@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -40,15 +41,6 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-// Width of the status indicator shown across the button.
-constexpr int kStatusIndicatorWidth = 14;
-// Height of the status indicator shown across the button.
-constexpr int kStatusIndicatorHeight = 2;
-// Spacing between the button's icon and the status indicator.
-constexpr int kStatusIndicatorSpacing = 1;
-}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabsToolbarButton,
                                       kUpdatePinStateMenu);
@@ -108,13 +100,15 @@ void SplitTabsToolbarButton::OnSplitTabChanged(const SplitTabChange& change) {
 
 void SplitTabsToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
-  gfx::Rect status_rect(kStatusIndicatorWidth, kStatusIndicatorHeight);
+  gfx::Rect status_rect(kSplitTabsStatusIndicatorWidth,
+                        kSplitTabsStatusIndicatorHeight);
   const gfx::Rect image_container_bounds =
       image_container_view()->GetLocalBounds();
   const int new_x =
       image_container_bounds.x() +
-      (image_container_bounds.width() - kStatusIndicatorWidth) / 2;
-  const int new_y = image_container_bounds.bottom() + kStatusIndicatorSpacing;
+      (image_container_bounds.width() - kSplitTabsStatusIndicatorWidth) / 2;
+  const int new_y =
+      image_container_bounds.bottom() + kSplitTabsStatusIndicatorSpacing;
   status_rect.set_origin(gfx::Point(new_x, new_y));
   status_indicator_->SetBoundsRect(status_rect);
 }

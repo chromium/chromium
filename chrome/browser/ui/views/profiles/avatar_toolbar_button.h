@@ -121,7 +121,6 @@ class AvatarToolbarButton : public ToolbarButton,
   void OnThemeChanged() override;
   void UpdateIcon() override;
   void Layout(PassKey) override;
-  int GetIconSize() const override;
   SkColor GetForegroundColor(ButtonState state) const override;
   std::optional<SkColor> GetHighlightTextColor() const override;
   std::optional<SkColor> GetHighlightBorderColor() const override;

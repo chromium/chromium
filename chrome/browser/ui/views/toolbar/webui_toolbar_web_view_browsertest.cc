@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -56,6 +57,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -78,6 +81,18 @@ std::string GetSplitTabsButtonAppJS() {
 std::string GetSplitTabsButtonIconJS() {
   return GetSplitTabsButtonAppJS() +
          "?.shadowRoot?.querySelector('cr-icon-button')";
+}
+
+std::string GetValueForCSSProperty(const std::string& element_js,
+                                   const std::string& property) {
+  return base::StringPrintf(
+      "window.getComputedStyle(%s).getPropertyValue('%s')", element_js.c_str(),
+      property.c_str());
+}
+
+std::string GetValueForToolbarAppCSSProperty(const std::string& property) {
+  return GetValueForCSSProperty("document.querySelector('toolbar-app')",
+                                property);
 }
 
 bool WaitForSplitTabsButtonVisible(content::WebContents* web_contents) {
@@ -687,6 +702,49 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   observer.Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
+                       NoRedundantNavigationOnReparenting) {
+  // 1. Setup: Create the view.
+  auto webui_toolbar_view = std::make_unique<WebUIToolbarWebView>(
+      browser(), browser()->command_controller());
+
+  content::WebContents* web_contents =
+      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
+  NavigationCounter nav_observer(web_contents);
+
+  // Helper to create a test widget.
+  auto create_widget = [&]() {
+    auto widget = std::make_unique<views::Widget>();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
+    params.context = browser()->window()->GetNativeWindow();
+    params.bounds = gfx::Rect(0, 0, 100, 100);
+    widget->Init(std::move(params));
+    return widget;
+  };
+
+  // 2. Initial Add: Triggers kUninitialized -> kPending.
+  auto widget1 = create_widget();
+  WebUIToolbarWebView* view_ptr =
+      widget1->GetContentsView()->AddChildView(std::move(webui_toolbar_view));
+  EXPECT_EQ(nav_observer.navigation_count(), 1u);
+  EXPECT_TRUE(view_ptr->IsPendingForTesting());
+
+  // 3. Simulate reparenting: Move to widget2 while in kPending state.
+  // RemoveChildViewT returns a unique_ptr to safely move the view.
+  auto moved_view = widget1->GetContentsView()->RemoveChildViewT(view_ptr);
+
+  auto widget2 = create_widget();
+  widget2->GetContentsView()->AddChildView(std::move(moved_view));
+
+  // 4. Verification: The navigation count must still be 1.
+  EXPECT_EQ(nav_observer.navigation_count(), 1u);
+
+  widget2->CloseNow();
+  widget1->CloseNow();
+}
+
 class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
  public:
   WebUIReloadButtonBrowserTest() {
@@ -927,45 +985,115 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
-                       NoRedundantNavigationOnReparenting) {
-  // 1. Setup: Create the view.
-  auto webui_toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      browser(), browser()->command_controller());
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
+                       VerifyDynamicTouchModeUpdate) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
 
-  content::WebContents* web_contents =
-      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-  NavigationCounter nav_observer(web_contents);
+  EnableSplitTabsButton(browser(), web_view);
+  ASSERT_TRUE(WaitForSplitTabsButtonVisible(web_contents));
 
-  // Helper to create a test widget.
-  auto create_widget = [&]() {
-    auto widget = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW);
-    params.context = browser()->window()->GetNativeWindow();
-    params.bounds = gfx::Rect(0, 0, 100, 100);
-    widget->Init(std::move(params));
-    return widget;
-  };
+  // Initial state: Standard (Touch disabled).
+  EXPECT_EQ("34px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-button-height"))
+                .ExtractString());
+  EXPECT_EQ("20px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-button-icon-size"))
+                .ExtractString());
+  EXPECT_EQ("1px",
+            content::EvalJs(web_contents, GetValueForCSSProperty(
+                                              GetSplitTabsButtonAppJS(),
+                                              "--split-tabs-indicator-spacing"))
+                .ExtractString());
+  std::string get_indicator_bottom_js = base::StringPrintf(
+      "window.getComputedStyle("
+      "%s.shadowRoot.querySelector('.status-indicator')).bottom",
+      GetSplitTabsButtonAppJS().c_str());
+  EXPECT_EQ(
+      "4px",
+      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
 
-  // 2. Initial Add: Triggers kUninitialized -> kPending.
-  auto widget1 = create_widget();
-  WebUIToolbarWebView* view_ptr =
-      widget1->GetContentsView()->AddChildView(std::move(webui_toolbar_view));
-  EXPECT_EQ(nav_observer.navigation_count(), 1u);
-  EXPECT_TRUE(view_ptr->IsPendingForTesting());
+  // Enable Touch UI.
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
 
-  // 3. Simulate reparenting: Move to widget2 while in kPending state.
-  // RemoveChildViewT returns a unique_ptr to safely move the view.
-  auto moved_view = widget1->GetContentsView()->RemoveChildViewT(view_ptr);
+    // Wait for the WebUI to update CSS variables.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                               "--toolbar-button-height"))
+                 .ExtractString() == "48px";
+    }));
 
-  auto widget2 = create_widget();
-  widget2->GetContentsView()->AddChildView(std::move(moved_view));
+    EXPECT_EQ("24px",
+              content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                                "--toolbar-button-icon-size"))
+                  .ExtractString());
+    EXPECT_EQ(
+        "9px",
+        content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+  }
 
-  // 4. Verification: The navigation count must still be 1.
-  EXPECT_EQ(nav_observer.navigation_count(), 1u);
+  // Verify revert to Standard.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                             "--toolbar-button-height"))
+               .ExtractString() == "34px";
+  }));
+  EXPECT_EQ(
+      "4px",
+      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+}
 
-  widget2->CloseNow();
-  widget1->CloseNow();
+class WebUIToolbarWebViewTouchBrowserTest
+    : public WebUIToolbarWebViewSplitTabsBrowserTest {
+ public:
+  WebUIToolbarWebViewTouchBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIToolbarWebViewSplitTabsBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kTopChromeTouchUi,
+                                    switches::kTopChromeTouchUiEnabled);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  EnableSplitTabsButton(browser(), web_view);
+  ASSERT_TRUE(WaitForSplitTabsButtonVisible(web_contents));
+
+  // Verify CSS variables set by app.ts based on loadTimeData.
+  // Toolbar button height should be 48px in touch mode (vs 34px).
+  EXPECT_EQ("48px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-button-height"))
+                .ExtractString());
+
+  // Toolbar icon size should be 24px in touch mode (vs 20px).
+  EXPECT_EQ("24px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-button-icon-size"))
+                .ExtractString());
+
+  // Spacing should be 1px.
+  EXPECT_EQ("1px",
+            content::EvalJs(web_contents, GetValueForCSSProperty(
+                                              GetSplitTabsButtonAppJS(),
+                                              "--split-tabs-indicator-spacing"))
+                .ExtractString());
+
+  // Verify computed style for indicator bottom margin.
+  // Formula: (48 - 24) / 2 - 1 - 2 = 9px.
+  std::string get_indicator_bottom_js = base::StringPrintf(
+      "window.getComputedStyle("
+      "%s.shadowRoot.querySelector('.status-indicator')).bottom",
+      GetSplitTabsButtonAppJS().c_str());
+  EXPECT_EQ(
+      "9px",
+      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
 }

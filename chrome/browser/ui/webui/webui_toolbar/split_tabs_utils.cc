@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -81,6 +82,12 @@ void PopulateSplitTabsDataSource(content::WebUIDataSource* source,
        IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED},
   };
   source->AddLocalizedStrings(kStrings);
+
+  source->AddInteger("splitTabsIndicatorWidth", kSplitTabsStatusIndicatorWidth);
+  source->AddInteger("splitTabsIndicatorHeight",
+                     kSplitTabsStatusIndicatorHeight);
+  source->AddInteger("splitTabsIndicatorSpacing",
+                     kSplitTabsStatusIndicatorSpacing);
 }
 
 }  // namespace webui_toolbar

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/command_updater.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,6 +54,11 @@ class MockReloadButtonPage
               (browser_controls_api::mojom::ToolbarButtonType type,
                bool is_pinned),
               (override));
+  MOCK_METHOD(
+      void,
+      OnLayoutChanged,
+      (browser_controls_api::mojom::LayoutConstantsPtr layout_constants),
+      (override));
 
  private:
   mojo::Receiver<browser_controls_api::mojom::BrowserControlsObserver>

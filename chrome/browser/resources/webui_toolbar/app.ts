@@ -13,8 +13,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
+import type {LayoutConstants} from './browser_controls_api_data_model.mojom-webui.js';
+import {type BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 
 export class ToolbarAppElement extends CrLitElement {
@@ -45,14 +45,13 @@ export class ToolbarAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy;
   private metricsRecorder_: MetricsRecorder;
   private trackedElementManager_: TrackedElementManager;
+  private listenerIds_: number[] = [];
 
   constructor() {
     super();
     this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
     this.trackedElementManager_ = TrackedElementManager.getInstance();
-    const gap = loadTimeData.getInteger('toolbarIconDefaultMargin');
-    this.style.setProperty('--toolbar-icon-default-margin', `${gap}px`);
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -62,6 +61,35 @@ export class ToolbarAppElement extends CrLitElement {
    */
   override connectedCallback() {
     super.connectedCallback();
+
+    // Initial setup of CSS variables
+    const gap = loadTimeData.getInteger('toolbarIconDefaultMargin');
+    this.style.setProperty('--toolbar-icon-default-margin', `${gap}px`);
+    this.style.setProperty(
+        '--toolbar-button-height',
+        `${loadTimeData.getInteger('toolbarButtonHeight')}px`);
+    this.style.setProperty(
+        '--toolbar-button-icon-size',
+        `${loadTimeData.getInteger('toolbarButtonIconSize')}px`);
+    this.style.setProperty(
+        '--split-tabs-indicator-width',
+        `${loadTimeData.getInteger('splitTabsIndicatorWidth')}px`);
+    this.style.setProperty(
+        '--split-tabs-indicator-height',
+        `${loadTimeData.getInteger('splitTabsIndicatorHeight')}px`);
+    this.style.setProperty(
+        '--split-tabs-indicator-spacing',
+        `${loadTimeData.getInteger('splitTabsIndicatorSpacing')}px`);
+
+    this.listenerIds_.push(
+        this.browserProxy_.callbackRouter.onLayoutChanged.addListener(
+            (layoutConstants: LayoutConstants) =>
+                this.onLayoutChanged_(layoutConstants)));
+
+    this.browserProxy_.handler.getLayoutConstants().then(
+        ({layoutConstants}) => {
+          this.onLayoutChanged_(layoutConstants);
+        });
 
     this.metricsRecorder_.startObserving();
     const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
@@ -84,11 +112,22 @@ export class ToolbarAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    this.listenerIds_.forEach(
+        id => this.browserProxy_.callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
+
     this.metricsRecorder_.stopObserving();
     const reload = this.shadowRoot.querySelector<HTMLElement>('#reload');
     if (reload) {
       this.trackedElementManager_.stopTracking(reload);
     }
+  }
+
+  private onLayoutChanged_(constants: LayoutConstants) {
+    this.style.setProperty(
+        '--toolbar-button-height', `${constants.toolbarButtonHeight}px`);
+    this.style.setProperty(
+        '--toolbar-button-icon-size', `${constants.toolbarButtonIconSize}px`);
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {

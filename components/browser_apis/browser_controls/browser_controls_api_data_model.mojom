@@ -51,3 +51,8 @@ enum SplitTabActiveLocation {
 enum ToolbarButtonType {
   kSplitTabs,
 };
+
+struct LayoutConstants {
+  int32 toolbar_button_height;
+  int32 toolbar_button_icon_size;
+};

@@ -262,11 +262,7 @@ std::optional<SkColor> ToolbarButton::GetBackgroundColor() const {
 }
 
 int ToolbarButton::GetIconSize() const {
-  if (ui::TouchUiController::Get()->touch_ui()) {
-    return kDefaultTouchableIconSize;
-  }
-
-  return kDefaultIconSizeChromeRefresh;
+  return GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize);
 }
 
 bool ToolbarButton::ShouldPaintBorder() const {

@@ -63,6 +63,10 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddInteger(
       "toolbarIconDefaultMargin",
       GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
+  source->AddInteger("toolbarButtonHeight",
+                     GetLayoutConstant(LayoutConstant::kToolbarButtonHeight));
+  source->AddInteger("toolbarButtonIconSize",
+                     GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
 
   webui::SetupWebUIDataSource(source, kWebuiToolbarResources,
                               IDR_WEBUI_TOOLBAR_WEBUI_TOOLBAR_HTML);

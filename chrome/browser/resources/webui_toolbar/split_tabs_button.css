@@ -9,50 +9,40 @@
  * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
-/* TODO(crbug.com/470039098): Pass values from C++ instead of hard code when
- * possible, and fix TouchUI mode */
 :host {
   align-items: center;
   display: inline-flex;
   justify-content: center;
   position: relative;
-  --cr-icon-button-size: 34px;
-  height: var(--cr-icon-button-size);
-  width: var(--cr-icon-button-size);
-  --cr-icon-button-icon-size: 20px;
+  height: var(--toolbar-button-height);
+  width: var(--toolbar-button-height);
 }
 
 cr-icon-button {
   margin: 0;
+  --cr-icon-button-size: var(--toolbar-button-height);
+  --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
 /* The "Blue Bar" status indicator that appears when a split is active */
-/* TODO(crbug.com/470039098): Pass values from C++ instead of hard code when
- * possible, and fix TouchUI mode */
 .status-indicator {
   background-color: var(--color-toolbar-action-item-engaged,
       var(--google-blue-600));
 
-  /* Exact dimensions from C++ constants (kStatusIndicatorWidth/Height) */
-  --indicator-height: 2px;
-  --indicator-width: 14px;
-  --indicator-spacing: 1px;
-
-  height: var(--indicator-height);
-  width: var(--indicator-width);
+  height: var(--split-tabs-indicator-height);
+  width: var(--split-tabs-indicator-width);
   border-radius: 1px;
 
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 
-  /* Calculated Vertical Position:
-     bottom = (ButtonSize - IconSize)/2 - Spacing - IndicatorHeight
-  */
-  bottom: calc((var(--cr-icon-button-size) -
-                var(--cr-icon-button-icon-size)) / 2 -
-               var(--indicator-spacing) - var(--indicator-height));
+  /* Calculated to align with icon bottom */
+  bottom: calc((var(--toolbar-button-height) -
+                var(--toolbar-button-icon-size)) / 2 -
+               var(--split-tabs-indicator-spacing) -
+               var(--split-tabs-indicator-height));
 
   pointer-events: none; /* Allows clicks to pass through to the button */
   z-index: 1; /* Renders above the button background */

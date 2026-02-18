@@ -754,12 +754,6 @@ void AvatarToolbarButton::UpdateLayoutInsets() {
       IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));
 }
 
-int AvatarToolbarButton::GetIconSize() const {
-  return ui::TouchUiController::Get()->touch_ui()
-             ? kDefaultTouchableIconSize
-             : kDefaultIconSizeChromeRefresh;
-}
-
 void AvatarToolbarButton::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

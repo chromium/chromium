@@ -29,6 +29,10 @@ interface BrowserControlsObserver {
   // Sets the pin state of the specified button in the renderer, the renderer
   // is expected to make UI changes accordingly.
   OnButtonPinStateChanged(ToolbarButtonType type, bool is_pinned);
+
+  // Sets the layout constants in the renderer, the renderer is expected to make
+  // UI changes accordingly.
+  OnLayoutChanged(LayoutConstants layout_constants);
 };
 
 // BrowserControlsService defines methods to be called from the WebUI to the
@@ -71,4 +75,8 @@ interface BrowserControlsService {
 
   // Gets the pin state for the specified button.
   GetButtonPinState(ToolbarButtonType type) => (bool is_pinned);
+
+  // Gets the current layout constants.
+  GetLayoutConstants()
+      => (LayoutConstants layout_constants);
 };

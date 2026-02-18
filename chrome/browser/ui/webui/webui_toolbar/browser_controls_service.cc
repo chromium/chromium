@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -85,6 +86,12 @@ int ToUIEventFlags(
   return event_flags;
 }
 
+browser_controls_api::mojom::LayoutConstantsPtr GetLayoutConstantsStruct() {
+  return browser_controls_api::mojom::LayoutConstants::New(
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
+      GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
+}
+
 }  // namespace
 
 BrowserControlsService::BrowserControlsService(
@@ -101,6 +108,10 @@ BrowserControlsService::BrowserControlsService(
       delegate_(delegate) {
   CHECK(web_contents_);
   CHECK(command_updater_);
+
+  touch_ui_subscription_ =
+      ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(
+          &BrowserControlsService::OnTouchUiChanged, base::Unretained(this)));
 }
 
 BrowserControlsService::~BrowserControlsService() = default;
@@ -233,6 +244,11 @@ void BrowserControlsService::GetButtonPinState(
   std::move(callback).Run(is_pinned);
 }
 
+void BrowserControlsService::GetLayoutConstants(
+    GetLayoutConstantsCallback callback) {
+  std::move(callback).Run(GetLayoutConstantsStruct());
+}
+
 void BrowserControlsService::OnTabSplitStatusChanged(
     bool is_split,
     browser_controls_api::mojom::SplitTabActiveLocation location) {
@@ -246,6 +262,12 @@ void BrowserControlsService::OnButtonPinStateChanged(
     bool is_pinned) {
   if (observer_) {
     observer_->OnButtonPinStateChanged(type, is_pinned);
+  }
+}
+
+void BrowserControlsService::OnTouchUiChanged() {
+  if (observer_) {
+    observer_->OnLayoutChanged(GetLayoutConstantsStruct());
   }
 }
 

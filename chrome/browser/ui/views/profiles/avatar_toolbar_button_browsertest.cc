@@ -112,6 +112,19 @@
 #include "components/user_manager/user_names.h"
 #endif
 
+// Friend of ToolbarButton to access non-public members.
+namespace test {
+class ToolbarButtonTestApi {
+ public:
+  explicit ToolbarButtonTestApi(const ToolbarButton* button)
+      : button_(button) {}
+  int GetIconSize() const { return button_->GetIconSize(); }
+
+ private:
+  raw_ptr<const ToolbarButton> button_;
+};
+}  // namespace test
+
 namespace {
 using ::testing::StrictMock;
 using ::testing::ValuesIn;
@@ -382,9 +395,9 @@ class AvatarToolbarButtonBaseBrowserTest {
     AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(GetBrowser());
     gfx::Image current_avatar_icon = gfx::Image(
         avatar_button->GetImage(views::Button::ButtonState::STATE_NORMAL));
+    int icon_size = test::ToolbarButtonTestApi(avatar_button).GetIconSize();
     gfx::Image adapted_signed_in_image = profiles::GetSizedAvatarIcon(
-        account_image, avatar_button->GetIconSize(),
-        avatar_button->GetIconSize(), profiles::SHAPE_CIRCLE);
+        account_image, icon_size, icon_size, profiles::SHAPE_CIRCLE);
     return gfx::test::AreImagesEqual(current_avatar_icon,
                                      adapted_signed_in_image);
   }

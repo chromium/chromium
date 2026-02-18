@@ -109,6 +109,9 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 1;
     case LayoutConstant::kToolbarButtonHeight:
       return touch_ui ? 48 : 34;
+    case LayoutConstant::kToolbarButtonIconSize:
+      return touch_ui ? kDefaultTouchableIconSize
+                      : kDefaultIconSizeChromeRefresh;
     case LayoutConstant::kToolbarDividerCornerRadius:
       return 1;
     case LayoutConstant::kToolbarDividerHeight:
