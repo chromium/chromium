@@ -3654,6 +3654,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabStateStore.InternalTabCountDelta.CounterHigher"
+    units="tabs" expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Recorded when the number of tabs restored from the internal tab
+    count tracker is higher than the number of tabs loaded from the database.
+    The value recorded is the difference.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.InternalTabCountDelta.DatabaseHigher"
+    units="tabs" expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Recorded when the number of tabs loaded from the database is
+    higher than the number of tabs restored from the internal tab count tracker.
+    The value recorded is the difference.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabStateStore.LoadAllTabsDuration" units="ms"
     expires_after="2026-10-28">
   <owner>skym@chromium.org</owner>

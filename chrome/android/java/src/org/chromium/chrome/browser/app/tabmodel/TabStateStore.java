@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isStorageAuthoritative;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -43,6 +45,8 @@ import java.util.Locale;
 @NullMarked
 public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
+    private static final String RESTORED_TAB_COUNT_DELTA =
+            "Tabs.TabStateStore.InternalTabCountDelta.";
 
     private @MonotonicNonNull TabStateStorageService mTabStateStorageService;
     private final PersistentStoreMigrationManager mMigrationManager;
@@ -527,6 +531,17 @@ public class TabStateStore implements TabPersistentStore {
     /** Called after both the regular and incognito data has been loaded. */
     private void onAllDataLoaded(int loadedTabCount) {
         assertInitialized();
+
+        if (mMigrationManager.isShadowStoreCaughtUp() || isStorageAuthoritative()) {
+            int tabCountDelta = loadedTabCount - mRestoredTabCount;
+            if (tabCountDelta > 0) {
+                RecordHistogram.recordCount1000Histogram(
+                        RESTORED_TAB_COUNT_DELTA + "DatabaseHigher", tabCountDelta);
+            } else if (tabCountDelta < 0) {
+                RecordHistogram.recordCount1000Histogram(
+                        RESTORED_TAB_COUNT_DELTA + "CounterHigher", -tabCountDelta);
+            }
+        }
 
         mRestoredTabCount = loadedTabCount;
         for (TabPersistentStoreObserver observer : mObservers) {
