@@ -23,7 +23,8 @@ namespace web_app {
 
 WebAppUpdateIdentityView::WebAppUpdateIdentityView(
     const WebAppIdentity& identity,
-    bool url_migration_only) {
+    bool url_migration_only,
+    bool has_title_change) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -43,6 +44,9 @@ WebAppUpdateIdentityView::WebAppUpdateIdentityView(
   name_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   name_label->SetProperty(views::kElementIdentifierKey,
                           WebAppUpdateIdentityView::kNameLabelId);
+  if (has_title_change) {
+    name_label->SetTextStyle(views::style::STYLE_EMPHASIZED);
+  }
 
   auto* origin_label = AddChildView(web_app::CreateOriginLabelFromStartUrl(
       identity.start_url, /*is_primary_text=*/false));

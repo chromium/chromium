@@ -45,4 +45,8 @@ int WebAppIdentityUpdate::GetCombinationChangeIndex() const {
   return combination_index;
 }
 
+bool WebAppIdentityUpdate::HasTitleChange() const {
+  return new_title.has_value();
+}
+
 }  // namespace web_app

@@ -347,14 +347,16 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                   // consistently.
                   .AddChild(views::Builder<WebAppUpdateIdentityView>(
                       std::make_unique<WebAppUpdateIdentityView>(
-                          update.MakeOldIdentity(), url_migration_only)))
+                          update.MakeOldIdentity(), url_migration_only,
+                          update.HasTitleChange())))
                   .AddChild(views::Builder<views::ImageView>().SetImage(
                       ui::ImageModel::FromVectorIcon(
                           vector_icons::kForwardArrowIcon, ui::kColorIcon,
                           kArrowIconSizeDp)))
                   .AddChild(views::Builder<WebAppUpdateIdentityView>(
                       std::make_unique<WebAppUpdateIdentityView>(
-                          update.MakeNewIdentity(), url_migration_only)))
+                          update.MakeNewIdentity(), url_migration_only,
+                          update.HasTitleChange())))
                   .SetMinimumSize(gfx::Size(
                       layout_provider->GetDistanceMetric(
                           views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH),

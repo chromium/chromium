@@ -55,6 +55,11 @@ struct WebAppIdentityUpdate {
   // correct position accordingly.
   int GetCombinationChangeIndex() const;
 
+  // Returns true if the identity update has a title change.
+  bool HasTitleChange() const;
+
+  // If the `new_*` fields are std::nullopt, then they are considered to be the
+  // same as the `old_*` fields.
   std::u16string old_title;
   std::optional<std::u16string> new_title = std::nullopt;
   gfx::Image old_icon;

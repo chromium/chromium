@@ -22,9 +22,10 @@ class WebAppUpdateIdentityView : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIconLabelId);
 
   // If `url_migration_only` is set, changes the style of the display url to be
-  // more prominent.
+  // more prominent. The ttiles are emphasized if `has_title_change` is set.
   WebAppUpdateIdentityView(const WebAppIdentity& identity,
-                           bool url_migration_only);
+                           bool url_migration_only,
+                           bool has_title_change);
 
   WebAppUpdateIdentityView(const WebAppUpdateIdentityView&) = delete;
   WebAppUpdateIdentityView& operator=(const WebAppUpdateIdentityView&) = delete;

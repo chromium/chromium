@@ -197,6 +197,12 @@ void AppUpdateDataReadCommand::OnIconsProcessedCreateIdentity() {
       pending_update_info_.has_name()
           ? std::make_optional(base::UTF8ToUTF16(pending_update_info_.name()))
           : std::nullopt;
+
+  // For url updates, the start_url should be the same before and after.
+  // The WebAppIdentityUpdate code automatically makes the new_start_url equal
+  // to the old one if not populated, signifying that they're both the same.
+  update_.old_start_url = lock_->registrar().GetAppStartUrl(app_id_);
+
   GetMutableDebugValue().Set("new_name", update_.new_title.has_value());
   ReportResultAndDestroy(AppUpdateDataReadResult::kSuccess);
 }
