@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -32,16 +33,18 @@
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/lobster/lobster_event_sink.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
@@ -1121,34 +1124,58 @@ void NativeInputMethodEngineObserver::OnCandidateClicked(
 void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
     const ui::ime::AssistiveWindowButton& button) {
   switch (button.id) {
-    case ui::ime::ButtonId::kSmartInputsSettingLink:
+    case ui::ime::ButtonId::kSmartInputsSettingLink: {
       base::RecordAction(base::UserMetricsAction(
           "ChromeOS.Settings.SmartInputs.PersonalInfoSuggestions.Open"));
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          ProfileManager::GetActiveUserProfile(),
-          chromeos::settings::mojom::kInputSubpagePath);
+      auto* session =
+          session_manager::SessionManager::Get()->GetActiveSession();
+      if (session) {
+        // TODO(crbug.com/447287122): Revisit here to see if there's a case
+        // where no active session is there.
+        ash::SettingsAppManager::Get()->Open(
+            CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                session->account_id())),
+            {.sub_page = chromeos::settings::mojom::kInputSubpagePath});
+      }
       break;
+    }
     case ui::ime::ButtonId::kLearnMore:
       if (button.window_type ==
           ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion) {
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(),
-            SettingToQueryString(
-                chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath,
-                chromeos::settings::mojom::Setting::kShowDiacritic));
+        auto* session =
+            session_manager::SessionManager::Get()->GetActiveSession();
+        if (session) {
+          // TODO(crbug.com/447287122): Revisit here to see if there's a case
+          // where no active session is there.
+          ash::SettingsAppManager::Get()->Open(
+              CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                  session->account_id())),
+              {.sub_page = SettingToQueryString(
+                   chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath,
+                   chromeos::settings::mojom::Setting::kShowDiacritic)});
+        }
       }
       if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {
         autocorrect_manager_->HideUndoWindow();
         base::RecordAction(base::UserMetricsAction(
             "ChromeOS.Settings.InputMethod.Autocorrect.Open"));
-        chromeos::settings::mojom::Setting setting =
-            ChromeKeyboardControllerClient::Get()->is_keyboard_visible()
-                ? chromeos::settings::mojom::Setting::kShowVKAutoCorrection
-                : chromeos::settings::mojom::Setting::kShowPKAutoCorrection;
-        std::string path = SettingToQueryString(
-            chromeos::settings::mojom::kInputMethodOptionsSubpagePath, setting);
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(), path);
+        auto* session =
+            session_manager::SessionManager::Get()->GetActiveSession();
+        if (session) {
+          // TODO(crbug.com/447287122): Revisit here to see if there's a case
+          // where no active session is there.
+          chromeos::settings::mojom::Setting setting =
+              ChromeKeyboardControllerClient::Get()->is_keyboard_visible()
+                  ? chromeos::settings::mojom::Setting::kShowVKAutoCorrection
+                  : chromeos::settings::mojom::Setting::kShowPKAutoCorrection;
+          std::string path = SettingToQueryString(
+              chromeos::settings::mojom::kInputMethodOptionsSubpagePath,
+              setting);
+          ash::SettingsAppManager::Get()->Open(
+              CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                  session->account_id())),
+              {.sub_page = path});
+        }
       }
       break;
     case ui::ime::ButtonId::kSuggestion:

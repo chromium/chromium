@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -21,10 +22,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -931,11 +933,14 @@ void KerberosCredentialsManager::NotifyRequiresLoginPassword(
 
 void KerberosCredentialsManager::OnTicketExpiryNotificationClick(
     const std::string& principal_name) {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      primary_profile_,
-      chromeos::settings::mojom::kKerberosAccountsV2SubpagePath +
-          std::string("?kerberos_reauth=") +
-          base::EscapeQueryParamValue(principal_name, false /* use_plus */));
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      primary_profile_.get());
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(user),
+      {.sub_page =
+           chromeos::settings::mojom::kKerberosAccountsV2SubpagePath +
+           std::string("?kerberos_reauth=") +
+           base::EscapeQueryParamValue(principal_name, false /* use_plus */)});
 
   // Close last! |principal_name| is owned by the notification.
   kerberos_ticket_expiry_notification::Close(primary_profile_);

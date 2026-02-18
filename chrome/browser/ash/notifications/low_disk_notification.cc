@@ -9,16 +9,18 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -123,9 +125,15 @@ LowDiskNotification::CreateNotification(Severity severity) {
   auto on_click = base::BindRepeating([](std::optional<int> button_index) {
     if (button_index) {
       DCHECK_EQ(0, *button_index);
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          ProfileManager::GetActiveUserProfile(),
-          chromeos::settings::mojom::kStorageSubpagePath);
+      if (auto* session =
+              session_manager::SessionManager::Get()->GetActiveSession()) {
+        // TODO(crbug.com/447287122): Revisit here to check if there's a case
+        // where there's no active session.
+        ash::SettingsAppManager::Get()->Open(
+            CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                session->account_id())),
+            {.sub_page = chromeos::settings::mojom::kStorageSubpagePath});
+      }
     }
   });
   std::unique_ptr<message_center::Notification> notification =

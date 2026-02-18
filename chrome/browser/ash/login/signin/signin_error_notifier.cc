@@ -32,13 +32,14 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -385,8 +386,14 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
     std::optional<int> button_index) {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kPeopleSectionPath);
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
+  if (user) {
+    // TODO(crbug.com/447287122): Revisit here to see if there's a case where no
+    // active session is there.
+    ash::SettingsAppManager::Get()->Open(
+        *user, {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
+  }
 }
 
 }  // namespace ash

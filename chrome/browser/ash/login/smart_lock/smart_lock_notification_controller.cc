@@ -9,10 +9,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -142,8 +144,16 @@ void SmartLockNotificationController::ShowNotification(
 }
 
 void SmartLockNotificationController::LaunchMultiDeviceSettings() {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
+  if (user) {
+    // TODO(crbug.com/447287122): Revisit here to see if there's a case where no
+    // active session is there.
+    ash::SettingsAppManager::Get()->Open(
+        *user,
+        {.sub_page =
+             chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath});
+  }
 }
 
 void SmartLockNotificationController::LockScreen() {
