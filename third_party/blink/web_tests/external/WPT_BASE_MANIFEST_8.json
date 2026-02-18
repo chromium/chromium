@@ -288783,6 +288783,19 @@
        {}
       ]
      ],
+     "float-vlr-014.html": [
+      "3f0d9046c8905502c63752734dd0ec455d626f49",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "float-vrl-002.xht": [
       "f15ab73efbeed0545b9e140925996c0219c5170f",
       [
@@ -407786,7 +407799,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "e605dbc0679eac37b427d5085a8c19c4df865517",
+      "0bee81610c173281b20ab56487af2effadf90359",
       []
      ],
      "iframe.html": [
@@ -409773,10 +409786,6 @@
      ],
      "focus-within-013-ref.html": [
       "cb0badd2ad330654f7458e18c74498a14c46fc47",
-      []
-     ],
-     "focus-within-removal-expected.txt": [
-      "30ef07cbfde7bf88c91ece0f00b065e89d28658a",
       []
      ],
      "focus-within-shadow-001-ref.html": [
@@ -443233,7 +443242,7 @@
      []
     ],
     "cssom-view.idl": [
-     "af51327bfb8b10065dc221c80cf89d0144c78924",
+     "13ac84c63d4488a8d07d6152507bf6b03dbeb62c",
      []
     ],
     "cssom.idl": [
@@ -519322,7 +519331,7 @@
    "connection-allowlist": {
     "tentative": {
      "dedicated-worker.sub.window.js": [
-      "d99ef92d74177cd348fdb217b1460c2d3d20b92c",
+      "22c2f094dc34a9ea2a7787cba2552029aabf25c3",
       [
        "connection-allowlist/tentative/dedicated-worker.sub.window.html",
        {
