@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -69,6 +70,7 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    @DisabledTest(message = "https://crbug.com/485606369")
     public void testOpenNewWindow_fromIncognitoNtp_robustWindowManagementExperimentalEnabled() {
         doTestOpenNewWindow_fromIncognitoNtp();
     }
