@@ -365,9 +365,10 @@ void ToastService::RegisterToasts(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     toast_registry_->RegisterToast(
-        // TODO(crbug.com/477845712): Use the correct icon.
         ToastId::kAutofillAiWalletErrorMessage,
-        ToastSpecification::Builder(kCheckIcon).AddGlobalScoped().Build());
+        ToastSpecification::Builder(vector_icons::kPersonTextIcon)
+            .AddGlobalScoped()
+            .Build());
   }
 
   if (base::FeatureList::IsEnabled(toast_features::kTranslateToast)) {
