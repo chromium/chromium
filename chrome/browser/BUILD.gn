@@ -8418,6 +8418,13 @@ static_library("browser") {
       "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     ]
   }
+
+  if (is_mac || is_linux) {
+    sources += [
+      "signin/before_fre_refresh_hats_field_trial.cc",
+      "signin/before_fre_refresh_hats_field_trial.h",
+    ]
+  }
 }
 
 # These are the dependencies for the "browser" target that are outside of

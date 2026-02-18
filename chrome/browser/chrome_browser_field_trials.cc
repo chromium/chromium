@@ -56,6 +56,12 @@
 #include "ui/base/ui_base_features.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/check_deref.h"
+#include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/signin/before_fre_refresh_hats_field_trial.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(local_state_);
@@ -85,6 +91,16 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
   }
 #endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // This trial is client controlled on Mac and Linux because the survey is
+  // triggered on the very first run of Chrome. These platforms do not support
+  // variations seed on the first run.
+  if (first_run::IsChromeFirstRun()) {
+    signin::CreateBeforeFreRefreshHatsFieldTrial(
+        CHECK_DEREF(feature_list), entropy_providers.default_entropy());
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {

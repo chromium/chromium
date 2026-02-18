@@ -4124,8 +4124,6 @@
     "BeforeFirstRunDesktopRefreshSurvey": [
         {
             "platforms": [
-                "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [

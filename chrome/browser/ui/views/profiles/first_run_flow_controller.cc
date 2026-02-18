@@ -59,6 +59,13 @@
 #include "chrome/installer/util/shell_util.h"
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/check_deref.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace {
 
 constexpr base::TimeDelta kDefaultBrowserCheckTimeout = base::Seconds(2);
@@ -609,6 +616,19 @@ void FirstRunFlowController::RunFinishFlowCallback() {
 }
 
 void FirstRunFlowController::MaybeTriggerHatsSurvey() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // No variations seed is available on Mac and Linux at the very first run of
+  // Chrome. Check the locale manually to make sure the survey is enabled for
+  // only eligible users. Do the locale check before the feature check to avoid
+  // unnecessary feature activation.
+  const ApplicationLocaleStorage& application_locale_storage =
+      CHECK_DEREF(CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
+                      .application_locale_storage());
+  if (application_locale_storage.Get() != "en-US") {
+    return;
+  }
+#endif
+
   if (!base::FeatureList::IsEnabled(
           switches::kBeforeFirstRunDesktopRefreshSurvey)) {
     return;
