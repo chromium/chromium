@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
@@ -1923,3 +1925,81 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   // Verify the display text remains empty.
   EXPECT_EQ(u"", omnibox_view()->GetText());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests for dump accessibility events related to the omnibox.
+class OmniboxViewViewsDumpAccessibilityEventsTest
+    : public views::DumpAccessibilityEventsViewsTestBase {
+ public:
+  OmniboxViewViewsDumpAccessibilityEventsTest() = default;
+  ~OmniboxViewViewsDumpAccessibilityEventsTest() override = default;
+
+ protected:
+  void SetUpTestViews() override {
+    // No custom widget needed - we use the browser window.
+  }
+
+  gfx::NativeWindow GetTargetNativeWindow() const override {
+    return browser()->window()->GetNativeWindow();
+  }
+
+  views::View* GetTargetRootView() const override {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->GetRootView();
+  }
+
+  OmniboxViewViews* omnibox_view() {
+    return static_cast<OmniboxViewViews*>(
+        browser()->window()->GetLocationBar()->GetOmniboxView());
+  }
+
+  OmniboxController* omnibox_controller() {
+    return browser()->window()->GetLocationBar()->GetOmniboxController();
+  }
+
+  // Opens the popup by starting an autocomplete query.
+  void OpenPopup() {
+    omnibox_controller()->edit_model()->SetUserText(u"example");
+    AutocompleteInput input(
+        u"example", metrics::OmniboxEventProto::BLANK,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    omnibox_controller()->StartAutocomplete(input);
+  }
+
+  // Closes the popup by clearing the autocomplete results.
+  void ClosePopup() {
+    omnibox_controller()->StopAutocomplete(/*clear_result=*/true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OmniboxViewViewsDumpAccessibilityEventsTest,
+                       OmniboxPopupOpenClose) {
+  SetFilters(R"(
+    @UIA-WIN-DENY:*
+    @UIA-WIN-ALLOW:ControllerFor*
+  )");
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  chrome::FocusLocationBar(browser());
+
+  EXPECT_FALSE(omnibox_controller()->IsPopupOpen());
+
+  BEGIN_RECORDING_EVENTS_OR_SKIP("omnibox-popup-open-close");
+
+  OpenPopup();
+  EXPECT_TRUE(omnibox_controller()->IsPopupOpen());
+
+  ClosePopup();
+  EXPECT_FALSE(omnibox_controller()->IsPopupOpen());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OmniboxViewViewsDumpAccessibilityEventsTest,
+    ::testing::ValuesIn(
+        views::DumpAccessibilityEventsViewsTestBase::EventTestPasses()),
+    views::EventTestPassToString());
+
+#endif
