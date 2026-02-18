@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation PasskeySuggestionBottomSheetMediator {
   // The WebStateList observed by this mediator and the observer bridge.
@@ -61,6 +63,9 @@
   if ([self hasSuggestions]) {
     // TODO(crbug.com/464290670): Pass actual domain.
     [consumer setSuggestions:self.suggestions andDomain:@""];
+    [consumer
+        setPrimaryActionString:l10n_util::GetNSString(
+                                   IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)];
   }
 }
 

@@ -11,14 +11,11 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
-#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
-#import "components/webauthn/ios/passkey_java_script_feature.h"
-#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -147,37 +144,6 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
     RequestInfo request_info) {
   [command_handler_ showPasskeySuggestionBottomSheet:request_info];
-
-  // TODO(crbug.com/460485496): remove the code below and related dependencies
-  // once the bottom sheet is implemented.
-  web::WebFramesManager* web_frames_manager =
-      webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state_.get());
-  if (!web_frames_manager) {
-    return;
-  }
-
-  web::WebFrame* web_frame =
-      web_frames_manager->GetFrameWithId(request_info.frame_id);
-
-  IOSPasswordManagerDriver* driver =
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_.get(),
-                                                               web_frame);
-  if (!driver) {
-    return;
-  }
-
-  password_manager::WebAuthnCredentialsDelegate* delegate =
-      GetWebAuthnCredentialsDelegateForDriver(driver);
-  if (!delegate) {
-    return;
-  }
-
-  // TODO(crbug.com/460485496): Use an empty credential ID for now. The real
-  // credential ID will come from the UI layer, i.e., from the accepted
-  // FormSuggestion object.
-  std::string credential_id;
-  delegate->SelectPasskey(credential_id, base::DoNothing());
 }
 
 void IOSChromePasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {

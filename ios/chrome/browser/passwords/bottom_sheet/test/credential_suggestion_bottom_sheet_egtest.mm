@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -43,15 +44,24 @@
 
 using chrome_test_util::WebViewMatcher;
 using password_manager_test_utils::DeleteCredential;
+using password_manager_test_utils::kDefaultUserDisplayName;
+using password_manager_test_utils::SaveExamplePasskeyToStore;
 
 static constexpr char kFormUsername[] = "un";
 static constexpr char kFormPassword[] = "pw";
+static constexpr char kLocalhost[] = "localhost";
 
 namespace {
 
 id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   return grey_allOf(grey_accessibilityID(id),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+// Matcher for the bottom sheet's "Continue" button.
+id<GREYMatcher> ContinueButton() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE);
 }
 
 id<GREYMatcher> SubtitleString(const GURL& url) {
@@ -220,6 +230,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [CredentialSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
                                                    kSuccess];
+
+  // Make sure the fake passkey keychain provider bridge is set.
+  [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];
 }
 
 - (void)tearDownHelper {
@@ -244,6 +257,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
     config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
   }
 
+  if ([self isRunningTest:@selector
+            (testOpenCredentialBottomSheetAndUsePasskeyOnModalLogin)]) {
+    config.features_enabled.push_back(kIOSPasskeyModalLoginWithShim);
+  }
+
   if ([self useNewBlur]) {
     config.features_enabled.push_back(kAutofillBottomSheetNewBlur);
   } else {
@@ -265,9 +283,17 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   return self.testServer->GetURL("/simple_login_form_empty_autofocus.html");
 }
 
-// Returns the GURL for the simple login passkey page.
-- (GURL)loginPasskeyPageURL {
-  return self.testServer->GetURL("/simple_login_form_empty_passkey.html");
+// Returns the GURL for the simple conditional passkey login page. This is a
+// page that accepts both passkeys and passwords.
+- (GURL)conditionalPasskeyLoginPageURL {
+  return self.testServer->GetURL(
+      "/simple_login_form_empty_passkey_conditional.html");
+}
+
+// Returns the GURL for the simple modal passkey login page.
+- (GURL)modalPasskeyLoginPageURL {
+  return self.testServer->GetURL(kLocalhost,
+                                 "/simple_login_form_empty_passkey_modal.html");
 }
 
 // Loads simple page on localhost.
@@ -284,10 +310,17 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
-- (void)loadLoginPasskeyPage {
+- (void)loadConditionalPasskeyLoginPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
-  [ChromeEarlGrey loadURL:[self loginPasskeyPageURL]];
+  [ChromeEarlGrey loadURL:[self conditionalPasskeyLoginPageURL]];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+- (void)loadModalPasskeyLoginPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey loadURL:[self modalPasskeyLoginPageURL]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:WebViewMatcher()];
 }
 
 // Saves a generic password (i.e., without special arguments) to the store and
@@ -464,9 +497,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(
-                                      [self loginPasskeyPageURL])];
+                                      [self conditionalPasskeyLoginPageURL])];
 
-  [self loadLoginPasskeyPage];
+  [self loadConditionalPasskeyLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
@@ -486,9 +519,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(
-                                      [self loginPasskeyPageURL])];
+                                      [self conditionalPasskeyLoginPageURL])];
 
-  [self loadLoginPasskeyPage];
+  [self loadConditionalPasskeyLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
@@ -500,6 +533,30 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       performAction:grey_tap()];
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
+}
+
+// Tests using a passkey from the bottom sheet in a modal login context.
+- (void)testOpenCredentialBottomSheetAndUsePasskeyOnModalLogin {
+  SaveExamplePasskeyToStore(/*rpId=*/base::SysUTF8ToNSString(kLocalhost));
+
+  [self loadModalPasskeyLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kDefaultUserDisplayName)];
+
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kDefaultUserDisplayName)];
+
+  // TODO(crbug.com/460486744): See if there's a way to validate that the
+  // passkey usage was successful.
 }
 
 // This test will allow us to know if we're using a coherent browser state to

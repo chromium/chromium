@@ -57,7 +57,8 @@ data/http_server_files/semi_bundle.pkpasses
 data/http_server_files/simple_login_form.html
 data/http_server_files/simple_login_form_empty.html
 data/http_server_files/simple_login_form_empty_autofocus.html
-data/http_server_files/simple_login_form_empty_passkey.html
+data/http_server_files/simple_login_form_empty_passkey_conditional.html
+data/http_server_files/simple_login_form_empty_passkey_modal.html
 data/http_server_files/simple_signup_form.html
 data/http_server_files/single_page_wide.pdf
 data/http_server_files/state_operations.html

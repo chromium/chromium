@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+<body>
+  Login form.
+  <form name='login_form' id='login_form'>
+    <button id='submit_button' type="button" value='Submit'>Log in with passkey</button>
+    <script>
+      document.getElementById('submit_button').addEventListener('click', async () => {
+        const publicKey = {
+          challenge: Uint8Array.from('randomlygeneratedcryptographicchallengestring', (c) => c.charCodeAt(0)).slice(0, 32),
+          timeout: 60000, // 60 seconds
+          rpId: 'localhost',
+          userVerification: 'preferred',
+          allowCredentials: []
+        };
+        await navigator.credentials.get({
+          publicKey: publicKey,
+          mediation: 'required'
+        });
+      });
+    </script>
+  </form>
+</body>
+</html>
