@@ -13,7 +13,6 @@ namespace {
 
 sql::DatabaseOptions GetDatabaseOptions() {
   return sql::DatabaseOptions()
-      .set_exclusive_locking(true)
       .set_wal_mode(true)
       // Prevent SQLite from trying to use mmap because
       // `SandboxedVfs` does not support mmap.

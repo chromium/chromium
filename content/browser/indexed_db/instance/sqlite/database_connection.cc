@@ -1018,7 +1018,6 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
   db_ =
       std::make_unique<sql::Database>(sql::DatabaseOptions()
-                                          .set_exclusive_locking(true)
                                           .set_wal_mode(true)
                                           .set_enable_triggers(true),
                                       in_memory() ? kSqlTagInMemory : kSqlTag);

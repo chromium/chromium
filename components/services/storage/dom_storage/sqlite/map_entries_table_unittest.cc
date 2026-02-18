@@ -66,7 +66,6 @@ class MapEntriesTableTest : public testing::Test {
 
 MapEntriesTableTest::MapEntriesTableTest()
     : database_(sql::DatabaseOptions()
-                    .set_exclusive_locking(true)
                     .set_wal_mode(true)
                     .set_mmap_enabled(false),
                 sql::test::kTestTag) {}

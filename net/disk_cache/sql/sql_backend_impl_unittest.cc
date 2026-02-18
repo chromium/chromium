@@ -165,7 +165,6 @@ class SqlBackendImplTest : public testing::Test {
                                        SqlPersistentStore::ResId res_id) {
     auto db = std::make_unique<sql::Database>(
         sql::DatabaseOptions()
-            .set_exclusive_locking(true)
 #if BUILDFLAG(IS_WIN)
             .set_exclusive_database_file_lock(true)
 #endif  // IS_WIN

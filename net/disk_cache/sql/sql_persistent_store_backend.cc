@@ -279,7 +279,6 @@ SqlPersistentStore::Backend::Backend(
       type_(type),
       read_cache_memory_monitor_(std::move(read_cache_memory_monitor)),
       db_(sql::DatabaseOptions()
-              .set_exclusive_locking(true)
 #if BUILDFLAG(IS_WIN)
               .set_exclusive_database_file_lock(true)
 #endif  // IS_WIN

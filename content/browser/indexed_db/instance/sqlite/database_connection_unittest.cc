@@ -184,7 +184,6 @@ TEST_F(DatabaseConnectionTest, TooNew) {
 
   // Simulate a newer version of the browser updating the schema.
   auto sql_db = std::make_unique<sql::Database>(sql::DatabaseOptions()
-                                                    .set_exclusive_locking(true)
                                                     .set_wal_mode(true)
                                                     .set_enable_triggers(true),
                                                 sql::test::kTestTag);

@@ -151,7 +151,6 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
     AcquireDatabaseLocks(std::u16string(name));
     base::FilePath db_path = GetDatabasePath(name);
     sql::Database db(sql::DatabaseOptions()
-                         .set_exclusive_locking(true)
                          .set_wal_mode(true)
                          .set_enable_triggers(true),
                      sql::test::kTestTag);

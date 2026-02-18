@@ -1101,7 +1101,6 @@ bool Database::RazeInternal() {
 
   Database null_db(
       DatabaseOptions()
-          .set_exclusive_locking(true)
           .set_page_size(options_.page_size_)
           .set_enable_views_discouraged(options_.enable_views_discouraged_),
       "RazeNullDB");

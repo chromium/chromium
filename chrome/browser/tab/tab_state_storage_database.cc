@@ -177,7 +177,7 @@ TabStateStorageDatabase::TabStateStorageDatabase(
     bool support_off_the_record_data)
     : profile_path_(profile_path),
       support_off_the_record_data_(support_off_the_record_data),
-      db_(sql::DatabaseOptions().set_preload(true).set_exclusive_locking(true),
+      db_(sql::DatabaseOptions().set_preload(true),
           sql::Database::Tag("TabStateStorage")) {}
 
 TabStateStorageDatabase::~TabStateStorageDatabase() = default;
