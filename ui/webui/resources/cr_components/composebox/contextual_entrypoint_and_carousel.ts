@@ -435,6 +435,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   setContextFiles(files: ContextualUpload[]) {
+    const dataTransfer = new DataTransfer();
     for (const file of files) {
       if ('tabId' in file) {
         // If the composebox is being initialized with tab context from the
@@ -455,9 +456,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           },
         }));
       } else {
-        this.addFileContext_([file.file]);
+        dataTransfer.items.add(file.file);
       }
     }
+    this.processFiles_(dataTransfer.files);
   }
 
   setInitialMode(mode: ComposeboxToolMode) {
@@ -730,8 +732,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         {uuid: e.detail.uuid, fromAutoSuggestedChip: fromAutoSuggestedChip});
   }
 
-  private getProcessFilesErrorData_(error: ProcessFilesError):
-      {metric: ComposeboxFileValidationError, errorMessage: string} {
+  private handleProcessFilesError_(error: ProcessFilesError) {
+    if (error === ProcessFilesError.NONE) {
+      return;
+    }
+
     let metric = ComposeboxFileValidationError.NONE;
     let errorMessage = '';
 
@@ -763,15 +768,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         break;
     }
 
-    return {metric, errorMessage};
-  }
-
-  private handleProcessFilesError_(error: ProcessFilesError) {
-    if (error === ProcessFilesError.NONE) {
-      return;
-    }
-
-    const {metric, errorMessage} = this.getProcessFilesErrorData_(error);
     this.recordFileValidationMetric_(metric);
     if (this.contextMenuEnabled_) {
       this.$.contextEntrypoint.closeMenu();
@@ -812,6 +808,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected processFiles_(files: FileList|null) {
     if (!files || files.length === 0) {
+      return;
+    }
+
+    if (this.entrypointName === 'Realbox') {
+      this.addFileContext_(Array.from(files));
       return;
     }
 
@@ -884,22 +885,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
     }
 
-    const hasError = errorToDisplay !== ProcessFilesError.NONE;
     if (filesToUpload.length > 0) {
-      let errorMessage = '';
-      if (this.entrypointName === 'Realbox' && hasError) {
-        const {metric, errorMessage: messageKey} =
-            this.getProcessFilesErrorData_(errorToDisplay);
-        errorMessage = this.i18n(messageKey);
-        this.recordFileValidationMetric_(metric);
-      }
-      this.addFileContext_(filesToUpload, errorMessage);
+      this.addFileContext_(filesToUpload);
     }
 
-    if (this.entrypointName !== 'Realbox' || !hasError ||
-        filesToUpload.length === 0) {
-      this.handleProcessFilesError_(errorToDisplay);
-    }
+    this.handleProcessFilesError_(errorToDisplay);
   }
 
   protected onFileChange_(e: Event) {
@@ -911,10 +901,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
   }
 
-  protected addFileContext_(filesToUpload: File[], errorMessage: string = '') {
+  protected addFileContext_(filesToUpload: File[]) {
     this.fire('add-file-context', {
       files: filesToUpload,
-      errorMessage: errorMessage,
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => {
         this.files_ = new Map([...this.files_.entries(), ...files.entries()]);
         this.recordFileValidationMetric_(ComposeboxFileValidationError.NONE);

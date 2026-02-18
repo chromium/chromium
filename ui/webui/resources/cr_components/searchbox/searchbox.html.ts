@@ -34,7 +34,6 @@ export function getHtml(this: SearchboxElement) {
         entrypoint-name="Realbox"
         @add-tab-context="${this.addTabContext_}"
         @add-file-context="${this.addFileContext_}"
-        @on-file-validation-error="${this.onFileValidationError_}"
         @set-tool-mode="${this.onSetToolMode_}"
         @model-click="${this.onModelClick_}"
         @get-tab-preview="${this.getTabPreview_}"
@@ -60,15 +59,10 @@ export function getHtml(this: SearchboxElement) {
     @drop="${this.dragAndDropHandler?.handleDrop}">
   ${this.ntpRealboxNextEnabled ?
     html`
-      <ntp-error-scrim id="errorScrim"
-          ?compact-mode="${this.searchboxLayoutMode === 'Compact'}"
-          .errorMessage="${this.errorMessage_}"
-          @dismiss-error-scrim="${this.onErrorScrimDismissed_}">
-      </ntp-error-scrim>
       <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
       </search-animated-glow>
     ` : ''}
-  <div id="inputInnerContainer" ?inert="${this.getInnerInputInert_()}">
+  <div id="inputInnerContainer">
     ${this.ntpRealboxNextEnabled && this.useCompactLayout_() ? html`
       <div class="contextualEntrypointContainer contextualEntrypointContainerCompact">
         ${contextualEntrypoint}
@@ -142,7 +136,7 @@ export function getHtml(this: SearchboxElement) {
   </div>
   ${this.ntpRealboxNextEnabled ? html`
     ${this.useCompactLayout_() ? html`
-      <div class="dropdownContainer" ?inert="${this.errorMessage_}">
+      <div class="dropdownContainer">
         ${dropdown}
         ${this.shouldShowRecentTabChipInDropdown_() ? html`
           <div id="recentTabChipContainer">
@@ -154,7 +148,7 @@ export function getHtml(this: SearchboxElement) {
         ` : ''}
       </div>
     ` : html`
-      <div id="inputInnerBottomContainer" ?inert="${this.errorMessage_}">
+      <div id="inputInnerBottomContainer">
         <div class="contextualEntrypointContainer">
           ${contextualEntrypoint}
         </div>

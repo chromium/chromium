@@ -448,10 +448,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   box-shadow: none;
 }
 
-:host([ntp-realbox-next-enabled]) #errorScrim {
-  border-radius: 23px;
-}
-
 .searchbox-icon-button-container.lens {
   margin-inline-end: 10px;
 }
