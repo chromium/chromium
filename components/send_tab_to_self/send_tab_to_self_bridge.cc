@@ -67,15 +67,10 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
     base::Time now,
     std::map<std::string, std::unique_ptr<SendTabToSelfEntry>>* entries,
-    std::string* local_personalizable_device_name,
     std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(entries);
   DCHECK(entries->empty());
-  DCHECK(local_personalizable_device_name);
   DCHECK(record_list);
-
-  *local_personalizable_device_name =
-      syncer::GetPersonalizableDeviceNameBlocking();
 
   for (const syncer::DataTypeStore::Record& r : *record_list) {
     auto specifics = std::make_unique<SendTabToSelfLocal>();
@@ -367,7 +362,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   }
 
   auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, trimmed_title, shared_time, local_device_name_,
+      guid, url, trimmed_title, shared_time, GetLocalFullName(),
       target_device_cache_guid, context);
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
@@ -493,6 +488,8 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     return {};
   }
 
+  const std::string local_full_name = GetLocalFullName();
+
   // Pre-calculate last active timestamps for sorting and filtering.
   std::vector<DeviceWithTimestamp> devices_with_timestamps =
       GetDevicesWithLastActiveTime(device_info_tracker_->GetAllDeviceInfo(),
@@ -526,7 +523,7 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     SharingDeviceNames device_names = GetSharingDeviceNames(device);
 
     // Don't include this device if it has the same name as the local device.
-    if (device_names.full_name == local_device_name_) {
+    if (device_names.full_name == local_full_name) {
       continue;
     }
 
@@ -559,7 +556,7 @@ SendTabToSelfBridge::DestroyAndStealStoreForTest(
 
 void SendTabToSelfBridge::SetLocalDeviceNameForTest(
     const std::string& local_device_name) {
-  local_device_name_ = local_device_name;
+  local_device_name_for_testing_ = local_device_name;
 }
 
 void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
@@ -634,25 +631,19 @@ void SendTabToSelfBridge::OnStoreCreated(
   auto initial_entries = std::make_unique<SendTabToSelfEntries>();
   SendTabToSelfEntries* initial_entries_copy = initial_entries.get();
 
-  auto local_device_name = std::make_unique<std::string>();
-  std::string* local_device_name_copy = local_device_name.get();
-
   store_ = std::move(store);
   store_->ReadAllDataAndPreprocess(
       base::BindOnce(&ParseLocalEntriesOnBackendSequence, clock_->Now(),
-                     base::Unretained(initial_entries_copy),
-                     base::Unretained(local_device_name_copy)),
+                     base::Unretained(initial_entries_copy)),
       base::BindOnce(&SendTabToSelfBridge::OnReadAllData,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(initial_entries),
-                     std::move(local_device_name)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(initial_entries)));
 }
 
 void SendTabToSelfBridge::OnReadAllData(
     std::unique_ptr<SendTabToSelfEntries> initial_entries,
-    std::unique_ptr<std::string> local_device_name,
     const std::optional<syncer::ModelError>& error) {
   DCHECK(initial_entries);
-  DCHECK(local_device_name);
 
   if (error) {
     change_processor()->ReportError(*error);
@@ -660,7 +651,6 @@ void SendTabToSelfBridge::OnReadAllData(
   }
 
   entries_ = std::move(*initial_entries);
-  local_device_name_ = std::move(*local_device_name);
 
   store_->ReadAllMetadata(base::BindOnce(
       &SendTabToSelfBridge::OnReadAllMetadata, weak_ptr_factory_.GetWeakPtr()));
@@ -701,6 +691,18 @@ SendTabToSelfEntry* SendTabToSelfBridge::GetMutableEntryByGUID(
     return nullptr;
   }
   return it->second.get();
+}
+
+std::string SendTabToSelfBridge::GetLocalFullName() const {
+  if (local_device_name_for_testing_.has_value()) {
+    return *local_device_name_for_testing_;
+  }
+  CHECK(change_processor()->IsTrackingMetadata());
+  const syncer::DeviceInfo* local_device = device_info_tracker_->GetDeviceInfo(
+      change_processor()->TrackedCacheGuid());
+  CHECK(local_device, base::NotFatalUntil::M148);
+
+  return GetSharingDeviceNames(local_device).full_name;
 }
 
 bool SendTabToSelfBridge::ShouldIncludeDevice(

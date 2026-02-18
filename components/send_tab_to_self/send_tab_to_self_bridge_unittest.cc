@@ -86,6 +86,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
     const std::string& guid,
     const std::string& name,
     base::Time last_updated_timestamp,
+    const std::string& model = "model",
     bool send_tab_to_self_receiving_enabled = true,
     sync_pb::SyncEnums_SendTabReceivingType send_tab_to_self_receiving_type = sync_pb::
         SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED) {
@@ -94,7 +95,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
       syncer::DeviceInfo::OsType::kLinux,
       syncer::DeviceInfo::FormFactor::kDesktop, "scoped_id", "manufacturer",
-      "model", "full_hardware_class", last_updated_timestamp,
+      model, "full_hardware_class", last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
       send_tab_to_self_receiving_enabled, send_tab_to_self_receiving_type,
       /*sharing_info=*/std::nullopt,
@@ -169,7 +170,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
     }
 
     SetLocalDeviceCacheGuid(kLocalDeviceCacheGuid);
-    local_device_ = CreateDevice(kLocalDeviceCacheGuid, "device",
+    local_device_ = CreateDevice(kLocalDeviceCacheGuid, kLocalDeviceName,
                                  clock()->Now() - base::Days(1));
     AddTestDevice(local_device_.get(), /*local=*/true);
   }
@@ -778,7 +779,7 @@ TEST_F(SendTabToSelfBridgeTest,
 
   std::unique_ptr<syncer::DeviceInfo> disabled_device =
       CreateDevice("disabled_guid", "disabled_device_name", clock()->Now(),
-                   /*send_tab_to_self_receiving_enabled=*/false);
+                   "model", /*send_tab_to_self_receiving_enabled=*/false);
   AddTestDevice(disabled_device.get());
 
   TargetDeviceInfo target_device_info(
@@ -815,7 +816,6 @@ TEST_F(SendTabToSelfBridgeTest,
 // Tests that the local device is not returned.
 TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
   InitializeBridge();
-  bridge()->SetLocalDeviceNameForTest(kLocalDeviceName);
 
   std::unique_ptr<syncer::DeviceInfo> local_device =
       CreateDevice(kLocalDeviceCacheGuid, kLocalDeviceName, clock()->Now());
@@ -1260,7 +1260,7 @@ TEST_F(SendTabToSelfBridgeTest,
   // If we filter before deduplicating, we pick the enabled one.
 
   std::unique_ptr<syncer::DeviceInfo> device_recent_disabled =
-      CreateDevice("guid_recent", "A", clock()->Now(),
+      CreateDevice("guid_recent", "A", clock()->Now(), "model",
                    /*send_tab_to_self_receiving_enabled=*/false);
   std::unique_ptr<syncer::DeviceInfo> device_older_enabled =
       CreateDevice("guid_older", "A", clock()->Now() - base::Days(1));
@@ -1348,6 +1348,58 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
                                  syncer::DeviceInfo::FormFactor::kDesktop),
                   testing::Field(&TargetDeviceInfo::form_factor,
                                  syncer::DeviceInfo::FormFactor::kPhone)));
+}
+
+// Tests that the local device is not returned even if its full name matches
+// another device.
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_ExcludeLocalDeviceByFullName) {
+  const std::string kMyLocalGuid = "unique_local_guid";
+  const std::string kMyDuplicateGuid = "unique_duplicate_guid";
+
+  // Initialize bridge.
+  InitializeBridgeWithoutDevice();
+
+  // Set local cache GUID.
+  SetLocalDeviceCacheGuid(kMyLocalGuid);
+
+  // Add a local device where GetSharingDeviceNames returns a specific full
+  // name. Using a specific model ensures the complex naming logic is used.
+  std::unique_ptr<syncer::DeviceInfo> local_device =
+      CreateDevice(kMyLocalGuid, "local_name", clock()->Now(), "local_model");
+
+  device_info_tracker()->Add(std::move(local_device));
+  device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);
+
+  // Add another device with the same full name but different GUID.
+  std::unique_ptr<syncer::DeviceInfo> duplicate_device = CreateDevice(
+      kMyDuplicateGuid, "local_name", clock()->Now(), "local_model");
+  device_info_tracker()->Add(std::move(duplicate_device));
+
+  // The duplicate device should be excluded because its full name matches the
+  // local device's full name.
+  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), IsEmpty());
+}
+
+// Tests that AddEntry uses the full name of the local device.
+TEST_F(SendTabToSelfBridgeTest, AddEntry_UsesFullName) {
+  const std::string kMyLocalGuid = "unique_local_guid_2";
+  InitializeBridgeWithoutDevice();
+
+  SetLocalDeviceCacheGuid(kMyLocalGuid);
+  std::unique_ptr<syncer::DeviceInfo> local_device =
+      CreateDevice(kMyLocalGuid, "local_name", clock()->Now(), "local_model");
+  const std::string full_name =
+      GetSharingDeviceNames(local_device.get()).full_name;
+
+  device_info_tracker()->Add(std::move(local_device));
+  device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);
+
+  const SendTabToSelfEntry* result = bridge()->AddEntry(
+      GURL("http://www.example.com/"), "title", "target", PageContext());
+
+  ASSERT_NE(nullptr, result);
+  EXPECT_EQ(full_name, result->GetDeviceName());
 }
 
 }  // namespace

@@ -6,6 +6,7 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BRIDGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -134,7 +135,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllData(std::unique_ptr<SendTabToSelfEntries> initial_entries,
-                     std::unique_ptr<std::string> local_device_name,
                      const std::optional<syncer::ModelError>& error);
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
@@ -146,6 +146,9 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // Returns a specific entry for editing. Returns null if the entry does not
   // exist.
   SendTabToSelfEntry* GetMutableEntryByGUID(const std::string& guid) const;
+
+  // Returns the name of the local device.
+  std::string GetLocalFullName() const;
 
   // Returns true if the device should be included in the target list.
   bool ShouldIncludeDevice(const syncer::DeviceInfo& device) const;
@@ -190,8 +193,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // `pref_service_` isn't owned.
   const raw_ptr<PrefService> pref_service_;
 
-  // The name of this local device.
-  std::string local_device_name_;
+  // The name of this local device, set only for testing.
+  std::optional<std::string> local_device_name_for_testing_;
 
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;
