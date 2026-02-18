@@ -31,6 +31,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DimenRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
@@ -685,14 +686,30 @@ public class SettingsSearchCoordinator
         updateHelpMenuVisibility();
     }
 
-    private void updateHelpMenuVisibility() {
-        View menuView = getHelpMenuView();
+    /** Update the visibility of the help menu on the toolbar. */
+    public void updateHelpMenuVisibility() {
+        ViewGroup menuView = (ViewGroup) getHelpMenuView();
         if (menuView == null) {
             mHandler.post(this::updateHelpMenuVisibility);
             return;
         }
 
-        menuView.setVisibility(shouldShowHelpMenu() ? View.VISIBLE : View.GONE);
+        menuView.post(
+                () -> {
+                    boolean show = shouldShowHelpMenu();
+                    if (!show) {
+                        // Should show menu if we have the search view.
+                        for (int i = 0; i < menuView.getChildCount(); i++) {
+                            View button = menuView.getChildAt(i);
+                            if (button instanceof SearchView) {
+                                show = true;
+                                break;
+                            }
+                        }
+                    }
+                    menuView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    updateSearchUiWidth();
+                });
     }
 
     private void stepBackInResultState() {

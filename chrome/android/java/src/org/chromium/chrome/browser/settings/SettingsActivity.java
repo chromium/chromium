@@ -991,6 +991,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     @Override
+    public boolean onPreparePanel(int featureId, @Nullable View view, Menu menu) {
+        boolean res = super.onPreparePanel(featureId, view, menu);
+        if (mSearchCoordinator != null) mSearchCoordinator.updateHelpMenuVisibility();
+        return res;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
