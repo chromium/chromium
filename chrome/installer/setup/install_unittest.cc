@@ -16,204 +16,27 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
-#include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/shortcut.h"
 #include "build/branding_buildflags.h"
-#include "chrome/install_static/install_details.h"
-#include "chrome/install_static/install_modes.h"
-#include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/setup/install_worker.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/installer_util_strings.h"
-#include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-// A parameterized test harness for testing
-// installer::CreateVisualElementsManifest. The parameters are:
-// 0: an index into a brand's install_static::kInstallModes array.
-// 1: the expected manifest.
-class CreateVisualElementsManifestTest
-    : public ::testing::TestWithParam<
-          std::tuple<install_static::InstallConstantIndex, const char*>> {
- protected:
-  CreateVisualElementsManifestTest()
-      : scoped_install_details_(false /* !system_level */,
-                                std::get<0>(GetParam())),
-        start_menu_override_(base::DIR_START_MENU),
-        expected_manifest_(std::get<1>(GetParam())),
-        version_("0.0.0.0") {}
-
-  CreateVisualElementsManifestTest(const CreateVisualElementsManifestTest&) =
-      delete;
-  CreateVisualElementsManifestTest& operator=(
-      const CreateVisualElementsManifestTest&) = delete;
-
-  void SetUp() override {
-    // Create a temp directory for testing.
-    ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
-
-    version_dir_ = test_dir_.GetPath().AppendASCII(version_.GetString());
-    ASSERT_TRUE(base::CreateDirectory(version_dir_));
-
-    manifest_path_ =
-        test_dir_.GetPath().Append(installer::kVisualElementsManifest);
-
-    ASSERT_TRUE(base::PathService::Get(base::DIR_START_MENU,
-                                       &start_menu_shortcut_path_));
-    start_menu_shortcut_path_ = start_menu_shortcut_path_.Append(
-        installer::GetLocalizedString(IDS_PRODUCT_NAME_BASE) +
-        installer::kLnkExt);
-  }
-
-  void TearDown() override {
-    // Clean up test directory manually so we can fail if it leaks.
-    ASSERT_TRUE(test_dir_.Delete());
-  }
-
-  // Creates a dummy test file at |path|.
-  void CreateTestFile(const base::FilePath& path) {
-    static constexpr char kBlah[] = "blah";
-    ASSERT_TRUE(base::WriteFile(path, kBlah));
-  }
-
-  // Creates the VisualElements directory and a light asset, if testing such.
-  void PrepareTestVisualElementsDirectory() {
-    base::FilePath visual_elements_dir =
-        version_dir_.AppendASCII(installer::kVisualElements);
-    ASSERT_TRUE(base::CreateDirectory(visual_elements_dir));
-    std::wstring light_logo_file_name = base::StrCat(
-        {L"Logo", install_static::InstallDetails::Get().logo_suffix(),
-         L".png"});
-    ASSERT_NO_FATAL_FAILURE(
-        CreateTestFile(visual_elements_dir.Append(light_logo_file_name)));
-  }
-
-  // Creates a bogus file at the location of the start menu shortcut.
-  void CreateStartMenuShortcut() {
-    ASSERT_NO_FATAL_FAILURE(CreateTestFile(start_menu_shortcut_path_));
-  }
-
-  // InstallDetails for this test run.
-  install_static::ScopedInstallDetails scoped_install_details_;
-
-  // Override the location of the Start Menu shortcuts.
-  base::ScopedPathOverride start_menu_override_;
-
-  // The expected contents of the manifest.
-  const char* const expected_manifest_;
-
-  // A dummy version number used to create the version directory.
-  const base::Version version_;
-
-  // The temporary directory used to contain the test operations.
-  base::ScopedTempDir test_dir_;
-
-  // The path to |test_dir_|\|version_|.
-  base::FilePath version_dir_;
-
-  // The path to VisualElementsManifest.xml.
-  base::FilePath manifest_path_;
-
-  // The path to the Start Menu shortcut.
-  base::FilePath start_menu_shortcut_path_;
-};
-
-constexpr char kExpectedPrimaryManifest[] =
-    "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
-    "  <VisualElements\r\n"
-    "      ShowNameOnSquare150x150Logo='on'\r\n"
-    "      Square150x150Logo='0.0.0.0\\VisualElements\\Logo.png'\r\n"
-    "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogo.png'\r\n"
-    "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogo.png'\r\n"
-    "      ForegroundText='light'\r\n"
-    "      BackgroundColor='#5F6368'/>\r\n"
-    "</Application>\r\n";
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kExpectedBetaManifest[] =
-    "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
-    "  <VisualElements\r\n"
-    "      ShowNameOnSquare150x150Logo='on'\r\n"
-    "      Square150x150Logo='0.0.0.0\\VisualElements\\LogoBeta.png'\r\n"
-    "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogoBeta.png'\r\n"
-    "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogoBeta.png'\r\n"
-    "      ForegroundText='light'\r\n"
-    "      BackgroundColor='#5F6368'/>\r\n"
-    "</Application>\r\n";
-
-constexpr char kExpectedDevManifest[] =
-    "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
-    "  <VisualElements\r\n"
-    "      ShowNameOnSquare150x150Logo='on'\r\n"
-    "      Square150x150Logo='0.0.0.0\\VisualElements\\LogoDev.png'\r\n"
-    "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogoDev.png'\r\n"
-    "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogoDev.png'\r\n"
-    "      ForegroundText='light'\r\n"
-    "      BackgroundColor='#5F6368'/>\r\n"
-    "</Application>\r\n";
-
-constexpr char kExpectedCanaryManifest[] =
-    "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
-    "  <VisualElements\r\n"
-    "      ShowNameOnSquare150x150Logo='on'\r\n"
-    "      Square150x150Logo='0.0.0.0\\VisualElements\\LogoCanary.png'\r\n"
-    "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogoCanary.png'\r\n"
-    "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogoCanary.png'\r\n"
-    "      ForegroundText='light'\r\n"
-    "      BackgroundColor='#5F6368'/>\r\n"
-    "</Application>\r\n";
-
-INSTANTIATE_TEST_SUITE_P(
-    GoogleChrome,
-    CreateVisualElementsManifestTest,
-    testing::Combine(testing::Values(install_static::STABLE_INDEX),
-                     testing::Values(kExpectedPrimaryManifest)));
-INSTANTIATE_TEST_SUITE_P(
-    BetaChrome,
-    CreateVisualElementsManifestTest,
-    testing::Combine(testing::Values(install_static::BETA_INDEX),
-                     testing::Values(kExpectedBetaManifest)));
-INSTANTIATE_TEST_SUITE_P(
-    DevChrome,
-    CreateVisualElementsManifestTest,
-    testing::Combine(testing::Values(install_static::DEV_INDEX),
-                     testing::Values(kExpectedDevManifest)));
-INSTANTIATE_TEST_SUITE_P(
-    CanaryChrome,
-    CreateVisualElementsManifestTest,
-    testing::Combine(testing::Values(install_static::CANARY_INDEX),
-                     testing::Values(kExpectedCanaryManifest)));
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
-INSTANTIATE_TEST_SUITE_P(
-    ChromeForTesting,
-    CreateVisualElementsManifestTest,
-    testing::Combine(
-        testing::Values(install_static::GOOGLE_CHROME_FOR_TESTING_INDEX),
-        testing::Values(kExpectedPrimaryManifest)));
-#else
-INSTANTIATE_TEST_SUITE_P(
-    Chromium,
-    CreateVisualElementsManifestTest,
-    testing::Combine(testing::Values(install_static::CHROMIUM_INDEX),
-                     testing::Values(kExpectedPrimaryManifest)));
-#endif
 
 class InstallShortcutTest : public testing::Test {
  protected:
@@ -326,28 +149,6 @@ class InstallShortcutTest : public testing::Test {
 };
 
 }  // namespace
-
-// Test that VisualElementsManifest.xml is not created when VisualElements are
-// not present.
-TEST_P(CreateVisualElementsManifestTest, VisualElementsManifestNotCreated) {
-  ASSERT_TRUE(
-      installer::CreateVisualElementsManifest(test_dir_.GetPath(), version_));
-  ASSERT_FALSE(base::PathExists(manifest_path_));
-}
-
-// Test that VisualElementsManifest.xml is created with the correct content when
-// VisualElements are present.
-TEST_P(CreateVisualElementsManifestTest, VisualElementsManifestCreated) {
-  ASSERT_NO_FATAL_FAILURE(PrepareTestVisualElementsDirectory());
-  ASSERT_TRUE(
-      installer::CreateVisualElementsManifest(test_dir_.GetPath(), version_));
-  ASSERT_TRUE(base::PathExists(manifest_path_));
-
-  std::string read_manifest;
-  ASSERT_TRUE(base::ReadFileToString(manifest_path_, &read_manifest));
-
-  ASSERT_STREQ(expected_manifest_, read_manifest.c_str());
-}
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST(OsUpdateHandlerCmdTest, OsUpdated) {

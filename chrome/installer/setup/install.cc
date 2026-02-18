@@ -12,27 +12,19 @@
 #include <memory>
 #include <string>
 
-#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/rand_util.h"
-#include "base/strings/strcat.h"
-#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "base/win/shortcut.h"
-#include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/install_worker.h"
@@ -49,8 +41,6 @@
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
-#include "chrome/installer/util/installer_util_strings.h"
-#include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
@@ -276,57 +266,6 @@ InstallStatus InstallNewVersion(const InstallParams& install_params,
   return INSTALL_FAILED;
 }
 
-std::string GenerateVisualElementsManifest(const base::Version& version) {
-  // A printf-style format string for generating the visual elements manifest.
-  // Required arguments, in order, are thrice:
-  //   - Relative path to the VisualElements directory.
-  //   - Logo suffix for the channel.
-  static constexpr char kManifestTemplate[] =
-      "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
-      "  <VisualElements\r\n"
-      "      ShowNameOnSquare150x150Logo='on'\r\n"
-      "      Square150x150Logo='%s\\Logo%s.png'\r\n"
-      "      Square70x70Logo='%s\\SmallLogo%s.png'\r\n"
-      "      Square44x44Logo='%s\\SmallLogo%s.png'\r\n"
-      "      ForegroundText='light'\r\n"
-      "      BackgroundColor='#5F6368'/>\r\n"
-      "</Application>\r\n";
-
-  // Construct the relative path to the versioned VisualElements directory.
-  std::string elements_dir = version.GetString();
-  elements_dir.push_back(
-      base::checked_cast<char>(base::FilePath::kSeparators[0]));
-  elements_dir.append(kVisualElements);
-
-  // Fill the manifest with the desired values.
-  const std::string logo_suffix =
-      base::WideToUTF8(install_static::InstallDetails::Get().logo_suffix());
-  return base::StringPrintf(kManifestTemplate, elements_dir.c_str(),
-                            logo_suffix.c_str(), elements_dir.c_str(),
-                            logo_suffix.c_str(), elements_dir.c_str(),
-                            logo_suffix.c_str());
-}
-
-// Whether VisualElements assets exist for this brand and mode.
-bool HasVisualElementAssets(const base::FilePath& base_path,
-                            const base::Version& version) {
-  // There are no assets at all if there's no VisualElements directory.
-  base::FilePath visual_elements_dir =
-      base_path.AppendASCII(version.GetString()).AppendASCII(kVisualElements);
-  if (!base::DirectoryExists(visual_elements_dir)) {
-    return false;
-  }
-
-// Assets are unconditionally required if there is a VisualElements directory.
-#if DCHECK_IS_ON()
-  DCHECK(base::PathExists(visual_elements_dir.Append(base::StrCat(
-      {L"Logo", install_static::InstallDetails::Get().logo_suffix(),
-       L".png"}))));
-#endif
-
-  return true;
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void LaunchOSUpdateHandlerIfNeeded(const InstallerState& installer_state,
                                    const std::wstring& installed_version) {
@@ -352,28 +291,6 @@ void LaunchOSUpdateHandlerIfNeeded(const InstallerState& installer_state,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
-
-bool CreateVisualElementsManifest(const base::FilePath& src_path,
-                                  const base::Version& version) {
-  if (!HasVisualElementAssets(src_path, version)) {
-    VLOG(1) << "No visual elements found, not writing "
-            << kVisualElementsManifest << " to " << src_path.value();
-    return true;
-  }
-
-  // Generate the manifest.
-  const std::string manifest(GenerateVisualElementsManifest(version));
-
-  // Write the manifest to |src_path|.
-  if (base::WriteFile(src_path.Append(kVisualElementsManifest), manifest)) {
-    VLOG(1) << "Successfully wrote " << kVisualElementsManifest << " to "
-            << src_path.value();
-    return true;
-  }
-  PLOG(ERROR) << "Error writing " << kVisualElementsManifest << " to "
-              << src_path.value();
-  return false;
-}
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns a CommandLine to run if os_update_handler.exe should be run,
@@ -558,7 +475,6 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
   const InstallationState& original_state = *install_params.installation_state;
   const InstallerState& installer_state = *install_params.installer_state;
   const base::FilePath& setup_path = *install_params.setup_path;
-  const base::FilePath& src_path = *install_params.src_path;
   const base::Version& new_version = *install_params.new_version;
 
   // TODO(robertshield): Removing the pending on-reboot moves should be done
@@ -568,12 +484,6 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
   // the same version.
   LOG_IF(ERROR, !RemoveFromMovesPendingReboot(installer_state.target_path()))
       << "Error accessing pending moves value.";
-
-  // Create VisualElementManifest.xml in |src_path| (if required) so that it
-  // looks as if it had been extracted from the archive when calling
-  // InstallNewVersion() below.
-  installer_state.SetStage(CREATING_VISUAL_MANIFEST);
-  CreateVisualElementsManifest(src_path, new_version);
 
   InstallStatus result =
       InstallNewVersion(install_params, IsDowngradeAllowed(prefs));

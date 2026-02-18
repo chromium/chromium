@@ -52,12 +52,6 @@ enum InstallShortcutLevel {
   INSTALL_SHORTCUT_LEVEL_LAST = ALL_USERS,
 };
 
-// Creates chrome.VisualElementsManifest.xml in |src_path| if
-// |src_path|\VisualElements exists. Returns true unless the manifest is
-// supposed to be created, but fails to be.
-bool CreateVisualElementsManifest(const base::FilePath& src_path,
-                                  const base::Version& version);
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns the command line to run os_update_handler, if the Windows version
 // changed, std::nullopt otherwise.

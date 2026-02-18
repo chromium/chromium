@@ -59,6 +59,8 @@ if (is_win) {
       "configure_app_container_sandbox.h",
       "downgrade_cleanup.cc",
       "downgrade_cleanup.h",
+      "generate_visual_elements_manifest_work_item.cc",
+      "generate_visual_elements_manifest_work_item.h",
       "install.cc",
       "install.h",
       "install_params.h",
@@ -145,6 +147,7 @@ if (is_win) {
     sources = [
       "configure_app_container_sandbox_unittest.cc",
       "downgrade_cleanup_unittest.cc",
+      "generate_visual_elements_manifest_work_item_unittest.cc",
       "install_unittest.cc",
       "install_worker_unittest.cc",
       "installer_state_unittest.cc",

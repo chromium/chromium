@@ -143,7 +143,6 @@ enum InstallerStage {
   PRECONDITIONS,             // Evaluating pre-install conditions.
   UNCOMPRESSING,             // Uncompressing chrome.packed.7z.
   UNPACKING,                 // Unpacking chrome.7z.
-  CREATING_VISUAL_MANIFEST,  // Creating VisualElementsManifest.xml.
   BUILDING,                  // Building the install work item list.
   EXECUTING,                 // Executing the install work item list.
   COPYING_PREFERENCES_FILE,  // Copying preferences file.

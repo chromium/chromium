@@ -45,6 +45,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/configure_app_container_sandbox.h"
 #include "chrome/installer/setup/downgrade_cleanup.h"
+#include "chrome/installer/setup/generate_visual_elements_manifest_work_item.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/last_breaking_installer_version.h"
@@ -234,36 +235,39 @@ void AddChromeWorkItems(const InstallParams& install_params,
                                     temp_path, WorkItem::NEW_NAME_IF_IN_USE,
                                     new_chrome_exe);
 
-  // Install kVisualElementsManifest if it is present in |src_path|. No need to
-  // make this a conditional work item as if the file is not there now, it will
-  // never be.
-  // TODO(grt): Touch the Start Menu shortcut after putting the manifest in
-  // place to force the Start Menu to refresh Chrome's tile.
-  if (base::PathExists(src_path.Append(installer::kVisualElementsManifest))) {
-    install_list->AddMoveTreeWorkItem(
-        src_path.Append(installer::kVisualElementsManifest),
-        target_path.Append(installer::kVisualElementsManifest), temp_path,
-        WorkItem::ALWAYS_MOVE);
-  } else {
-    // We do not want to have an old VisualElementsManifest pointing to an old
-    // version directory. Delete it as there wasn't a new one to replace it.
-    install_list->AddDeleteTreeWorkItem(
-        target_path.Append(installer::kVisualElementsManifest), temp_path);
-  }
-
   // In the past, we copied rather than moved for system level installs so that
   // the permissions of %ProgramFiles% would be picked up.  Now that |temp_path|
   // is in %ProgramFiles% for system level installs (and in %LOCALAPPDATA%
   // otherwise), there is no need to do this.
   // Note that we pass true for check_duplicates to avoid failing on in-use
   // repair runs if the current_version is the same as the new_version.
+  const base::FilePath target_version_dir =
+      target_path.AppendASCII(new_version.GetString());
   bool check_for_duplicates =
       (current_version.IsValid() && current_version == new_version);
   install_list->AddMoveTreeWorkItem(
-      src_path.AppendASCII(new_version.GetString()),
-      target_path.AppendASCII(new_version.GetString()), temp_path,
+      src_path.AppendASCII(new_version.GetString()), target_version_dir,
+      temp_path,
       check_for_duplicates ? WorkItem::CHECK_DUPLICATES
                            : WorkItem::ALWAYS_MOVE);
+
+  // Delete an old VisualElementsManifest unconditionally.
+  const base::FilePath manifest_path =
+      target_path.Append(installer::kVisualElementsManifest);
+  install_list->AddDeleteTreeWorkItem(manifest_path, temp_path);
+
+  // Generate a new VisualElementsManifest if the installation has
+  // VisualElements.
+  // TODO(grt): Touch the Start Menu shortcut after putting the manifest in
+  // place to force the Start Menu to refresh Chrome's tile.
+  std::unique_ptr<WorkItem> manifest_item(WorkItem::CreateConditionalWorkItem(
+      std::make_unique<ConditionFileExists>(
+          target_version_dir.AppendASCII(kVisualElements)),
+      std::make_unique<GenerateVisualElementsManifestWorkItem>(target_path,
+                                                               new_version),
+      /*else_item=*/nullptr));
+  manifest_item->set_log_message("VisualElementsDirectoryExists");
+  install_list->AddWorkItem(manifest_item.release());
 
   // Delete any old_chrome.exe if present (ignore failure if it's in use).
   install_list
