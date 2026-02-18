@@ -16,7 +16,9 @@ runs:
 
     - name: Install all chrome binaries if needed
       shell: bash
-      run: echo ${{ inputs.working-directory }}
+      run: echo ${INPUTS_WORKING_DIRECTORY}
+      env:
+        INPUTS_WORKING_DIRECTORY: ${{ inputs.working-directory }}
 
     - name: Install all chrome binaries if needed
       # Run in a custom working directory if required.

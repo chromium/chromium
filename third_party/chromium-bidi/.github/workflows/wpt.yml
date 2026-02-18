@@ -106,7 +106,7 @@ jobs:
         timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+          npm run wpt -- "webdriver/tests/bidi/${GITHUB_EVENT_INPUTS_TESTS}"
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
@@ -118,11 +118,12 @@ jobs:
           UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
+          GITHUB_EVENT_INPUTS_TESTS: ${{ github.event.inputs.tests }}
       - name: Run WPT interop tests
         if: ${{matrix.kind == 'cd'}}
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- "webdriver/tests/interop/${{ github.event.inputs.tests }}"
+          npm run wpt -- "webdriver/tests/interop/${GITHUB_EVENT_INPUTS_TESTS}"
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
@@ -135,6 +136,7 @@ jobs:
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport-interop.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
           FAIL_NO_TEST: false
+          GITHUB_EVENT_INPUTS_TESTS: ${{ github.event.inputs.tests }}
       - name: Upload artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -235,8 +237,10 @@ jobs:
           # Move the expectations from the current config to a separate directory to
           # upload them to artifacts.
         run: |
-          mkdir -p ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}
-          mv ./wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/* ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/
+          mkdir -p ./artifacts/updated-wpt-metadata/${STEPS_PATHS_OUTPUTS_SRC_DIR_NAME}
+          mv ./wpt-metadata/${STEPS_PATHS_OUTPUTS_SRC_DIR_NAME}/* ./artifacts/updated-wpt-metadata/${STEPS_PATHS_OUTPUTS_SRC_DIR_NAME}/
+        env:
+          STEPS_PATHS_OUTPUTS_SRC_DIR_NAME: ${{ steps.paths.outputs.src_dir_name }}
       - name: Upload artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
