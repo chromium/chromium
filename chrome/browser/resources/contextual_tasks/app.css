@@ -204,7 +204,7 @@
   position: relative;
 }
 
-:host([is-in-basic-mode_][enable-basic-mode-zorder_]) .flex-center {
+:host([is-in-basic-mode_][enable-basic-mode-zorder_]) #flexCenterContainer {
   z-index: 0;
 }
 
@@ -225,7 +225,7 @@ error-page {
 
 :host([is-error-page-visible_]) #threadFrame,
 :host([is-error-page-visible_]) #composebox,
-:host([is-error-page-visible_]) .flex-center,
+:host([is-error-page-visible_]) #flexCenterContainer,
 :host([is-ghost-loader-visible_]) #threadFrame,
 :host([is-shown-in-tab_]) #ghostLoader,
 :host(:not([is-ghost-loader-visible_])) #ghostLoader,
@@ -266,14 +266,14 @@ error-page {
   width: 100%;
 }
 
-.flex-center {
+#flexCenterContainer {
   align-self: end;
   grid-column: 1;
   grid-row: 2;
   position: relative;
 }
 
-:host([is-zero-state_]) .flex-center {
+:host([is-zero-state_]) #flexCenterContainer {
   align-self: start;
   align-items: center;
   display: flex;
@@ -287,7 +287,7 @@ error-page {
 }
 
 :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
-    .flex-center {
+    #flexCenterContainer {
   --flex-center-height: 50%;
   justify-content: flex-end;
   overflow-anchor: none;
@@ -296,7 +296,8 @@ error-page {
   width: 100%;
 }
 
-:host([is-zero-state_][enable-native-zero-state-suggestions]) .flex-center {
+:host([is-zero-state_][enable-native-zero-state-suggestions])
+    #flexCenterContainer {
   box-sizing: border-box;
   flex-direction: column;
   justify-content: flex-start;
@@ -305,19 +306,19 @@ error-page {
   padding-top: 20vh;
 }
 
-:host([is-zero-state_]:not([is-shown-in-tab_]):not([enable-native-zero-state-suggestions]))
-    .flex-center {
+:host([is-zero-state_]:not([is-shown-in-tab_]):not([enable-native-zero-state-suggestions_]))
+    #flexCenterContainer {
   height: 52%;
 }
 
-:host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+:host([is-zero-state_][is-shown-in-tab_]) #flexCenterContainer {
   height: calc(var(--flex-center-height) - 88px);
   inset-inline-start: 76px;
   top: 88px;
   width: calc(100% - 76px);
 }
 
-:host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+:host([is-zero-state_]:not([is-shown-in-tab_])) #flexCenterContainer {
   --wrapper-indent_: 20px;
   align-items: flex-start;
   gap: 24px;
@@ -327,17 +328,17 @@ error-page {
 }
 
 :host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
-    .flex-center {
+    #flexCenterContainer {
   justify-content: flex-end;
 }
 
-:host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
+:host([is-zero-state_][enable-native-zero-state-suggestions_]:not([is-shown-in-tab_]))
     #composebox {
   bottom: 30px;
 }
 
 @media (min-width: 789px) {
-  :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+  :host([is-zero-state_]:not([is-shown-in-tab_])) #flexCenterContainer {
     /* 96px gutter + 5px for text indentation in thread. */
     --wrapper-indent_: 101px;
     inset-inline-start: var(--wrapper-indent_);
@@ -351,7 +352,7 @@ error-page {
  * composebox.css min-width: 1420px for full explanation.
  */
 @media (min-width: 1420px) {
-  :host(:not([is-shown-in-tab_])[is-zero-state_]) .flex-center {
+  :host(:not([is-shown-in-tab_])[is-zero-state_]) #flexCenterContainer {
     --wrapper-indent_: max(285px, calc(50% - 570px));
     inset-inline-start: var(--wrapper-indent_);
     width: calc(100% - var(--wrapper-indent_));
@@ -407,25 +408,25 @@ error-page {
 
 @media (max-height: 800px) {
   :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
-      .flex-center {
+      #flexCenterContainer {
     padding-top: 30px;
     height: 30%;
   }
 
   :host([is-zero-state_]:not([enable-native-zero-state-suggestions])
-      [is-shown-in-tab_]) .flex-center {
+      [is-shown-in-tab_]) #flexCenterContainer {
     height: calc(30% - 88px);
   }
 
   :host([is-zero-state_]:not([enable-native-zero-state-suggestions]):not([is-shown-in-tab_]))
-      .flex-center {
+      #flexCenterContainer {
     padding-top: 50px;
   }
 }
 
 @media (max-height: 500px) {
   :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
-      .flex-center {
+      #flexCenterContainer {
     justify-content: flex-start;
     gap: 18px;
     overflow: hidden;
@@ -433,17 +434,10 @@ error-page {
   }
 
   :host([is-zero-state_][enable-native-zero-state-suggestions])
-      .flex-center {
+      #flexCenterContainer {
     gap: 15px;
     padding-top: 5vh;
     overflow: hidden;
-  }
-
-  :host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
-      .flex-center {
-    min-height: 250px !important;
-    padding-top: 50px !important;
-    border: 5px solid yellow !important;
   }
 }
 
@@ -521,7 +515,7 @@ error-page {
 }
 
 @media (max-width: 480px) {
-  :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+  :host([is-zero-state_][is-shown-in-tab_]) #flexCenterContainer {
     inset-inline-start: 0;
     width: 100%;
   }

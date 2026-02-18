@@ -150,7 +150,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       isLensOverlayShowing_: {type: Boolean},
       isGhostLoaderVisible_: {type: Boolean, reflect: true},
       isErrorDialogVisible_: {type: Boolean},
-      enableNativeZeroStateSuggestions: {
+      enableNativeZeroStateSuggestions_: {
         type: Boolean,
         reflect: true,
       },
@@ -161,8 +161,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     };
   }
 
-  accessor enableNativeZeroStateSuggestions: boolean =
-      loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected accessor enableBasicModeZOrder_: boolean =
       loadTimeData.getBoolean('enableBasicModeZOrder');
@@ -177,6 +175,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor isInBasicMode_: boolean = false;
   protected accessor isErrorPageVisible_: boolean = false;
   protected accessor isZeroState_: boolean = false;
+  protected accessor enableNativeZeroStateSuggestions_: boolean =
+      loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -442,6 +442,14 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.setStyleVariable(
           '--composebox-margin-left', `${position.marginLeft}px`);
     }
+  }
+
+  getEnableNativeZeroStateSuggestionsForTesting() {
+    return this.enableNativeZeroStateSuggestions_;
+  }
+
+  setEnableNativeZeroStateSuggestionsForTesting(enable: boolean) {
+    this.enableNativeZeroStateSuggestions_ = enable;
   }
 
   // Conditionally update the provided thread URL so it restores an existing

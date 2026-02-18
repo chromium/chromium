@@ -11,6 +11,7 @@
 
 :host {
   --tab-select-color_: rgba(153, 200, 255, 1);
+  --input-inline-spacing: 12px;
   outline: none;
   height: var(--cr-composebox-match-height, 44px);
   display: block;
@@ -43,8 +44,7 @@
   /* Optional match border if '--match-border-size' is set
    * via ::part. Otherwise, keep it as 0px. */
   border: var(--match-border-size, 0) solid
-      var(--color-searchbox-results-icon-focused-outline,
-      var(--tab-select-color_));
+      var(--color-searchbox-results-icon-focused-outline);
 }
 
 @media (forced-colors: active) {

@@ -410,6 +410,7 @@
   --color-searchbox-results-background-hovered: transparent;
   --color-searchbox-results-background-selected: transparent;
   --match-border-size: 2px;
+  --color-searchbox-results-icon-focused-outline: rgba(153, 200, 255, 1);
 
   align-items: flex-start;
   background-color: var(--search-background-color);
@@ -467,8 +468,7 @@
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-container):hover {
   background-color: var(
-      --color-composebox-zero-state-suggestions-background-hovered,
-      rgba(247, 248, 250, 1));
+      --color-composebox-zero-state-suggestions-background-hovered);
 }
 
 @media (forced-colors: active) {

@@ -8,15 +8,16 @@ import './onboarding_tooltip.js';
 
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
-import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {VoiceSearchState} from './constants.js';
@@ -34,30 +35,13 @@ function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
 }
 
 function createGhostMatch(): AutocompleteMatch {
-  return {
+  return createAutocompleteMatch({
     contents: '\u200b',
     description: '\u200b',
-
-    destinationUrl: {url: ''},
     type: 'SEARCH_SUGGEST',
     isSearchType: true,
-    // Server side for contextual tasks should always make suggestions
-    // non-deletable.
-    allowedToBeDeleted: false,
-    fillIntoEdit: '',
-    inlineAutocompletion: '',
-    imageDominantColor: '',
-    isRichSuggestion: false,
-
-    a11yLabel: '',
-    removeButtonA11yLabel: '',
-
     iconPath: '//resources/cr_components/searchbox/icons/search_spark.svg',
-    contentsClass: [],
-    descriptionClass: [],
-    swapContentsAndDescription: false,
-    supportsDeletion: false,
-  } as unknown as AutocompleteMatch;
+  });
 }
 export interface ContextualTasksComposeboxElement {
   $: {
@@ -83,6 +67,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   static override get properties() {
     return {
+      enableNativeZeroStateSuggestions: {type: Boolean},
       isZeroState: {
         type: Boolean,
         reflect: true,
@@ -106,10 +91,11 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         value: loadTimeData.getBoolean('showOnboardingTooltip'),
       },
       zeroStateSuggestions_: {type: Object},
-      isLoading_: {type: Boolean, reflect: true},
-      enableNativeZeroStateSuggestions: {type: Boolean},
       activeToolMode_: {
         type: Number,
+      },
+      isLoading_: {
+        type: Boolean,
         reflect: true,
       },
     };
@@ -319,7 +305,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     this.clearTooltipImpressionTimer_();
   }
 
-  protected onZeroStateResultReceived_(e: CustomEvent<AutocompleteResult>) {
+  protected onSuggestionsResultReceived_(e: CustomEvent<AutocompleteResult>) {
     this.isLoading_ = false;
     this.zeroStateSuggestions_ = e.detail;
   }

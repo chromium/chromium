@@ -412,7 +412,6 @@ export class ComposeboxElement extends I18nMixinLit
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-
     // When the result initially gets set check if dropdown should show.
     if (changedPrivateProperties.has('input_') ||
         changedPrivateProperties.has('result_') ||
@@ -1313,7 +1312,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
     this.haveReceivedAutcompleteResponse_ = true;
     this.result_ = result;
-    this.fire('zero-state-result-changed', result);
+    /* Indicates when suggestion results have changed so that zero state
+     * suggestion results in contextual tasks composebox can update accordingly.
+     */
+    this.fire('result-changed', result);
 
     const hasMatches = this.result_.matches.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;

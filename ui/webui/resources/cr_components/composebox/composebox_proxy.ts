@@ -7,7 +7,8 @@ import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browse
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './composebox.mojom-webui.js';
 
-export function createAutocompleteMatch(): AutocompleteMatch {
+export function createAutocompleteMatch(
+    config: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
   return {
     isHidden: false,
     a11yLabel: '',
@@ -39,6 +40,7 @@ export function createAutocompleteMatch(): AutocompleteMatch {
     hasInstantKeyword: false,
     keywordChipHint: '',
     keywordChipA11y: '',
+    ...config,
   };
 }
 
