@@ -4796,6 +4796,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "first-run-desktop-revamp",
+    "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "flex-firmware-update",
     "owners": [ "nicholasbishop@google.com", "chromeos-flex-eng@google.com" ],
     "expiry_milestone": 143

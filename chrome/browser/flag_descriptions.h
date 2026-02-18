@@ -2280,6 +2280,11 @@ inline constexpr char kFirstRunDesktopRefreshName[] =
 inline constexpr char kFirstRunDesktopRefreshDescription[] =
     "Enables the visually refreshed first run flow on desktop.";
 
+inline constexpr char kFirstRunDesktopRevampName[] = "First Run Desktop Revamp";
+inline constexpr char kFirstRunDesktopRevampDescription[] =
+    "Enables the first run revamp (new UI and additional effects). It is no-op "
+    "if `first-run-desktop-refresh` is disabled.";
+
 inline constexpr char kForceTextDirectionName[] = "Force text direction";
 inline constexpr char kForceTextDirectionDescription[] =
     "Explicitly force the per-character directionality of UI text to "
