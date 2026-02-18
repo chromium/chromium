@@ -203,6 +203,7 @@ PrivatePass EntityInstanceToPrivatePass(const EntityInstance& entity) {
     // Non-private pass types are not supported.
     case EntityTypeName::kVehicle:
     case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kOrder:
       NOTREACHED();
   }
   return pass;

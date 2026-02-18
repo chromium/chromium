@@ -74,6 +74,7 @@ chromium-metrics-reviews@google.com.
       summary="Emitted for Known Traveler Number forms or entities only."/>
   <variant name=".NationalIdCard"
       summary="Emitted for national id card forms or entities only."/>
+  <variant name=".Order" summary="Emitted for order forms or entities only."/>
   <variant name=".Passport"
       summary="Emitted for passport forms or entities only."/>
   <variant name=".RedressNumber"
@@ -582,6 +583,13 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NOT_USERNAME"/>
   <variant name="NUMERIC_QUANTITY"/>
   <variant name="ONE_TIME_CODE"/>
+  <variant name="ORDER_ACCOUNT"/>
+  <variant name="ORDER_DATE"/>
+  <variant name="ORDER_GRAND_TOTAL"/>
+  <variant name="ORDER_ID"/>
+  <variant name="ORDER_MERCHANT_DOMAIN"/>
+  <variant name="ORDER_MERCHANT_NAME"/>
+  <variant name="ORDER_PRODUCT_NAMES"/>
   <variant name="PASSPORT_EXPIRATION_DATE"/>
   <variant name="PASSPORT_ISSUE_DATE"/>
   <variant name="PASSPORT_ISSUING_COUNTRY"/>

@@ -323,6 +323,8 @@ enum AutofillAiEntityType {
   AUTOFILL_AI_ENTITY_TYPE_REDRESS_NUMBER = 6;
 
   AUTOFILL_AI_ENTITY_TYPE_FLIGHT_RESERVATION = 7;
+
+  AUTOFILL_AI_ENTITY_TYPE_ORDER = 8;
 }
 
 // Defines the different types of storage that can hold AutofillAi entities.

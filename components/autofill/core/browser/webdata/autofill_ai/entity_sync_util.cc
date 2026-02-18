@@ -651,6 +651,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
       return GetNationalIdCardSpecifics(entity, base_specifics);
     case EntityTypeName::kRedressNumber:
       return GetRedressNumberSpecifics(entity, base_specifics);
+    case EntityTypeName::kOrder:
     case EntityTypeName::kKnownTravelerNumber:
       return GetKnownTravelerNumberSpecifics(entity, base_specifics);
   }
@@ -817,6 +818,7 @@ EntityTypeToPassType(EntityType entity_type) {
     case EntityTypeName::kPassport:
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kOrder:
     case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
       // Those entity types are not synced.

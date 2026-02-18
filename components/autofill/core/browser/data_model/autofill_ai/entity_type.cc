@@ -50,6 +50,15 @@ std::u16string AttributeType::GetNameForI18n() const {
       case AttributeTypeName::kFlightReservationDepartureDate:
         // Flight reservations are read-only and do not use attribute strings.
         return u"";
+      case AttributeTypeName::kOrderDate:
+      case AttributeTypeName::kOrderAccount:
+      case AttributeTypeName::kOrderGrandTotal:
+      case AttributeTypeName::kOrderId:
+      case AttributeTypeName::kOrderMerchantDomain:
+      case AttributeTypeName::kOrderMerchantName:
+      case AttributeTypeName::kOrderProductNames:
+        // Orders are read-only and do not use attribute strings.
+        return u"";
       case AttributeTypeName::kKnownTravelerNumberName:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME);
@@ -133,6 +142,8 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
         return 5;
       case EntityTypeName::kNationalIdCard:
         return 2;
+      case EntityTypeName::kOrder:
+        return 8;
       case EntityTypeName::kPassport:
         return 1;
       case EntityTypeName::kRedressNumber:
@@ -165,6 +176,8 @@ std::u16string EntityType::GetNameForI18n() const {
     case EntityTypeName::kNationalIdCard:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME);
+    case EntityTypeName::kOrder:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ORDER_ENTITY_NAME);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME);
     case EntityTypeName::kRedressNumber:

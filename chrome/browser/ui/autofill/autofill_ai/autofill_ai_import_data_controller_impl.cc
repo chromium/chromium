@@ -273,6 +273,9 @@ int AutofillAiImportDataControllerImpl::
     case EntityTypeName::kFlightReservation:
       NOTREACHED()
           << "Entity is read only and doesn't support saving/updating.";
+    case EntityTypeName::kOrder:
+      NOTREACHED()
+          << "Entity is read only and doesn't support saving/updating.";
   }
   NOTREACHED();
 }

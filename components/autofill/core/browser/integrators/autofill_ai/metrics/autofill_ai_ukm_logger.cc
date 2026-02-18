@@ -45,6 +45,8 @@ optimization_guide::proto::AutofillAiEntityType GetEntityType(
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER;
     case EntityTypeName::kNationalIdCard:
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_NATIONAL_ID_CARD;
+    case EntityTypeName::kOrder:
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_ORDER;
     case EntityTypeName::kPassport:
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_PASSPORT;
     case EntityTypeName::kRedressNumber:

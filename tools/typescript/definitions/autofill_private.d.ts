@@ -158,6 +158,13 @@ declare global {
         FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
         FLIGHT_RESERVATION_DEPARTURE_DATE,
         ADDRESS_HOME_ZIP_AND_CITY,
+        ORDER_ID,
+        ORDER_DATE,
+        ORDER_MERCHANT_NAME,
+        ORDER_MERCHANT_DOMAIN,
+        ORDER_PRODUCT_NAMES,
+        ORDER_ACCOUNT,
+        ORDER_GRAND_TOTAL,
       }
 
       export enum AddressRecordType {

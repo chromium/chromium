@@ -109,5 +109,19 @@
     "disambiguation order": [ "Departure airport", "Arrival airport", "Departure date", "Passenger name", "Flight number" ],
     "experiment feature": "AutofillAiWalletFlightReservation",
     "read only": true
+  },
+  {
+    "name": "Order",
+    "attributes": [ "Id", "Account", "Date", "Merchant name", "Merchant domain", "Product names", "Grand total" ],
+    "obfuscated attributes": [],
+    "required fields": [
+      [ "Id" ]
+    ],
+    "import constraints": [],
+    "merge constraints": [],
+    "strike keys": [],
+    "disambiguation order": [ "Merchant name", "Date", "Grand total" ],
+    "experiment feature": "AutofillUseAccessibilityAnnotator",
+    "read only": true
   }
 ]

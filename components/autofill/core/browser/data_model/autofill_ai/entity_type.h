@@ -144,6 +144,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kKnownTravelerNumberExpirationDate:
     case AttributeTypeName::kNationalIdCardIssueDate:
     case AttributeTypeName::kNationalIdCardExpirationDate:
+    case AttributeTypeName::kOrderDate:
     case AttributeTypeName::kPassportExpirationDate:
     case AttributeTypeName::kPassportIssueDate:
       return DataType::kDate;
@@ -157,6 +158,12 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kFlightReservationDepartureAirport:
     case AttributeTypeName::kFlightReservationArrivalAirport:
     case AttributeTypeName::kKnownTravelerNumberNumber:
+    case AttributeTypeName::kOrderAccount:
+    case AttributeTypeName::kOrderGrandTotal:
+    case AttributeTypeName::kOrderId:
+    case AttributeTypeName::kOrderMerchantDomain:
+    case AttributeTypeName::kOrderMerchantName:
+    case AttributeTypeName::kOrderProductNames:
     case AttributeTypeName::kNationalIdCardNumber:
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kRedressNumberNumber:
@@ -215,6 +222,21 @@ constexpr FieldType AttributeType::field_type() const {
       return NATIONAL_ID_CARD_ISSUE_DATE;
     case AttributeTypeName::kNationalIdCardExpirationDate:
       return NATIONAL_ID_CARD_EXPIRATION_DATE;
+
+    case AttributeTypeName::kOrderAccount:
+      return ORDER_ACCOUNT;
+    case AttributeTypeName::kOrderDate:
+      return ORDER_DATE;
+    case AttributeTypeName::kOrderGrandTotal:
+      return ORDER_GRAND_TOTAL;
+    case AttributeTypeName::kOrderId:
+      return ORDER_ID;
+    case AttributeTypeName::kOrderMerchantDomain:
+      return ORDER_MERCHANT_DOMAIN;
+    case AttributeTypeName::kOrderMerchantName:
+      return ORDER_MERCHANT_NAME;
+    case AttributeTypeName::kOrderProductNames:
+      return ORDER_PRODUCT_NAMES;
 
     case AttributeTypeName::kPassportName:
       return NAME_FULL;

@@ -113,6 +113,8 @@ std::string_view EntityTypeToMetricsString(EntityType type) {
       return "RedressNumber";
     case EntityTypeName::kFlightReservation:
       return "FlightReservation";
+    case EntityTypeName::kOrder:
+      return "Order";
   }
   NOTREACHED();
 }

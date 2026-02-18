@@ -720,6 +720,7 @@ bool IsMaskedStorageSupported(EntityType type,
       return true;
     case EntityTypeName::kFlightReservation:
     case EntityTypeName::kVehicle:
+    case EntityTypeName::kOrder:
       return false;
   }
   NOTREACHED();

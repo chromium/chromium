@@ -556,6 +556,16 @@ enum FieldType {
   // single field (e.g. "75000 Paris").
   ADDRESS_HOME_ZIP_AND_CITY = 207,
 
+  // Types corresponding to the "Order" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  ORDER_ID = 208,
+  ORDER_DATE = 209,
+  ORDER_MERCHANT_NAME = 210,
+  ORDER_MERCHANT_DOMAIN = 211,
+  ORDER_PRODUCT_NAMES = 212,
+  ORDER_ACCOUNT = 213,
+  ORDER_GRAND_TOTAL = 214,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -566,7 +576,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 208,
+  MAX_VALID_FIELD_TYPE = 215,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -846,6 +856,13 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
     case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case ORDER_ID:
+    case ORDER_DATE:
+    case ORDER_MERCHANT_NAME:
+    case ORDER_MERCHANT_DOMAIN:
+    case ORDER_PRODUCT_NAMES:
+    case ORDER_ACCOUNT:
+    case ORDER_GRAND_TOTAL:
       return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:

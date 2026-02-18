@@ -101,6 +101,8 @@ std::u16string GetFillValueForEntity(
             return AttributeType(AttributeTypeName::kRedressNumberName);
           case EntityTypeName::kVehicle:
             return AttributeType(AttributeTypeName::kVehicleOwner);
+          case EntityTypeName::kOrder:
+            return AttributeType(AttributeTypeName::kOrderAccount);
         }
         return std::nullopt;
       }();

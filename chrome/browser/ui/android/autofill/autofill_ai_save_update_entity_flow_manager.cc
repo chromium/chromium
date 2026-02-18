@@ -69,6 +69,8 @@ int GetMessageIconResourceId(const EntityInstance& entity) {
       return IDR_ANDROID_AUTOFILL_VEHICLE;
     case EntityTypeName::kFlightReservation:
       NOTREACHED() << "Entity is read only and doesn't support save prompts.";
+    case EntityTypeName::kOrder:
+      NOTREACHED() << "Entity is read only and doesn't support save prompts.";
   }
   NOTREACHED();
 }
