@@ -35,6 +35,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                   kDefaultReportFrequency);
   registry->RegisterListPref(kSaasUsageDomainUrlsForBrowser);
   registry->RegisterDictionaryPref(kSaasUsageReport);
+  registry->RegisterTimePref(kSaasUsageReportLastTriggerTime, base::Time());
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -60,6 +61,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kCloudLegacyTechReportAllowlist);
   registry->RegisterListPref(kSaasUsageDomainUrlsForProfile);
   registry->RegisterDictionaryPref(kSaasUsageReport);
+  registry->RegisterTimePref(kSaasUsageReportLastTriggerTime, base::Time());
 }
 
 }  // namespace enterprise_reporting

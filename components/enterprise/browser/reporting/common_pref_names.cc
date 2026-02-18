@@ -70,4 +70,8 @@ const char kSaasUsageDomainUrlsForProfile[] =
 // Dictionary which stores the aggregated metrics per SaaS domain.
 const char kSaasUsageReport[] = "enterprise_reporting.saas_usage.report";
 
+// The timestamp of the last time the SaaS usage report was triggered.
+const char kSaasUsageReportLastTriggerTime[] =
+    "enterprise_reporting.saas_usage.last_trigger_time";
+
 }  // namespace enterprise_reporting

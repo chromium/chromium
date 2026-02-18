@@ -37,6 +37,8 @@ extern const char kSaasUsageDomainUrlsForProfile[];
 
 extern const char kSaasUsageReport[];
 
+extern const char kSaasUsageReportLastTriggerTime[];
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_COMMON_PREF_NAMES_H_
