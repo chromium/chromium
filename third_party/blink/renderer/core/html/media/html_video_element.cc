@@ -632,8 +632,9 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, size, reinterpret_as_srgb);
 
-  if (!snapshot_provider_ ||
-      !required_provider_info.Matches(*snapshot_provider_) ||
+  bool cached_info_matches_required_info =
+      snapshot_provider_ && required_provider_info.Matches(*snapshot_provider_);
+  if (!cached_info_matches_required_info ||
       allow_accelerated_images != allow_accelerated_images_) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
