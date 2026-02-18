@@ -9,26 +9,39 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import androidx.lifecycle.LifecycleOwner;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 @NullMarked
-public class BatchUploadCardPreference extends Preference {
+public class BatchUploadCardPreference extends ChromeBasePreference {
+    /** Listener for BatchUploadCardPreference. */
+    public interface Listener {
+        /** Called when the visibility of the card changes. */
+        void onBatchUploadCardVisibilityChanged();
+    }
+
     private BatchUploadCardCoordinator mBatchUploadCardCoordinator;
+    private @Nullable Listener mListener;
 
     public BatchUploadCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setLayoutResource(R.layout.signin_settings_card_view);
+    }
+
+    @Override
+    public int getCustomBackgroundStyle() {
+        return BackgroundStyle.NONE;
     }
 
     /** Initialize the dependencies for the BatchUploadCardPreference and update the error card. */
@@ -37,7 +50,9 @@ public class BatchUploadCardPreference extends Preference {
             Activity activity,
             Profile profile,
             ModalDialogManager dialogManager,
-            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
+            @Nullable Listener listener) {
+        mListener = listener;
         mBatchUploadCardCoordinator =
                 new BatchUploadCardCoordinator(
                         activity,
@@ -73,7 +88,13 @@ public class BatchUploadCardPreference extends Preference {
             // callback is invoked before the mBatchUploadCardCoordinator field is assigned.
             return;
         }
-        setVisible(mBatchUploadCardCoordinator.shouldShowBatchUploadCard());
+        boolean isVisible = mBatchUploadCardCoordinator.shouldShowBatchUploadCard();
+        if (isVisible() != isVisible) {
+            setVisible(isVisible);
+            if (mListener != null) {
+                mListener.onBatchUploadCardVisibilityChanged();
+            }
+        }
         notifyChanged();
     }
 }

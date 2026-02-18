@@ -109,7 +109,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SyncService.SyncStateChangedListener,
                 IdentityManager.Observer,
                 SyncErrorCardPreference.SyncErrorCardPreferenceListener,
-                IdentityErrorCardPreference.Listener {
+                IdentityErrorCardPreference.Listener,
+                BatchUploadCardPreference.Listener {
     @VisibleForTesting public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_password";
     @VisibleForTesting public static final String FRAGMENT_CUSTOM_PASSPHRASE = "custom_password";
     @VisibleForTesting public static final String FRAGMENT_PASSPHRASE_TYPE = "password_type";
@@ -426,7 +427,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getActivity(),
                 profile,
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                assumeNonNull(mSnackbarManagerSupplier));
+                assumeNonNull(mSnackbarManagerSupplier),
+                this);
     }
 
     private void setupAccountDataTypePreferences() {
@@ -1040,6 +1042,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     // SyncErrorCardPreferenceListener implementation:
+
     @Override
     public void onSyncErrorCardPrimaryButtonClicked() {
         assert !mShouldReplaceSyncSettingsWithAccountSettings
@@ -1059,6 +1062,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 == UserActionableError.NEEDS_SETTINGS_CONFIRMATION;
         getSigninManager().signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         finishCurrentSettings();
+    }
+
+    @Override
+    public void onSyncErrorCardVisibilityChanged() {
+        notifyPreferencesUpdated();
     }
 
     @Override
@@ -1135,6 +1143,16 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             case UserActionableError.NONE:
             default:
         }
+    }
+
+    @Override
+    public void onIdentityErrorCardVisibilityChanged() {
+        notifyPreferencesUpdated();
+    }
+
+    @Override
+    public void onBatchUploadCardVisibilityChanged() {
+        notifyPreferencesUpdated();
     }
 
     private boolean isEeaChoiceCountry() {

@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -26,15 +25,19 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorCardDetails;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 
 @NullMarked
-public class IdentityErrorCardPreference extends Preference
+public class IdentityErrorCardPreference extends ChromeBasePreference
         implements SyncService.SyncStateChangedListener {
     public interface Listener {
         /** Called when the user clicks the button. */
         void onIdentityErrorCardButtonClicked(@UserActionableError int error);
+
+        /** Called when the visibility of the error card changes. */
+        default void onIdentityErrorCardVisibilityChanged() {}
     }
 
     private @Nullable Profile mProfile;
@@ -48,6 +51,11 @@ public class IdentityErrorCardPreference extends Preference
 
         setLayoutResource(R.layout.signin_settings_card_view);
         mIdentityError = UserActionableError.NONE;
+    }
+
+    @Override
+    public int getCustomBackgroundStyle() {
+        return BackgroundStyle.NONE;
     }
 
     /**
@@ -94,7 +102,10 @@ public class IdentityErrorCardPreference extends Preference
         }
         mIdentityError = error;
         if (shouldShowErrorCard()) {
-            setVisible(true);
+            if (!isVisible()) {
+                setVisible(true);
+                mListener.onIdentityErrorCardVisibilityChanged();
+            }
             notifyChanged();
             RecordHistogram.recordEnumeratedHistogram(
                     "Sync.IdentityErrorCard"
@@ -102,7 +113,10 @@ public class IdentityErrorCardPreference extends Preference
                     ErrorUiAction.SHOWN,
                     ErrorUiAction.NUM_ENTRIES);
         } else {
-            setVisible(false);
+            if (isVisible()) {
+                setVisible(false);
+                mListener.onIdentityErrorCardVisibilityChanged();
+            }
         }
     }
 
