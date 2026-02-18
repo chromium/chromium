@@ -4,16 +4,10 @@
 
 #include <string_view>
 
-#include "base/base64.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
@@ -22,12 +16,10 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/test_support/glic_functional_browsertest.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
-#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -62,6 +54,7 @@ namespace {
 
 using ::base::test::TestFuture;
 using ::base::test::ValueIs;
+using ::glic::actor::AsyncActionWaiter;
 using ::glic::test::ErrorHasSubstr;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ActionsResult;
@@ -153,76 +146,10 @@ Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
   return action;
 }
 
-// Helper class that utilizes content::DOMMessageQueue to capture the result of
-// an asynchronous PerformActions call. It listens for messages sent via
-// domAutomationController and filters by request ID to ensure the correct
-// result is returned.
-class AsyncActionWaiter {
- public:
-  AsyncActionWaiter(content::RenderFrameHost* rfh, std::string request_id)
-      : queue_(rfh), request_id_(std::move(request_id)) {}
-
-  base::expected<ActionsResult, std::string> Wait() {
-    while (true) {
-      std::string json_message;
-      if (!queue_.WaitForMessage(&json_message)) {
-        return base::unexpected("Failed to wait for message from JS.");
-      }
-
-      auto json_value = base::JSONReader::ReadAndReturnValueWithError(
-          json_message, base::JSON_PARSE_RFC);
-      if (!json_value.has_value()) {
-        return base::unexpected("Failed to parse JSON result from JS: " +
-                                json_value.error().message);
-      }
-
-      const base::DictValue* dict = json_value->GetIfDict();
-      if (!dict) {
-        return base::unexpected("Expected a JSON object from JS.");
-      }
-
-      const std::string* id = dict->FindString("requestId");
-      if (!id) {
-        return base::unexpected(
-            "Expected a string value for `requestId` key in JSON object from "
-            "JS");
-      }
-
-      if (*id != request_id_) {
-        // Message not for us
-        continue;
-      }
-
-      const std::string* result_base64 = dict->FindString("result");
-      if (!result_base64) {
-        return base::unexpected("JSON result missing 'result' field.");
-      }
-
-      return ParseBase64Proto<ActionsResult>(*result_base64);
-    }
-  }
-
- private:
-  content::DOMMessageQueue queue_;
-  std::string request_id_;
-};
-
 class ActorFunctionalBrowserTest
-    : public glic::test::GlicFunctionalBrowserTestBase {
+    : public glic::actor::GlicActorFunctionalBrowserTestBase {
  public:
-  static constexpr base::TimeDelta kShortWaitTime = base::Milliseconds(10);
-  static constexpr base::TimeDelta kLongWaitTime = base::Minutes(2);
-
-  ActorFunctionalBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicMultiInstance, {}},
-                              {actor::kActorBindCreatedTabToTask, {}},
-                              {features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
-        /*disabled_features=*/{});
-  }
+  ActorFunctionalBrowserTest() = default;
   ~ActorFunctionalBrowserTest() override = default;
 
  protected:
@@ -230,235 +157,6 @@ class ActorFunctionalBrowserTest
     glic::test::GlicFunctionalBrowserTestBase::SetUpOnMainThread();
     // TODO(crbug.com/461825458): Add support for kAttached window mode in test.
     RunTestSequence(OpenGlic());
-  }
-
-  actor::ActorKeyedService* actor_keyed_service() {
-    return actor::ActorKeyedService::Get(browser()->profile());
-  }
-
-  // Helper that sets a future if an ActorTask with `task_id` enters a completed
-  // state.
-  base::CallbackListSubscription CreateTaskCompletionSubscription(
-      TaskId for_task_id,
-      TestFuture<ActorTask::State>& future) {
-    return actor_keyed_service()->AddTaskStateChangedCallback(
-        base::BindLambdaForTesting([&future, for_task_id](
-                                       TaskId task_id, ActorTask::State state) {
-          if (task_id == for_task_id && ActorTask::IsCompletedState(state)) {
-            future.SetValue(state);
-          }
-        }));
-  }
-
-  // Returns the state of the relevant ActorTask.
-  ActorTask::State GetActorTaskState(TaskId task_id) {
-    ActorTask* task = actor_keyed_service()->GetTask(task_id);
-    CHECK_NE(task, nullptr) << "ActorTask " << task_id << " not found.";
-    return task->GetState();
-  }
-
-  base::expected<glic::mojom::CancelActionsResult, std::string> CancelActions(
-      TaskId task_id) {
-    std::string script = "window.client.browser.cancelActions($1)";
-    ASSIGN_OR_RETURN(int result_int, EvalJsInGlicForInt(content::JsReplace(
-                                         script, task_id.value())));
-    return base::ok(static_cast<glic::mojom::CancelActionsResult>(result_int));
-  }
-
-  // Helper to call the CreateTask TS API.
-  // Returns the TaskId of the newly created ActorTask.
-  base::expected<TaskId, std::string> CreateTask(
-      webui::mojom::TaskOptionsPtr options = nullptr) {
-    std::string title;
-    if (options && options->title) {
-      title = content::JsReplace("{title: $1}", *options->title);
-    }
-
-    std::string script =
-        base::StrCat({"window.client.browser.createTask(", title, ");"});
-    ASSIGN_OR_RETURN(int task_id_int, EvalJsInGlicForInt(script));
-    return base::ok(actor::TaskId(task_id_int));
-  }
-
-  // Helper to call the PerformActions TS API synchronously.
-  // Takes an `Actions` proto and returns the resulting `ActionsResult` proto.
-  // Note: This blocks until all Actions are completed by wrapping
-  // PerformActionsAsync.
-  [[nodiscard]] base::expected<ActionsResult, std::string> PerformActions(
-      const Actions& actions) {
-    return PerformActionsAsync(actions)->Wait();
-  }
-
-  // Helper to run PerformActions asynchronously.
-  // Returns an AsyncActionWaiter that can be used to wait for the result.
-  [[nodiscard]] std::unique_ptr<AsyncActionWaiter> PerformActionsAsync(
-      const Actions& actions) {
-    // TODO(crbug.com/471254787): Revise PerformActionsAsync to handle async JS
-    // calls in a blocking manner in C++.
-    std::string serialized_actions;
-    CHECK(actions.SerializeToString(&serialized_actions));
-    const std::string proto_base64 = base::Base64Encode(serialized_actions);
-
-    static int counter = 0;
-    std::string request_id = base::NumberToString(++counter);
-    auto waiter = std::make_unique<AsyncActionWaiter>(FindGlicGuestMainFrame(),
-                                                      request_id);
-    // Script to call PerformActions() and send the result via
-    // domAutomationController to be received by the AsyncActionWaiter.
-    const std::string script = content::JsReplace(
-        R"(
-      (async () => {
-        const resultBuffer =
-            await window.client.browser.performActions(
-                Uint8Array.fromBase64($1).buffer);
-        window.domAutomationController.send({
-            requestId: $2,
-            result: new Uint8Array(resultBuffer).toBase64()
-        });
-      })();
-    )",
-        proto_base64, request_id);
-
-    content::ExecuteScriptAsync(FindGlicGuestMainFrame(), script);
-
-    return waiter;
-  }
-
-  // Helper to call the StopActorTask TS API.
-  // Note: Inactive tasks are cleared right after entering a "Completed" state,
-  // so you need to listen for state changes using a subscription before calling
-  // this method if you want to verify the task stopped correctly.
-  void StopActorTask(TaskId task_id,
-                     glic::mojom::ActorTaskStopReason stop_reason) {
-    std::string script = R"(
-      (async (taskId, stopReason) => {
-        await window.client.browser.stopActorTask(taskId, stopReason);
-      })($1, $2)
-    )";
-    // Store the result of content::JsReplace in a std::string to make ownership
-    // explicit.
-    const std::string full_script = content::JsReplace(
-        script, task_id.value(), static_cast<int>(stop_reason));
-    EXPECT_OK(EvalJsInGlic(full_script));
-  }
-
-  // Helper to call the PauseActorTask TS API.
-  // Note: `tab_handle` needs to be specified if you intend to resume the task
-  // in the future without performing any tab-scoped actions beforehand.
-  void PauseActorTask(TaskId task_id,
-                      glic::mojom::ActorTaskPauseReason pause_reason =
-                          glic::mojom::ActorTaskPauseReason::kPausedByModel,
-                      tabs::TabHandle tab_handle = tabs::TabHandle::Null()) {
-    base::expected<base::Value, std::string> pause_task_js_result = [&]() {
-      if (tab_handle == tabs::TabHandle::Null()) {
-        std::string script = "window.client.browser.pauseActorTask($1, $2);";
-        return EvalJsInGlic(content::JsReplace(script, task_id.value(),
-                                               static_cast<int>(pause_reason)));
-      } else {
-        std::string script =
-            "window.client.browser.pauseActorTask($1, $2, $3);";
-        return EvalJsInGlic(content::JsReplace(
-            script, task_id.value(), static_cast<int>(pause_reason),
-            base::NumberToString(tab_handle.raw_value())));
-      }
-    }();
-
-    EXPECT_TRUE(pause_task_js_result.has_value())
-        << "pauseActorTask() failed: " << pause_task_js_result.error();
-  }
-
-  // Helper to call the ResumeActorTask TS API.
-  // Returns the ActionResultCode of the resumeActorTask call.
-  base::expected<mojom::ActionResultCode, std::string> ResumeActorTask(
-      TaskId task_id,
-      base::Value context_options) {
-    ASSIGN_OR_RETURN(
-        std::string context_options_json,
-        base::WriteJson(context_options.GetDict()), [&]() {
-          return std::string("Failed to serialize context options to JSON.");
-        });
-
-    std::string script = base::StringPrintf(
-        "(async () => {"
-        "  const result = await window.client.browser.resumeActorTask(%d, %s);"
-        "  return result.actionResult;"
-        "})()",
-        task_id.value(), context_options_json.c_str());
-    ASSIGN_OR_RETURN(int action_result_int, EvalJsInGlicForInt(script));
-    return base::ok(static_cast<mojom::ActionResultCode>(action_result_int));
-  }
-
-  // Helper to call the InterruptActorTask TS API.
-  void InterruptActorTask(TaskId task_id) {
-    std::string script = "window.client.browser.interruptActorTask($1);";
-    EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
-  }
-
-  // Helper to call the UninterruptActorTask TS API.
-  void UninterruptActorTask(TaskId task_id) {
-    std::string script = "window.client.browser.uninterruptActorTask($1);";
-    EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
-  }
-
-  // Waits until the task reaches the `expected_state`.
-  void WaitForTaskState(TaskId task_id, ActorTask::State expected_state) {
-    if (actor_keyed_service()->GetTask(task_id)->GetState() == expected_state) {
-      return;
-    }
-    base::RunLoop run_loop;
-    base::CallbackListSubscription subscription =
-        actor_keyed_service()->AddTaskStateChangedCallback(
-            base::BindLambdaForTesting(
-                [&](TaskId task_id_param, ActorTask::State state) {
-                  if (task_id_param == task_id && state == expected_state) {
-                    run_loop.Quit();
-                  }
-                }));
-    run_loop.Run();
-  }
-
-  // Helper to call the CreateActorTab TS API.
-  // Returns the TabId of the newly created tab, or base::unexpected on failure.
-  base::expected<tabs::TabHandle, std::string> CreateActorTab(
-      TaskId task_id,
-      std::optional<bool> open_in_background,
-      std::optional<std::string> initiator_tab_id,
-      std::optional<std::string> initiator_window_id) {
-    static constexpr std::string_view kCreateActorTabScript = R"(
-      (async (taskId, openInBackground, initiatorTabId, initiatorWindowId) => {
-        const options = {};
-        if (openInBackground !== null) {
-          options.openInBackground = openInBackground;
-        }
-        if (initiatorTabId !== null) {
-          options.initiatorTabId = initiatorTabId;
-        }
-        if (initiatorWindowId !== null) {
-          options.initiatorWindowId = initiatorWindowId;
-        }
-        const tabData = await window.client.browser.createActorTab(
-            taskId, options);
-        // "NO_TAB_ID" triggers the parsing error on C++ side.
-        return tabData ? tabData.tabId : "NO_TAB_ID";
-      })($1, $2, $3, $4)
-    )";
-    base::expected<std::string, std::string> result =
-        EvalJsInGlicForString(content::JsReplace(
-            kCreateActorTabScript, task_id.value(),
-            open_in_background ? base::Value(*open_in_background)
-                               : base::Value(),
-            initiator_tab_id ? base::Value(*initiator_tab_id) : base::Value(),
-            initiator_window_id ? base::Value(*initiator_window_id)
-                                : base::Value()));
-    if (!result.has_value()) {
-      return base::unexpected(result.error());
-    }
-    int tab_id;
-    if (!base::StringToInt(result.value(), &tab_id)) {
-      return base::unexpected(base::StringPrintf(
-          "Failed to parse tab ID %s from TS API.", result.value().c_str()));
-    }
-    return tabs::TabHandle(tab_id);
   }
 
  private:

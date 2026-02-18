@@ -425,7 +425,10 @@ source_set("browser_tests") {
   ]
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/actor:browser_tests",
+    ]
   }
 
   if (is_android) {
