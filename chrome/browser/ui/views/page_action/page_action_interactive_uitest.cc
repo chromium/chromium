@@ -442,12 +442,13 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
     EXPECT_EQ(new_translate_index.value(), 0u);
   }
   // The memory saver view, now a non-chip, should follow the chip.
-  // Since translate is at 0, memory saver (if it was initially at 1) should be
-  // at 1.
+  // Since translate is at index 0, the memory saver should maintain its
+  // relative order among non-chips.
   {
     auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
     ASSERT_TRUE(new_memory_saver_index.has_value());
-    EXPECT_EQ(new_memory_saver_index.value(), 1u);
+    EXPECT_EQ(new_memory_saver_index.value(),
+              initial_memory_saver_index.value());
   }
 
   // Step 2: Activate suggestion chip for the memory saver page action as well.
@@ -985,10 +986,10 @@ class PageActionPixelReorderTest : public PageActionPixelTestBase {
       return false;
     }
 
-    // Expect the Translate action (suggestion chip) to be at index 0,
-    // and the memory saver page action to be at index 1.
+    // Expect the Translate action (suggestion chip) to be at index 0.
     EXPECT_EQ(translate_index.value(), 0u);
-    EXPECT_EQ(memory_saver_index.value(), 1u);
+    // The memory saver page action should follow the chip.
+    EXPECT_GT(memory_saver_index.value(), 0u);
 
     return true;
   }

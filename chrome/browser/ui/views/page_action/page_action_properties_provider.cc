@@ -24,6 +24,14 @@ constexpr auto kPageActionProperties =
                 .element_identifier = kAiModePageActionIconElementId,
             },
         },
+        {
+            kActionIndigo,
+            {
+                .histogram_name = "Indigo",
+                .type = PageActionIconType::kIndigo,
+                .element_identifier = kIndigoPageActionIconElementId,
+            },
+        },
 
         {
             kActionSidePanelShowLensOverlayResults,

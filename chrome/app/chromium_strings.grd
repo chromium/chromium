@@ -3176,6 +3176,14 @@ Chromium is unable to recover your settings.
       <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION" desc="Explanatory text in dialog for reporting an unsafe site to Chromium">
         Improve online safety for everyone when you report a site you think is harmful.
       </message>
+
+      <!-- Indigo Strings -->
+      <message name="IDS_INDIGO_ENTRYPOINT_CHIP_TEXT" desc="The text on the Indigo entry point chip in the omnibox." translateable="false">
+        Indigo
+      </message>
+      <message name="IDS_INDIGO_ENTRYPOINT_CHIP_TOOLTIP_TEXT" desc="The tooltip text of the Indigo entry point chip in the omnibox when in hover state." translateable="false">
+        Indigo tooltip text
+      </message>
     </messages>
   </release>
 </grit>

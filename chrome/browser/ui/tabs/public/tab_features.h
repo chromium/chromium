@@ -167,6 +167,10 @@ class ProtocolHandlerPickerCoordinator;
 }  // namespace web_app
 #endif
 
+namespace indigo {
+class IndigoPageActionController;
+}  // namespace indigo
+
 namespace tabs {
 
 class ContextHighlightTabFeature;
@@ -579,6 +583,11 @@ class TabFeatures {
 
   std::unique_ptr<accessibility_annotator::ContentAnnotatorTabHelper>
       content_annotator_tab_helper_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<indigo::IndigoPageActionController>
+      indigo_page_action_controller_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

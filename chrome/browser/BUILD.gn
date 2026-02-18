@@ -2579,6 +2579,8 @@ static_library("browser") {
     deps += [
       "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/contextual_tasks:ui_impl",
+      "//chrome/browser/indigo",
+      "//chrome/browser/indigo:impl",
       "//chrome/browser/legion",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",

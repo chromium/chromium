@@ -81,7 +81,8 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
   // and don't have a feature param.
   if (page_action == PageActionIconType::kContextualSidePanel ||
       page_action == PageActionIconType::kJsOptimizations ||
-      page_action == PageActionIconType::kRecordReplay) {
+      page_action == PageActionIconType::kRecordReplay ||
+      page_action == PageActionIconType::kIndigo) {
     return true;
   }
 

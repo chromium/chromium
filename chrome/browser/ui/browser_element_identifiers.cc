@@ -11,6 +11,7 @@
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kActionItemZoomElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAiModePageActionIconElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kIndigoPageActionIconElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kAnonymizedUrlCollectionPersonalizationSettingId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);

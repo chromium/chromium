@@ -289,6 +289,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="Contextual Task"/>
   <int value="38" label="JS Optimizations"/>
   <int value="39" label="RecordReplay"/>
+  <int value="40" label="Indigo"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->

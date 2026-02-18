@@ -50,6 +50,7 @@
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActionItemZoomElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAiModePageActionIconElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kIndigoPageActionIconElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kAnonymizedUrlCollectionPersonalizationSettingId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);

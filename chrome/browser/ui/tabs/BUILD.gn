@@ -515,6 +515,7 @@ if (!is_android) {
       "//chrome/browser/favicon",
       "//chrome/browser/glic/selection",
       "//chrome/browser/image_fetcher",
+      "//chrome/browser/indigo",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
