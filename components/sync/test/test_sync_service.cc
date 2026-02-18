@@ -12,12 +12,14 @@
 #include "build/build_config.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/progress_marker_map.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_error.h"
 #include "components/sync/service/sync_token_status.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
@@ -492,7 +494,23 @@ void TestSyncService::TriggerLocalDataMigrationForItems(
 
 void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
     DataType data_type,
-    std::vector<LocalDataItemModel::DataId> items) {}
+    std::vector<LocalDataItemModel::DataId> items) {
+  // Using `SyncUserSettings::ResetSelectedType()` to be aligned with the
+  // implementation in
+  // `SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive()`.
+  GetUserSettings()->ResetSelectedType(
+      GetUserSelectableTypeFromDataType(data_type).value());
+
+  if (auto it = local_data_descriptions_.find(data_type);
+      it != local_data_descriptions_.end()) {
+    const absl::flat_hash_set<LocalDataItemModel::DataId> items_to_remove(
+        items.begin(), items.end());
+    std::erase_if(it->second.local_data_models,
+                  [&items_to_remove](const LocalDataItemModel& model) {
+                    return items_to_remove.contains(model.id);
+                  });
+  }
+}
 
 void TestSyncService::AcknowledgeBookmarksLimitExceededError(
     BookmarksLimitExceededHelpClickedSource source) {
