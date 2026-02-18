@@ -466,8 +466,9 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
     router_rules = router_evaluator_->ToString();
   }
   ServiceWorkerVersionInfo info(
-      running_status(), status(), fetch_handler_type_, script_url(), scope(),
-      key(), registration_id(), version_id(), embedded_worker()->process_id(),
+      running_status(), status(), fetch_handler_type_,
+      navigation_preload_state_, script_url(), scope(), key(),
+      registration_id(), version_id(), embedded_worker()->process_id(),
       embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
       ancestor_frame_type_, router_rules);

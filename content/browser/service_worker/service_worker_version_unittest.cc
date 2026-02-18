@@ -28,6 +28,7 @@
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_ping_controller.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -2185,6 +2186,28 @@ TEST_P(ServiceWorkerVersionTest, NoUsbEventHandler) {
       helper_.get(), /*has_usb_event_handlers*/ false);
   StartServiceWorker(version_.get());
   EXPECT_FALSE(version_->has_usb_event_handlers());
+}
+
+TEST_P(ServiceWorkerVersionTest, GetInfoDefaultNavigationPreloadState) {
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+
+  ServiceWorkerVersionInfo info = version_->GetInfo();
+  EXPECT_FALSE(info.navigation_preload_state.enabled);
+  EXPECT_EQ("true", info.navigation_preload_state.header);
+}
+
+TEST_P(ServiceWorkerVersionTest, GetInfoCustomNavigationPreloadState) {
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+
+  // Enable navigation preload with a custom header via the registration.
+  registration_->EnableNavigationPreload(true);
+  registration_->SetNavigationPreloadHeader("custom-header-value");
+
+  ServiceWorkerVersionInfo info = version_->GetInfo();
+  EXPECT_TRUE(info.navigation_preload_state.enabled);
+  EXPECT_EQ("custom-header-value", info.navigation_preload_state.header);
 }
 
 }  // namespace service_worker_version_unittest

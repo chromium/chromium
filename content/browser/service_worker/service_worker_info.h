@@ -35,6 +35,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       blink::EmbeddedWorkerStatus running_status,
       ServiceWorkerVersion::Status status,
       std::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
+      blink::mojom::NavigationPreloadState navigation_preload_state,
       const GURL& script_url,
       const GURL& scope,
       const blink::StorageKey& storage_key,
