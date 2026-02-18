@@ -6659,6 +6659,9 @@ Handoff must also be enabled in the General section of Settings, and your device
           =1 {A required field is empty. Fill it before saving.}
           other {Some required fields are empty. Fill them before saving.}}
       </message>
+      <message name="IDS_IOS_SETTINGS_ENHANCED_AUTOFILL_SAVED_INFORMATION" desc="Text describing that the information is saved on device in the Enhanced Autofill Settings menu. [iOS only]">
+        Your saved information is stored on your device
+      </message>
       <message name="IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to export the passwords, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [Length: about two lines]">
         To export passwords, you must first set a passcode on your device.
       </message>
