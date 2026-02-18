@@ -2572,7 +2572,7 @@ bool StyleResolver::ApplyAnimatedStyle(
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleBuilder().BaseData()) {
     state.StyleBuilder().SetBaseData(StyleBaseData::Create(
-        state.StyleBuilder().CloneStyle(), cascade.GetImportantSet()));
+        state.StyleBuilder().CloneStyle(), cascade.ReleaseImportantSet()));
   }
 
   CSSAnimations::CalculateAnimationUpdate(
@@ -3004,7 +3004,7 @@ const ComputedStyle* StyleResolver::StyleForInterpolations(
 
   ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade);
   state.StyleBuilder().SetBaseData(StyleBaseData::Create(
-      state.StyleBuilder().CloneStyle(), cascade.GetImportantSet()));
+      state.StyleBuilder().CloneStyle(), cascade.ReleaseImportantSet()));
 
   ApplyInterpolations(state, cascade, interpolations);
   return state.TakeStyle();

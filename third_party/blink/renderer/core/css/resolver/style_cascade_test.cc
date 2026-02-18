@@ -189,8 +189,8 @@ class TestCascade {
                                  /*mixin_parameter_bindings=*/nullptr);
   }
 
-  std::unique_ptr<CSSBitset> GetImportantSet() {
-    return cascade_.GetImportantSet();
+  std::unique_ptr<CSSBitset> ReleaseImportantSet() {
+    return cascade_.ReleaseImportantSet();
   }
 
   String ComputedValue(String name) const {
@@ -3712,30 +3712,32 @@ TEST_F(StyleCascadeTest, Reset) {
   EXPECT_EQ(CascadePriority(), cascade.GetPriority("--x"));
 }
 
-TEST_F(StyleCascadeTest, GetImportantSetEmpty) {
+TEST_F(StyleCascadeTest, ReleaseImportantSetEmpty) {
   TestCascade cascade(GetDocument());
   cascade.Add("color:red");
   cascade.Add("width:1px");
   cascade.Add("--x:green");
-  EXPECT_FALSE(cascade.GetImportantSet());
+  EXPECT_FALSE(cascade.ReleaseImportantSet());
 }
 
-TEST_F(StyleCascadeTest, GetImportantSetSingle) {
+TEST_F(StyleCascadeTest, ReleaseImportantSetSingle) {
   TestCascade cascade(GetDocument());
   cascade.Add("width:1px !important");
-  ASSERT_TRUE(cascade.GetImportantSet());
-  EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth}), *cascade.GetImportantSet());
+  std::unique_ptr<CSSBitset> bitset = cascade.ReleaseImportantSet();
+  ASSERT_TRUE(bitset);
+  EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth}), *bitset);
 }
 
-TEST_F(StyleCascadeTest, GetImportantSetMany) {
+TEST_F(StyleCascadeTest, ReleaseImportantSetMany) {
   TestCascade cascade(GetDocument());
   cascade.Add("width:1px !important");
   cascade.Add("height:1px !important");
   cascade.Add("top:1px !important");
-  ASSERT_TRUE(cascade.GetImportantSet());
+  std::unique_ptr<CSSBitset> bitset = cascade.ReleaseImportantSet();
+  ASSERT_TRUE(bitset);
   EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth, CSSPropertyID::kHeight,
                        CSSPropertyID::kTop}),
-            *cascade.GetImportantSet());
+            *bitset);
 }
 
 TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {

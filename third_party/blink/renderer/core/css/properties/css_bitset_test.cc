@@ -241,15 +241,6 @@ TEST(CSSBitsetTest, SetAndHas) {
   EXPECT_TRUE(bitset.Has(CSSPropertyID::kHeight));
 }
 
-TEST(CSSBitsetTest, Or) {
-  CSSBitset bitset;
-  EXPECT_FALSE(bitset.Has(CSSPropertyID::kWidth));
-  bitset.Or(CSSPropertyID::kWidth, false);
-  EXPECT_FALSE(bitset.Has(CSSPropertyID::kWidth));
-  bitset.Or(CSSPropertyID::kWidth, true);
-  EXPECT_TRUE(bitset.Has(CSSPropertyID::kWidth));
-}
-
 TEST(CSSBitsetTest, HasAny) {
   CSSBitset bitset;
   EXPECT_FALSE(bitset.HasAny());

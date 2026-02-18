@@ -145,6 +145,12 @@ void CascadeMap::Add(const AtomicString& custom_property_name,
   Add(list, priority);
 }
 
+static CSSPropertyID UnvisitedID(CSSPropertyID id) {
+  CSSPropertyID unvisited_id =
+      CSSProperty::UnvisitedID(static_cast<unsigned>(id));
+  return unvisited_id == CSSPropertyID::kInvalid ? id : unvisited_id;
+}
+
 void CascadeMap::Add(CSSPropertyID id, CascadePriority priority) {
   DCHECK_NE(id, CSSPropertyID::kInvalid);
   DCHECK_NE(id, CSSPropertyID::kVariable);
@@ -153,7 +159,22 @@ void CascadeMap::Add(CSSPropertyID id, CascadePriority priority) {
   size_t index = static_cast<size_t>(static_cast<unsigned>(id));
   DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
 
-  has_important_ |= priority.IsImportant();
+  if (priority.IsImportant()) {
+    if (!important_set_) {
+      important_set_.reset(new CSSBitset);
+    }
+    // Mark that our winning declaration for this property is going to be
+    // an !important declaration; this declaration may not be the eventual
+    // winner, but it can only lose to other !important declarations,
+    // so we never need to unset the bit. (The winning declaration could
+    // resolve to a revert to a non-!important declaration, but the bitmap
+    // does not attempt to track resolved values, only declarations.)
+    //
+    // We use the unvisited ID because visited/unvisited colors are currently
+    // interpolated together.
+    // TODO(crbug.com/40680035): Interpolate visited colors separately.
+    important_set_->Set(UnvisitedID(id));
+  }
 
   CascadePriorityList* list =
       UNSAFE_BUFFERS(&native_properties_.Buffer()[index]);
@@ -189,10 +210,13 @@ void CascadeMap::Add(CascadePriorityList* list, CascadePriority priority) {
 
 void CascadeMap::Reset() {
   inline_style_lost_ = false;
-  has_important_ = false;
   native_properties_.Bits().Reset();
   custom_properties_.clear();
   backing_vector_.clear();
+  important_set_.reset();
+#if DCHECK_IS_ON()
+  important_set_released_ = false;
+#endif
 }
 
 }  // namespace blink

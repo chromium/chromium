@@ -189,9 +189,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       return To<CSSProperty>(GetPropertyInternal(visited_id));
     }
   }
+  static CSSPropertyID UnvisitedID(unsigned id) {
+    return static_cast<CSSPropertyID>(
+        UNSAFE_BUFFERS(kPropertyUnvisitedIDs[id]));
+  }
   const CSSProperty* GetUnvisitedProperty() const {
-    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(UNSAFE_BUFFERS(
-        kPropertyUnvisitedIDs[static_cast<unsigned>(property_id_)]));
+    CSSPropertyID unvisited_id = UnvisitedID(property_id_);
     if (unvisited_id == CSSPropertyID::kInvalid) {
       return nullptr;
     } else {

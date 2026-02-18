@@ -111,12 +111,13 @@ class CORE_EXPORT StyleCascade {
 
   // Returns a CSSBitset containing the !important declarations (collecting
   // declarations if needed). If there are no !important declarations,
-  // returns nullptr.
+  // returns nullptr. Can only be called once (or will DCHECK), as the bitset
+  // is allocated when building the cascade and releases ownership on this call.
   //
   // Note that this function does not return any set bits for -internal-visited-
   // properties. Instead, !important -internal-visited-* declarations cause
   // the corresponding unvisited properties to be set in the return value.
-  std::unique_ptr<CSSBitset> GetImportantSet();
+  std::unique_ptr<CSSBitset> ReleaseImportantSet();
 
   bool InlineStyleLost() const { return map_.InlineStyleLost(); }
 

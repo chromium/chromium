@@ -189,17 +189,6 @@ CascadeOrigin TargetOriginForRevert(CascadeOrigin origin) {
   }
 }
 
-CSSPropertyID UnvisitedID(CSSPropertyID id) {
-  if (id == CSSPropertyID::kVariable) {
-    return id;
-  }
-  const CSSProperty& property = CSSProperty::Get(id);
-  if (!property.IsVisited()) {
-    return id;
-  }
-  return property.GetUnvisitedProperty()->PropertyID();
-}
-
 bool IsInterpolation(CascadePriority priority) {
   switch (priority.GetOrigin()) {
     case CascadeOrigin::kAnimation:
@@ -329,19 +318,9 @@ void StyleCascade::Apply(CascadeFilter filter) {
   ApplyUnresolvedEnv(resolver);
 }
 
-std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
+std::unique_ptr<CSSBitset> StyleCascade::ReleaseImportantSet() {
   CollectDeclarationsIfNeeded();
-  if (!map_.HasImportant()) {
-    return nullptr;
-  }
-  auto set = std::make_unique<CSSBitset>();
-  for (CSSPropertyID id : map_.NativeBitset()) {
-    // We use the unvisited ID because visited/unvisited colors are currently
-    // interpolated together.
-    // TODO(crbug.com/1062217): Interpolate visited colors separately
-    set->Or(UnvisitedID(id), map_.At(CSSPropertyName(id)).IsImportant());
-  }
-  return set;
+  return map_.ReleaseImportantSet();
 }
 
 void StyleCascade::Reset() {

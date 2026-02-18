@@ -60,13 +60,6 @@ class CORE_EXPORT CSSBitsetBase {
     UNSAFE_BUFFERS(chunks_.data()[bit / 64]) |= (1ull << (bit % 64));
   }
 
-  inline void Or(CSSPropertyID id, bool v) {
-    size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
-    DCHECK_LT(bit, kBits);
-    UNSAFE_BUFFERS(chunks_.data()[bit / 64]) |=
-        (static_cast<uint64_t>(v) << (bit % 64));
-  }
-
   inline bool Has(CSSPropertyID id) const {
     size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);

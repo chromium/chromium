@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -80,8 +82,15 @@ class CORE_EXPORT CascadeMap {
   uint64_t HighPriorityBits() const {
     return native_properties_.Bits().HighPriorityBits();
   }
-  // True if any important declaration has been added.
-  bool HasImportant() const { return has_important_; }
+  // Returns the set of (native) properties that have !important set.
+  // Can only be called once unless you do Reset().
+  std::unique_ptr<CSSBitset> ReleaseImportantSet() {
+#if DCHECK_IS_ON()
+    DCHECK(!important_set_released_);
+    important_set_released_ = true;
+#endif
+    return std::move(important_set_);
+  }
   // True if any inline style declaration lost the cascade to something
   // else. This is rare, but if it happens, we need to turn off incremental
   // style calculation (see CanApplyInlineStyleIncrementally() and related
@@ -195,11 +204,14 @@ class CORE_EXPORT CascadeMap {
  private:
   ALWAYS_INLINE void Add(CascadePriorityList* list, CascadePriority);
 
-  bool has_important_ = false;
   bool inline_style_lost_ = false;
   NativeMap native_properties_;
   CustomMap custom_properties_;
   CascadePriorityList::BackingVector backing_vector_;
+  std::unique_ptr<CSSBitset> important_set_;
+#if DCHECK_IS_ON()
+  bool important_set_released_ = false;
+#endif
 };
 
 // CascadePriorityList implementation is inlined for performance reasons.
