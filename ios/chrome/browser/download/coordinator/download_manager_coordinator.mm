@@ -41,6 +41,8 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -56,6 +58,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -93,6 +96,8 @@
   // in progress.
   // Restart when the animation ends.
   BOOL _restartPending;
+  // Handler for Gemini commands.
+  __weak id<BWGCommands> _geminiHandler;
 }
 @end
 
@@ -110,6 +115,10 @@
 - (void)restart {
   DCHECK(self.presenter);
   DCHECK(self.browser);
+  if (IsGeminiCopresenceEnabled()) {
+    _geminiHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+  }
 
   if (_stopped && self.presenter.presentedViewController) {
     // Stopping animation is still in progress. Wait until it is done to
@@ -165,6 +174,7 @@
 
 - (void)stop {
   [self pause];
+  _geminiHandler = nil;
 }
 
 // Similar to stop, but the coordinator can be restarted later.
@@ -320,6 +330,14 @@
 
 #pragma mark - ContainedPresenterDelegate
 
+- (void)containedPresenterWillPresent:(id<ContainedPresenter>)presenter {
+  if (IsGeminiCopresenceEnabled()) {
+    [_geminiHandler
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::Banner];
+  }
+}
+
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
   DCHECK(presenter == self.presenter);
 }
@@ -331,6 +349,13 @@
   if (_restartPending) {
     _restartPending = NO;
     [self start];
+  }
+
+  if (IsGeminiCopresenceEnabled()) {
+    [_geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     Banner];
   }
 }
 

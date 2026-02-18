@@ -314,6 +314,17 @@ GeminiPageContext* GeminiBrowserAgent::CreateGeminiPageContext(
   return page_context;
 }
 
+void GeminiBrowserAgent::UpdateActiveTabHelperWithPresentedSource(
+    gemini::FloatyUpdateSource source,
+    bool is_presented) {
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
+  if (!gemini_tab_helper) {
+    return;
+  }
+  gemini_tab_helper->UpdatePresentedSource(source, is_presented);
+}
+
 void GeminiBrowserAgent::UpdateForTraitCollection(
     UITraitCollection* traitCollection) {
   // Update the offset for a device orientation update to landscape or portrait.
@@ -577,9 +588,8 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
   }
 
   floaty_hidden_timestamp_ = base::TimeTicks::Now();
-  if (source == gemini::FloatyUpdateSource::Overlay) {
-    is_external_overlay_presented_ = true;
-  }
+
+  UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/true);
 
   if (is_floaty_temporarily_hidden_) {
     return;
@@ -603,9 +613,7 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
     return;
   }
 
-  if (source == gemini::FloatyUpdateSource::Overlay) {
-    is_external_overlay_presented_ = false;
-  }
+  UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/false);
 
   // `HideFloatyIfInvoked()` may be called when a view controller
   // dismisses. If a view controller dismisses as part of presenting another
@@ -619,8 +627,12 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   // be hidden quickly followed by a new WebState being shown where
   // hiding/showing the floaty are valid invocations.
   bool is_web_navigation = source == gemini::FloatyUpdateSource::WebNavigation;
-  if ((!is_web_navigation && triggered_during_transition) ||
-      is_external_overlay_presented_) {
+
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
+  bool should_block =
+      gemini_tab_helper && gemini_tab_helper->ShouldBlockFloatyFromShowing();
+  if ((!is_web_navigation && triggered_during_transition) || should_block) {
     return;
   }
 

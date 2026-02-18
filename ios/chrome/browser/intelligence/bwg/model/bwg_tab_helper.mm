@@ -289,6 +289,31 @@ GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
   return gemini_page_context;
 }
 
+bool BwgTabHelper::ShouldBlockFloatyFromShowing() {
+  return is_external_overlay_presented_ || is_alert_presented_ ||
+         is_banner_presented_ || is_snackbar_presented_;
+}
+
+void BwgTabHelper::UpdatePresentedSource(gemini::FloatyUpdateSource source,
+                                         bool is_presented) {
+  switch (source) {
+    case gemini::FloatyUpdateSource::Alert:
+      is_alert_presented_ = is_presented;
+      break;
+    case gemini::FloatyUpdateSource::Banner:
+      is_banner_presented_ = is_presented;
+      break;
+    case gemini::FloatyUpdateSource::Overlay:
+      is_external_overlay_presented_ = is_presented;
+      break;
+    case gemini::FloatyUpdateSource::Snackbar:
+      is_snackbar_presented_ = is_presented;
+      break;
+    default:
+      break;
+  }
+}
+
 bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
 }

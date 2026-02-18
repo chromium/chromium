@@ -3429,6 +3429,13 @@ const char kChromeAppStoreUrl[] =
       geminiService->IsBwgAvailableForWebState(self.activeWebState);
   bool isWebStateVisible = self.activeWebState->IsVisible();
   if (!eligibleSite || !isWebStateVisible) {
+    // Reset presented sources before hiding the floaty due to an ineligible
+    // site.
+    BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(self.activeWebState);
+    if (tabHelper) {
+      tabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
+    }
+
     geminiBrowserAgent->HideFloatyIfInvoked(
         animated, gemini::FloatyUpdateSource::IneligibleSite);
     return;

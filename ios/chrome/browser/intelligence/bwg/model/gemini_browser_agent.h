@@ -222,6 +222,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       std::unique_ptr<optimization_guide::proto::PageContext>
           page_context_proto);
 
+  // Updates the presented source, if any, of the active tab helper.
+  void UpdateActiveTabHelperWithPresentedSource(
+      gemini::FloatyUpdateSource source,
+      bool is_presented);
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -284,6 +289,14 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // to avoid showing the floaty when view controllers are presented/dismissed
   // while an overlay is presented.
   bool is_external_overlay_presented_ = false;
+
+  // Whether an alert is currently presented. Used to avoid showing the floaty
+  // when view controllers are presented/dismissed while an alert is presented.
+  bool is_alert_presented_ = false;
+
+  // Whether a banner is currently presented. Used to avoid showing the floaty
+  // when view controllers are presented/dismissed while a banner is presented.
+  bool is_banner_presented_ = false;
 
   // Registrar for pref changes.
   PrefChangeRegistrar pref_change_registrar_;
