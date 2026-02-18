@@ -43,7 +43,8 @@ TEST_F(CommandBufferSharedTest, TestBasic) {
 
 static const int kSize = 100000;
 
-void WriteToState(int32_t* buffer, CommandBufferSharedState* shared_state) {
+void WriteToState(base::span<int32_t, kSize> buffer,
+                  CommandBufferSharedState* shared_state) {
   CommandBuffer::State state;
   for (int i = 0; i < kSize; i++) {
     state.token = i - 1;
@@ -53,23 +54,20 @@ void WriteToState(int32_t* buffer, CommandBufferSharedState* shared_state) {
         static_cast<gpu::error::Error>((i + 3) % (gpu::error::kErrorLast + 1));
     // Ensure that the producer doesn't update the buffer until after the
     // consumer reads from it.
-    UNSAFE_TODO(EXPECT_EQ(buffer[i], 0));
+    EXPECT_EQ(buffer[i], 0);
 
     shared_state->Write(state);
   }
 }
 
 TEST_F(CommandBufferSharedTest, TestConsistency) {
-  std::unique_ptr<int32_t[]> buffer;
-  buffer.reset(new int32_t[kSize]);
+  std::array<int32_t, kSize> buffer{0};
   base::Thread consumer("Reader Thread");
-
-  UNSAFE_TODO(memset(buffer.get(), 0, kSize * sizeof(int32_t)));
 
   consumer.Start();
   consumer.task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&WriteToState, buffer.get(), shared_state_.get()));
+      base::BindOnce(&WriteToState, base::span(buffer), shared_state_.get()));
 
   CommandBuffer::State last_state;
   while (true) {
@@ -81,7 +79,7 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
       continue;
 
     if (state.get_offset >= 1) {
-      UNSAFE_TODO(buffer[state.get_offset - 1]) = 1;
+      buffer[state.get_offset - 1] = 1;
       // Check that the state is consistent
       EXPECT_LE(last_state.token, state.token);
       EXPECT_LE(last_state.generation, state.generation);
