@@ -1713,7 +1713,7 @@ public class MediaDrmBridge {
                     }
                     break;
                 default:
-                    Log.w(TAG, "Ignoring MediaDrm event %d for session %s" + event, sessionId);
+                    Log.w(TAG, "Ignoring MediaDrm event %d for session %s", event, sessionId);
                     break;
             }
         }
