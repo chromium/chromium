@@ -14,6 +14,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/user_metrics.h"
 #include "base/version_info/version_info.h"
@@ -21,7 +22,8 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -78,8 +80,11 @@ void AppControlsNotifier::HandleClick(std::optional<int> button_index) {
 }
 
 void AppControlsNotifier::OpenAppsSettings() {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kAppsSectionPath);
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(user),
+      {.sub_page = chromeos::settings::mojom::kAppsSectionPath});
 }
 
 bool AppControlsNotifier::ShouldShowNotification() const {

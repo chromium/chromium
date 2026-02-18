@@ -141,6 +141,7 @@ static_library("crosapi") {
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/firewall_hole",

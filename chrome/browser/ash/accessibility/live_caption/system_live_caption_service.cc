@@ -16,7 +16,6 @@
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/live_caption/live_caption_controller.h"

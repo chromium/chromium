@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -43,12 +44,14 @@
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -474,10 +477,15 @@ void LocalPrinterAsh::GetStatus(const std::string& printer_id,
 
 void LocalPrinterAsh::ShowSystemPrintSettings(
     ShowSystemPrintSettingsCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+  // TODO(crbug.com/447287122): Consider to use the active session, instead of
+  // primary session, or pass the user context from callers.
+  auto* session = session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(session);
+  auto* user =
+      user_manager::UserManager::Get()->FindUser(session->account_id());
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(user),
+      {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
   std::move(callback).Run();
 }
 

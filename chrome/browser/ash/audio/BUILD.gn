@@ -23,6 +23,8 @@ static_library("audio") {
   deps = [
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/hats",
+    "//chromeos/ash/experiences/settings_ui",
+    "//components/session_manager/core",
 
     # Due to a cycle, we can't depend on //chrome/browser. Explicitly list one
     # of its dependencies that transitively depends on generated mojo headers,

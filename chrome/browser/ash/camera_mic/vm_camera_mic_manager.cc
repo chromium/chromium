@@ -15,6 +15,7 @@
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -30,10 +31,12 @@
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -368,10 +371,15 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   // Opens the settings page.
   void OpenSettings() const {
     switch (vm_type_) {
-      case VmType::kCrostiniVm:
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            profile_, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
+      case VmType::kCrostiniVm: {
+        auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            profile_.get());
+        ash::SettingsAppManager::Get()->Open(
+            CHECK_DEREF(user),
+            {.sub_page =
+                 chromeos::settings::mojom::kCrostiniDetailsSubpagePath});
         break;
+      }
       case VmType::kPluginVm:
         chrome::ShowAppManagementPage(
             profile_, plugin_vm::kPluginVmShelfAppId,
