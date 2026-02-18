@@ -682,6 +682,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DataControls.DragAndDrop.EvaluationLatency"
+    units="ms" expires_after="2027-02-09">
+  <owner>rslan@google.com</owner>
+  <owner>cep-se@google.com</owner>
+  <summary>
+    Records the time taken to evaluate the Data Controls policy verdict for a
+    drag and drop operation. This is synchronous on the UI thread. Recorded when
+    the policy evaluation finishes, immediately before the verdict is returned.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DataControls.DragAndDrop.Verdict"
+    enum="DataControlsDragAndDropVerdict" expires_after="2027-02-09">
+  <owner>rslan@google.com</owner>
+  <owner>cep-se@google.com</owner>
+  <summary>
+    Records the verdict of the Data Controls policy check for a drag and drop
+    operation. This is recorded when the kDataControlsDragEnforcement feature is
+    enabled and the policy evaluation completes.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DataProtection.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2026-07-19">
   <owner>alshawwa@chromium.org</owner>

@@ -9,8 +9,10 @@
 #include <queue>
 #include <variant>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/data_controls/chrome_clipboard_context.h"
@@ -62,6 +64,15 @@
 namespace enterprise_data_protection {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DataControlsDragAndDropVerdict {
+  kAllowed = 0,
+  kBlocked = 1,
+  kWarned = 2,
+  kMaxValue = kWarned
+};
 
 // Returns an empty URL if `endpoint` doesn't hold a DTE, or a non-URL DTE.
 GURL GetUrlFromEndpoint(const content::ClipboardEndpoint& endpoint) {
@@ -822,6 +833,10 @@ bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
     return true;
   }
 
+  // ElapsedTimer is used here to measure the synchronous delay added to the
+  // drag operation by the Data Controls policy check.
+  base::ElapsedTimer timer;
+
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(source.browser_context())
                      ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
@@ -832,19 +847,37 @@ bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
     ReportDragData(source, drop_data, verdict);
   }
 
-  if (verdict.level() == data_controls::Rule::Level::kBlock ||
-      verdict.level() == data_controls::Rule::Level::kWarn) {
+  bool blocked = verdict.level() == data_controls::Rule::Level::kBlock ||
+                 verdict.level() == data_controls::Rule::Level::kWarn;
+
+  if (blocked) {
     auto* factory = GetDialogFactory();
     if (factory) {
       factory->ShowDialogIfNeeded(
           source.web_contents(),
           data_controls::DataControlsDialog::Type::kClipboardDragBlock);
     }
-
-    return false;
   }
 
-  return true;
+  base::UmaHistogramTimes(
+      "Enterprise.DataControls.DragAndDrop.EvaluationLatency", timer.Elapsed());
+
+  DataControlsDragAndDropVerdict histogram_verdict;
+  switch (verdict.level()) {
+    case data_controls::Rule::Level::kBlock:
+      histogram_verdict = DataControlsDragAndDropVerdict::kBlocked;
+      break;
+    case data_controls::Rule::Level::kWarn:
+      histogram_verdict = DataControlsDragAndDropVerdict::kWarned;
+      break;
+    default:
+      histogram_verdict = DataControlsDragAndDropVerdict::kAllowed;
+      break;
+  }
+  base::UmaHistogramEnumeration("Enterprise.DataControls.DragAndDrop.Verdict",
+                                histogram_verdict);
+
+  return !blocked;
 }
 
 bool ReplaceCopyFromFindBar(std::u16string_view selected_text,

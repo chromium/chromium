@@ -92,6 +92,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Clicked"/>
 </enum>
 
+<enum name="DataControlsDragAndDropVerdict">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Blocked"/>
+  <int value="2" label="Warned"/>
+</enum>
+
 <enum name="DataProtectionURLVerdictSource">
   <int value="0" label="Page UserData"/>
   <int value="1" label="Cached lookup result"/>

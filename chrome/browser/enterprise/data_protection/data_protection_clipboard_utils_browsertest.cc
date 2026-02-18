@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -2202,6 +2203,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Paste) {
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragAllowed) {
+  base::HistogramTester histogram_tester;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
@@ -2210,9 +2212,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragAllowed) {
       /*drop_data=*/content::DropData());
 
   EXPECT_TRUE(allowed);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DataControls.DragAndDrop.Verdict", 0 /* Allowed */, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.DataControls.DragAndDrop.EvaluationLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragBlocked) {
+  base::HistogramTester histogram_tester;
   active_user_test_mixin_->SetFakeCookieValue();
 
   base::RunLoop run_loop;
@@ -2292,6 +2299,10 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragBlocked) {
       /*drop_data=*/drop_data);
 
   EXPECT_FALSE(allowed);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DataControls.DragAndDrop.Verdict", 1 /* Blocked */, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.DataControls.DragAndDrop.EvaluationLatency", 1);
 
   helper.WaitForDialogToInitialize();
   helper.CloseDialogWithoutBypass();
