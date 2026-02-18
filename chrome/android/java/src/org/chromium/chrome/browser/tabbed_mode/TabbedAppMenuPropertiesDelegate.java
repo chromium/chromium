@@ -281,8 +281,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Divider
         maybeAddDividerLine(modelList, R.id.divider_line_id);
 
+        // History parent
+        if (shouldShowHistoryParentItem()) {
+            modelList.add(buildHistoryParentItem());
+        }
+
         // Open History
-        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing())) {
             modelList.add(buildHistoryItem());
         }
 
@@ -290,7 +296,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (shouldShowTinkerTank()) modelList.add(buildTinkerTankItem());
 
         // Quick Delete
-        if (shouldShowQuickDeleteItem()) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowQuickDeleteItem()) {
             modelList.add(buildQuickDeleteItem());
             maybeAddDividerLine(modelList, R.id.quick_delete_divider_line_id);
         }
@@ -302,7 +309,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         modelList.add(buildBookmarksItem());
 
         // Recent Tabs
-        if (shouldShowRecentTabsItem()) modelList.add(buildRecentTabsItem());
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowRecentTabsItem()) {
+            modelList.add(buildRecentTabsItem());
+        }
 
         // Extensions
         if (shouldShowExtensionsItem()) {
@@ -654,6 +664,51 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.manage_all_windows_menu_id,
                         R.string.menu_manage_all_windows,
                         shouldShowIconBeforeItem() ? R.drawable.ic_select_window : 0));
+    }
+
+    private boolean shouldShowHistoryParentItem() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            return false;
+        }
+
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
+            return true;
+        }
+
+        if (shouldShowRecentTabsItem()) {
+            return true;
+        }
+
+        if (shouldShowQuickDeleteItem()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private MVCListAdapter.ListItem buildHistoryParentItem() {
+        assert shouldShowHistoryParentItem();
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
+            submenuItems.add(buildHistoryItem());
+        }
+
+        if (shouldShowRecentTabsItem()) {
+            submenuItems.add(buildRecentTabsItem());
+        }
+
+        if (shouldShowQuickDeleteItem()) {
+            submenuItems.add(buildQuickDeleteItem());
+        }
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.history_parent_menu_id,
+                        R.string.menu_history,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_history_24dp : Resources.ID_NULL,
+                        submenuItems));
     }
 
     private MVCListAdapter.ListItem buildHistoryItem() {
