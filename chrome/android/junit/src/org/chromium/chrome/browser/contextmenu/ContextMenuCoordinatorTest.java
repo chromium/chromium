@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -35,10 +34,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -81,49 +76,6 @@ public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
     public static final String PARENT_LABEL = "Parent item";
 
-    /**
-     * Shadow class used to capture the inputs for {@link
-     * ContextMenuCoordinator#createContextMenuDialog}.
-     */
-    @Implements(ContextMenuDialog.class)
-    public static class ShadowContextMenuDialog extends ShadowDialog {
-        boolean mShouldRemoveScrim;
-        boolean mDismissInvoked;
-        @Nullable View mTouchEventDelegateView;
-        Rect mRect;
-
-        public ShadowContextMenuDialog() {}
-
-        @Implementation
-        protected void __constructor__(
-                Activity ownerActivity,
-                int theme,
-                int topMarginPx,
-                int bottomMarginPx,
-                View layout,
-                View contentView,
-                boolean isPopup,
-                boolean shouldRemoveScrim,
-                @Nullable Integer popupMargin,
-                @Nullable Integer desiredPopupContentWidth,
-                @Nullable View touchEventDelegateView,
-                Rect rect) {
-            mShouldRemoveScrim = shouldRemoveScrim;
-            mTouchEventDelegateView = touchEventDelegateView;
-            mRect = rect;
-        }
-
-        @Override
-        @Implementation
-        public void show() {}
-
-        @Override
-        @Implementation
-        public void dismiss() {
-            mDismissInvoked = true;
-        }
-    }
-
     /** Helper class to access the protected constructor of ViewAndroidDelegate. */
     public static class TestViewAndroidDelegate extends ViewAndroidDelegate {
         public TestViewAndroidDelegate(ViewGroup containerView) {
@@ -152,72 +104,63 @@ public class ContextMenuCoordinatorTest {
                 new ContextMenuCoordinator(mActivity, TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         Profile.setProfileFromWebContentsForTesting(mProfile);
         ContextMenuHeaderCoordinator.setDisableForTesting(true);
+        ContextMenuDialog.setForceEmptyForTesting(true);
     }
 
     @Test
-    @Config(
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     public void testCreateContextMenuDialog() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/* isPopup= */ false);
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
 
-        Assert.assertFalse("Dialog should have scrim behind.", shadowDialog.mShouldRemoveScrim);
+        Assert.assertFalse(
+                "Dialog should have scrim behind.", dialog.getShouldRemoveScrimForTesting());
     }
 
     @Test
     @DisabledTest(message = "crbug.com/1444964")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testCreateContextMenuDialog_PopupStyle() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/* isPopup= */ true);
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
 
-        Assert.assertTrue("Dialog should remove scrim behind.", shadowDialog.mShouldRemoveScrim);
+        Assert.assertTrue(
+                "Dialog should remove scrim behind.", dialog.getShouldRemoveScrimForTesting());
         Assert.assertNotNull(
                 "TouchEventDelegateView should not be null when drag drop is enabled.",
-                shadowDialog.mTouchEventDelegateView);
+                dialog.getTouchEventDelegateViewForTesting());
     }
 
     @Test
-    @Config(
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     public void testDismissDialogCalledOnVisibilityChanged_Hidden() {
         final int triggeringTouchXDp = 100;
         final int triggeringTouchYDp = 200;
         ContextMenuDialog dialog =
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
-        shadowDialog.show();
+        dialog.show();
 
         WebContentsObserver mWebContentsObserver = mCoordinator.getWebContentsObserverForTesting();
 
         mWebContentsObserver.onVisibilityChanged(Visibility.HIDDEN);
 
-        Assert.assertTrue(shadowDialog.mDismissInvoked);
+        Assert.assertTrue(dialog.isDismissedForTesting());
     }
 
     @Test
-    @Config(
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     public void testDismissDialogCalledOnVisibilityChanged_Visible() {
         final int triggeringTouchXDp = 100;
         final int triggeringTouchYDp = 200;
         ContextMenuDialog dialog =
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
-        shadowDialog.show();
+        dialog.show();
 
         WebContentsObserver mWebContentsObserver = mCoordinator.getWebContentsObserverForTesting();
 
         mWebContentsObserver.onVisibilityChanged(Visibility.VISIBLE);
 
-        Assert.assertFalse(shadowDialog.mDismissInvoked);
+        Assert.assertFalse(dialog.isDismissedForTesting());
     }
 
     @Test
@@ -267,15 +210,12 @@ public class ContextMenuCoordinatorTest {
     @Test
     @DisabledTest(message = "crbug.com/1444964")
     @DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
-    @Config(
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     public void testDisplayMenu() {
         final int triggeringTouchXDp = 100;
         final int triggeringTouchYDp = 200;
         ContextMenuDialog dialog =
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
-        ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
 
         List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
         Assert.assertEquals("There should be exactly 1 ListView.", 1, listViews.size());
@@ -286,7 +226,7 @@ public class ContextMenuCoordinatorTest {
 
         // Verify rect is calculated correctly. Note that the calculation done below assume the
         // density is 1.0.
-        Rect rect = shadowDialog.mRect;
+        Rect rect = dialog.getRectForTesting();
         Assert.assertEquals("rect.left for ContextMenuDialog does not match.", 100, rect.left);
         Assert.assertEquals("rect.right for ContextMenuDialog does not match.", 100, rect.right);
         Assert.assertEquals(
@@ -300,9 +240,7 @@ public class ContextMenuCoordinatorTest {
     @Test
     @DisabledTest(message = "crbug.com/1444964")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testDisplayMenu_DragEnabled() {
         final int shadowImgWidth = 50;
@@ -313,7 +251,6 @@ public class ContextMenuCoordinatorTest {
         final int triggeringTouchYDp = 200;
         ContextMenuDialog dialog =
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
-        ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
 
         List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
         Assert.assertEquals("There should be exactly 1 ListView.", 1, listViews.size());
@@ -328,7 +265,7 @@ public class ContextMenuCoordinatorTest {
                 listView.getVerticalFadingEdgeLength());
 
         // Verify rect is calculated correctly.
-        Rect rect = shadowDialog.mRect;
+        Rect rect = dialog.getRectForTesting();
         Assert.assertEquals(
                 "rect.left for ContextMenuDialog does not match.", /*100 - 50 / 2 =*/
                 75,
@@ -352,10 +289,7 @@ public class ContextMenuCoordinatorTest {
     // See: crbug.com/450954710
     @Test
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(
-            sdk = 29,
-            shadows = {ShadowContextMenuDialog.class},
-            qualifiers = "mdpi")
+    @Config(sdk = 29, qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testFocusAfterSubmenuNavigation() {
         final int triggeringTouchXDp = 100;
@@ -383,8 +317,7 @@ public class ContextMenuCoordinatorTest {
         ContextMenuDialog dialog =
                 displayContextMenuDialogAtLocation(
                         triggeringTouchXDp, triggeringTouchYDp, List.of(modelList));
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
-        shadowDialog.show();
+        dialog.show();
 
         List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
         assertThat("Expected there to be 1 ContextMenuListView", listViews, hasSize(1));

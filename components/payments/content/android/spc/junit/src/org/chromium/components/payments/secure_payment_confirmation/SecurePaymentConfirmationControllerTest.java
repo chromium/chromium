@@ -37,8 +37,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -75,11 +73,7 @@ import java.util.Locale;
 
 /** Unit tests for {@link SecurePaymentConfirmationController} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {
-            SecurePaymentConfirmationControllerTest.ShadowBottomSheetControllerProvider.class
-        })
+@Config(manifest = Config.NONE)
 public class SecurePaymentConfirmationControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -122,21 +116,6 @@ public class SecurePaymentConfirmationControllerTest {
     private String mRelyingPartyId;
     private SecurePaymentConfirmationController mController;
 
-    /** The shadow of BottomSheetControllerProvider. Not to be used outside the test. */
-    @Implements(BottomSheetControllerProvider.class)
-    /* package */ static class ShadowBottomSheetControllerProvider {
-        private static BottomSheetController sBottomSheetController;
-
-        @Implementation
-        public static BottomSheetController from(WindowAndroid windowAndroid) {
-            return sBottomSheetController;
-        }
-
-        private static void setBottomSheetController(BottomSheetController controller) {
-            sBottomSheetController = controller;
-        }
-    }
-
     @Before
     public void setUp() {
         doReturn(new WeakReference<>(RuntimeEnvironment.getApplication()))
@@ -147,7 +126,7 @@ public class SecurePaymentConfirmationControllerTest {
         doReturn(true)
                 .when(mBottomSheetController)
                 .requestShowContent(any(BottomSheetContent.class), anyBoolean());
-        ShadowBottomSheetControllerProvider.setBottomSheetController(mBottomSheetController);
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
 
         CurrencyFormatter.Natives currencyFormatter = mock(CurrencyFormatter.Natives.class);
         CurrencyFormatterJni.setInstanceForTesting(currencyFormatter);
@@ -221,7 +200,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInit_whenBottomSheetControllerNull_throwsAssertError() {
-        ShadowBottomSheetControllerProvider.setBottomSheetController(null);
+        BottomSheetControllerProvider.setInstanceForTesting(null);
         assertThrows(
                 AssertionError.class,
                 () -> createController(/* showOptOut= */ false, /* informOnly= */ false));

@@ -21,8 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -41,11 +39,7 @@ import java.lang.ref.WeakReference;
 
 /** A test for SecurePaymentConfirmationNoMatchingCred. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {
-            SecurePaymentConfirmationNoMatchingCredTest.ShadowBottomSheetControllerProvider.class
-        })
+@Config(manifest = Config.NONE)
 public class SecurePaymentConfirmationNoMatchingCredTest {
     private static final long IGNORED_INPUT_DELAY =
             InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100;
@@ -64,21 +58,6 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     private FakeClock mClock;
 
     private SecurePaymentConfirmationNoMatchingCredController mNoMatchingCredController;
-
-    /** The shadow of BottomSheetControllerProvider. Not to use outside the test. */
-    @Implements(BottomSheetControllerProvider.class)
-    /* package */ static class ShadowBottomSheetControllerProvider {
-        private static BottomSheetController sBottomSheetController;
-
-        @Implementation
-        public static BottomSheetController from(WindowAndroid windowAndroid) {
-            return sBottomSheetController;
-        }
-
-        private static void setBottomSheetController(BottomSheetController controller) {
-            sBottomSheetController = controller;
-        }
-    }
 
     @Before
     public void setUp() {
@@ -105,7 +84,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
                     mUserOptedOut = true;
                 };
 
-        ShadowBottomSheetControllerProvider.setBottomSheetController(
+        BottomSheetControllerProvider.setInstanceForTesting(
                 createBottomSheetController(/* requestShowContentResponse= */ true));
 
         mClock = new FakeClock();
@@ -241,7 +220,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     @Feature({"Payments"})
     public void testRequestShowContentFalse() {
         createNoMatchingCredController();
-        ShadowBottomSheetControllerProvider.setBottomSheetController(
+        BottomSheetControllerProvider.setInstanceForTesting(
                 createBottomSheetController(/* requestShowContentResponse= */ false));
         Assert.assertFalse(show());
         Assert.assertTrue(mNoMatchingCredController.isHidden());
@@ -276,7 +255,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     @Test
     @Feature({"Payments"})
     public void testShowWithNullBottomSheetController() {
-        ShadowBottomSheetControllerProvider.setBottomSheetController(null);
+        BottomSheetControllerProvider.setInstanceForTesting(null);
         createNoMatchingCredController();
         Assert.assertFalse(show());
         Assert.assertTrue(mNoMatchingCredController.isHidden());

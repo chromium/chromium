@@ -23,6 +23,7 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -46,10 +47,12 @@ import org.chromium.ui.widget.RectProvider;
 @NullMarked
 public class ContextMenuDialog extends AlwaysDismissedDialog {
     public static final int NO_CUSTOM_MARGIN = -1;
-
     private static final long ENTER_ANIMATION_DURATION_MS = 250;
     // Exit animation duration should be set to 60% of the enter animation duration.
     private static final long EXIT_ANIMATION_DURATION_MS = 150;
+
+    private static boolean sForceEmptyForTesting;
+
     private final Activity mActivity;
     private final View mContentView;
     private final boolean mIsPopup;
@@ -72,6 +75,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final @Nullable Integer mDesiredPopupContentWidth;
 
     private final @Nullable Runnable mOnDismissCallback;
+
+    private boolean mDismissedForTesting;
 
     /**
      * View that is showing behind the context menu. If menu is shown as a popup without scrim, this
@@ -322,7 +327,18 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     }
 
     @Override
+    public void show() {
+        if (sForceEmptyForTesting) return;
+        super.show();
+    }
+
+    @Override
     public void dismiss() {
+        if (sForceEmptyForTesting) {
+            mDismissedForTesting = true;
+            return;
+        }
+
         if (mIsPopup) {
             if (mPopupWindow != null) {
                 mPopupWindow.dismiss();
@@ -363,6 +379,27 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     }
                 });
         mContentView.startAnimation(exitAnimation);
+    }
+
+    public boolean getShouldRemoveScrimForTesting() {
+        return mShouldRemoveScrim;
+    }
+
+    public @Nullable View getTouchEventDelegateViewForTesting() {
+        return mTouchEventDelegateView;
+    }
+
+    public Rect getRectForTesting() {
+        return mRect;
+    }
+
+    public boolean isDismissedForTesting() {
+        return mDismissedForTesting;
+    }
+
+    public static void setForceEmptyForTesting(boolean forceEmpty) {
+        sForceEmptyForTesting = forceEmpty;
+        ResettersForTesting.register(() -> sForceEmptyForTesting = false);
     }
 
     @Override

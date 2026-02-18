@@ -32,8 +32,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -63,25 +61,8 @@ import java.lang.ref.WeakReference;
 
 /** JUnit tests for the class {@link SigninBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {SigninBridgeTest.ShadowBottomSheetControllerProvider.class})
+@Config(manifest = Config.NONE)
 public class SigninBridgeTest {
-    /** The shadow of BottomSheetControllerProvider. */
-    @Implements(BottomSheetControllerProvider.class)
-    static class ShadowBottomSheetControllerProvider {
-        private static BottomSheetController sBottomSheetController;
-
-        @Implementation
-        public static BottomSheetController from(WindowAndroid windowAndroid) {
-            return sBottomSheetController;
-        }
-
-        private static void setBottomSheetController(BottomSheetController controller) {
-            sBottomSheetController = controller;
-        }
-    }
-
     private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
@@ -109,7 +90,7 @@ public class SigninBridgeTest {
 
     @Before
     public void setUp() {
-        ShadowBottomSheetControllerProvider.setBottomSheetController(mBottomSheetControllerMock);
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetControllerMock);
         Context context = ApplicationProvider.getApplicationContext();
 
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));

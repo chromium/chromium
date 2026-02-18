@@ -20,8 +20,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -33,12 +31,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {
-            AuthenticatorIncognitoConfirmationBottomsheetTest.ShadowBottomSheetControllerProvider
-                    .class
-        })
+@Config(manifest = Config.NONE)
 public class AuthenticatorIncognitoConfirmationBottomsheetTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
@@ -51,21 +44,6 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
     private boolean mUserPositive;
 
     private AuthenticatorIncognitoConfirmationBottomsheet mBottomsheet;
-
-    /** The shadow of BottomSheetControllerProvider. */
-    @Implements(BottomSheetControllerProvider.class)
-    static class ShadowBottomSheetControllerProvider {
-        private static BottomSheetController sBottomSheetController;
-
-        @Implementation
-        public static BottomSheetController from(WindowAndroid windowAndroid) {
-            return sBottomSheetController;
-        }
-
-        private static void setBottomSheetController(BottomSheetController controller) {
-            sBottomSheetController = controller;
-        }
-    }
 
     @Before
     public void setUp() {
@@ -86,7 +64,7 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
                     mUserPositive = false;
                 };
 
-        ShadowBottomSheetControllerProvider.setBottomSheetController(
+        BottomSheetControllerProvider.setInstanceForTesting(
                 createBottomSheetController(/* requestShowContentResponse= */ true));
     }
 

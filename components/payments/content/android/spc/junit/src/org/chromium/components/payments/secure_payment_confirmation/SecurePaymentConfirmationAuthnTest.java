@@ -25,8 +25,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -55,9 +53,7 @@ import java.lang.ref.WeakReference;
 
 /** A test for SecurePaymentConfirmationAuthn. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {SecurePaymentConfirmationAuthnTest.ShadowBottomSheetControllerProvider.class})
+@Config(manifest = Config.NONE)
 @EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
 @DisableFeatures(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
 public class SecurePaymentConfirmationAuthnTest {
@@ -82,21 +78,6 @@ public class SecurePaymentConfirmationAuthnTest {
     private SecurePaymentConfirmationAuthnController mAuthnController;
     private final FakeClock mClock = new FakeClock();
     private @SpcResponseStatus int mResponseStatus = SpcResponseStatus.UNKNOWN;
-
-    /** The shadow of BottomSheetControllerProvider. Not to use outside the test. */
-    @Implements(BottomSheetControllerProvider.class)
-    /* package */ static class ShadowBottomSheetControllerProvider {
-        private static BottomSheetController sBottomSheetController;
-
-        @Implementation
-        public static BottomSheetController from(WindowAndroid windowAndroid) {
-            return sBottomSheetController;
-        }
-
-        private static void setBottomSheetController(BottomSheetController controller) {
-            sBottomSheetController = controller;
-        }
-    }
 
     @Before
     public void setUp() {
@@ -139,7 +120,7 @@ public class SecurePaymentConfirmationAuthnTest {
                     mIsPaymentOptOut = true;
                 };
 
-        ShadowBottomSheetControllerProvider.setBottomSheetController(
+        BottomSheetControllerProvider.setInstanceForTesting(
                 createBottomSheetController(/* requestShowContentResponse= */ true));
     }
 
@@ -350,7 +331,7 @@ public class SecurePaymentConfirmationAuthnTest {
     @Feature({"Payments"})
     public void testRequestShowContentFalse() {
         createAuthnController();
-        ShadowBottomSheetControllerProvider.setBottomSheetController(
+        BottomSheetControllerProvider.setInstanceForTesting(
                 createBottomSheetController(/* requestShowContentResponse= */ false));
         Assert.assertFalse(show());
         Assert.assertTrue(mAuthnController.isHidden());
@@ -385,7 +366,7 @@ public class SecurePaymentConfirmationAuthnTest {
     @Test
     @Feature({"Payments"})
     public void testShowWithNullBottomSheetController() {
-        ShadowBottomSheetControllerProvider.setBottomSheetController(null);
+        BottomSheetControllerProvider.setInstanceForTesting(null);
         createAuthnController();
         Assert.assertFalse(show());
         Assert.assertTrue(mAuthnController.isHidden());
