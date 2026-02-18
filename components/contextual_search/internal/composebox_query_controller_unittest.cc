@@ -963,6 +963,71 @@ TEST_F(ComposeboxQueryControllerTest,
             first_request_id->analytics_id());
 }
 
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequest_CorrectlySupercedesPreviousRequest) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false);
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the first file upload flow.
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  int64_t context_id = 12345;
+  StartPdfFileUploadFlow(file_token_1,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+  WaitForFileUpload(file_token_1, lens::MimeType::kPdf);
+
+  // Check first file info.
+  auto* file_info_1 = controller().GetFileInfoForTesting(file_token_1);
+  ASSERT_TRUE(file_info_1);
+  EXPECT_FALSE(file_info_1->is_superceded);
+  auto request_id_1 = file_info_1->GetRequestIdForTesting();
+  EXPECT_EQ(request_id_1->sequence_id(), 1);
+
+  // Act: Start the second file upload flow with same context ID.
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_2,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+  WaitForFileUpload(file_token_2, lens::MimeType::kPdf);
+
+  // Check superceded status.
+  EXPECT_TRUE(file_info_1->is_superceded);
+
+  auto* file_info_2 = controller().GetFileInfoForTesting(file_token_2);
+  ASSERT_TRUE(file_info_2);
+  EXPECT_FALSE(file_info_2->is_superceded);
+  auto request_id_2 = file_info_2->GetRequestIdForTesting();
+  EXPECT_EQ(request_id_2->sequence_id(), 2);
+  // Verify it chained from request 1.
+  EXPECT_EQ(request_id_2->uuid(), request_id_1->uuid());
+
+  // Act: Start the third file upload flow with same context ID.
+  const base::UnguessableToken file_token_3 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_3,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+  WaitForFileUpload(file_token_3, lens::MimeType::kPdf);
+
+  // Check superceded status.
+  EXPECT_TRUE(file_info_1->is_superceded);
+  EXPECT_TRUE(file_info_2->is_superceded);
+
+  auto* file_info_3 = controller().GetFileInfoForTesting(file_token_3);
+  ASSERT_TRUE(file_info_3);
+  EXPECT_FALSE(file_info_3->is_superceded);
+  auto request_id_3 = file_info_3->GetRequestIdForTesting();
+  EXPECT_EQ(request_id_3->sequence_id(), 3);
+  // Verify it chained from request 2.
+  EXPECT_EQ(request_id_3->uuid(), request_id_2->uuid());
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
   // Act: Start the session.
   controller().InitializeIfNeeded();

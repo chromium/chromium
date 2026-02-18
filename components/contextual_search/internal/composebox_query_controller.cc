@@ -745,7 +745,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
       }
       if (info->request_id.has_value() &&
           info->request_id->context_id() ==
-              contextual_input_data->context_id.value()) {
+              contextual_input_data->context_id.value() &&
+          !info->is_superceded) {
+        // Mark the previous request as superceded since the new request has the
+        // same context id and is a newer request.
+        info->is_superceded = true;
         previous_request_id = info->request_id;
         break;
       }
