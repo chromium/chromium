@@ -59,6 +59,11 @@ constexpr std::string_view kMouseClickFailureHistogram =
 
 class EventDispatcherTest : public ::testing::Test {
  public:
+  EventDispatcherTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicActorSplitValidateAndExecute);
+  }
+
   void SetUp() override {
     mock_state_manager_ = std::make_unique<MockActorUiStateManager>();
     dispatcher_ = NewUiEventDispatcher(mock_state_manager_.get());
@@ -70,6 +75,7 @@ class EventDispatcherTest : public ::testing::Test {
   base::HistogramTester histograms_;
   std::unique_ptr<MockActorUiStateManager> mock_state_manager_;
   std::unique_ptr<UiEventDispatcher> dispatcher_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EventDispatcherTest, NoEventsToDispatch) {
@@ -375,12 +381,12 @@ TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
 class EventDispatcherRendererResolvedTest : public EventDispatcherTest {
  public:
   EventDispatcherRendererResolvedTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicActorSplitValidateAndExecute);
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicActorSplitValidateAndExecute,
+         features::kGlicActorUiOverlayMagicCursor},
+        {});
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EventDispatcherRendererResolvedTest, MissingActorTabData) {

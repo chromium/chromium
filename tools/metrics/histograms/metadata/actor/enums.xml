@@ -258,6 +258,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/safety_list.h:SafetyListParseResult) -->
 
+<!-- LINT.IfChange(SplitModeTimeOfUseFrameStatus) -->
+
+<enum name="SplitModeTimeOfUseFrameStatus">
+  <int value="0" label="kMatch"/>
+  <int value="1" label="kInitializedFrameDestroyed"/>
+  <int value="2" label="kFrameMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.h:SplitModeTimeOfUseFrameStatus) -->
+
 <!-- LINT.IfChange(StoppedReasonEnum) -->
 
 <enum name="StoppedReasonEnum">

@@ -311,10 +311,11 @@ BASE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened,
 // If enabled, the magic cursor in the actor overlay is shown.
 BASE_FEATURE(kGlicActorUiOverlayMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the actor splits up the validation and execution portion of
-// invoking a tool.
+// If enabled, tool execution is split into separate Validate and Execute steps.
+// The Validate step initializes the tool in the renderer and returns the
+// target's coordinate point early, before the actual execution occurs.
 BASE_FEATURE(kGlicActorSplitValidateAndExecute,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
 const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
