@@ -7,14 +7,18 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/titled_url_index.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -49,9 +53,17 @@ class BookmarkStorage
   // (appending suffix kBackupExtension).
   //
   // All disk writes will be executed as a task in a backend task runner.
-  BookmarkStorage(const BookmarkModel* model,
-                  PermanentNodeSelection permanent_node_selection,
-                  const base::FilePath& file_path);
+  //
+  // If both an encryptor and an encrypted file path are provided, an additional
+  // encrypted copy of the bookmarks will be saved to the specified path. This
+  // encrypted write operation is scheduled on the same backend task runner.
+  BookmarkStorage(
+      const BookmarkModel* model,
+      PermanentNodeSelection permanent_node_selection,
+      const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+          encryptor,
+      const base::FilePath& file_path,
+      const std::optional<base::FilePath> encrypted_file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
   BookmarkStorage& operator=(const BookmarkStorage&) = delete;
@@ -95,6 +107,13 @@ class BookmarkStorage
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   const PermanentNodeSelection permanent_node_selection_;
+
+  // Used to hold the encryptor that is shared between BookmarkStorage and the
+  // background sequence.
+  const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor_;
+
+  const std::optional<base::FilePath> encrypted_file_path_;
 
   // Helper to write bookmark data safely.
   base::ImportantFileWriter writer_;

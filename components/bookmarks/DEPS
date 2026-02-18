@@ -3,6 +3,7 @@ include_rules = [
   "+components/favicon_base",
   "+components/keyed_service",
   "+components/omnibox/common",
+  "+components/os_crypt/async",
   "+components/pref_registry",
   "+components/prefs",
   "+components/query_parser",

@@ -262,11 +262,13 @@ void BookmarkModel::Load(const base::FilePath& profile_path) {
 
   local_or_syncable_store_ = std::make_unique<BookmarkStorage>(
       this, BookmarkStorage::kSelectLocalOrSyncableNodes,
-      local_or_syncable_file_path);
+      /*encryptor=*/nullptr, local_or_syncable_file_path,
+      /*encrypted_file_path=*/std::nullopt);
 
   if (!account_file_path.empty()) {
     account_store_ = std::make_unique<BookmarkStorage>(
-        this, BookmarkStorage::kSelectAccountNodes, account_file_path);
+        this, BookmarkStorage::kSelectAccountNodes, /*encryptor=*/nullptr,
+        account_file_path, /*encrypted_file_path=*/std::nullopt);
   }
 
   // Creating ModelLoader schedules the load on a backend task runner.
