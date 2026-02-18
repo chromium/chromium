@@ -92,16 +92,30 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
 TabStripComboButton::~TabStripComboButton() = default;
 
 void TabStripComboButton::UpdateButtonsVisibility() {
-  PrefService* prefs = browser_->GetProfile()->GetPrefs();
-  if (start_button_) {
-    const std::string_view pref_name =
-        tab_groups::IsProjectsPanelFeatureEnabled()
-            ? prefs::kProjectsPanelPinnedToTabstrip
-            : prefs::kEverythingMenuPinnedToTabstrip;
-    start_button_->SetVisible(prefs->GetBoolean(pref_name));
+  if (!browser_ || !browser_->GetActions()) {
+    return;
   }
-  if (end_button_) {
-    end_button_->SetVisible(
+
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  const actions::ActionId start_action_id =
+      tab_groups::IsProjectsPanelFeatureEnabled() ? kActionToggleProjectsPanel
+                                                  : kActionTabGroupsMenu;
+  const std::string_view pref_name =
+      tab_groups::IsProjectsPanelFeatureEnabled()
+          ? prefs::kProjectsPanelPinnedToTabstrip
+          : prefs::kEverythingMenuPinnedToTabstrip;
+  actions::ActionItem* start_action_item =
+      actions::ActionManager::Get().FindAction(
+          start_action_id, browser_->GetActions()->root_action_item());
+  if (start_action_item) {
+    start_action_item->SetVisible(prefs->GetBoolean(pref_name));
+  }
+
+  actions::ActionItem* end_action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionTabSearch, browser_->GetActions()->root_action_item());
+  if (end_action_item) {
+    end_action_item->SetVisible(
         prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip));
   }
 }

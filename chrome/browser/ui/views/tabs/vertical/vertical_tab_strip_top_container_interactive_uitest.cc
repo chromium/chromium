@@ -37,6 +37,12 @@ class VerticalTabStripTopContainerInteractiveUiTest
     return SendAccelerator(kBrowserViewElementId,
                            ui::Accelerator(ui::VKEY_A, kModifiers));
   }
+
+  auto SetPinned(const char* pref, bool pinned) {
+    return Do([this, pref, pinned]() {
+      browser()->profile()->GetPrefs()->SetBoolean(pref, pinned);
+    });
+  }
 };
 
 // This test checks that we can click the tab search button starting from the
@@ -46,7 +52,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
-      EnsurePresent(kTabSearchButtonElementId),
+      // Ensure the tab search button is showing.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      WaitForShow(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button.
       SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
       // Display Horizontal Tabs.
@@ -71,7 +79,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       // Display Vertical Tabs
       EnterVerticalTabsMode(),
       WaitForShow(kVerticalTabStripTopContainerElementId),
-      EnsurePresent(kTabSearchButtonElementId),
+      // Ensure the tab search button is showing.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      WaitForShow(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button
       SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
 }
