@@ -79,7 +79,11 @@ base::DictValue ProfileInternalsHandler::CreateProfileEntry(
   profile_entry.Set("gaiaName", entry->GetGAIAName());
   profile_entry.Set("gaiaId", entry->GetGAIAId().ToString());
   profile_entry.Set("userName", entry->GetUserName());
-  profile_entry.Set("hostedDomain", entry->GetHostedDomain());
+  std::string hosted_domain = "UNKNOWN";
+  if (std::optional<std::string> domain = entry->GetHostedDomain()) {
+    hosted_domain = domain->empty() ? "NO_HOSTED_DOMAIN" : *domain;
+  }
+  profile_entry.Set("hostedDomain", hosted_domain);
   profile_entry.Set("isManaged",
                     signin::TriboolToString(entry->GetIsManaged()));
   profile_entry.Set("isSupervised", entry->IsSupervised());

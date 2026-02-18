@@ -571,8 +571,13 @@ size_t ProfileAttributesEntry::GetMetricsBucketIndex() {
   return bucket_index;
 }
 
-std::string ProfileAttributesEntry::GetHostedDomain() const {
-  return GetString(kHostedDomain);
+std::optional<std::string> ProfileAttributesEntry::GetHostedDomain() const {
+  const base::Value* value = GetValue(kHostedDomain);
+  if (!value || !value->is_string() || value->GetString().empty()) {
+    return std::nullopt;
+  }
+  const auto& result = value->GetString();
+  return result == signin::constants::kNoHostedDomainFound ? "" : result;
 }
 
 signin::Tribool ProfileAttributesEntry::GetIsManaged() const {
@@ -586,11 +591,11 @@ signin::Tribool ProfileAttributesEntry::GetIsManaged() const {
   // If the value is not set, return fallback to the hosted domain check.
   // This can eventually be removed once all profiles have an explicit value.
   if (value == kIntegerNotSet) {
-    if (GetHostedDomain().empty()) {
-      return signin::Tribool::kUnknown;
+    if (std::optional<std::string> hosted_domain = GetHostedDomain();
+        hosted_domain.has_value()) {
+      return signin::TriboolFromBool(!hosted_domain->empty());
     }
-    return signin::TriboolFromBool(GetHostedDomain() !=
-                                   signin::constants::kNoHostedDomainFound);
+    return signin::Tribool::kUnknown;
   }
 
   // If the value is invalid, or is not a valid Tribool value, return unknown.
@@ -812,9 +817,17 @@ void ProfileAttributesEntry::SetProfileThemeColors(
   }
 }
 
-void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
-  if (SetString(kHostedDomain, hosted_domain))
+void ProfileAttributesEntry::SetHostedDomain(
+    std::optional<std::string_view> hosted_domain) {
+  std::string_view hosted_domain_to_set;
+  if (hosted_domain.has_value()) {
+    hosted_domain_to_set = hosted_domain->empty()
+                               ? signin::constants::kNoHostedDomainFound
+                               : *hosted_domain;
+  }
+  if (SetString(kHostedDomain, std::string(hosted_domain_to_set))) {
     profile_attributes_storage_->NotifyProfileHostedDomainChanged(GetPath());
+  }
 }
 
 void ProfileAttributesEntry::SetIsManaged(signin::Tribool value) {

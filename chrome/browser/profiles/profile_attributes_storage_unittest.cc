@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -37,6 +38,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -125,7 +127,7 @@ void VerifyInitialValues(ProfileAttributesEntry* entry,
   EXPECT_EQ(is_omitted, entry->IsOmitted());
   EXPECT_EQ(is_signed_in_with_credential_provider,
             entry->IsSignedInWithCredentialProvider());
-  EXPECT_EQ(std::string(), entry->GetHostedDomain());
+  EXPECT_EQ(std::nullopt, entry->GetHostedDomain());
   EXPECT_EQ(signin::Tribool::kUnknown, entry->GetIsManaged());
 }
 
@@ -2343,6 +2345,56 @@ TEST_F(ProfileAttributesStorageTest, EnterpriseLabelOverridesLocalProfileName) {
   entry->SetEnterpriseProfileLabel(u"management_label");
   EXPECT_EQ(u"management_label", entry->GetEnterpriseProfileLabel());
   EXPECT_EQ(u"management_label", entry->GetLocalProfileName());
+}
+
+TEST_F(ProfileAttributesStorageTest, GetHostedDomainFormatStability) {
+  AddTestingProfile();
+  base::FilePath path = GetProfilePath("testing_profile_path0");
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(path);
+  ASSERT_NE(entry, nullptr);
+
+  PrefService* local_state = g_browser_process->local_state();
+
+  // 1. NO_HOSTED_DOMAIN -> ""
+  {
+    ScopedDictPrefUpdate update(local_state, prefs::kProfileAttributes);
+    base::DictValue* profile_dict =
+        update->FindDict(path.BaseName().MaybeAsASCII());
+    ASSERT_TRUE(profile_dict);
+    profile_dict->Set("hosted_domain", signin::constants::kNoHostedDomainFound);
+  }
+  EXPECT_EQ(entry->GetHostedDomain(), "");
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
+
+  // 2. domain.com -> domain.com
+  {
+    ScopedDictPrefUpdate update(local_state, prefs::kProfileAttributes);
+    base::DictValue* profile_dict =
+        update->FindDict(path.BaseName().MaybeAsASCII());
+    profile_dict->Set("hosted_domain", "example.com");
+  }
+  EXPECT_EQ(entry->GetHostedDomain(), "example.com");
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kTrue);
+
+  // 3. empty string -> nullopt
+  {
+    ScopedDictPrefUpdate update(local_state, prefs::kProfileAttributes);
+    base::DictValue* profile_dict =
+        update->FindDict(path.BaseName().MaybeAsASCII());
+    profile_dict->Set("hosted_domain", "");
+  }
+  EXPECT_EQ(entry->GetHostedDomain(), std::nullopt);
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kUnknown);
+
+  // 4. missing -> nullopt
+  {
+    ScopedDictPrefUpdate update(local_state, prefs::kProfileAttributes);
+    base::DictValue* profile_dict =
+        update->FindDict(path.BaseName().MaybeAsASCII());
+    profile_dict->Remove("hosted_domain");
+  }
+  EXPECT_EQ(entry->GetHostedDomain(), std::nullopt);
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kUnknown);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

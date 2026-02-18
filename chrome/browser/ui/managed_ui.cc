@@ -143,9 +143,10 @@ std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile) {
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile.GetPath());
-    if (entry && !entry->GetHostedDomain().empty() &&
-        entry->GetHostedDomain() != kNoHostedDomainFound) {
-      return entry->GetHostedDomain();
+    if (std::optional<std::string> hosted_domain =
+            entry ? entry->GetHostedDomain() : std::nullopt;
+        hosted_domain.has_value() && !hosted_domain->empty()) {
+      return hosted_domain;
     }
   }
 

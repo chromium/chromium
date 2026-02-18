@@ -53,8 +53,6 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #endif
 
-using signin::constants::kNoHostedDomainFound;
-
 namespace {
 const int kAvatarSize = 100;
 constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
@@ -63,15 +61,13 @@ constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
   DCHECK(entry);
-  if (entry->GetHostedDomain() == kNoHostedDomainFound) {
+  std::optional<std::string> hosted_domain = entry->GetHostedDomain();
+  if (hosted_domain == std::string()) {
     return std::string();
   }
-  const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? account_domain_name
-                                      : entry->GetHostedDomain();
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY,
-      base::UTF8ToUTF16(domain_name));
+      base::UTF8ToUTF16(hosted_domain.value_or(account_domain_name)));
 }
 
 std::string GetManagedDeviceTitle() {
@@ -398,15 +394,13 @@ std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED, email);
 #else
-  if (entry->GetHostedDomain() == kNoHostedDomainFound) {
+  std::optional<std::string> hosted_domain = entry->GetHostedDomain();
+  if (hosted_domain == std::string()) {
     return std::string();
   }
-  const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? account_domain_name
-                                      : entry->GetHostedDomain();
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
-      base::UTF8ToUTF16(domain_name));
+      base::UTF8ToUTF16(hosted_domain.value_or(account_domain_name)));
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 

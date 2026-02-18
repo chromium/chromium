@@ -61,7 +61,6 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #endif
 
-using ::signin::constants::kNoHostedDomainFound;
 using ::testing::Return;
 
 namespace {
@@ -208,7 +207,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
-  EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_EQ(entry->GetHostedDomain(), "");
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
@@ -222,7 +221,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_TRUE(entry->GetGAIAGivenName().empty());
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
-  EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_FALSE(entry->GetHostedDomain().has_value());
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 }
 
@@ -256,7 +255,7 @@ TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   // as unconsented primary account still exists.
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
-  EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_EQ(entry->GetHostedDomain(), "");
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
 }
@@ -286,7 +285,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_TRUE(entry->GetGAIAGivenName().empty());
   EXPECT_FALSE(entry->GetGAIAPicture());
-  EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_FALSE(entry->GetHostedDomain().has_value());
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 }
 
@@ -488,7 +487,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
-  EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_EQ(entry->GetHostedDomain(), "");
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
   EXPECT_TRUE(entry->IsGlicEligible());
 
@@ -505,7 +504,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   EXPECT_TRUE(entry->GetGAIAGivenName().empty());
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
-  EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_FALSE(entry->GetHostedDomain().has_value());
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
   EXPECT_FALSE(entry->IsGlicEligible());
 }

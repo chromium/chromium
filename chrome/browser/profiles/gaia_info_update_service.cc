@@ -135,13 +135,7 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   gaia_id_of_profile_attribute_entry_ = info.GetGaiaId();
   entry->SetGAIAGivenName(base::UTF8ToUTF16(info.GetGivenName().value_or("")));
   entry->SetGAIAName(base::UTF8ToUTF16(info.GetFullName().value_or("")));
-  std::string hosted_domain_to_set;
-  if (std::optional<std::string_view> hosted_domain = info.GetHostedDomain()) {
-    hosted_domain_to_set = hosted_domain->empty()
-                               ? signin::constants::kNoHostedDomainFound
-                               : std::string(*hosted_domain);
-  }
-  entry->SetHostedDomain(hosted_domain_to_set);
+  entry->SetHostedDomain(info.GetHostedDomain());
   entry->SetIsManaged(info.IsManaged());
 
   if (info.GetAvatarUrl().has_value() && info.GetAvatarUrl()->empty()) {
@@ -165,7 +159,7 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   entry->SetGAIAName(std::u16string());
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
-  entry->SetHostedDomain(std::string());
+  entry->SetHostedDomain(std::nullopt);
   entry->SetIsManaged(signin::Tribool::kFalse);
   entry->SetIsGlicEligible(false);
 }

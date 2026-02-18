@@ -203,16 +203,12 @@ class ProfileAttributesEntry {
   // Note: The bucket index is assigned once and remains the same all time. 0 is
   // reserved for the guest profile.
   size_t GetMetricsBucketIndex();
-  // Returns the hosted domain for the current signed-in account. Returns empty
-  // string if there is no signed-in account and returns
-  // |signin::constants::kNoHostedDomainFound| if the signed-in account has no
-  // hosted domain (such as when it is a standard gmail.com account). Unlike
-  // for other string getters, the returned value is UTF8 encoded.
-  //
-  // TODO(crbug.com/458409080): convert the return value to
-  // std::optional<std::string> for parity with
-  // `AccountInfo::GetHostedDomain()`.
-  std::string GetHostedDomain() const;
+  // Returns the hosted domain for the current signed-in account. Returns
+  // std::nullopt if there is no signed-in account and returns an empty string
+  // if the signed-in account has no hosted domain (such as when it is a
+  // standard gmail.com account). Unlike for other string getters, the returned
+  // value is UTF8 encoded.
+  std::optional<std::string> GetHostedDomain() const;
 
   // Returns management status of the current signed-in account.
   signin::Tribool GetIsManaged() const;
@@ -267,7 +263,8 @@ class ProfileAttributesEntry {
 
   // Unlike for other string setters, the argument is expected to be UTF8
   // encoded.
-  void SetHostedDomain(std::string hosted_domain);
+  // Clears the hosted_domain value when std::nullopt is passed.
+  void SetHostedDomain(std::optional<std::string_view> hosted_domain);
   void SetIsManaged(signin::Tribool value);
 
   void SetProfileManagementEnrollmentToken(const std::string& enrollment_token);
