@@ -32,6 +32,9 @@ declare global {
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;
 
+export type OnBeforeRequestDetails = Parameters<
+    ChromeEventFunctionType<typeof chrome.webRequest.onBeforeRequest>>[0];
+
 // The url query parameter keys for the viewport size.
 const VIEWPORT_HEIGHT_KEY = 'bih';
 const VIEWPORT_WIDTH_KEY = 'biw';
@@ -205,6 +208,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   private popStateFinishedCallbackForTesting_: (() => void)|null = null;
   private forceBasicModeIfOpeningThreadHistory_: boolean =
       loadTimeData.getBoolean('forceBasicModeIfOpeningThreadHistory');
+  // This is needed to keep navigations between non-AIM pages from triggering
+  // the input hide/restore callbacks.
+  private isNavigatingFromAiPage_: boolean = false;
 
   override firstUpdated() {
     this.postMessageHandler_ =
@@ -270,9 +276,23 @@ export class ContextualTasksAppElement extends CrLitElement {
       // TODO(crbug.com/474359572): Rename this to be more descriptive of what
       // it actually does.
       callbackRouter.hideInput.addListener(() => {
+        // OnBeforeRequest will trigger before the navigation, so this is needed
+        // to prevent the input from being hidden when navigating to a new
+        // page.
+        if (this.isNavigatingFromAiPage_) {
+          return;
+        }
+
         this.isInBasicMode_ = true;
       }),
       callbackRouter.restoreInput.addListener(() => {
+        // OnBeforeRequest will trigger before the navigation, so this is needed
+        // to prevent the input from being restored when navigating to a new
+        // page.
+        if (this.isNavigatingFromAiPage_) {
+          return;
+        }
+
         this.isInBasicMode_ = false;
       }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
@@ -420,8 +440,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.browserProxy_.callbackRouter.removeListener(id));
-    this.$.threadFrame.request.onBeforeRequest.removeListener(
-        this.onBeforeRequest);
+    this.removeWebviewRequestOverrides();
     this.eventTracker_.removeAll();
   }
 
@@ -534,6 +553,10 @@ export class ContextualTasksAppElement extends CrLitElement {
           urls: ['<all_urls>'],
         },
         ['blocking']);
+    this.$.threadFrame.request.onCompleted.addListener(this.onCompleted, {
+      types: ['main_frame'] as any,
+      urls: ['<all_urls>'],
+    });
 
     // Allow downloading files. This is necessary since aim can generate images
     // for download.
@@ -548,6 +571,12 @@ export class ContextualTasksAppElement extends CrLitElement {
     const userAgent = this.$.threadFrame.getUserAgent();
     const userAgentSuffix = loadTimeData.getString('userAgentSuffix');
     this.$.threadFrame.setUserAgentOverride(`${userAgent} ${userAgentSuffix}`);
+  }
+
+  private removeWebviewRequestOverrides() {
+    this.$.threadFrame.request.onBeforeRequest.removeListener(
+        this.onBeforeRequest);
+    this.$.threadFrame.request.onCompleted.removeListener(this.onCompleted);
   }
 
   private addCommonSearchParams(url: URL): URL {
@@ -582,6 +611,10 @@ export class ContextualTasksAppElement extends CrLitElement {
             const newUrl = this.addCommonSearchParams(url);
             const isSigninDomain =
                 !!this.signInDomains_.find((domain) => domain === url.host);
+            if (this.isAiPage_) {
+              this.isNavigatingFromAiPage_ = true;
+              this.isInBasicMode_ = true;
+            }
             if (this.forcedEmbeddedPageHost && !isSigninDomain) {
               newUrl.host = this.forcedEmbeddedPageHost;
             }
@@ -590,6 +623,15 @@ export class ContextualTasksAppElement extends CrLitElement {
             }
             return {};
           };
+
+  private onCompleted = (): void => {
+    if (!this.isNavigatingFromAiPage_) {
+      return;
+    }
+
+    this.isInBasicMode_ = false;
+    this.isNavigatingFromAiPage_ = false;
+  };
 
   getThreadUrlForTesting() {
     return this.$.threadFrame.src;
@@ -615,6 +657,18 @@ export class ContextualTasksAppElement extends CrLitElement {
   setMockPostMessageHandlerForTesting(mockPostMessageHandler:
                                           PostMessageHandler) {
     this.postMessageHandler_ = mockPostMessageHandler;
+  }
+
+  isNavigatingForTesting() {
+    return this.isNavigatingFromAiPage_;
+  }
+
+  onBeforeRequestForTesting(details: OnBeforeRequestDetails) {
+    return this.onBeforeRequest(details);
+  }
+
+  onCompletedForTesting() {
+    this.onCompleted();
   }
 }
 

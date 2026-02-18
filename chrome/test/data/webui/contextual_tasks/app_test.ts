@@ -4,6 +4,7 @@
 
 import 'chrome://contextual-tasks/app.js';
 
+import type {OnBeforeRequestDetails} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -505,6 +506,73 @@ suite('ContextualTasksAppTest', function() {
             '0', flexCenterStyle.zIndex,
             'Flex center container z-index should be 0');
       });
+
+  test('sets basic mode when navigating from AI page', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Verify initial state.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
+
+    // Ensure the app is on an AI page.
+    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Simulate navigation start.
+    appElement.onBeforeRequestForTesting(
+        {url: 'http://example.com'} as OnBeforeRequestDetails);
+    await microtasksFinished();
+
+    // Should be in basic mode now because the app is navigating from an AI page.
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
+    assertTrue(appElement.isNavigatingForTesting());
+
+    // Simulate navigation complete.
+    appElement.onCompletedForTesting();
+    await microtasksFinished();
+
+    // Should exit basic mode.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
+    assertFalse(appElement.isNavigatingForTesting());
+  });
+
+  test('does not set basic mode when navigating from non-AI page', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Verify initial state.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
+
+    // Ensure the app is NOT on an AI page.
+    proxy.callbackRouterRemote.onAiPageStatusChanged(false);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Simulate navigation start.
+    appElement.onBeforeRequestForTesting(
+        {url: 'http://example.com'} as OnBeforeRequestDetails);
+    await microtasksFinished();
+
+    // Should NOT be in basic mode.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
+    assertFalse(appElement.isNavigatingForTesting());
+
+    // Simulate navigation complete.
+    appElement.onCompletedForTesting();
+    await microtasksFinished();
+
+    // Should still not be in basic mode.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
+  });
 
   test('sends composebox height update', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
