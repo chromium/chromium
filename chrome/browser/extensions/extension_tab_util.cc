@@ -157,7 +157,7 @@ int GetTabIdForExtensions(WebContents& web_contents) {
 
 bool IsFileUrl(const GURL& url) {
   return url.SchemeIsFile() || (url.SchemeIs(content::kViewSourceScheme) &&
-                                GURL(url.GetContent()).SchemeIsFile());
+                                GURL(url.GetContentPiece()).SchemeIsFile());
 }
 
 ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(

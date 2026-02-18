@@ -253,7 +253,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidEmail) {
 
   // The throttle does not navigate away from its current URL if the provided
   // domain is invalid.
-  EXPECT_EQ(kTestUrl, web_contents()->GetURL().GetContent());
+  EXPECT_EQ(kTestUrl, web_contents()->GetURL().GetContentPiece());
 }
 
 TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidEmail) {
@@ -273,7 +273,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidEmail) {
   // The throttle navigates to the Google sign-in URL for the domain
   // corresponding to the parsed email address.
   EXPECT_EQ(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain),
-            web_contents()->GetURL().GetContent());
+            web_contents()->GetURL().GetContentPiece());
 }
 
 TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomain) {
@@ -292,7 +292,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomain) {
 
   // The throttle navigates to the token-based management test URL when a token
   // is received but a domain is not.
-  EXPECT_EQ(kTokenUrl, web_contents()->GetURL().GetContent());
+  EXPECT_EQ(kTokenUrl, web_contents()->GetURL().GetContentPiece());
 }
 
 TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomainAndToken) {
@@ -311,7 +311,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomainAndToken) {
 
   // The throttle navigates to the unmanaged test URL when neither a domain nor
   // a token are received.
-  EXPECT_EQ(kUnmanagedUrl, web_contents()->GetURL().GetContent());
+  EXPECT_EQ(kUnmanagedUrl, web_contents()->GetURL().GetContentPiece());
 }
 
 TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidDomain) {
@@ -330,7 +330,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidDomain) {
 
   // The throttle does not navigate away from its current URL if the provided
   // domain is invalid.
-  EXPECT_EQ(kTestUrl, web_contents()->GetURL().GetContent());
+  EXPECT_EQ(kTestUrl, web_contents()->GetURL().GetContentPiece());
 }
 
 TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidDomain) {
@@ -350,7 +350,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidDomain) {
   // The throttle navigates to the Google sign-in URL corresponding to the
   // parsed domain when the domain is valid.
   EXPECT_EQ(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain),
-            web_contents()->GetURL().GetContent());
+            web_contents()->GetURL().GetContentPiece());
 }
 
 TEST_F(ProfileManagementNavigationThrottleRedirectTest, Switch_ValidDomain) {
@@ -376,7 +376,7 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, Switch_ValidDomain) {
   // The throttle navigates to the Google sign-in URL corresponding to the
   // parsed domain when the domain is valid.
   EXPECT_EQ(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain),
-            web_contents()->GetURL().GetContent());
+            web_contents()->GetURL().GetContentPiece());
 }
 
 }  // namespace profile_management

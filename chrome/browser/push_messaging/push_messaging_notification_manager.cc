@@ -229,7 +229,7 @@ bool PushMessagingNotificationManager::IsTabVisible(
   // and thus should be considered when checking the visible URL. However, the
   // prefix has to be removed before the origins can be compared.
   if (visible_url.SchemeIs(content::kViewSourceScheme))
-    visible_url = GURL(visible_url.GetContent());
+    visible_url = GURL(visible_url.GetContentPiece());
 
   return visible_url.DeprecatedGetOriginAsURL() == origin;
 }

@@ -32,16 +32,16 @@ void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
     bool is_blocked_by_incognito_policy) {
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 
-  std::u16string blocked_page_title;
+  std::string blocked_page_title;
   if (url.has_host()) {
-    blocked_page_title = base::UTF8ToUTF16(url.GetHost());
+    blocked_page_title = url.GetHost();
   } else if (url.SchemeIs(content::kViewSourceScheme)) {
-    blocked_page_title = base::UTF8ToUTF16(GURL(url.GetContent()).GetHost());
+    blocked_page_title = GURL(url.GetContentPiece()).GetHost();
   } else {
     // Local file paths show the full URL.
-    blocked_page_title = base::UTF8ToUTF16(url.spec());
+    blocked_page_title = url.spec();
   }
-  EXPECT_EQ(blocked_page_title, web_contents->GetTitle());
+  EXPECT_EQ(base::UTF8ToUTF16(blocked_page_title), web_contents->GetTitle());
 
   // Depending if the URL is blocked by the incognito policy or not, a different
   // error page is displayed.

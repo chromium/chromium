@@ -118,7 +118,7 @@ TEST_F(ClickToCallUtilsTest, NonTelLink_DoNotOfferForLink) {
 TEST_F(ClickToCallUtilsTest, TelLinkWithFragment) {
   GURL fragment("tel:123#456");
   EXPECT_TRUE(ShouldOfferClickToCallForURL(&profile_, fragment));
-  EXPECT_EQ("123", fragment.GetContent());
+  EXPECT_EQ("123", fragment.GetContentPiece());
 }
 
 TEST_F(ClickToCallUtilsTest, TelLinkWithEncodedCharacters) {
