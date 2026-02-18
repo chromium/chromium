@@ -17,6 +17,26 @@
   padding-top: 14px;
 }
 
+/* Light Mode - Soft pastel background, colored text */
+.cr-nav-menu-item[selected] {
+  background-color: var(--color-sys-primary-container);
+  color: var(--color-sys-primary);
+  --iron-icon-fill-color: var(--color-sys-primary);
+}
+
+/* Dark Mode - Light pastel background, dark text */
+@media (prefers-color-scheme: dark) {
+  .cr-nav-menu-item[selected] {
+    background-color: var(--color-sys-primary);
+    color: var(--color-sys-on-primary);
+    --iron-icon-fill-color: var(--color-sys-on-primary);
+  }
+}
+
+.cr-nav-menu-item:not([selected]):hover {
+  background-color: var(--color-sys-state-hover-on-subtle);
+}
+
 .separator {
   border-top: 1px solid var(--cr-separator-color);
   margin-bottom: 16px;
@@ -32,7 +52,8 @@
 }
 
 .branding {
-  color: var(--color-sys-on-header-primary);
+  /* Hardcoded color for branding */
+  color: var(--google-blue-600);
   font-weight: 500;
 }
 
