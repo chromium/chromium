@@ -14,6 +14,8 @@ static_library("send_tab_to_self") {
     "features.h",
     "metrics_util.cc",
     "metrics_util.h",
+    "outgoing_tab_form_field_extractor.cc",
+    "outgoing_tab_form_field_extractor.h",
     "page_context.cc",
     "page_context.h",
     "pref_names.cc",
@@ -34,6 +36,8 @@ static_library("send_tab_to_self") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -93,6 +97,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "entry_point_display_reason_unittest.cc",
+    "outgoing_tab_form_field_extractor_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
     "target_device_info_unittest.cc",
@@ -102,6 +107,8 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
     "//components/history/core/browser",
     "//components/prefs:test_support",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
