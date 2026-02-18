@@ -114,14 +114,12 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   [textInput.view becomeFirstResponder];
 
-  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
-    if (textInput.isPreEditing) {
-      // Reset the pre-edit state to ensure the caret is not visible.
-      [textInput exitPreEditState];
-      [textInput enterPreEditState];
-    } else {
-      [self setCaretPos:textInput.text.length];
-    }
+  if (_presentationContext == OmniboxPresentationContext::kComposebox &&
+      _omniboxTextModel && _omniboxTextModel->user_input_in_progress) {
+    // In composebox, the omnibox is refocused after using the camera
+    // attachment. If user has existing input, set the caret to the end of the
+    // text. Otherwise, skip setting the caret position crbug.com/475977756.
+    [self setCaretPos:textInput.text.length];
   }
 
   // Ensures that the accessibility system focuses the text input instead of
