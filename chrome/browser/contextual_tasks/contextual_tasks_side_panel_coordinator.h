@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
@@ -50,6 +51,7 @@ class ContextualTasksService;
 class ContextualTasksUiService;
 class ContextualTasksWebView;
 class ActiveTaskContextProvider;
+class EntryPointEligibilityManager;
 
 class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
@@ -79,13 +81,15 @@ class ContextualTasksSidePanelCoordinator
 
   explicit ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window,
-      ActiveTaskContextProvider* active_task_context_provider);
+      ActiveTaskContextProvider* active_task_context_provider,
+      EntryPointEligibilityManager* eligibility_manager);
 
   // For testing only.
   ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window,
       SidePanelUI* side_panel_ui,
-      ActiveTaskContextProvider* active_task_context_provider);
+      ActiveTaskContextProvider* active_task_context_provider,
+      EntryPointEligibilityManager* eligibility_manager);
   ContextualTasksSidePanelCoordinator(
       const ContextualTasksSidePanelCoordinator&) = delete;
   ContextualTasksSidePanelCoordinator& operator=(
@@ -147,6 +151,7 @@ class ContextualTasksSidePanelCoordinator
 
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
+  friend class ContextualTasksSidePanelCoordinatorTest;
 
   // Hide or show side panel base on open state of the current task.
   void UpdateSidePanelVisibility();
@@ -212,6 +217,8 @@ class ContextualTasksSidePanelCoordinator
 
   void RecordSessionEndMetrics();
 
+  void OnEligibilityChange(bool is_eligible);
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
@@ -249,10 +256,15 @@ class ContextualTasksSidePanelCoordinator
   // the contextual tasks side panel when active tab is changed.
   SidePanelEntry::Id side_panel_id_not_to_override_ = SidePanelEntry::Id::kGlic;
 
+  base::CallbackListSubscription eligibility_change_subscription_;
+
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;
 
   bool in_cobrowsing_session_ = false;
+
+  base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace contextual_tasks
