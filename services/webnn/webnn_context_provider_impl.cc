@@ -105,7 +105,6 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
     LoseAllContextsCallback lose_all_contexts_callback,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
-    int32_t client_id,
     mojo::SharedRemote<viz::mojom::GpuHost> gpu_host)
     : shared_context_state_(std::move(shared_context_state)),
       gpu_feature_info_(std::move(gpu_feature_info)),
@@ -114,7 +113,6 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
       lose_all_contexts_callback_(std::move(lose_all_contexts_callback)),
       scheduler_(scheduler),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
-      client_id_(client_id),
       gpu_host_(std::move(gpu_host)) {
   CHECK_NE(scheduler_, nullptr);
   CHECK_NE(main_thread_task_runner_, nullptr);
@@ -139,7 +137,6 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     LoseAllContextsCallback lose_all_contexts_callback,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
-    int32_t client_id,
     mojo::SharedRemote<viz::mojom::GpuHost> gpu_host) {
   // `shared_context_state` is only used by DirectML backend for GPU context. It
   // may be nullptr when GPU acceleration is not available. For such case, WebNN
@@ -149,14 +146,14 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
       std::move(shared_context_state), std::move(gpu_feature_info),
       std::move(gpu_info), shared_image_manager,
       std::move(lose_all_contexts_callback), std::move(main_thread_task_runner),
-      scheduler, client_id, std::move(gpu_host)));
+      scheduler, std::move(gpu_host)));
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-    bool is_incognito) {
+    const WebNNReceiversParams& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  provider_receivers_.Add(this, std::move(receiver), is_incognito);
+  provider_receivers_.Add(this, std::move(receiver), params);
 }
 
 void WebNNContextProviderImpl::RemoveWebNNContextImpl(
@@ -189,8 +186,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // interface method invocation or disconnect notification scheduled by a
   // receiver. It is illegal to attempt to call this at any other time, such as
   // from within an asynchronous task or callback posted from a message handler.
-  [[maybe_unused]] const bool is_incognito =
-      provider_receivers_.current_context();
+  const WebNNReceiversParams params = provider_receivers_.current_context();
 
   // Force context creation to fail if the WebNN GPU feature is disabled, which
   // happens when the GPU process has crashed too many times.
@@ -209,7 +205,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // task runner to ensure they execute in the same sequence and order as those
   // with a SyncToken.
   const gpu::CommandBufferId command_buffer_id =
-      gpu::CommandBufferIdFromChannelAndRoute(client_id_,
+      gpu::CommandBufferIdFromChannelAndRoute(params.client_id,
                                               g_next_route_id.GetNext());
 
   // TODO(crbug.com/474940915): Create the `gpu_sequence` with
@@ -276,7 +272,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
           std::move(read_tensor_producer), std::move(read_tensor_consumer),
           command_buffer_id, std::move(gpu_sequence),
           std::move(owning_task_runner), std::move(receiver), std::move(remote),
-          std::move(callback), is_incognito,
+          std::move(callback), params.is_incognito,
           /*ep_package_info=*/{});
       return;
     }
@@ -288,7 +284,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
         command_buffer_id, std::move(gpu_sequence),
         std::move(owning_task_runner), std::move(receiver), std::move(remote),
-        std::move(callback), is_incognito));
+        std::move(callback), params.is_incognito));
     return;
   } else if (dml::ShouldCreateDmlContext(*options)) {
     base::expected<WebNNContextImplPtr, mojom::ErrorPtr>
@@ -310,7 +306,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_APPLE)
   if (__builtin_available(macOS 14.4, *)) {
     if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML) &&
-        !is_incognito
+        !params.is_incognito
 #if BUILDFLAG(IS_MAC)
         && base::mac::GetCPUType() == base::mac::CPUType::kArm
 #endif  // BUILDFLAG(IS_MAC)
@@ -349,7 +345,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
         command_buffer_id, std::move(gpu_sequence),
         std::move(owning_task_runner), std::move(receiver), std::move(remote),
-        std::move(callback), is_incognito);
+        std::move(callback), params.is_incognito);
     return;
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)

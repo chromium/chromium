@@ -113,9 +113,6 @@ WebNNTestEnvironment::WebNNTestEnvironment(
   static base::NoDestructor<gpu::Scheduler> g_webnn_scheduler{
       g_webnn_sync_point_manager.get()};
 
-  // All tests use the same client ID since no other client exists.
-  constexpr int32_t kFakeClientIdForTesting = 0;
-
   mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
   fake_gpu_host_.Bind(gpu_host_proxy.InitWithNewPipeAndPassReceiver());
   context_provider_ = WebNNContextProviderImpl::Create(
@@ -123,14 +120,16 @@ WebNNTestEnvironment::WebNNTestEnvironment(
       std::move(gpu_info),
       /*shared_image_manager=*/nullptr, std::move(lose_all_contexts_callback),
       task_environment_->GetMainThreadTaskRunner(), g_webnn_scheduler.get(),
-      kFakeClientIdForTesting, mojo::SharedRemote(std::move(gpu_host_proxy)));
+      mojo::SharedRemote(std::move(gpu_host_proxy)));
 }
 
 void WebNNTestEnvironment::BindWebNNContextProvider(
     mojo::PendingReceiver<mojom::WebNNContextProvider> pending_receiver,
     bool is_incognito) {
-  context_provider_->BindWebNNContextProvider(std::move(pending_receiver),
-                                              is_incognito);
+  // All tests use the same client ID since no other client exists.
+  constexpr int32_t kFakeClientIdForTesting = 0;
+  context_provider_->BindWebNNContextProvider(
+      std::move(pending_receiver), {is_incognito, kFakeClientIdForTesting});
 }
 
 WebNNTestEnvironment::~WebNNTestEnvironment() = default;

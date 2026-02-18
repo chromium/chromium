@@ -665,11 +665,11 @@ void GpuServiceImpl::BindWebNNContextProvider(
         std::move(shared_context_state), gpu_feature_info_, gpu_info_,
         shared_image_manager(),
         base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
-        main_runner(), GetGpuScheduler(), client_id, gpu_host_);
+        main_runner(), GetGpuScheduler(), gpu_host_);
   }
 
   webnn_context_provider_->BindWebNNContextProvider(std::move(pending_receiver),
-                                                    is_incognito);
+                                                    {is_incognito, client_id});
 }
 
 void GpuServiceImpl::GetVideoMemoryUsageStats(
