@@ -2000,13 +2000,13 @@
     How it works
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_ONE" desc="First bullet point under the security settings standard bundle section">
-    Uses on-device methods to detect threats
+    Provides strong security. You can choose to turn on additional features.
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_TWO" desc="Second bullet point under the security settings standard bundle section">
-    Warns you about insecure connections on the open internet
+    Sends less data to Google (for example, parts of URLs)
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_THREE" desc="Third bullet point under the security settings standard bundle section">
-    Prioritizes site speed over enhanced security features
+    Prioritizes site speed
   </message>
   <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_TITLE" desc="Name of Safe Browsing enhanced protection">
     Enhanced Protection
@@ -2015,13 +2015,13 @@
     Real-time, proactive protection by sending more information to Google Safe Browsing
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_ONE" desc="First bullet point under the security settings enhanced bundle section">
-    Sends the URL and page content to Google to detect threats faster
+    Protects you on the web with Google’s best security
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_TWO" desc="Second bullet point under the security settings enhanced bundle section">
-    Warns you about all insecure connections
+    Sends more data to Google (for example, URLs, page content, and more)
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_THREE" desc="Third bullet point under the security settings enhanced bundle section">
-    Slows down some unfamiliar sites to block common attacks
+    Slows some unfamiliar sites
   </message>
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED" desc="The state text denoting that a security feature is in the enhanced state.">
     Enhanced
