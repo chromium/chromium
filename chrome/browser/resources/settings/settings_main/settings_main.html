@@ -126,7 +126,7 @@
   <template is="dom-if" if="[[showPage_(pageVisibility_.appearance)]]">
     <div slot="view" id="appearance">
       <template is="dom-if" if="[[renderPlugin_(
-          routes_.APPEARANCE, lastRoute_, inSearchMode_)]]">
+          routes_.APPEARANCE, lastRoute_, inSearchMode_)]]" update-when-false>
         <settings-appearance-page-index prefs="{{prefs}}"
             in-search-mode="[[inSearchMode_]]">
         </settings-appearance-page-index>
