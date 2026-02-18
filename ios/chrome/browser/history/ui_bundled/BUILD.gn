@@ -151,17 +151,29 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "history_entry_inserter_unittest.mm" ]
+  sources = [
+    "base_history_view_controller_unittest.mm",
+    "history_entry_inserter_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/common/ui/favicon",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("eg2_tests") {

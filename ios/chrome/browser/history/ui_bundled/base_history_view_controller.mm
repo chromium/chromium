@@ -667,7 +667,10 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
                         indexPath:(NSIndexPath*)indexPath {
   item.faviconAttributes = attributes;
   if (!cached && attributes.faviconImage) {
-    if ([self.tableViewModel itemAtIndexPath:indexPath] != item) {
+    // Since the favicon fetch is asynchronous, `self.tableViewModel` may have
+    // updated. Ensure `indexPath` is still valid for this item before updating.
+    if (![self.tableViewModel hasItemAtIndexPath:indexPath] ||
+        [self.tableViewModel itemAtIndexPath:indexPath] != item) {
       return;
     }
     LegacyTableViewCell* cell =
