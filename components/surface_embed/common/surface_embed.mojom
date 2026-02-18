@@ -1,0 +1,34 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module surface_embed.mojom;
+
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "third_party/blink/public/mojom/frame/frame_visual_properties.mojom";
+
+// Implemented by SurfaceEmbedWebPlugin in the render process.
+// The browser uses this interface to embed the surface of a child WebContents
+// in an <embed> element on the embedder page.
+interface SurfaceEmbed {
+  // Embeds a surface by its FrameSinkId.
+  SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
+};
+
+// Implemented by SurfaceEmbedHost in the browser process.
+// The render process will use this interface to initiate the child WebContents
+// attachment and synchronize with the browser about the visual properties of
+// the <embed> element.
+interface SurfaceEmbedHost {
+  // Sets the SurfaceEmbed interface for communication with the renderer. This
+  // must be called before other methods on SurfaceEmbedHost.
+  SetSurfaceEmbed(pending_remote<SurfaceEmbed> surface_embed);
+
+  // Synchronizes the visual properties of the <embed> element.
+  // `is_visible` reports visibility with respect to "visibility:" CSS property;
+  // This does not cover the case of "display:none", in which the plugin will
+  // be destroyed.
+  SynchronizeVisualProperties(
+      blink.mojom.FrameVisualProperties visual_properties,
+      bool is_visible);
+};

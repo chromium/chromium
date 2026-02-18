@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/surface_embed/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_surface_embed)
 
@@ -16,4 +17,27 @@ component("common") {
   ]
 
   deps = [ "//base" ]
+}
+
+mojom("mojom") {
+  disable_variants = true
+
+  sources = [ "surface_embed.mojom" ]
+
+  deps = [
+    "//services/viz/public/mojom",
+    "//third_party/blink/public/mojom:mojom_core",
+  ]
+
+  if (is_component_build) {
+    # In component builds, the sources for mojom_core are compiled into the
+    # //third_party/blink/public/common component. We must override the
+    # dependency to link against the component instead of the mojom target to
+    # avoid duplicate symbols (ODR violations). In static builds, we link
+    # against the mojom target directly to avoid pulling in unnecessary
+    # dependencies from blink/public/common.
+    # See https://crbug.com/40480178.
+    overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
+    component_deps = [ "//third_party/blink/public/common" ]
+  }
 }

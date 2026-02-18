@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 #
 
+import("//components/surface_embed/buildflags/buildflags.gni")
+
 # This file represents global knowledge about all the mojom targets building
 # browser-to-renderer exposed mojom interfaces. Developers are responsible for
 # maintaining this file to match addition and removal of newly exposed targets.
@@ -353,3 +355,7 @@ browser_exposed_mojom_targets = [
   "//url/mojom:url_mojom_origin",
   "//url/mojom:url_mojom_scheme_host_port",
 ]
+
+if (enable_surface_embed) {
+  browser_exposed_mojom_targets += [ "//components/surface_embed/common:mojom" ]
+}

@@ -16,6 +16,8 @@ component("renderer") {
     "surface_embed_web_plugin.h",
   ]
 
+  public_deps = [ "//components/surface_embed/common:mojom" ]
+
   deps = [
     "//base",
     "//cc",

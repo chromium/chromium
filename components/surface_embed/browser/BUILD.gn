@@ -6,9 +6,36 @@ import("//components/surface_embed/buildflags/buildflags.gni")
 
 assert(enable_surface_embed)
 
-source_set("browser") {
-  sources = []
-  deps = [ "//components/surface_embed/common" ]
+# This is a static_library instead of a component.
+# The `mojom` target generated code is linked into this target. If this were a
+# component (shared library), the mojom symbols would be hidden within it
+# unless explicitly exported. Since the mojom target does not have export
+# attributes, we use a static_library so that the linker of the final
+# executable can see the mojom symbols directly.
+static_library("browser") {
+  sources = [
+    "dummy_surface_provider.cc",
+    "dummy_surface_provider.h",
+    "surface_embed_host.cc",
+    "surface_embed_host.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/surface_embed/common:mojom",
+    "//components/viz/host",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/public/mojom",
+    "//third_party/blink/public/common",
+  ]
+
+  deps = [
+    "//components/viz/common",
+    "//content/public/browser",
+    "//skia",
+    "//ui/compositor",
+    "//ui/gfx/geometry",
+  ]
 }
 
 source_set("browser_tests") {
@@ -23,14 +50,17 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//components/surface_embed/common",
-    "//components/viz/common",
     "//content/public/browser",
     "//content/shell:content_shell_lib",
     "//content/test:browsertest_support",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/compositor",
     "//ui/gfx",
     "//url",
   ]

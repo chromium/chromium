@@ -354,6 +354,7 @@ include_rules = [
   "+components/supervised_user/core/browser",
   "+components/supervised_user/core/common",
   "+components/supervised_user/test_support",
+  "+components/surface_embed",
   "+components/sync",
   "+components/sync_bookmarks",
   "+components/sync_device_info",

@@ -26,6 +26,7 @@ import("//components/on_device_translation/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//components/surface_embed/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -2391,6 +2392,7 @@ static_library("browser") {
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",
+    "//components/surface_embed/buildflags",
     "//components/sync",
     "//components/sync_bookmarks",
     "//components/sync_preferences",
@@ -7580,6 +7582,14 @@ static_library("browser") {
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
+
+  if (enable_surface_embed) {
+    deps += [
+      "//components/surface_embed/browser",
+      "//components/surface_embed/common",
+    ]
+  }
+
   if (enable_extensions_core) {
     if (enable_guest_view) {
       sources += [
