@@ -76,51 +76,44 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           @mousedown="${this.onContextMenuContainerMouseDown_}"
           @click="${this.onContextMenuContainerClick_}">
         ${this.shouldHideEntrypointButton_ ? '' : html`
-          ${this.showModelPicker ? html`
-            <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
+          ${this.showMenuOnClick ? html`
+            <cr-composebox-contextual-entrypoint-and-menu
+                id="contextEntrypoint"
                 part="composebox-entrypoint"
                 exportparts="context-menu-entrypoint-icon"
                 class="upload-button no-overlap"
-                .tabSuggestions="${this.tabSuggestions}"
-                .showMenuOnClick="${this.showMenuOnClick}"
                 @open-image-upload="${this.openImageUpload_}"
                 @open-file-upload="${this.openFileUpload_}"
                 @add-tab-context="${this.addTabContext_}"
                 @delete-tab-context="${this.onDeleteFile_}"
                 @tool-click="${this.onToolClick_}"
+                @deep-search-click="${this.handleDeepSearchClick_}"
+                @create-image-click="${this.handleImageGenClick_}"
+                .showModelPicker="${this.showModelPicker}"
+                .inputState="${this.inputState}"
+                .searchboxLayoutMode="${this.searchboxLayoutMode}"
+                .tabSuggestions="${this.tabSuggestions}"
+                .inCreateImageMode="${
+                    this.activeTool_ === ComposeboxToolMode.kImageGen}"
                 .hasImageFiles="${this.hasImageFiles()}"
                 .disabledTabIds="${this.addedTabsIds_}"
                 .fileNum="${this.files_.size}"
-                .searchboxLayoutMode="${this.searchboxLayoutMode}"
-                .inputState="${this.inputState}"
+                ?upload-button-disabled="${this.uploadButtonDisabled_}"
+                ?show-context-menu-description="${
+                    this.shouldShowDescription_()}"
+                glif-animation-state="${this.contextMenuGlifAnimationState}">
+            </cr-composebox-contextual-entrypoint-and-menu>
+          ` : html`
+            <cr-composebox-contextual-entrypoint-button
+                id="contextEntrypoint"
+                part="composebox-entrypoint"
+                exportparts="context-menu-entrypoint-icon"
+                class="upload-button no-overlap"
                 ?upload-button-disabled="${this.uploadButtonDisabled_}"
                 ?show-context-menu-description="${
                       this.shouldShowDescription_()}"
                 glif-animation-state="${this.contextMenuGlifAnimationState}">
             </cr-composebox-contextual-entrypoint-button>
-          ` : html`
-            <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
-                part="composebox-entrypoint"
-                exportparts="context-menu-entrypoint-icon"
-                class="upload-button no-overlap"
-                .tabSuggestions="${this.tabSuggestions}"
-                .showMenuOnClick="${this.showMenuOnClick}"
-                @open-image-upload="${this.openImageUpload_}"
-                @open-file-upload="${this.openFileUpload_}"
-                @add-tab-context="${this.addTabContext_}"
-                @deep-search-click="${this.handleDeepSearchClick_}"
-                @create-image-click="${this.handleImageGenClick_}"
-                @delete-tab-context="${this.onDeleteFile_}"
-                .inCreateImageMode="${
-                  this.activeTool_ === ComposeboxToolMode.kImageGen}"
-                .hasImageFiles="${this.hasImageFiles()}"
-                .disabledTabIds="${this.addedTabsIds_}"
-                .fileNum="${this.files_.size}"
-                .searchboxLayoutMode="${this.searchboxLayoutMode}"
-                ?upload-button-disabled="${this.uploadButtonDisabled_}"
-                ?show-context-menu-description="${this.shouldShowDescription_()}"
-                glif-animation-state="${this.contextMenuGlifAnimationState}">
-            </cr-composebox-context-menu-entrypoint>
           `}
         `}
         ${this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ? html`
