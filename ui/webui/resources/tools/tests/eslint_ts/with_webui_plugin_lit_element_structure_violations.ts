@@ -68,7 +68,8 @@ declare global {
 
 customElements.define(TestError5Element.is, TestError5Element);
 
-// Case1.6: Class with incorrect order method definition order.
+// Case1.6: Class with incorrect order method definition order and usage of
+// this.dispatchEvent(new CustomEvent(...))
 export class TestError6Element extends CrLitElement {
   override render() {
     return '';
@@ -104,6 +105,15 @@ export class TestError6Element extends CrLitElement {
 
   override updated() {
     super.updated();
+
+    this.dispatchEvent(
+        new CustomEvent('foo1-updated', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent(
+        'foo2-updated', {bubbles: true, composed: true, detail: 'foo'}));
+
+    const FOO3_UPDATED = 'foo3-updated';
+    this.dispatchEvent(new CustomEvent(
+        FOO3_UPDATED, {bubbles: true, composed: true, detail: 'foo'}));
   }
 
   override firstUpdated() {}
@@ -213,6 +223,18 @@ export class TestNoError3Element extends CrLitElement {
 
   override updated() {
     super.updated();
+
+    // Case where bubbles, composed are not specified.
+    this.dispatchEvent(new CustomEvent('bar-updated', {detail: 'bar'}));
+    // Case where bubbles, composed are specified but one of them is false.
+    this.dispatchEvent(new CustomEvent(
+        'bar-updated', {bubbles: true, composed: false, detail: 'bar'}));
+    // Case where options besides bubbles, composed, detail are specifiied.
+    this.dispatchEvent(new CustomEvent(
+        'bar-updated',
+        {bubbles: true, composed: true, cancelable: true, detail: 'bar'}));
+
+    this.fire('bar-updated', 'bar');
   }
 }
 

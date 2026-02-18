@@ -94,6 +94,30 @@ line. For example:
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 ```
 
+### Leverage helper methods of the CrLitElement superclass.
+
+#### Use `this.fire(...)` for firing events where possible.
+
+**Do not:**
+```ts
+this.dispatchEvent(new CustomEvent(
+  'event-one', {bubbles: true, composed: true}));
+
+this.dispatchEvent(new CustomEvent(
+  'event-two', {bubbles: true, composed: true, detail: someValue}));
+```
+
+**Do:**
+```ts
+this.fire('event-one');
+this.fire('event-two', someValue);
+
+// OK to use dispatchEvent() when firing non-bubbling or non-composed events.
+this.dispatchEvent(new CustomEvent('event-three', {detail: someValue}));
+```
+
+*Note*: When a non-bubbling or non-composed event should be fired use
+`dispatchEvent()` directly, as `fire()` creates bubbling and composed events.
 
 ## Template Guidelines (.html.ts)
 

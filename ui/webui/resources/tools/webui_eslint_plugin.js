@@ -70,6 +70,10 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
       recommended: 'error',
     },
     messages: {
+      useFireHelper:
+          'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...))..',
+      useFireHelperWithEventName:
+          'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...)), for event \'{{eventName}}\'.',
       incorrectClassName:
           'CrLitElement subclass {{className}} should end with the \'Element\' suffix.',
       incorrectMethodDefinitionOrder:
@@ -199,6 +203,48 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
             node.arguments[0].property.name === 'is';
         const arg1Correct = node.arguments[1].name === this.node.id.name;
         this.hasCustomElementRegistration = arg0Correct && arg1Correct;
+      }
+
+      runUseFireHelperCheck(node) {
+        if (!this.isLitElement) {
+          return;
+        }
+
+        assert.ok(node.type === 'ObjectExpression');
+
+        const callExpressionNode = node.parent.parent;
+        assert.ok(callExpressionNode.type === 'CallExpression');
+
+        function hasProp(node, name, value) {
+          return node.properties.some(prop => {
+            return prop.key.name === name && prop.value.value === value;
+          });
+        }
+
+        if (!hasProp(node, 'bubbles', true) ||
+            !hasProp(node, 'composed', true)) {
+          return;
+        }
+
+        let propertiesLength = 2;
+        if (node.properties.find(prop => prop.key.name === 'detail')) {
+          propertiesLength++;
+        }
+
+        if (node.properties.length > propertiesLength) {
+          // Handle case where properties other than 'bubbles', 'composed',
+          // 'detail' are passed.
+          return;
+        }
+
+        const eventName = node.parent.arguments[0]?.value;
+        context.report({
+          node: callExpressionNode,
+          messageId: eventName ? 'useFireHelperWithEventName' : 'useFireHelper',
+          data: {
+            eventName: node.parent.arguments[0]?.value,
+          },
+        });
       }
 
       runMissingTagNameRegistrationCheck() {
@@ -374,6 +420,14 @@ interface HTMLElementTagNameMap {
         }
 
         currentClassInfo.superCallCalled.add(node.property.name);
+      },
+      ['CallExpression[callee.object.type="ThisExpression"][callee.property.name="dispatchEvent"] > NewExpression[callee.name="CustomEvent"] > ObjectExpression'](
+          node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.runUseFireHelperCheck(node);
       },
       'ClassDeclaration:exit'(node) {
         if (!hasLitImport) {
