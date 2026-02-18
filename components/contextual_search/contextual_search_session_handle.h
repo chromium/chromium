@@ -16,6 +16,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/lens_server_proto/modality_chip_props.pb.h"
 
 class GURL;
 class PrefService;
@@ -103,6 +104,12 @@ class ContextualSearchSessionHandle {
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<lens::ImageEncodingOptions> image_options);
+
+  // Starts the Modality Chip upload flow for the given file token. The file
+  // token must have been previously returned by `CreateContextToken`.
+  virtual void StartModalityChipUploadFlow(
+      const base::UnguessableToken& file_token,
+      std::unique_ptr<lens::ModalityChipProps> modality_chip_props);
 
   // Removes file from context controller. Returns true if the file was found
   // and deleted.

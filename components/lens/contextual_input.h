@@ -12,6 +12,7 @@
 #include "base/memory/raw_span.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/sessions/core/session_id.h"
+#include "third_party/lens_server_proto/modality_chip_props.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -64,6 +65,11 @@ struct ContextualInputData {
   // Followup uploads for an existing document should re-use the same context
   // id.
   std::optional<int64_t> context_id;
+  // If set, the modality chip props for the context. This should be mutually
+  // exclusive with the other fields in this struct, as it corresponds to an
+  // input that is received from the server, instead of originating from the
+  // client.
+  std::optional<lens::ModalityChipProps> modality_chip_props;
   // Whether or not the contextual input data is for a context upload with
   // strong user Lens usage intent. This is usually true, but can be false for
   // the LensOverlay zero-state initial context upload.

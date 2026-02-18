@@ -207,6 +207,36 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
   }
 }
 
+void ContextualSearchSessionHandle::StartModalityChipUploadFlow(
+    const base::UnguessableToken& file_token,
+    std::unique_ptr<lens::ModalityChipProps> modality_chip_props) {
+  // Exit early if the file token is not in the list of uploaded context
+  // tokens, i.e. it was deleted before the upload flow could start.
+  auto it = std::find(uploaded_context_tokens_.begin(),
+                      uploaded_context_tokens_.end(), file_token);
+  if (it == uploaded_context_tokens_.end()) {
+    return;
+  }
+
+  auto* context_controller = GetController();
+  auto* metrics_recorder = GetMetricsRecorder();
+  if (!context_controller) {
+    return;
+  }
+  if (!metrics_recorder) {
+    return;
+  }
+
+  // TODO(crbug.com/483820565): Add UMA logging for modality chips to the
+  // metrics recorder.
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  // Create an input data with the modality chip props and no other data.
+  input_data->modality_chip_props = std::move(*modality_chip_props);
+  context_controller->StartFileUploadFlow(file_token, std::move(input_data),
+                                          /*image_options=*/std::nullopt);
+}
+
 bool ContextualSearchSessionHandle::DeleteFile(
     const base::UnguessableToken& file_token) {
   // Remove the file token from the list of uploaded context tokens.

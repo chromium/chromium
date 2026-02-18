@@ -46,6 +46,7 @@ _proto_files = [
   "lens_overlay_visual_input_type.proto",
   "lens_overlay_visual_search_interaction_data.proto",
   "lens_overlay_visual_search_interaction_log_data.proto",
+  "modality_chip_props.proto",
 ]
 
 proto_library("lens_overlay_proto") {

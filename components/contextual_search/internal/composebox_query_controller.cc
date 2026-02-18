@@ -356,29 +356,34 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
   }
   for (const auto& file_token : file_tokens) {
     auto* file_info = GetFileInfo(file_token);
-    // TODO(crbug.com/483174088): Add non-Lens context to the AddedInputs proto.
-    if (!file_info ||
-        !IsValidFileUploadStatusForMultimodalRequest(
-            file_info->upload_status) ||
-        !file_info->request_id.has_value()) {
+    if (!file_info || !IsValidFileUploadStatusForMultimodalRequest(
+                          file_info->upload_status)) {
       continue;
     }
 
-    lens::LensOverlayLensFile* lens_file =
-        added_inputs.add_added_inputs()->mutable_lens_file();
-    lens_file->set_vsrid(
-        lens::Base64EncodeRequestId(file_info->request_id.value()));
-    lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
-    auto mime_type = MimeTypeToString(file_info->mime_type);
-    if (mime_type.has_value()) {
-      lens_file->set_mime_type(mime_type.value());
-    }
-    lens_file->set_file_name(file_info->file_name);
-    if (file_info->tab_title.has_value()) {
-      lens_file->set_page_title(file_info->tab_title.value());
-    }
-    if (file_info->tab_url.has_value()) {
-      lens_file->set_page_url(file_info->tab_url.value().spec());
+    if (file_info->input_data &&
+        file_info->input_data->modality_chip_props.has_value()) {
+      // Process modality chips.
+      added_inputs.add_added_inputs()->CopyFrom(
+          file_info->input_data->modality_chip_props->added_input());
+    } else if (file_info->request_id.has_value()) {
+      // Process Lens file uploads.
+      lens::LensOverlayLensFile* lens_file =
+          added_inputs.add_added_inputs()->mutable_lens_file();
+      lens_file->set_vsrid(
+          lens::Base64EncodeRequestId(file_info->request_id.value()));
+      lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
+      auto mime_type = MimeTypeToString(file_info->mime_type);
+      if (mime_type.has_value()) {
+        lens_file->set_mime_type(mime_type.value());
+      }
+      lens_file->set_file_name(file_info->file_name);
+      if (file_info->tab_title.has_value()) {
+        lens_file->set_page_title(file_info->tab_title.value());
+      }
+      if (file_info->tab_url.has_value()) {
+        lens_file->set_page_url(file_info->tab_url.value().spec());
+      }
     }
   }
   return added_inputs;
@@ -409,7 +414,6 @@ void ComposeboxQueryController::CreateSearchUrl(
   if (is_aim_search) {
     // For AIM queries, add the added inputs param to the request url params,
     // regardless of if any of the context was a Lens upload.
-    // TODO(crbug.com/483174088): Add non-Lens context to the AddedInputs proto.
     lens::AddedInputs added_inputs =
         CreateAddedInputs(search_url_request_info->file_tokens);
     if (added_inputs.added_inputs_size() > 0) {
@@ -621,7 +625,6 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     }
 
     // Add added inputs.
-    // TODO(crbug.com/483174088): Add non-Lens context to the AddedInputs proto.
     lens::AddedInputs added_inputs =
         CreateAddedInputs(create_client_to_aim_request_info->file_tokens);
     if (added_inputs.added_inputs_size() > 0) {
@@ -673,7 +676,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // Create a file info struct to hold the file upload data.
   auto file_info = std::make_unique<FileInfo>();
   file_info->file_token = file_token;
-  file_info->mime_type = contextual_input_data->primary_content_type.value();
+  if (contextual_input_data->primary_content_type.has_value()) {
+    file_info->mime_type = contextual_input_data->primary_content_type.value();
+  } else {
+    file_info->mime_type = lens::MimeType::kUnknown;
+  }
   file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
   file_info->tab_url = contextual_input_data->page_url;
   file_info->tab_title = contextual_input_data->page_title;
@@ -687,6 +694,17 @@ void ComposeboxQueryController::StartFileUploadFlow(
   auto [it, inserted] = active_files_.emplace(file_token, std::move(file_info));
   DCHECK(inserted);
   FileInfo& current_file_info = *it->second;
+
+  if (contextual_input_data->modality_chip_props.has_value()) {
+    // If the input data is for a modality chip, then mark the file as uploaded
+    // because the chip is was received from the server.
+    current_file_info.input_data->modality_chip_props =
+        std::move(contextual_input_data->modality_chip_props.value());
+    UpdateFileUploadStatus(
+        file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+        std::nullopt);
+    return;
+  }
 
   if (contextual_input_data->context_input.has_value() &&
       !contextual_input_data->context_input->empty()) {
