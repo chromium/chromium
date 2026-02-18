@@ -48,6 +48,9 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
   void OnBeforeFormsSeen(AutofillManager& manager,
                          base::span<const FormGlobalId> updated_forms,
                          base::span<const FormGlobalId> removed_forms) override;
+  void OnAfterFormsSeen(AutofillManager& manager,
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override;
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
                               FieldTypeSource source,
@@ -62,7 +65,7 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
   std::vector<base::OnceClosure> callbacks_;
 
   // The observation for the Autofill manager of the relevant tab.
-  ScopedAutofillManagersObservation autofill_manager_observation_{this};
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 };
 
 }  // namespace autofill

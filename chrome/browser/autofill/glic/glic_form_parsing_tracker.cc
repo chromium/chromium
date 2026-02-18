@@ -39,10 +39,9 @@ base::OnceClosure WrapAsTimeoutCallback(base::OnceClosure cb,
 }  // namespace
 
 GlicFormParsingTracker::GlicFormParsingTracker(AutofillClient* client) {
-  if (client) {
-    autofill_manager_observation_.Observe(client);
+  CHECK(client);
+  autofill_managers_observation_.Observe(client);
   }
-}
 
 GlicFormParsingTracker::~GlicFormParsingTracker() = default;
 
@@ -82,13 +81,14 @@ void GlicFormParsingTracker::OnAutofillManagerStateChanged(
     AutofillManager& manager,
     AutofillDriver::LifecycleState old_state,
     AutofillDriver::LifecycleState new_state) {
-  if (old_state == AutofillDriver::LifecycleState::kActive &&
-      new_state != AutofillDriver::LifecycleState::kActive) {
+  if (new_state == AutofillDriver::LifecycleState::kPendingReset ||
+      new_state == AutofillDriver::LifecycleState::kPendingDeletion) {
     autofill::LocalFrameToken local_frame_token =
         manager.driver().GetFrameToken();
     absl::erase_if(form_parsing_status_, [local_frame_token](const auto& pair) {
       return pair.first.frame_token == local_frame_token;
     });
+
     MaybeNotifyGlic();
   }
 }
@@ -103,6 +103,24 @@ void GlicFormParsingTracker::OnBeforeFormsSeen(
   }
   for (const FormGlobalId& form_global_id : removed_forms) {
     form_parsing_status_.erase(form_global_id);
+  }
+
+  MaybeNotifyGlic();
+}
+
+void GlicFormParsingTracker::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  // If a form was seen as updated in `OnBeforeFormsSeen()`, but `manager` does
+  // not own it here, it means that it didn't satisfy the requirements for
+  // parsing it (e.g. had 0 fields). In that case, this class should not wait
+  // for it.
+  for (const FormGlobalId form_id : updated_forms) {
+    if (!manager.FindCachedFormById(form_id)) {
+      // Form was not actually parsed.
+      form_parsing_status_.erase(form_id);
+    }
   }
 
   MaybeNotifyGlic();

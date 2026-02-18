@@ -103,7 +103,7 @@ TEST_F(GlicFormParsingTrackerTest, CleanupOnLifecycleChange) {
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnAutofillManagerStateChanged,
       /*old_state=*/AutofillDriver::LifecycleState::kActive,
-      /*new_state=*/AutofillDriver::LifecycleState::kInactive);
+      /*new_state=*/AutofillDriver::LifecycleState::kPendingReset);
 
   // Verify only the form associated with the inactive frame was removed.
   const auto& status_map = test_api(tracker()).form_parsing_status();
@@ -219,6 +219,28 @@ TEST_F(GlicFormParsingTrackerTest, IgnoreSmallForms) {
 // Tests that if no forms are currently tracked, calling Wait() executes the
 // callback immediately.
 TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfNoForms) {
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+}
+
+// Tests that if Wait() is called when all tracked forms are already fully
+// parsed, the callback is executed immediately.
+TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfAlreadyParsed) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+
+  // Fully parse the form before calling Wait.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -483,6 +505,36 @@ TEST_F(GlicFormParsingTrackerTest, Wait_FeatureDisabled) {
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
+}
+
+// Tests that if a form is reported in `OnAfterFormsSeen` but has no fields,
+// it is removed from the tracking map.
+TEST_F(GlicFormParsingTrackerTest, EmptyFormRemovedAfterSeen) {
+  FormData form_data;
+  form_data.set_renderer_id(test::MakeFormRendererId());
+  // No fields added to form_data.
+
+  autofill_manager().OnFormsSeen({form_data}, {});
+  FormGlobalId form_id = form_data.global_id();
+
+  // The manager should now have a FormStructure with 0 fields.
+  // GlicFormParsingTracker::OnAfterFormsSeen is triggered by OnFormsSeen.
+  // Since the form has 0 fields, it should be erased.
+  EXPECT_FALSE(test_api(tracker()).form_parsing_status().contains(form_id));
+}
+
+// Tests that OnFieldTypesDetermined does nothing if the form is no longer
+// being tracked (e.g., it was removed from the DOM).
+TEST_F(GlicFormParsingTrackerTest, OnFieldTypesDetermined_NoOpsIfFormMissing) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  ASSERT_FALSE(autofill_manager().FindCachedFormById(form_id));
+
+  // This should not crash and should not add the form to the map.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined,
+      test::MakeFormGlobalId(),
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+  EXPECT_FALSE(test_api(tracker()).form_parsing_status().contains(form_id));
 }
 
 }  // namespace
