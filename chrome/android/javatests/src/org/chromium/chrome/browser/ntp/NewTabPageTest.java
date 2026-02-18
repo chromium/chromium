@@ -27,6 +27,7 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -900,6 +902,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage"})
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void testAiModeButton() {
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         TouchCommon.singleClickView(
@@ -907,7 +910,7 @@ public class NewTabPageTest {
                         .findViewById(
                                 org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
-        mOmnibox.checkFocus(false);
+        verifyComposeplateUrlNavigation();
     }
 
     @Test
@@ -944,7 +947,23 @@ public class NewTabPageTest {
                         .findViewById(
                                 org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
-        mOmnibox.checkFocus(false);
+        verifyComposeplateUrlNavigation();
+    }
+
+    private void verifyComposeplateUrlNavigation() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    GURL actual = mTab.getUrl();
+                    GURL expected = mTemplateUrlService.getComposeplateUrl();
+                    Criteria.checkThat(
+                            "Expected host and path to match between tab's URL "
+                                    + actual
+                                    + " and template URL service "
+                                    + expected,
+                            TextUtils.equals(actual.getHost(), expected.getHost())
+                                    && TextUtils.equals(actual.getPath(), expected.getPath()),
+                            Matchers.is(true));
+                });
     }
 
     private void verifyMostVisitedTileMargin() {
