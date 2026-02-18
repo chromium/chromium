@@ -151,10 +151,17 @@ InputStateModel::InputStateModel(
 
   // TODO(crbug.com/479254789): Once `INPUT_TYPE_BROWSER_TAB` is available from
   // server, remove this check.
-  if (std::find(state_.allowed_input_types.begin(),
-                state_.allowed_input_types.end(),
-                omnibox::INPUT_TYPE_BROWSER_TAB) ==
-      state_.allowed_input_types.end()) {
+  auto contains = [&](omnibox::InputType type) {
+    return std::find(state_.allowed_input_types.begin(),
+                     state_.allowed_input_types.end(),
+                     type) != state_.allowed_input_types.end();
+  };
+
+  // Only add browser tab if it does not already exist and both lens and image
+  // types are allowed.
+  if (!contains(omnibox::INPUT_TYPE_BROWSER_TAB) &&
+      contains(omnibox::INPUT_TYPE_LENS_IMAGE) &&
+      contains(omnibox::INPUT_TYPE_LENS_FILE)) {
     state_.allowed_input_types.push_back(omnibox::INPUT_TYPE_BROWSER_TAB);
   }
 
