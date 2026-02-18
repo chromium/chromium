@@ -2225,6 +2225,12 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const CredentialRequestOptions& options,
     const IdentityCredentialRequestOptions& identity_options) {
+  // FedCM is disabled in webview, check this early to avoid unnecessary work.
+  if (!RuntimeEnabledFeatures::FedCmEnabled(resolver->GetExecutionContext())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "FedCM is not supported."));
+    return;
+  }
   // Common errors for FedCM and WebIdentityDigitalCredential.
   if (identity_options.providers().size() == 0) {
     resolver->RejectWithTypeError("Need at least one identity provider.");

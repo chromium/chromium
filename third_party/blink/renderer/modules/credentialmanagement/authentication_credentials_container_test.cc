@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -79,8 +80,9 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   bool IsDisconnected() const { return disconnected_; }
 
   void WaitForCallToGet() {
-    if (get_callback_)
+    if (get_callback_) {
       return;
+    }
 
     loop_.Run();
   }
@@ -327,6 +329,39 @@ class CredentialManagerTestingContext {
 };
 
 }  // namespace
+
+TEST(AuthenticationCredentialsContainerTest, FedCmDisabledRejectsPromise) {
+  test::TaskEnvironment task_environment;
+  ScopedFedCmForTest fedcm_disabled(false);
+
+  MockFederatedAuthRequest mock_federated_auth_request;
+  CredentialManagerTestingContext context(
+      /*mock_credential_manager=*/nullptr, /*mock_authenticator=*/nullptr,
+      /*mock_federated_auth_request=*/&mock_federated_auth_request);
+
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  IdentityCredentialRequestOptions* identity =
+      IdentityCredentialRequestOptions::Create();
+  auto* idp = IdentityProviderRequestOptions::Create();
+  idp->setConfigURL("https://idp.example/config.json");
+  idp->setClientId("clientId");
+  identity->setProviders({idp});
+  options->setIdentity(identity);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* exception = V8DOMException::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "NotSupportedError");
+  EXPECT_EQ(exception->message(), "FedCM is not supported.");
+}
 
 class MockPublicKeyCredential : public Credential {
  public:
