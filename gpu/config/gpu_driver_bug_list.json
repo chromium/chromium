@@ -110,48 +110,11 @@
     },
     {
       "id": 31,
-      "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528],
-      "description": "The Mali-3xx/4xx/Txxx driver does not guarantee flush ordering",
+      "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528, 179815, 179250, 229643, 230896, 163464, 233612, 289461, 369316, 678508],
+      "description": "Always use virtualized contexts on Android",
       "os": {
         "type": "android"
       },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali-[T34].*",
-      "features": [
-        "use_virtualized_gl_contexts"
-      ]
-    },
-    {
-      "id": 32,
-      "cr_bugs": [179815],
-      "description": "Share groups are not working on (older?) Broadcom drivers",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Broadcom.*",
-      "features": [
-        "use_virtualized_gl_contexts"
-      ]
-    },
-    {
-      "id": 33,
-      "description": "Share group-related crashes and poor context switching perf on Imagination drivers",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Imagination.*",
-      "features": [
-        "use_virtualized_gl_contexts"
-      ]
-    },
-    {
-      "id": 34,
-      "cr_bugs": [179250, 229643, 230896],
-      "description": "Share groups are not working on (older?) Vivante drivers",
-      "os": {
-        "type": "android"
-      },
-      "gl_extensions": ".*GL_VIV_shader_binary.*",
       "features": [
         "use_virtualized_gl_contexts"
       ]
@@ -167,18 +130,6 @@
       "gl_vendor": "NVIDIA.*",
       "features": [
         "init_gl_position_in_vertex_shader"
-      ]
-    },
-    {
-      "id": 38,
-      "cr_bugs": [163464, 233612, 289461],
-      "description": "Non-virtual contexts on Qualcomm sometimes cause out-of-order frames",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Qualcomm.*",
-      "features": [
-        "use_virtualized_gl_contexts"
       ]
     },
     {
@@ -307,23 +258,6 @@
       "gl_extensions": ".*GL_VIV_shader_binary.*",
       "disabled_extensions": [
         "GL_OES_standard_derivatives"
-      ]
-    },
-    {
-      "id": 72,
-      "description": "Use virtual contexts on NVIDIA with GLES 3.1",
-      "cr_bugs": [369316],
-      "os": {
-        "type": "android"
-      },
-      "gl_type": "gles",
-      "gl_version": {
-        "op": "=",
-        "value": "3.1"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "use_virtualized_gl_contexts"
       ]
     },
     {
@@ -1031,19 +965,6 @@
       "gl_renderer": "Adreno.*",
       "features": [
         "disable_program_caching_for_transform_feedback"
-      ]
-    },
-    {
-      "id": 213,
-      "description": "The Mali-Gxx driver does not guarantee flush ordering",
-      "cr_bugs": [678508],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali-G.*",
-      "features": [
-        "use_virtualized_gl_contexts"
       ]
     },
     {
