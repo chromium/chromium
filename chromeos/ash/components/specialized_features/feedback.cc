@@ -40,7 +40,7 @@ std::string GetOsVersion() {
 // Redacts the description of the provided feedback data and returns it.
 scoped_refptr<feedback::FeedbackData> RedactFeedbackData(
     scoped_refptr<feedback::FeedbackData> feedback_data) {
-  redaction::RedactionTool redactor(/*first_party_extension_ids=*/nullptr);
+  redaction::RedactionTool redactor;
   redactor.EnableCreditCardRedaction(true);
   feedback_data->RedactDescription(redactor);
   return feedback_data;
