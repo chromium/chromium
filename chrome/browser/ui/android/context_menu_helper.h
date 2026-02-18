@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/context_menu_params.h"
@@ -49,7 +50,13 @@ class ContextMenuHelper
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
   GetChromeRenderFrame() const;
 
-  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
+
+  // A weak reference to the Java object. The Java object will be kept alive by
+  // a static map in the Java code. ScopedJavaGlobalRef would scale poorly with
+  // a large number of WebContents as each entry would consume a slot in the
+  // finite global ref table.
+  JavaObjectWeakGlobalRef java_obj_;
 
   content::ContextMenuParams context_menu_params_;
 

@@ -33,14 +33,15 @@
 #include "chrome/android/chrome_jni_headers/ContextMenuHelper_jni.h"
 
 using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
 
 ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<ContextMenuHelper>(*web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(
+  java_obj_ = JavaObjectWeakGlobalRef(
       env, Java_ContextMenuHelper_create(env, reinterpret_cast<int64_t>(this),
                                          web_contents->GetJavaWebContents()));
-  DCHECK(!java_obj_.is_null());
+  DCHECK(!java_obj_.is_uninitialized());
 }
 
 ContextMenuHelper::~ContextMenuHelper() {
@@ -48,7 +49,7 @@ ContextMenuHelper::~ContextMenuHelper() {
   extension_menu_model_.reset();
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextMenuHelper_destroy(env, java_obj_);
+  Java_ContextMenuHelper_destroy(env, GetJavaObject(env));
 }
 
 void ContextMenuHelper::ShowContextMenu(
@@ -71,7 +72,7 @@ void ContextMenuHelper::ShowContextMenu(
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
   Java_ContextMenuHelper_showContextMenu(
-      env, java_obj_,
+      env, GetJavaObject(env),
       context_menu::BuildJavaContextMenuParams(
           context_menu_params_, model_ptr,
           render_frame_host.GetProcess()->GetDeprecatedID(),
@@ -82,7 +83,7 @@ void ContextMenuHelper::ShowContextMenu(
 
 void ContextMenuHelper::DismissContextMenu() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextMenuHelper_dismissContextMenu(env, java_obj_);
+  Java_ContextMenuHelper_dismissContextMenu(env, GetJavaObject(env));
 }
 
 void ContextMenuHelper::OnContextMenuClosed(JNIEnv* env) {
@@ -93,8 +94,15 @@ void ContextMenuHelper::OnContextMenuClosed(JNIEnv* env) {
 void ContextMenuHelper::SetPopulatorFactory(
     const JavaRef<jobject>& jpopulator_factory) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextMenuHelper_setPopulatorFactory(env, java_obj_,
+  Java_ContextMenuHelper_setPopulatorFactory(env, GetJavaObject(env),
                                              jpopulator_factory);
+}
+
+ScopedJavaLocalRef<jobject> ContextMenuHelper::GetJavaObject(
+    JNIEnv* env) const {
+  auto java_obj = java_obj_.get(env);
+  CHECK(!java_obj.is_null());
+  return java_obj;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper);
