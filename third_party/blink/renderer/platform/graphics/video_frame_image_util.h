@@ -70,6 +70,18 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
+
+// Variant of the above that explicitly separates whether an accelerated draw or
+// software draw is being requested via exactly one of `snapshot_provider` and
+// `sw_draw_info` being valid.
+PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasNon2DResourceProviderSharedImage* snapshot_provider,
+    std::optional<CanvasSnapshotProvider::Info> sw_draw_info,
+    media::PaintCanvasVideoRenderer* video_renderer,
+    bool prefer_tagged_orientation,
+    bool reinterpret_video_as_srgb);
+
 PLATFORM_EXPORT bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider);
 
