@@ -836,7 +836,7 @@ public class UrlBar extends AutocompleteEditText {
                 && currentTextSize == mPreviousScrollFontSize
                 && currentIsRtl == mPreviousScrollWasRtl
                 && isVisibleTextTheSame(text)) {
-            scrollTo(mPreviousScrollResultXPosition, getScrollY());
+            scrollTo(mPreviousScrollResultXPosition, 0);
 
             return;
         }
@@ -891,7 +891,7 @@ public class UrlBar extends AutocompleteEditText {
             float width = layout.getPaint().measureText(text.toString());
             scrollPos = Math.max(0, endPointX - measuredWidth + width);
         }
-        scrollTo((int) scrollPos, getScrollY());
+        scrollTo((int) scrollPos, 0);
     }
 
     @Override
@@ -1088,7 +1088,7 @@ public class UrlBar extends AutocompleteEditText {
                 scrollPos = endPointX + measuredWidth;
             }
         }
-        scrollTo((int) scrollPos, getScrollY());
+        scrollTo((int) scrollPos, 0);
     }
 
     @Override
