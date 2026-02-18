@@ -280,7 +280,12 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 // If `kEnableOAuthMultiloginStandardCookiesBinding` is enabled, DBSC standard
 // takes precedence over DBSC prototype.
 BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_WIN)
+);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -291,7 +296,12 @@ BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
 // NOTE: This flag is meant to be used in conjunction with the
 // `kEnableOAuthMultiloginCookiesBinding` flag.
 BASE_FEATURE(kEnableOAuthMultiloginCookiesBindingServerExperiment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_WIN)
+);
 BASE_FEATURE_PARAM(bool,
                    kOAuthMultiloginCookieBindingEnforced,
                    &kEnableOAuthMultiloginCookiesBindingServerExperiment,
