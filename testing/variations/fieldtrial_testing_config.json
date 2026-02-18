@@ -16809,7 +16809,20 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledWithSharingAndEnhancedAudioResponsiveness",
+                    "params": {
+                        "sharing": "true"
+                    },
+                    "enable_features": [
+                        "EnableAudioMonitoringOnAndroid",
+                        "MediaIndicatorsAndroid"
+                    ]
+                },
+                {
                     "name": "EnabledWithEnhancedAudioResponsiveness",
+                    "params": {
+                        "sharing": "false"
+                    },
                     "enable_features": [
                         "EnableAudioMonitoringOnAndroid",
                         "MediaIndicatorsAndroid"
@@ -16817,6 +16830,9 @@
                 },
                 {
                     "name": "Enabled",
+                    "params": {
+                        "sharing": "false"
+                    },
                     "enable_features": [
                         "MediaIndicatorsAndroid"
                     ],
