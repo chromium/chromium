@@ -117,6 +117,24 @@ source_set("browser_tests") {
 }
 
 if (enable_glic) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "skills_interactive_uitest.cc" ]
+    deps = [
+      ":public",
+      ":skills",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings",
+      "//chrome/browser/glic/test_support",
+      "//components/skills:features",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [
