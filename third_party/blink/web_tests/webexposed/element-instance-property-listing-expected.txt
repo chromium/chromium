@@ -552,6 +552,7 @@ html element canvas
     property getElementTransform
     property height
     property layoutSubtree
+    property onpaint
     property toBlob
     property toDataURL
     property transferControlToOffscreen

@@ -821,6 +821,8 @@ class CORE_EXPORT LocalFrameView final
   void NotifyVideoIsDominantVisibleStatus(HTMLVideoElement* element,
                                           bool is_dominant);
 
+  void DidPaintCanvasChild(const Element&);
+
   bool HasDominantVideoElement() const;
 
   // Gets the xr overlay layer if present, or nullptr if there is none.
@@ -1304,6 +1306,11 @@ class CORE_EXPORT LocalFrameView final
   Member<TapFriendlinessChecker> tap_friendliness_checker_;
 
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;
+
+  // Set of Element children of <canvas> which painted in the current paint
+  // lifecycle update. This is cleared at the end of the lifecycle update. Used
+  // for `CanvasDrawElement`.
+  HeapHashSet<Member<const Element>> painted_canvas_child_elements_;
 
   HeapHashSet<WeakMember<HTMLVideoElement>> fullscreen_video_elements_;
 

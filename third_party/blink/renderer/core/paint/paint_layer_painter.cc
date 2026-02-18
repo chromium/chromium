@@ -583,6 +583,7 @@ PaintResult PaintLayerPainter::PaintChildren(
     return result;
   }
 
+  bool painting_canvas_child = false;
   if (auto* canvas = DynamicTo<HTMLCanvasElement>(layout_object.GetNode())) {
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
         canvas->layoutSubtree()) {
@@ -592,6 +593,8 @@ PaintResult PaintLayerPainter::PaintChildren(
       // TODO(https://crbug.com/480074850): Determine how hit test data works
       // in non-composited subtrees, and test if this is needed.
       paint_flags |= PaintFlag::kOmitCompositingInfo;
+
+      painting_canvas_child = true;
     } else {
       // Prevent canvas fallback content from being rendered.
       return result;
@@ -628,6 +631,11 @@ PaintResult PaintLayerPainter::PaintChildren(
           result = kMayBeClippedByCullRect;
         }
       }
+    }
+
+    if (painting_canvas_child && child->SelfOrDescendantNeedsRepaint()) {
+      const auto* child_el = To<Element>(child->GetLayoutObject().GetNode());
+      layout_object.GetFrameView()->DidPaintCanvasChild(*child_el);
     }
   }
 
