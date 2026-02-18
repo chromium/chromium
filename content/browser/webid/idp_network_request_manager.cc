@@ -653,9 +653,9 @@ void OnAccountsRequestParsed(
     return;
   }
 
-  const std::string* origin_salt = response_dict.FindString(kOriginSaltKey);
-  if (IsEmbedderInitiatedLoginEnabled() && origin_salt) {
-    response.origin_salt = *origin_salt;
+  const std::string* site_salt = response_dict.FindString(kSiteSaltKey);
+  if (IsEmbedderInitiatedLoginEnabled() && site_salt) {
+    response.site_salt = *site_salt;
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
@@ -995,7 +995,7 @@ IdpNetworkRequestManager::AccountsResponse::operator=(
 std::vector<IdentityRequestAccountPtr>
 IdpNetworkRequestManager::AccountsResponse::PotentialAccountsForSite(
     const std::string& site) const {
-  std::string salted_site(origin_salt + site);
+  std::string salted_site(site_salt + site);
   auto hash = crypto::hash::Sha256(salted_site);
   std::string hashed_site = base::HexEncode(hash);
 

@@ -721,7 +721,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedSites) {
       ]
     }
   ],
-  "origin_salt": "fc432178f9155c4e24762de5b9505f2e"
+  "site_salt": "fc432178f9155c4e24762de5b9505f2e"
   })";
 
   FetchStatus accounts_response;
@@ -731,7 +731,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedSites) {
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("fc432178f9155c4e24762de5b9505f2e", accounts.origin_salt);
+  EXPECT_EQ("fc432178f9155c4e24762de5b9505f2e", accounts.site_salt);
   ASSERT_THAT(
       accounts.accounts[0]->potentially_approved_site_hashes,
       ElementsAre(

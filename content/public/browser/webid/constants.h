@@ -22,7 +22,7 @@ inline constexpr char kHintsKey[] = "login_hints";
 inline constexpr char kDomainHintsKey[] = "domain_hints";
 inline constexpr char kLabelsKey[] = "labels";
 inline constexpr char kLabelHintsKey[] = "label_hints";
-inline constexpr char kOriginSaltKey[] = "origin_salt";
+inline constexpr char kSiteSaltKey[] = "site_salt";
 }  // namespace content::webid
 
 #endif  // CONTENT_PUBLIC_BROWSER_WEBID_CONSTANTS_H_

@@ -109,7 +109,7 @@ TEST_F(IdentityCredentialSourceImplTest, SuccessfulFetching) {
       content::IdentityRequestAccount::LoginState::kSignIn);
 
   IdpNetworkRequestManager::AccountsResponse accounts_response;
-  accounts_response.origin_salt = "fc432178f9155c4e24762de5b9505f2e";
+  accounts_response.site_salt = "fc432178f9155c4e24762de5b9505f2e";
   accounts_response.accounts.push_back(account);
 
   EXPECT_CALL(*network_manager_, SendAccountsRequest(_, accounts_url, _, _))
@@ -210,7 +210,7 @@ TEST_F(IdentityCredentialSourceImplTest, FilterOutSignupAccount) {
           std::vector<std::string>());
 
   IdpNetworkRequestManager::AccountsResponse accounts_response;
-  accounts_response.origin_salt = "fc432178f9155c4e24762de5b9505f2e";
+  accounts_response.site_salt = "fc432178f9155c4e24762de5b9505f2e";
   accounts_response.accounts.push_back(account_matching);
   accounts_response.accounts.push_back(account_not_matching);
 

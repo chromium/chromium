@@ -158,7 +158,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
         const std::string& site) const;
 
     std::vector<IdentityRequestAccountPtr> accounts;
-    std::string origin_salt;
+    // A salt used to compute hashes of the RP site (eTLD+1) to check against
+    // potentially_approved_site_hashes in each account. This allows the browser
+    // to filter accounts based on whether they have been used on the current
+    // site before, without the IdP knowing the current site until an account is
+    // selected.
+    std::string site_salt;
   };
 
   enum class DisconnectResponse {
