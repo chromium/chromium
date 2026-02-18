@@ -30,7 +30,8 @@ namespace base::test {
 using perfetto::protos::gen::TraceConfig;
 
 TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
-                               bool privacy_filtering);
+                               bool privacy_filtering,
+                               bool convert_to_legacy_json = false);
 
 // Use TestTraceProcessor to record Perfetto traces in unit and browser tests.
 // This API can be used to start and stop traces, run SQL queries on the trace

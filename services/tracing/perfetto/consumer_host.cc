@@ -88,8 +88,6 @@ class JsonStringOutputWriter
 
 class ConsumerHost::StreamWriter {
  public:
-  using Slice = std::string;
-
   static scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
     return base::ThreadPool::CreateSequencedTaskRunner(
         {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE});
@@ -104,10 +102,10 @@ class ConsumerHost::StreamWriter {
         disconnect_callback_(std::move(disconnect_callback)),
         callback_task_runner_(callback_task_runner) {}
 
-  void WriteToStream(std::unique_ptr<Slice> slice, bool has_more) {
+  void WriteToStream(std::string&& slice, bool has_more) {
     DCHECK(stream_.is_valid());
 
-    base::span<const uint8_t> bytes = base::as_byte_span(*slice);
+    base::span<const uint8_t> bytes = base::as_byte_span(slice);
     while (!bytes.empty()) {
       size_t actually_written_bytes = 0;
       MojoResult result = stream_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
@@ -211,25 +209,7 @@ ConsumerHost::TracingSession::TracingSession(
   std::erase_if(*pending_enable_tracing_ack_pids_,
                 [this](base::ProcessId pid) { return !IsExpectedPid(pid); });
 
-  perfetto::TraceConfig effective_config(trace_config);
-  // If we're going to convert the data to JSON, don't enable privacy filtering
-  // at the data source level since it will be performed at conversion time
-  // (otherwise there's nothing to pass through the allowlist).
-  if (convert_to_legacy_json_ && privacy_filtering_enabled_) {
-    for (auto& data_source : *effective_config.mutable_data_sources()) {
-      auto* chrome_config =
-          data_source.mutable_config()->mutable_chrome_config();
-      chrome_config->set_privacy_filtering_enabled(false);
-      // Argument filtering should still be enabled together with privacy
-      // filtering to ensure, for example, that only the expected metadata gets
-      // written.
-      base::trace_event::TraceConfig base_config(chrome_config->trace_config());
-      base_config.EnableArgumentFilter();
-      chrome_config->set_trace_config(base_config.ToString());
-    }
-  }
-
-  host_->consumer_endpoint()->EnableTracing(effective_config,
+  host_->consumer_endpoint()->EnableTracing(trace_config,
                                             std::move(output_file));
   MaybeSendEnableTracingAck();
 
@@ -428,7 +408,6 @@ void ConsumerHost::TracingSession::RequestBufferUsage(
 void ConsumerHost::TracingSession::DisableTracingAndEmitJson(
     const std::string& agent_label_filter,
     mojo::ScopedDataPipeProducerHandle stream,
-    bool privacy_filtering_enabled,
     DisableTracingAndEmitJsonCallback callback) {
   DCHECK(!read_buffers_stream_writer_);
 
@@ -437,14 +416,6 @@ void ConsumerHost::TracingSession::DisableTracingAndEmitJson(
       base::BindOnce(&TracingSession::OnConsumerClientDisconnected,
                      weak_factory_.GetWeakPtr()),
       base::SequencedTaskRunner::GetCurrentDefault());
-
-  if (privacy_filtering_enabled) {
-    // For filtering/allowlisting to be possible at JSON export time,
-    // filtering must not have been enabled during proto emission time
-    // (or there's nothing to pass through the allowlist).
-    DCHECK(!privacy_filtering_enabled_ || convert_to_legacy_json_);
-    privacy_filtering_enabled_ = true;
-  }
 
   json_agent_label_filter_ = agent_label_filter;
 
@@ -520,10 +491,8 @@ void ConsumerHost::TracingSession::ExportJson() {
 
 void ConsumerHost::TracingSession::OnJSONTraceData(std::string json,
                                                    bool has_more) {
-  auto slice = std::make_unique<StreamWriter::Slice>();
-  slice->swap(json);
   read_buffers_stream_writer_.AsyncCall(&StreamWriter::WriteToStream)
-      .WithArgs(std::move(slice), has_more);
+      .WithArgs(std::move(json), has_more);
 
   if (!has_more) {
     read_buffers_stream_writer_.Reset();
@@ -542,28 +511,29 @@ void ConsumerHost::TracingSession::OnTraceData(
     max_size += packet.size();
   }
 
+  // Copy packets into a trace slice.
+  std::string chunk;
+  chunk.reserve(max_size);
+  // Copy packets into a trace file chunk.
+  for (auto& packet : packets) {
+    auto [data, size] = packet.GetProtoPreamble();
+    chunk.append(data, size);
+    auto& slices = packet.slices();
+    for (auto& slice : slices) {
+      chunk.append(static_cast<const char*>(slice.start), slice.size);
+    }
+  }
+
+  if (privacy_filtering_enabled_) {
+    tracing::PrivacyFilteringCheck::RemoveBlockedFields(chunk);
+  }
+
   // If |trace_processor_| was initialized, then export trace as JSON.
   if (trace_processor_) {
-    // Copy packets into a trace file chunk.
-    size_t position = 0;
-    // TraceProcessorStorage::Parse(), a third-party dependency, takes
-    // std::unique_ptr<uint8_t[]> as the argument and takes ownership of the
-    // data. This makes the conversion to base::HeapArray() challenging so the
-    // code was left as-is.
-    std::unique_ptr<uint8_t[]> data(new uint8_t[max_size]);
-    for (perfetto::TracePacket& packet : packets) {
-      auto [preamble, preamble_size] = packet.GetProtoPreamble();
-      DCHECK_LT(position + preamble_size, max_size);
-      UNSAFE_TODO(memcpy(&data[position], preamble, preamble_size));
-      position += preamble_size;
-      for (const perfetto::Slice& slice : packet.slices()) {
-        DCHECK_LT(position + slice.size, max_size);
-        UNSAFE_TODO(memcpy(&data[position], slice.start, slice.size));
-        position += slice.size;
-      }
-    }
-
-    auto status = trace_processor_->Parse(std::move(data), position);
+    auto status =
+        trace_processor_->Parse(perfetto::trace_processor::TraceBlobView(
+            perfetto::trace_processor::TraceBlob::CopyFrom(
+                reinterpret_cast<uint8_t*>(chunk.data()), chunk.size())));
     // TODO(eseckler): There's no way to propagate this error at the moment - If
     // one occurs on production builds, we silently ignore it and will end up
     // producing an empty JSON result.
@@ -575,22 +545,6 @@ void ConsumerHost::TracingSession::OnTraceData(
       trace_processor_.reset();
     }
     return;
-  }
-
-  // Copy packets into a trace slice.
-  auto chunk = std::make_unique<StreamWriter::Slice>();
-  chunk->reserve(max_size);
-  for (auto& packet : packets) {
-    auto [data, size] = packet.GetProtoPreamble();
-    chunk->append(data, size);
-    auto& slices = packet.slices();
-    for (auto& slice : slices) {
-      chunk->append(static_cast<const char*>(slice.start), slice.size);
-    }
-  }
-
-  if (privacy_filtering_enabled_) {
-    tracing::PrivacyFilteringCheck::RemoveBlockedFields(*chunk);
   }
 
   read_buffers_stream_writer_.AsyncCall(&StreamWriter::WriteToStream)

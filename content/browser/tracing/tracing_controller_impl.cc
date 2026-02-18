@@ -256,9 +256,10 @@ std::vector<uint8_t> TracingControllerImpl::GetTrackEventDescriptor() {
   return track_event.SerializeAsArray();
 }
 
-bool TracingControllerImpl::StartTracing(
+bool TracingControllerImpl::StartTracingImpl(
     const base::trace_event::TraceConfig& trace_config,
-    StartTracingDoneCallback callback) {
+    StartTracingDoneCallback callback,
+    bool privacy_filtering_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(chiniforooshan): The actual value should be received by callback and
   // this function should return void.
@@ -286,8 +287,7 @@ bool TracingControllerImpl::StartTracing(
   ConnectToServiceIfNeeded();
 
   perfetto::TraceConfig perfetto_config =
-      tracing::GetDefaultPerfettoConfig(trace_config,
-                                        /*privacy_filtering_enabled=*/false,
+      tracing::GetDefaultPerfettoConfig(trace_config, privacy_filtering_enabled,
                                         /*convert_to_legacy_json=*/true);
 
   consumer_host_->EnableTracing(
@@ -313,20 +313,10 @@ bool TracingControllerImpl::StopTracing(
 
 bool TracingControllerImpl::StopTracing(
     const scoped_refptr<TraceDataEndpoint>& trace_data_endpoint,
-    const std::string& agent_label,
-    bool privacy_filtering_enabled) {
+    const std::string& agent_label) {
   if (!IsTracing() || drainer_ || !tracing_session_host_)
     return false;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Setting the argument filter is no longer supported just in the TraceConfig;
-  // clients of the TracingController that need filtering need to pass that
-  // option to StopTracing directly as an argument. This is due to Perfetto-
-  // based tracing requiring this filtering to be done during serialization
-  // time and not during tracing time.
-  // TODO(oysteine): Remove the config option once the legacy IPC layer is
-  // removed.
-  CHECK(privacy_filtering_enabled || !trace_config_->IsArgumentFilterEnabled());
 
   trace_data_endpoint_ = std::move(trace_data_endpoint);
   is_data_complete_ = false;
@@ -345,7 +335,7 @@ bool TracingControllerImpl::StopTracing(
       std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer_handle));
 
   tracing_session_host_->DisableTracingAndEmitJson(
-      agent_label, std::move(producer_handle), privacy_filtering_enabled,
+      agent_label, std::move(producer_handle),
       base::BindOnce(&TracingControllerImpl::OnReadBuffersComplete,
                      base::Unretained(this)));
 

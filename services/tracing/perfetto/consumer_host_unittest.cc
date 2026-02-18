@@ -262,16 +262,15 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
 
   void DisableTracingAndEmitJson(
       mojo::ScopedDataPipeProducerHandle stream,
-      ConsumerHost::TracingSession::DisableTracingAndEmitJsonCallback callback,
-      bool enable_privacy_filtering) {
+      ConsumerHost::TracingSession::DisableTracingAndEmitJsonCallback
+          callback) {
     base::RunLoop wait_for_call;
     task_runner_->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(
             &ConsumerHost::TracingSession::DisableTracingAndEmitJson,
             base::Unretained(consumer_.get()->tracing_session_for_testing()),
-            std::string(), std::move(stream), enable_privacy_filtering,
-            std::move(callback)),
+            std::string(), std::move(stream), std::move(callback)),
         wait_for_call.QuitClosure());
     wait_for_call.Run();
   }
@@ -426,8 +425,7 @@ class TracingConsumerTest : public testing::Test,
         std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer));
   }
 
-  void DisableTracingAndEmitJson(base::OnceClosure write_callback,
-                                 bool enable_privacy_filtering = false) {
+  void DisableTracingAndEmitJson(base::OnceClosure write_callback) {
     expect_json_data_ = true;
     MojoCreateDataPipeOptions options = {sizeof(MojoCreateDataPipeOptions),
                                          MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
@@ -436,8 +434,7 @@ class TracingConsumerTest : public testing::Test,
     MojoResult rv = mojo::CreateDataPipe(&options, producer, consumer);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     threaded_service_->DisableTracingAndEmitJson(std::move(producer),
-                                                 std::move(write_callback),
-                                                 enable_privacy_filtering);
+                                                 std::move(write_callback));
     drainer_ =
         std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer));
   }
@@ -714,18 +711,14 @@ TEST_F(TracingConsumerTest, PrivacyFilterConfigInJson) {
   threaded_perfetto_service()->CreateProducer();
   auto config =
       threaded_perfetto_service()->GetDataSourceConfig(kDataSourceName);
-  EXPECT_FALSE(config.chrome_config().privacy_filtering_enabled());
-  base::trace_event::TraceConfig base_config(
-      config.chrome_config().trace_config());
-  EXPECT_TRUE(base_config.IsArgumentFilterEnabled());
+  EXPECT_TRUE(config.chrome_config().privacy_filtering_enabled());
 
   base::RunLoop no_more_data;
   ExpectPackets("\"trace_processor_stats\":\"__stripped__\"",
                 no_more_data.QuitClosure());
 
   base::RunLoop write_done;
-  DisableTracingAndEmitJson(write_done.QuitClosure(),
-                            /* enable_privacy_filtering =*/true);
+  DisableTracingAndEmitJson(write_done.QuitClosure());
 
   no_more_data.Run();
   write_done.Run();

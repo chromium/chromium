@@ -140,7 +140,7 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
   }
 
   auto finished_dump_callback = base::BindOnce(
-      [](TraceFinishedCallback callback, bool anonymize,
+      [](TraceFinishedCallback callback,
          memory_instrumentation::mojom::RequestOutcome outcome,
          uint64_t dump_guid) {
         // Once the trace has stopped, run |callback| on the UI thread.
@@ -159,9 +159,9 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
                 std::move(finish_sink_callback));
         content::TracingController::GetInstance()->StopTracing(
             sink,
-            /*agent_label=*/"", anonymize);
+            /*agent_label=*/"");
       },
-      std::move(callback), anonymize);
+      std::move(callback));
 
   auto trigger_memory_dump_callback = base::BindOnce(
       [](base::OnceCallback<void(
@@ -179,7 +179,8 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
   // The only reason this should return false is if tracing is already enabled,
   // which we've already checked.
   bool result = content::TracingController::GetInstance()->StartTracing(
-      GetBackgroundTracingConfig(), std::move(trigger_memory_dump_callback));
+      GetBackgroundTracingConfig(), std::move(trigger_memory_dump_callback),
+      anonymize);
   DCHECK(result);
 }
 

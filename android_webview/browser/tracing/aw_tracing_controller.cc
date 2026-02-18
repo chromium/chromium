@@ -91,7 +91,8 @@ bool AwTracingController::Start(JNIEnv* env,
                               ApiCall::kTracingStartWithMemoryDump);
   }
   return content::TracingController::GetInstance()->StartTracing(
-      trace_config, content::TracingController::StartTracingDoneCallback());
+      trace_config, content::TracingController::StartTracingDoneCallback(),
+      /*privacy_filtering_enabled=*/true);
 }
 
 bool AwTracingController::StopAndFlush(JNIEnv* env) {
@@ -102,8 +103,7 @@ bool AwTracingController::StopAndFlush(JNIEnv* env) {
                               weak_factory_.GetWeakPtr()),
           base::BindOnce(&AwTracingController::OnTraceDataComplete,
                          weak_factory_.GetWeakPtr())),
-      /*agent_label=*/"",
-      /*privacy_filtering_enabled=*/true);
+      /*agent_label=*/"");
 }
 
 void AwTracingController::OnTraceDataComplete() {

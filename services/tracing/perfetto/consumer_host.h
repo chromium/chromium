@@ -90,7 +90,6 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
     void DisableTracingAndEmitJson(
         const std::string& agent_label_filter,
         mojo::ScopedDataPipeProducerHandle stream,
-        bool privacy_filtering_enabled,
         DisableTracingAndEmitJsonCallback callback) override;
 
    private:

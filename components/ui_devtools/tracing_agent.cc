@@ -165,7 +165,6 @@ class TracingAgent::PerfettoTracingSession
         this, std::move(consumer_handle));
     tracing_session_host_->DisableTracingAndEmitJson(
         agent_label_, std::move(producer_handle),
-        /*privacy_filtering_enabled=*/false,
         base::BindOnce(&PerfettoTracingSession::OnReadBuffersComplete,
                        base::Unretained(this)));
   }

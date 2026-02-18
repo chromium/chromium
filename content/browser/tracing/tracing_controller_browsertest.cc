@@ -197,7 +197,8 @@ class TracingControllerTest : public ContentBrowserTest {
                          base::Unretained(this), run_loop.QuitClosure());
 
       bool result =
-          controller->StartTracing(TraceConfig(), std::move(callback));
+          controller->StartTracing(TraceConfig(), std::move(callback),
+                                   /*privacy_filtering_enabled=*/true);
       ASSERT_TRUE(result);
       run_loop.Run();
       EXPECT_EQ(enable_recording_done_callback_count(), 1);
@@ -213,8 +214,7 @@ class TracingControllerTest : public ContentBrowserTest {
           TracingController::CreateStringEndpoint(std::move(callback));
 
       bool result =
-          controller->StopTracing(trace_data_endpoint, /*agent_label=*/"",
-                                  /*privacy_filtering_enabled=*/true);
+          controller->StopTracing(trace_data_endpoint, /*agent_label=*/"");
       ASSERT_TRUE(result);
       run_loop.Run();
       EXPECT_EQ(disable_recording_done_callback_count(), 1);

@@ -29,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_user_event.pbzero.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/test/bind.h"
@@ -876,6 +877,43 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, AddTraceEventWithProcessId) {
                 ::testing::ElementsAre("foo_memory_event",
                                        base::NumberToString(child_pids[i])));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
+                       ConvertLegacyJsonWithPrivacyFilter) {
+  auto session = perfetto::Tracing::NewTrace(perfetto::kCustomBackend);
+  session->Setup(base::test::DefaultTraceConfig(
+      TRACE_DISABLED_BY_DEFAULT("user_action_samples"), true, true));
+
+  {
+    // The test runs tracing service on the main thread and StartBlocking()
+    // can deadlock so use a RunLoop instead.
+    base::RunLoop run_loop;
+    session->SetOnStartCallback([&run_loop] { run_loop.QuitWhenIdle(); });
+    session->Start();
+    run_loop.Run();
+  }
+
+  {
+    // A trace event with chrome_user_event proto.
+    TRACE_EVENT_INSTANT(
+        TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction",
+        [&](perfetto::EventContext ctx) {
+          perfetto::protos::pbzero::ChromeUserEvent* new_sample =
+              ctx.event()->set_chrome_user_event();
+          new_sample->set_action(
+              "TestAction");  // This should not survive privacy filter.
+          new_sample->set_action_hash(42);
+        });
+  }
+
+  base::TrackEvent::Flush();
+  session->StopBlocking();
+  std::vector<char> buffer = session->ReadTraceBlocking();
+  std::string buffer_string(buffer.begin(), buffer.end());
+
+  EXPECT_TRUE(buffer_string.contains("\"action_hash\":42"));
+  EXPECT_FALSE(buffer_string.contains("\"action\":"));
 }
 
 #if BUILDFLAG(IS_POSIX)

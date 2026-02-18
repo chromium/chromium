@@ -659,7 +659,7 @@ void TestDriver::CollectResults(bool synchronous) {
   Supervisor::GetInstance()->RequestTraceWithHeapDump(
       base::BindOnce(&TestDriver::TraceFinished, base::Unretained(this),
                      std::move(finish_tracing_closure)),
-      /* anonymize= */ true);
+      /* anonymize= */ false);
 
   if (synchronous)
     run_loop->Run();

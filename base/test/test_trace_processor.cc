@@ -14,6 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
 namespace base::test {
@@ -64,7 +65,8 @@ TestTraceProcessorImpl::PerfettoSQLPackage GetChromeStdlib() {
 }  // namespace
 
 TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
-                               bool privacy_filtering) {
+                               bool privacy_filtering,
+                               bool convert_to_legacy_json) {
   TraceConfig trace_config;
   auto* buffer_config = trace_config.add_buffers();
   buffer_config->set_size_kb(4 * 1024);
@@ -73,6 +75,10 @@ TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
   auto* source_config = data_source->mutable_config();
   source_config->set_name("track_event");
   source_config->set_target_buffer(0);
+
+  auto* chrome_config = source_config->mutable_chrome_config();
+  chrome_config->set_privacy_filtering_enabled(privacy_filtering);
+  chrome_config->set_convert_to_legacy_json(convert_to_legacy_json);
 
   perfetto::protos::gen::TrackEventConfig track_event_config;
   base::trace_event::TraceConfigCategoryFilter category_filter;

@@ -335,8 +335,7 @@ interface TracingSessionHost {
   // DEPRECATED: Existing usecases only; new use cases of tracing should use the
   // streaming proto format via ReadBuffers.
   DisableTracingAndEmitJson(string agent_label_filter,
-                            handle<data_pipe_producer> stream,
-                            bool privacy_filtering_enabled) => ();
+                            handle<data_pipe_producer> stream) => ();
 };
 
 // Any client connecting to ConsumerHost should implement this interface which

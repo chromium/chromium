@@ -62,12 +62,12 @@ class TracingControllerImpl : public TracingController,
   // TracingController implementation.
   bool GetCategories(GetCategoriesDoneCallback callback) override;
   std::vector<uint8_t> GetTrackEventDescriptor() override;
-  bool StartTracing(const base::trace_event::TraceConfig& trace_config,
-                    StartTracingDoneCallback callback) override;
+  bool StartTracingImpl(const base::trace_event::TraceConfig& trace_config,
+                        StartTracingDoneCallback callback,
+                        bool privacy_filtering_enabled) override;
   bool StopTracing(const scoped_refptr<TraceDataEndpoint>& endpoint) override;
   bool StopTracing(const scoped_refptr<TraceDataEndpoint>& endpoint,
-                   const std::string& agent_label,
-                   bool privacy_filtering_enabled = false) override;
+                   const std::string& agent_label) override;
   bool GetTraceBufferUsage(GetTraceBufferUsageCallback callback) override;
   bool IsTracing() override;
 
