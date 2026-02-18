@@ -55,7 +55,8 @@ void GetEligibilityAndRunCallback(
     const GURL& url,
     optimization_guide::PageContextEligibility* page_context_eligibility,
     base::OnceCallback<
-        void(std::optional<optimization_guide::proto::AnnotatedPageContent>)>
+        void(scoped_refptr<
+             const page_content_annotations::RefCountedAnnotatedPageContent>)>
         callback,
     optimization_guide::AIPageContentResultOrError content) {
   bool is_eligible =
@@ -65,8 +66,12 @@ void GetEligibilityAndRunCallback(
            url.GetHost(), url.GetPath(),
            optimization_guide::GetFrameMetadataFromPageContent(*content),
            page_context_eligibility));
-  std::move(callback).Run(is_eligible ? std::make_optional(content->proto)
-                                      : std::nullopt);
+  std::move(callback).Run(
+      is_eligible
+          ? base::MakeRefCounted<
+                page_content_annotations::RefCountedAnnotatedPageContent>(
+                std::move(content->proto))
+          : nullptr);
 }
 
 }  // namespace
@@ -197,9 +202,8 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
         // upload.
         OnReceivedAnnotatedPageContent(
             extracted_page_content_result->is_eligible_for_server_upload
-                ? std::make_optional(
-                      extracted_page_content_result->page_content)
-                : std::nullopt);
+                ? std::move(extracted_page_content_result->page_content)
+                : nullptr);
         should_extract_apc = false;
       }
     }
@@ -220,7 +224,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
                   weak_ptr_factory_.GetWeakPtr())));
     }
   } else {
-    OnReceivedAnnotatedPageContent(/*content=*/std::nullopt);
+    OnReceivedAnnotatedPageContent(/*content=*/nullptr);
   }
 
   if (kExtractInnerTextForZeroStateSuggestions.Get()) {
@@ -277,7 +281,9 @@ void ZeroStateSuggestionsPageData::GetPageContext(
 }
 
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
-    std::optional<optimization_guide::proto::AnnotatedPageContent> content) {
+    scoped_refptr<
+        const page_content_annotations::RefCountedAnnotatedPageContent>
+        content) {
   if (annotated_page_content_done_) {
     return;
   }
@@ -359,7 +365,7 @@ void ZeroStateSuggestionsPageData::GiveUp() {
   OnReceivedInnerText(nullptr);
   OnReceivedOptimizationMetadata(
       optimization_guide::OptimizationGuideDecision::kUnknown, {});
-  OnReceivedAnnotatedPageContent(/*content=*/std::nullopt);
+  OnReceivedAnnotatedPageContent(/*content=*/nullptr);
 }
 
 void ZeroStateSuggestionsPageData::InvokePageContextCallbacksIfComplete() {
@@ -412,7 +418,8 @@ ZeroStateSuggestionsPageData::ConstructPageContextProto() const {
   page_context.set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
 
   if (annotated_page_content_) {
-    *page_context.mutable_annotated_page_content() = *annotated_page_content_;
+    *page_context.mutable_annotated_page_content() =
+        annotated_page_content_->data;
   }
   if (inner_text_result_) {
     page_context.set_inner_text(inner_text_result_->inner_text);

@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/page_user_data.h"
 
 // Convenience macro for emitting OPTIMIZATION_GUIDE_LOGs where
@@ -119,7 +120,9 @@ class ZeroStateSuggestionsPageData
 
   // Called when annotated page content is received.
   void OnReceivedAnnotatedPageContent(
-      std::optional<optimization_guide::proto::AnnotatedPageContent> content);
+      scoped_refptr<
+          const page_content_annotations::RefCountedAnnotatedPageContent>
+          content);
 
   // Called when on-demand metadata is received.
   void OnReceivedOptimizationMetadataOnDemand(
@@ -164,7 +167,7 @@ class ZeroStateSuggestionsPageData
   bool inner_text_done_ = false;
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   bool annotated_page_content_done_ = false;
-  std::optional<optimization_guide::proto::AnnotatedPageContent>
+  scoped_refptr<const page_content_annotations::RefCountedAnnotatedPageContent>
       annotated_page_content_;
   bool optimization_metadata_done_ = false;
   optimization_guide::OptimizationGuideDecision optimization_decision_;

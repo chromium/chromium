@@ -10,7 +10,7 @@ ExtractedPageContentResult::ExtractedPageContentResult() = default;
 ExtractedPageContentResult::~ExtractedPageContentResult() = default;
 
 ExtractedPageContentResult::ExtractedPageContentResult(
-    optimization_guide::proto::AnnotatedPageContent page_content,
+    scoped_refptr<const RefCountedAnnotatedPageContent> page_content,
     base::Time extraction_timestamp,
     bool is_eligible_for_server_upload,
     std::vector<uint8_t> screenshot_data)
@@ -21,7 +21,7 @@ ExtractedPageContentResult::ExtractedPageContentResult(
 
 ExtractedPageContentResult::ExtractedPageContentResult(
     const ExtractedPageContentResult& other) {
-  page_content.CopyFrom(other.page_content);
+  page_content = other.page_content;
   extraction_timestamp = other.extraction_timestamp;
   is_eligible_for_server_upload = other.is_eligible_for_server_upload;
   screenshot_data = other.screenshot_data;
@@ -29,7 +29,7 @@ ExtractedPageContentResult::ExtractedPageContentResult(
 
 ExtractedPageContentResult& ExtractedPageContentResult::operator=(
     const ExtractedPageContentResult& other) {
-  page_content.CopyFrom(other.page_content);
+  page_content = other.page_content;
   extraction_timestamp = other.extraction_timestamp;
   is_eligible_for_server_upload = other.is_eligible_for_server_upload;
   screenshot_data = other.screenshot_data;

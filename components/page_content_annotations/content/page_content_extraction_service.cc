@@ -120,17 +120,11 @@ bool PageContentExtractionService::ShouldEnablePageContentExtraction() const {
 
 void PageContentExtractionService::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent&
-        annotated_page_content,
+    scoped_refptr<const RefCountedAnnotatedPageContent> annotated_page_content,
     const std::vector<uint8_t>& screenshot_data,
     std::optional<int> tab_id) {
-  // TODO(crrev.com/c/484331007): std::move() APC into the ref counted object.
-  auto ref_counted_content =
-      base::MakeRefCounted<RefCountedAnnotatedPageContent>(
-          annotated_page_content);
-
   for (auto& observer : observers_) {
-    observer.OnPageContentExtracted(page, ref_counted_content);
+    observer.OnPageContentExtracted(page, annotated_page_content);
   }
 
   if (!is_page_content_cache_enabled_) {
@@ -145,7 +139,8 @@ void PageContentExtractionService::OnPageContentExtracted(
 
   page_content_cache_handler_->ProcessPageContentExtraction(
       tab_id, ToWebStateWrapper(web_contents),
-      ToPageContext(annotated_page_content, web_contents, screenshot_data),
+      ToPageContext(annotated_page_content->data, web_contents,
+                    screenshot_data),
       base::Time::Now());
 }
 
@@ -198,7 +193,7 @@ void PageContentExtractionService::OnVisibilityChanged(
   if (extracted_result) {
     page_content_cache_handler_->OnVisibilityChanged(
         tab_id, ToWebStateWrapper(web_contents),
-        ToPageContext(std::move(extracted_result->page_content), web_contents,
+        ToPageContext(extracted_result->page_content->data, web_contents,
                       std::move(extracted_result->screenshot_data)),
         extracted_result->extraction_timestamp);
   }

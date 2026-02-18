@@ -122,7 +122,7 @@ class PageContentExtractionService : public KeyedService,
   // observers. `tab_id` for the tab where page is loaded, if available.
   virtual void OnPageContentExtracted(
       content::Page& page,
-      const optimization_guide::proto::AnnotatedPageContent&
+      scoped_refptr<const RefCountedAnnotatedPageContent>
           annotated_page_content,
       const std::vector<uint8_t>& screenshot_data,
       std::optional<int> tab_id);

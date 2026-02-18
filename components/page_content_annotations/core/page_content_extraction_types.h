@@ -5,17 +5,22 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_EXTRACTION_TYPES_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_EXTRACTION_TYPES_H_
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace page_content_annotations {
+
+using RefCountedAnnotatedPageContent =
+    base::RefCountedData<optimization_guide::proto::AnnotatedPageContent>;
 
 struct ExtractedPageContentResult {
   ExtractedPageContentResult();
   ~ExtractedPageContentResult();
 
   ExtractedPageContentResult(
-      optimization_guide::proto::AnnotatedPageContent page_content,
+      scoped_refptr<const RefCountedAnnotatedPageContent> page_content,
       base::Time extraction_timestamp,
       bool is_eligible_for_server_upload,
       std::vector<uint8_t> screenshot_data);
@@ -26,7 +31,7 @@ struct ExtractedPageContentResult {
   ExtractedPageContentResult& operator=(ExtractedPageContentResult&&);
 
   // The AnnotatedPageContent proto that represents the page content.
-  optimization_guide::proto::AnnotatedPageContent page_content;
+  scoped_refptr<const RefCountedAnnotatedPageContent> page_content;
 
   // The timestamp when the extraction is triggered.
   base::Time extraction_timestamp;

@@ -38,12 +38,12 @@ class TestPageContentExtractionService : public PageContentExtractionService {
 
   void OnPageContentExtracted(
       content::Page& page,
-      const optimization_guide::proto::AnnotatedPageContent&
+      scoped_refptr<const RefCountedAnnotatedPageContent>
           annotated_page_content,
       const std::vector<uint8_t>& screenshot_data,
       std::optional<int> tab_id) override {
     last_extracted_content_ = ExtractedPageContentResult(
-        annotated_page_content, base::Time::Now(), false, screenshot_data);
+        std::move(annotated_page_content), base::Time::Now(), false, screenshot_data);
     extraction_count_++;
     if (quit_closure_) {
       std::move(quit_closure_).Run();
