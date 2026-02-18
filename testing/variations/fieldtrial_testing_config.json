@@ -15487,6 +15487,16 @@
                     "name": "InputOnVizEnabled",
                     "enable_features": [
                         "InputOnViz"
+                    ],
+                    "disable_features": [
+                        "InputVizardSpeculativeTransfer"
+                    ]
+                },
+                {
+                    "name": "InputOnVizEnabled_SpeculativeTransfer",
+                    "enable_features": [
+                        "InputOnViz",
+                        "InputVizardSpeculativeTransfer"
                     ]
                 }
             ]
