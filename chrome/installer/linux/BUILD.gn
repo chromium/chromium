@@ -239,8 +239,57 @@ group("linux") {
   deps = [
     ":beta",
     ":canary",
+    ":deb_repo_package",
     ":stable",
     ":unstable",
+  ]
+}
+
+action("deb_repo_package") {
+  visibility = [ ":*" ]
+  script = "debian/build_repo_package.py"
+
+  inputs = [
+    "common/installer.py",
+    "common/apt.include",
+    "common/key.include",
+    "common/repo_variables.include",
+    "common/variables.include",
+    "debian/build_repo_package.py",
+    "debian/control_repo.template",
+    "debian/postinst_repo",
+    "debian/postrm_repo",
+  ]
+
+  deps = [ ":installer_deps" ]
+
+  if (is_chrome_branded) {
+    package = "google-chrome-repo"
+  } else {
+    package = "chromium-browser-repo"
+  }
+
+  # Assume PGP_KEY_VERSION=1 for now.
+  # Ideally this would be extracted via exec_script or passed from GN.
+  pgp_key_version = "1"
+
+  outputs = [ "$root_out_dir/${package}_${pgp_key_version}_all.deb" ]
+
+  args = [
+    "-a",
+    "amd64",
+    "-b",
+    build_timestamp,
+    "-c",
+    "stable",
+    "-d",
+    branding_path_component,
+    "-o",
+    rebase_path(root_out_dir, root_build_dir),
+    "-s",
+    rebase_path(sysroot, root_build_dir),
+    "-t",
+    target_os,
   ]
 }
 
@@ -283,8 +332,11 @@ copy("deb_packaging_files") {
   sources = [
     "debian/changelog.template",
     "debian/control.template",
+    "debian/control_repo.template",
     "debian/postinst",
+    "debian/postinst_repo",
     "debian/postrm",
+    "debian/postrm_repo",
     "debian/prerm",
   ]
   outputs = [ "$root_out_dir/installer/debian/{{source_file_part}}" ]

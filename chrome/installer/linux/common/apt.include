@@ -69,7 +69,7 @@ gen_sources_content() {
 # This file will not be recreated if removed.
 X-Repolib-Name: @@MENUNAME
 Types: deb
-URIs: https://dl.google.com/linux/chrome-$CHANNEL/deb/
+URIs: https://dl.google.com/linux/chrome-@@channel/deb/
 Suites: stable
 Components: main
 Signed-By: $GPG_FILE

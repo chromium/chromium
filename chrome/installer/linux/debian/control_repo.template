@@ -1,0 +1,11 @@
+Package: @@PACKAGE
+Version: @@versionfull
+Architecture: all
+Section: web
+Priority: optional
+Maintainer: @@MAINTNAME <@@MAINTMAIL>
+Standards-Version: 3.8.0
+Description: @@SHORTDESC (repository configuration)
+ @@FULLDESC
+ .
+ This package contains the APT repository configuration and signing key.

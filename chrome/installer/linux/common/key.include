@@ -1,6 +1,12 @@
+# This must increment by 1 every time PGP_KEY_DATA is updated.
+# This is used as a priority value for the key file, so newer
+# keyrings should always take priority.
+PGP_KEY_VERSION=1
+
 PGP_KEY_CHECKSUM="=+PQZ"
 
-# Be sure to update PGP_KEY_CHECKSUM when updating PGP_KEY_DATA.
+# Be sure to update PGP_KEY_CHECKSUM and increment PGP_KEY_VERSION
+# when updating PGP_KEY_DATA.
 #
 # pub   rsa4096 2016-04-12 [SC]
 #       EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796
