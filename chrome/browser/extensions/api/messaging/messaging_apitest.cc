@@ -825,8 +825,9 @@ IN_PROC_BROWSER_TEST_F(StructuredCloneMessageSerializationApiTest,
 // -----------------------------------------------------------------------------
 //
 // The primary goal is to ensure that extensions with mismatched serialization
-// formats cannot communicate, except for specific allowed exceptions (like
-// web pages).
+// formats cannot communicate, except for specific allowed exceptions like
+// web pages who adapt their message serialization format to the target
+// extension's serialization format.
 //
 // Legend:
 // - JSON: JSON serialization.
@@ -841,15 +842,12 @@ IN_PROC_BROWSER_TEST_F(StructuredCloneMessageSerializationApiTest,
 // | Ext(SC)| Ext(J)   | sendMessage  | No            | FAIL (Port Close)|
 // | Ext(J) | Ext(SC)  | connect      | No            | FAIL (Port Close)|
 // | Ext(SC)| Ext(J)   | connect      | No            | FAIL (Port Close)|
-// | Web(J) | Ext(J)   | sendMessage  | Yes           | SUCCESS          |
-// | Web(J) | Ext(SC)  | sendMessage  | No (Allowed)  | SUCCESS          |
-// | Web(J) | Ext(SC)  | sendMessage  | No            | FAIL (Render)*   |
+// | Web    | Ext(J)   | sendMessage  | Yes (Adapts)  | SUCCESS          |
+// | Web    | Ext(SC)  | sendMessage  | Yes (Adapts)  | SUCCESS          |
 // | Ext(SC)| Native   | native       | N/A (Forces J)| FAIL (Render)**  |
 // | Ext(SC)| Native   | native       | N/A (Forces J)| SUCCESS          |
 // | Native | Ext(SC)  | native       | N/A           | SUCCESS          |
 //
-// * Web pages default to JSON serialization in the renderer, so sending SC-only
-//   types (BigInt) fails before hitting the browser.
 // ** Native messaging channels force JSON serialization in the renderer, so
 //    sending SC-only types (BigInt) fails before hitting the browser.
 
@@ -1147,15 +1145,19 @@ class WebPageMessagingSerializationInteropApiTest
   }
 };
 
-// Tests that a web page can successfully send a message to a standard JSON
-// extension.
+// Tests that a web page uses JSON serialization when messaging a JSON
+// extension. We verify the serialization format used by sending an object with
+// a `toJSON` method, which is respected by JSON.stringify but ignored by
+// structured clone. This confirms that the web page adapts to the extension's
+// preference (JSON).
 IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
-                       WebPageToJsonExtension) {
+                       WebPageToJSONExtension) {
   static constexpr char kManifest[] = R"(
       {
         "name": "JsonExtension",
         "version": "1.0",
         "manifest_version": 3,
+        "message_serialization": "json",
         "background": {
           "service_worker": "background.js"
         },
@@ -1166,10 +1168,12 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
   static constexpr char kBackground[] = R"(
     chrome.runtime.onMessageExternal.addListener(
         (message, sender, sendResponse) => {
-      if (message.greeting === 'hello') {
+      // If JSON serialization is used, `toJSON` changes `message.value`.
+      // If Structured Clone is used, the original `message.value` is kept.
+      if (message.value === 'from_toJSON') {
         sendResponse('success');
       } else {
-        sendResponse('failure');
+        sendResponse('failure: received ' + JSON.stringify(message));
       }
     });
   )";
@@ -1189,7 +1193,11 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
 
   static constexpr char kScript[] = R"(
     const extensionId = '%s';
-    chrome.runtime.sendMessage(extensionId, {greeting: "hello"}, (response) => {
+    const obj = {
+      toJSON: () => { return { value: 'from_toJSON' }; },
+      value: 'original'
+    };
+    chrome.runtime.sendMessage(extensionId, obj, (response) => {
       if (chrome.runtime.lastError) {
         window.domAutomationController.send(
           'error: ' + chrome.runtime.lastError.message);
@@ -1205,11 +1213,13 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
             GetResponseFromWebPageScriptExecution(frame, message_queue));
 }
 
-// Tests that a web page (which defaults to JSON) cannot send a message to an
-// extension using structured clone serialization. The browser disallows this
-// mismatch for web pages.
+// Tests that a web page uses structured clone serialization when messaging a
+// structured clone extension. We verify the serialization format used by
+// sending an object that can only be serialized with the structured clone
+// algorithm. This confirms that the web page adapts to the extension's
+// preference (structured clone).
 IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
-                       JSONWebPageToStructuredCloneExtension) {
+                       WebPageToStructuredCloneExtension) {
   static constexpr char kManifest[] = R"(
       {
         "name": "StructuredCloneExtension",
@@ -1226,16 +1236,13 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
   static constexpr char kBackground[] = R"(
     chrome.runtime.onMessageExternal.addListener(
         (message, sender, sendResponse) => {
-      // The extension receives the JSON message converted to a JS object.
-      if (message.greeting === 'hello') {
+      if (message === 123n) {
         sendResponse('success');
       } else {
-        sendResponse(
-          'failure: unexpected message content: ' + message.greeting);
+        sendResponse('failure');
       }
     });
   )";
-
   TestExtensionDir dir;
   dir.WriteManifest(kManifest);
   dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
@@ -1251,35 +1258,38 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
 
   static constexpr char kScript[] = R"(
     const extensionId = '%s';
-    chrome.runtime.sendMessage(extensionId, {greeting: "hello"}, (response) => {
-      if (chrome.runtime.lastError) {
-        window.domAutomationController.send(chrome.runtime.lastError.message);
-      } else {
-        window.domAutomationController.send(response);
+    try {
+        chrome.runtime.sendMessage(extensionId, 123n, (response) => {
+           if (chrome.runtime.lastError) {
+             window.domAutomationController.send(
+               'fail: ' + chrome.runtime.lastError.message);
+           } else {
+             window.domAutomationController.send(response);
+           }
+        });
+      } catch (e) {
+        window.domAutomationController.send('fail: ' + e.message);
       }
-    });
   )";
 
   ExecuteScriptAsync(frame,
                      base::StringPrintf(kScript, extension->id().c_str()));
-  EXPECT_EQ(base::StringPrintf("\"%s\"", kMessageSerializationFormatError),
+  EXPECT_EQ("\"success\"",
             GetResponseFromWebPageScriptExecution(frame, message_queue));
 }
 
-// TODO(crbug.com/40321352): Allow web page to send structured clone. This
-// currently doesn't work because we decide the serialization format in the
-// renderer and since a web page is not an extension we default to JSON
-// serialization.
-// Tests that a web page (which defaults to JSON) cannot send a message to an
-// extension using structured clone serialization.
+// Tests that a web page cannot send a message that can only be serialized by
+// the structured clone algorithm to a JSON extension. This ensures we don't
+// accidentally switch to structured clone for JSON extensions just because the
+// message is structured clone serializable.
 IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
-                       StructuredCloneWebPageToStructuredCloneExtension) {
+                       WebPageSendsStructuredCloneToJSONExtension) {
   static constexpr char kManifest[] = R"(
       {
-        "name": "StructuredCloneExtension",
+        "name": "JsonExtension",
         "version": "1.0",
         "manifest_version": 3,
-        "message_serialization": "structured_clone",
+        "message_serialization": "json",
         "background": {
           "service_worker": "background.js"
         },
@@ -1290,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
   static constexpr char kBackground[] = R"(
     chrome.runtime.onMessageExternal.addListener(
         (message, sender, sendResponse) => {
-        // Intentionally blank.
+      // Should not be reached.
     });
   )";
   TestExtensionDir dir;
@@ -1318,6 +1328,271 @@ IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
 
   ExecuteScriptAsync(frame,
                      base::StringPrintf(kScript, extension->id().c_str()));
+  EXPECT_EQ("\"success\"",
+            GetResponseFromWebPageScriptExecution(frame, message_queue));
+}
+
+// Tests that a web page will not use JSON serialization even for a message that
+// is JSON serializable when that message is to a structured clone extension.
+// This ensures we don't accidentally switch to JSON serialization for
+// structured clone extensions just because the message is JSON serializable.
+IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
+                       WebPageSendsJSONToStructuredCloneExtension) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "StructuredCloneExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "message_serialization": "structured_clone",
+        "background": {
+          "service_worker": "background.js"
+        },
+        "externally_connectable": {
+          "matches": ["*://example.com/*"]
+        }
+      })";
+  static constexpr char kBackground[] = R"(
+    chrome.runtime.onMessageExternal.addListener(
+        (message, sender, sendResponse) => {
+      // If JSON serialization is used, `toJSON` changes `message.value`.
+      // If Structured Clone is used, the original `message.value` is kept.
+      if (message.value === 'original') {
+        sendResponse('success');
+      } else {
+        sendResponse('failure: received ' + JSON.stringify(message));
+      }
+    });
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  content::DOMMessageQueue message_queue;
+  content::RenderFrameHost* frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(frame);
+
+  static constexpr char kScript[] = R"(
+    const extensionId = '%s';
+    const obj = {
+      value: 'original'
+    };
+    // Structured clone will fail to serialize a function so we must define the
+    // function as an non-enumerable property. `JSON.stringify()` will still
+    // respect `toJSON()` when serializing though.
+    Object.defineProperty(obj, 'toJSON', {
+      value: () => { return { value: 'from_toJSON' }; },
+      enumerable: false
+    });
+    chrome.runtime.sendMessage(extensionId, obj, (response) => {
+      if (chrome.runtime.lastError) {
+        window.domAutomationController.send(
+            'fail: ' + chrome.runtime.lastError.message);
+      } else {
+        window.domAutomationController.send(response);
+      }
+    });
+  )";
+
+  ExecuteScriptAsync(frame,
+                     base::StringPrintf(kScript, extension->id().c_str()));
+  EXPECT_EQ("\"success\"",
+            GetResponseFromWebPageScriptExecution(frame, message_queue));
+}
+
+// Tests that if a web page attempts to message an extension that is not
+// installed, we fallback to default JSON serialization to prevent a web page
+// from being able to determine if an extension is installed.
+IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
+                       WebPageToNonInstalledExtension) {
+  // Load a helper extension that is connectable to enable `chrome.runtime` for
+  // the web page.
+  static constexpr char kHelperManifest[] = R"(
+      {
+        "name": "HelperExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "background": { "service_worker": "background.js" },
+        "externally_connectable": { "matches": ["*://example.com/*"] }
+      })";
+  TestExtensionDir helper_dir;
+  helper_dir.WriteManifest(kHelperManifest);
+  helper_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  ASSERT_TRUE(LoadExtension(helper_dir.UnpackedPath()));
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  content::DOMMessageQueue message_queue;
+  content::RenderFrameHost* frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(frame);
+
+  // Use a valid formatted ID that is definitely not installed.
+  const std::string non_existent_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+  static constexpr char kScript[] = R"(
+    const extensionId = '%s';
+    try {
+      // `123n` requires structured clone to serialize.
+      chrome.runtime.sendMessage(extensionId, 123n, (response) => {});
+      window.domAutomationController.send('fail: serialization succeeded');
+    } catch (e) {
+      if (e.message.includes('Could not serialize message')) {
+        window.domAutomationController.send('success');
+      } else {
+        window.domAutomationController.send('fail: ' + e.message);
+      }
+    }
+  )";
+
+  ExecuteScriptAsync(frame,
+                     base::StringPrintf(kScript, non_existent_id.c_str()));
+  EXPECT_EQ("\"success\"",
+            GetResponseFromWebPageScriptExecution(frame, message_queue));
+}
+
+// Tests that if a web page attempts to message an extension that is installed,
+// but not externally connectable by the web page we fallback to default JSON
+// serialization. This is to prevent a web page from being able to determine if
+// an extension is installed.
+IN_PROC_BROWSER_TEST_F(WebPageMessagingSerializationInteropApiTest,
+                       WebPageToNonConnectableStructuredCloneExtension) {
+  // Load a helper extension that is connectable to enable `chrome.runtime` for
+  // the web page.
+  static constexpr char kHelperManifest[] = R"(
+      {
+        "name": "HelperExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "background": { "service_worker": "background.js" },
+        "externally_connectable": { "matches": ["*://example.com/*"] }
+      })";
+  TestExtensionDir helper_dir;
+  helper_dir.WriteManifest(kHelperManifest);
+  helper_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  ASSERT_TRUE(LoadExtension(helper_dir.UnpackedPath()));
+
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "NonConnectableExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "message_serialization": "structured_clone",
+        "background": {
+          "service_worker": "background.js"
+        }
+        // No externally_connectable key.
+      })";
+  static constexpr char kBackground[] = "";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  content::DOMMessageQueue message_queue;
+  content::RenderFrameHost* frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(frame);
+
+  static constexpr char kScript[] = R"(
+    const extensionId = '%s';
+    try {
+      // `123n` requires structured clone to serialize.
+      chrome.runtime.sendMessage(extensionId, 123n, (response) => {});
+      window.domAutomationController.send('fail: serialization succeeded');
+    } catch (e) {
+      if (e.message.includes('Could not serialize message')) {
+        window.domAutomationController.send('success');
+      } else {
+        window.domAutomationController.send('fail: ' + e.message);
+      }
+    }
+  )";
+
+  ExecuteScriptAsync(frame,
+                     base::StringPrintf(kScript, extension->id().c_str()));
+  EXPECT_EQ("\"success\"",
+            GetResponseFromWebPageScriptExecution(frame, message_queue));
+}
+
+// Tests that if a web page attempts to message an extension that is installed
+// but not externally connectable, and the message format would otherwise
+// mismatch (e.g. sender forced to JSON, receiver expects structured clone), we
+// still return the "does not exist" error rather than the "incompatible format"
+// error. This is to protect extension privacy since if we returned the
+// "incompatible format" error it would indicate the extension is installed even
+// if the sender has no access to send a message to that extension.
+IN_PROC_BROWSER_TEST_F(
+    WebPageMessagingSerializationInteropApiTest,
+    WebPageToNonConnectableStructuredCloneExtension_DoesNotExistError) {
+  // Load a helper extension that is connectable to enable `chrome.runtime` for
+  // the web page.
+  static constexpr char kHelperManifest[] = R"(
+      {
+        "name": "HelperExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "background": { "service_worker": "background.js" },
+        "externally_connectable": { "matches": ["*://example.com/*"] }
+      })";
+  TestExtensionDir helper_dir;
+  helper_dir.WriteManifest(kHelperManifest);
+  helper_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  ASSERT_TRUE(LoadExtension(helper_dir.UnpackedPath()));
+
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "NonConnectableExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "message_serialization": "structured_clone",
+        "background": {
+          "service_worker": "background.js"
+        }
+        // No externally_connectable key.
+      })";
+  static constexpr char kBackground[] = "";
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::DOMMessageQueue message_queue;
+  content::RenderFrameHost* frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(frame);
+
+  static constexpr char kWebPageScript[] = R"(
+    const extensionId = '%s';
+    // We send a message that is serializable, so it leaves the renderer.
+    chrome.runtime.sendMessage(extensionId, {greeting: 'hello'}, (response) => {
+      if (chrome.runtime.lastError) {
+        if (chrome.runtime.lastError.message ===
+            'Could not establish connection. Receiving end does not exist.') {
+          window.domAutomationController.send('success');
+        } else {
+          window.domAutomationController.send(
+              'fail: ' + chrome.runtime.lastError.message);
+        }
+      } else {
+        window.domAutomationController.send('fail: unexpected success');
+      }
+    });
+  )";
+
+  ExecuteScriptAsync(
+      frame, base::StringPrintf(kWebPageScript, extension->id().c_str()));
   EXPECT_EQ("\"success\"",
             GetResponseFromWebPageScriptExecution(frame, message_queue));
 }

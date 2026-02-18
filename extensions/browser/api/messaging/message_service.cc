@@ -489,35 +489,6 @@ void MessageService::OpenChannelToExtension(
     return;
   }
 
-  // Ensure the sender isn't using a serialization format that the receiver
-  // doesn't support.
-  mojom::SerializationFormat receiver_format =
-      MessageSerializationInfo::UsesStructuredClone(target_extension)
-          ? mojom::SerializationFormat::kStructuredClone
-          : mojom::SerializationFormat::kJson;
-
-  // We strictly enforce that the sender and receiver must use the same
-  // serialization format. This prevents ambiguity and potential security/data
-  // issues where a sender might think it's sending JSON but the receiver treats
-  // it as a structured clone (or vice versa), even if the data payload happens
-  // to be compatible.
-  // TODO(crbug.com/40321352): Add the ability to force web pages that
-  // communicate to extensions to use the serialization format that the receiver
-  // extensions has specified. Currently web pages default to JSON so this will
-  // stop any web page from sending a message to an extension that uses
-  // structured clone message serialization.
-  if (source_port_id.serialization_format != receiver_format) {
-    opener_port->DispatchOnDisconnect(
-        kReceivingEndIncompatibleMessageSerializationFormat);
-    for (const auto& tracking_id : open_channel_tracking_ids) {
-      message_tracker->StopTrackingMessagingStage(
-          tracking_id,
-          MessageTracker::OpenChannelMessagePipelineResult::
-              kOpenChannelFailIncompatibleMessageSerializationFormat);
-    }
-    return;
-  }
-
   // Worker specific open channel metrics tracking.
   std::string worker_status_metric_suffix;
   if (BackgroundInfo::IsServiceWorkerBased(target_extension)) {
@@ -593,6 +564,30 @@ void MessageService::OpenChannelToExtension(
       }
       return;
     }
+  }
+
+  // Ensure the sender isn't using a serialization format that the receiver
+  // doesn't support.
+  mojom::SerializationFormat receiver_format =
+      MessageSerializationInfo::UsesStructuredClone(target_extension)
+          ? mojom::SerializationFormat::kStructuredClone
+          : mojom::SerializationFormat::kJson;
+
+  // We strictly enforce that the sender and receiver must use the same
+  // serialization format. This prevents ambiguity and potential security/data
+  // issues where a sender might think it's sending JSON but the receiver treats
+  // it as a structured clone (or vice versa), even if the data payload happens
+  // to be compatible.
+  if (source_port_id.serialization_format != receiver_format) {
+    opener_port->DispatchOnDisconnect(
+        kReceivingEndIncompatibleMessageSerializationFormat);
+    for (const auto& tracking_id : open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id,
+          MessageTracker::OpenChannelMessagePipelineResult::
+              kOpenChannelFailIncompatibleMessageSerializationFormat);
+    }
+    return;
   }
 
   WebContents* source_contents = nullptr;
