@@ -13,6 +13,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "rlz/lib/assert.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,12 +64,14 @@ TEST(StringUtilsUnittest, TestBytesToString) {
   unsigned char data[] = {0x1E, 0x00, 0x21, 0x67, 0xFF};
   std::string result;
 
-  EXPECT_FALSE(rlz_lib::BytesToString(NULL, 5, &result));
-  EXPECT_FALSE(rlz_lib::BytesToString(data, 5, NULL));
-  EXPECT_FALSE(rlz_lib::BytesToString(NULL, 5, NULL));
+  EXPECT_FALSE(rlz_lib::BytesToString(base::span<uint8_t>(), &result));
+  EXPECT_FALSE(rlz_lib::BytesToString(data, NULL));
+  EXPECT_FALSE(rlz_lib::BytesToString(base::span<uint8_t>(), NULL));
 
-  EXPECT_TRUE(rlz_lib::BytesToString(data, 5, &result));
+  EXPECT_TRUE(rlz_lib::BytesToString(data, &result));
   EXPECT_EQ(std::string("1E002167FF"), result);
-  EXPECT_TRUE(rlz_lib::BytesToString(data, 4, &result));
+  EXPECT_TRUE(rlz_lib::BytesToString(base::span(data).first<4>(), &result));
+  EXPECT_EQ(std::string("1E002167"), result);
+  EXPECT_TRUE(rlz_lib::BytesToString(base::span(data).first(4u), &result));
   EXPECT_EQ(std::string("1E002167"), result);
 }

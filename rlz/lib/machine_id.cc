@@ -35,7 +35,7 @@ bool GetMachineId(std::string* machine_id) {
   unsigned char bytes[23];
   std::string str_bytes;
   base::RandBytes(bytes);
-  rlz_lib::BytesToString(bytes, sizeof(bytes), &str_bytes);
+  rlz_lib::BytesToString(bytes, &str_bytes);
   str_bytes.resize(45);
   machine_id->clear();
   base::StringAppendF(machine_id, "NONCE%s", str_bytes.c_str());
@@ -105,8 +105,7 @@ bool GetMachineIdImpl(const std::u16string& sid_string,
     rlz_lib::Crc8::Generate(id_binary.data(), kSizeWithoutChecksum,
                             &id_binary[kSizeWithoutChecksum]);
 
-  return rlz_lib::BytesToString(id_binary.data(), kSizeWithoutChecksum + 1,
-                                machine_id);
+  return rlz_lib::BytesToString(id_binary, machine_id);
 }
 
 }  // namespace testing

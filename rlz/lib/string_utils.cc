@@ -72,17 +72,16 @@ int HexStringToInteger(const char* text) {
   return number;
 }
 
-bool BytesToString(const unsigned char* data,
-                   int data_len,
-                   std::string* string) {
+bool BytesToString(base::span<uint8_t> data, std::string* string) {
   if (!string)
     return false;
 
   string->clear();
-  if (data_len < 1 || !data)
+  if (data.empty() || !data.data()) {
     return false;
+  }
 
-  *string = base::HexEncode(data, static_cast<size_t>(data_len));
+  *string = base::HexEncode(data);
   return true;
 }
 
