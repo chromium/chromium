@@ -22,7 +22,7 @@ const base::FeatureParam<std::string> kLegionProxyServerUrl{&kLegion,
 
 const base::FeatureParam<std::string> kLegionTokenServerUrl{
     &kLegion, /*name=*/"LegionTokenServerUrl",
-    /*default_value=*/"https://prod.legion.goog"};
+    /*default_value=*/"https://phosphor-pa.googleapis.com"};
 
 const base::FeatureParam<std::string> kLegionTokenServerGetInitialDataPath{
     &kLegion,
