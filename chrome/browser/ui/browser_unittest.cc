@@ -323,7 +323,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  private:
   class BookmarkBarStateTestBrowserWindow : public TestBrowserWindow {
    public:
-    BookmarkBarStateTestBrowserWindow() : browser_(nullptr) {}
+    BookmarkBarStateTestBrowserWindow() = default;
 
     BookmarkBarStateTestBrowserWindow(
         const BookmarkBarStateTestBrowserWindow&) = delete;
@@ -357,7 +357,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
                                             reason);
     }
 
-    raw_ptr<Browser, DanglingUntriaged> browser_;  // Weak ptr.
+    raw_ptr<Browser> browser_ = nullptr;
     BookmarkBar::State bookmark_bar_state_ = BookmarkBar::HIDDEN;
   };
 };
