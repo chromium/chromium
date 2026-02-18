@@ -144,11 +144,12 @@ class WindowPerformanceTest : public testing::Test,
         MakeGarbageCollected<KeyboardEvent>(type, init, start_time);
     // use start_time to simulate enqueue time.
     performance_->GetResponsivenessMetrics()
-          .SetCurrentInteractionEventQueuedTimestamp(start_time);
-    performance_->EventTimingProcessingStart(*keyboard_event, processing_start,
-                                             target);
+        .SetCurrentInteractionEventQueuedTimestamp(start_time);
+    PerformanceEventTiming* entry = performance_->EventTimingProcessingStart(
+        *keyboard_event, processing_start, target);
     keyboard_event->SetTarget(target);
-    performance_->EventTimingProcessingEnd(*keyboard_event, processing_end);
+    performance_->EventTimingProcessingEnd(entry, *keyboard_event,
+                                           processing_end);
     return performance_->event_timing_entries_.back();
   }
 
@@ -163,11 +164,12 @@ class WindowPerformanceTest : public testing::Test,
     PointerEvent* pointer_event = PointerEvent::Create(type, init, start_time);
     // use start_time to simulate enqueue time.
     performance_->GetResponsivenessMetrics()
-          .SetCurrentInteractionEventQueuedTimestamp(start_time);
-    performance_->EventTimingProcessingStart(*pointer_event, processing_start,
-                                             target);
+        .SetCurrentInteractionEventQueuedTimestamp(start_time);
+    PerformanceEventTiming* entry = performance_->EventTimingProcessingStart(
+        *pointer_event, processing_start, target);
     pointer_event->SetTarget(target);
-    performance_->EventTimingProcessingEnd(*pointer_event, processing_end);
+    performance_->EventTimingProcessingEnd(entry, *pointer_event,
+                                           processing_end);
     return performance_->event_timing_entries_.back();
   }
 
@@ -185,8 +187,7 @@ class WindowPerformanceTest : public testing::Test,
 
     return PerformanceEventTiming::Create(
         name, reporting_info, false, nullptr,
-        LocalDOMWindow::From(GetScriptState()),
-        performance_->NavigationId());
+        LocalDOMWindow::From(GetScriptState()), performance_->NavigationId());
   }
 
   HeapVector<Member<PerformanceEventTiming>>*
@@ -591,8 +592,9 @@ TEST_P(WindowPerformanceTest, NestedEventInProcessingTime) {
   init->setKeyCode(4);
   KeyboardEvent* keyboard_event = MakeGarbageCollected<KeyboardEvent>(
       event_type_names::kKeypress, init, GetTimeOrigin());
-  performance_->EventTimingProcessingStart(
-      *keyboard_event, GetTimeOrigin() + base::Milliseconds(1), nullptr);
+  PerformanceEventTiming* keyboard_entry =
+      performance_->EventTimingProcessingStart(
+          *keyboard_event, GetTimeOrigin() + base::Milliseconds(1), nullptr);
 
   UIEventInit* event_init = UIEventInit::Create();
   event_init->setBubbles(true);
@@ -600,13 +602,14 @@ TEST_P(WindowPerformanceTest, NestedEventInProcessingTime) {
   event_init->setComposed(true);
   UIEvent* event = MakeGarbageCollected<UIEvent>(event_type_names::kBeforeinput,
                                                  event_init, GetTimeOrigin());
-  performance_->EventTimingProcessingStart(
-      *event, GetTimeOrigin() + base::Milliseconds(2), nullptr);
+  PerformanceEventTiming* event_entry =
+      performance_->EventTimingProcessingStart(
+          *event, GetTimeOrigin() + base::Milliseconds(2), nullptr);
 
   performance_->EventTimingProcessingEnd(
-      *event, GetTimeOrigin() + base::Milliseconds(4));
+      event_entry, *event, GetTimeOrigin() + base::Milliseconds(4));
   performance_->EventTimingProcessingEnd(
-      *keyboard_event, GetTimeOrigin() + base::Milliseconds(5));
+      keyboard_entry, *keyboard_event, GetTimeOrigin() + base::Milliseconds(5));
 
   base::TimeTicks presentation_time = GetTimeOrigin() + base::Seconds(6.0);
   SimulateAllRenderingStages(presentation_time);

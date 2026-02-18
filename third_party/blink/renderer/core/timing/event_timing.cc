@@ -43,8 +43,8 @@ EventTiming::EventTiming(base::TimeTicks processing_start,
                          const Event& event,
                          EventTarget* hit_test_target)
     : performance_(performance), event_(&event) {
-  performance_->EventTimingProcessingStart(event, processing_start,
-                                           hit_test_target);
+  entry_ = performance_->EventTimingProcessingStart(event, processing_start,
+                                                    hit_test_target);
 }
 
 // static
@@ -103,8 +103,9 @@ std::optional<EventTiming> EventTiming::TryCreate(
   // some event types which can be filtered are tracked at the point
   // where they may be filtered. This condition check ensures we don't create
   // two EventTiming objects for the same Event.
-  if (performance->GetCurrentEventTimingEvent() == &event)
+  if (performance->GetCurrentEventTimingEvent() == &event) {
     return std::nullopt;
+  }
 
   base::TimeTicks processing_start = Now();
 
@@ -121,9 +122,9 @@ void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
 }
 
 EventTiming::~EventTiming() {
-  // event_ might potentially be null if this is std::move()-ed.
-  if (event_) {
-    performance_->EventTimingProcessingEnd(*event_, Now());
+  // performance_ might be null if this is std::move()-ed.
+  if (event_ && performance_) {
+    performance_->EventTimingProcessingEnd(entry_, *event_, Now());
   }
 }
 

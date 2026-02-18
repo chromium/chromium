@@ -29,6 +29,7 @@ enum class FallbackReason {
   kSwapPromiseBroken,
   kMacOSArtificialEvent,
   kDoesNotNeedNextPaint,
+  kWindowDestroyed,
 };
 
 class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {

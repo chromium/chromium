@@ -108,10 +108,12 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   //
   // Will create a `PerformanceEventTiming`, and if needed, requests the next
   // presentation time to calculate the full |duration| to next paint.
-  void EventTimingProcessingStart(const Event& event,
-                                  base::TimeTicks processing_start,
-                                  EventTarget* hit_test_target);
-  void EventTimingProcessingEnd(const Event& event,
+  PerformanceEventTiming* EventTimingProcessingStart(
+      const Event& event,
+      base::TimeTicks processing_start,
+      EventTarget* hit_test_target);
+  void EventTimingProcessingEnd(PerformanceEventTiming* entry,
+                                const Event& event,
                                 base::TimeTicks processing_end);
 
   // Set commit finish time for all pending events that have finished processing
@@ -302,6 +304,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // Calculate responsiveness metrics and record UKM for them.
   Member<ResponsivenessMetrics> responsiveness_metrics_;
+
+  uint32_t event_nesting_level_ = 0;
+
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
 

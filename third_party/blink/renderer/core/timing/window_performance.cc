@@ -572,12 +572,12 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
   }
 }
 
-void WindowPerformance::EventTimingProcessingStart(
+PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
     const Event& event,
     base::TimeTicks processing_start,
     EventTarget* hit_test_target) {
   if (!DomWindow() || !DomWindow()->GetFrame()) {
-    return;
+    return nullptr;
   }
   DCHECK(!processing_start.is_null());
 
@@ -620,6 +620,11 @@ void WindowPerformance::EventTimingProcessingStart(
   // or the previous frame.
   reporting_info.prevent_counting_as_interaction |= IsAutoscrollActive();
 
+  if (event_nesting_level_ > 0) {
+    reporting_info.is_processing_fully_nested_in_another_event = true;
+  }
+  event_nesting_level_++;
+
   // We always have a Hit test target before starting event dispatch.  During
   // event dispatch we might change target via event retargetting or
   // pointer-capture (or any number of other features).
@@ -640,43 +645,37 @@ void WindowPerformance::EventTimingProcessingStart(
 
   event_timing_entries_.push_back(entry);
   current_event_ = &event;
+  return entry;
 }
 
 void WindowPerformance::EventTimingProcessingEnd(
+    PerformanceEventTiming* entry,
     const Event& event,
     base::TimeTicks processing_end) {
   current_event_ = nullptr;
   DCHECK(!processing_end.is_null());
 
-  if (!DomWindow() || !DomWindow()->GetFrame()) {
+  if (!entry) {
     return;
   }
-  const AtomicString& event_type = event.type();
-  auto iter = std::find_if(event_timing_entries_.rbegin(),
-                           event_timing_entries_.rend(), [](const auto& event) {
-                             return event->GetEventTimingReportingInfo()
-                                 ->processing_end_time.is_null();
-                           });
-  CHECK(iter != event_timing_entries_.rend());
-  PerformanceEventTiming* entry = *iter;
-  CHECK(entry);
-  CHECK(entry->name() == event_type);
+
+  CHECK_GT(event_nesting_level_, 0u);
+  event_nesting_level_--;
+
+  const AtomicString& event_type = entry->name();
 
   PerformanceEventTiming::EventTimingReportingInfo* reporting_info =
       entry->GetEventTimingReportingInfo();
   CHECK(reporting_info);
   reporting_info->processing_end_time = processing_end;
 
-  if (auto pre_iter = std::next(iter);
-      pre_iter != event_timing_entries_.rend()) {
-    auto iter_null_time = std::find_if(
-        event_timing_entries_.begin(), pre_iter.base(), [](const auto& event) {
-          return event->GetEventTimingReportingInfo()
-              ->processing_end_time.is_null();
-        });
-    if (iter_null_time != pre_iter.base()) {
-      reporting_info->is_processing_fully_nested_in_another_event = true;
-    }
+  // Windows (like iframes or open tabs) can become detached in the middle of
+  // the event, when the event itself does the detaching.
+  // ReportEventTimings() requires a window, so we likely won't ever report this
+  // event anywhere, but let's still return the bookkeeping to a clean state.
+  if (!DomWindow() || !DomWindow()->GetFrame()) {
+    entry->UpdateFallbackTime(processing_end, FallbackReason::kWindowDestroyed);
+    return;
   }
 
   // "Artificial" pointerup events will re-use the same timestamp as the
@@ -703,7 +702,6 @@ void WindowPerformance::EventTimingProcessingEnd(
 
   // Request presentation time first, because this might increment presentation
   // index
-  // TODO(crbug.com/)
   if (need_new_promise_for_event_presentation_time_) {
     DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
         *DomWindow()->GetFrame(),

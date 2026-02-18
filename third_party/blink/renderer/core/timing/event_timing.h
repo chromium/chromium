@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_EVENT_TIMING_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -37,8 +38,16 @@ class CORE_EXPORT EventTiming final {
   ~EventTiming();
   EventTiming(const EventTiming&) = delete;
   EventTiming& operator=(const EventTiming&) = delete;
-  EventTiming(EventTiming&&) = default;
-  EventTiming& operator=(EventTiming&&) = default;
+  EventTiming(EventTiming&& other)
+      : performance_(std::exchange(other.performance_, nullptr)),
+        event_(std::exchange(other.event_, nullptr)),
+        entry_(std::exchange(other.entry_, nullptr)) {}
+  EventTiming& operator=(EventTiming&& other) {
+    performance_ = std::exchange(other.performance_, nullptr);
+    event_ = std::exchange(other.event_, nullptr);
+    entry_ = std::exchange(other.entry_, nullptr);
+    return *this;
+  }
 
   static void HandleInputDelay(LocalDOMWindow* window,
                                const Event& event,
@@ -56,8 +65,9 @@ class CORE_EXPORT EventTiming final {
                        EventTarget* hit_test_target);
 
   // Data members:
-  Persistent<WindowPerformance> performance_;
-  Persistent<const Event> event_;
+  WindowPerformance* performance_;
+  const Event* event_;
+  PerformanceEventTiming* entry_;
 };
 
 }  // namespace blink
