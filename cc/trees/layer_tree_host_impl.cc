@@ -1438,7 +1438,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
             << "crbug.com/454680865: Viz damage does not contain client "
                "damage! "
             << "Client: " << root_layer_damage_rect_.ToString()
-            << " Viz: " << viz_damage_rect.ToString();
+            << " Viz: " << viz_damage_rect.ToString() << " Viz content rect: "
+            << active_tree_->RootRenderSurface()->content_rect().ToString();
       }
     }
 
