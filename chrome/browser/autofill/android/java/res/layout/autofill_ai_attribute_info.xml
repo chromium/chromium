@@ -26,13 +26,12 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.TextLarge"/>
 
-    <!-- TODO: crbug.com/460410690 - Implement accessibility labels to clearly
-         distinguish between the new and old attribute values. -->
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/old_attribute_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.TextLarge.Disabled"/>
+        android:textAppearance="@style/TextAppearance.TextLarge.Disabled"
+        android:visibility="gone" />
 
 </LinearLayout>
