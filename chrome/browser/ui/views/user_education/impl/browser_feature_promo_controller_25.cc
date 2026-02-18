@@ -68,7 +68,7 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
           if (info.priority != Priority::kHigh) {
             preconditions.AddPrecondition(
                 browser_context->GetSharedPrecondition(
-                    kNoCriticalNoticeShowingPrecondition));
+                    kActorNotActuatingActiveTabPrecondition));
           }
           return preconditions;
         },
