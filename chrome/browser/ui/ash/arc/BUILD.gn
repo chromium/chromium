@@ -43,6 +43,8 @@ static_library("arc") {
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/vector_icons",
     "//chromeos/ash/experiences/arc/vm_data_migration",
+    "//chromeos/ash/experiences/settings_ui",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//components/web_modal",
     "//content/public/browser",

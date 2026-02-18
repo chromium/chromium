@@ -50,6 +50,8 @@ source_set("quick_answers") {
     "//chrome/browser/ui/ash/quick_answers/ui:typography",
     "//chrome/browser/ui/ash/read_write_cards",
     "//chrome/browser/ui/color:color_headers",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/kiosk",
     "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/quick_answers",

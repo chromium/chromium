@@ -27,7 +27,8 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
@@ -341,16 +342,25 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
+  if (!user) {
+    // TODO(crbug.com/447287122): Revisit here to see if the profile is always
+    // a user profile.
+    return;
+  }
   switch (QuickAnswersState::GetFeatureType()) {
     case QuickAnswersState::FeatureType::kQuickAnswers:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kSearchSubpagePath,
-          chromeos::settings::mojom::Setting::kQuickAnswersOnOff);
+      ash::SettingsAppManager::Get()->Open(
+          *user, {.sub_page = chromeos::settings::mojom::kSearchSubpagePath,
+                  .setting_id =
+                      chromeos::settings::mojom::Setting::kQuickAnswersOnOff});
       return;
     case QuickAnswersState::FeatureType::kHmr:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kSystemPreferencesSectionPath,
-          chromeos::settings::mojom::Setting::kMahiOnOff);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kSystemPreferencesSectionPath,
+           .setting_id = chromeos::settings::mojom::Setting::kMahiOnOff});
       return;
   }
 

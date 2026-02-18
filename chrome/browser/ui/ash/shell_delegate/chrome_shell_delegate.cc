@@ -22,6 +22,7 @@
 #include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -70,7 +71,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
@@ -83,7 +83,10 @@
 #include "chromeos/ash/components/specialized_features/feedback.h"
 #include "chromeos/ash/experiences/clipboard/clipboard_history_controller_delegate_impl.h"
 #include "chromeos/ash/experiences/clipboard/clipboard_image_model_factory_impl.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/views/server_holder.h"
 #include "components/user_manager/user_manager.h"
@@ -537,10 +540,18 @@ std::string ChromeShellDelegate::GetVersionString() {
 }
 
 void ChromeShellDelegate::OpenMultitaskingSettings() {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kSystemPreferencesSectionPath,
-      chromeos::settings::mojom::Setting::kSnapWindowSuggestions);
+  auto* session = session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    // TODO(crbug.com/447287122): Revisit here to see if there always is
+    // an active session.
+    return;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUser(session->account_id())),
+      {.sub_page = chromeos::settings::mojom::kSystemPreferencesSectionPath,
+       .setting_id =
+           chromeos::settings::mojom::Setting::kSnapWindowSuggestions});
 }
 
 bool ChromeShellDelegate::IsNoFirstRunSwitchOn() const {

@@ -12,12 +12,14 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -33,13 +35,15 @@
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -307,12 +311,21 @@ void LoginScreenClientImpl::ShowParentAccessHelpApp() {
 }
 
 void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
-      std::string(chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2) +
-          "?settingId=" +
-          base::NumberToString(static_cast<int>(
-              chromeos::settings::mojom::Setting::kLockScreenNotification)));
+  // TODO(crbug.com/447287122): Revisit here to pass the appropriate user
+  // context here.
+  auto* session = session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    return;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUser(session->account_id())),
+      {.sub_page = base::StrCat(
+           {chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2,
+            "?settingId=",
+            base::NumberToString(
+                static_cast<int>(chromeos::settings::mojom::Setting::
+                                     kLockScreenNotification))})});
 }
 
 void LoginScreenClientImpl::OnFocusLeavingSystemTray(bool reverse) {
