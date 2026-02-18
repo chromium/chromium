@@ -166,6 +166,48 @@ public class TopInsetCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnApplyWindowInsets_ToolbarSwipe() {
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        setBackgroundType(NtpBackgroundType.DEFAULT, NtpBackgroundType.CHROME_COLOR);
+
+        when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.TOOLBAR_SWIPE);
+        mTabSupplier.set(null);
+        clearInvocations(mObserver);
+
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+
+        // Verify that notifyObservers() is called because it's a toolbar swipe.
+        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(false));
+    }
+
+    @Test
+    public void testOnApplyWindowInsets_NullTab_ReturnEarly() {
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        setBackgroundType(NtpBackgroundType.DEFAULT, NtpBackgroundType.CHROME_COLOR);
+
+        when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mTabSupplier.set(null);
+        clearInvocations(mObserver);
+
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+
+        // Verify that notifyObservers() is NOT called.
+        verify(mObserver, never()).onToEdgeChange(any(Integer.class), any(Boolean.class));
+    }
+
+    @Test
+    public void testOnApplyWindowInsets_NullTab_NullLayoutStateProvider_ReturnEarly() {
+        // mLayoutStateProviderSupplier is not set, so mLayoutStateProvider is null in coordinator.
+        mTabSupplier.set(null);
+        clearInvocations(mObserver);
+
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+
+        // Verify that notifyObservers() is NOT called.
+        verify(mObserver, never()).onToEdgeChange(any(Integer.class), any(Boolean.class));
+    }
+
+    @Test
     public void testOnTabSwitched_RetriggerOnApplyWindowInsets() {
         // Verifies that retriggerOnApplyWindowInsets() is called if the new tab is a NTP.
         setCurrentTab(mNtpTab);

@@ -1053,4 +1053,17 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         sForceStaleCaptureHistogram = true;
         return () -> sForceStaleCaptureHistogram = false;
     }
+
+    @Override
+    public void doSynchronousLayoutAndCapture() {
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+
+        measure(widthSpec, heightSpec);
+        layout(getLeft(), getTop(), getLeft() + getMeasuredWidth(), getTop() + getMeasuredHeight());
+
+        ViewResourceAdapter resourceAdapter = getToolbarResourceAdapter();
+        resourceAdapter.invalidate(null);
+        resourceAdapter.triggerBitmapCapture();
+    }
 }
