@@ -277,9 +277,7 @@ NSString* GetTurnOffCaptionTitleString() {
   imageHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   imageHeightConstraint.active = YES;
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                      withAction:@selector(updateImageOnTraitChange)];
 }
 

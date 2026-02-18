@@ -39,9 +39,8 @@
   [_formInputAccessoryView setUpWithLeadingView:nil navigationDelegate:self];
   [self setShouldHideDoneButton:YES];
   [self updateUIForEditState];
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
+
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                      withAction:@selector
                      (hideFormInputAccessoryViewOnTraitChange)];
 }

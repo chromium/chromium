@@ -60,9 +60,7 @@
       [imageView.heightAnchor constraintEqualToConstant:0];
   [self updateImageViewVisibility];
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                      withAction:@selector(updateImageViewVisibility)];
 }
 

@@ -37,9 +37,8 @@
   self.tableView.accessibilityIdentifier =
       kGoogleServicesSettingsViewIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(closePopoverOnTraitChange)];
 }
 

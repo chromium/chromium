@@ -171,9 +171,8 @@ CGFloat TrashIconSize() {
   _tableViewHeightConstraint = [_tableView.heightAnchor
       constraintEqualToConstant:_tableView.contentSize.height];
   _tableViewHeightConstraint.active = YES;
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(updateBottomSheetHeight)];
 }
 
