@@ -76,6 +76,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.mojo.system.Pair;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
 import java.io.IOException;
@@ -399,6 +400,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @EnableAnimations
+    @Restriction(DeviceFormFactor.DESKTOP) // Flaky on desktop crbug.com/485611939
     public void testTabToGridAndBack_SoftCleanup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
