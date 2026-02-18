@@ -344,6 +344,8 @@ class ProfilePickerUIPixelTest
         return SigninUIError::UsernameNotAllowedByPatternFromPrefs(kEmail);
       case SigninUIError::Type::kWrongReauthAccount:
         return SigninUIError::WrongReauthAccount(kEmail, kOtherEmail);
+      case SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile:
+        NOTREACHED() << "Not tested yet.";
       case SigninUIError::Type::kProfileWasUsedByAnotherAccount:
         // This error uses a dedicated profile picker view, not the modal error
         // dialog. See `ProfilePickerSignInProvider::ShowSigninError`.

@@ -601,7 +601,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="SigninDisallowed"/>
   <int value="9" label="SigninCookiesDisallowed"/>
   <int value="10" label="NoIdentityManager"/>
-  <int value="11" label="kMaxValue"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/signin_ui_error.h:SigninUIErrorType) -->
