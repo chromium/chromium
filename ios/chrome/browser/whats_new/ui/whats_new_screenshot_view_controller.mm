@@ -102,9 +102,8 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
     [self configureLabelView];
   }
   [self layoutAlertScreen];
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits
+
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(toggleDarkModeOnTraitChange)];
 
   [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
