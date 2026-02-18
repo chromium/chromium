@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -57,6 +58,13 @@ class TabStripComboButtonInteractiveUiTest
                  WaitForShow(kVerticalTabStripProjectsButtonElementId));
   }
 
+  auto ExecuteUnpinCommand(ui::ElementIdentifier id, int command_id) {
+    return WithView(id, [command_id](views::View* button) {
+      views::AsViewClass<TabStripComboButton>(button->parent())
+          ->ExecuteCommand(command_id, 0);
+    });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -103,19 +111,10 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true));
 }
 
-// TODO(crbug.com/485281827): Fix and re-enable.
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
-                       DISABLED_UnpinTabSearch) {
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      // Right click tab search button to open context menu.
-      MoveMouseTo(kTabSearchButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          InAnyContext(
-              WaitForShow(TabStripComboButton::kTabSearchUnpinMenuItem)),
-          InAnyContext(SelectMenuItem(
-              TabStripComboButton::kTabSearchUnpinMenuItem))),
+      ExecuteUnpinCommand(kTabSearchButtonElementId, IDC_TAB_SEARCH_TOGGLE_PIN),
       // Verify button is hidden and pref is updated.
       WaitForHide(kTabSearchButtonElementId),
       CheckResult(
@@ -130,14 +129,8 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                        UnpinProjectsPanel) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      // Right click projects panel button to open context menu.
-      MoveMouseTo(kVerticalTabStripProjectsButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          InAnyContext(
-              WaitForShow(TabStripComboButton::kProjectsPanelUnpinMenuItem)),
-          InAnyContext(SelectMenuItem(
-              TabStripComboButton::kProjectsPanelUnpinMenuItem))),
+      ExecuteUnpinCommand(kVerticalTabStripProjectsButtonElementId,
+                          IDC_PROJECTS_PANEL_TOGGLE_PIN),
       // Verify button is hidden and pref is updated.
       WaitForHide(kVerticalTabStripProjectsButtonElementId),
       CheckResult(
@@ -167,27 +160,26 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
     return Steps(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
                  SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true),
                  WaitForShow(kTabSearchButtonElementId),
-                 WaitForShow(kSavedTabGroupButtonElementId),
-                 FinishTabstripAnimations());
+                 WaitForShow(kSavedTabGroupButtonElementId));
+  }
+
+  auto ExecuteUnpinCommand(ui::ElementIdentifier id, int command_id) {
+    return WithView(id, [command_id](views::View* button) {
+      views::AsViewClass<TabStripComboButton>(button->parent())
+          ->ExecuteCommand(command_id, 0);
+    });
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/485281827): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
-                       DISABLED_UnpinEverythingMenu) {
+                       UnpinEverythingMenu) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      // Right click everything menu button to open context menu.
-      MoveMouseTo(kSavedTabGroupButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          InAnyContext(
-              WaitForShow(TabStripComboButton::kEverythingMenuUnpinMenuItem)),
-          InAnyContext(SelectMenuItem(
-              TabStripComboButton::kEverythingMenuUnpinMenuItem))),
+      ExecuteUnpinCommand(kSavedTabGroupButtonElementId,
+                          IDC_EVERYTHING_MENU_TOGGLE_PIN),
       // Verify button is hidden and pref is updated.
       WaitForHide(kSavedTabGroupButtonElementId),
       CheckResult(
