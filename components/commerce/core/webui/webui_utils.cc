@@ -171,20 +171,6 @@ shared::mojom::ProductInfoPtr ProductInfoToMojoProduct(
   return product_info;
 }
 
-shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
-    const ProductSpecificationsSet& set) {
-  auto set_ptr = shared::mojom::ProductSpecificationsSet::New();
-
-  set_ptr->name = set.name();
-  set_ptr->uuid = set.uuid();
-
-  for (const auto& url : set.urls()) {
-    set_ptr->urls.push_back(url);
-  }
-
-  return set_ptr;
-}
-
 shared::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
     bookmarks::BookmarkModel& model,
     const bookmarks::BookmarkNode* node,

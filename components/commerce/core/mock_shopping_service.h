@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -22,8 +21,6 @@ class BookmarkNode;
 namespace commerce {
 
 class AccountChecker;
-class MockClusterManager;
-class MockProductSpecificationsService;
 
 // A mock ShoppingService that allows us to decide the response.
 class MockShoppingService : public commerce::ShoppingService {
@@ -123,16 +120,6 @@ class MockShoppingService : public commerce::ShoppingService {
               GetDiscountInfoForUrl,
               (const GURL& url, DiscountInfoCallback callback),
               (override));
-  MOCK_METHOD(void,
-              GetProductSpecificationsForUrls,
-              (const std::vector<GURL>& urls,
-               ProductSpecificationsCallback callback),
-              (override));
-  MOCK_METHOD(ProductSpecificationsService*,
-              GetProductSpecificationsService,
-              (),
-              (override));
-  MOCK_METHOD(ClusterManager*, GetClusterManager, (), (override));
 
   // Make this mock permissive for all features but default to providing empty
   // data for all accessors of shopping data.
@@ -163,13 +150,6 @@ class MockShoppingService : public commerce::ShoppingService {
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
   void SetResponseForGetDiscountInfoForUrl(
       const std::vector<DiscountInfo>& infos);
-  void SetResponseForGetProductSpecificationsForUrls(
-      ProductSpecifications specs);
-
- private:
-  std::unique_ptr<MockProductSpecificationsService>
-      product_specifications_service_;
-  std::unique_ptr<MockClusterManager> cluster_manager_;
 };
 
 }  // namespace commerce

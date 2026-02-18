@@ -7084,7 +7084,6 @@ test("unit_tests") {
     "//chrome/browser/btm:unit_tests",
     "//chrome/browser/chooser_controller:unit_tests",
     "//chrome/browser/commerce",
-    "//chrome/browser/commerce:unit_tests",
     "//chrome/browser/complex_tasks:unit_tests",
     "//chrome/browser/content_extraction",
     "//chrome/browser/content_index:unit_tests",

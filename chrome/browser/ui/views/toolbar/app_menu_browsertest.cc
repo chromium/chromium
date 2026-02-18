@@ -52,8 +52,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -83,8 +83,7 @@ class AppMenuBrowserTest : public UiBrowserTest {
     // disruptive notification revocation (or other SH feature).
     scoped_feature_list_.InitWithFeatures(
         {}, /*disabled_features=*/{
-            features::kSafetyHubDisruptiveNotificationRevocation,
-            commerce::kProductSpecifications});
+            features::kSafetyHubDisruptiveNotificationRevocation});
   }
 
   // UiBrowserTest:

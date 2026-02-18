@@ -108,8 +108,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetPasswordSenderService(nullptr);
   controller_builder.SetPlusAddressServices(nullptr, nullptr);
   controller_builder.SetPrefServiceSyncable(nullptr);
-  // TODO(crbug.com/330201909) implement for iOS.
-  controller_builder.SetProductSpecificationsService(nullptr);
   controller_builder.SetSendTabToSelfSyncService(nullptr);
   controller_builder.SetSessionSyncService(nullptr);
   controller_builder.SetSharingMessageBridge(nullptr);

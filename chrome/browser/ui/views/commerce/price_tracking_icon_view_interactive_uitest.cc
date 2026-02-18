@@ -579,8 +579,7 @@ class PriceTrackingIconViewErrorHandelingTest
     test_features_.InitWithFeaturesAndParameters(
         {{commerce::kShoppingList,
           {{commerce::kRevertIconOnFailureParam, "true"}}}},
-        {commerce::kPriceInsights, commerce::kEnableDiscountInfoApi,
-         commerce::kProductSpecifications});
+        {commerce::kPriceInsights, commerce::kEnableDiscountInfoApi});
   }
 
  private:

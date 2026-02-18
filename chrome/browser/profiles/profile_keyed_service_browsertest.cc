@@ -963,10 +963,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   };
   // clang-format on
 
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    guest_active_services.insert("ProductSpecificationsService");
-  }
-
   if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
     guest_active_services.insert("SearchEnginePreconnector");
   }

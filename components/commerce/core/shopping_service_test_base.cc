@@ -447,21 +447,6 @@ MockWebExtractor::MockWebExtractor() {
 
 MockWebExtractor::~MockWebExtractor() = default;
 
-MockProductSpecificationsServerProxy::MockProductSpecificationsServerProxy()
-    : ProductSpecificationsServerProxy(nullptr, nullptr, nullptr) {}
-MockProductSpecificationsServerProxy::~MockProductSpecificationsServerProxy() =
-    default;
-
-void MockProductSpecificationsServerProxy::
-    SetGetProductSpecificationsForClusterIdsResponse(
-        std::optional<ProductSpecifications> specs) {
-  ON_CALL(*this, GetProductSpecificationsForClusterIds)
-      .WillByDefault([specs](std::vector<uint64_t> cluster_ids,
-                             ProductSpecificationsCallback callback) {
-        std::move(callback).Run(std::move(cluster_ids), std::move(specs));
-      });
-}
-
 ShoppingServiceTestBase::ShoppingServiceTestBase()
     : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
       opt_guide_(std::make_unique<testing::NiceMock<MockOptGuideDecider>>()),
@@ -470,9 +455,6 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       sync_service_(std::make_unique<syncer::TestSyncService>()),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()),
-      product_spec_service_(
-          std::make_unique<
-              testing::NiceMock<MockProductSpecificationsService>>()),
       tab_restore_service_(
           std::make_unique<testing::NiceMock<MockTabRestoreService>>()) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -491,8 +473,7 @@ void ShoppingServiceTestBase::SetUp() {
       sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr,
-      nullptr, nullptr, nullptr,
+      nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
       std::make_unique<testing::NiceMock<MockWebExtractor>>(),
       tab_restore_service_.get());
 
@@ -567,16 +548,6 @@ CommerceInfoCache& ShoppingServiceTestBase::GetCache() {
 
 MockOptGuideDecider* ShoppingServiceTestBase::GetMockOptGuideDecider() {
   return opt_guide_.get();
-}
-
-ProductSpecificationsSet::Observer*
-ShoppingServiceTestBase::GetProductSpecServiceUrlRefObserver() {
-  return shopping_service_->prod_spec_url_ref_observer_.get();
-}
-
-void ShoppingServiceTestBase::SetProductSpecificationsServerProxy(
-    std::unique_ptr<ProductSpecificationsServerProxy> proxy_ptr) {
-  shopping_service_->product_specs_server_proxy_ = std::move(proxy_ptr);
 }
 
 MockTabRestoreService* ShoppingServiceTestBase::GetMockTabRestoreService() {

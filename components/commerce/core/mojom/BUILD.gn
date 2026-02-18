@@ -9,7 +9,6 @@ mojom("mojo_bindings") {
     "commerce_web_extractor.mojom",
     "price_insights.mojom",
     "price_tracking.mojom",
-    "product_specifications.mojom",
     "shared.mojom",
     "shopping_service.mojom",
   ]

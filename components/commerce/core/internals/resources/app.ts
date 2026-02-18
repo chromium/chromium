@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './eligibility_list.js';
-import './product_specifications_set_list.js';
 import './subscription_list.js';
 import './shared_style.css.js';
 
@@ -28,15 +27,6 @@ export class CommerceInternalsAppElement extends CrLitElement {
 
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();
-
-  protected onClickResetProductSpecifications_() {
-    if (confirm(
-            'All your product specification sets will be removed. Are you ' +
-            'sure?')) {
-      this.commerceInternalsApi_.resetProductSpecifications();
-      location.reload();
-    }
-  }
 
   protected resetPriceTrackingEmailPreference_() {
     this.commerceInternalsApi_.resetPriceTrackingEmailPref();

@@ -413,7 +413,6 @@ Refer to README.md for content description and update process.
  <item id="remoting_corp_session_reauthorize_host" added_in_milestone="123" content_hash_code="0731c945" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="birch_calendar_provider" added_in_milestone="124" content_hash_code="00ad7833" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_calendar_fetcher.cc" />
  <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="05d9dc45" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/enclave_manager.cc" />
- <item id="product_specifications_fetcher" added_in_milestone="123" content_hash_code="0834e122" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/compare/product_specifications_server_proxy.cc" />
  <item id="enterprise_logo_fetcher" added_in_milestone="124" content_hash_code="03b77fed" os_list="linux,windows,chromeos,android" file_path="chrome/browser/enterprise/util/managed_browser_utils.cc" />
  <item id="private_metrics_encryption_key" added_in_milestone="141" content_hash_code="007eb169" os_list="linux,windows,android,chromeos" file_path="components/metrics/private_metrics/data_upload_config_downloader.cc" />
  <item id="remoting_corp_logging_report_session_disconnected" added_in_milestone="124" content_hash_code="04807b73" os_list="windows,android,linux,chromeos" file_path="remoting/base/corp_logging_service_client.cc" />
@@ -433,7 +432,6 @@ Refer to README.md for content description and update process.
  <item id="dbsc_registration" added_in_milestone="127" content_hash_code="03c42469" os_list="windows,linux" file_path="net/device_bound_sessions/url_fetcher.cc" />
  <item id="google_calendar_page_handler" added_in_milestone="127" content_hash_code="00ab702c" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.cc" />
  <item id="nearby_connections_wifi_direct" added_in_milestone="127" content_hash_code="00cec3a0" os_list="chromeos" file_path="chrome/services/sharing/nearby/platform/wifi_direct_socket.cc" />
- <item id="chrome_commerce_comparable_products" added_in_milestone="127" content_hash_code="07478997" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/compare/cluster_server_proxy.cc" />
  <item id="autofill_password_favicon_fetch" added_in_milestone="128" content_hash_code="00df689d" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/autofill/popup/password_favicon_loader.cc" />
  <item id="peripherals_companion_app" added_in_milestone="128" content_hash_code="06414ac5" os_list="chromeos" file_path="chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.cc" />
  <item id="enterprise_companion_event_logging" added_in_milestone="128" content_hash_code="06883e8e" os_list="linux,windows" file_path="chrome/enterprise_companion/event_logger.cc" />

@@ -5,10 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("commerce") {
-  sources = [
-    "browser_utils.h",
-    "shopping_service_factory.h",
-  ]
+  sources = [ "shopping_service_factory.h" ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -16,10 +13,7 @@ source_set("commerce") {
 }
 
 source_set("impl") {
-  sources = [
-    "browser_utils.cc",
-    "shopping_service_factory.cc",
-  ]
+  sources = [ "shopping_service_factory.cc" ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":commerce",
@@ -36,7 +30,6 @@ source_set("impl") {
     "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
-    "//components/commerce/core/product_specifications",
     "//components/leveldb_proto",
     "//components/prefs",
     "//components/variations/service",
@@ -50,20 +43,4 @@ source_set("impl") {
       "//components/commerce/core:discounts_db_content_proto",
     ]
   }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "browser_utils_unittest.cc" ]
-  deps = [
-    ":commerce",
-    "//chrome/test:test_support",
-    "//components/commerce/core:account_checker_test_support",
-    "//components/commerce/core:commerce_constants",
-    "//components/commerce/core:feature_list",
-    "//components/commerce/core:feature_utils",
-    "//components/commerce/core:shopping_service_test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
 }

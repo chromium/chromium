@@ -24,30 +24,8 @@
 
 namespace commerce {
 
-GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls) {
-  auto urls_list = base::ListValue();
-
-  for (auto& url : urls) {
-    urls_list.Append(url.spec());
-  }
-
-  std::string json;
-  if (!base::JSONWriter::Write(urls_list, &json)) {
-    return GURL(commerce::kChromeUICompareUrl);
-  }
-
-  return net::AppendQueryParameter(GURL(commerce::kChromeUICompareUrl), "urls",
-                                   json);
-}
-
-GURL GetProductSpecsTabUrlForID(const base::Uuid& uuid) {
-  return net::AppendQueryParameter(GURL(commerce::kChromeUICompareUrl), "id",
-                                   uuid.AsLowercaseString());
-}
-
 std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
-    const optimization_guide::OptimizationMetadata& metadata,
-    bool can_load_product_specs_full_page_ui) {
+    const optimization_guide::OptimizationMetadata& metadata) {
   if (!metadata.any_metadata().has_value()) {
     return nullptr;
   }
@@ -124,16 +102,13 @@ std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
     info->category_data = buyable_product.category_data();
   }
 
-  // TODO(376128060): Remove the feature check after M132.
-  if (can_load_product_specs_full_page_ui) {
-    for (int i = 0; i < buyable_product.price_summary_size(); ++i) {
-      info->price_summary.push_back(buyable_product.price_summary(i));
-    }
+  for (int i = 0; i < buyable_product.price_summary_size(); ++i) {
+    info->price_summary.push_back(buyable_product.price_summary(i));
+  }
 
-    if (buyable_product.has_price_display_recommendation()) {
-      info->price_display_recommendation =
-          buyable_product.price_display_recommendation();
-    }
+  if (buyable_product.has_price_display_recommendation()) {
+    info->price_display_recommendation =
+        buyable_product.price_display_recommendation();
   }
 
   return info;

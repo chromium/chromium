@@ -5,7 +5,7 @@
 import type {ProductInfo} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ProductSpecificationsSet, ShoppingEligibilityDetails, Subscription} from './commerce_internals.mojom-webui.js';
+import type {ShoppingEligibilityDetails, Subscription} from './commerce_internals.mojom-webui.js';
 import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter} from './commerce_internals.mojom-webui.js';
 
 export class CommerceInternalsApiProxy {
@@ -44,15 +44,6 @@ export class CommerceInternalsApiProxy {
 
   getSubscriptionDetails(): Promise<{subscriptions: Subscription[]}> {
     return this.handler.getSubscriptionDetails();
-  }
-
-  getProductSpecificationsDetails():
-      Promise<{productSpecificationsSet: ProductSpecificationsSet[]}> {
-    return this.handler.getProductSpecificationsDetails();
-  }
-
-  resetProductSpecifications(): void {
-    return this.handler.resetProductSpecifications();
   }
 
   getShoppingEligibilityDetails():

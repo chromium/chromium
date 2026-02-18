@@ -17,7 +17,6 @@
 namespace commerce {
 
 class ShoppingService;
-class ProductSpecificationsSet;
 
 class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
  public:
@@ -36,18 +35,12 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   void GetProductInfoForUrl(const GURL& url,
                             GetProductInfoForUrlCallback callback) override;
   void GetSubscriptionDetails(GetSubscriptionDetailsCallback callback) override;
-  void GetProductSpecificationsDetails(
-      GetProductSpecificationsDetailsCallback callback) override;
-  void ResetProductSpecifications() override;
   void GetShoppingEligibilityDetails(
       GetShoppingEligibilityDetailsCallback callback) override;
 
  private:
   mojo::Remote<mojom::CommerceInternalsPage> page_;
   mojo::Receiver<mojom::CommerceInternalsHandler> receiver_;
-
-  void DeleteAllProductSpecificationSets(
-      const std::vector<ProductSpecificationsSet> sets);
 
   // The shopping service should always outlive this object since its lifecycle
   // is tied to the browser while this object is tied to a specific tab.

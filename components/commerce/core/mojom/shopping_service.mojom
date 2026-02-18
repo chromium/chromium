@@ -5,7 +5,6 @@
 module shopping_service.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "components/commerce/core/mojom/shared.mojom";
@@ -73,79 +72,6 @@ struct PriceInsightsInfo {
   string currency_code;
 };
 
-struct ProductSpecificationsDescriptionText {
-  // The actual text for the description.
-  string text;
-
-  // A context URL for the description if available.
-  array<UrlInfo> urls;
-};
-
-struct ProductSpecificationsOption {
-  // The descriptions for this particular option of a product.
-  array<ProductSpecificationsDescriptionText> descriptions;
-};
-
-struct ProductSpecificationsDescription {
-  // The possible options for a feature of a product.
-  array<ProductSpecificationsOption> options;
-
-  // The label for the contained description texts.
-  string label;
-
-  // Alternative text with additional context for this description.
-  string alt_text;
-};
-
-struct ProductSpecificationsValue {
-  // One or more descriptions about the feature being described by this value.
-  array<ProductSpecificationsDescription> specification_descriptions;
-
-  // Summaries describing the collective list of descriptions.
-  array<ProductSpecificationsDescriptionText> summary;
-};
-
-struct ProductSpecificationsProduct {
-  // The GPC ID for this product.
-  uint64 product_cluster_id;
-
-  // The title of the product.
-  string title;
-
-  // The URL for the product image.
-  url.mojom.Url image_url;
-
-  // A map of dimension IDs to the string value as it relates to this product.
-  map<uint64, ProductSpecificationsValue> product_dimension_values;
-
-  // A list of summaries about the product.
-  array<ProductSpecificationsDescriptionText> summary;
-
-  // The URL for buying options for the product (jackpot URL).
-  url.mojom.Url buying_options_url;
-};
-
-// Describes whether different parts of the Compare feature are enabled.
-struct ProductSpecificationsFeatureState {
-  bool is_syncing_tab_compare;
-  bool can_load_full_page_ui;
-  bool can_manage_sets;
-  bool can_fetch_data;
-  bool is_allowed_for_enterprise;
-  bool is_quality_logging_allowed;
-  bool is_signed_in;
-};
-
-// This struct represents information acquired from the product specifications
-// backend.
-struct ProductSpecifications {
-  // A map of dimension IDs to the name of the dimension.
-  map<uint64, string> product_dimension_map;
-
-  // The products that the dimensions pertain to.
-  array<ProductSpecificationsProduct> products;
-};
-
 //TODO(crbug.com/311697865) move this to a common location.
 enum UserFeedback {
   kUnspecified,
@@ -153,8 +79,8 @@ enum UserFeedback {
   kThumbsDown,
 };
 
-// Used by surfaces like the price tracking section in side panel, product
-// specifications, chrome://history etc, to communicate with C++-side handler.
+// Used by surfaces like the price tracking section in side panel,
+// chrome://history etc, to communicate with C++-side handler.
 interface ShoppingServiceHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreateShoppingServiceHandler(
@@ -184,10 +110,6 @@ interface ShoppingServiceHandler {
   GetPriceInsightsInfoForUrl(url.mojom.Url url)
       => (url.mojom.Url url, PriceInsightsInfo priceInsightsInfo);
 
-  // Returns the product specifications for the provided list of URLs.
-  GetProductSpecificationsForUrls(array<url.mojom.Url> urls)
-      => (ProductSpecifications productSpecs);
-
   // Returns a list of URL infos for each product tab the user has open.
   // This excludes non-HTTP/HTTPS URLs.
   GetUrlInfosForProductTabs() => (array<UrlInfo> url_infos);
@@ -207,36 +129,4 @@ interface ShoppingServiceHandler {
 
   // Opens |url| in an existing or new tab.
   SwitchToOrOpenTab(url.mojom.Url url);
-
-  // Get all of a user's product specifications sets.
-  GetAllProductSpecificationsSets() => (
-      array<commerce.shared.mojom.ProductSpecificationsSet> sets);
-
-  // Return product specification set corresponding to identifier |uuid|.
-  GetProductSpecificationsSetByUuid(mojo_base.mojom.Uuid uuid)
-      => (commerce.shared.mojom.ProductSpecificationsSet? set);
-
-  // Creates a new product specifications set and returns the new entity.
-  AddProductSpecificationsSet(string name, array<url.mojom.Url> urls)
-      => (commerce.shared.mojom.ProductSpecificationsSet? created_set);
-
-  // Deletes a product specifications set given its UUID.
-  DeleteProductSpecificationsSet(mojo_base.mojom.Uuid uuid);
-
-  // Set the name for a product specifications set associated with the provided
-  // Uuid. If no set with the provided Uuid exists, nullopt is returned.
-  SetNameForProductSpecificationsSet(mojo_base.mojom.Uuid uuid, string name)
-      => (commerce.shared.mojom.ProductSpecificationsSet? updated_set);
-
-  // Set the URLs for a product specifications set associated with the provided
-  // Uuid. If no set with the provided Uuid exists, nullopt is returned.
-  SetUrlsForProductSpecificationsSet(mojo_base.mojom.Uuid uuid,
-      array<url.mojom.Url> urls) => (
-      commerce.shared.mojom.ProductSpecificationsSet? updated_set);
-  // Store the user feedback for product specifications supplied by the user.
-  SetProductSpecificationsUserFeedback(UserFeedback feedback);
-
-  // Get access state for compare feature.
-  GetProductSpecificationsFeatureState()
-      => (ProductSpecificationsFeatureState state);
 };

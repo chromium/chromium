@@ -83,10 +83,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForProfile(profile),
-      PowerBookmarkServiceFactory::GetForProfile(profile), nullptr,
-      /**ProductSpecificationsService not currently used on iOS
-         crbug.com/329431295 */
-      nullptr, nullptr,
+      PowerBookmarkServiceFactory::GetForProfile(profile), nullptr, nullptr,
       nullptr, /** Cart and discount features are not available on iOS. */
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()

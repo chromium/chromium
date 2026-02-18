@@ -13,13 +13,10 @@
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
-#include "components/commerce/core/product_specifications/product_specifications_service.h"
-#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/payments/core/currency_formatter.h"
@@ -193,62 +190,6 @@ void CommerceInternalsHandler::GetSubscriptionDetails(
           },
           std::move(callback), shopping_service_->bookmark_model_->AsWeakPtr(),
           shopping_service_->locale_on_startup_));
-}
-
-void CommerceInternalsHandler::GetProductSpecificationsDetails(
-    GetProductSpecificationsDetailsCallback callback) {
-  std::vector<commerce::mojom::ProductSpecificationsSetPtr>
-      product_specifications_list;
-
-  for (auto& spec : shopping_service_->GetAllProductSpecificationSets()) {
-    commerce::mojom::ProductSpecificationsSetPtr product_specifications =
-        commerce::mojom::ProductSpecificationsSet::New();
-    product_specifications->uuid = spec.uuid().AsLowercaseString();
-    product_specifications->creation_time = base::UTF16ToUTF8(
-        base::TimeFormatShortDateAndTime(spec.creation_time()));
-    product_specifications->update_time =
-        base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(spec.update_time()));
-    product_specifications->name = spec.name();
-    auto& url_infos = product_specifications->url_infos;
-    for (const UrlInfo& url_info : spec.url_infos()) {
-      auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
-      url_info_ptr->url = url_info.url;
-      url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
-      url_infos.push_back(std::move(url_info_ptr));
-    }
-    product_specifications_list.push_back(std::move(product_specifications));
-  }
-  std::move(callback).Run(std::move(product_specifications_list));
-}
-
-void CommerceInternalsHandler::ResetProductSpecifications() {
-  auto* product_specifications_service =
-      shopping_service_->GetProductSpecificationsService();
-  if (!product_specifications_service) {
-    return;
-  }
-  shopping_service_->pref_service_->SetInteger(
-      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
-  shopping_service_->pref_service_->SetTime(
-      commerce::kProductSpecificationsEntryPointLastDismissedTime,
-      base::Time::Now());
-  shopping_service_->pref_service_->SetInteger(
-      commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(
-          product_specifications::mojom::DisclosureVersion::kUnknown));
-  product_specifications_service->GetAllProductSpecifications(base::BindOnce(
-      &CommerceInternalsHandler::DeleteAllProductSpecificationSets,
-      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CommerceInternalsHandler::DeleteAllProductSpecificationSets(
-    const std::vector<ProductSpecificationsSet> sets) {
-  auto* product_specifications_service =
-      shopping_service_->GetProductSpecificationsService();
-  for (auto& set : sets) {
-    product_specifications_service->DeleteProductSpecificationsSet(
-        set.uuid().AsLowercaseString());
-  }
 }
 
 void CommerceInternalsHandler::GetShoppingEligibilityDetails(

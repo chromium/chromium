@@ -797,8 +797,4 @@ void ShowWebAppSettings(Profile* profile,
 }
 #endif
 
-void ShowAllComparisonTables(Browser* browser) {
-  ShowSingletonTab(browser, GURL(commerce::kChromeUICompareUrl));
-}
-
 }  // namespace chrome

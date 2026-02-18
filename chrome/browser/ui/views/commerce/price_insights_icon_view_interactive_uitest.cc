@@ -76,13 +76,11 @@ class PriceInsightsIconViewBaseInteractiveTest
               },
 
           },
-          /*disabled_features*/ {commerce::kEnableDiscountInfoApi,
-                                 commerce::kProductSpecifications});
+          /*disabled_features*/ {commerce::kEnableDiscountInfoApi});
     } else {
       test_features_.InitWithFeatures(
           /*enabled_features=*/{commerce::kPriceInsights},
           /*disabled_features*/ {commerce::kEnableDiscountInfoApi,
-                                 commerce::kProductSpecifications,
                                  ::features::kPageActionsMigration});
     }
   }

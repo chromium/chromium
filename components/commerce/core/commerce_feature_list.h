@@ -44,10 +44,6 @@ BASE_DECLARE_FEATURE(kShopCardImpressionLimits);
 
 std::string ShopCardExperiment();
 
-BASE_DECLARE_FEATURE(kProductSpecifications);
-BASE_DECLARE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields);
-BASE_DECLARE_FEATURE(kProductSpecificationsCache);
-
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion);
@@ -169,16 +165,6 @@ extern const char kShopCardArm5[];
 extern const char kShopCardArm6[];
 extern const char kShopCardFrontPosition[];
 extern const char kShopCardMaxImpressions[];
-
-// Feature params for product specifications.
-extern const char kProductSpecificationsSetValidForClusteringTimeParam[];
-extern const base::FeatureParam<base::TimeDelta>
-    kProductSpecificationsSetValidForClusteringTime;
-extern const char kProductSpecificationsUseServerClusteringParam[];
-extern const base::FeatureParam<bool> kProductSpecificationsUseServerClustering;
-extern const char kProductSpecificationsEnableQualityLoggingParam[];
-extern const base::FeatureParam<bool>
-    kProductSpecificationsEnableQualityLogging;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

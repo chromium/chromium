@@ -10,7 +10,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
-#include "components/commerce/core/product_specifications/product_specifications_set.h"
 
 class GURL;
 
@@ -24,9 +23,6 @@ shared::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
     const std::optional<const ProductInfo>& info,
     const std::string& locale);
-
-shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
-    const ProductSpecificationsSet& set);
 
 shared::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
     bookmarks::BookmarkModel& model,

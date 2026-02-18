@@ -461,10 +461,6 @@ after discussions on the right group.
     </sender>
   </group>
   <group name="Chrome Commerce" hidden="true">
-    <sender name="Compare">
-      <annotation id="chrome_commerce_comparable_products"/>
-      <annotation id="product_specifications_fetcher"/>
-    </sender>
     <sender name="Subscription">
       <annotation id="chrome_commerce_subscriptions_create"/>
       <annotation id="chrome_commerce_subscriptions_delete"/>

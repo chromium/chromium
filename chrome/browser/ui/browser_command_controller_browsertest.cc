@@ -42,7 +42,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -611,51 +610,6 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-
-// Tests for comparison table submenu.
-class BrowserCommandControllerBrowserTestCompare
-    : public BrowserCommandControllerBrowserTest {
- public:
-  BrowserCommandControllerBrowserTestCompare() {
-    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
-                       AddToTableMenu_UrlSchemeHttp) {
-  GURL url = GURL("http://example.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  browser()->command_controller()->TabStateChanged();
-
-  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(
-      IDC_ADD_TO_COMPARISON_TABLE_MENU));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
-                       AddToTableMenu_UrlSchemeHttps) {
-  GURL url = GURL("https://example.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  browser()->command_controller()->TabStateChanged();
-
-  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(
-      IDC_ADD_TO_COMPARISON_TABLE_MENU));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
-                       AddToTableMenu_UrlSchemeNotHttpOrHttps) {
-  GURL url = GURL("chrome://history");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  browser()->command_controller()->TabStateChanged();
-
-  EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(
-      IDC_ADD_TO_COMPARISON_TABLE_MENU));
-}
 
 // Tests for Your saved info submenu.
 class BrowserCommandControllerBrowserTestYourSavedInfo

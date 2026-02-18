@@ -18,7 +18,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
-#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.h"
@@ -244,9 +243,6 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
           profile, ServiceAccessType::IMPLICIT_ACCESS));
   builder.SetPrefService(profile->GetPrefs());
   builder.SetPrefServiceSyncable(PrefServiceSyncableFromProfile(profile));
-  builder.SetProductSpecificationsService(
-      commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
-          profile));
   builder.SetTabGroupSyncService(GetTabGroupSyncService(profile));
   builder.SetTemplateURLService(
 #if BUILDFLAG(IS_ANDROID)
@@ -552,7 +548,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(PasswordReceiverServiceFactory::GetInstance());
   DependsOn(PasswordSenderServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
-  DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
 
   DependsOn(SecurityEventRecorderFactory::GetInstance());

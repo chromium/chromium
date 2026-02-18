@@ -213,7 +213,6 @@ test("components_unittests") {
     "//components/collaboration:unit_tests",
     "//components/commerce/core:shopping_service_unit_tests",
     "//components/commerce/core:utils_unit_tests",
-    "//components/commerce/core/product_specifications:unit_tests",
     "//components/component_updater:unit_tests",
     "//components/component_updater/installer_policies:unit_tests",
     "//components/consent_auditor:unit_tests",

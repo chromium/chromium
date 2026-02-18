@@ -130,8 +130,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
           profile, ServiceAccessType::IMPLICIT_ACCESS));
   builder.SetPrefService(profile->GetPrefs());
   builder.SetPrefServiceSyncable(profile->GetSyncablePrefs());
-  // TODO(crbug.com/330201909) implement for iOS.
-  builder.SetProductSpecificationsService(nullptr);
   builder.SetSendTabToSelfSyncService(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile));
   builder.SetSessionSyncService(

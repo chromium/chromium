@@ -164,8 +164,7 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
 TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
-  test_features_.InitWithFeatures(
-      {commerce::kShoppingList, kProductSpecifications}, {});
+  test_features_.InitWithFeatures({commerce::kShoppingList}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -795,133 +794,6 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_CacheEntriesRetained) {
           GetCache().IsUrlReferenced(web_wrappers[i]->GetLastCommittedURL()));
     }
   }
-}
-
-// Ensure the cache maintained by the service is observing changes in the URLs
-// stored in each ProductSpecificationsSet.
-TEST_P(ShoppingServiceTest, TestProductSpecificationsSetUrlsRetained) {
-  ProductSpecificationsSet::Observer* observer =
-      GetProductSpecServiceUrlRefObserver();
-  ASSERT_FALSE(observer == nullptr);
-
-  const GURL url1("http://example.com/1");
-  const GURL url2("http://example.com/2");
-  base::Uuid id = base::Uuid::GenerateRandomV4();
-
-  ProductSpecificationsSet prod_spec_set(id.AsLowercaseString(), 0, 0, {url1},
-                                         "specs");
-
-  observer->OnProductSpecificationsSetAdded(prod_spec_set);
-
-  // The URLs in the set should be referenced in the cache.
-  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url1));
-  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
-
-  ProductSpecificationsSet updated_prod_spec_set(id.AsLowercaseString(), 0, 0,
-                                                 {url1, url2}, "specs");
-
-  // The updated set is considered the same since the UUID matches the previous.
-  observer->OnProductSpecificationsSetUpdate(prod_spec_set,
-                                             updated_prod_spec_set);
-
-  // The existing URL count should not have changed and the new one should be
-  // added.
-  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url1));
-  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url2));
-
-  ProductSpecificationsSet updated_prod_spec_set2(id.AsLowercaseString(), 0, 0,
-                                                  {url2}, "specs");
-
-  observer->OnProductSpecificationsSetUpdate(updated_prod_spec_set,
-                                             updated_prod_spec_set2);
-
-  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
-  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url2));
-
-  observer->OnProductSpecificationsSetRemoved(updated_prod_spec_set2);
-
-  // There should no longer be any references in the cache.
-  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
-  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
-}
-
-TEST_P(ShoppingServiceTest, TestRecentTabsCleanedUpOnDeletion) {
-  const GURL url("http://example.com/");
-  base::Uuid id = base::Uuid::GenerateRandomV4();
-
-  ProductSpecificationsSet spec_set(id.AsLowercaseString(), 0, 0, {url},
-                                    "specs");
-
-  EXPECT_CALL(*GetMockTabRestoreService(), DeleteNavigationEntries).Times(1);
-  ON_CALL(*GetMockTabRestoreService(), DeleteNavigationEntries)
-      .WillByDefault(
-          [spec_set = spec_set](
-              const sessions::TabRestoreService::DeletionPredicate& predicate) {
-            // A totally unrelated URL should be ignored.
-            sessions::SerializedNavigationEntry entry1;
-            entry1.set_virtual_url(GURL("http://example.com"));
-            ASSERT_FALSE(predicate.Run(entry1));
-
-            // An exact match should be removed.
-            sessions::SerializedNavigationEntry entry2;
-            entry2.set_virtual_url(GetProductSpecsTabUrlForID(spec_set.uuid()));
-            ASSERT_TRUE(predicate.Run(entry2));
-
-            // A matching URL with extra params should be removed as well.
-            sessions::SerializedNavigationEntry entry3;
-            entry3.set_virtual_url(
-                GURL(GetProductSpecsTabUrlForID(spec_set.uuid()).spec() +
-                     "?param=1"));
-            ASSERT_TRUE(predicate.Run(entry3));
-          });
-
-  shopping_service_->OnProductSpecificationsSetRemoved(spec_set);
-}
-
-TEST_P(ShoppingServiceTest, TestProductSpecificationsUrlCountMetrics) {
-  test_features_.InitWithFeatures({commerce::kProductSpecifications}, {});
-  sync_service_->GetUserSettings()->SetSelectedTypes(
-      true, {syncer::UserSelectableType::kProductComparison});
-
-  pref_service_->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-
-  SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
-
-  const GURL url1("http://example.com/1");
-  const GURL url2("http://example.com/2");
-
-  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
-      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
-      kCurrencyCode, kGpcTitle, kProductCategories);
-  opt_guide_->SetResponse(url1, OptimizationType::PRICE_TRACKING,
-                          OptimizationGuideDecision::kTrue, meta);
-
-  NiceMockWebWrapper web1(GURL(url1), false);
-  DidNavigatePrimaryMainFrame(&web1);
-
-  NiceMockWebWrapper web2(GURL(url2), false);
-  DidNavigatePrimaryMainFrame(&web2);
-
-  base::HistogramTester histogram_tester;
-  base::RunLoop looper;
-  shopping_service_->GetProductSpecificationsForUrls(
-      {url1, url2},
-      base::BindOnce([](std::vector<uint64_t> urls,
-                        std::optional<ProductSpecifications> specs) {
-      }).Then(looper.QuitClosure()));
-  looper.Run();
-
-  histogram_tester.ExpectTotalCount("Commerce.Compare.Table.ColumnCount", 1);
-  histogram_tester.ExpectUniqueSample("Commerce.Compare.Table.ColumnCount", 2,
-                                      1);
-  histogram_tester.ExpectTotalCount(
-      "Commerce.Compare.Table.PercentageValidProducts2", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Commerce.Compare.Table.PercentageValidProducts2", 50, 1);
-
-  DidNavigatePrimaryMainFrame(&web1);
-  DidNavigatePrimaryMainFrame(&web2);
 }
 
 // Test that product info is inserted into the cache without a client
@@ -2343,46 +2215,6 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithUnspecifiedType) {
                                 },
                                 &run_loop));
   run_loop.Run();
-}
-
-TEST_P(ShoppingServiceTest, TestProductSpecificationsCache) {
-  test_features_.InitWithFeatures({kProductSpecifications}, {});
-
-  const GURL url("http://example.com");
-  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
-      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
-      kCurrencyCode, kGpcTitle, kProductCategories);
-  opt_guide_->SetResponse(url, OptimizationType::PRICE_TRACKING,
-                          OptimizationGuideDecision::kTrue, meta);
-
-  ProductSpecifications specs;
-  specs.product_dimension_map[1L] = kTitle;
-  MockProductSpecificationsServerProxy* mock_server_proxy =
-      new MockProductSpecificationsServerProxy();
-  mock_server_proxy->SetGetProductSpecificationsForClusterIdsResponse(
-      std::move(specs));
-  SetProductSpecificationsServerProxy(base::WrapUnique(mock_server_proxy));
-
-  std::array<base::RunLoop, 2> run_loop;
-
-  shopping_service_->GetProductSpecificationsForUrls(
-      {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,
-                               std::optional<ProductSpecifications> specs) {
-             }).Then(run_loop[0].QuitClosure()));
-  run_loop[0].Run();
-
-  // The first product specs should be cached, so this empty value should not be
-  // returned.
-  mock_server_proxy->SetGetProductSpecificationsForClusterIdsResponse(
-      std::nullopt);
-
-  shopping_service_->GetProductSpecificationsForUrls(
-      {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,
-                               std::optional<ProductSpecifications> specs) {
-               ASSERT_TRUE(specs.has_value());
-               ASSERT_TRUE(specs->product_dimension_map[1L] == kTitle);
-             }).Then(run_loop[1].QuitClosure()));
-  run_loop[1].Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ShoppingServiceTest, ::testing::Bool());

@@ -39,7 +39,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"

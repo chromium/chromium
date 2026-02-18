@@ -90,8 +90,7 @@ class DiscountsInteractiveTest
 
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{commerce::kPriceInsights,
-                               commerce::kProductSpecifications});
+        /*disabled_features=*/{commerce::kPriceInsights});
   }
 
   void SetUp() override {

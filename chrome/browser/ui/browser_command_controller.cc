@@ -24,7 +24,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
@@ -1059,9 +1058,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_BOOKMARK_BAR:
       ToggleBookmarkBar(browser_);
       break;
-    case IDC_SHOW_ALL_COMPARISON_TABLES:
-      ShowAllComparisonTables(browser_);
-      break;
     case IDC_SHOW_FULL_URLS:
       ToggleShowFullURLs(browser_);
       break;
@@ -1800,13 +1796,6 @@ void BrowserCommandController::InitCommandState() {
     command_updater_.UpdateCommandEnabled(IDC_SHOW_CHROME_LABS, true);
   }
 
-  // Compare commands.
-  command_updater_.UpdateCommandEnabled(IDC_COMPARE_MENU, true);
-  command_updater_.UpdateCommandEnabled(IDC_SHOW_ALL_COMPARISON_TABLES, true);
-  command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU, true);
-  command_updater_.UpdateCommandEnabled(
-      IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB, true);
-
 #if BUILDFLAG(ENABLE_GLIC)
   // Glic commands.
   command_updater_.UpdateCommandEnabled(
@@ -2022,13 +2011,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
         DevToolsWindow::AllowDevToolsFor(
             profile(), browser_->tab_strip_model()->GetActiveWebContents()));
   }
-
-  // Disable the add to comparison table menu when the page is not a standard
-  // webpage.
-  command_updater_.UpdateCommandEnabled(
-      IDC_ADD_TO_COMPARISON_TABLE_MENU,
-      commerce::IsUrlEligibleForProductSpecs(
-          current_web_contents->GetLastCommittedURL()));
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {

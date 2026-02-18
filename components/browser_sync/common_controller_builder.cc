@@ -36,7 +36,6 @@
 #include "components/collaboration/public/data_type_controller/shared_tab_group_account_data_type_controller.h"
 #include "components/collaboration/public/data_type_controller/shared_tab_group_data_type_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -353,11 +352,6 @@ void CommonControllerBuilder::SetPrefService(PrefService* pref_service) {
 void CommonControllerBuilder::SetPrefServiceSyncable(
     sync_preferences::PrefServiceSyncable* pref_service_syncable) {
   pref_service_syncable_.Set(pref_service_syncable);
-}
-
-void CommonControllerBuilder::SetProductSpecificationsService(
-    commerce::ProductSpecificationsService* product_specifications_service) {
-  product_specifications_service_.Set(product_specifications_service);
 }
 
 void CommonControllerBuilder::SetDualReadingListModel(

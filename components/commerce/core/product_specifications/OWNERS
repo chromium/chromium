@@ -1,3 +1,0 @@
-# For simple refactoring etc. For any substantial changes, always loop in an
-# actual feature owner too!
-per-file *sync_bridge*=file://components/sync/OWNERS

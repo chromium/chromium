@@ -23,15 +23,11 @@
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
-#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
-#include "components/commerce/core/product_specifications/product_specifications_service.h"
-#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/proto/features/product_specifications.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
@@ -84,8 +80,6 @@ class ShoppingServiceHandlerTest : public testing::Test {
   void SetUp() override {
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
     client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
-    product_spec_service_ =
-        std::make_unique<MockProductSpecificationsService>();
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     account_checker_ = std::make_unique<MockAccountChecker>();
@@ -98,9 +92,6 @@ class ShoppingServiceHandlerTest : public testing::Test {
     SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 
-    ON_CALL(*shopping_service_, GetProductSpecificationsService)
-        .WillByDefault(testing::Return(product_spec_service_.get()));
-
     auto delegate = std::make_unique<MockDelegate>();
     delegate_ = delegate.get();
     handler_ = std::make_unique<commerce::ShoppingServiceHandler>(
@@ -111,7 +102,6 @@ class ShoppingServiceHandlerTest : public testing::Test {
   }
 
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockAccountChecker> account_checker_;
   std::unique_ptr<MockShoppingService> shopping_service_;

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ProductInfo, ProductSpecificationsSet} from './shared.mojom-webui.js';
-import type {PriceInsightsInfo, ProductSpecifications, ProductSpecificationsFeatureState, UrlInfo, UserFeedback} from './shopping_service.mojom-webui.js';
+import type {ProductInfo} from './shared.mojom-webui.js';
+import type {PriceInsightsInfo, UrlInfo} from './shopping_service.mojom-webui.js';
 import {ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
 let instance: ShoppingServiceBrowserProxy|null = null;
@@ -25,22 +24,6 @@ export interface ShoppingServiceBrowserProxy {
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
   getProductInfoForUrls(urls: Url[]): Promise<{productInfos: ProductInfo[]}>;
-  getProductSpecificationsForUrls(urls: Url[]):
-      Promise<{productSpecs: ProductSpecifications}>;
-  getAllProductSpecificationsSets():
-      Promise<{sets: ProductSpecificationsSet[]}>;
-  getProductSpecificationsSetByUuid(uuid: Uuid):
-      Promise<{set: ProductSpecificationsSet | null}>;
-  addProductSpecificationsSet(name: string, urls: Url[]):
-      Promise<{createdSet: ProductSpecificationsSet | null}>;
-  deleteProductSpecificationsSet(uuid: Uuid): void;
-  setNameForProductSpecificationsSet(uuid: Uuid, name: string):
-      Promise<{updatedSet: ProductSpecificationsSet | null}>;
-  setUrlsForProductSpecificationsSet(uuid: Uuid, urls: Url[]):
-      Promise<{updatedSet: ProductSpecificationsSet | null}>;
-  setProductSpecificationsUserFeedback(feedback: UserFeedback): void;
-  getProductSpecificationsFeatureState():
-      Promise<{state: ProductSpecificationsFeatureState | null}>;
 }
 
 export class ShoppingServiceBrowserProxyImpl implements
@@ -75,10 +58,6 @@ export class ShoppingServiceBrowserProxyImpl implements
     return this.handler.getPriceInsightsInfoForUrl(url);
   }
 
-  getProductSpecificationsForUrls(urls: Url[]) {
-    return this.handler.getProductSpecificationsForUrls(urls);
-  }
-
   getUrlInfosForProductTabs() {
     return this.handler.getUrlInfosForProductTabs();
   }
@@ -101,38 +80,6 @@ export class ShoppingServiceBrowserProxyImpl implements
 
   switchToOrOpenTab(url: Url) {
     this.handler.switchToOrOpenTab(url);
-  }
-
-  getAllProductSpecificationsSets() {
-    return this.handler.getAllProductSpecificationsSets();
-  }
-
-  getProductSpecificationsSetByUuid(uuid: Uuid) {
-    return this.handler.getProductSpecificationsSetByUuid(uuid);
-  }
-
-  addProductSpecificationsSet(name: string, urls: Url[]) {
-    return this.handler.addProductSpecificationsSet(name, urls);
-  }
-
-  deleteProductSpecificationsSet(uuid: Uuid) {
-    this.handler.deleteProductSpecificationsSet(uuid);
-  }
-
-  setNameForProductSpecificationsSet(uuid: Uuid, name: string) {
-    return this.handler.setNameForProductSpecificationsSet(uuid, name);
-  }
-
-  setUrlsForProductSpecificationsSet(uuid: Uuid, urls: Url[]) {
-    return this.handler.setUrlsForProductSpecificationsSet(uuid, urls);
-  }
-
-  setProductSpecificationsUserFeedback(feedback: UserFeedback) {
-    this.handler.setProductSpecificationsUserFeedback(feedback);
-  }
-
-  getProductSpecificationsFeatureState() {
-    return this.handler.getProductSpecificationsFeatureState();
   }
 
   static getInstance(): ShoppingServiceBrowserProxy {

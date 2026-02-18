@@ -12,7 +12,6 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"

@@ -603,8 +603,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       {"showComposeControl", compose_visible},
       {"showHistorySearchControl",
        history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
-      {"showCompareControl", commerce::IsProductSpecificationsSettingVisible(
-                                 shopping_service->GetAccountChecker())},
       {"showPasswordChangeControl",
        PasswordChangeServiceFactory::GetForProfile(profile) &&
            PasswordChangeServiceFactory::GetForProfile(profile)

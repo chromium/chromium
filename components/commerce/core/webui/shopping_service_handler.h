@@ -15,7 +15,6 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
-#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -29,10 +28,6 @@ namespace optimization_guide {
 class ModelQualityLogsUploaderService;
 }  // namespace optimization_guide
 
-namespace base {
-class Uuid;
-}
-
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
@@ -44,7 +39,6 @@ namespace commerce {
 
 class ShoppingService;
 struct PriceInsightsInfo;
-struct ProductSpecifications;
 
 class ShoppingServiceHandler
     : public shopping_service::mojom::ShoppingServiceHandler {
@@ -95,9 +89,6 @@ class ShoppingServiceHandler
   void GetPriceInsightsInfoForUrl(
       const GURL& url,
       GetPriceInsightsInfoForUrlCallback callback) override;
-  void GetProductSpecificationsForUrls(
-      const std::vector<::GURL>& urls,
-      GetProductSpecificationsForUrlsCallback callback) override;
   void GetUrlInfosForProductTabs(
       GetUrlInfosForProductTabsCallback callback) override;
   void GetUrlInfosForRecentlyViewedTabs(
@@ -107,28 +98,6 @@ class ShoppingServiceHandler
       GetPriceTrackingStatusForCurrentUrlCallback callback) override;
   void SwitchToOrOpenTab(const GURL& url) override;
   void OpenUrlInNewTab(const GURL& url) override;
-  void GetAllProductSpecificationsSets(
-      GetAllProductSpecificationsSetsCallback callback) override;
-  void GetProductSpecificationsSetByUuid(
-      const base::Uuid& uuid,
-      GetProductSpecificationsSetByUuidCallback callback) override;
-  void AddProductSpecificationsSet(
-      const std::string& name,
-      const std::vector<GURL>& urls,
-      AddProductSpecificationsSetCallback callback) override;
-  void DeleteProductSpecificationsSet(const base::Uuid& uuid) override;
-  void SetNameForProductSpecificationsSet(
-      const base::Uuid& uuid,
-      const std::string& name,
-      SetNameForProductSpecificationsSetCallback callback) override;
-  void SetUrlsForProductSpecificationsSet(
-      const base::Uuid& uuid,
-      const std::vector<GURL>& urls,
-      SetUrlsForProductSpecificationsSetCallback callback) override;
-  void SetProductSpecificationsUserFeedback(
-      shopping_service::mojom::UserFeedback feedback) override;
-  void GetProductSpecificationsFeatureState(
-      GetProductSpecificationsFeatureStateCallback callback) override;
 
   optimization_guide::ModelQualityLogEntry*
   current_log_quality_entry_for_testing() {
@@ -143,11 +112,6 @@ class ShoppingServiceHandler
   void OnGetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback,
       bool tracked);
-  void OnGetProductSpecificationsForUrls(
-      std::vector<GURL> input_urls,
-      GetProductSpecificationsForUrlsCallback callback,
-      std::vector<uint64_t> ids,
-      std::optional<ProductSpecifications> specs);
 
   mojo::Receiver<shopping_service::mojom::ShoppingServiceHandler> receiver_;
   // The bookmark model, shopping service and tracker will outlive this

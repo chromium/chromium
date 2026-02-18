@@ -66,36 +66,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not clicked (after expansion)"/>
 </enum>
 
-<enum name="CompareEntryPointTrigger">
-  <summary>
-    The different ways to trigger a compare proactive entry point.
-  </summary>
-  <int value="0" label="From Selection"/>
-  <int value="1" label="From Navigation"/>
-</enum>
-
-<enum name="CompareTableColumnAction">
-  <summary>
-    The different ways a comparison table's columns can be modified.
-  </summary>
-  <int value="0" label="Remove"/>
-  <int value="1" label="Changed order (drag-and-drop)"/>
-  <int value="2" label="Add from suggested"/>
-  <int value="3" label="Update from suggested"/>
-  <int value="4" label="Add from recently viewed"/>
-  <int value="5" label="Update from recently viewed"/>
-</enum>
-
-<enum name="CompareTableLoadStatus">
-  <summary>The statuses of a compare table loading.</summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure"/>
-  <int value="2" label="Failure - empty table from backend"/>
-  <int value="3" label="Failure - empty table with non-products"/>
-  <int value="4" label="Failure - user not eligible"/>
-  <int value="5" label="Failure - offline"/>
-</enum>
-
 <!-- LINT.IfChange(DiscountClusterType) -->
 
 <enum name="DiscountClusterType">
