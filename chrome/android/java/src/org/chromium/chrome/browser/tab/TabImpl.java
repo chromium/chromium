@@ -1465,92 +1465,95 @@ class TabImpl implements Tab {
             @Nullable TabState tabState,
             boolean initializeRenderer,
             boolean isPinned) {
-        try {
-            TraceEvent.begin("Tab.initialize");
+        TraceEvent.begin("Tab.initialize");
+        // WARNING: Do not early return from this method to ensure the trace event is ended and to
+        // ensure the logic at the end of this method is run for all tabs.
 
-            if (parent != null) {
-                mParentId = parent.getId();
-            }
+        if (parent != null) {
+            mParentId = parent.getId();
+        }
 
-            mTabLaunchTypeAtCreation = mLaunchType;
-            mCreationState = creationState;
-            mIsPinned = isPinned;
+        mTabLaunchTypeAtCreation = mLaunchType;
+        mCreationState = creationState;
+        mIsPinned = isPinned;
 
-            // If applicable set up for a lazy background tab load.
-            mPendingLoadParams = loadUrlParams;
-            if (loadUrlParams != null) {
-                mUrl = new GURL(loadUrlParams.getUrl());
-                setTitle(pendingTitle != null ? pendingTitle : mUrl.getSpec());
-            }
+        // If applicable set up for a lazy background tab load.
+        mPendingLoadParams = loadUrlParams;
+        if (loadUrlParams != null) {
+            mUrl = new GURL(loadUrlParams.getUrl());
+            setTitle(pendingTitle != null ? pendingTitle : mUrl.getSpec());
+        }
 
-            // The {@link mDelegateFactory} needs to be set before calling
-            // {@link TabHelpers.initTabHelpers()}. This is because it creates a
-            // TabBrowserControlsConstraintsHelper, and {@link
-            // TabBrowserControlsConstraintsHelper#updateVisibilityDelegate()} will call the
-            // Tab#getDelegateFactory().createBrowserControlsVisibilityDelegate().
-            // See https://crbug.com/1179419.
-            mDelegateFactory = delegateFactory;
+        // The {@link mDelegateFactory} needs to be set before calling
+        // {@link TabHelpers.initTabHelpers()}. This is because it creates a
+        // TabBrowserControlsConstraintsHelper, and {@link
+        // TabBrowserControlsConstraintsHelper#updateVisibilityDelegate()} will call the
+        // Tab#getDelegateFactory().createBrowserControlsVisibilityDelegate().
+        // See https://crbug.com/1179419.
+        mDelegateFactory = delegateFactory;
 
-            TabHelpers.initTabHelpers(this, parent);
+        TabHelpers.initTabHelpers(this, parent);
 
-            mIsDraggingObserver =
-                    (isDragging) -> {
-                        if (mNativeTabAndroid != 0) {
-                            TabImplJni.get().onDraggingStateChanged(mNativeTabAndroid, isDragging);
-                        }
-                    };
-            getIsDraggingSupplier().addSyncObserverAndPostIfNonNull(mIsDraggingObserver);
+        mIsDraggingObserver =
+                (isDragging) -> {
+                    if (mNativeTabAndroid != 0) {
+                        TabImplJni.get().onDraggingStateChanged(mNativeTabAndroid, isDragging);
+                    }
+                };
+        getIsDraggingSupplier().addSyncObserverAndPostIfNonNull(mIsDraggingObserver);
 
-            if (tabState != null) {
-                restoreFieldsFromState(tabState);
-            }
+        if (tabState != null) {
+            restoreFieldsFromState(tabState);
+        }
 
-            initializeNative();
+        initializeNative();
 
-            RevenueStats.getInstance().tabCreated(this);
+        RevenueStats.getInstance().tabCreated(this);
 
-            boolean needsInitWebContents = true;
-            boolean createWebContents = webContents == null;
-            // Headless tab model will not have a WindowAndroid and for archived tabs, we don't want
-            // to create a WebContents. Archived and headless tab models are not associated with
-            // BrowserWindowInterface so this shouldn't be an issue for now.
-            mInitializedWithWindowAndroid = mWindowAndroid != null;
-            if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()
-                    && mInitializedWithWindowAndroid
-                    && !mIsArchived) {
-                if (mWebContentsState != null) {
-                    assert webContents == null;
+        boolean needsInitWebContents = true;
+        boolean createWebContents = webContents == null;
+        // Headless and archived tabs will never load and thus don't need a WebContents. The reason
+        // all tabs need a WebContents is when used in C++ via BrowserWindowInterface. Since
+        // headless and archived tabs are not associated with a window they can avoid initializing
+        // tabs with WebContents.
+        mInitializedWithWindowAndroid = mWindowAndroid != null;
+        if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()
+                && mInitializedWithWindowAndroid
+                && !mIsArchived) {
+            if (mWebContentsState != null) {
+                assert webContents == null;
 
-                    unfreezeContents(/* noRenderer= */ true);
-                    webContents = getWebContents();
-                    needsInitWebContents = false;
-                    assert webContents != null;
-                } else if (getPendingLoadParams() != null) {
-                    assert webContents == null;
-
-                    webContents =
-                            WebContentsFactory.createWebContents(
-                                    mProfile, isHidden(), initializeRenderer);
-                } else if (createWebContents) {
-                    webContents =
-                            WebContentsFactory.createWebContents(
-                                    mProfile, initiallyHidden, initializeRenderer);
-                }
+                unfreezeContents(/* noRenderer= */ true);
+                webContents = getWebContents();
+                // unfreezeContents() already called initWebContents().
+                needsInitWebContents = false;
                 assert webContents != null;
-            } else {
-                // If there is a frozen WebContents state or a pending lazy load, don't create a new
-                // WebContents. Restoring will be done when showing the tab in the foreground.
-                if (mWebContentsState != null || getPendingLoadParams() != null) {
-                    return;
-                }
-                if (createWebContents) {
-                    webContents =
-                            WebContentsFactory.createWebContents(
-                                    mProfile, initiallyHidden, initializeRenderer);
-                }
-            }
+            } else if (getPendingLoadParams() != null) {
+                assert webContents == null;
 
-            assumeNonNull(webContents);
+                webContents =
+                        WebContentsFactory.createWebContents(
+                                mProfile, isHidden(), initializeRenderer);
+            } else if (createWebContents) {
+                webContents =
+                        WebContentsFactory.createWebContents(
+                                mProfile, initiallyHidden, initializeRenderer);
+            }
+            assert webContents != null;
+        } else if (mWebContentsState == null
+                && getPendingLoadParams() == null
+                && createWebContents) {
+            // If there is a frozen WebContentsState or a pending lazy load, skip creating a new
+            // WebContents. Restoring will be done when showing the tab in the foreground. It is
+            // also correct to not create a WebContents if one was provided to this method.
+
+            webContents =
+                    WebContentsFactory.createWebContents(
+                            mProfile, initiallyHidden, initializeRenderer);
+        }
+
+        // Initialization logic that requires a WebContents to have been created.
+        if (webContents != null) {
             if (needsInitWebContents) {
                 initWebContents(webContents);
             }
@@ -1562,26 +1565,27 @@ class TabImpl implements Tab {
             if (!createWebContents && webContents.shouldShowLoadingUI()) {
                 didStartPageLoad(webContents.getVisibleUrl());
             }
-
-        } finally {
-            if (mTimestampMillis == INVALID_TIMESTAMP) {
-                setTimestampMillis(System.currentTimeMillis());
-            }
-            String appId = null;
-            Boolean hasThemeColor = null;
-            int themeColor = 0;
-            if (tabState != null) {
-                appId = tabState.openerAppId;
-                themeColor = tabState.themeColor;
-                hasThemeColor = tabState.hasThemeColor();
-            }
-            if (hasThemeColor != null) {
-                updateThemeColor(hasThemeColor ? themeColor : TabState.UNSPECIFIED_THEME_COLOR);
-            }
-
-            for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
-            TraceEvent.end("Tab.initialize");
         }
+
+        // Remaining initialization logic that should always run.
+        if (mTimestampMillis == INVALID_TIMESTAMP) {
+            setTimestampMillis(System.currentTimeMillis());
+        }
+        String appId = null;
+        Boolean hasThemeColor = null;
+        int themeColor = 0;
+        if (tabState != null) {
+            appId = tabState.openerAppId;
+            themeColor = tabState.themeColor;
+            hasThemeColor = tabState.hasThemeColor();
+        }
+        if (hasThemeColor != null) {
+            updateThemeColor(hasThemeColor ? themeColor : TabState.UNSPECIFIED_THEME_COLOR);
+        }
+
+        for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
+
+        TraceEvent.end("Tab.initialize");
     }
 
     @Nullable
