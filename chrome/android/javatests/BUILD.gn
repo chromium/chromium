@@ -924,6 +924,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
     ":chrome_test_java_helper",
     "//chrome/android/feed:chrome_feed_java_resources",
     "//chrome/browser/composeplate/android:java",
+    "//chrome/browser/ntp_customization:java",
     "//chrome/browser/ui/android/logo:utils_java",
   ]
 }

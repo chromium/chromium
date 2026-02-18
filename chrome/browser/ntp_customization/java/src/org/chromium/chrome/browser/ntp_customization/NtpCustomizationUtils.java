@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import static androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE;
-
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
@@ -724,7 +722,6 @@ public class NtpCustomizationUtils {
      *
      * @param themeColorId The new color theme id.
      */
-    @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
     public static void setNtpThemeColorIdToSharedPreference(@NtpThemeColorId int themeColorId) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID, themeColorId);
