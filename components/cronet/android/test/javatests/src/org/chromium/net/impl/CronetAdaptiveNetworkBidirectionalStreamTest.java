@@ -4,7 +4,6 @@
 
 package org.chromium.net.impl;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assume.assumeTrue;
@@ -16,6 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import android.os.Build;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -26,13 +27,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 
-import java.nio.ByteBuffer;
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetException;
 import org.chromium.net.UrlResponseInfo;
+
+import java.nio.ByteBuffer;
+import java.util.concurrent.ScheduledExecutorService;
 
 /** Test functionality of CronetAdaptiveNetworkBidirectionalStream interface. */
 @Batch(Batch.PER_CLASS)
@@ -181,7 +182,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         verify(mPrimaryStream).read(buffer);
         verify(mFallbackStream, never()).read(any());
     }
-
 
     @Test
     @SmallTest
