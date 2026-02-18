@@ -594,6 +594,11 @@ public class AccountPickerBottomSheetMediator
                     (resultCode, data) -> {
                         if (resultCode == Activity.RESULT_OK) {
                             signIn();
+                        } else if (mIsSeamlessSignin) {
+                            // Act like the sign-in has been cancelled.
+                            // In non seamless mode, a bottomsheet should still be shown on the
+                            // screen and sign-in is not yet cancelled at this stage.
+                            abandonSeamlessSignin();
                         }
                     },
                     DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);

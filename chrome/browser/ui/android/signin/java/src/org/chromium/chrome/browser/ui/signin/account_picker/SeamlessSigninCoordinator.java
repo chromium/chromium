@@ -41,6 +41,7 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
 
     private @Nullable AccountPickerBottomSheetView mView;
+    private boolean mIsDestroyed;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
@@ -107,6 +108,11 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
 
     @MainThread
     void destroy() {
+        if (mIsDestroyed) {
+            return;
+        }
+
+        mIsDestroyed = true;
         mAccountPickerBottomSheetMediator.destroy();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
     }

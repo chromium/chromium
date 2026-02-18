@@ -285,7 +285,7 @@ public class SeamlessSigninTest {
 
     @Test
     @MediumTest
-    public void testAutomativeDevice_signInDefaultAccount() {
+    public void testAutomotiveDevice_signInDefaultAccount() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -306,7 +306,27 @@ public class SeamlessSigninTest {
 
     @Test
     @MediumTest
-    public void testAutomativeDevice_signInManagedAccount() {
+    public void testAutomotiveDevice_deviceLockCancelled() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Signin.AccountConsistencyPromoAction")
+                        .build();
+        mAutoTestRule.setIsAutomotive(true);
+        createCoordinatorAndLaunchSigninFlow();
+        SigninTestUtil.completeDeviceLock(
+                mDeviceLockActivityLauncher,
+                /** deviceLockCreated= */
+                false);
+
+        verifySignInNeverStarted();
+        assertBottomSheetNeverShown();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testAutomotiveDevice_signInManagedAccount() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -332,7 +352,7 @@ public class SeamlessSigninTest {
 
     @Test
     @MediumTest
-    public void testAutomativeDevice_signInManagedAccount_showsLoadingSpinner() {
+    public void testAutomotiveDevice_signInManagedAccount_showsLoadingSpinner() {
         mIsAccountManaged = true;
         mAutoTestRule.setIsAutomotive(true);
         createCoordinatorAndLaunchSigninFlow();
