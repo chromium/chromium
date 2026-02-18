@@ -109,9 +109,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                                        titleText:titleText];
     [self.view setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
 
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(selectAnimationForCurrentStyle)];
   }
   return self;
