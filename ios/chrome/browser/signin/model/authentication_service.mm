@@ -466,10 +466,9 @@ void AuthenticationService::SignOut(
   base::OnceClosure callback_closure =
       completion ? base::BindOnce(completion) : base::DoNothing();
 
-  // Note: Once `kSeparateProfilesForManagedAccounts` is launched, the "clear
-  // browsing data" cases are only reachable for managed accounts that were
-  // already signed in before that feature was enabled. Once those users have
-  // been migrated, this code can be cleaned up.
+  // TODO(crbug.com/407498240): Once all users are migrated to multiple
+  // profiles, the "clear browsing data" cases will be unused and can be cleaned
+  // up.
   if (is_managed && is_migrated_from_syncing) {
     // If `is_clear_data_feature_for_managed_users_enabled` is false, browsing
     // data for managed account needs to be cleared only if sync has started at
@@ -513,13 +512,6 @@ AuthenticationService::PerformProfileInitializationIfNecessary() {
   const bool was_already_initialized =
       attributes_storage->GetAttributesForProfileWithName(profile_name)
           .IsFullyInitialized();
-
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    return was_already_initialized
-               ? ProfileInitializationOutcome::
-                     kFeatureDisabledAlreadyInitialized
-               : ProfileInitializationOutcome::kFeatureDisabledNewlyInitialized;
-  }
 
   // When opening a managed profile for the first time, the user needs to be
   // signed in automatically.

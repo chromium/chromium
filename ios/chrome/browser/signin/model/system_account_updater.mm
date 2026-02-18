@@ -290,15 +290,9 @@ void SystemAccountUpdater::HandleMigrationIfNeeded() {
     // Only migrate prefs if a migration was never performed.
     local_state->SetBoolean(prefs::kMigrateWidgetsPrefs, true);
     UpdateLoadedAccounts();
-  } else if (!local_state->GetBoolean(prefs::kWidgetsForMultiProfile) &&
-             AreSeparateProfilesForManagedAccountsEnabled()) {
+  } else if (!local_state->GetBoolean(prefs::kWidgetsForMultiProfile)) {
     // Reload timelines if multi-profile was enabled since last build.
     local_state->SetBoolean(prefs::kWidgetsForMultiProfile, true);
-    ReloadAllTimelines();
-  } else if (local_state->GetBoolean(prefs::kWidgetsForMultiProfile) &&
-             !AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Reload timelines if multi-profile was disabled since last build.
-    local_state->SetBoolean(prefs::kWidgetsForMultiProfile, false);
     ReloadAllTimelines();
   }
 }

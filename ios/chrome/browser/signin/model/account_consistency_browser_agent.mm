@@ -237,9 +237,6 @@ bool AccountConsistencyBrowserAgent::SigninEnabled() const {
 }
 
 bool AccountConsistencyBrowserAgent::CanShowAccountMenu() const {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    return false;
-  }
   ProfileIOS* profile = browser_->GetProfile()->GetOriginalProfile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -248,6 +245,5 @@ bool AccountConsistencyBrowserAgent::CanShowAccountMenu() const {
 }
 
 void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   [application_handler_ showAccountMenuFromWebWithURL:url];
 }
