@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -70,10 +71,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -81,6 +85,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -90,6 +95,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -275,6 +281,28 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
     }
 
     return 0;
+  }
+
+  void ForceInstallWebApp(const webapps::AppId& app_id, const GURL& url) {
+    web_app::WebAppTestInstallObserver observer(browser()->profile());
+    observer.BeginListening({app_id});
+
+    base::DictValue dict;
+    dict.Set(web_app::kUrlKey, url.spec());
+    dict.Set(web_app::kDefaultLaunchContainerKey,
+             web_app::kDefaultLaunchContainerWindowValue);
+
+    base::ListValue list;
+    list.Append(std::move(dict));
+
+    browser()->profile()->GetPrefs()->SetList(
+        prefs::kWebAppInstallForceList, std::move(list));
+
+    const webapps::AppId installed_app_id = observer.Wait();
+    EXPECT_EQ(installed_app_id, app_id);
+
+    EXPECT_TRUE(provider().registrar_unsafe().HasExternalAppWithInstallSource(
+        installed_app_id, web_app::ExternalInstallSource::kExternalPolicy));
   }
 
  private:
@@ -637,6 +665,38 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
             u"Customize and control A minimal-ui app");
   EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
             u"Customize and control A minimal-ui app");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       MenuButtonMigrationPending_PolicyApp) {
+  ASSERT_TRUE(https_server()->Started());
+  const GURL app_url = https_server()->GetURL("/simple.html");
+  webapps::AppId app_id =
+      web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, app_url);
+  ForceInstallWebApp(app_id, app_url);
+  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
+      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+
+  // Set pending migration info.
+  // TODO(crbug.com/485342623) Switch to Migration test website to avoid modify
+  // the registrar
+  {
+    web_app::ScopedRegistryUpdate update =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    web_app::proto::PendingMigrationInfo migration_info;
+    migration_info.set_manifest_id("https://new.app.com");
+    migration_info.set_behavior(
+        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    update->UpdateApp(app_id)->SetPendingMigrationInfo(
+        std::move(migration_info));
+  }
+
+  // The menu button shouldn't show the migration label because the app source
+  // (EXTERNAL_POLICY) is invalid for migration.
+  menu_button->UpdateStateForTesting();
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 }
 
 class WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu

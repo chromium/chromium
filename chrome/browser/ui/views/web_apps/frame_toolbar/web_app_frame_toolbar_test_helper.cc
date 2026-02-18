@@ -82,8 +82,8 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
     Browser* browser,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     const GURL& start_url) {
-  webapps::AppId app_id =
-      web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
+  webapps::AppId app_id = web_app::test::InstallWebApp(
+      browser->profile(), std::move(web_app_info));
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
   Browser* app_browser =
@@ -106,6 +106,12 @@ WebAppFrameToolbarTestHelper::InstallAndLaunchIsolatedWebApp(
 
   SetViews(app_browser);
   return url_info;
+}
+
+void WebAppFrameToolbarTestHelper::LaunchWebAppBrowserAndWait(
+    Profile* profile,
+    const webapps::AppId& app_id) {
+  SetViews(web_app::LaunchWebAppBrowserAndWait(profile, app_id));
 }
 
 GURL WebAppFrameToolbarTestHelper::

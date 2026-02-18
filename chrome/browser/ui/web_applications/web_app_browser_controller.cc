@@ -278,6 +278,10 @@ bool WebAppBrowserController::HasPendingMigration() const {
   if (!base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
     return false;
   }
+  if (!registrar().AppMatches(app_id(),
+                              WebAppFilter::IsAppValidMigrationSource())) {
+    return false;
+  }
   const WebApp* app = registrar().GetAppById(app_id());
   return app && app->pending_migration_info().has_value();
 }
