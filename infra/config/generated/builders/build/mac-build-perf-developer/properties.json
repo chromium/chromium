@@ -17,7 +17,8 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb"
+                  "mb",
+                  "mac_toolchain"
                 ],
                 "config": "chromium",
                 "target_platform": "mac"

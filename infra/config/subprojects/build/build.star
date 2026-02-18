@@ -485,6 +485,7 @@ cq_build_perf_builder(
             config = "chromium",
             apply_configs = [
                 "mb",
+                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
@@ -732,6 +733,7 @@ This builder measures build performance for Mac developer builds, by simulating 
             config = "chromium",
             apply_configs = [
                 "mb",
+                "mac_toolchain",
             ],
             target_platform = builder_config.target_platform.MAC,
         ),
