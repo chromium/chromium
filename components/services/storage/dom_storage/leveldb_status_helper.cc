@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "storage/common/database/leveldb_status_helper.h"
+#include "components/services/storage/dom_storage/leveldb_status_helper.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "storage/common/database/db_status.h"
+#include "components/services/storage/dom_storage/db_status.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 

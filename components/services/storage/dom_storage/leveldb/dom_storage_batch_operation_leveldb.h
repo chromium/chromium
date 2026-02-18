@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "storage/common/database/db_status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {

@@ -15,7 +15,7 @@
 #include "base/types/pass_key.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb_utils.h"
-#include "storage/common/database/leveldb_status_helper.h"
+#include "components/services/storage/dom_storage/leveldb_status_helper.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 

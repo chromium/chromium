@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/test/gmock_expected_support.h"
+#include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/public/cpp/compression.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
-#include "storage/common/database/db_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 

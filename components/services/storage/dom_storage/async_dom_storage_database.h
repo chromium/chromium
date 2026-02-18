@@ -17,9 +17,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
+#include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
-#include "storage/common/database/db_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {

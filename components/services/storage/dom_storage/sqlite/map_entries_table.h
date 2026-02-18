@@ -8,8 +8,8 @@
 #include <map>
 #include <vector>
 
+#include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "storage/common/database/db_status.h"
 
 namespace sql {
 class Database;

@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "storage/common/database/db_status.h"
-#include "storage/common/database/leveldb_status_helper.h"
+#include "components/services/storage/dom_storage/leveldb_status_helper.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"

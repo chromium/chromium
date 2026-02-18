@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef STORAGE_COMMON_DATABASE_DB_STATUS_H_
-#define STORAGE_COMMON_DATABASE_DB_STATUS_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_DB_STATUS_H_
+#define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_DB_STATUS_H_
 
 #include <optional>
 #include <string>
 
-#include "base/component_export.h"
 #include "base/types/expected.h"
 
 namespace storage {
@@ -16,7 +15,7 @@ namespace storage {
 // A database status code and optionally an error message. This status code
 // may have originated from the database engine or from the Chromium code. See
 // notes above `type_`.
-class COMPONENT_EXPORT(STORAGE_DATABASE_STATUS) DbStatus {
+class DbStatus {
  public:
   DbStatus();
   DbStatus(const DbStatus& rhs);
@@ -123,4 +122,4 @@ using StatusOr = base::expected<T, DbStatus>;
 
 }  // namespace storage
 
-#endif  // STORAGE_COMMON_DATABASE_DB_STATUS_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_DB_STATUS_H_

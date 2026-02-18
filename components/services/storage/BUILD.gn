@@ -8,6 +8,8 @@ source_set("storage") {
   sources = [
     "dom_storage/async_dom_storage_database.cc",
     "dom_storage/async_dom_storage_database.h",
+    "dom_storage/db_status.cc",
+    "dom_storage/db_status.h",
     "dom_storage/dom_storage_constants.h",
     "dom_storage/dom_storage_database.cc",
     "dom_storage/dom_storage_database.h",
@@ -21,6 +23,8 @@ source_set("storage") {
     "dom_storage/leveldb/local_storage_leveldb.h",
     "dom_storage/leveldb/session_storage_leveldb.cc",
     "dom_storage/leveldb/session_storage_leveldb.h",
+    "dom_storage/leveldb_status_helper.cc",
+    "dom_storage/leveldb_status_helper.h",
     "dom_storage/local_storage_impl.cc",
     "dom_storage/local_storage_impl.h",
     "dom_storage/session_storage_area_impl.cc",
@@ -42,6 +46,8 @@ source_set("storage") {
     "dom_storage/sqlite/sqlite_database_macros.h",
     "dom_storage/sqlite/sqlite_database_utils.cc",
     "dom_storage/sqlite/sqlite_database_utils.h",
+    "dom_storage/sqlite_status_helper.cc",
+    "dom_storage/sqlite_status_helper.h",
     "dom_storage/storage_area_impl.cc",
     "dom_storage/storage_area_impl.h",
     "indexed_db/leveldb/leveldb_state.cc",
@@ -128,8 +134,6 @@ source_set("storage") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//storage/common",
-    "//storage/common:database_status",
-    "//storage/common:leveldb_status_helper",
   ]
 }
 
@@ -259,7 +263,6 @@ source_set("tests") {
     "//sql:test_support",
     "//storage/browser",
     "//storage/browser:test_support",
-    "//storage/common:database_status",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -296,7 +299,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//content/test:test_support",
     "//sql:test_support",
-    "//storage/common:database_status",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/leveldatabase",

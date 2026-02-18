@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "storage/common/database/sqlite_status_helper.h"
+#include "components/services/storage/dom_storage/sqlite_status_helper.h"
 
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"

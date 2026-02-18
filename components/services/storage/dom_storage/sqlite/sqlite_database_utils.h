@@ -8,9 +8,9 @@
 #include <memory>
 #include <tuple>
 
+#include "components/services/storage/dom_storage/db_status.h"
+#include "components/services/storage/dom_storage/sqlite_status_helper.h"
 #include "sql/database.h"
-#include "storage/common/database/db_status.h"
-#include "storage/common/database/sqlite_status_helper.h"
 
 namespace sql {
 class MetaTable;

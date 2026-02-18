@@ -21,8 +21,8 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "storage/common/database/db_status.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace base {

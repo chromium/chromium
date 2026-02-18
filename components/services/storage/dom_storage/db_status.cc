@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "storage/common/database/db_status.h"
+#include "components/services/storage/dom_storage/db_status.h"
 
 #include <string>
 
