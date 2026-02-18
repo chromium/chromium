@@ -848,7 +848,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     if (totalCount + files.length > maxTotal) {
-      errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
+      errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
     }
 
     for (const file of files) {
@@ -882,16 +882,16 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         if (currentTypeCount >= maxType) {
           switch (inputType) {
             case InputType.kLensImage:
-              errorToDisplay = ProcessFilesError.MAX_IMAGES_EXCEEDED;
+              errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_IMAGES_EXCEEDED);
               break;
             case InputType.kLensFile:
-              errorToDisplay = ProcessFilesError.MAX_PDFS_EXCEEDED;
+              errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_PDFS_EXCEEDED);
               break;
             default:
-              errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
+              errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
           }
         } else {
-          errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
+          errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
         }
       }
     }
