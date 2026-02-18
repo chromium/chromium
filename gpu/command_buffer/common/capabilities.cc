@@ -6,15 +6,7 @@
 
 namespace gpu {
 
-Capabilities::Capabilities() {
-  mappable_formats = base::MakeFlatSet<viz::SharedImageFormat>(std::vector({
-      viz::SinglePlaneFormat::kBGR_565,
-      viz::SinglePlaneFormat::kRGBA_4444,
-      viz::SinglePlaneFormat::kRGBA_8888,
-      viz::SinglePlaneFormat::kRGBX_8888,
-      viz::MultiPlaneFormat::kYV12,
-  }));
-}
+Capabilities::Capabilities() = default;
 
 Capabilities::Capabilities(const Capabilities& other) = default;
 

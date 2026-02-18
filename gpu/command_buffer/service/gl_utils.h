@@ -86,9 +86,12 @@ void PopulateGLCapabilities(GLCapabilities* caps,
                             const FeatureInfo* feature_info);
 
 #if BUILDFLAG(IS_CHROMEOS)
-void PopulateEmptyDRMCaps(
-    base::flat_set<viz::SharedImageFormat> mappable_formats,
-    base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers);
+// Validate the list of formats `drm_formats_and_modifiers` only contains valid
+// drm formats that are mappable for Exo on ChromeOS. Provide fallback list of
+// mappable formats with invalid modifiers, if it is empty.
+void PopulateMappableDrmFormatsForExo(
+    base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers,
+    const FeatureInfo* feature_info);
 void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info);
 #endif

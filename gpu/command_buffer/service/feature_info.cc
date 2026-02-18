@@ -184,16 +184,7 @@ size_t GetNumAttachments(GLenum attachment) {
 
 }  // anonymous namespace.
 
-FeatureInfo::FeatureFlags::FeatureFlags() {
-  mappable_formats = base::MakeFlatSet<viz::SharedImageFormat>(std::vector({
-      viz::SinglePlaneFormat::kBGR_565,
-      viz::SinglePlaneFormat::kRGBA_8888,
-      viz::SinglePlaneFormat::kRGBX_8888,
-      viz::MultiPlaneFormat::kYV12,
-      viz::MultiPlaneFormat::kNV12,
-  }));
-}
-
+FeatureInfo::FeatureFlags::FeatureFlags() = default;
 FeatureInfo::FeatureFlags::~FeatureFlags() = default;
 
 FeatureInfo::FeatureInfo() {
@@ -468,7 +459,6 @@ void FeatureInfo::EnableOESTextureHalfFloatLinear() {
     return;
   AddExtensionString("GL_OES_texture_half_float_linear");
   feature_flags_.enable_texture_half_float_linear = true;
-  feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRGBA_F16);
 }
 
 void FeatureInfo::EnableANGLEInstancedArrayIfPossible(
@@ -972,8 +962,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
         GL_BGRA8_EXT);
     validators_.texture_sized_texture_filterable_internal_format.AddValue(
         GL_BGRA8_EXT);
-    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kBGRA_8888);
-    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kBGRX_8888);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -1228,18 +1216,9 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     validators_.texture_internal_format_storage.AddValue(GL_RGB10_A2_EXT);
     validators_.pixel_type.AddValue(GL_UNSIGNED_INT_2_10_10_10_REV);
   }
-  if (feature_flags_.chromium_image_ar30) {
-    feature_flags_.mappable_formats.insert(
-        viz::SinglePlaneFormat::kBGRA_1010102);
-  }
-  if (feature_flags_.chromium_image_ab30) {
-    feature_flags_.mappable_formats.insert(
-        viz::SinglePlaneFormat::kRGBA_1010102);
-  }
 
   if (feature_flags_.chromium_image_ycbcr_p010) {
     AddExtensionString("GL_CHROMIUM_ycbcr_p010_image");
-    feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kP010);
   }
 
   // TODO(gman): Add support for these extensions.
@@ -1422,9 +1401,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
 
     validators_.texture_internal_format_storage.AddValue(GL_R8_EXT);
     validators_.texture_internal_format_storage.AddValue(GL_RG8_EXT);
-
-    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kR_8);
-    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRG_88);
   }
 
   const bool is_texture_norm16_supported_for_webgl2_or_es3 =

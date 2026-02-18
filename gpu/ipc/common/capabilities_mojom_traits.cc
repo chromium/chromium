@@ -30,13 +30,6 @@ bool StructTraits<gpu::mojom::CapabilitiesDataView, gpu::Capabilities>::Read(
   out->context_supports_distance_field_text =
       data.context_supports_distance_field_text();
   out->using_vulkan_context = data.using_vulkan_context();
-  std::vector<viz::SharedImageFormat> mappable_formats;
-  if (!data.ReadMappableFormats(&mappable_formats)) {
-    return false;
-  }
-  out->mappable_formats =
-      base::MakeFlatSet<viz::SharedImageFormat>(mappable_formats);
-
   if (!data.ReadDrmFormatsAndModifiers(&out->drm_formats_and_modifiers)) {
     return false;
   }

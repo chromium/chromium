@@ -1141,7 +1141,6 @@ gl::GLSurface* RasterDecoderImpl::GetGLSurface() {
 Capabilities RasterDecoderImpl::GetCapabilities() {
   // TODO(enne): reconcile this with gles2_cmd_decoder's capability settings.
   Capabilities caps;
-  caps.mappable_formats = feature_info()->feature_flags().mappable_formats;
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
   caps.disable_mac_swangle_rgbx =
@@ -1239,16 +1238,8 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  base::EraseIf(caps.drm_formats_and_modifiers, [&](const auto& format) {
-    auto drm_format = format.first;
-    return !ui::IsValidDrmFormat(drm_format) ||
-           !caps.mappable_formats.contains(
-               ui::GetSharedImageFormatFromFourCCFormat(drm_format));
-  });
-  if (caps.drm_formats_and_modifiers.empty()) {
-    gles2::PopulateEmptyDRMCaps(caps.mappable_formats,
-                                caps.drm_formats_and_modifiers);
-  }
+  gles2::PopulateMappableDrmFormatsForExo(caps.drm_formats_and_modifiers,
+                                          feature_info());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return caps;

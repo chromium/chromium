@@ -37,7 +37,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     FeatureFlags();
     ~FeatureFlags();
 
-    base::flat_set<viz::SharedImageFormat> mappable_formats;
     // Use glBlitFramebuffer() and glRenderbufferStorageMultisample() with
     // GL_EXT_framebuffer_multisample-style semantics (as opposed to
     // GL_EXT_multisampled_render_to_texture semantics).
