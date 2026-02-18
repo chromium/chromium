@@ -35,14 +35,7 @@ TEST(AddressRewriterTest, LastRule) {
   EXPECT_EQ(large_rewrite.Rewrite(u"2"), large_rewrite.Rewrite(u"short"));
 }
 
-// TODO(crbug.com/483953320): Re-enable this test on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_AutofillFixRewriterRulesEnabled \
-  DISABLED_AutofillFixRewriterRulesEnabled
-#else
-#define MAYBE_AutofillFixRewriterRulesEnabled AutofillFixRewriterRulesEnabled
-#endif
-TEST(AddressRewriterTest, MAYBE_AutofillFixRewriterRulesEnabled) {
+TEST(AddressRewriterTest, AutofillFixRewriterRulesEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kAutofillFixRewriterRules);
   AddressRewriter de_fixed =
