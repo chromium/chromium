@@ -118,7 +118,8 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 @interface SharingCoordinator () <ActivityServicePresentation,
                                   CRWWebViewDownloadDelegate,
-                                  QRGenerationCommands>
+                                  QRGenerationCommands,
+                                  ShareDownloadOverlayCommands>
 
 @property(nonatomic, strong)
     ActivityServiceCoordinator* activityServiceCoordinator;
@@ -384,6 +385,15 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 #pragma mark - ShareDownloadOverlayCommands
 
+- (void)cancelDownload {
+  [self cancelDownloadFromView:nil];
+}
+
+#pragma mark - Private
+
+// Cancels the current download. If `shareButton` is not nil and
+// `self.shouldRestartCoordinator` is true, restart the coordinator as if
+// `shareButton` was tapped.
 - (void)cancelDownloadFromView:(UIView*)shareButton {
   [self stopDisplayDownloadOverlay];
   self.isCancelling = YES;
@@ -395,6 +405,7 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
                             OpenInDownloadResult::kCanceled);
 }
 
+// Called when the download was cancelled to restart the coordinator if needed.
 - (void)downloadWasCancelledFromView:(UIView*)shareButton {
   self.isDownloadCanceled = YES;
   self.isCancelling = NO;
