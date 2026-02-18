@@ -136,6 +136,7 @@ class SqlPersistentStore::Backend {
 
   using EvictionCandidateList =
       EvictionCandidateAggregator::EvictionCandidateList;
+  using EvictionTargetList = EvictionCandidateAggregator::EvictionTargetList;
 
   // A helper struct to associate an IOBuffer with a starting offset.
   struct BufferWithStart {
@@ -277,8 +278,7 @@ class SqlPersistentStore::Backend {
   // entries.
   void EvictEntries(ResIdListOrErrorAndStoreStatusCallback callback,
                     bool is_idle_time_eviction,
-                    ResIdList res_ids,
-                    int64_t bytes_usage,
+                    EvictionTargetList eviction_target_list,
                     base::TimeTicks post_task_time);
   // The internal implementation of `EvictEntries`. Deletes the entries from the
   // database and updates the store status.

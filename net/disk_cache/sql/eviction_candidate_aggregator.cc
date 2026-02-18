@@ -15,11 +15,11 @@ namespace disk_cache {
 EvictionCandidateAggregator::EvictionCandidate::EvictionCandidate(
     SqlPersistentStore::ResId res_id,
     SqlPersistentStore::ShardId shard_id,
-    int64_t bytes_usage,
+    int64_t entry_size_with_overhead,
     base::Time last_used)
     : res_id(res_id),
       shard_id(shard_id),
-      bytes_usage(bytes_usage),
+      entry_size_with_overhead(entry_size_with_overhead),
       last_used(last_used) {}
 EvictionCandidateAggregator::EvictionCandidate::~EvictionCandidate() = default;
 EvictionCandidateAggregator::EvictionCandidate::EvictionCandidate(
@@ -27,6 +27,30 @@ EvictionCandidateAggregator::EvictionCandidate::EvictionCandidate(
 EvictionCandidateAggregator::EvictionCandidate&
 EvictionCandidateAggregator::EvictionCandidate::operator=(EvictionCandidate&&) =
     default;
+EvictionCandidateAggregator::EvictionCandidate::EvictionCandidate(
+    const EvictionCandidate&) = default;
+EvictionCandidateAggregator::EvictionCandidate&
+EvictionCandidateAggregator::EvictionCandidate::operator=(
+    const EvictionCandidate&) = default;
+
+EvictionCandidateAggregator::EvictionTarget::EvictionTarget(
+    SqlPersistentStore::ResId res_id,
+    int64_t entry_size_with_overhead)
+    : res_id(res_id), entry_size_with_overhead(entry_size_with_overhead) {}
+EvictionCandidateAggregator::EvictionTarget::~EvictionTarget() = default;
+EvictionCandidateAggregator::EvictionTarget::EvictionTarget(EvictionTarget&&) =
+    default;
+EvictionCandidateAggregator::EvictionTarget&
+EvictionCandidateAggregator::EvictionTarget::operator=(EvictionTarget&&) =
+    default;
+EvictionCandidateAggregator::EvictionTarget::EvictionTarget(
+    const EvictionTarget&) = default;
+EvictionCandidateAggregator::EvictionTarget&
+EvictionCandidateAggregator::EvictionTarget::operator=(const EvictionTarget&) =
+    default;
+
+bool EvictionCandidateAggregator::EvictionTarget::operator==(
+    const EvictionTarget& other) const = default;
 
 EvictionCandidateAggregator::EvictionCandidateAggregator(
     int64_t size_to_be_removed,
@@ -92,15 +116,12 @@ void EvictionCandidateAggregator::AggregateCandidatesAndRunCallbacks(
       all_candidates.begin(), all_candidates.end(),
       [](const auto& a, const auto& b) { return a.last_used < b.last_used; });
 
-  std::vector<std::vector<SqlPersistentStore::ResId>>
-      selected_res_ids_per_shard(GetSizeOfShards());
-  std::vector<int64_t> bytes_usage_per_shard(GetSizeOfShards());
+  std::vector<EvictionTargetList> eviction_targets_per_shard(GetSizeOfShards());
   int64_t removed_total_size = 0;
   for (const EvictionCandidate& candidate : all_candidates) {
-    removed_total_size += candidate.bytes_usage;
-    bytes_usage_per_shard[candidate.shard_id.value()] += candidate.bytes_usage;
-    selected_res_ids_per_shard[candidate.shard_id.value()].emplace_back(
-        candidate.res_id);
+    removed_total_size += candidate.entry_size_with_overhead;
+    eviction_targets_per_shard[candidate.shard_id.value()].emplace_back(
+        candidate.res_id, candidate.entry_size_with_overhead);
     if (removed_total_size > size_to_be_removed_) {
       break;
     }
@@ -114,18 +135,16 @@ void EvictionCandidateAggregator::AggregateCandidatesAndRunCallbacks(
       continue;
     }
     task_runners_[i]->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(selected_callbacks[i]),
-                       std::move(selected_res_ids_per_shard[i]),
-                       bytes_usage_per_shard[i], base::TimeTicks::Now()));
+        FROM_HERE, base::BindOnce(std::move(selected_callbacks[i]),
+                                  std::move(eviction_targets_per_shard[i]),
+                                  base::TimeTicks::Now()));
   }
 
   // Run the last shard's callback on the current thread to avoid an
   // unnecessary thread hop.
   DCHECK(task_runners_[last_shard_id.value()]->RunsTasksInCurrentSequence());
   std::move(selected_callbacks[last_shard_id.value()])
-      .Run(std::move(selected_res_ids_per_shard[last_shard_id.value()]),
-           bytes_usage_per_shard[last_shard_id.value()],
+      .Run(std::move(eviction_targets_per_shard[last_shard_id.value()]),
            base::TimeTicks::Now());
 }
 

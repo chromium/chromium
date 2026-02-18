@@ -27,25 +27,43 @@ class NET_EXPORT_PRIVATE EvictionCandidateAggregator
   struct NET_EXPORT_PRIVATE EvictionCandidate {
     EvictionCandidate(SqlPersistentStore::ResId res_id,
                       SqlPersistentStore::ShardId shard_id,
-                      int64_t bytes_usage,
+                      int64_t entry_size_with_overhead,
                       base::Time last_used);
     ~EvictionCandidate();
     EvictionCandidate(EvictionCandidate&&);
     EvictionCandidate& operator=(EvictionCandidate&&);
+    EvictionCandidate(const EvictionCandidate&);
+    EvictionCandidate& operator=(const EvictionCandidate&);
 
     SqlPersistentStore::ResId res_id;
     SqlPersistentStore::ShardId shard_id;
-    int64_t bytes_usage;
+    // The size of the entry in bytes, including the static overhead
+    // (kSqlBackendStaticResourceSize).
+    int64_t entry_size_with_overhead;
     base::Time last_used;
   };
+  struct NET_EXPORT_PRIVATE EvictionTarget {
+    EvictionTarget(SqlPersistentStore::ResId res_id,
+                   int64_t entry_size_with_overhead);
+    ~EvictionTarget();
+    EvictionTarget(EvictionTarget&&);
+    EvictionTarget& operator=(EvictionTarget&&);
+    EvictionTarget(const EvictionTarget&);
+    EvictionTarget& operator=(const EvictionTarget&);
 
+    bool operator==(const EvictionTarget& other) const;
+
+    SqlPersistentStore::ResId res_id;
+    int64_t entry_size_with_overhead;
+  };
+
+  using EvictionTargetList = std::vector<EvictionTarget>;
   using EvictionCandidateList = std::vector<EvictionCandidate>;
   using EvictionCandidateSelectedCallback =
-      base::OnceCallback<void(std::vector<SqlPersistentStore::ResId>,
-                              int64_t bytes_usage,
+      base::OnceCallback<void(EvictionTargetList eviction_targets,
                               base::TimeTicks post_task_time)>;
 
-  explicit EvictionCandidateAggregator(
+  EvictionCandidateAggregator(
       int64_t size_to_be_removed,
       std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners);
 

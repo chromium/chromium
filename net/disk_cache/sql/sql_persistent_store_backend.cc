@@ -2315,7 +2315,9 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
       }
       candidates_total_size += bytes_usage;
       candidates_total_size += kSqlBackendStaticResourceSize;
-      candidates.emplace_back(res_id, shard_id_, bytes_usage, last_used);
+      candidates.emplace_back(res_id, shard_id_,
+                              bytes_usage + kSqlBackendStaticResourceSize,
+                              last_used);
     }
   }
   base::UmaHistogramMicrosecondsTimes(
@@ -2330,8 +2332,7 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
 void SqlPersistentStore::Backend::EvictEntries(
     ResIdListOrErrorAndStoreStatusCallback callback,
     bool is_idle_time_eviction,
-    ResIdList res_ids,
-    int64_t bytes_usage,
+    EvictionTargetList eviction_target_list,
     base::TimeTicks post_task_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - post_task_time;
   // Checks that this method is called on the expected sequence when invoked via
@@ -2340,10 +2341,20 @@ void SqlPersistentStore::Backend::EvictEntries(
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.EvictEntries", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("res_ids_size", res_ids.size());
+                       dict.Add("target_size", eviction_target_list.size());
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
+
+  ResIdList res_ids;
+  int64_t bytes_usage = 0;
+  res_ids.reserve(eviction_target_list.size());
+  for (const auto& target : eviction_target_list) {
+    res_ids.emplace_back(target.res_id);
+    bytes_usage +=
+        target.entry_size_with_overhead - kSqlBackendStaticResourceSize;
+  }
+
   auto result = EvictEntriesInternal(
       res_ids, bytes_usage, is_idle_time_eviction, corruption_detected);
   RecordTimeAndErrorResultHistogram(
