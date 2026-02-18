@@ -215,9 +215,11 @@ void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
 
 void WebAppSettingsPageHandler::SetWindowMode(const std::string& app_id,
                                               apps::WindowMode window_mode) {
-  // Changing window mode is not allowed for isolated web apps.
+  // Changing window mode is not allowed for isolated web apps and isolated sub
+  // apps.
   if (provider().registrar_unsafe().AppMatches(
-          app_id, web_app::WebAppFilter::IsIsolatedApp())) {
+          app_id, web_app::WebAppFilter::IsIsolatedApp() |
+                      web_app::WebAppFilter::IsIsolatedSubApp())) {
     return;
   }
 

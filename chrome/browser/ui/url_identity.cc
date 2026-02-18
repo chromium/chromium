@@ -89,13 +89,6 @@ UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
                          base::UTF8ToUTF16(extension->name()), false)};
 }
 
-std::optional<webapps::AppId> GetIsolatedWebAppIdFromUrl(const GURL& url) {
-  base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-      web_app::IsolatedWebAppUrlInfo::Create(url);
-  return url_info.has_value() ? std::make_optional(url_info.value().app_id())
-                              : std::nullopt;
-}
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
@@ -109,7 +102,10 @@ UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
       web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
-  std::optional<webapps::AppId> app_id = GetIsolatedWebAppIdFromUrl(url);
+  std::optional<webapps::AppId> app_id =
+      provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          url, web_app::WebAppFilter::IsIsolatedApp() |
+                   web_app::WebAppFilter::IsIsolatedSubApp());
   if (!app_id.has_value()) {  // fallback to default
     return CreateDefaultUrlIdentityFromUrl(url, options);
   }
