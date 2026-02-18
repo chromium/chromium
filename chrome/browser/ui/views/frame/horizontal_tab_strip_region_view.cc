@@ -73,6 +73,11 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
+#include "ui/aura/window.h"
+#endif
+
 namespace {
 
 class FrameGrabHandle : public views::View {
@@ -206,6 +211,9 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
           tabs::TabSearchPosition::kLeadingHorizontalTabstrip),
       tab_search_position_metrics_logger_(
           std::make_unique<TabSearchPositionMetricsLogger>(profile_)),
+#if BUILDFLAG(IS_CHROMEOS)
+      tab_scrubber_(std::make_unique<ash::TabScrubber>(browser_view)),
+#endif
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
@@ -477,6 +485,28 @@ void HorizontalTabStripRegionView::Layout(PassKey) {
     // set the bounds.
     button_to_paint_to_layer->SetBoundsRect(button_new_bounds);
   }
+}
+
+void HorizontalTabStripRegionView::AddedToWidget() {
+  TabStripRegionView::AddedToWidget();
+#if BUILDFLAG(IS_CHROMEOS)
+  if (tab_scrubber_ && GetWidget() && GetWidget()->GetNativeWindow()) {
+    GetWidget()->GetNativeWindow()->AddPreTargetHandler(tab_scrubber_.get());
+  }
+#endif
+}
+
+void HorizontalTabStripRegionView::RemovedFromWidget() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (tab_scrubber_) {
+    tab_scrubber_->FinishScrub(false);
+    if (GetWidget() && GetWidget()->GetNativeWindow()) {
+      GetWidget()->GetNativeWindow()->RemovePreTargetHandler(
+          tab_scrubber_.get());
+    }
+  }
+#endif
+  TabStripRegionView::RemovedFromWidget();
 }
 
 bool HorizontalTabStripRegionView::CanDrop(const OSExchangeData& data) {

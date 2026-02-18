@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -106,7 +107,7 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    TabScrubber::GetInstance()->use_default_activation_delay_ = false;
+    GetTabScrubber(browser())->use_default_activation_delay_ = false;
     // Disable external monitor scaling of coordinates.
     ash::Shell* shell = ash::Shell::Get();
     shell->event_transformation_handler()->set_transformation_mode(
@@ -119,6 +120,14 @@ class TabScrubberTest : public InProcessBrowserTest,
     wm_helper_.reset();
 
     browser()->tab_strip_model()->RemoveObserver(this);
+  }
+
+  ash::TabScrubber* GetTabScrubber(Browser* browser) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    HorizontalTabStripRegionView* tab_strip_region_view =
+        static_cast<HorizontalTabStripRegionView*>(
+            browser_view->tab_strip_view());
+    return tab_strip_region_view->get_tab_scrubber_for_testing();
   }
 
   TabStrip* GetTabStrip(Browser* browser) {
@@ -141,6 +150,13 @@ class TabScrubberTest : public InProcessBrowserTest,
         ->GetMirroredBounds()
         .CenterPoint()
         .x();
+  }
+
+  gfx::Point GetEventLocation(Browser* browser) {
+    // Add an offset of 5 pixels to ensure the location is within the non-client
+    // area of the browser (frame / caption area). This number is arbitrary.
+    return browser->window()->GetNativeWindow()->GetBoundsInScreen().origin() +
+           gfx::Vector2d(5, 5);
   }
 
   // The simulated scroll event's offsets are calculated in the tests rather
@@ -172,7 +188,8 @@ class TabScrubberTest : public InProcessBrowserTest,
 
     int offset = GetTabCenter(browser, index) -
                  GetStartX(browser, active_index, direction);
-    ui::ScrollEvent scroll_event(ui::EventType::kScroll, gfx::Point(0, 0),
+    gfx::Point location = GetEventLocation(browser);
+    ui::ScrollEvent scroll_event(ui::EventType::kScroll, location,
                                  ui::EventTimeForNow(), 0, offset, 0, offset, 0,
                                  kScrubbingGestureFingerCount);
     event_generator->Dispatch(&scroll_event);
@@ -208,7 +225,9 @@ class TabScrubberTest : public InProcessBrowserTest,
       increment *= 2;
     }
     browser->tab_strip_model()->AddObserver(this);
-    ScrollGenerator scroll_generator(event_generator.get());
+    ScrollGenerator scroll_generator(event_generator.get(),
+                                     GetTabScrubber(browser),
+                                     GetEventLocation(browser));
     int last = GetStartX(browser, active_index, direction);
     for (int i = active_index + increment; i != (index + increment);
          i += increment) {
@@ -230,7 +249,9 @@ class TabScrubberTest : public InProcessBrowserTest,
   void SendScrubSequence(Browser* browser, float x_offset, int index) {
     auto event_generator = CreateEventGenerator(browser);
     browser->tab_strip_model()->AddObserver(this);
-    ScrollGenerator scroll_generator(event_generator.get());
+    ScrollGenerator scroll_generator(event_generator.get(),
+                                     GetTabScrubber(browser),
+                                     GetEventLocation(browser));
     scroll_generator.GenerateScroll(x_offset);
     browser->tab_strip_model()->RemoveObserver(this);
   }
@@ -251,7 +272,7 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   bool IsTabScrubberEnabled() {
-    return TabScrubber::GetInstance()->GetEnabledForTesting();
+    return GetTabScrubber(browser())->GetEnabledForTesting();
   }
 
   void AddTabs(Browser* browser, int num_tabs) {
@@ -294,14 +315,18 @@ class TabScrubberTest : public InProcessBrowserTest,
   // forces the TabScrubber to complete any pending activation.
   class ScrollGenerator {
    public:
-    explicit ScrollGenerator(ui::test::EventGenerator* event_generator)
-        : event_generator_(event_generator) {
-      ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
-                                   gfx::Point(), time_for_next_event_, 0, 0, 0,
-                                   0, 0, kScrubbingGestureFingerCount);
+    explicit ScrollGenerator(ui::test::EventGenerator* event_generator,
+                             ash::TabScrubber* tab_scrubber,
+                             const gfx::Point& location)
+        : event_generator_(event_generator),
+          tab_scrubber_(tab_scrubber),
+          location_(location) {
+      ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, location_,
+                                   time_for_next_event_, 0, 0, 0, 0, 0,
+                                   kScrubbingGestureFingerCount);
       event_generator->Dispatch(&fling_cancel);
-      if (TabScrubber::GetInstance()->IsActivationPending()) {
-        TabScrubber::GetInstance()->FinishScrub(true);
+      if (tab_scrubber_->IsActivationPending()) {
+        tab_scrubber_->FinishScrub(true);
       }
     }
 
@@ -309,29 +334,30 @@ class TabScrubberTest : public InProcessBrowserTest,
     ScrollGenerator& operator=(const ScrollGenerator&) = delete;
 
     ~ScrollGenerator() {
-      ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart,
-                                  gfx::Point(), time_for_next_event_, 0,
-                                  last_x_offset_, 0, last_x_offset_, 0,
-                                  kScrubbingGestureFingerCount);
+      ui::ScrollEvent fling_start(
+          ui::EventType::kScrollFlingStart, location_, time_for_next_event_, 0,
+          last_x_offset_, 0, last_x_offset_, 0, kScrubbingGestureFingerCount);
       event_generator_->Dispatch(&fling_start);
-      if (TabScrubber::GetInstance()->IsActivationPending()) {
-        TabScrubber::GetInstance()->FinishScrub(true);
+      if (tab_scrubber_->IsActivationPending()) {
+        tab_scrubber_->FinishScrub(true);
       }
     }
 
     void GenerateScroll(int x_offset) {
       time_for_next_event_ += base::Milliseconds(100);
-      ui::ScrollEvent scroll(ui::EventType::kScroll, gfx::Point(),
+      ui::ScrollEvent scroll(ui::EventType::kScroll, location_,
                              time_for_next_event_, 0, x_offset, 0, x_offset, 0,
                              kScrubbingGestureFingerCount);
       last_x_offset_ = x_offset;
       event_generator_->Dispatch(&scroll);
-      if (TabScrubber::GetInstance()->IsActivationPending()) {
-        TabScrubber::GetInstance()->FinishScrub(true);
+      if (tab_scrubber_->IsActivationPending()) {
+        tab_scrubber_->FinishScrub(true);
       }
     }
 
     raw_ptr<ui::test::EventGenerator> event_generator_;
+    raw_ptr<ash::TabScrubber> tab_scrubber_;
+    const gfx::Point location_;
     base::TimeTicks time_for_next_event_ = ui::EventTimeForNow();
     int last_x_offset_ = 0;
   };
@@ -464,10 +490,10 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteHighlighted) {
   AddTabs(browser(), 1);
 
   SendScrubEvent(browser(), 0);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_FALSE(GetTabScrubber(browser())->IsActivationPending());
 }
 
 // Delete the currently highlighted tab. Make sure the TabScrubber is
@@ -476,10 +502,10 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteBeforeHighlighted) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
+  EXPECT_EQ(0, GetTabScrubber(browser())->highlighted_tab());
 }
 
 // Move the currently highlighted tab and confirm it gets tracked.
@@ -487,11 +513,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveHighlighted) {
   AddTabs(browser(), 1);
 
   SendScrubEvent(browser(), 0);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->tab_strip_model()->SelectTabAt(0);
   browser()->tab_strip_model()->DeselectTabAt(1);
   browser()->tab_strip_model()->MoveSelectedTabsTo(1, std::nullopt);
-  EXPECT_EQ(1, TabScrubber::GetInstance()->highlighted_tab());
+  EXPECT_EQ(1, GetTabScrubber(browser())->highlighted_tab());
 }
 
 // Move a tab to before the highlighted one. Make sure that the highlighted tab
@@ -500,11 +526,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveBefore) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->tab_strip_model()->SelectTabAt(0);
   browser()->tab_strip_model()->SelectTabAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
-  EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
+  EXPECT_EQ(0, GetTabScrubber(browser())->highlighted_tab());
 }
 
 // Move a tab to after the highlighted one. Make sure that the highlighted tab
@@ -513,9 +539,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveAfter) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->tab_strip_model()->MoveSelectedTabsTo(0, std::nullopt);
-  EXPECT_EQ(2, TabScrubber::GetInstance()->highlighted_tab());
+  EXPECT_EQ(2, GetTabScrubber(browser())->highlighted_tab());
 }
 
 // Close the browser while an activation is pending.
@@ -523,9 +549,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, CloseBrowser) {
   AddTabs(browser(), 1);
 
   SendScrubEvent(browser(), 0);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->window()->Close();
-  EXPECT_FALSE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_FALSE(GetTabScrubber(browser())->IsActivationPending());
 }
 
 // In an RTL layout, swipe 4 tabs in each direction. Each of the tabs should
@@ -572,11 +598,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMoveBefore) {
   AddTabs(browser(), 2);
 
   SendScrubEvent(browser(), 1);
-  EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
+  EXPECT_TRUE(GetTabScrubber(browser())->IsActivationPending());
   browser()->tab_strip_model()->SelectTabAt(0);
   browser()->tab_strip_model()->SelectTabAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
-  EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
+  EXPECT_EQ(0, GetTabScrubber(browser())->highlighted_tab());
 }
 
 // If the window cycle list is open, the tab scrubber should be disabled.
@@ -608,12 +634,13 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, VerticalAndHorizontalScroll) {
   auto event_generator = CreateEventGenerator(browser());
   constexpr int kOffset = 100;
+  gfx::Point location = GetEventLocation(browser());
 
   {
     // If y offset is larger than x offset, the event should be recognized as a
     // vertical scroll and should not begin scrubbing.
     ui::ScrollEvent vertical_scroll_event(
-        ui::EventType::kScroll, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+        ui::EventType::kScroll, location, ui::EventTimeForNow(), 0,
         /*x_offset=*/0, /*y_offset=*/kOffset,
         /*x_offset_ordinal_=*/0, /*y_offset=*/kOffset,
         kScrubbingGestureFingerCount);
@@ -625,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, VerticalAndHorizontalScroll) {
     // If x offset is larger than y offset, the event should be recognized as a
     // horizontal scroll and should begin scrubbing.
     ui::ScrollEvent horizontal_scroll_event(
-        ui::EventType::kScroll, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+        ui::EventType::kScroll, location, ui::EventTimeForNow(), 0,
         /*x_offset=*/kOffset, /*y_offset=*/0,
         /*x_offset_ordinal_=*/kOffset, /*y_offset=*/0,
         kScrubbingGestureFingerCount);
@@ -639,8 +666,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, VerticalAndHorizontalScroll) {
     // example when the user start scrubbing with a horizontal scroll and the
     // fingers go up at the end of the scroll.
     ui::ScrollEvent fling_scroll_event(
-        ui::EventType::kScrollFlingStart, gfx::Point(0, 0),
-        ui::EventTimeForNow(), 0,
+        ui::EventType::kScrollFlingStart, location, ui::EventTimeForNow(), 0,
         /*x_offset=*/0, /*y_offset=*/kOffset,
         /*x_offset_ordinal_=*/0, /*y_offset=*/kOffset, 0);
     event_generator->Dispatch(&fling_scroll_event);
@@ -653,12 +679,13 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, VerticalAndHorizontalScroll) {
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, EventHandling) {
   auto event_generator = CreateEventGenerator(browser());
   constexpr int kOffset = 100;
+  gfx::Point location = GetEventLocation(browser());
 
   {
     // Begin scrubbing and mark the event as handled for 3-fingers scroll event.
     ui::ScrollEvent scroll_event_with_3_fingers(
-        ui::EventType::kScroll, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
-        kOffset, 0, kOffset, 0, kScrubbingGestureFingerCount);
+        ui::EventType::kScroll, location, ui::EventTimeForNow(), 0, kOffset, 0,
+        kOffset, 0, kScrubbingGestureFingerCount);
     event_generator->Dispatch(&scroll_event_with_3_fingers);
     EXPECT_TRUE(scroll_event_with_3_fingers.handled());
   }
@@ -667,8 +694,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, EventHandling) {
     // Fling scroll event which is called during the scrubbing should be
     // consumed here.
     ui::ScrollEvent fling_scroll_event(ui::EventType::kScrollFlingStart,
-                                       gfx::Point(0, 0), ui::EventTimeForNow(),
-                                       0, kOffset, 0, kOffset, 0, 0);
+                                       location, ui::EventTimeForNow(), 0,
+                                       kOffset, 0, kOffset, 0, 0);
     event_generator->Dispatch(&fling_scroll_event);
     EXPECT_TRUE(fling_scroll_event.handled());
   }
@@ -677,18 +704,18 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, EventHandling) {
     // Fling scroll event should NOT be consumed here if the scrubbing is not
     // ongoing. Do NOT handle the event for this scenario.
     ui::ScrollEvent fling_scroll_event(ui::EventType::kScrollFlingStart,
-                                       gfx::Point(0, 0), ui::EventTimeForNow(),
-                                       0, kOffset, 0, kOffset, 0, 0);
+                                       location, ui::EventTimeForNow(), 0,
+                                       kOffset, 0, kOffset, 0, 0);
     event_generator->Dispatch(&fling_scroll_event);
     EXPECT_FALSE(fling_scroll_event.handled());
   }
 
   {
     // Other scroll events should be not handled by TabScrubber.
-    ui::ScrollEvent scroll_event_with_2_fingers(
-        ui::EventType::kScroll, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
-        kOffset, 0, kOffset, 0,
-        /*finger_count=*/2);
+    ui::ScrollEvent scroll_event_with_2_fingers(ui::EventType::kScroll,
+                                                location, ui::EventTimeForNow(),
+                                                0, kOffset, 0, kOffset, 0,
+                                                /*finger_count=*/2);
     event_generator->Dispatch(&scroll_event_with_2_fingers);
     EXPECT_FALSE(scroll_event_with_2_fingers.handled());
   }
