@@ -390,11 +390,7 @@ bool Window::IsVisible() const {
 }
 
 Window::OcclusionState Window::GetOcclusionState() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  return occlusion_state_override_.value_or(occlusion_state_);
-#else
   return occlusion_state_;
-#endif
 }
 
 ScopedWindowCaptureRequest Window::MakeWindowCapturable() {
@@ -1121,12 +1117,6 @@ void Window::SetOcclusionInfo(OcclusionState occlusion_state,
   occlusion_state_ = occlusion_state;
   occluded_region_in_root_ = occluded_region;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (occlusion_state_override_) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   if (delegate_)
     delegate_->OnWindowOcclusionChanged(old_occlusion_state, occlusion_state);
 
@@ -1532,28 +1522,6 @@ void Window::SetOpaqueRegionsForOcclusion(
   for (auto& observer : observers_)
     observer.OnWindowOpaqueRegionsForOcclusionChanged(this);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void Window::SetOcclusionStateOverride(
-    std::optional<OcclusionState> occlusion_state) {
-  if (occlusion_state == occlusion_state_override_) {
-    return;
-  }
-  auto old_occlusion_state =
-      occlusion_state ? occlusion_state_override_.value_or(occlusion_state_)
-                      : occlusion_state_override_.value();
-  occlusion_state_override_ = occlusion_state;
-
-  if (delegate_) {
-    delegate_->OnWindowOcclusionChanged(old_occlusion_state,
-                                        GetOcclusionState());
-  }
-
-  for (WindowObserver& observer : observers_) {
-    observer.OnWindowOcclusionChanged(this);
-  }
-}
-#endif
 
 void Window::NotifyResizeLoopStarted() {
   for (auto& observer : observers_)
