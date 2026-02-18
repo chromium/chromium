@@ -575,6 +575,53 @@ suite('ContextualTasksAppTest', function() {
     assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
   });
 
+  // Regression test for crbug.com/484936343.
+  test(
+      'restores basic mode state after navigation when starting in basic mode',
+      async () => {
+        // Enable the flag that forces basic mode on history.
+        loadTimeData.overrideValues(
+            {forceBasicModeIfOpeningThreadHistory: true});
+
+        // Construct a URL with history params.
+        const fixtureUrlWithHistory = new URL(fixtureUrl);
+        fixtureUrlWithHistory.searchParams.set('atvm', '1');
+
+        const proxy = new TestContextualTasksBrowserProxy(
+            fixtureUrlWithHistory.toString());
+        BrowserProxyImpl.setInstance(proxy);
+        proxy.handler.setIsShownInTab(true);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        // Verify initial state is basic mode.
+        assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
+
+        // Ensure the app is on an AI page so navigation logic triggers.
+        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await proxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Simulate navigation start.
+        appElement.onBeforeRequestForTesting(
+            {url: 'http://example.com'} as OnBeforeRequestDetails);
+        await microtasksFinished();
+
+        // Should still be in basic mode during navigation.
+        assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
+        assertTrue(appElement.isNavigatingForTesting());
+
+        // Simulate navigation complete.
+        appElement.onCompletedForTesting();
+        await microtasksFinished();
+
+        // Should still be in basic mode after navigation (restored).
+        assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
+        assertFalse(appElement.isNavigatingForTesting());
+      });
+
   test('sends composebox height update', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
