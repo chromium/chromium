@@ -241,7 +241,9 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
+          features::kHappinessTrackingSurveysForDesktopSEHijacking) &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
         base::to_address(profile_), /*create_if_necessary=*/true);
     if (hats_service) {

@@ -17,8 +17,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/extensions/rich_radio_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -35,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
@@ -103,7 +109,8 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
         TemplateURLServiceFactory::GetForProfile(browser()->profile()));
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
     ImageFetcherServiceFactory::GetInstance()->SetTestingFactory(
         profile->GetProfileKey(),
@@ -384,6 +391,53 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
       WaitForHide(kSettingsOverriddenDialogId),
       // Only now should the navigation complete.
       WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
+}
+
+class SettingsOverriddenExplicitChoiceDialogHatsInteractiveUiTest
+    : public SettingsOverriddenExplicitChoiceDialogInteractiveUiTest {
+ public:
+  SettingsOverriddenExplicitChoiceDialogHatsInteractiveUiTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kHappinessTrackingSurveysForDesktopSEHijacking);
+  }
+
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SettingsOverriddenExplicitChoiceDialogInteractiveUiTest::
+        OnWillCreateBrowserContextServices(context);
+    Profile* profile = Profile::FromBrowserContext(context);
+    HatsServiceFactory::GetInstance()->SetTestingFactory(
+        profile, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<testing::NiceMock<MockHatsService>>(
+              Profile::FromBrowserContext(context));
+        }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsOverriddenExplicitChoiceDialogHatsInteractiveUiTest,
+    HatsSurveyTriggered) {
+  RunTestSequence(
+      SetNewSearchProvider(DefaultSearch::kUseDefault),
+      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+      WaitForDialogToShow(), Do([this]() {
+        HatsService* hats_service = HatsServiceFactory::GetForProfile(
+            browser()->profile(), /*create_if_necessary=*/true);
+        CHECK(hats_service);
+        MockHatsService* mock_hats_service =
+            static_cast<MockHatsService*>(hats_service);
+        EXPECT_CALL(
+            *mock_hats_service,
+            LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000, _, _))
+            .WillOnce(testing::Return(true));
+      }),
+      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
+      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      WaitForHide(kSettingsOverriddenDialogSaveButtonId));
 }
 
 }  // namespace
