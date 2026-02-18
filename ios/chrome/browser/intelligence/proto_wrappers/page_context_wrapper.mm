@@ -722,13 +722,13 @@ result.links = linksArray;
   } else if (_shouldGetInnerText && !_pageContext->has_inner_text()) {
     response = base::unexpected(PageContextWrapperError::kInnerTextError);
     completionStatus = PageContextCompletionStatus::kFailure;
-  } else if (_shouldGetSnapshot && !_pageContext->has_tab_screenshot()) {
-    response = base::unexpected(PageContextWrapperError::kScreenshotError);
-    completionStatus = PageContextCompletionStatus::kFailure;
   } else if (_shouldGetFullPagePDF && !_pageContext->has_pdf_data()) {
     response = base::unexpected(PageContextWrapperError::kPDFDataError);
     completionStatus = PageContextCompletionStatus::kFailure;
   } else {
+    // TODO(crbug.com/483989948): Make screenshot failure blocking once
+    // 'aw, snap' snackbar is fixed.
+
     if (_config->graft_cross_origin_frame_content()) {
       // Place the remaining unclaimed remote frame content nodes as direct
       // children of the main frame node since they couldn't be grafted by

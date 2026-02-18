@@ -6824,6 +6824,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Snapshots.BlockedByPlaceholder" enum="Boolean"
+    expires_after="2027-02-12">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether a snapshot extraction fails because a placeholder is
+    scheduled to be shown for the next navigation. Yes (true) if blocked, No
+    (false) otherwise.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
     expires_after="2026-08-09">
   <owner>asamidoi@chromium.org</owner>
