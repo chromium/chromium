@@ -286,7 +286,7 @@ bool GraphiteSharedContext::InsertRecordingImpl(
     // cache in case the error was due to a corrupted cached shader blob.
     GpuProcessShmCount::ScopedIncrement use_shader_cache(
         use_shader_cache_shm_count_);
-    static crash_reporter::CrashKeyString<1024> insert_error_key(
+    static crash_reporter::CrashKeyString<4096> insert_error_key(
         "graphite-insert-error");
     insert_error_key.Set(insert_status.message());
     CHECK(simulating_insert_failure);
