@@ -277,19 +277,19 @@ void CookieControlsPageActionController::OnShowPromoResult(
     return;
   }
 
-  // Requesting to show an IPH while one is already showing/queued will result
-  // in a failure. In this case, do nothing.
-  if (iph_activity_) {
-    return;
+  // If the request to show the IPH failed then animate the chip in as a
+  // fallback to get attention. The exception to this is if the IPH is already
+  // showing or if the request failed because another "show" request is already
+  // queued. If there's already a request queued, then wait for its response
+  // before making a decision.
+  if (!iph_activity_ &&
+      result.failure() != user_education::FeaturePromoResult::kAlreadyQueued) {
+    page_action_controller_->ShowSuggestionChip(
+        kActionShowCookieControls, page_actions::SuggestionChipConfig{
+                                       .should_animate = true,
+                                       .should_announce_chip = true,
+                                   });
   }
-
-  // If showing the IPH failed, and one isn't already showing, then animate the
-  // chip in.
-  page_action_controller_->ShowSuggestionChip(
-      kActionShowCookieControls, page_actions::SuggestionChipConfig{
-                                     .should_animate = true,
-                                     .should_announce_chip = true,
-                                 });
 }
 
 void CookieControlsPageActionController::OnIPHClosed() {

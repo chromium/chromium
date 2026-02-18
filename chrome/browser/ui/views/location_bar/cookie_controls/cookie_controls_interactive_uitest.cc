@@ -329,9 +329,17 @@ class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
   ~CookieControlsWithIphUiTest() override = default;
 };
 
-// TODO(crbug.com/409272227): IPH tests are flaky ~everywhere.
+// TODO(crbug.com/409272227): IPH tests are flaky on Linux and Win asan bots
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
+  DISABLED_ShowAndDismissIphOnHighSiteEngagement
+#else
+#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
+  ShowAndDismissIphOnHighSiteEngagement
+#endif
 IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       DISABLED_ShowAndDismissIphOnHighSiteEngagement) {
+                       MAYBE_ShowAndDismissIphOnHighSiteEngagement) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
