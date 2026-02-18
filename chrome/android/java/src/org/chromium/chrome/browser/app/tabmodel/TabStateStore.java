@@ -139,14 +139,14 @@ public class TabStateStore implements TabPersistentStore {
             String windowTag,
             TabCreatorManager tabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
+            PersistentStoreMigrationManager migrationManager,
             @Nullable CipherFactory cipherFactory) {
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
         mTabPersistencePolicy = tabPersistencePolicy;
+        mMigrationManager = migrationManager;
         mCipherFactory = cipherFactory;
-
-        mMigrationManager = new PersistentStoreMigrationManagerImpl(mWindowTag);
     }
 
     @Initializer
@@ -174,7 +174,8 @@ public class TabStateStore implements TabPersistentStore {
             mHasCipherFactory = false;
         }
         mModelTrackingManager =
-                new ModelTrackingOrchestrator(mWindowTag, mTabModelSelector, mHasCipherFactory);
+                new ModelTrackingOrchestrator(
+                        mWindowTag, mMigrationManager, mTabModelSelector, mHasCipherFactory);
 
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         TabModel incognitoModel = mTabModelSelector.getModel(true);

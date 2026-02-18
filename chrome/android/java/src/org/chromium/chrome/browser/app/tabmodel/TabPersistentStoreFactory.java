@@ -116,6 +116,7 @@ public class TabPersistentStoreFactory {
                     windowTag,
                     tabCreatorManager,
                     tabPersistencePolicy,
+                    migrationManager,
                     cipherFactory);
         }
         throw new IllegalStateException();
@@ -231,7 +232,8 @@ public class TabPersistentStoreFactory {
             AccumulatingTabCreator regularShadowTabCreator,
             String orchestratorTag) {
         if (migrationManager == null) migrationManager = sDefaultManager;
-        if (migrationManager.getShadowStoreType() != StoreType.TAB_STATE_STORE) return null;
+        @StoreType int shadowStoreType = migrationManager.getShadowStoreType();
+        if (shadowStoreType != StoreType.TAB_STATE_STORE) return null;
         assert isTabStorageEnabled();
 
         TabPersistentStore shadowTabPersistentStore =
@@ -240,6 +242,7 @@ public class TabPersistentStoreFactory {
                         windowTag,
                         shadowTabCreatorManager,
                         tabPersistencePolicy,
+                        migrationManager,
                         cipherFactory);
 
         new ShadowTabStoreValidator(
@@ -249,6 +252,8 @@ public class TabPersistentStoreFactory {
                 regularShadowTabCreator,
                 migrationManager,
                 orchestratorTag);
+
+        migrationManager.onShadowStoreCreated(shadowStoreType);
         return shadowTabPersistentStore;
     }
 }

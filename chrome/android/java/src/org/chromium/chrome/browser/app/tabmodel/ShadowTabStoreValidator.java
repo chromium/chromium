@@ -40,6 +40,7 @@ public class ShadowTabStoreValidator {
     private final StoreMetricsObserver mAuthoritativeObserver;
     private final StoreMetricsObserver mShadowObserver;
     private final String mSuffix;
+    private final boolean mShadowStoreCaughtUp;
 
     /**
      * @param authoritativeStore The primary store whose timing is used as the baseline.
@@ -69,6 +70,9 @@ public class ShadowTabStoreValidator {
 
         authoritativeStore.addObserver(mAuthoritativeObserver);
         shadowStore.addObserver(mShadowObserver);
+
+        // Retrieve shadow store catch up state prior to any clearing operation.
+        mShadowStoreCaughtUp = mPersistentStoreMigrationManager.isShadowStoreCaughtUp();
     }
 
     private void onStateLoaded() {
@@ -94,7 +98,7 @@ public class ShadowTabStoreValidator {
     }
 
     private void recordDiffMetrics() {
-        if (!mPersistentStoreMigrationManager.isShadowStoreCaughtUp()) return;
+        if (!mShadowStoreCaughtUp) return;
 
         int tabCountDelta =
                 mTabModel.getCount() - mShadowTabCreator.createFrozenTabArgumentsList.size();
@@ -103,6 +107,8 @@ public class ShadowTabStoreValidator {
                     "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher", tabCountDelta);
         } else if (tabCountDelta < 0) {
             recordCountHistogram("Tabs.TabStateStore.TabCountDelta.ShadowHigher", -tabCountDelta);
+        } else {
+            recordEqualTabCountHistogram();
         }
 
         for (CreateFrozenTabArguments arguments : mShadowTabCreator.createFrozenTabArgumentsList) {
@@ -127,6 +133,11 @@ public class ShadowTabStoreValidator {
 
     private void recordCountHistogram(String histogramStr, int tabCountDelta) {
         RecordHistogram.recordCount1000Histogram(histogramStr + mSuffix, tabCountDelta);
+    }
+
+    private void recordEqualTabCountHistogram() {
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.TabStateStore.TabCountDelta.Equal" + mSuffix, true);
     }
 
     private void recordTimesHistogram(String histogramStr, long timeDelta) {

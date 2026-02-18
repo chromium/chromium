@@ -3677,6 +3677,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabStateStore.ShadowStoreCaughtUp" enum="Boolean"
+    expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records when the shadow store has caught up to the authoritative
+    store. This is a prerequisite for the shadow store to become the
+    authoritative store during the migration process.
+  </summary>
+</histogram>
+
 <histogram
     name="Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher.{TabModelOrchestratorType}"
     units="tabs" expires_after="2026-10-28">
@@ -3687,6 +3698,20 @@ chromium-metrics-reviews@google.com.
     shadow tab models when the authoritative model has more tabs. Recorded when
     both models have finished loading. This is recorded for the
     {TabModelOrchestratorType} tab model orchestrator.
+  </summary>
+  <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
+</histogram>
+
+<histogram
+    name="Tabs.TabStateStore.TabCountDelta.Equal.{TabModelOrchestratorType}"
+    units="Boolean" expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the tab count when the authoritative and shadow tab models
+    have the same number of tabs. Recorded when both models have finished
+    loading. This is recorded for the {TabModelOrchestratorType} tab model
+    orchestrator.
   </summary>
   <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
 </histogram>

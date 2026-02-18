@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.base.metrics.RecordHistogram;
+
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_SHADOW_WRITTEN_STORE;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.allowFullMigration;
@@ -68,6 +70,10 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
         if (shadowWrittenStore == StoreType.INVALID) {
             shadowWrittenStore = mShadowStoreType;
             if (!maybePerformMigrationSwap(currentAuthoritativeStoreType, shadowWrittenStore)) {
+                if (shadowWrittenStore == StoreType.TAB_STATE_STORE) {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Tabs.TabStateStore.ShadowStoreCaughtUp", true);
+                }
                 setShadowWrittenStore(shadowWrittenStore);
                 return;
             }
