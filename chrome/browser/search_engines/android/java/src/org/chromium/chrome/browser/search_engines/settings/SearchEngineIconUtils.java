@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
@@ -17,6 +18,8 @@ import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallba
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.net.NetworkTrafficAnnotationTag;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 import java.util.Map;
@@ -74,18 +77,8 @@ public class SearchEngineIconUtils {
             GURL faviconUrl,
             LargeIconBridge largeIconBridge,
             @Nullable Map<GURL, Bitmap> iconCache) {
-
-        if (iconCache != null && iconCache.containsKey(faviconUrl)) {
-            logoView.setImageBitmap(iconCache.get(faviconUrl));
-            return;
-        }
-
-        @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
-        if (bitmap != null) {
-            if (iconCache != null) {
-                iconCache.put(faviconUrl, bitmap);
-            }
-            logoView.setImageBitmap(bitmap);
+        if (getIconFromCacheOrBuiltIn(
+                templateUrl, faviconUrl, iconCache, logoView::setImageBitmap)) {
             return;
         }
 
@@ -94,10 +87,88 @@ public class SearchEngineIconUtils {
                 context.getResources().getDimensionPixelSize(R.dimen.search_engine_favicon_size);
         logoView.setImageBitmap(
                 FaviconUtils.createGenericFaviconBitmap(context, uiElementSizeInPx, null));
+
+        fetchIconFromGoogleServer(
+                context, faviconUrl, largeIconBridge, iconCache, logoView::setImageBitmap);
+    }
+
+    /**
+     * Updates the provided PropertyModel with the Search Engine icon. It checks the cache (if
+     * exists), built-in resources, and falls back to fetching from the Google Server.
+     *
+     * @param context Context for resources.
+     * @param model The PropertyModel to update.
+     * @param propertyKey The key for the icon property in the model.
+     * @param templateUrl The search engine template.
+     * @param faviconUrl The specific GURL for the favicon.
+     * @param largeIconBridge The bridge to fetch icons.
+     * @param iconCache Optional: A map to store/retrieve fetched bitmaps.
+     */
+    public static void updateIcon(
+            Context context,
+            PropertyModel model,
+            WritableObjectPropertyKey<Bitmap> propertyKey,
+            TemplateUrl templateUrl,
+            GURL faviconUrl,
+            LargeIconBridge largeIconBridge,
+            @Nullable Map<GURL, Bitmap> iconCache) {
+        if (getIconFromCacheOrBuiltIn(
+                templateUrl, faviconUrl, iconCache, (bitmap) -> model.set(propertyKey, bitmap))) {
+            return;
+        }
+
+        // Use a placeholder image while trying to fetch the logo.
+        int uiElementSizeInPx =
+                context.getResources().getDimensionPixelSize(R.dimen.search_engine_favicon_size);
+        model.set(
+                propertyKey,
+                FaviconUtils.createGenericFaviconBitmap(context, uiElementSizeInPx, null));
+
+        fetchIconFromGoogleServer(
+                context,
+                faviconUrl,
+                largeIconBridge,
+                iconCache,
+                (bitmap) -> model.set(propertyKey, bitmap));
+    }
+
+    private static boolean getIconFromCacheOrBuiltIn(
+            TemplateUrl templateUrl,
+            GURL faviconUrl,
+            @Nullable Map<GURL, Bitmap> iconCache,
+            Callback<Bitmap> callback) {
+        if (iconCache != null && iconCache.containsKey(faviconUrl)) {
+            callback.onResult(iconCache.get(faviconUrl));
+            return true;
+        }
+
+        @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
+        if (bitmap != null) {
+            if (iconCache != null) {
+                iconCache.put(faviconUrl, bitmap);
+            }
+            callback.onResult(bitmap);
+            return true;
+        }
+        return false;
+    }
+
+    // TODO(crbug.com/483929347): Replace this logic with the implementation from
+    // SearchEngineUtils.java and have SearchEngineUtils call this class to prevent inconsistent
+    // icons.
+    private static void fetchIconFromGoogleServer(
+            Context context,
+            GURL faviconUrl,
+            LargeIconBridge largeIconBridge,
+            @Nullable Map<GURL, Bitmap> iconCache,
+            Callback<Bitmap> callback) {
+        int uiElementSizeInPx =
+                context.getResources().getDimensionPixelSize(R.dimen.search_engine_favicon_size);
+
         LargeIconCallback onFaviconAvailable =
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
                     if (icon != null) {
-                        logoView.setImageBitmap(icon);
+                        callback.onResult(icon);
                         if (iconCache != null) {
                             iconCache.put(faviconUrl, icon);
                         }

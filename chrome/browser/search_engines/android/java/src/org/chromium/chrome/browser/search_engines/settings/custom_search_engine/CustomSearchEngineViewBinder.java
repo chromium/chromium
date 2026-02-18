@@ -33,4 +33,11 @@ public class CustomSearchEngineViewBinder {
                             model.get(CustomSearchEngineProperties.MENU_CLICK_LISTENER));
         }
     }
+
+    public static void bindPreference(
+            PropertyModel model, CustomSearchEngineListPreference pref, PropertyKey propertyKey) {
+        if (CustomSearchEngineProperties.ADAPTER == propertyKey) {
+            pref.setAdapter(model.get(CustomSearchEngineProperties.ADAPTER));
+        }
+    }
 }

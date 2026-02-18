@@ -39,9 +39,10 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                 findPreference(CUSTOM_SEARCH_ENGINE_LIST_PREF);
         if (customSearchEnginePref != null) {
             if (mSearchEngineCoordinator == null) {
-                mSearchEngineCoordinator = new CustomSearchEngineListCoordinator();
+                mSearchEngineCoordinator =
+                        new CustomSearchEngineListCoordinator(
+                                getContext(), getProfile(), customSearchEnginePref);
             }
-            customSearchEnginePref.setOnViewBindListener(mSearchEngineCoordinator::onViewBound);
         }
     }
 
@@ -57,7 +58,10 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
 
     @Override
     public void onDestroy() {
+        if (mSearchEngineCoordinator != null) {
+            mSearchEngineCoordinator.destroy();
+            mSearchEngineCoordinator = null;
+        }
         super.onDestroy();
-        mSearchEngineCoordinator = null;
     }
 }

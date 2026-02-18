@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.search_engines.settings.custom_search_engine
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 
 import androidx.preference.PreferenceViewHolder;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,27 +18,22 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
 @NullMarked
 public class CustomSearchEngineListPreference extends ChromeBasePreference {
-
-    public interface OnViewBindListener {
-        void onViewBound(View view);
-    }
-
-    private @Nullable OnViewBindListener mListener;
+    private @Nullable Adapter mAdapter;
 
     public CustomSearchEngineListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.custom_search_engine_list_preference);
     }
 
-    public void setOnViewBindListener(OnViewBindListener listener) {
-        mListener = listener;
+    public void setAdapter(@Nullable Adapter adapter) {
+        mAdapter = adapter;
+        notifyChanged();
     }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        if (mListener != null) {
-            mListener.onViewBound(holder.itemView);
-        }
+        RecyclerView recyclerView = (RecyclerView) holder.itemView;
+        recyclerView.setAdapter(mAdapter);
     }
 }
