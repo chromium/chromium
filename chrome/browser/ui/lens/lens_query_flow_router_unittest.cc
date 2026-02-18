@@ -35,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/gfx/skia_util.h"
 
 using ::testing::_;
@@ -88,6 +89,7 @@ MATCHER_P(CreateSearchUrlRequestInfoMatches,
              expected->lens_overlay_selection_type &&
          arg->additional_params == expected->additional_params &&
          arg->image_crop.has_value() == expected->image_crop.has_value() &&
+         arg->aim_entry_point == expected->aim_entry_point &&
          arg->file_tokens == expected->file_tokens;
 }
 
@@ -673,6 +675,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = lens::ImageCrop();
+  expected_request_info->aim_entry_point =
+      omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
   expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
@@ -763,6 +767,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
                                          /*has_image=*/true);
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = lens::ImageCrop();
+  expected_request_info->aim_entry_point =
+      omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
   expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect CreateSearchUrl to be called immediately.
@@ -827,6 +833,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = std::nullopt;
+  expected_request_info->aim_entry_point =
+      omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
   expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
@@ -984,6 +992,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = std::nullopt;
+  expected_request_info->aim_entry_point =
+      omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
   expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
@@ -1055,6 +1065,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = lens::ImageCrop();
+  expected_request_info->aim_entry_point =
+      omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
   expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
