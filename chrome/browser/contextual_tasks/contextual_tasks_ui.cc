@@ -324,6 +324,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                      contextual_tasks::GetEnableContextualTasksSmartCompose());
   source->AddBoolean("enableNativeZeroStateSuggestions",
                      contextual_tasks::GetEnableNativeZeroStateSuggestions());
+  // Contextual tasks needs finer control over when to query zps based on its
+  // current state. Most other composebox's blindly query autocomplete as soon
+  // as it is rendered.
+  source->AddBoolean("queryZpsOnLoad", false);
 
   AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxShowLensSearchChip", false);
@@ -763,35 +767,48 @@ bool ContextualTasksUI::IsLensOverlayShowing() const {
   return is_lens_overlay_showing_;
 }
 
-void ContextualTasksUI::OnActiveTabContextStatusChanged() {
+bool ContextualTasksUI::CanUpdateSuggestedTabContext(
+    tabs::TabInterface* tab,
+    const GURL& last_committed_url) {
   if (!GetBrowser()) {
-    return;
+    return false;
   }
 
   if (!composebox_handler_) {
-    return;
+    return false;
   }
 
+  if (!tab) {
+    return false;
+  }
+
+  if (!last_committed_url.is_valid() ||
+      !last_committed_url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  if (!GetOrCreateContextualSessionHandle()) {
+    return false;
+  }
+
+  return true;
+}
+
+void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   if (contextual_tasks::GetIsProtectedPageErrorEnabled() && page_) {
     page_->HideErrorPage();
   }
 
-  tabs::TabInterface* tab = GetBrowser()->GetActiveTabInterface();
-  if (!tab) {
-    composebox_handler_->UpdateSuggestedTabContext(nullptr);
-    return;
-  }
+  tabs::TabInterface* tab =
+      GetBrowser() ? GetBrowser()->GetActiveTabInterface() : nullptr;
+  GURL last_committed_url =
+      tab ? tab->GetContents()->GetLastCommittedURL() : GURL::EmptyGURL();
 
-  content::WebContents* web_contents = tab->GetContents();
-  GURL last_committed_url = web_contents->GetLastCommittedURL();
-
-  if (!last_committed_url.is_valid() ||
-      !last_committed_url.SchemeIsHTTPOrHTTPS()) {
-    composebox_handler_->UpdateSuggestedTabContext(nullptr);
-    return;
-  }
-
-  if (!GetOrCreateContextualSessionHandle()) {
+  if (!CanUpdateSuggestedTabContext(tab, last_committed_url)) {
+    if (composebox_handler_) {
+      // Inform the handler that the current tab cannot be added as an autochip.
+      composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    }
     return;
   }
 

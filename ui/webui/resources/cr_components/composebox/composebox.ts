@@ -276,6 +276,10 @@ export class ComposeboxElement extends I18nMixinLit
   private showTypedSuggestWithContext_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggestWithContext');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
+  // Determines whether to query zps when the composebox is rendered.
+  private queryZpsOnLoad: boolean = loadTimeData.valueExists('queryZpsOnLoad') ?
+      loadTimeData.valueExists('queryZpsOnLoad') :
+      true;
   private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -355,7 +359,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.focusInput();
     // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
     // autocomplete query is triggered after the state has been initialized.
-    if (this.showZps && !this.searchboxNextEnabled) {
+    if (this.queryZpsOnLoad && !this.searchboxNextEnabled) {
       this.queryAutocomplete_(/* clearMatches= */ false);
     }
 
@@ -486,6 +490,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   queryAutocomplete(clearMatches: boolean) {
     this.queryAutocomplete_(clearMatches);
+  }
+
+  protected onQueryAutocomplete_(e: CustomEvent<{clearMatches: boolean}>) {
+    this.queryAutocomplete_(e.detail.clearMatches);
   }
 
   playGlowAnimation() {

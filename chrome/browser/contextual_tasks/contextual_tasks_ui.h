@@ -164,6 +164,11 @@ class ContextualTasksUI
       const GURL& url,
       contextual_tasks::ContextualTasksUiService* ui_service);
 
+  // Returns whether OnActiveTabContextStatusChanged should proceed with trying
+  // to add the current tab as an auto-chip.
+  bool CanUpdateSuggestedTabContext(tabs::TabInterface* tab,
+                                    const GURL& last_committed_url);
+
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
