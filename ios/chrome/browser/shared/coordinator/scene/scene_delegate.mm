@@ -194,7 +194,15 @@ void SyncBreadcrumbsLog() {
 - (void)scene:(UIScene*)scene
     continueUserActivity:(NSUserActivity*)userActivity {
   _sceneState.startupHadExternalIntent = YES;
-  _sceneState.pendingUserActivity = userActivity;
+  if (IsEnableNewStartupFlowEnabled()) {
+    TaskRequest* request = [[TaskRequest alloc]
+        initWithUserActivity:userActivity
+                  sceneState:_sceneState
+                  taskSource:TaskSource::TaskSourceUserActivity];
+    [_sceneState.profileState.appState.taskOrchestrator addTaskRequest:request];
+  } else {
+    _sceneState.pendingUserActivity = userActivity;
+  }
 }
 
 @end

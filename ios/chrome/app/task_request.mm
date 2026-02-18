@@ -8,13 +8,17 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_request+testing.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface TaskRequestForTesting : TaskRequest
@@ -48,6 +52,9 @@
 // Properties needed to handle a shortcut item.
 @property(nonatomic, copy) ShortcutCompletionHandler shortcutHandler;
 @property(nonatomic, strong) UIApplicationShortcutItem* shortcutItem;
+
+// Properties needed to handle a NSUserActivity item.
+@property(nonatomic, strong) NSUserActivity* userActivity;
 
 @end
 
@@ -84,6 +91,7 @@
     _source = taskSource;
     _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
     _sceneSessionID = sceneState.sceneSessionID;
+    _userActivity = userActivity;
   }
   return self;
 }
@@ -170,7 +178,23 @@
 }
 
 - (void)executeUserActivity {
-  // TODO(crbug.com/462018636): Add implementation.
+  SceneState* sceneState = [self sceneStateFromSessionID];
+  CHECK(sceneState);
+  Browser* browser =
+      sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  CHECK(browser);
+
+  PrefService* prefs = sceneState.profileState.profile->GetPrefs();
+  UserActivityBrowserAgent* userActivityBrowserAgent =
+      UserActivityBrowserAgent::FromBrowser(browser);
+  if (IsIncognitoPolicyApplied(prefs) &&
+      !userActivityBrowserAgent->ProceedWithUserActivity(self.userActivity)) {
+    // TODO(crbug.com/462018636): Find a centralized solution to handle toasts
+    // for all intent types.
+    userActivityBrowserAgent->ShowToastWhenOpenExternalIntentInUnexpectedMode();
+  } else {
+    userActivityBrowserAgent->ContinueUserActivity(self.userActivity, YES);
+  }
 }
 
 - (void)executeContextURL {

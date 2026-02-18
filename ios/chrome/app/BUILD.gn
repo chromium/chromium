@@ -96,8 +96,11 @@ source_set("tasks_handling") {
 
   deps = [
     "//base",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
   ]
 
