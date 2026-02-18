@@ -156,6 +156,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         id="carousel"
         class="${this.carouselOnTop_ ? 'top' : ''}"
         .files="${Array.from(this.files_.values())}"
+        ?enable-scrolling="${this.enableCarouselScrolling}"
         @delete-file="${this.onDeleteFile_}">
       </cr-composebox-file-carousel> ` : ''}
     ${this.submitButtonShown && this.searchboxLayoutMode === 'Compact' ?

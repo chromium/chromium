@@ -9,12 +9,14 @@ import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 export function getHtml(this: ComposeboxFileCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${this.files.map((item) => {
-  return html`
-    <cr-composebox-file-thumbnail .file="${item}"
-        exportparts="thumbnail, thumbnail-title">
-    </cr-composebox-file-thumbnail>`;
-})}
+<div class="file-carousel-container">
+  ${this.files.map((item) => {
+    return html`
+      <cr-composebox-file-thumbnail .file="${item}"
+          exportparts="thumbnail, thumbnail-title">
+      </cr-composebox-file-thumbnail>`;
+  })}
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

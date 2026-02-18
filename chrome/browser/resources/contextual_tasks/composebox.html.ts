@@ -46,6 +46,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .disableCaretColorAnimation="${true}"
           .isInCoBrowsingZeroState="${this.isZeroState}"
           .lensButtonTriggersOverlay="${true}"
+          .enableCarouselScrolling="${true}"
           @result-changed="${this.onSuggestionsResultReceived_}">
       </cr-composebox>
     </div>

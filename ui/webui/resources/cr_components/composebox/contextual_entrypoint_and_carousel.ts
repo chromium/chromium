@@ -130,6 +130,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      enableCarouselScrolling: {type: Boolean},
       showRecentTabChip: {type: Boolean},
       recentTabForChip: {type: Object},
 
@@ -179,6 +180,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       GlifAnimationState.INELIGIBLE;
   accessor inComposebox: boolean = false;
   accessor showModelPicker: boolean = false;
+  accessor enableCarouselScrolling: boolean = false;
   accessor isOmniboxInCompactMode_: boolean = false;
   accessor recentTabForChip: TabInfo|null = null;
 

@@ -209,11 +209,13 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      enableCarouselScrolling: {type: Boolean},
     };
   }
 
   accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
+  accessor enableCarouselScrolling: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor fileUploadsComplete: boolean = true;
   accessor maxSuggestions: number|null = null;

@@ -8,7 +8,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('FileCarouselTest', function() {
@@ -37,30 +37,28 @@ suite('FileCarouselTest', function() {
     await microtasksFinished();
   });
 
+  function getFileCarouselContainer(): HTMLElement {
+    return fileCarousel.shadowRoot.querySelector('.file-carousel-container')!;
+  }
+
+  function createFile(n: number): ComposeboxFile {
+    return {
+      uuid: {high: 0n, low: BigInt(n)} as any,
+      name: `file${n}.txt`,
+      dataUrl: null,
+      objectUrl: null,
+      type: 'text/plain',
+      status: FileUploadStatus.kNotUploaded,
+      url: null,
+      tabId: null,
+      isDeletable: true,
+    };
+  }
+
   test('renders files', async () => {
     const files: ComposeboxFile[] = [
-      {
-        uuid: {high: 0n, low: 1n} as any,
-        name: 'file1.txt',
-        dataUrl: null,
-        objectUrl: null,
-        type: 'text/plain',
-        status: FileUploadStatus.kNotUploaded,
-        url: null,
-        tabId: null,
-        isDeletable: true,
-      },
-      {
-        uuid: {high: 0n, low: 2n} as any,
-        name: 'file2.txt',
-        dataUrl: null,
-        objectUrl: null,
-        type: 'text/plain',
-        status: FileUploadStatus.kNotUploaded,
-        url: null,
-        tabId: null,
-        isDeletable: true,
-      },
+      createFile(1),
+      createFile(2),
     ];
     fileCarousel.files = files;
     await microtasksFinished();
@@ -132,5 +130,93 @@ suite('FileCarouselTest', function() {
     fileCarousel.remove();
     await microtasksFinished();
     assertTrue(resizeObserverDisconnectCalled);
+  });
+
+  test('toggles gradients based on scroll', async () => {
+    fileCarousel.enableScrolling = true;
+    fileCarousel.files = [createFile(1), createFile(2), createFile(3)];
+    await microtasksFinished();
+
+    const container = getFileCarouselContainer();
+    Object.defineProperty(container, 'clientHeight', {value: 50});
+    Object.defineProperty(container, 'scrollHeight', {value: 100});
+
+    // Initial state: scrolled to top.
+    Object.defineProperty(container, 'scrollTop', {value: 0, writable: true});
+    container.dispatchEvent(new Event('scroll'));
+    await microtasksFinished();
+    assertTrue(fileCarousel.hasAttribute('gradient-top-hidden'));
+    assertFalse(fileCarousel.hasAttribute('gradient-bottom-hidden'));
+
+    // Scrolled to middle.
+    container.scrollTop = 25;
+    container.dispatchEvent(new Event('scroll'));
+    await microtasksFinished();
+    assertFalse(fileCarousel.hasAttribute('gradient-top-hidden'));
+    assertFalse(fileCarousel.hasAttribute('gradient-bottom-hidden'));
+
+    // Scrolled to bottom.
+    container.scrollTop = 50;
+    container.dispatchEvent(new Event('scroll'));
+    await microtasksFinished();
+    assertFalse(fileCarousel.hasAttribute('gradient-top-hidden'));
+    assertTrue(fileCarousel.hasAttribute('gradient-bottom-hidden'));
+  });
+
+  test('hides gradients when no scrollbar', async () => {
+    fileCarousel.enableScrolling = true;
+    fileCarousel.files = [createFile(1)];
+    await microtasksFinished();
+
+    const container = getFileCarouselContainer();
+    Object.defineProperty(container, 'clientHeight', {value: 100});
+    Object.defineProperty(container, 'scrollHeight', {value: 50});
+
+    container.dispatchEvent(new Event('scroll'));
+    await microtasksFinished();
+
+    assertTrue(fileCarousel.hasAttribute('gradient-top-hidden'));
+    assertTrue(fileCarousel.hasAttribute('gradient-bottom-hidden'));
+  });
+
+  test('scrolls to bottom when files are added', async () => {
+    fileCarousel.enableScrolling = true;
+    fileCarousel.files = [createFile(1)];
+    await microtasksFinished();
+
+    const container = getFileCarouselContainer();
+    Object.defineProperty(container, 'clientHeight', {value: 50});
+    Object.defineProperty(container, 'scrollHeight', {value: 100});
+    container.scrollTop = 0;
+    let scrollToOptions: ScrollToOptions|undefined;
+    container.scrollTo = (options) => {
+      if (typeof options === 'object') {
+        scrollToOptions = options;
+      }
+    };
+
+    fileCarousel.files = [createFile(1), createFile(2)];
+    await microtasksFinished();
+
+    assertTrue(!!scrollToOptions);
+    assertEquals(100, scrollToOptions.top);
+    assertEquals('smooth', scrollToOptions.behavior);
+  });
+
+  test('does not scroll to bottom when scrolling disabled', async () => {
+    fileCarousel.enableScrolling = false;
+    fileCarousel.files = [createFile(1)];
+    await microtasksFinished();
+
+    const container = getFileCarouselContainer();
+    let scrollToCalled = false;
+    container.scrollTo = () => {
+      scrollToCalled = true;
+    };
+
+    fileCarousel.files = [createFile(1), createFile(2)];
+    await microtasksFinished();
+
+    assertFalse(scrollToCalled);
   });
 });
