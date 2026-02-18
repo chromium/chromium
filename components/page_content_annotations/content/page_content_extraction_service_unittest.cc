@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -24,12 +25,14 @@ class PageContentExtractionServiceTest : public testing::Test {
   ~PageContentExtractionServiceTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   feature_engagement::test::MockTracker mock_tracker_;
 };
@@ -37,8 +40,8 @@ class PageContentExtractionServiceTest : public testing::Test {
 TEST_F(PageContentExtractionServiceTest, CacheDisabled) {
   scoped_feature_list_.InitAndDisableFeature(features::kPageContentCache);
 
-  PageContentExtractionService service(os_crypt_async_.get(), base::FilePath(),
-                                       &mock_tracker_);
+  PageContentExtractionService service(os_crypt_async_.get(),
+                                       temp_dir_.GetPath(), &mock_tracker_);
 
   EXPECT_FALSE(service.GetPageContentCache());
 }
@@ -48,8 +51,8 @@ TEST_F(PageContentExtractionServiceTest, CacheEnabled_NoEngagement) {
       features::kPageContentCache,
       {{"page_content_cache_use_user_engagement", "false"}});
 
-  PageContentExtractionService service(os_crypt_async_.get(), base::FilePath(),
-                                       &mock_tracker_);
+  PageContentExtractionService service(os_crypt_async_.get(),
+                                       temp_dir_.GetPath(), &mock_tracker_);
 
   EXPECT_TRUE(service.GetPageContentCache());
 }
@@ -66,8 +69,8 @@ TEST_F(PageContentExtractionServiceTest,
                   feature_engagement::kIPHFuseboxAttachmentFeature)))
       .WillOnce(Return(true));
 
-  PageContentExtractionService service(os_crypt_async_.get(), base::FilePath(),
-                                       &mock_tracker_);
+  PageContentExtractionService service(os_crypt_async_.get(),
+                                       temp_dir_.GetPath(), &mock_tracker_);
 
   EXPECT_TRUE(service.GetPageContentCache());
 }
@@ -83,8 +86,8 @@ TEST_F(PageContentExtractionServiceTest,
                   feature_engagement::kIPHFuseboxAttachmentFeature)))
       .WillOnce(Return(false));
 
-  PageContentExtractionService service(os_crypt_async_.get(), base::FilePath(),
-                                       &mock_tracker_);
+  PageContentExtractionService service(os_crypt_async_.get(),
+                                       temp_dir_.GetPath(), &mock_tracker_);
 
   EXPECT_FALSE(service.GetPageContentCache());
 }
