@@ -517,6 +517,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.SafetyListParseResult.NavigationAllowed"
+    enum="SafetyListParseResult" expires_after="2026-10-29">
+  <owner>tquintanilla@google.com</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Records the outcome of parsing the navigation allowed static safety list.
+    Recorded every time an attempt is made to parse a navigation static safety
+    lists JSON, regardless of whether or not the parse was successful.
+  </summary>
+</histogram>
+
+<histogram name="Actor.SafetyListParseResult.NavigationBlocked"
+    enum="SafetyListParseResult" expires_after="2026-10-29">
+  <owner>tquintanilla@google.com</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Records the outcome of parsing the navigation blocked static safety list.
+    Recorded every time an attempt is made to parse a navigation static safety
+    lists JSON, regardless of whether or not the parse was successful.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Count.{StoppedReason}" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

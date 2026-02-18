@@ -228,6 +228,31 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor/page_stability_metrics_common.h:PageStabilityOutcome) -->
 
+<!-- LINT.IfChange(RendererResolvedTargetResult) -->
+
+<enum name="RendererResolvedTargetResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kMissingActorTabData"/>
+  <int value="2" label="kRendererResolvedTargetHasNoValue"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:RendererResolvedTargetResult) -->
+
+<!-- LINT.IfChange(SafetyListParseResult) -->
+
+<enum name="SafetyListParseResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kInvalidJson"/>
+  <int value="2" label="kJsonKeyValueNotAList"/>
+  <int value="3" label="kJsonListValueNotADictionary"/>
+  <int value="4" label="kInvalidToField"/>
+  <int value="5" label="kInvalidToUrlPattern"/>
+  <int value="6" label="kInvalidFromField"/>
+  <int value="7" label="kInvalidFromUrlPattern"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/safety_list.h:SafetyListParseResult) -->
+
 <!-- LINT.IfChange(StoppedReasonEnum) -->
 
 <enum name="StoppedReasonEnum">

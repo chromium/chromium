@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "url/gurl.h"
@@ -47,29 +48,34 @@ SafetyList::SafetyList(const SafetyList&) = default;
 SafetyList& SafetyList::operator=(const SafetyList&) = default;
 
 // static
-SafetyList SafetyList::ParsePatternListFromJson(
-    const base::ListValue& list_data) {
+base::expected<SafetyList, SafetyListParseResult>
+SafetyList::ParsePatternListFromJson(const base::ListValue& list_data) {
   Patterns patterns;
   for (const auto& navigation : list_data) {
     const base::DictValue* navigation_dict = navigation.GetIfDict();
     if (!navigation_dict) {
-      return SafetyList();
+      return base::unexpected(
+          SafetyListParseResult::kJsonListValueNotADictionary);
     }
 
     // Only parse pattern pair if both fields exist.
-    const std::string* to = navigation_dict->FindString("to");
-    if (!to) {
-      return SafetyList();
-    }
     const std::string* from = navigation_dict->FindString("from");
     if (!from) {
-      return SafetyList();
+      return base::unexpected(SafetyListParseResult::kInvalidFromField);
     }
     ContentSettingsPattern source = ContentSettingsPattern::FromString(*from);
+    if (!source.IsValid()) {
+      return base::unexpected(SafetyListParseResult::kInvalidFromUrlPattern);
+    }
+
+    const std::string* to = navigation_dict->FindString("to");
+    if (!to) {
+      return base::unexpected(SafetyListParseResult::kInvalidToField);
+    }
     ContentSettingsPattern destination =
         ContentSettingsPattern::FromString(*to);
-    if (!source.IsValid() || !destination.IsValid()) {
-      return SafetyList();
+    if (!destination.IsValid()) {
+      return base::unexpected(SafetyListParseResult::kInvalidToUrlPattern);
     }
     patterns.push_back(
         SafetyListPatterns{std::move(source), std::move(destination)});

@@ -39,6 +39,13 @@ class SafetyListManager {
   friend class base::NoDestructor<SafetyListManager>;
   SafetyListManager();
 
+  struct ParseStatus {
+    SafetyListParseResult allowed_result;
+    SafetyListParseResult blocked_result;
+  };
+
+  ParseStatus ParseSafetyListsInternal(std::string_view json_string);
+
   // TODO(crbug.com/453660392): Add hashmap with JSON key -> SafetyList pairing.
   SafetyList allowed_;
   SafetyList blocked_;
