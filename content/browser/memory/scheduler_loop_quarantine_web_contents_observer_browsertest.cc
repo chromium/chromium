@@ -4,7 +4,6 @@
 
 #include "content/browser/memory/scheduler_loop_quarantine_web_contents_observer.h"
 
-#include "base/allocator/partition_alloc_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -15,6 +14,11 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_alloc_features.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace content {
 class SchedulerLoopQuarantineWebContentsObserverBrowserTestBase

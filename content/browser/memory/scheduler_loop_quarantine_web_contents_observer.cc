@@ -4,10 +4,17 @@
 
 #include "content/browser/memory/scheduler_loop_quarantine_web_contents_observer.h"
 
-#include "base/allocator/partition_alloc_support.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "partition_alloc/buildflags.h"
+
+// `//chrome` and `//android_webview` expect `use_partition_alloc=true`,
+// but some other `//content` embedders like Edge do support both.
+// Hence this #ifdef.
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_alloc_support.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace content {
 namespace {
@@ -46,8 +53,12 @@ void SchedulerLoopQuarantineWebContentsObserver::ReadyToCommitNavigation(
 
   // We are only interested in the first navigation, reconfigure, remove
   // ourselves, and mark it as configured for other observers.
+  // ReconfigureSchedulerLoopQuarantineBranch() is only available when
+  // PartitionAlloc is built. Without PA the quarantine is a no-op.
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ReconfigureSchedulerLoopQuarantineBranch(
       base::allocator::SchedulerLoopQuarantineBranchType::kMain);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   g_reconfiguration_done = true;
   web_contents()->RemoveUserData(UserDataKey());  // will delete `this`.
   // `this` is now deleted do not touch anything here anymore.
@@ -58,11 +69,15 @@ void SchedulerLoopQuarantineWebContentsObserver::ReadyToCommitNavigation(
 void SchedulerLoopQuarantineWebContentsObserver::MaybeCreateForWebContents(
     WebContents* web_contents) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Without PartitionAlloc there is nothing to reconfigure, so skip creating
+  // the observer entirely.
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (base::allocator::IsSchedulerLoopQuarantineEnabled("") &&
       !AlreadyTriggeredReconfiguration()) {
     SchedulerLoopQuarantineWebContentsObserver::CreateForWebContents(
         web_contents);
   }
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 // static
