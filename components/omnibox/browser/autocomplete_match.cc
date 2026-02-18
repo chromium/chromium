@@ -1461,6 +1461,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       case OmniboxActionId::ACTION_IN_SUGGEST:
       case OmniboxActionId::EXTENSION_ACTION:
       case OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT:
+      case OmniboxActionId::SITE_SEARCH:
         // Preserve existing behavior by continuing on to use the match `type`.
         break;
       case OmniboxActionId::STARTER_PACK_BOOKMARKS:

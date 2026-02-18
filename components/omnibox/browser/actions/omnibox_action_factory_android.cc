@@ -46,6 +46,18 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
           static_cast<int32_t>(pedal_id)));
 }
 
+base::android::ScopedJavaGlobalRef<jobject> BuildSiteSearchAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint,
+    const std::u16string& keyword) {
+  return base::android::ScopedJavaGlobalRef<jobject>(
+      Java_OmniboxActionFactory_buildSiteSearchAction(
+          env, g_java_factory.Get(), instance, hint, accessibility_hint,
+          keyword));
+}
+
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
     intptr_t instance,

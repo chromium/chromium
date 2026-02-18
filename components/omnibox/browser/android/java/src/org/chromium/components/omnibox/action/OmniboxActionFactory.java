@@ -5,6 +5,7 @@
 package org.chromium.components.omnibox.action;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,6 +25,21 @@ public interface OmniboxActionFactory {
     @CalledByNative
     @Nullable OmniboxAction buildOmniboxPedal(
             long instance, String hint, String accessibilityHint, @OmniboxPedalId int pedalId);
+
+    /**
+     * Create a new SiteSearchAction.
+     *
+     * @param hint the title displayed on the chip
+     * @param accessibilityHint the text to be announced to the accessibility-enabled users
+     * @param keyword the site search keyword
+     * @return new instance of a SiteSearchAction
+     */
+    @CalledByNative
+    @Nullable OmniboxAction buildSiteSearchAction(
+            long instance,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint,
+            @JniType("std::u16string") String keyword);
 
     /**
      * Create a new OmniboxActionInSuggest.

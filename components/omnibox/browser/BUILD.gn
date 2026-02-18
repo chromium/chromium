@@ -119,6 +119,8 @@ static_library("browser") {
     "actions/omnibox_action_concepts.h",
     "actions/omnibox_action_in_suggest.cc",
     "actions/omnibox_action_in_suggest.h",
+    "actions/omnibox_action_site_search.cc",
+    "actions/omnibox_action_site_search.h",
     "actions/omnibox_extension_action.cc",
     "actions/omnibox_extension_action.h",
     "actions/omnibox_pedal.cc",

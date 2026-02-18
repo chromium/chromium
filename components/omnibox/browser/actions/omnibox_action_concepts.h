@@ -40,6 +40,9 @@ enum class OmniboxActionId {
   STARTER_PACK_TABS,
   STARTER_PACK_AI_MODE,
 
+  // A site search action that enters keyword mode for a specific site.
+  SITE_SEARCH,
+
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

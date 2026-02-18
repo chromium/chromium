@@ -61,6 +61,12 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     }
 
     @Override
+    public @Nullable OmniboxAction buildSiteSearchAction(
+            long nativeInstance, String hint, String accessibilityHint, String keyword) {
+        return new SiteSearchAction(nativeInstance, hint, accessibilityHint, keyword);
+    }
+
+    @Override
     public @Nullable OmniboxAction buildActionInSuggest(
             long nativeInstance,
             String hint,
