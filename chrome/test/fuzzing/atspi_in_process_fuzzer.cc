@@ -1204,7 +1204,7 @@ void Database::InsertControlPathAndPrerequisites(
       "order by "
       "random() limit max(0, ((select count(*) from controlsv4) - ?)))"));
   delete_stmt.BindInt64(0, kMaxRowsAllowed);
-  base::IgnoreResult(delete_stmt.Run());
+  delete_stmt.Run();
 }
 
 std::optional<std::string> Database::GetRandomControlPath(

@@ -498,9 +498,9 @@ TEST(PrefServiceTest, MAYBE_GetValueWithTypeConversion) {
 
   // Good cases:
   prefs.SetTime(kTimePref, base::Time::Now());
-  base::IgnoreResult(prefs.GetTime(kTimePref));
+  prefs.GetTime(kTimePref);
   prefs.SetInt64(kInt64Pref, 123);
-  base::IgnoreResult(prefs.GetInt64(kInt64Pref));
+  prefs.GetInt64(kInt64Pref);
 
   // Bad cases:
   EXPECT_CHECK_DEATH(prefs.SetInt64(kTimePref, 123));

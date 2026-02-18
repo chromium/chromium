@@ -154,7 +154,7 @@ void UserSessionActivityReporterDelegate::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Clear previous activity data from the idle event notifier.
-  base::IgnoreResult(idle_event_notifier_->GetActivityDataAndReset());
+  idle_event_notifier_->GetActivityDataAndReset();
 
   session_activity_.Clear();
 }

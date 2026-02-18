@@ -60,6 +60,6 @@ int DomatoHtmlInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                   ->GetActiveWebContents()
                   ->GetPrimaryMainFrame();
   DisableUnloadTimerForTesting(rfh);
-  base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), GURL(url_string)));
+  std::ignore = ui_test_utils::NavigateToURL(browser(), GURL(url_string));
   return 0;
 }

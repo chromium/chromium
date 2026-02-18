@@ -195,9 +195,8 @@ void JsSandboxMessagePort::HandleStringOnIsolateThread(std::string string) {
     return;
   }
 
-  base::IgnoreResult(onmessage->Call(isolate->GetCurrentContext(),
-                                     GetWrapper(isolate).ToLocalChecked(), 1,
-                                     argv));
+  std::ignore = onmessage->Call(isolate->GetCurrentContext(),
+                                GetWrapper(isolate).ToLocalChecked(), 1, argv);
 }
 
 void JsSandboxMessagePort::HandleArrayBufferOnIsolateThread(
@@ -226,9 +225,8 @@ void JsSandboxMessagePort::HandleArrayBufferOnIsolateThread(
     return;
   }
 
-  base::IgnoreResult(onmessage->Call(isolate->GetCurrentContext(),
-                                     GetWrapper(isolate).ToLocalChecked(), 1,
-                                     argv));
+  std::ignore = onmessage->Call(isolate->GetCurrentContext(),
+                                GetWrapper(isolate).ToLocalChecked(), 1, argv);
 }
 
 }  // namespace android_webview

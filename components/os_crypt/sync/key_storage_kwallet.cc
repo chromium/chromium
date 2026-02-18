@@ -119,9 +119,9 @@ std::optional<std::string> KeyStorageKWallet::GetKeyImpl() {
 
   if (entry_type != KWalletDBus::Type::kPassword) {
     int ret = 0;
-    base::IgnoreResult(
+    std::ignore =
         kwallet_dbus_->RemoveEntry(handle_, KeyStorageLinux::kFolderName,
-                                   KeyStorageLinux::kKey, app_name_, &ret));
+                                   KeyStorageLinux::kKey, app_name_, &ret);
     return GenerateAndStorePassword();
   }
 

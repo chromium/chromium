@@ -111,7 +111,7 @@ void PerformDrop(aura::client::DragDropDelegate::DropCallback drop_cb,
     std::move(drop_cb).Run(std::move(data_to_drop), output_drag_op,
                            /*drag_image_layer_owner=*/nullptr);
   }
-  base::IgnoreResult(drag_cancel.Release());
+  std::ignore = drag_cancel.Release();
 }
 
 }  // namespace

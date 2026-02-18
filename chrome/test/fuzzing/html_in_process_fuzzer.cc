@@ -33,6 +33,6 @@ int HtmlInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   if (url_string.length() > kMaxUrlLength) {
     return -1;
   }
-  base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), GURL(url_string)));
+  std::ignore = ui_test_utils::NavigateToURL(browser(), GURL(url_string));
   return 0;
 }

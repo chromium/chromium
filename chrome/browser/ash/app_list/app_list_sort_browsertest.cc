@@ -762,8 +762,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
   // Wait for one additional frame so that the metric data is collected.
   ui::Compositor* compositor =
       app_list_test_api_.GetTopLevelAppsGridView()->layer()->GetCompositor();
-  base::IgnoreResult(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300));
 
   histograms.ExpectTotalCount(
       ash::kClamshellReorderAnimationSmoothnessHistogram, 1);
@@ -779,8 +779,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
       event_generator_.get());
 
   // Wait for the metric data to be collected.
-  base::IgnoreResult(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300));
 
   // Smoothness of the reorder animation triggered by undo button is recorded.
   histograms.ExpectTotalCount(
@@ -823,8 +823,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
   // Wait for one additional frame so that the metric data is collected.
   ui::Compositor* compositor =
       app_list_test_api_.GetTopLevelAppsGridView()->layer()->GetCompositor();
-  base::IgnoreResult(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300));
 
   histograms.ExpectTotalCount(ash::kTabletReorderAnimationSmoothnessHistogram,
                               1);
@@ -840,8 +840,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
   EXPECT_EQ(ash::AppListToastType::kNone, app_list_test_api_.GetToastType());
 
   // Wait for the metric data to be collected.
-  base::IgnoreResult(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300));
 
   // Smoothness of the reorder animation triggered by undo button is recorded.
   histograms.ExpectTotalCount(ash::kTabletReorderAnimationSmoothnessHistogram,

@@ -88,7 +88,7 @@ ReportingServerConnector::ReportingServerConnector()
   // it is initialized on the first use, but for Ash we need it to be prepared
   // for encryption key delivery early after enrollment.
 #if BUILDFLAG(IS_CHROMEOS)
-  base::IgnoreResult(EnsureUsableClient());
+  std::ignore = EnsureUsableClient();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

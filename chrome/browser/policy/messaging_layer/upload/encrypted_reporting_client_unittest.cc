@@ -263,7 +263,7 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 
   // Send record #11 for upload.
@@ -294,7 +294,7 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 }
 
@@ -364,7 +364,7 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithSameRecords) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/1, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 }
 
@@ -434,7 +434,7 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithAddedRecord) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/1, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 }
 
@@ -467,7 +467,7 @@ TEST_F(EncryptedReportingClientTest, KeyRequestAlone) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 
   // Can repeat immediately - no throttling when there are no records.
@@ -493,7 +493,7 @@ TEST_F(EncryptedReportingClientTest, KeyRequestAlone) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 }
 
@@ -563,7 +563,7 @@ TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 }
 
@@ -633,7 +633,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
   }
 
   // Send record #11 for upload.
@@ -699,7 +699,7 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
   ASSERT_TRUE(response.has_value());
   SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-  base::IgnoreResult(GetAndValidateResponse(response_event));
+  GetAndValidateResponse(response_event);
 }
 
 TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
@@ -785,8 +785,8 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
 
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(
-        response_event, /*expected_seq_id=*/kFirstSequenceId - 1));
+    GetAndValidateResponse(response_event,
+                           /*expected_seq_id=*/kFirstSequenceId - 1);
 
     encrypted_reporting_client->AccountForAllowedJob(
         payload_records_.rbegin()->sequence_information().priority(),
@@ -893,8 +893,8 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
 
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(
-        response_event, /*expected_seq_id=*/sequence_id_ - 2));
+    GetAndValidateResponse(response_event,
+                           /*expected_seq_id=*/sequence_id_ - 2);
 
     encrypted_reporting_client->AccountForAllowedJob(
         payload_records_.rbegin()->sequence_information().priority(),
@@ -951,7 +951,7 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
     ASSERT_TRUE(response.has_value());
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    GetAndValidateResponse(response_event);
 
     encrypted_reporting_client->AccountForAllowedJob(
         payload_records_.rbegin()->sequence_information().priority(),

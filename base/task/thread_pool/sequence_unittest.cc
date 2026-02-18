@@ -235,7 +235,7 @@ TEST(ThreadPoolSequenceTest, TakeEmptyFrontSlot) {
       RegisteredTaskSource::CreateForTesting(sequence);
   {
     registered_task_source.WillRunTask();
-    IgnoreResult(registered_task_source.TakeTask(&sequence_transaction));
+    std::ignore = registered_task_source.TakeTask(&sequence_transaction);
     registered_task_source.DidProcessTask(&sequence_transaction);
   }
   EXPECT_DCHECK_DEATH({
