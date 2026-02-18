@@ -27,7 +27,8 @@ bool SharedImageCopyManager::CopyImage(SharedImageBacking* src_backing,
     }
   }
 
-  LOG(ERROR) << "No supported copy strategy found for the given backings.";
+  LOG(ERROR) << "No supported shared image copy strategy found to copy from "
+             << src_backing->GetName() << " to " << dst_backing->GetName();
   return false;
 }
 

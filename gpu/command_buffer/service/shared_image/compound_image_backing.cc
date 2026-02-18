@@ -1008,7 +1008,8 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                                              SharedImageAccessStream stream) {
   ElementHolder* access_element = GetElement(backing);
   if (!access_element) {
-    LOG(ERROR) << "backing not in the element list.";
+    LOG(ERROR) << "Backing (" << backing->GetName()
+               << ") not in the element list";
     return;
   }
 
@@ -1040,8 +1041,10 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
       access_element->GetBacking()->SetClearedRect(src_cleared_rect);
       SetClearedRect(src_cleared_rect);
     } else {
-      LOG(ERROR)
-          << "Failed to copy between backings. Backing can be using stale data";
+      LOG(ERROR) << "Failed to copy from "
+                 << latest_content_element->GetBacking()->GetName() << " to "
+                 << access_element->GetBacking()->GetName()
+                 << ". Backing can be using stale data";
     }
 
     UMA_HISTOGRAM_BOOLEAN("GPU.CompoundImageBacking.ContentSync.Success",
@@ -1136,7 +1139,8 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
   auto* gpu_backing = GetGpuBacking();
   if (!gpu_backing ||
       !copy_manager_->CopyImage(gpu_backing, shm_element.GetBacking())) {
-    DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
+    LOG(ERROR) << "Failed to copy from GPU backing (" << gpu_backing->GetName()
+               << ") to shared memory";
     return false;
   }
 
@@ -1161,7 +1165,8 @@ void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
 
   auto* gpu_backing = GetGpuBacking();
   if (!gpu_backing) {
-    DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
+    LOG(ERROR) << "Failed to copy from GPU backing (" << gpu_backing->GetName()
+               << ") to shared memory";
     std::move(callback).Run(false);
     return;
   }
