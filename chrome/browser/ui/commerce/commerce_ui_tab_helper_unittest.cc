@@ -31,6 +31,8 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_details.h"
@@ -78,21 +80,71 @@ std::optional<ProductInfo> CreateProductInfo(
   return info;
 }
 
+enum class TestSyncConfig {
+  // Feature toggles off, SetIsSyncFeatureEnabledIncludingBookmarks true.
+  kTransportModeFeatureOff_SignedInWithSyncFeartureOn,
+  // Feature toggles on, SetIsSyncFeatureEnabledIncludingBookmarks false.
+  kTransportModeFeatureOn_SignedInWithSyncFeartureOff,
+  // Feature toggles on, SetIsSyncFeatureEnabledIncludingBookmarks true.
+  kTransportModeFeatureOn_SignedInWithSyncFeartureOn,
+};
+
 }  // namespace
 
 using ukm::builders::Shopping_ShoppingInformation;
 
-class CommerceUiTabHelperTest : public testing::Test {
+class CommerceUiTabHelperTest : public testing::TestWithParam<TestSyncConfig> {
  public:
   CommerceUiTabHelperTest()
       : shopping_service_(std::make_unique<MockShoppingService>()),
         image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()),
         account_checker_(std::make_unique<MockAccountChecker>()) {
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+
+    client->SetIsSyncFeatureEnabledIncludingBookmarks(
+        IsSyncFeatureEnabledIncludingBookmarks());
+    if (IsTransportModeFeatureEnabled()) {
+      sync_features_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                                switches::kSyncEnableBookmarksInTransportMode},
+          /*disabled_features=*/{});
+    } else {
+      sync_features_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              switches::kSyncEnableBookmarksInTransportMode});
+    }
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+    if (IsTransportModeFeatureEnabled()) {
+      bookmark_model_->CreateAccountPermanentFolders();
+    }
     shopping_service_->SetAccountChecker(account_checker_.get());
+  }
+
+  bool IsTransportModeFeatureEnabled() {
+    switch (GetParam()) {
+      case TestSyncConfig::kTransportModeFeatureOff_SignedInWithSyncFeartureOn:
+        return false;
+      case TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOff:
+        return true;
+      case TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOn:
+        return true;
+    }
+    NOTREACHED();
+  }
+
+  bool IsSyncFeatureEnabledIncludingBookmarks() {
+    switch (GetParam()) {
+      case TestSyncConfig::kTransportModeFeatureOff_SignedInWithSyncFeartureOn:
+        return true;
+      case TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOff:
+        return false;
+      case TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOn:
+        return true;
+    }
+    NOTREACHED();
   }
 
   CommerceUiTabHelperTest(const CommerceUiTabHelperTest&) = delete;
@@ -193,12 +245,13 @@ class CommerceUiTabHelperTest : public testing::Test {
       discounts_page_action_controller_;
   std::unique_ptr<PriceInsightsPageActionViewController>
       price_insights_page_action_controller_;
+  base::test::ScopedFeatureList sync_features_;
   base::test::ScopedFeatureList features_;
 };
 
 // The price tracking icon shouldn't be available if no image URL was provided
 // by the shopping service.
-TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityIfNoImage) {
+TEST_P(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityIfNoImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -223,7 +276,7 @@ TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityIfNoImage) {
 
 // The price tracking state should not update in the helper if there is no image
 // returbed by the shopping service.
-TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityWithImage) {
+TEST_P(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityWithImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -246,7 +299,7 @@ TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityWithImage) {
 }
 
 // Make sure unsubscribe without a bookmark for the current page is functional.
-TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
+TEST_P(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
   // Intentionally create a bookmark with a URL different from the known
   // product URL but use the same cluster ID.
   AddProductBookmark(bookmark_model_.get(), u"title",
@@ -272,7 +325,7 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
+TEST_P(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
   ASSERT_FALSE(side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
@@ -296,7 +349,7 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 }
 
-TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
+TEST_P(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
   ASSERT_FALSE(side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
@@ -312,7 +365,7 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_P(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfEmptyProductInfo) {
   commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
                                           true);
@@ -324,7 +377,7 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest,
+TEST_P(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfNoProductClusterTitle) {
   commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
                                           true);
@@ -339,11 +392,13 @@ TEST_F(CommerceUiTabHelperTest,
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
-TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
+TEST_P(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   features_.InitWithFeatures(
-      {commerce::kPriceInsights, commerce::kEnableDiscountInfoApi}, {});
+      /*enabled_features=*/{commerce::kPriceInsights,
+                            commerce::kEnableDiscountInfoApi},
+      /*disabled_features=*/{});
   commerce::SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
 
   std::optional<ProductInfo> product_info = CreateProductInfo(
@@ -380,5 +435,25 @@ TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm_recorder.ExpectEntryMetric(
       entries[0], Shopping_ShoppingInformation::kHasDiscountName, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CommerceUiTabHelperTest,
+    testing::Values(
+        TestSyncConfig::kTransportModeFeatureOff_SignedInWithSyncFeartureOn,
+        TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOff,
+        TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOn),
+    [](const testing::TestParamInfo<TestSyncConfig>& info) {
+      switch (info.param) {
+        case TestSyncConfig::
+            kTransportModeFeatureOff_SignedInWithSyncFeartureOn:
+          return "TransportModeFeatureOff_SignedInWithSyncFeartureOn";
+        case TestSyncConfig::
+            kTransportModeFeatureOn_SignedInWithSyncFeartureOff:
+          return "TransportModeFeatureOn_SignedInWithSyncFeartureOff";
+        case TestSyncConfig::kTransportModeFeatureOn_SignedInWithSyncFeartureOn:
+          return "TransportModeFeatureOn_SignedInWithSyncFeartureOn";
+      }
+    });
 
 }  // namespace commerce

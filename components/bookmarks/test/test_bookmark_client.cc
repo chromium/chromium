@@ -86,7 +86,7 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
 }
 
 void TestBookmarkClient::SetIsSyncFeatureEnabledIncludingBookmarks(bool value) {
-  is_sync_feature_enabled_including_bookmarks_for_uma = value;
+  is_sync_feature_enabled_including_bookmarks_ = value;
 }
 
 void TestBookmarkClient::SetAccountBookmarkSyncMetadataAndScheduleWrite(
@@ -106,7 +106,7 @@ LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
 }
 
 bool TestBookmarkClient::IsSyncFeatureEnabledIncludingBookmarks() {
-  return is_sync_feature_enabled_including_bookmarks_for_uma;
+  return is_sync_feature_enabled_including_bookmarks_;
 }
 
 bool TestBookmarkClient::CanSetPermanentNodeTitle(

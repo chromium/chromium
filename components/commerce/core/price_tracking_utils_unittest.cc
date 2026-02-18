@@ -27,6 +27,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -373,6 +374,44 @@ TEST_F(PriceTrackingUtilsTest, IsBookmarkPriceTracked_NonProduct) {
                                looper->Quit();
                              },
                              &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(PriceTrackingUtilsTest, SetPriceTrackingStateForAccountBookmark) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kSyncEnableBookmarksInTransportMode);
+  // Set up the state where the user is signed in but Sync-the-feature is OFF.
+  static_cast<bookmarks::TestBookmarkClient*>(bookmark_model_->client())
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(false);
+  bookmark_model_->CreateAccountPermanentFolders();
+
+  const uint64_t cluster_id = 12345L;
+  const bookmarks::BookmarkNode* product =
+      bookmark_model_->AddURL(bookmark_model_->account_bookmark_bar_node(), 0,
+                              u"product", GURL("http://example.com"));
+
+  AddProductInfoToExistingBookmark(bookmark_model_.get(), product, u"product",
+                                   cluster_id);
+
+  // Simulate successful calls in the subscriptions manager.
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  EXPECT_CALL(
+      *shopping_service_,
+      Subscribe(VectorHasSubscriptionWithId(base::NumberToString(cluster_id)),
+                testing::_))
+      .Times(1);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(
+      shopping_service_.get(), bookmark_model_.get(), product, true,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            EXPECT_TRUE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
   run_loop.Run();
 }
 

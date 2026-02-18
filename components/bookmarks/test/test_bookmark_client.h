@@ -129,7 +129,7 @@ class TestBookmarkClient : public BookmarkClient {
   std::map<GURL, std::list<favicon_base::FaviconImageCallback>>
       requests_per_page_url_;
 
-  bool is_sync_feature_enabled_including_bookmarks_for_uma = false;
+  bool is_sync_feature_enabled_including_bookmarks_ = false;
 
   std::string account_bookmark_sync_metadata_;
   base::RepeatingClosure account_bookmark_sync_metadata_save_closure_ =
