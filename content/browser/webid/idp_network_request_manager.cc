@@ -134,6 +134,10 @@ constexpr char kContinueOnKey[] = "continue_on";
 // The token is embedded in the URL as a query parameter, following standards
 // such as OIDC and SAML.
 constexpr char kRedirectToKey[] = "redirect_to";
+// `redirect_to` may be an object containing these keys.
+constexpr char kRedirectUrlKey[] = "url";
+constexpr char kRedirectMethodKey[] = "method";
+constexpr char kRedirectBodyKey[] = "body";
 // The id assertion endpoint may contain an error dict containing a code and url
 // which describes the error.
 constexpr char kErrorKey[] = "error";
@@ -710,7 +714,7 @@ ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
 
 TokenResponseType GetTokenResponseType(const base::Value* token,
                                        const std::string* continue_on,
-                                       const std::string* redirect_to,
+                                       const base::Value* redirect_to,
                                        const base::DictValue* error) {
   // TODO(crbug.com/474120843): break down the TokenResponseType further so that
   // we can log the distinction between the continue_on and the redirect_to
@@ -804,9 +808,8 @@ void OnTokenRequestParsed(
   const std::string* continue_on = can_use_response && continue_on_callback
                                        ? response->FindString(kContinueOnKey)
                                        : nullptr;
-  // TODO(crbug.com/474120843): also support redirect_to that are POST requests.
-  const std::string* redirect_to = can_use_response && redirect_to_callback
-                                       ? response->FindString(kRedirectToKey)
+  const base::Value* redirect_to = can_use_response && redirect_to_callback
+                                       ? response->Find(kRedirectToKey)
                                        : nullptr;
   const base::DictValue* response_error =
       response ? response->FindDict(kErrorKey) : nullptr;
@@ -884,14 +887,37 @@ void OnTokenRequestParsed(
   }
 
   if (redirect_to) {
-    GURL url = token_url.Resolve(*redirect_to);
+    GURL url;
+    blink::mojom::FedCmRedirectMethod method =
+        blink::mojom::FedCmRedirectMethod::kGet;
+    std::string request_body;
+
+    if (redirect_to->is_string()) {
+      url = token_url.Resolve(redirect_to->GetString());
+    } else if (redirect_to->is_dict()) {
+      const base::DictValue& redirect_dict = redirect_to->GetDict();
+      const std::string* url_string = redirect_dict.FindString(kRedirectUrlKey);
+      if (url_string) {
+        url = token_url.Resolve(*url_string);
+      }
+      const std::string* method_string =
+          redirect_dict.FindString(kRedirectMethodKey);
+      if (method_string && *method_string == "POST") {
+        method = blink::mojom::FedCmRedirectMethod::kPost;
+      }
+      const std::string* body_string =
+          redirect_dict.FindString(kRedirectBodyKey);
+      if (body_string) {
+        request_body = *body_string;
+      }
+    }
     if (url.is_valid()) {
       std::move(record_error_metrics_callback)
           .Run(token_response_type, /*error_dialog_type=*/std::nullopt,
                /*error_url_type=*/std::nullopt);
       std::move(redirect_to_callback)
-          .Run({ParseStatus::kSuccess, fetch_status.response_code},
-               std::move(url));
+          .Run({ParseStatus::kSuccess, fetch_status.response_code}, method,
+               std::move(url), std::move(request_body));
       return;
     }
   }

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,11 +32,16 @@ class IdentityRegistryDelegate {
   // `idp_config_url` is passed by value so that it remains valid even if the
   // implementation destructs the IdentityRegistry (e.g. by closing the
   // associated WebContents).
+  // If `redirect_to` is provided, the original page is redirected to this URL
+  // instead, using GET or POST as specified in `method`. In the latter case,
+  // `request_body` is used as the body of the request.
   // If account_id is nullopt, uses the account that was selected in the
   // account chooser.
   virtual bool OnResolve(GURL idp_config_url,
                          const std::optional<std::string>& account_id,
+                         blink::mojom::FedCmRedirectMethod method,
                          const std::optional<GURL>& redirect_to,
+                         const std::string& request_body,
                          const base::Value& token) = 0;
 
   enum class Method { kClose, kResolve };

@@ -34,6 +34,7 @@
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -133,7 +134,9 @@ class CONTENT_EXPORT RequestService
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
   void ResolveTokenRequest(const std::optional<std::string>& account_id,
+                           blink::mojom::FedCmRedirectMethod method,
                            const std::optional<GURL>& redirect_to,
+                           const std::string& request_body,
                            base::Value token,
                            ResolveTokenRequestCallback callback) override;
   void SetIdpSigninStatus(
@@ -162,7 +165,9 @@ class CONTENT_EXPORT RequestService
   void OnClose() override;
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
+                 blink::mojom::FedCmRedirectMethod method,
                  const std::optional<GURL>& redirect_to,
+                 const std::string& request_body,
                  const base::Value& token) override;
   void OnOriginMismatch(Method method,
                         const url::Origin& expected,
@@ -393,8 +398,13 @@ class CONTENT_EXPORT RequestService
   void OnRedirectToResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       FetchStatus status,
-      const GURL& redirect_to);
-  void RedirectTo(const GURL& idp_config_url, const GURL& redirect_to);
+      blink::mojom::FedCmRedirectMethod method,
+      const GURL& redirect_to,
+      const std::string& request_body);
+  void RedirectTo(const GURL& idp_config_url,
+                  blink::mojom::FedCmRedirectMethod method,
+                  const GURL& redirect_to,
+                  const std::string& request_body);
 
   // Called after we get at token (either from the ID assertion endpoint or
   // from IdentityProvider.resolve) to update our various permissions.

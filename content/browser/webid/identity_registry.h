@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_WEBID_IDENTITY_REGISTRY_H_
 #define CONTENT_BROWSER_WEBID_IDENTITY_REGISTRY_H_
 
-#include "content/browser/webid/identity_registry_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
 
 class WebContents;
+class IdentityRegistryDelegate;
 class MockIdentityRegistry;
 
 // Stores a FederatedIdentityModalDialogViewDelegate which can later be
@@ -24,7 +25,9 @@ class CONTENT_EXPORT IdentityRegistry
   virtual void NotifyClose(const url::Origin& notifier_origin);
   virtual bool NotifyResolve(const url::Origin& notifier_origin,
                              const std::optional<std::string>& account_id,
+                             blink::mojom::FedCmRedirectMethod method,
                              const std::optional<GURL>& redirect_to,
+                             const std::string& request_body,
                              const base::Value& token);
 
  private:

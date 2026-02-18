@@ -37,7 +37,9 @@ void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
 bool IdentityRegistry::NotifyResolve(
     const url::Origin& notifier_origin,
     const std::optional<std::string>& account_id,
+    blink::mojom::FedCmRedirectMethod method,
     const std::optional<GURL>& redirect_to,
+    const std::string& request_body,
     const base::Value& token) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
@@ -48,7 +50,8 @@ bool IdentityRegistry::NotifyResolve(
     return false;
   }
 
-  return delegate_->OnResolve(idp_config_url_, account_id, redirect_to, token);
+  return delegate_->OnResolve(idp_config_url_, account_id, method, redirect_to,
+                              request_body, token);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IdentityRegistry);

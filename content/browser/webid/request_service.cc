@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 using base::Value;
@@ -630,16 +632,32 @@ void RequestService::CancelTokenRequest() {
 
 void RequestService::ResolveTokenRequest(
     const std::optional<std::string>& account_id,
+    blink::mojom::FedCmRedirectMethod method,
     const std::optional<GURL>& redirect_to,
+    const std::string& request_body,
     base::Value token,
     ResolveTokenRequestCallback callback) {
+  if (redirect_to) {
+    // GET must not have a body; POST must have a body.
+    if (method == blink::mojom::FedCmRedirectMethod::kGet &&
+        !request_body.empty()) {
+      ReportBadMessage("GET redirects must not have a body");
+      return;
+    }
+    if (method == blink::mojom::FedCmRedirectMethod::kPost &&
+        request_body.empty()) {
+      ReportBadMessage("POST redirects must have a body");
+      return;
+    }
+  }
+
   if (!identity_registry_ && !SetupIdentityRegistryFromPopup()) {
     std::move(callback).Run(false);
     return;
   }
 
-  bool accepted = identity_registry_->NotifyResolve(origin(), account_id,
-                                                    redirect_to, token);
+  bool accepted = identity_registry_->NotifyResolve(
+      origin(), account_id, method, redirect_to, request_body, token);
   std::move(callback).Run(accepted);
 }
 
@@ -1553,9 +1571,12 @@ void RequestService::OnAccountSelected(const GURL& idp_config_url,
       &RequestService::OnContinueOnResponseReceived,
       weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
 
-  IdpNetworkRequestManager::RedirectToCallback redirect_to = base::BindOnce(
-      &RequestService::OnRedirectToResponseReceived,
-      weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
+  IdpNetworkRequestManager::RedirectToCallback redirect_to;
+  if (IsNavigationInterceptionEnabled()) {
+    redirect_to = base::BindOnce(&RequestService::OnRedirectToResponseReceived,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 idp_info.provider->Clone());
+  }
 
   std::vector<std::string> disclosure_shown_for;
   if (!is_sign_in) {
@@ -1789,12 +1810,16 @@ void RequestService::OnContinueOnResponseReceived(
 void RequestService::OnRedirectToResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     FetchStatus status,
-    const GURL& redirect_to) {
-  RedirectTo(idp->config->config_url, redirect_to);
+    blink::mojom::FedCmRedirectMethod method,
+    const GURL& redirect_to,
+    const std::string& request_body) {
+  RedirectTo(idp->config->config_url, method, redirect_to, request_body);
 }
 
 void RequestService::RedirectTo(const GURL& idp_config_url,
-                                const GURL& redirect_to) {
+                                blink::mojom::FedCmRedirectMethod method,
+                                const GURL& redirect_to,
+                                const std::string& request_body) {
   // Navigate the top-level frame to the URL specified by the IdP.
   //
   // This is done here rather than in the callers of the RequestService because
@@ -1823,6 +1848,14 @@ void RequestService::RedirectTo(const GURL& idp_config_url,
 
   content::NavigationController::LoadURLParams params(redirect_to);
   params.transition_type = ui::PAGE_TRANSITION_LINK;
+  if (method == blink::mojom::FedCmRedirectMethod::kPost) {
+    params.transition_type = ui::PAGE_TRANSITION_FORM_SUBMIT;
+    params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
+    params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+        base::as_byte_span(request_body));
+    params.extra_headers =
+        "Content-Type: application/x-www-form-urlencoded\r\n";
+  }
   web_contents->GetController().LoadURLWithParams(params);
 
   // TODO(crbug.com/474120843): Introduce a more specific success enum value
@@ -2344,7 +2377,9 @@ void RequestService::OnClose() {
 
 bool RequestService::OnResolve(GURL idp_config_url,
                                const std::optional<std::string>& account_id,
+                               blink::mojom::FedCmRedirectMethod method,
                                const std::optional<GURL>& redirect_to,
+                               const std::string& request_body,
                                const base::Value& token) {
   // Close the pop-up window post user permission.
   if (!request_dialog_controller_) {
@@ -2374,7 +2409,7 @@ bool RequestService::OnResolve(GURL idp_config_url,
 
   if (redirect_to && redirect_to->is_valid() &&
       IsNavigationInterceptionEnabled()) {
-    RedirectTo(idp_config_url, *redirect_to);
+    RedirectTo(idp_config_url, method, *redirect_to, request_body);
     return true;
   }
 

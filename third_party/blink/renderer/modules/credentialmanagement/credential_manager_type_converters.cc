@@ -1253,4 +1253,17 @@ TypeConverter<LoginStatusOptionsPtr, blink::LoginStatusOptions>::Convert(
   return mojo_options;
 }
 
+// static
+blink::mojom::blink::FedCmRedirectMethod
+TypeConverter<blink::mojom::blink::FedCmRedirectMethod,
+              blink::V8ResolveRedirectRequestMethod>::
+    Convert(const blink::V8ResolveRedirectRequestMethod& method) {
+  switch (method.AsEnum()) {
+    case blink::V8ResolveRedirectRequestMethod::Enum::kGET:
+      return blink::mojom::blink::FedCmRedirectMethod::kGet;
+    case blink::V8ResolveRedirectRequestMethod::Enum::kPOST:
+      return blink::mojom::blink::FedCmRedirectMethod::kPost;
+  }
+}
+
 }  // namespace mojo

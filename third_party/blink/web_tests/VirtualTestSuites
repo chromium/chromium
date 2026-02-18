@@ -1070,6 +1070,27 @@
     "expires": "Aug 1, 2026"
   },
   {
+    "prefix": "fedcm-navigation-interception",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/fedcm-navigation-interception/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmNavigationInterception"
+    ],
+    "owners": [
+      "cbiesinger@chromium.org",
+      "npm@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Dec 1, 2026"
+  },
+  {
     "prefix": "fedcm-flexible-tokens",
     "platforms": [
       "Linux",

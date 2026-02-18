@@ -66,7 +66,9 @@ class MockFederatedAuthRequest : public RequestService {
   MOCK_METHOD(void,
               ResolveTokenRequest,
               (const std::optional<std::string>& account_id,
+               blink::mojom::FedCmRedirectMethod method,
                const std::optional<GURL>& redirect_to,
+               const std::string& request_body,
                base::Value token,
                ResolveTokenRequestCallback callback),
               (override));

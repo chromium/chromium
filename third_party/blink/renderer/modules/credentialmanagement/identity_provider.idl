@@ -9,9 +9,16 @@ dictionary IdentityUserInfo {
   USVString picture;
 };
 
+enum ResolveRedirectRequestMethod {
+  "GET",
+  "POST"
+};
+
 dictionary IdentityResolveOptions {
   USVString accountId;
   [RuntimeEnabled=FedCmNavigationInterception] boolean redirect = false;
+  [RuntimeEnabled=FedCmNavigationInterception] ResolveRedirectRequestMethod method = "GET";
+  [RuntimeEnabled=FedCmNavigationInterception] USVString body = "";
 };
 
 dictionary IdentityProviderToken {

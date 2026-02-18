@@ -107,6 +107,12 @@ enum Format {
   kSdJwt,
 };
 
+// Whether to load the redirect URL with a GET or POST HTTP method.
+enum FedCmRedirectMethod {
+  kGet,
+  kPost
+};
+
 // The request parameters for a navigator.credentials.get() FedCM call.
 struct IdentityProviderRequestOptions {
   IdentityProviderConfig config;
@@ -228,11 +234,15 @@ interface FederatedAuthRequest {
   // when the id_assertion_endpoint returns a continue_on rather than the
   // actual token.
   // If `redirect_to` is specified, that URL is loaded in the context that
-  // triggered the FedCM call and `token` is ignored.
+  // triggered the FedCM call using the HTTP method specified in `method` and
+  // `token` is ignored. If `method` is `kPost`, `request_body` will be used as
+  // the body of the POST request.
   // If no account ID is provided, the account ID of the account that was
   // selected in the account chooser will be used.
   ResolveTokenRequest(string? account_id,
+                      FedCmRedirectMethod method,
                       url.mojom.Url? redirect_to,
+                      string request_body,
                       mojo_base.mojom.Value token) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin. 'origin' must

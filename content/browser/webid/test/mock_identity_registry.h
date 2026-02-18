@@ -29,7 +29,9 @@ class MockIdentityRegistry : public IdentityRegistry {
               NotifyResolve,
               (const url::Origin&,
                const std::optional<std::string>&,
+               blink::mojom::FedCmRedirectMethod,
                const std::optional<GURL>&,
+               const std::string&,
                const base::Value&),
               (override));
 };

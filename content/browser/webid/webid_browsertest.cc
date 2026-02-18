@@ -37,6 +37,8 @@
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -2685,6 +2687,117 @@ IN_PROC_BROWSER_TEST_F(WebIdNavigationInterceptionTest, resolveWithRedirect) {
 
   EXPECT_EQ("/title3.html",
             shell()->web_contents()->GetLastCommittedURL().GetPath());
+}
+
+// Verify that redirect in IdentityProvider.resolve works correctly.
+IN_PROC_BROWSER_TEST_F(WebIdNavigationInterceptionTest, redirectPOST) {
+  // For this test, we just want to test redirects without having to also
+  // trigger interception, so override the check.
+  auto* request_service = webid::RequestService::GetOrCreateForCurrentDocument(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  request_service->SetForceAllowRedirectToForTesting(true);
+
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  // Points to the relative url of the authorization servlet.
+  std::string continue_on = "/authz.html";
+
+  // Add a servlet to serve a response for the id assertion endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](std::string url,
+             const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            content += "is_auto_selected=false&";
+            content += "mode=passive&";
+            content += "fields=name,email,picture";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            static constexpr char body[] =
+                R"({"redirect_to": {"url": "/title3.html",
+            "method": "POST", "body": "body"}})";
+            response->set_content(body);
+            DCHECK(request.headers.contains("Origin"));
+            response->AddCustomHeader(
+                network::cors::header_names::kAccessControlAllowOrigin,
+                request.headers.at("Origin"));
+            response->AddCustomHeader(
+                network::cors::header_names::kAccessControlAllowCredentials,
+                "true");
+            return response;
+          },
+          continue_on);
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  // Create a WebContents that represents the modal dialog, specifically
+  // the structure that the Identity Registry hangs to.
+  Shell* modal = CreateBrowser();
+  auto config_url = GURL(BaseIdpUrl());
+
+  modal->LoadURL(config_url);
+  EXPECT_TRUE(WaitForLoadStop(modal->web_contents()));
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  // Expects the account chooser to be opened. Selects the first account.
+  EXPECT_CALL(*controller, ShowAccountsDialog)
+      .WillOnce(::testing::WithArg<4>([&config_url](auto on_selected) {
+        std::move(on_selected)
+            .Run(config_url,
+                 /* account_id=*/"not_real_account",
+                 /* is_sign_in= */ true);
+        return true;
+      }));
+
+  std::string script = R"(
+          var result = navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+              }]
+            }
+         }).then(({token}) => token);
+    )";
+
+  // Kick off the identity credential request and deliberately
+  // leave the promise hanging, since it requires UX permission
+  // prompts to be accepted later.
+  LoadStopObserver stop_observer(shell()->web_contents());
+  EXPECT_TRUE(content::ExecJs(shell(), script,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the redirect to load.
+  stop_observer.Wait();
+
+  EXPECT_EQ("/title3.html",
+            shell()->web_contents()->GetLastCommittedURL().GetPath());
+
+  content::NavigationEntry* entry = shell()
+                                        ->web_contents()
+                                        ->GetPrimaryMainFrame()
+                                        ->GetController()
+                                        .GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(entry->GetHasPostData());
 }
 
 }  // namespace content

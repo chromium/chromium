@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_resolve_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_resolve_redirect_request_method.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -271,7 +272,10 @@ ScriptPromise<IDLUndefined> IdentityProvider::resolve(
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
+  mojom::blink::FedCmRedirectMethod method =
+      mojom::blink::FedCmRedirectMethod::kGet;
   std::optional<KURL> redirect_to;
+  String request_body;
   if (options->redirect()) {
     String url_string;
     if (!token_value.ToString(url_string)) {
@@ -280,16 +284,38 @@ ScriptPromise<IDLUndefined> IdentityProvider::resolve(
       return promise;
     }
 
+    method =
+        mojo::ConvertTo<mojom::blink::FedCmRedirectMethod>(options->method());
+
     redirect_to = context->CompleteURL(url_string);
     if (!redirect_to->IsValid()) {
       resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
                                        "Invalid redirect URL.");
       return promise;
     }
+
+    request_body = options->body();
+
+    // GET must not have a body; POST must have a body.
+    if (method == mojom::blink::FedCmRedirectMethod::kGet &&
+        !request_body.empty()) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                       "GET redirects must not have a body.");
+      return promise;
+    } else if (method == mojom::blink::FedCmRedirectMethod::kPost &&
+               request_body.empty()) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                       "POST redirects must have a body.");
+      return promise;
+    }
+  }
+  if (request_body.IsNull()) {
+    request_body = g_empty_string;
   }
 
   request->ResolveTokenRequest(
-      account_id, redirect_to, std::move(*token_base_value),
+      account_id, method, redirect_to, request_body,
+      std::move(*token_base_value),
       BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
 
   return promise;

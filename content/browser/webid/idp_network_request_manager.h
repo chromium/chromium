@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -21,6 +22,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -242,7 +244,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult&&)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
-  using RedirectToCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
+  using RedirectToCallback =
+      base::OnceCallback<void(FetchStatus,
+                              blink::mojom::FedCmRedirectMethod,
+                              const GURL&,
+                              const std::string& request_body)>;
   using RecordErrorMetricsCallback =
       base::OnceCallback<void(FedCmTokenResponseType,
                               std::optional<FedCmErrorDialogType>,
