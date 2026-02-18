@@ -73,9 +73,9 @@ class TabSearchToolbarButtonInteractiveUiTest
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
-        /*disabled_features=*/{features::kGlicLocaleFiltering,
-                               features::kGlicCountryFiltering,
-                               tabs::kHorizontalTabStripComboButton});
+        /*disabled_features=*/{
+            features::kGlicLocaleFiltering, features::kGlicCountryFiltering,
+            tabs::kHorizontalTabStripComboButton, tabs::kVerticalTabs});
   }
   ~TabSearchToolbarButtonInteractiveUiTest() override = default;
 
@@ -134,7 +134,8 @@ class TabSearchToolbarButtonGlicDisabledTest
     : public TabSearchToolbarButtonTest {
  public:
   TabSearchToolbarButtonGlicDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kGlic);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kGlic, tabs::kVerticalTabs});
   }
   ~TabSearchToolbarButtonGlicDisabledTest() override = default;
 
@@ -161,7 +162,8 @@ class TabSearchToolbarButtonComboEnabledTest
  public:
   TabSearchToolbarButtonComboEnabledTest() {
     scoped_feature_list_.InitWithFeatures(
-        {tabs::kHorizontalTabStripComboButton, features::kGlic}, {});
+        {tabs::kHorizontalTabStripComboButton, features::kGlic},
+        {tabs::kVerticalTabs});
   }
   ~TabSearchToolbarButtonComboEnabledTest() override = default;
 

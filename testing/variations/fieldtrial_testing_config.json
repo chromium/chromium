@@ -28198,6 +28198,25 @@
             ]
         }
     ],
+    "VerticalTabs": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VerticalTabs",
+                        "VerticalTabsPreviewBadge"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoConferenceDLCUIRollout": [
         {
             "platforms": [
