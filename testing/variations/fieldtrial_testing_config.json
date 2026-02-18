@@ -20689,6 +20689,26 @@
             ]
         }
     ],
+    "PreloadingRespectUserAgentOverride": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreloadingRespectUserAgentOverride",
+                        "RespectUserAgentOverrideInSearchPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2EarlyDocumentLifecycleUpdateV2": [
         {
             "platforms": [
@@ -22310,26 +22330,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ResolutionBasedDecoderPriority"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RespectUserAgentOverrideInSearchPrefetch": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreloadingRespectUserAgentOverride",
-                        "RespectUserAgentOverrideInSearchPrefetch"
                     ]
                 }
             ]
