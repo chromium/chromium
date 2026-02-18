@@ -33,12 +33,10 @@ class EmbeddingBrowserTracker {
     browser_window_interface_ = browser_window_interface;
 
     if (browser_window_interface_) {
-#if !BUILDFLAG(IS_ANDROID)
       browser_did_close_subscription_ =
           browser_window_interface_->RegisterBrowserDidClose(
               base::BindRepeating(&EmbeddingBrowserTracker::OnBrowserDidClose,
                                   base::Unretained(this)));
-#endif
     }
     browser_change_cb_.Run();
   }
