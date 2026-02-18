@@ -4,6 +4,22 @@
 
 module record_replay.mojom;
 
+// Uniquely identifies a DOM element in a document.
+struct DomNodeId {
+  int64 id;
+};
+
+// Identify a DOM element. Unlike DomNodeId, a selector is not guaranteed to
+// be unique but attempts to be stable across page loads.
+struct Selector {
+  string selector;
+};
+
+// The value of a form control element or contenteditable.
+struct FieldValue {
+  string value;
+};
+
 // There is one instance of this interface per RenderFrame in the render
 // process. The events are initiated by the browser process.
 //
@@ -19,22 +35,22 @@ interface RecordReplayAgent {
   // Determines a selector for a given DOM element.
   // If unsuccessful, `element_selector` is the empty string.
   // TDOO(b/476101114): Generalize to multiple selectors.
-  GetElementSelector(int64 dom_node_id) => (string element_selector);
+  GetElementSelector(DomNodeId dom_node_id) => (Selector element_selector);
 
   // Determines all elements that match the given selector. The response is a
   // list of DOM node IDs.
-  GetMatchingElements(string element_selector) => (array<int64> elements);
+  GetMatchingElements(Selector element_selector) => (array<DomNodeId> elements);
 
   // Dispatches a click event on the given DOM element.
-  DoClick(int64 dom_node_id) => (bool success);
+  DoClick(DomNodeId dom_node_id) => (bool success);
 
   // Dispatches a paste event into the given form control element element which
   // replaces its content with `text`.
-  DoPaste(int64 dom_node_id, string text) => (bool success);
+  DoPaste(DomNodeId dom_node_id, FieldValue text) => (bool success);
 
   // Selects the first option of the given select element that has the given
   // `value`.
-  DoSelect(int64 dom_node_id, string value) => (bool success);
+  DoSelect(DomNodeId dom_node_id, FieldValue value) => (bool success);
 };
 
 // There is one instance of this interface per RenderFrameHost in the browser
@@ -53,11 +69,15 @@ interface RecordReplayAgent {
 // In particular, element selectors shall not be parsed in the browser process.
 interface RecordReplayDriver {
   // Fired when a left-click or tap on the given element happens.
-  OnClick(int64 dom_node_id, string element_selector);
+  OnClick(DomNodeId dom_node_id, Selector element_selector);
 
   // Fired when the value of a select element changes.
-  OnSelectChanged(int64 dom_node_id, string element_selector, string value);
+  OnSelectChanged(DomNodeId dom_node_id,
+                  Selector element_selector,
+                  FieldValue value);
 
   // Fired when the text value of a text form control element changes.
-  OnTextChange(int64 dom_node_id, string element_selector, string text);
+  OnTextChange(DomNodeId dom_node_id,
+               Selector element_selector,
+               FieldValue text);
 };

@@ -4,12 +4,15 @@
 
 #include "chrome/renderer/record_replay/record_replay_agent.h"
 
+#include <string>
+
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_dom_event.h"
@@ -102,36 +105,37 @@ void RecordReplayAgent::StopRecording() {
 }
 
 void RecordReplayAgent::GetElementSelector(
-    int64_t dom_node_id,
-    base::OnceCallback<void(const std::string&)> cb) {
-  blink::WebElement element =
-      blink::WebNode::FromDomNodeId(dom_node_id).DynamicTo<blink::WebElement>();
+    DomNodeId dom_node_id,
+    base::OnceCallback<void(Selector)> cb) {
+  blink::WebElement element = blink::WebNode::FromDomNodeId(*dom_node_id)
+                                  .DynamicTo<blink::WebElement>();
   if (!element) {
-    std::move(cb).Run("");
+    std::move(cb).Run(Selector(""));
     return;
   }
-  std::move(cb).Run(BuildElementSelector(element));
+  std::move(cb).Run(Selector(BuildElementSelector(element)));
 }
 
 void RecordReplayAgent::GetMatchingElements(
-    const std::string& element_selector,
-    base::OnceCallback<void(const std::vector<int64_t>&)> cb) {
+    Selector element_selector,
+    base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) {
   const blink::WebDocument document = GetDocument();
   if (!document) {
     std::move(cb).Run({});
     return;
   }
   const std::vector<blink::WebElement> matches =
-      document.QuerySelectorAll(blink::WebString::FromUTF8(element_selector));
-  std::move(cb).Run(base::ToVector(
-      matches,
-      [](const blink::WebElement& e) -> int64_t { return e.GetDomNodeId(); }));
+      document.QuerySelectorAll(blink::WebString::FromUTF8(*element_selector));
+  std::move(cb).Run(
+      base::ToVector(matches, [](const blink::WebElement& e) -> DomNodeId {
+        return DomNodeId(e.GetDomNodeId());
+      }));
 }
 
-void RecordReplayAgent::DoClick(int64_t dom_node_id,
+void RecordReplayAgent::DoClick(DomNodeId dom_node_id,
                                 base::OnceCallback<void(bool)> cb) {
-  blink::WebElement element =
-      blink::WebNode::FromDomNodeId(dom_node_id).DynamicTo<blink::WebElement>();
+  blink::WebElement element = blink::WebNode::FromDomNodeId(*dom_node_id)
+                                  .DynamicTo<blink::WebElement>();
   if (!element) {
     std::move(cb).Run(false);
     return;
@@ -140,32 +144,32 @@ void RecordReplayAgent::DoClick(int64_t dom_node_id,
   std::move(cb).Run(true);
 }
 
-void RecordReplayAgent::DoPaste(int64_t dom_node_id,
-                                const std::string& text,
+void RecordReplayAgent::DoPaste(DomNodeId dom_node_id,
+                                FieldValue text,
                                 base::OnceCallback<void(bool)> cb) {
   blink::WebFormControlElement element =
-      blink::WebNode::FromDomNodeId(dom_node_id)
+      blink::WebNode::FromDomNodeId(*dom_node_id)
           .DynamicTo<blink::WebFormControlElement>();
   if (!element) {
     std::move(cb).Run(false);
     return;
   }
-  element.PasteText(blink::WebString::FromUTF8(text), /*replace_all=*/false);
+  element.PasteText(blink::WebString::FromUTF8(*text), /*replace_all=*/false);
   std::move(cb).Run(true);
 }
 
-void RecordReplayAgent::DoSelect(int64_t dom_node_id,
-                                 const std::string& value,
+void RecordReplayAgent::DoSelect(DomNodeId dom_node_id,
+                                 FieldValue value,
                                  base::OnceCallback<void(bool)> cb) {
   blink::WebFormControlElement element =
-      blink::WebNode::FromDomNodeId(dom_node_id)
+      blink::WebNode::FromDomNodeId(*dom_node_id)
           .DynamicTo<blink::WebFormControlElement>();
   if (!element ||
       element.FormControlType() != blink::mojom::FormControlType::kSelectOne) {
     std::move(cb).Run(false);
     return;
   }
-  element.SetValue(blink::WebString::FromUTF8(value), /*send_events=*/true);
+  element.SetValue(blink::WebString::FromUTF8(*value), /*send_events=*/true);
   std::move(cb).Run(true);
 }
 
@@ -193,7 +197,8 @@ void RecordReplayAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
     return;
   }
 
-  GetDriver()->OnClick(element.GetDomNodeId(), BuildElementSelector(element));
+  GetDriver()->OnClick(DomNodeId(element.GetDomNodeId()),
+                       Selector(BuildElementSelector(element)));
 }
 
 void RecordReplayAgent::SelectControlSelectionChanged(
@@ -201,9 +206,9 @@ void RecordReplayAgent::SelectControlSelectionChanged(
   if (!record_) {
     return;
   }
-  GetDriver()->OnSelectChanged(element.GetDomNodeId(),
-                               BuildElementSelector(element),
-                               element.Value().Utf8());
+  GetDriver()->OnSelectChanged(DomNodeId(element.GetDomNodeId()),
+                               Selector(BuildElementSelector(element)),
+                               FieldValue(element.Value().Utf8()));
 }
 
 void RecordReplayAgent::TextFieldDidEndEditing(
@@ -211,9 +216,9 @@ void RecordReplayAgent::TextFieldDidEndEditing(
   if (!record_) {
     return;
   }
-  GetDriver()->OnTextChange(element.GetDomNodeId(),
-                            BuildElementSelector(element),
-                            element.Value().Utf8());
+  GetDriver()->OnTextChange(DomNodeId(element.GetDomNodeId()),
+                            Selector(BuildElementSelector(element)),
+                            FieldValue(element.Value().Utf8()));
 }
 
 }  // namespace record_replay

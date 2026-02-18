@@ -12,6 +12,7 @@
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
 #include "chrome/browser/record_replay/recording_data_manager.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -37,28 +38,27 @@ class MockRecordReplayAgent : public RecordReplayDriver::TestRecordReplayAgent {
   MOCK_METHOD(void, StopRecording, (), (override));
   MOCK_METHOD(void,
               GetElementSelector,
-              (int64_t dom_node_id,
-               base::OnceCallback<void(const std::string&)> cb),
+              (DomNodeId dom_node_id, base::OnceCallback<void(Selector)> cb),
               (override));
   MOCK_METHOD(void,
               GetMatchingElements,
-              (const std::string& element_selector,
-               base::OnceCallback<void(const std::vector<int64_t>&)> cb),
+              (Selector element_selector,
+               base::OnceCallback<void(const std::vector<DomNodeId>&)> cb),
               (override));
   MOCK_METHOD(void,
               DoClick,
-              (int64_t dom_node_id, base::OnceCallback<void(bool)> cb),
+              (DomNodeId dom_node_id, base::OnceCallback<void(bool)> cb),
               (override));
   MOCK_METHOD(void,
               DoPaste,
-              (int64_t dom_node_id,
-               const std::string& text,
+              (DomNodeId dom_node_id,
+               FieldValue text,
                base::OnceCallback<void(bool)> cb),
               (override));
   MOCK_METHOD(void,
               DoSelect,
-              (int64_t dom_node_id,
-               const std::string& value,
+              (DomNodeId dom_node_id,
+               FieldValue value,
                base::OnceCallback<void(bool)> cb),
               (override));
 };
@@ -159,8 +159,9 @@ TEST_F(ReplayerTest, SuccessfulRecording_SingleAction) {
     EXPECT_CALL(check, Call("insufficient time passed"));
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123}));
-    EXPECT_CALL(agent(), DoClick(123, _)).WillOnce(RunOnceCallback<1>(true));
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(123)}));
+    EXPECT_CALL(agent(), DoClick(DomNodeId(123), _))
+        .WillOnce(RunOnceCallback<1>(true));
 
     EXPECT_CALL(on_finish(), Run());
     EXPECT_CALL(check, Call("sufficient time passed"));
@@ -197,15 +198,16 @@ TEST_F(ReplayerTest, SuccessfulRecording_MultipleAction) {
     InSequence s;
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123}));
-    EXPECT_CALL(agent(), DoSelect(123, "select value", _))
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(123)}));
+    EXPECT_CALL(agent(),
+                DoSelect(DomNodeId(123), FieldValue("select value"), _))
         .WillOnce(RunOnceCallback<2>(true));
 
     EXPECT_CALL(check, Call("first action done"));
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{456}));
-    EXPECT_CALL(agent(), DoPaste(456, "text value", _))
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(456)}));
+    EXPECT_CALL(agent(), DoPaste(DomNodeId(456), FieldValue("text value"), _))
         .WillOnce(RunOnceCallback<2>(true));
 
     EXPECT_CALL(on_finish(), Run());
@@ -234,14 +236,16 @@ TEST_F(ReplayerTest, SuccessfulRecording_Repeat_Success) {
     InSequence s;
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{}));
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{}));
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123, 456}));
+        .WillOnce(RunOnceCallback<1>(
+            std::vector<DomNodeId>{DomNodeId(123), DomNodeId(456)}));
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123}));
-    EXPECT_CALL(agent(), DoClick(123, _)).WillOnce(RunOnceCallback<1>(true));
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(123)}));
+    EXPECT_CALL(agent(), DoClick(DomNodeId(123), _))
+        .WillOnce(RunOnceCallback<1>(true));
 
     EXPECT_CALL(on_finish(), Run());
   }
@@ -275,18 +279,18 @@ TEST_F(ReplayerTest, SuccessfulRecording_Repeat_Failure) {
     InSequence s;
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123}));
-    EXPECT_CALL(agent(), DoClick(123, _))
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(123)}));
+    EXPECT_CALL(agent(), DoClick(DomNodeId(123), _))
         .WillOnce(RunOnceCallback<1>(false));  // Failure!
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123}));
-    EXPECT_CALL(agent(), DoClick(123, _))
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(123)}));
+    EXPECT_CALL(agent(), DoClick(DomNodeId(123), _))
         .WillOnce(RunOnceCallback<1>(false));  // Failure!
 
     EXPECT_CALL(agent(), GetMatchingElements)
-        .WillOnce(RunOnceCallback<1>(std::vector<int64_t>{123}));
-    EXPECT_CALL(agent(), DoClick(123, _))
+        .WillOnce(RunOnceCallback<1>(std::vector<DomNodeId>{DomNodeId(123)}));
+    EXPECT_CALL(agent(), DoClick(DomNodeId(123), _))
         .WillOnce(RunOnceCallback<1>(false));  // Failure!
 
     EXPECT_CALL(on_finish(), Run());

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -32,19 +33,18 @@ class RecordReplayDriver : public mojom::RecordReplayDriver {
    public:
     virtual void StartRecording() = 0;
     virtual void StopRecording() = 0;
-    virtual void GetElementSelector(
-        int64_t dom_node_id,
-        base::OnceCallback<void(const std::string&)> cb) = 0;
+    virtual void GetElementSelector(DomNodeId dom_node_id,
+                                    base::OnceCallback<void(Selector)> cb) = 0;
     virtual void GetMatchingElements(
-        const std::string& element_selector,
-        base::OnceCallback<void(const std::vector<int64_t>&)> cb) = 0;
-    virtual void DoClick(int64_t dom_node_id,
+        Selector element_selector,
+        base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) = 0;
+    virtual void DoClick(DomNodeId dom_node_id,
                          base::OnceCallback<void(bool)> cb) = 0;
-    virtual void DoPaste(int64_t dom_node_id,
-                         const std::string& text,
+    virtual void DoPaste(DomNodeId dom_node_id,
+                         FieldValue text,
                          base::OnceCallback<void(bool)> cb) = 0;
-    virtual void DoSelect(int64_t dom_node_id,
-                          const std::string& value,
+    virtual void DoSelect(DomNodeId dom_node_id,
+                          FieldValue value,
                           base::OnceCallback<void(bool)> cb) = 0;
   };
 
@@ -68,28 +68,27 @@ class RecordReplayDriver : public mojom::RecordReplayDriver {
   // See mojom::RecordReplayAgent record_replay.mojom.
   void StartRecording();
   void StopRecording();
-  void GetElementSelector(int64_t dom_node_id,
-                          base::OnceCallback<void(const std::string&)> cb);
+  void GetElementSelector(DomNodeId dom_node_id,
+                          base::OnceCallback<void(Selector)> cb);
   void GetMatchingElements(
-      const std::string& element_selector,
-      base::OnceCallback<void(const std::vector<int64_t>&)> cb);
-  void DoClick(int64_t dom_node_id, base::OnceCallback<void(bool)> cb);
-  void DoPaste(int64_t dom_node_id,
-               const std::string& text,
+      Selector element_selector,
+      base::OnceCallback<void(const std::vector<DomNodeId>&)> cb);
+  void DoClick(DomNodeId dom_node_id, base::OnceCallback<void(bool)> cb);
+  void DoPaste(DomNodeId dom_node_id,
+               FieldValue text,
                base::OnceCallback<void(bool)> cb);
-  void DoSelect(int64_t dom_node_id,
-                const std::string& value,
+  void DoSelect(DomNodeId dom_node_id,
+                FieldValue value,
                 base::OnceCallback<void(bool)> cb);
 
   // mojom::RecordReplayDriver:
-  void OnClick(int64_t dom_node_id,
-               const std::string& element_selector) override;
-  void OnSelectChanged(int64_t dom_node_id,
-                       const std::string& element_selector,
-                       const std::string& text) override;
-  void OnTextChange(int64_t dom_node_id,
-                    const std::string& element_selector,
-                    const std::string& text) override;
+  void OnClick(DomNodeId dom_node_id, Selector element_selector) override;
+  void OnSelectChanged(DomNodeId dom_node_id,
+                       Selector element_selector,
+                       FieldValue text) override;
+  void OnTextChange(DomNodeId dom_node_id,
+                    Selector element_selector,
+                    FieldValue text) override;
 
   void set_record_replay_agent_for_test(TestRecordReplayAgent* agent) {
     test_autofill_agent_ = agent;

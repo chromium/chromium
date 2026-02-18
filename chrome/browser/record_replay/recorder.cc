@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "chrome/browser/record_replay/recording.pb.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "url/gurl.h"
 
 namespace record_replay {
@@ -38,33 +39,32 @@ void Recorder::UpdateDelta(Recording::Action& action) {
   last_time_ = now;
 }
 
-void Recorder::AddClick(std::string element_selector) {
+void Recorder::AddClick(Selector element_selector) {
   Recording::Action& action = *recording_.mutable_actions()->Add();
-  action.set_element_selector(std::move(element_selector));
+  action.set_element_selector(*std::move(element_selector));
   action.mutable_click_specifics();
   UpdateDelta(action);
 }
 
-void Recorder::AddSelectChange(std::string element_selector,
-                               std::string value) {
+void Recorder::AddSelectChange(Selector element_selector, FieldValue value) {
   Recording::Action& action = *recording_.mutable_actions()->Add();
-  action.set_element_selector(std::move(element_selector));
-  action.mutable_select_specifics()->set_value(std::move(value));
+  action.set_element_selector(*std::move(element_selector));
+  action.mutable_select_specifics()->set_value(*std::move(value));
   UpdateDelta(action);
 }
 
-void Recorder::AddTextChange(std::string element_selector, std::string text) {
+void Recorder::AddTextChange(Selector element_selector, FieldValue text) {
   Recording::Action& action = *recording_.mutable_actions()->Add();
-  action.set_element_selector(std::move(element_selector));
-  action.mutable_text_specifics()->set_value(std::move(text));
+  action.set_element_selector(*std::move(element_selector));
+  action.mutable_text_specifics()->set_value(*std::move(text));
   UpdateDelta(action);
 }
 
-void Recorder::AddAutofill(std::string element_selector,
+void Recorder::AddAutofill(Selector element_selector,
                            Recording::Action::AutofillSpecifics::Type type,
                            std::string guid) {
   Recording::Action& action = *recording_.mutable_actions()->Add();
-  action.set_element_selector(std::move(element_selector));
+  action.set_element_selector(*std::move(element_selector));
   action.mutable_autofill_specifics()->set_type(type);
   action.mutable_autofill_specifics()->set_guid(std::move(guid));
   UpdateDelta(action);

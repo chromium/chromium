@@ -5,8 +5,11 @@
 #ifndef CHROME_RENDERER_RECORD_REPLAY_RECORD_REPLAY_AGENT_H_
 #define CHROME_RENDERER_RECORD_REPLAY_RECORD_REPLAY_AGENT_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -41,18 +44,18 @@ class RecordReplayAgent : public content::RenderFrameObserver,
   // mojom::RecordReplayAgent:
   void StartRecording() override;
   void StopRecording() override;
-  void GetElementSelector(
-      int64_t dom_node_id,
-      base::OnceCallback<void(const std::string&)> cb) override;
+  void GetElementSelector(DomNodeId dom_node_id,
+                          base::OnceCallback<void(Selector)> cb) override;
   void GetMatchingElements(
-      const std::string& element_selector,
-      base::OnceCallback<void(const std::vector<int64_t>&)> cb) override;
-  void DoClick(int64_t dom_node_id, base::OnceCallback<void(bool)> cb) override;
-  void DoPaste(int64_t dom_node_id,
-               const std::string& text,
+      Selector element_selector,
+      base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) override;
+  void DoClick(DomNodeId dom_node_id,
                base::OnceCallback<void(bool)> cb) override;
-  void DoSelect(int64_t dom_node_id,
-                const std::string& value,
+  void DoPaste(DomNodeId dom_node_id,
+               FieldValue text,
+               base::OnceCallback<void(bool)> cb) override;
+  void DoSelect(DomNodeId dom_node_id,
+                FieldValue value,
                 base::OnceCallback<void(bool)> cb) override;
 
  private:

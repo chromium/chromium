@@ -8,6 +8,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 static_library("record_replay") {
   sources = [
+    "aliases.h",
     "record_replay_features.cc",
     "record_replay_features.h",
   ]
@@ -17,4 +18,28 @@ static_library("record_replay") {
 mojom("mojom") {
   sources = [ "record_replay.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "record_replay.mojom.DomNodeId"
+          cpp = "::record_replay::DomNodeId"
+          copyable_pass_by_value = true
+        },
+        {
+          mojom = "record_replay.mojom.FieldValue"
+          cpp = "::record_replay::FieldValue"
+          move_only = true
+        },
+        {
+          mojom = "record_replay.mojom.Selector"
+          cpp = "::record_replay::Selector"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "record_replay_mojom_traits.h" ]
+      traits_sources = [ "record_replay_mojom_traits.cc" ]
+      traits_public_deps = [ ":record_replay" ]
+    },
+  ]
 }

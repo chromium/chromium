@@ -24,10 +24,12 @@ message Recording {
     message ClickSpecifics {}
 
     message SelectSpecifics {
+      // This string comes from the renderer. It is not to be trusted.
       string value = 1;
     }
 
     message TextSpecifics {
+      // This string comes from the renderer. It is not to be trusted.
       string value = 1;
     }
 
@@ -37,6 +39,7 @@ message Recording {
     int64 delta = 1;
 
     // Identifies the element on which the action was executed.
+    // This string comes from the renderer. It is not to be trusted.
     // TODO(b/476101114): Generalize to multiple selectors.
     string element_selector = 2;
 

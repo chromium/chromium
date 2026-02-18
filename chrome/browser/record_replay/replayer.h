@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_REPLAYER_H_
 #define CHROME_BROWSER_RECORD_REPLAY_REPLAYER_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/record_replay/element_id.h"
 #include "chrome/browser/record_replay/recording.pb.h"
+#include "chrome/common/record_replay/aliases.h"
 
 namespace record_replay {
 
@@ -52,16 +51,15 @@ class Replayer {
   // times.
   void DoAction(int index, int num_max_retries);
 
-  void ReplayAutofillAction(const std::string& element_selector,
+  void ReplayAutofillAction(Selector element_selector,
                             const Recording::Action::AutofillSpecifics& payload,
                             SuccessCallback cb);
-  void ReplayClickAction(const std::string& element_selector,
-                         SuccessCallback cb);
-  void ReplaySelectChangeAction(const std::string& element_selector,
-                                std::string value,
+  void ReplayClickAction(Selector element_selector, SuccessCallback cb);
+  void ReplaySelectChangeAction(Selector element_selector,
+                                FieldValue value,
                                 SuccessCallback cb);
-  void ReplayTextChangeAction(const std::string& element_selector,
-                              std::string text,
+  void ReplayTextChangeAction(Selector element_selector,
+                              FieldValue text,
                               SuccessCallback cb);
 
   // Retrieves all elements in all active frames that match `element_selector`.
@@ -70,7 +68,7 @@ class Replayer {
   // If there is no unique match, it does not call `action_cb` and calls
   // `result_cb` to report failure.
   void GetUniqueMatchingElementsAndDo(
-      const std::string& element_selector,
+      Selector element_selector,
       base::OnceCallback<void(RecordReplayDriver&, ElementId, SuccessCallback)>
           action_cb,
       SuccessCallback result_cb);

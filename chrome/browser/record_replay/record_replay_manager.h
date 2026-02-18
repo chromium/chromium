@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/record_replay/recorder.h"
 #include "chrome/browser/record_replay/replayer.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
@@ -47,17 +48,17 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   // Events that need to be recorded.
   void OnClick(RecordReplayDriver& driver,
                const ElementId& element_id,
-               const std::string& element_selector,
+               Selector element_selector,
                base::PassKey<RecordReplayDriver> pass_key);
   void OnSelectChanged(RecordReplayDriver& driver,
                        const ElementId& element_id,
-                       const std::string& element_selector,
-                       const std::string& value,
+                       Selector element_selector,
+                       FieldValue value,
                        base::PassKey<RecordReplayDriver> pass_key);
   void OnTextChange(RecordReplayDriver& driver,
                     const ElementId& element_id,
-                    const std::string& element_selector,
-                    const std::string& text,
+                    Selector element_selector,
+                    FieldValue text,
                     base::PassKey<RecordReplayDriver> pass_key);
 
   // Starts or stops the replay of the recording for the currently active page,
@@ -71,7 +72,7 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
       base::OnceCallback<void(std::optional<Recording>)> cb);
 
   // Retrieves all elements in all active frames that match `element_selector`.
-  void GetMatchingElements(const std::string& element_selector,
+  void GetMatchingElements(Selector element_selector,
                            base::OnceCallback<void(std::vector<ElementId>)> cb);
 
   void ReportToUser(std::string_view message);

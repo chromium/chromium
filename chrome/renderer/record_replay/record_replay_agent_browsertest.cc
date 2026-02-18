@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/renderer/record_replay/record_replay_agent_test_api.h"
@@ -41,19 +42,15 @@ class MockRecordReplayDriver : public mojom::RecordReplayDriver {
 
   MOCK_METHOD(void,
               OnClick,
-              (int64_t dom_node_id, const std::string& selector),
+              (DomNodeId dom_node_id, Selector selector),
               (override));
   MOCK_METHOD(void,
               OnSelectChanged,
-              (int64_t dom_node_id,
-               const std::string& selector,
-               const std::string& value),
+              (DomNodeId dom_node_id, Selector selector, FieldValue value),
               (override));
   MOCK_METHOD(void,
               OnTextChange,
-              (int64_t dom_node_id,
-               const std::string& selector,
-               const std::string& text),
+              (DomNodeId dom_node_id, Selector selector, FieldValue text),
               (override));
 
  private:
@@ -85,8 +82,8 @@ class RecordReplayAgentTest : public ChromeRenderViewTest {
     return GetDocument().GetElementById(blink::WebString::FromUTF8(id));
   }
 
-  int64_t GetDomNodeId(const std::string& element_id) {
-    return GetWebElementById(element_id).GetDomNodeId();
+  DomNodeId GetDomNodeId(const std::string& element_id) {
+    return DomNodeId(GetWebElementById(element_id).GetDomNodeId());
   }
 
  private:
@@ -107,22 +104,23 @@ TEST_F(RecordReplayAgentTest, GetElementSelector) {
     </div>
   )");
 
-  base::MockCallback<base::OnceCallback<void(const std::string&)>> cb;
+  base::MockCallback<base::OnceCallback<void(Selector)>> cb;
 
-  EXPECT_CALL(cb, Run("#foo"));
+  EXPECT_CALL(cb, Run(Selector("#foo")));
   agent().GetElementSelector(GetDomNodeId("foo"), cb.Get());
 
-  EXPECT_CALL(cb, Run("[id=\"123\"]"));
+  EXPECT_CALL(cb, Run(Selector("[id=\"123\"]")));
   agent().GetElementSelector(GetDomNodeId("123"), cb.Get());
 
-  EXPECT_CALL(cb, Run("[id=\"!bar\"]"));
+  EXPECT_CALL(cb, Run(Selector("[id=\"!bar\"]")));
   agent().GetElementSelector(GetDomNodeId("!bar"), cb.Get());
 
   blink::WebElement span = GetDocument().QuerySelector("span");
   EXPECT_CALL(
       cb,
-      Run(":root > BODY:nth-child(2) > DIV:nth-child(4) > SPAN:nth-child(1)"));
-  agent().GetElementSelector(span.GetDomNodeId(), cb.Get());
+      Run(Selector(
+          ":root > BODY:nth-child(2) > DIV:nth-child(4) > SPAN:nth-child(1)")));
+  agent().GetElementSelector(DomNodeId(span.GetDomNodeId()), cb.Get());
 }
 
 // Tests that GetMatchingElements() includes all elements that match a selector.
@@ -133,11 +131,12 @@ TEST_F(RecordReplayAgentTest, GetMatchingElements) {
     <div class="no-match"></div>
   )");
 
-  base::MockCallback<base::OnceCallback<void(const std::vector<int64_t>&)>> cb;
-  std::vector<int64_t> expected_ids = {GetDomNodeId("div1"),
-                                       GetDomNodeId("div2")};
+  base::MockCallback<base::OnceCallback<void(const std::vector<DomNodeId>&)>>
+      cb;
+  std::vector<DomNodeId> expected_ids = {GetDomNodeId("div1"),
+                                         GetDomNodeId("div2")};
   EXPECT_CALL(cb, Run(expected_ids));
-  agent().GetMatchingElements(".match", cb.Get());
+  agent().GetMatchingElements(Selector(".match"), cb.Get());
 }
 
 // Tests that DoPaste() changes the value of a text form control.
@@ -146,7 +145,7 @@ TEST_F(RecordReplayAgentTest, DoPaste) {
 
   base::MockCallback<base::OnceCallback<void(bool)>> cb;
   EXPECT_CALL(cb, Run(true));
-  agent().DoPaste(GetDomNodeId("input"), "hello world", cb.Get());
+  agent().DoPaste(GetDomNodeId("input"), FieldValue("hello world"), cb.Get());
 
   blink::WebInputElement input =
       GetWebElementById("input").DynamicTo<blink::WebInputElement>();
@@ -184,7 +183,7 @@ TEST_F(RecordReplayAgentTest, DoSelect) {
 
   base::MockCallback<base::OnceCallback<void(bool)>> cb;
   EXPECT_CALL(cb, Run(true));
-  agent().DoSelect(GetDomNodeId("select"), "value2", cb.Get());
+  agent().DoSelect(GetDomNodeId("select"), FieldValue("value2"), cb.Get());
 
   blink::WebFormControlElement select =
       GetWebElementById("select").DynamicTo<blink::WebFormControlElement>();
@@ -196,7 +195,8 @@ TEST_F(RecordReplayAgentTest, RecordingClick) {
   LoadHTML(R"(<button id="button">Click me</button>)");
   agent().StartRecording();
 
-  EXPECT_CALL(mock_driver(), OnClick(GetDomNodeId("button"), "#button"));
+  EXPECT_CALL(mock_driver(),
+              OnClick(GetDomNodeId("button"), Selector("#button")));
   // TODO(b/483386299): Consider faking the click in Blink once
   // WebRecordReplayClient has landed.
   test_api(agent()).DidReceiveLeftMouseDownOrGestureTapInNode(
@@ -214,7 +214,8 @@ TEST_F(RecordReplayAgentTest, RecordingSelect) {
   agent().StartRecording();
 
   EXPECT_CALL(mock_driver(),
-              OnSelectChanged(GetDomNodeId("select"), "#select", "value2"));
+              OnSelectChanged(GetDomNodeId("select"), Selector("#select"),
+                              FieldValue("value2")));
   blink::WebFormControlElement select =
       GetWebElementById("select").DynamicTo<blink::WebFormControlElement>();
   select.SetValue("value2");
@@ -226,7 +227,8 @@ TEST_F(RecordReplayAgentTest, RecordingTextChange) {
   agent().StartRecording();
 
   EXPECT_CALL(mock_driver(),
-              OnTextChange(GetDomNodeId("input"), "#input", "new text"));
+              OnTextChange(GetDomNodeId("input"), Selector("#input"),
+                           FieldValue("new text")));
   blink::WebInputElement input =
       GetWebElementById("input").DynamicTo<blink::WebInputElement>();
   input.SetValue("new text");

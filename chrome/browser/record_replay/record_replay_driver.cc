@@ -8,6 +8,7 @@
 #include "chrome/browser/record_replay/element_id.h"
 #include "chrome/browser/record_replay/record_replay_client.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -60,8 +61,8 @@ void RecordReplayDriver::StopRecording() {
 }
 
 void RecordReplayDriver::GetElementSelector(
-    int64_t dom_node_id,
-    base::OnceCallback<void(const std::string&)> cb) {
+    DomNodeId dom_node_id,
+    base::OnceCallback<void(Selector)> cb) {
   if (test_autofill_agent_) {
     test_autofill_agent_->GetElementSelector(dom_node_id, std::move(cb));
     return;
@@ -70,16 +71,17 @@ void RecordReplayDriver::GetElementSelector(
 }
 
 void RecordReplayDriver::GetMatchingElements(
-    const std::string& element_selector,
-    base::OnceCallback<void(const std::vector<int64_t>&)> cb) {
+    Selector element_selector,
+    base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) {
   if (test_autofill_agent_) {
-    test_autofill_agent_->GetMatchingElements(element_selector, std::move(cb));
+    test_autofill_agent_->GetMatchingElements(std::move(element_selector),
+                                              std::move(cb));
     return;
   }
-  GetAgent()->GetMatchingElements(element_selector, std::move(cb));
+  GetAgent()->GetMatchingElements(std::move(element_selector), std::move(cb));
 }
 
-void RecordReplayDriver::DoClick(int64_t dom_node_id,
+void RecordReplayDriver::DoClick(DomNodeId dom_node_id,
                                  base::OnceCallback<void(bool)> cb) {
   if (test_autofill_agent_) {
     test_autofill_agent_->DoClick(dom_node_id, std::move(cb));
@@ -88,46 +90,49 @@ void RecordReplayDriver::DoClick(int64_t dom_node_id,
   GetAgent()->DoClick(dom_node_id, std::move(cb));
 }
 
-void RecordReplayDriver::DoPaste(int64_t dom_node_id,
-                                 const std::string& text,
+void RecordReplayDriver::DoPaste(DomNodeId dom_node_id,
+                                 FieldValue text,
                                  base::OnceCallback<void(bool)> cb) {
   if (test_autofill_agent_) {
-    test_autofill_agent_->DoPaste(dom_node_id, text, std::move(cb));
+    test_autofill_agent_->DoPaste(dom_node_id, std::move(text), std::move(cb));
     return;
   }
   GetAgent()->DoPaste(dom_node_id, text, std::move(cb));
 }
 
-void RecordReplayDriver::DoSelect(int64_t dom_node_id,
-                                  const std::string& value,
+void RecordReplayDriver::DoSelect(DomNodeId dom_node_id,
+                                  FieldValue value,
                                   base::OnceCallback<void(bool)> cb) {
   if (test_autofill_agent_) {
-    test_autofill_agent_->DoSelect(dom_node_id, value, std::move(cb));
+    test_autofill_agent_->DoSelect(dom_node_id, std::move(value),
+                                   std::move(cb));
     return;
   }
   GetAgent()->DoSelect(dom_node_id, value, std::move(cb));
 }
 
-void RecordReplayDriver::OnClick(int64_t dom_node_id,
-                                 const std::string& element_selector) {
+void RecordReplayDriver::OnClick(DomNodeId dom_node_id,
+                                 Selector element_selector) {
   client_->GetManager().OnClick(*this, {GetFrameToken(), dom_node_id},
-                                element_selector,
+                                std::move(element_selector),
                                 /*pass_key=*/{});
 }
 
-void RecordReplayDriver::OnSelectChanged(int64_t dom_node_id,
-                                         const std::string& element_selector,
-                                         const std::string& value) {
+void RecordReplayDriver::OnSelectChanged(DomNodeId dom_node_id,
+                                         Selector element_selector,
+                                         FieldValue value) {
   client_->GetManager().OnSelectChanged(*this, {GetFrameToken(), dom_node_id},
-                                        element_selector, value,
+                                        std::move(element_selector),
+                                        std::move(value),
                                         /*pass_key=*/{});
 }
 
-void RecordReplayDriver::OnTextChange(int64_t dom_node_id,
-                                      const std::string& element_selector,
-                                      const std::string& text) {
+void RecordReplayDriver::OnTextChange(DomNodeId dom_node_id,
+                                      Selector element_selector,
+                                      FieldValue text) {
   client_->GetManager().OnTextChange(*this, {GetFrameToken(), dom_node_id},
-                                     element_selector, text,
+                                     std::move(element_selector),
+                                     std::move(text),
                                      /*pass_key=*/{});
 }
 

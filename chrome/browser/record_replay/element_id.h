@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "chrome/common/record_replay/aliases.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace record_replay {
@@ -14,20 +15,20 @@ namespace record_replay {
 // Uniquely identifies a DOM element in the browser process.
 class ElementId {
  public:
-  ElementId(blink::LocalFrameToken frame_token, int64_t dom_node_id);
+  ElementId(blink::LocalFrameToken frame_token, DomNodeId dom_node_id);
   ElementId(const ElementId&);
   ElementId& operator=(const ElementId&);
   ~ElementId();
 
   const blink::LocalFrameToken& frame_token() const { return frame_token_; }
-  int64_t dom_node_id() const { return dom_node_id_; }
+  DomNodeId dom_node_id() const { return dom_node_id_; }
 
   friend bool operator==(const ElementId& lhs, const ElementId& rhs);
   friend auto operator<=>(const ElementId& lhs, const ElementId& rhs);
 
  private:
   blink::LocalFrameToken frame_token_;
-  int64_t dom_node_id_ = 0;
+  DomNodeId dom_node_id_{};
 };
 
 std::ostream& operator<<(std::ostream& os, const ElementId& element_id);

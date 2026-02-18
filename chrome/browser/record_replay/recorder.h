@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/record_replay/recording.pb.h"
+#include "chrome/common/record_replay/aliases.h"
 
 class GURL;
 
@@ -25,10 +26,10 @@ class Recorder {
   GURL start_url() const;
   base::Time start_time() const;
 
-  void AddClick(std::string element_selector);
-  void AddSelectChange(std::string element_selector, std::string value);
-  void AddTextChange(std::string element_selector, std::string text);
-  void AddAutofill(std::string element_selector,
+  void AddClick(Selector element_selector);
+  void AddSelectChange(Selector element_selector, FieldValue value);
+  void AddTextChange(Selector element_selector, FieldValue text);
+  void AddAutofill(Selector element_selector,
                    Recording::Action::AutofillSpecifics::Type type,
                    std::string guid);
 

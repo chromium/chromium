@@ -8,7 +8,7 @@
 
 namespace record_replay {
 
-ElementId::ElementId(blink::LocalFrameToken frame_token, int64_t dom_node_id)
+ElementId::ElementId(blink::LocalFrameToken frame_token, DomNodeId dom_node_id)
     : frame_token_(std::move(frame_token)), dom_node_id_(dom_node_id) {}
 
 ElementId::ElementId(const ElementId&) = default;

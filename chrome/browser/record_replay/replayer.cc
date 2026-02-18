@@ -4,7 +4,6 @@
 
 #include "chrome/browser/record_replay/replayer.h"
 
-#include <string>
 #include <vector>
 
 #include "base/check.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
 #include "chrome/browser/record_replay/recording.pb.h"
+#include "chrome/common/record_replay/aliases.h"
 
 namespace record_replay {
 
@@ -99,19 +99,20 @@ void Replayer::DoAction(int index, int num_max_retries) {
           [](Replayer* self, int index, SuccessCallback cb) {
             const Recording::Action& action = self->action(index);
             if (action.has_autofill_specifics()) {
-              self->ReplayAutofillAction(action.element_selector(),
+              self->ReplayAutofillAction(Selector(action.element_selector()),
                                          action.autofill_specifics(),
                                          std::move(cb));
             } else if (action.has_click_specifics()) {
-              self->ReplayClickAction(action.element_selector(), std::move(cb));
+              self->ReplayClickAction(Selector(action.element_selector()),
+                                      std::move(cb));
             } else if (action.has_select_specifics()) {
-              self->ReplaySelectChangeAction(action.element_selector(),
-                                             action.select_specifics().value(),
-                                             std::move(cb));
+              self->ReplaySelectChangeAction(
+                  Selector(action.element_selector()),
+                  FieldValue(action.select_specifics().value()), std::move(cb));
             } else if (action.has_text_specifics()) {
-              self->ReplayTextChangeAction(action.element_selector(),
-                                           action.text_specifics().value(),
-                                           std::move(cb));
+              self->ReplayTextChangeAction(
+                  Selector(action.element_selector()),
+                  FieldValue(action.text_specifics().value()), std::move(cb));
             } else {
               LOG(ERROR) << "Invalid action";
             }
@@ -120,7 +121,7 @@ void Replayer::DoAction(int index, int num_max_retries) {
 }
 
 void Replayer::ReplayAutofillAction(
-    const std::string& element_selector,
+    Selector element_selector,
     const Recording::Action::AutofillSpecifics& specifics,
     SuccessCallback cb) {
   // TODO(b/483386299): An autofill is currently recorded twice: once as
@@ -130,10 +131,10 @@ void Replayer::ReplayAutofillAction(
   std::move(cb).Run(true);
 }
 
-void Replayer::ReplayClickAction(const std::string& element_selector,
+void Replayer::ReplayClickAction(Selector element_selector,
                                  SuccessCallback cb) {
   GetUniqueMatchingElementsAndDo(
-      element_selector,
+      std::move(element_selector),
       base::BindOnce(
           [](RecordReplayDriver& driver, ElementId match, SuccessCallback cb) {
             driver.DoClick(match.dom_node_id(), std::move(cb));
@@ -141,36 +142,37 @@ void Replayer::ReplayClickAction(const std::string& element_selector,
       std::move(cb));
 }
 
-void Replayer::ReplaySelectChangeAction(const std::string& element_selector,
-                                        std::string value,
+void Replayer::ReplaySelectChangeAction(Selector element_selector,
+                                        FieldValue value,
                                         SuccessCallback cb) {
   GetUniqueMatchingElementsAndDo(
-      element_selector,
+      std::move(element_selector),
       base::BindOnce(
-          [](std::string value, RecordReplayDriver& driver, ElementId match,
+          [](FieldValue value, RecordReplayDriver& driver, ElementId match,
              SuccessCallback cb) {
-            driver.DoSelect(match.dom_node_id(), value, std::move(cb));
+            driver.DoSelect(match.dom_node_id(), std::move(value),
+                            std::move(cb));
           },
           std::move(value)),
       std::move(cb));
 }
 
-void Replayer::ReplayTextChangeAction(const std::string& element_selector,
-                                      std::string text,
+void Replayer::ReplayTextChangeAction(Selector element_selector,
+                                      FieldValue text,
                                       SuccessCallback cb) {
   GetUniqueMatchingElementsAndDo(
       element_selector,
       base::BindOnce(
-          [](std::string text, RecordReplayDriver& driver, ElementId match,
+          [](FieldValue text, RecordReplayDriver& driver, ElementId match,
              SuccessCallback cb) {
-            driver.DoPaste(match.dom_node_id(), text, std::move(cb));
+            driver.DoPaste(match.dom_node_id(), std::move(text), std::move(cb));
           },
           std::move(text)),
       std::move(cb));
 }
 
 void Replayer::GetUniqueMatchingElementsAndDo(
-    const std::string& element_selector,
+    Selector element_selector,
     base::OnceCallback<void(RecordReplayDriver&, ElementId, SuccessCallback)>
         action_cb,
     SuccessCallback result_cb) {
