@@ -63,10 +63,7 @@ dependencies {
     compileLatest 'com.google.android.gms:play-services-cast:22.2.0'
     compileLatest 'com.google.android.gms:play-services-fido:+'
     compileLatest 'com.google.android.gms:play-services-gcm:+'
-    // TODO(https://crbug.com/477567669): Compile the latest version once this
-    // package is fixed. Right now the version alpha09 is broken.
-    // compileLatest 'com.google.android.gms:play-services-identity-credentials:+'
-    compile 'com.google.android.gms:play-services-identity-credentials:16.0.0-alpha08'
+    compileLatest 'com.google.android.gms:play-services-identity-credentials:+'
     compileLatest 'com.google.android.gms:play-services-iid:+'
     compileLatest 'com.google.android.gms:play-services-instantapps:+'
     compileLatest 'com.google.android.gms:play-services-location:+'
