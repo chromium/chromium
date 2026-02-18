@@ -199,6 +199,17 @@ bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
   }
 }
 
+bool IsPartOfSVGResource(const LayoutObject& layout_object) {
+  const LayoutObject* current = &layout_object;
+  while (current) {
+    if (current->IsSVGResourceContainer()) {
+      return true;
+    }
+    current = current->Parent();
+  }
+  return false;
+}
+
 }  // namespace
 
 CompositorElementIdNamespace
@@ -1196,6 +1207,13 @@ CompositorAnimations::CheckCanStartSVGElementOnCompositor(
     // themmselves and create their own blink::Animation objects for CSS
     // animations and transitions.
     reasons |= kTargetHasInvalidCompositingState;
+  }
+  if (const auto* layout_object = svg_element.GetLayoutObject()) {
+    if (IsPartOfSVGResource(*layout_object)) {
+      // If the element is either a resource container or a descendant of one,
+      // we don't paint it directly, and thus animation can not be composited.
+      reasons |= kTargetHasInvalidCompositingState;
+    }
   }
   return reasons;
 }

@@ -2559,6 +2559,39 @@ TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
                 StartOnCompositorReason::kGeneric));
 }
 
+TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGResource) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes slide {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(-10%); }
+      }
+      svg * {
+        animation: slide 4s linear infinite;
+      }
+    </style>
+    <svg id="root">
+      <linearGradient>
+        <stop/>
+      </linearGradient>
+      <pattern>
+        <rect width="100" height="100"/>
+      </pattern>
+    </svg>
+  )HTML");
+
+  for (Element& child :
+       ElementTraversal::DescendantsOf(*GetElementById("root"))) {
+    const Animation& animation =
+        *child.GetElementAnimations()->Animations().begin()->key;
+    EXPECT_TRUE(animation.CheckCanStartAnimationOnCompositor(
+                    GetDocument().View()->GetPaintArtifactCompositor(),
+                    StartOnCompositorReason::kGeneric) &
+                CompositorAnimations::kTargetHasInvalidCompositingState)
+        << child.localName();
+  }
+}
+
 TEST_P(AnimationCompositorAnimationsTest,
        TotalAnimationCountAcrossAllDocuments) {
   LoadTestData("animation-in-main-frame.html");
