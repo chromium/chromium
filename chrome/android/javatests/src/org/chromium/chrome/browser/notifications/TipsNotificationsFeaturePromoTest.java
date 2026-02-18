@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -144,6 +145,7 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/485627769")
     public void testESBBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType
         int featureType = TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING;
