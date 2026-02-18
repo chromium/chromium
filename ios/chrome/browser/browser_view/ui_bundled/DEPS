@@ -82,6 +82,7 @@ include_rules = [
   "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/passwords",
   "+ios/chrome/browser/phone_number/ui_bundled",
+  "+ios/chrome/browser/picture_in_picture",
   "+ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h",
