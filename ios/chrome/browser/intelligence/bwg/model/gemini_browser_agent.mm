@@ -268,6 +268,18 @@ CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
   return offset;
 }
 
+void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
+  ios::provider::StartBwgOverlay(config);
+  gemini_tab_helper->SetBwgUiShowing(true);
+  if (IsGeminiCopresenceEnabled()) {
+    fullscreen_controller_->ExitFullscreen();
+    last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
+    is_floaty_invoked_ = true;
+  }
+}
+
 void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
   if (!fullscreen_controller_ || !is_floaty_invoked_) {
     return;
@@ -547,7 +559,14 @@ void GeminiBrowserAgent::DismissFloaty() {
   }
 
   is_floaty_invoked_ = false;
-  ios::provider::ResetGemini();
+  // TODO(crbug.com/484045717): Refactor to merge these two provider calls.
+  if (IsGeminiCopresenceEnabled()) {
+    ios::provider::UpdateGeminiViewState(
+        ios::provider::GeminiViewState::kHidden,
+        /*animated=*/false);
+  } else {
+    ios::provider::ResetGemini();
+  }
 }
 
 void GeminiBrowserAgent::HideFloatyIfInvoked(
@@ -813,13 +832,12 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   }
 
   // Start the overlay and update the tab helper to reflect this.
-  ios::provider::StartBwgOverlay(config);
-  gemini_tab_helper->SetBwgUiShowing(true);
-  if (IsGeminiCopresenceEnabled()) {
-    fullscreen_controller_->ExitFullscreen();
-    last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
-    is_floaty_invoked_ = true;
-  }
+  base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+  DismissGeminiFromOtherWindows(base::BindOnce(^{
+    if (weak_ptr) {
+      weak_ptr->InvokeFloaty(config);
+    }
+  }));
 }
 
 UIImage* GeminiBrowserAgent::FetchPageFavicon() {

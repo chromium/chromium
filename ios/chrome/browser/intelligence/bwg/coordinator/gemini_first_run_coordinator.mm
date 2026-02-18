@@ -76,61 +76,6 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  __weak GeminiFirstRunCoordinator* weakSelf = self;
-  GeminiBrowserAgent::FromBrowser(self.browser)
-      ->DismissGeminiFromOtherWindows(base::BindOnce(^{
-        [weakSelf startCoordinator];
-      }));
-}
-
-- (void)stop {
-  [self stopWithCompletion:nil];
-}
-
-#pragma mark - Public
-
-- (void)stopWithCompletion:(ProceduralBlock)completion {
-  BwgTabHelper* BWGTabHelper = [self activeWebStateGeminiTabHelper];
-  if (BWGTabHelper) {
-    BWGTabHelper->SetBwgUiShowing(false);
-    BWGTabHelper->SetPreventContextualPanelEntryPoint(NO);
-  }
-
-  [self presentPageActionMenuIPH];
-  _viewController = nil;
-  _geminiCommandsHandler = nil;
-  _helpCommandsHandler = nil;
-  _mediator = nil;
-  _prefService = nil;
-  _tracker = nil;
-  _completion = nil;
-  [self dismissPresentedViewWithCompletion:completion];
-  [super stop];
-}
-
-#pragma mark - GeminiMediatorDelegate
-
-- (void)dismissGeminiConsentUIWithCompletion:(void (^)())completion {
-  [self dismissPresentedViewWithCompletion:completion];
-  _viewController = nil;
-}
-
-- (void)dismissGeminiFlow {
-  [_geminiCommandsHandler dismissGeminiFlowWithCompletion:nil];
-}
-
-#pragma mark - UISheetPresentationControllerDelegate
-
-// Handles the dismissal of the UI.
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [_geminiCommandsHandler dismissGeminiFlowWithCompletion:nil];
-}
-
-#pragma mark - Private
-
-// Starts the Gemini FRE coordinator.
-- (void)startCoordinator {
   _prefService = self.profile->GetPrefs();
   CHECK(_prefService);
 
@@ -182,6 +127,52 @@
 
   [super start];
 }
+
+- (void)stop {
+  [self stopWithCompletion:nil];
+}
+
+#pragma mark - Public
+
+- (void)stopWithCompletion:(ProceduralBlock)completion {
+  BwgTabHelper* BWGTabHelper = [self activeWebStateGeminiTabHelper];
+  if (BWGTabHelper) {
+    BWGTabHelper->SetBwgUiShowing(false);
+    BWGTabHelper->SetPreventContextualPanelEntryPoint(NO);
+  }
+
+  [self presentPageActionMenuIPH];
+  _viewController = nil;
+  _geminiCommandsHandler = nil;
+  _helpCommandsHandler = nil;
+  _mediator = nil;
+  _prefService = nil;
+  _tracker = nil;
+  _completion = nil;
+  [self dismissPresentedViewWithCompletion:completion];
+  [super stop];
+}
+
+#pragma mark - GeminiMediatorDelegate
+
+- (void)dismissGeminiConsentUIWithCompletion:(void (^)())completion {
+  [self dismissPresentedViewWithCompletion:completion];
+  _viewController = nil;
+}
+
+- (void)dismissGeminiFlow {
+  [_geminiCommandsHandler dismissGeminiFlowWithCompletion:nil];
+}
+
+#pragma mark - UISheetPresentationControllerDelegate
+
+// Handles the dismissal of the UI.
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [_geminiCommandsHandler dismissGeminiFlowWithCompletion:nil];
+}
+
+#pragma mark - Private
 
 // Dismisses presented view.
 - (void)dismissPresentedViewWithCompletion:(void (^)())completion {
