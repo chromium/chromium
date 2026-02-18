@@ -144,8 +144,8 @@
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   if (!identity) {
     DUMP_WILL_BE_NOTREACHED();
-    // If the user is signed-out, the view may currently be dismissed. No need
-    // to update the view.
+    // If the user is signed-out, the view will be dismissed by
+    // onEndBatchOfPrimaryAccountChanges. No need to update the view.
     return;
   }
   [self handleIdentityUpdated:identity];
@@ -155,7 +155,7 @@
   if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // This accounts table view will be popped or dismissed when the user
     // is signed out. Avoid reloading it in that case as that would lead to an
-    // empty table view.
+    // empty table view or during account switching.
     return;
   }
 
@@ -163,6 +163,12 @@
   // Only attempt to pop the top-most view controller once the account list
   // has been dismissed.
   [self.consumer popView];
+}
+
+- (void)onEndBatchOfPrimaryAccountChanges {
+  if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    [self.delegate manageAccountsMediatorWantsToBeStopped:self];
+  }
 }
 
 #pragma mark - AuthenticationServiceObserving
