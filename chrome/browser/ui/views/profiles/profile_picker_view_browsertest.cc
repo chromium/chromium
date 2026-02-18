@@ -46,6 +46,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -3533,8 +3534,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   WaitForBrowserUrl(kTwoFactorIntersitialUrl,
                     new_browser->GetTabStripModel()->GetActiveWebContents());
 
-  // Explicitly close the browser to avoid crash during teardown.
-  CloseBrowserSynchronously(static_cast<Browser*>(new_browser));
+  // Explicitly close the browser to avoid crash during teardown. Prevent
+  // `profile_being_created` from being destroyed before we have the opportunity
+  // to test attributes.
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile_being_created, ProfileKeepAliveOrigin::kBackgroundMode);
+  CloseBrowserSynchronously(new_browser);
 
   // Check expectations when the profile creation flow is done.
   ProfileAttributesEntry* entry =
