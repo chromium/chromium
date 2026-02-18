@@ -70,9 +70,9 @@ namespace ash {
 namespace {
 
 // Ensures that there is no id collision within the subtree of StatusAreaWidget.
-constexpr uint32_t kCustomIconsBaseId = 10000;
+constexpr uint64_t kCustomIconsBaseId = 10000;
 
-uint32_t GetCustomIconId(const TrayIconConfiguration& configuration) {
+uint64_t GetCustomIconId(const TrayIconConfiguration& configuration) {
   return configuration.id + kCustomIconsBaseId;
 }
 
