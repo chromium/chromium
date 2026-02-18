@@ -440,6 +440,8 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private onRemoteWalletPassesLinkClick_() {
+    // TODO(crbug.com/477845712): Link out to pass details view instead once
+    // crbug.com/454899556 is fixed.
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('walletPassesPageUrl'));
   }
