@@ -199,7 +199,11 @@ template("system_webview_apk_or_module_tmpl") {
         if (use_webview_pgo_profile) {
           _using_webview_toolchain = true
           shared_libraries = [ "//android_webview:libwebviewchromium($webview_toolchain)" ]
-          deps += [ "//android_webview:copy_webview_lib_unstripped" ]
+          if (!defined(data_deps)) {
+            data_deps = []
+          }
+          # This needs to be a swarming runtime dep for the orderfile bot to work.
+          data_deps += [ "//android_webview:copy_webview_lib_unstripped" ]
         } else {
           shared_libraries = [ "//android_webview:libwebviewchromium" ]
         }
