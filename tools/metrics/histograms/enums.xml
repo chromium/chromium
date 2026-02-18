@@ -8144,6 +8144,7 @@ from previous Chrome versions.
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
   <int value="-2129662187" label="CrosAppsBackgroundEventHandling:disabled"/>
   <int value="-2129531046" label="LacrosProfileBackwardMigration:enabled"/>
+  <int value="-2129499727" label="SidePanelFlyoverAnimation:enabled"/>
   <int value="-2129417438" label="MenuElements:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
@@ -13448,6 +13449,7 @@ from previous Chrome versions.
   <int value="-326535569" label="WebNotesStylize:disabled"/>
   <int value="-326083626" label="AppBanners:disabled"/>
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
+  <int value="-325020026" label="SidePanelFlyoverAnimation:disabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
   <int value="-324429921" label="HttpsFirstModeV2ForEngagedSites:disabled"/>

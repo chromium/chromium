@@ -7014,6 +7014,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVerticalTabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kVerticalTabs)},
 
+    {"side-panel-flyover-animation",
+     flag_descriptions::kSidePanelFlyoverAnimationName,
+     flag_descriptions::kSidePanelFlyoverAnimationDescription,
+     kOsWin | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kSidePanelFlyoverAnimation)},
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

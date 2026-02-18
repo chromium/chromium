@@ -8754,6 +8754,11 @@
     "expiry_milestone": 150
   },
   {
+    "name" : "side-panel-flyover-animation",
+    "owners": [ "dfried@google.com", "estalin@chromium.org", "dljames@chromium.org" ],
+    "expiry_milestone" : 160
+  },
+  {
     "name" : "side-panel-improved-clobbering",
     "owners": [ "chrome-cros@google.com", "tluk@chromium.org" ],
     "expiry_milestone" : 110

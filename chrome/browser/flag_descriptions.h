@@ -3854,6 +3854,14 @@ inline constexpr char kVerticalTabsName[] = "Vertical Tabs";
 inline constexpr char kVerticalTabsDescription[] =
     "Enables an option for showing tabs to the side.";
 
+inline constexpr char kSidePanelFlyoverAnimationName[] =
+    "Side Panel Flyover Animation";
+inline constexpr char kSidePanelFlyoverAnimationDescription[] =
+    "Simplifies contents animations while animating vertical tabstrip and side "
+    "panels, reducing jank on most platforms. When enabled, the animating "
+    "elements will appear to float over the contents, which resize at the "
+    "beginning or end of the animation.";
+
 inline constexpr char kTabGroupsFocusingName[] = "Tab Groups Focusing";
 inline constexpr char kTabGroupsFocusingDescription[] =
     "When a tab group is focused, the tabstrip constrains visiblity to the "
