@@ -62,10 +62,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollectorManager
   void OnCollectorDestroyed(DevtoolsDurableMessageCollector* collector);
   void OnCollectorAddedBytes(size_t delta);
   void OnCollectorRemovedBytes(size_t delta);
+  void OnCollectorAddedMessage(size_t count = 1);
+  void OnCollectorRemovedMessage(size_t count = 1);
 
   // Keeps track of aggregate memory usage of all managed collectors, for
   // reporting purposes.
   size_t total_memory_usage_ = 0;
+  size_t total_message_count_ = 0;
 
   // A set of collectors managed by this class.
   std::set<raw_ptr<DevtoolsDurableMessageCollector>> collectors_;

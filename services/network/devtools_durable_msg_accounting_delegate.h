@@ -16,6 +16,7 @@ class DevtoolsDurableMessageAccountingDelegate {
   virtual void WillAddBytes(DevtoolsDurableMessage& message,
                             int64_t chunk_size) = 0;
   virtual void WillRemoveBytes(DevtoolsDurableMessage& message) = 0;
+  virtual void WillDestroyMessage(DevtoolsDurableMessage& message) = 0;
 };
 
 }  // namespace network

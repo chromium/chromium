@@ -29,6 +29,10 @@ class MockDevtoolsDurableMessageAccountingDelegate
               WillRemoveBytes,
               (DevtoolsDurableMessage & message),
               (override));
+  MOCK_METHOD(void,
+              WillDestroyMessage,
+              (DevtoolsDurableMessage & message),
+              (override));
 };
 
 }  // namespace

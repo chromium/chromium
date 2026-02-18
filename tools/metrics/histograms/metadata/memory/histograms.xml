@@ -753,6 +753,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ProcessMemoryAllocatorTiny2">
+  <variant name=".DurableMessages.AggregateMessageCount"
+      summary="Reports the aggregate message count by all
+               DevToolsDurableMessageCollector instances."/>
   <variant name=".Malloc.BRPQuarantinedCount"
       summary="Number of slots quarantined by BRP, recorded when
                USE_BACKUP_REF_PTR build flag is enabled."/>

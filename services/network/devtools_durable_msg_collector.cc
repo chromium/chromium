@@ -59,6 +59,10 @@ DevtoolsDurableMessageCollector::CreateDurableMessage(
   // Mark eviction order.
   message_queue_.push(message->GetWeakPtr());
 
+  if (manager_) {
+    manager_->OnCollectorAddedMessage();
+  }
+
   return message->GetWeakPtr();
 }
 
@@ -101,6 +105,13 @@ void DevtoolsDurableMessageCollector::WillRemoveBytes(
   CHECK_GE(cur_buffer_size_, 0);
   if (manager_) {
     manager_->OnCollectorRemovedBytes(size);
+  }
+}
+
+void DevtoolsDurableMessageCollector::WillDestroyMessage(
+    DevtoolsDurableMessage& message) {
+  if (manager_) {
+    manager_->OnCollectorRemovedMessage();
   }
 }
 

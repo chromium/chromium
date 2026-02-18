@@ -70,6 +70,17 @@ void DevtoolsDurableMessageCollectorManager::OnCollectorRemovedBytes(
   total_memory_usage_ -= size;
 }
 
+void DevtoolsDurableMessageCollectorManager::OnCollectorAddedMessage(
+    size_t count) {
+  total_message_count_ += count;
+}
+
+void DevtoolsDurableMessageCollectorManager::OnCollectorRemovedMessage(
+    size_t count) {
+  DCHECK_GE(total_message_count_, count);
+  total_message_count_ -= count;
+}
+
 bool DevtoolsDurableMessageCollectorManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -78,6 +89,9 @@ bool DevtoolsDurableMessageCollectorManager::OnMemoryDump(
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   total_memory_usage_);
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  total_message_count_);
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
                   base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                   collectors_.size());

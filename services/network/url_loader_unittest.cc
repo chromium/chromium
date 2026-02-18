@@ -675,6 +675,8 @@ class MockDurableMessageAccountingDelegate
     size_ -= message.encoded_byte_size();
   }
 
+  void WillDestroyMessage(DevtoolsDurableMessage& message) override {}
+
   int64_t size() { return size_; }
 
  private:

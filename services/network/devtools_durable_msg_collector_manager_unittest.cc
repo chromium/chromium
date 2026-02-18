@@ -182,6 +182,8 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
       MemoryAllocatorDump::kNameObjectCount, MemoryAllocatorDump::kUnitsObjects,
       1u);
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(object_count_entry))));
+  MemoryAllocatorDump::Entry entry_count("object_count", "objects", 1u);
+  EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(entry_count))));
 
   collector_remote.reset();
   EXPECT_TRUE(base::test::RunUntil(
@@ -194,6 +196,8 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
   ASSERT_NE(dump2, nullptr);
   MemoryAllocatorDump::Entry entry2("size", "bytes", 0u);
   EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2))));
+  MemoryAllocatorDump::Entry entry2_count("object_count", "objects", 0u);
+  EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2_count))));
 }
 
 }  // namespace network

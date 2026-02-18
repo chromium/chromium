@@ -51,6 +51,7 @@ DevtoolsDurableMessage::DevtoolsDurableMessage(
 
 DevtoolsDurableMessage::~DevtoolsDurableMessage() {
   accounting_delegate_->WillRemoveBytes(*this);
+  accounting_delegate_->WillDestroyMessage(*this);
 }
 
 void DevtoolsDurableMessage::AddBytes(base::span<const uint8_t> bytes,

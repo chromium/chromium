@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollector
   // Accounting delegate overrides.
   void WillAddBytes(DevtoolsDurableMessage& message, int64_t size) override;
   void WillRemoveBytes(DevtoolsDurableMessage& message) override;
+  void WillDestroyMessage(DevtoolsDurableMessage& message) override;
 
  private:
   base::queue<base::WeakPtr<DevtoolsDurableMessage>> message_queue_;
