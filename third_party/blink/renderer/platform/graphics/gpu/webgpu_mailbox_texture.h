@@ -35,7 +35,6 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       const wgpu::Device& device,
       wgpu::TextureUsage usage,
       scoped_refptr<StaticBitmapImage> image,
-      const SkImageInfo& info,
       const gfx::Rect& image_sub_rect,
       bool is_dummy_mailbox_texture);
 

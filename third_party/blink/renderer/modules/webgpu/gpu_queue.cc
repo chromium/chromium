@@ -1042,7 +1042,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
             GetDawnControlClient(), device_->GetHandle(),
             wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc |
                 wgpu::TextureUsage::TextureBinding,
-            image, source_image_info, image_source_copy_rect, noop);
+            image, image_source_copy_rect, noop);
 
     if (mailbox_texture != nullptr) {
       wgpu::TexelCopyTextureInfo src = {.texture =
