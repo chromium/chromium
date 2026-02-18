@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -297,14 +298,16 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
 
   SearchboxContextData* searchbox_context_data =
       browser_window_interface->GetFeatures().searchbox_context_data();
   if (!searchbox_context_data) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto context = searchbox_context_data->TakePendingContext();
@@ -323,7 +326,7 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
   searchbox_context_data->SetPendingContext(std::move(context));
 
   edit_model()->OpenAiMode(false, /*via_context_menu=*/false);
-  std::move(callback).Run(std::nullopt);
+  std::move(callback).Run(base::ok(base::UnguessableToken()));
 }
 
 void WebuiOmniboxHandler::OnShow() {

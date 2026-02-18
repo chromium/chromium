@@ -2793,8 +2793,7 @@ suite('NewTabPageComposeboxTest', () => {
     test('add tab context', async () => {
       createComposeboxElement();
       searchboxHandler.setPromiseResolveFor(
-          ADD_TAB_CONTEXT_FN,
-          {token: {low: BigInt(1), high: BigInt(2)}});
+          ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
       // Assert no files.
       assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
@@ -2815,6 +2814,39 @@ suite('NewTabPageComposeboxTest', () => {
       assertEquals(files.length, 1);
       assertEquals(files[0]!.type, 'tab');
       assertEquals(files[0]!.name, sampleTabTitle);
+    });
+
+    test('add tab context fails', async () => {
+      createComposeboxElement();
+      // Set the promise to reject to simulate a failure.
+      searchboxHandler.setResultMapperFor(ADD_TAB_CONTEXT_FN, () => {
+        return Promise.reject(new Error('fail'));
+      });
+
+      // Assert no files.
+      assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
+
+      const contextMenuButton =
+          $$(composeboxElement.$.context, '#contextEntrypoint');
+      assertTrue(!!contextMenuButton);
+      const sampleTabTitle = 'Sample Tab';
+      let contextAdded = false;
+      const callback = (_file: any) => {
+        contextAdded = true;
+      };
+
+      contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+        detail: {id: 1, title: sampleTabTitle, onContextAdded: callback},
+        bubbles: true,
+        composed: true,
+      }));
+
+      await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+      await microtasksFinished();
+
+      // Assert callback was not called and no files in carousel.
+      assertFalse(contextAdded);
+      assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
     });
 
     test('setSearchContext sets input and queries autocomplete', async () => {
@@ -2903,7 +2935,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
     searchboxHandler.reset();
     searchboxHandler.setPromiseResolveFor(
-        ADD_TAB_CONTEXT_FN, {token: {low: BigInt(1), high: BigInt(2)}});
+        ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
     const tab = {
       tabId: 1,
@@ -2937,7 +2969,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     searchboxHandler.reset();
     searchboxHandler.setPromiseResolveFor(
-        ADD_TAB_CONTEXT_FN, {token: {low: BigInt(1), high: BigInt(2)}});
+        ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
     const tab = {
       tabId: 1,

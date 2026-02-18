@@ -799,7 +799,7 @@ suite('ContextualTasksComposeboxTest', () => {
       composebox.$.context.requestUpdate();
     };
     mockSearchboxPageHandler.setResultFor(
-        ADD_TAB_CONTEXT_FN, Promise.resolve({token: FAKE_TOKEN_STRING}));
+        ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
     await composebox.addTabContext_({
       detail: {
         id: 0,
@@ -1042,7 +1042,7 @@ suite('ContextualTasksComposeboxTest', () => {
     };
 
     mockSearchboxPageHandler.setResultFor(
-        ADD_TAB_CONTEXT_FN, Promise.resolve({token: FAKE_TOKEN_STRING}));
+        ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
     await composebox.addTabContext_({
       detail: {
         id: 0,

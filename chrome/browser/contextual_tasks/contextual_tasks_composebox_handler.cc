@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
@@ -887,7 +888,7 @@ void ContextualTasksComposeboxHandler::AddTabContext(
     base::UnguessableToken token = base::UnguessableToken::Create();
     delayed_tabs_[token] = tab_id;
     pending_delayed_tab_ids_.insert(tab_id);
-    std::move(callback).Run(token);
+    std::move(callback).Run(base::ok(token));
     return;
   }
 
@@ -899,7 +900,8 @@ void ContextualTasksComposeboxHandler::AddTabContext(
 
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto token = contextual_session_handle->CreateContextToken();
