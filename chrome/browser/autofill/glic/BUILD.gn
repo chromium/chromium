@@ -11,8 +11,6 @@ static_library("glic") {
     "actor_form_filling_service_impl.h",
     "actor_form_section_splitter.cc",
     "actor_form_section_splitter.h",
-    "glic_form_parsing_tracker.cc",
-    "glic_form_parsing_tracker.h",
   ]
 
   deps = [
@@ -37,7 +35,6 @@ source_set("unit_tests") {
     "actor_filling_observer_unittest.cc",
     "actor_form_filling_service_unittest.cc",
     "actor_form_section_splitter_unittest.cc",
-    "glic_form_parsing_tracker_unittest.cc",
   ]
 
   deps = [
@@ -58,7 +55,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "glic_form_parsing_tracker_test_api.h",
     "mock_actor_form_filling_service.cc",
     "mock_actor_form_filling_service.h",
   ]

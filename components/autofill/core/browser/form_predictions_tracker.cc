@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/glic/glic_form_parsing_tracker.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
 
 #include "base/feature_list.h"
 #include "base/timer/timer.h"
@@ -38,14 +38,14 @@ base::OnceClosure WrapAsTimeoutCallback(base::OnceClosure cb,
 
 }  // namespace
 
-GlicFormParsingTracker::GlicFormParsingTracker(AutofillClient* client) {
+FormPredictionsTracker::FormPredictionsTracker(AutofillClient* client) {
   CHECK(client);
   autofill_managers_observation_.Observe(client);
-  }
+}
 
-GlicFormParsingTracker::~GlicFormParsingTracker() = default;
+FormPredictionsTracker::~FormPredictionsTracker() = default;
 
-void GlicFormParsingTracker::Wait(base::OnceClosure callback,
+void FormPredictionsTracker::Wait(base::OnceClosure callback,
                                   base::TimeDelta timeout) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillDelayApcForPredictions)) {
@@ -55,10 +55,10 @@ void GlicFormParsingTracker::Wait(base::OnceClosure callback,
   callbacks_.push_back(WrapAsTimeoutCallback(std::move(callback), timeout));
 
   // It may happen that forms were parsed before the waiting was requested.
-  MaybeNotifyGlic();
+  MaybeNotifyWaitingCallbacks();
 }
 
-void GlicFormParsingTracker::MaybeNotifyGlic() {
+void FormPredictionsTracker::MaybeNotifyWaitingCallbacks() {
   if (callbacks_.empty()) {
     return;
   }
@@ -67,7 +67,7 @@ void GlicFormParsingTracker::MaybeNotifyGlic() {
   // `ObservationDelayController`
   bool all_forms_parsed =
       std::ranges::all_of(form_parsing_status_, [](const auto& pair) {
-        return pair.second.server_parsed_in_actor_mode &&
+        return pair.second.server_predicted_in_actor_mode &&
                pair.second.heuristic_parsed_in_actor_mode;
       });
   if (all_forms_parsed) {
@@ -77,7 +77,7 @@ void GlicFormParsingTracker::MaybeNotifyGlic() {
   }
 }
 
-void GlicFormParsingTracker::OnAutofillManagerStateChanged(
+void FormPredictionsTracker::OnAutofillManagerStateChanged(
     AutofillManager& manager,
     AutofillDriver::LifecycleState old_state,
     AutofillDriver::LifecycleState new_state) {
@@ -89,11 +89,11 @@ void GlicFormParsingTracker::OnAutofillManagerStateChanged(
       return pair.first.frame_token == local_frame_token;
     });
 
-    MaybeNotifyGlic();
+    MaybeNotifyWaitingCallbacks();
   }
 }
 
-void GlicFormParsingTracker::OnBeforeFormsSeen(
+void FormPredictionsTracker::OnBeforeFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
@@ -105,10 +105,10 @@ void GlicFormParsingTracker::OnBeforeFormsSeen(
     form_parsing_status_.erase(form_global_id);
   }
 
-  MaybeNotifyGlic();
+  MaybeNotifyWaitingCallbacks();
 }
 
-void GlicFormParsingTracker::OnAfterFormsSeen(
+void FormPredictionsTracker::OnAfterFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
@@ -123,10 +123,10 @@ void GlicFormParsingTracker::OnAfterFormsSeen(
     }
   }
 
-  MaybeNotifyGlic();
+  MaybeNotifyWaitingCallbacks();
 }
 
-void GlicFormParsingTracker::OnFieldTypesDetermined(
+void FormPredictionsTracker::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     FieldTypeSource source,
@@ -144,14 +144,14 @@ void GlicFormParsingTracker::OnFieldTypesDetermined(
       form_parsing_status_[form_id].heuristic_parsed_in_actor_mode = true;
       break;
     case FieldTypeSource::kAutofillServer:
-      form_parsing_status_[form_id].server_parsed_in_actor_mode = true;
+      form_parsing_status_[form_id].server_predicted_in_actor_mode = true;
       break;
     case FieldTypeSource::kAutofillAiModel:
       // Not supported by GLIC.
       break;
   }
 
-  MaybeNotifyGlic();
+  MaybeNotifyWaitingCallbacks();
 }
 
 }  // namespace autofill

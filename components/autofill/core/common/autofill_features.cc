@@ -393,7 +393,7 @@ BASE_FEATURE(kAutofillDeepLinkAutofillOptions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// If enabled, `GlicFormParsingTracker` will wait up to 1 second
+// If enabled, `FormParsingTracker` will wait up to 1 second
 // for Autofill to finish parsing forms pesent on a given tab before capturing
 // APC. For more context see: go/autofill-actor-mode-implementation
 // TODO(crbug.com/479794574): Convert to killswitch if no regressions are

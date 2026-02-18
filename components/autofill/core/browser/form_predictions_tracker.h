@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_GLIC_GLIC_FORM_PARSING_TRACKER_H_
-#define CHROME_BROWSER_AUTOFILL_GLIC_GLIC_FORM_PARSING_TRACKER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PREDICTIONS_TRACKER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PREDICTIONS_TRACKER_H_
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -17,13 +17,15 @@ namespace autofill {
 // the server in the actor mode.
 // TODO(crbug.com/479794574): Implement this class and delay APC if not all
 // forms were parsed yet.
-class GlicFormParsingTracker final : public AutofillManager::Observer {
+// TODO(crbug.com/485547157): Make this class more generic and wait for
+// non-actor mode predictions too.
+class FormPredictionsTracker final : public AutofillManager::Observer {
  public:
-  explicit GlicFormParsingTracker(AutofillClient* client);
-  ~GlicFormParsingTracker() override;
+  explicit FormPredictionsTracker(AutofillClient* client);
+  ~FormPredictionsTracker() override;
 
   struct FormParsingStatus {
-    bool server_parsed_in_actor_mode = false;
+    bool server_predicted_in_actor_mode = false;
     bool heuristic_parsed_in_actor_mode = false;
   };
 
@@ -34,11 +36,11 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
             base::TimeDelta timeout = base::Seconds(1));
 
  private:
-  friend class GlicFormParsingTrackerTestApi;
+  friend class FormPredictionsTrackerTestApi;
 
-  // Verifies that all forms were parsed in the actor mode and executes all
+  // Verifies that all forms got predictions in actor mode and executes all
   // callbacks in `callbacks_`, then clears `callbacks_`.
-  void MaybeNotifyGlic();
+  void MaybeNotifyWaitingCallbacks();
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(
@@ -70,4 +72,4 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_GLIC_GLIC_FORM_PARSING_TRACKER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PREDICTIONS_TRACKER_H_

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/glic/glic_form_parsing_tracker.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/autofill/glic/glic_form_parsing_tracker_test_api.h"
+#include "components/autofill/core/browser/form_predictions_tracker_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -19,22 +19,22 @@ namespace autofill {
 
 namespace {
 
-class GlicFormParsingTrackerTest
+class FormPredictionsTrackerTest
     : public testing::Test,
       public WithTestAutofillClientDriverManager<> {
  public:
-  GlicFormParsingTrackerTest() {
+  FormPredictionsTrackerTest() {
     InitAutofillClient();
-    tracker_ = std::make_unique<GlicFormParsingTracker>(&autofill_client());
+    tracker_ = std::make_unique<FormPredictionsTracker>(&autofill_client());
     CreateAutofillDriver();
   }
 
-  ~GlicFormParsingTrackerTest() override { DestroyAutofillClient(); }
+  ~FormPredictionsTrackerTest() override { DestroyAutofillClient(); }
 
   base::test::ScopedFeatureList& scoped_feature_list() {
     return scoped_feature_list_;
   }
-  GlicFormParsingTracker& tracker() { return *tracker_; }
+  FormPredictionsTracker& tracker() { return *tracker_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
@@ -43,12 +43,12 @@ class GlicFormParsingTrackerTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_unit_test_environment_;
-  std::unique_ptr<GlicFormParsingTracker> tracker_;
+  std::unique_ptr<FormPredictionsTracker> tracker_;
 };
 
 // Tests that when a new form is discovered (`OnBeforeFormsSeen`), it is added
 // to the internal tracking map with both parsing bits initialized to false.
-TEST_F(GlicFormParsingTrackerTest, FormAddedOnSeen) {
+TEST_F(FormPredictionsTrackerTest, FormAddedOnSeen) {
   std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
   const FormGlobalId& form_id = forms[0];
 
@@ -57,16 +57,16 @@ TEST_F(GlicFormParsingTrackerTest, FormAddedOnSeen) {
       base::span<FormGlobalId>());
 
   const absl::flat_hash_map<
-      FormGlobalId, GlicFormParsingTracker::FormParsingStatus>& status_map =
+      FormGlobalId, FormPredictionsTracker::FormParsingStatus>& status_map =
       test_api(tracker()).form_parsing_status();
   ASSERT_TRUE(status_map.contains(form_id));
   EXPECT_FALSE(status_map.at(form_id).heuristic_parsed_in_actor_mode);
-  EXPECT_FALSE(status_map.at(form_id).server_parsed_in_actor_mode);
+  EXPECT_FALSE(status_map.at(form_id).server_predicted_in_actor_mode);
 }
 
 // Tests that when a form is removed from the DOM (`OnBeforeFormsSeen` with
 // removed_forms), it is successfully purged from the internal tracking map.
-TEST_F(GlicFormParsingTrackerTest, FormRemoved) {
+TEST_F(FormPredictionsTrackerTest, FormRemoved) {
   std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
 
   // Add the form first.
@@ -85,7 +85,7 @@ TEST_F(GlicFormParsingTrackerTest, FormRemoved) {
 // Tests that when the AutofillManager's lifecycle state changes from active to
 // inactive, all forms associated with that manager's frame are removed from
 // tracking, while forms in other frames are preserved.
-TEST_F(GlicFormParsingTrackerTest, CleanupOnLifecycleChange) {
+TEST_F(FormPredictionsTrackerTest, CleanupOnLifecycleChange) {
   LocalFrameToken frame_token = autofill_driver().GetFrameToken();
   FormGlobalId form_in_frame = {frame_token, FormRendererId(123)};
 
@@ -116,7 +116,7 @@ TEST_F(GlicFormParsingTrackerTest, CleanupOnLifecycleChange) {
 // Tests that `OnAutofillManagerStateChanged`'s cleanup logic is NOT triggered
 // when the state change does not involve transitioning away from kActive (e.g.,
 // kInactive to kActive).
-TEST_F(GlicFormParsingTrackerTest, NoCleanupOnActivation) {
+TEST_F(FormPredictionsTrackerTest, NoCleanupOnActivation) {
   LocalFrameToken frame_token = autofill_driver().GetFrameToken();
   FormGlobalId form_id = {frame_token, FormRendererId(123)};
 
@@ -136,7 +136,7 @@ TEST_F(GlicFormParsingTrackerTest, NoCleanupOnActivation) {
 // Tests the state transitions of a form. It verifies that heuristic and
 // server parsing statuses are updated independently based on the source
 // provided in `OnFieldTypesDetermined`.
-TEST_F(GlicFormParsingTrackerTest, StateTransitions) {
+TEST_F(FormPredictionsTrackerTest, StateTransitions) {
   std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
   const FormGlobalId& form_id = forms[0];
   autofill_manager().NotifyObservers(
@@ -155,7 +155,7 @@ TEST_F(GlicFormParsingTrackerTest, StateTransitions) {
   EXPECT_FALSE(test_api(tracker())
                    .form_parsing_status()
                    .at(form_id)
-                   .server_parsed_in_actor_mode);
+                   .server_predicted_in_actor_mode);
 
   // Simulate server-side parsing completion.
   autofill_manager().NotifyObservers(
@@ -165,13 +165,13 @@ TEST_F(GlicFormParsingTrackerTest, StateTransitions) {
   EXPECT_TRUE(test_api(tracker())
                   .form_parsing_status()
                   .at(form_id)
-                  .server_parsed_in_actor_mode);
+                  .server_predicted_in_actor_mode);
 }
 
 // Tests that if a form is seen again (e.g., the DOM was modified and
 // re-triggered `OnBeforeFormsSeen`), its parsing status is reset to false
 // because the previous parsing results may no longer be valid.
-TEST_F(GlicFormParsingTrackerTest, ResetOnReSeen) {
+TEST_F(FormPredictionsTrackerTest, ResetOnReSeen) {
   std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
   const FormGlobalId& form_id = forms[0];
   autofill_manager().NotifyObservers(
@@ -198,7 +198,7 @@ TEST_F(GlicFormParsingTrackerTest, ResetOnReSeen) {
 // Tests that the detector respects the `small_forms_were_parsed` flag. If the
 // manager determines types but small forms were NOT parsed, the detector
 // should not mark the form as parsed.
-TEST_F(GlicFormParsingTrackerTest, IgnoreSmallForms) {
+TEST_F(FormPredictionsTrackerTest, IgnoreSmallForms) {
   std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
   const FormGlobalId& form_id = forms[0];
   autofill_manager().NotifyObservers(
@@ -218,7 +218,7 @@ TEST_F(GlicFormParsingTrackerTest, IgnoreSmallForms) {
 
 // Tests that if no forms are currently tracked, calling Wait() executes the
 // callback immediately.
-TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfNoForms) {
+TEST_F(FormPredictionsTrackerTest, Wait_ExecutesImmediatelyIfNoForms) {
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -226,7 +226,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfNoForms) {
 
 // Tests that if Wait() is called when all tracked forms are already fully
 // parsed, the callback is executed immediately.
-TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfAlreadyParsed) {
+TEST_F(FormPredictionsTrackerTest, Wait_ExecutesImmediatelyIfAlreadyParsed) {
   FormGlobalId form_id = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -248,7 +248,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfAlreadyParsed) {
 
 // Tests that if a form is tracked but not fully parsed, Wait() defers the
 // callback until parsing is complete.
-TEST_F(GlicFormParsingTrackerTest, Wait_DefersUntilFormFullyParsed) {
+TEST_F(FormPredictionsTrackerTest, Wait_DefersUntilFormFullyParsed) {
   FormGlobalId form_id = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -274,7 +274,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_DefersUntilFormFullyParsed) {
 
 // Tests that if multiple forms are tracked, Wait() waits for the last remaining
 // parsing bit across all forms.
-TEST_F(GlicFormParsingTrackerTest, Wait_UntilMultipleFormsParsed) {
+TEST_F(FormPredictionsTrackerTest, Wait_UntilMultipleFormsParsed) {
   FormGlobalId form1 = test::MakeFormGlobalId();
   FormGlobalId form2 = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
@@ -310,7 +310,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_UntilMultipleFormsParsed) {
 
 // Tests that calling Wait() while a callback is already registered, schedules
 // another callback, all of which will be executed once requirements are met.
-TEST_F(GlicFormParsingTrackerTest, Wait_MultipleCallbacksPending) {
+TEST_F(FormPredictionsTrackerTest, Wait_MultipleCallbacksPending) {
   FormGlobalId form_id = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -343,7 +343,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_MultipleCallbacksPending) {
 // Tests that the tracker can be reused. Once a callback has been executed,
 // a subsequent call to Wait() should successfully register a new callback
 // and wait for new forms to complete.
-TEST_F(GlicFormParsingTrackerTest, Wait_ReschedulesAfterExecution) {
+TEST_F(FormPredictionsTrackerTest, Wait_ReschedulesAfterExecution) {
   FormGlobalId form1 = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -387,7 +387,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_ReschedulesAfterExecution) {
 
 // Verifies that timeouts set when waiting are respected and the callback gets
 // automatically executed even if requirements are not met.
-TEST_F(GlicFormParsingTrackerTest, Wait_TimeoutOnSingleCallback) {
+TEST_F(FormPredictionsTrackerTest, Wait_TimeoutOnSingleCallback) {
   FormGlobalId form = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -406,7 +406,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_TimeoutOnSingleCallback) {
 
 // Verifies that if the callback got executed because of a timeout, it is not
 // executed again after the requirements are met.
-TEST_F(GlicFormParsingTrackerTest,
+TEST_F(FormPredictionsTrackerTest,
        Wait_RequirementsMetAfterTimeoutSingleCallback) {
   FormGlobalId form = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
@@ -431,7 +431,7 @@ TEST_F(GlicFormParsingTrackerTest,
 
 // Verifies that timeouts are handled correctly even if multiple callbacks are
 // pending.
-TEST_F(GlicFormParsingTrackerTest, Wait_TimeoutsOnMultipleCallbacksPending) {
+TEST_F(FormPredictionsTrackerTest, Wait_TimeoutsOnMultipleCallbacksPending) {
   FormGlobalId form = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -460,7 +460,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_TimeoutsOnMultipleCallbacksPending) {
 
 // Verifies that one callback timing out doesn't block other callbacks from
 // being executed as a result of requirements being met.
-TEST_F(GlicFormParsingTrackerTest,
+TEST_F(FormPredictionsTrackerTest,
        Wait_RequirementsMetMultipleCallbacksPendingOneTimedout) {
   FormGlobalId form = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
@@ -491,7 +491,7 @@ TEST_F(GlicFormParsingTrackerTest,
   EXPECT_TRUE(future3.IsReady());
 }
 
-TEST_F(GlicFormParsingTrackerTest, Wait_FeatureDisabled) {
+TEST_F(FormPredictionsTrackerTest, Wait_FeatureDisabled) {
   scoped_feature_list().Reset();
   scoped_feature_list().InitAndDisableFeature(
       features::kAutofillDelayApcForPredictions);
@@ -509,7 +509,7 @@ TEST_F(GlicFormParsingTrackerTest, Wait_FeatureDisabled) {
 
 // Tests that if a form is reported in `OnAfterFormsSeen` but has no fields,
 // it is removed from the tracking map.
-TEST_F(GlicFormParsingTrackerTest, EmptyFormRemovedAfterSeen) {
+TEST_F(FormPredictionsTrackerTest, EmptyFormRemovedAfterSeen) {
   FormData form_data;
   form_data.set_renderer_id(test::MakeFormRendererId());
   // No fields added to form_data.
@@ -518,14 +518,14 @@ TEST_F(GlicFormParsingTrackerTest, EmptyFormRemovedAfterSeen) {
   FormGlobalId form_id = form_data.global_id();
 
   // The manager should now have a FormStructure with 0 fields.
-  // GlicFormParsingTracker::OnAfterFormsSeen is triggered by OnFormsSeen.
+  // FormPredictionsTracker::OnAfterFormsSeen is triggered by OnFormsSeen.
   // Since the form has 0 fields, it should be erased.
   EXPECT_FALSE(test_api(tracker()).form_parsing_status().contains(form_id));
 }
 
 // Tests that OnFieldTypesDetermined does nothing if the form is no longer
 // being tracked (e.g., it was removed from the DOM).
-TEST_F(GlicFormParsingTrackerTest, OnFieldTypesDetermined_NoOpsIfFormMissing) {
+TEST_F(FormPredictionsTrackerTest, OnFieldTypesDetermined_NoOpsIfFormMissing) {
   FormGlobalId form_id = test::MakeFormGlobalId();
   ASSERT_FALSE(autofill_manager().FindCachedFormById(form_id));
 

@@ -33,7 +33,6 @@
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
-#include "chrome/browser/autofill/glic/glic_form_parsing_tracker.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -1266,7 +1265,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                                 base::Unretained(this)));
   }
 
-  glic_form_parsing_tracker_ = std::make_unique<GlicFormParsingTracker>(this);
+  form_parsing_tracker_ = std::make_unique<FormPredictionsTracker>(this);
 #endif
 }
 
