@@ -28,6 +28,7 @@ static_library("main_parts") {
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/cuttlefish:buildflags",
+    "//build/config/squid:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:global_features",

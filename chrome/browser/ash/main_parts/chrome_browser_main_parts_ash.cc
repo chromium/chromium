@@ -48,6 +48,7 @@
 #include "build/branding_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "build/config/cuttlefish/buildflags.h"  // PLATFORM_CUTTLEFISH
+#include "build/config/squid/buildflags.h"       // PLATFORM_SQUID
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -303,7 +304,7 @@
 #include "chrome/browser/ash/chromebox_for_meetings/cfm_chrome_services.h"
 #endif
 
-#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
 #include "chrome/browser/ash/dbus/fjord_oobe_service_provider.h"
 #endif
 
@@ -534,7 +535,7 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<ArcCroshServiceProvider>()));
 
-#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
     fjord_oobe_service_ = CrosDBusService::Create(
         system_bus, chromeos::kFjordOobeServiceName,
         dbus::ObjectPath(chromeos::kFjordOobeServicePath),
@@ -608,7 +609,7 @@ class DBusServices {
     fusebox_service_.reset();
     mojo_connection_service_.reset();
     arc_crosh_service_.reset();
-#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
     fjord_oobe_service_.reset();
 #endif
     PowerDataCollector::Shutdown();
@@ -647,7 +648,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
   std::unique_ptr<CrosDBusService> arc_tracing_service_;
   std::unique_ptr<CrosDBusService> arc_crosh_service_;
-#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
   std::unique_ptr<CrosDBusService> fjord_oobe_service_;
 #endif
 };

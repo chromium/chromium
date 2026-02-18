@@ -5,6 +5,7 @@
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/cuttlefish/buildflags.gni")
+import("//build/config/squid/buildflags.gni")
 
 assert(is_chromeos)
 
@@ -52,7 +53,7 @@ static_library("dbus") {
     "virtual_file_request_service_provider.h",
   ]
 
-  if (is_cuttlefish) {
+  if (is_cuttlefish || is_squid) {
     sources += [
       "fjord_oobe_service_provider.cc",
       "fjord_oobe_service_provider.h",
