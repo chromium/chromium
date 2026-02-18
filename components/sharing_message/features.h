@@ -9,4 +9,6 @@
 
 BASE_DECLARE_FEATURE(kClickToCall);
 
+BASE_DECLARE_FEATURE(kOneTimeTokenBackendNotification);
+
 #endif  // COMPONENTS_SHARING_MESSAGE_FEATURES_H_

@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sharing_message/buildflags.h"
+#include "components/sharing_message/features.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration_result.h"
@@ -273,7 +274,7 @@ bool SharingDeviceRegistrationImpl::
 
 bool SharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
     const {
-  return false;
+  return base::FeatureList::IsEnabled(kOneTimeTokenBackendNotification);
 }
 
 void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(

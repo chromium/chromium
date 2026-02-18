@@ -246,6 +246,24 @@ TEST_F(SharingDeviceRegistrationImplTest, IsSharedClipboardSupported_False) {
   EXPECT_FALSE(sharing_device_registration_.IsSharedClipboardSupported());
 }
 
+TEST_F(SharingDeviceRegistrationImplTest,
+       IsOneTimeTokenBackendNotificationSupported_True) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOneTimeTokenBackendNotification);
+
+  EXPECT_TRUE(sharing_device_registration_
+                  .IsOneTimeTokenBackendNotificationSupported());
+}
+
+TEST_F(SharingDeviceRegistrationImplTest,
+       IsOneTimeTokenBackendNotificationSupported_False) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOneTimeTokenBackendNotification);
+
+  EXPECT_FALSE(sharing_device_registration_
+                   .IsOneTimeTokenBackendNotificationSupported());
+}
+
 TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_Success) {
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
