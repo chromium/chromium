@@ -153,8 +153,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             // logic to achieve this is defined in the Android app layer and an intent must be
             // generated even if the same activity could handle the navigation.
             WebContents webContents = getWebContents();
-            if (ChromeFeatureList.sAndroidWebAppLaunchHandler.isEnabled()
-                    && webContents != null
+            if (webContents != null
                     && !webContents.hasOpener()
                     && params.isTabInPWA()
                     && params.isInitialNavigationInFrame()

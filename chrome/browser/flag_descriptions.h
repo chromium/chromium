@@ -215,14 +215,6 @@ inline constexpr char kAndroidSmsOtpFillingName[] = "Enable SMS OTP filling";
 inline constexpr char kAndroidSmsOtpFillingDescription[] =
     "Enables filling of OTPs received via SMS on Android";
 
-inline constexpr char kAndroidWebAppLaunchHandlerName[] =
-    "Android Web App Launch Handler";
-inline constexpr char kAndroidWebAppLaunchHandlerDescription[] =
-    "Enables support of launch_handler and file_handlers that allows web app "
-    "developers to control how it's launched — for example if it uses an "
-    "existing window or creates a new one, and to specify types of files a web "
-    "app can handle.";
-
 inline constexpr char kApproximateGeolocationPermissionName[] =
     "Approximate Geolocation Permission";
 inline constexpr char kApproximateGeolocationPermissionDescription[] =

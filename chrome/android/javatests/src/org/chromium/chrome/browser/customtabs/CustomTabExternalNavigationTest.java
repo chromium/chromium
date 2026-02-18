@@ -290,7 +290,6 @@ public class CustomTabExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
     public void testShouldDisableExternalIntentRequestsForUrl() throws TimeoutException {
         setUpTwa();
         mNavigationDelegate.setTabLaunchTypeForTesting(TabLaunchType.FROM_LONGPRESS_FOREGROUND);

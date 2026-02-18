@@ -5875,9 +5875,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      // This needs to be kept as a runtime flag
+      // in order to disable the API in WebView.
       name: "WebAppLaunchQueue",
       status: "stable",
-      base_feature: "none",
     },
     {
       name: "WebAppScopeExtensions",

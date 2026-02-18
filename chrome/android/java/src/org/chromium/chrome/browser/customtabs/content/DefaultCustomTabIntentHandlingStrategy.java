@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -57,8 +56,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(mTabProvider.getTab());
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER)
-                && intentDataProvider.isTrustedWebActivity()) {
+        if (intentDataProvider.isTrustedWebActivity()) {
             Tab tab = mTabProvider.getTab();
             assumeNonNull(tab);
             WebContents webContents = tab.getWebContents();
@@ -136,8 +134,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     @Override
     public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER)
-                && intentDataProvider.isTrustedWebActivity()) {
+        if (intentDataProvider.isTrustedWebActivity()) {
             Tab tab = mTabProvider.getTab();
             assumeNonNull(tab);
             WebContents webContents = tab.getWebContents();

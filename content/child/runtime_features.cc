@@ -412,9 +412,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(webnn::mojom::features::
                        kExperimentalWebMachineLearningNeuralNetwork),
            kSetOnlyIfOverridden},
-#if BUILDFLAG(IS_ANDROID)
-          {"WebAppLaunchQueue", raw_ref(features::kAndroidWebAppLaunchHandler)},
-#endif
           {"LocalNetworkAccessPermissionPolicy",
            raw_ref(network::features::kLocalNetworkAccessChecks)},
           {"LocalNetworkAccessSplitPermissions",

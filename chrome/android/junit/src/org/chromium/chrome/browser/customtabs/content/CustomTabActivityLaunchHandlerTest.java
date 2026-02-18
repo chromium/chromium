@@ -29,12 +29,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
@@ -46,7 +44,6 @@ import java.util.Objects;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
 public class CustomTabActivityLaunchHandlerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -120,15 +117,5 @@ public class CustomTabActivityLaunchHandlerTest {
         doTestLaunchHandler(1, env.intentDataProvider);
         CustomTabIntentDataProvider dataProvider = createIntentDataProvider();
         doTestLaunchHandler(1, dataProvider);
-    }
-
-    @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
-    public void disabledLaunchHandler() {
-        doTestLaunchHandler(0, env.intentDataProvider);
-
-        CustomTabIntentDataProvider dataProvider = createIntentDataProvider();
-
-        doTestLaunchHandler(0, dataProvider);
     }
 }

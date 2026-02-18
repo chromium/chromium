@@ -1450,21 +1450,6 @@
             ]
         }
     ],
-    "AndroidWebAppLaunchHandler": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "AndroidWebAppLaunchHandler"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidWindowManagementWebApi": [
         {
             "platforms": [
