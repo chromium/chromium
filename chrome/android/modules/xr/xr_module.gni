@@ -8,7 +8,10 @@ xr_module_desc = {
       "//chrome/android/modules/xr/internal/java/AndroidManifest.xml"
   java_deps = [
     "//chrome/android/modules/xr:java",
+    "//third_party/android_deps:com_google_ar_impress_java",
     "//third_party/android_sdk:android_xr_extensions_java",
+    "//third_party/androidx:androidx_xr_arcore_arcore_openxr_java",
+    "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
   ]
   uses_split = "chrome"
   loadable_modules_64_bit = [

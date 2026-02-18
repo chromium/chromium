@@ -391,6 +391,10 @@ template("chrome_common_apk_or_module_tmpl") {
       deps += [ "//chrome/android:product_version_resources" ]
     }
 
+    loadable_modules = []
+    if (android_64bit_target_cpu) {
+      secondary_abi_loadable_modules = []
+    }
     if (_is_bundle) {
       # Required to support macro resources.
       # See https://crbug.com/1278419
@@ -406,6 +410,21 @@ template("chrome_common_apk_or_module_tmpl") {
         deps += _desc.java_deps
         if (defined(_desc.jni_registration)) {
           srcjar_deps += [ _desc.jni_registration ]
+        }
+        if (defined(_desc.loadable_modules)) {
+          loadable_modules += _desc.loadable_modules
+        }
+        if (android_64bit_target_cpu) {
+          if (defined(_desc.loadable_modules_64_bit)) {
+            loadable_modules += _desc.loadable_modules_64_bit
+          }
+          if (defined(_desc.loadable_modules_32_bit)) {
+            secondary_abi_loadable_modules += _desc.loadable_modules_32_bit
+          }
+        } else {
+          if (defined(_desc.loadable_modules_32_bit)) {
+            loadable_modules += _desc.loadable_modules_32_bit
+          }
         }
       }
     }
@@ -497,16 +516,18 @@ template("chrome_common_apk_or_module_tmpl") {
     }
 
     shared_libraries = []
-    loadable_modules = []
     if (android_64bit_target_cpu) {
       secondary_abi_shared_libraries = []
-      secondary_abi_loadable_modules = []
     }
     if (defined(invoker.loadable_modules)) {
-      loadable_modules = invoker.loadable_modules
+      loadable_modules += invoker.loadable_modules
     }
     if (defined(invoker.secondary_abi_loadable_modules)) {
-      secondary_abi_loadable_modules = invoker.secondary_abi_loadable_modules
+      if (defined(secondary_abi_loadable_modules)) {
+        secondary_abi_loadable_modules += invoker.secondary_abi_loadable_modules
+      } else {
+        secondary_abi_loadable_modules = invoker.secondary_abi_loadable_modules
+      }
     }
 
     if (_is_64_bit_browser && build_hwasan_splits) {
@@ -548,7 +569,7 @@ template("chrome_common_apk_or_module_tmpl") {
 
       # For Trichrome, the primary abi arcore library is added to
       # TrichromeLibrary.apk, so it's not needed here.
-      if (!_is_trichrome) {
+      if (!_is_trichrome && _is_bundle) {
         _arcore_target = "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar"
         deps += [ _arcore_target ]
         _libarcore_dir = get_label_info(_arcore_target, "target_out_dir") +
