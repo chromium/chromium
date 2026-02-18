@@ -425,5 +425,81 @@ class CheckNoFlakyUnitTest(unittest.TestCase):
         self.assertFalse('ios/path/foo_egtest.mm' in errors[0].message)
 
 
+class CheckSystemColorUsageTest(unittest.TestCase):
+    """Test the _CheckUsageOfSystemColors presubmit check."""
+
+    def testForbiddenUseOfSystemColors(self):
+        bad_lines = [
+            '[UIColor redColor]',
+            '[UIColor blueColor]',
+            'UIColor.blueColor;',
+            'auto myArray = @[[UIColor blueColor], [UIColor redColor]];',
+            '  [[UIColor tertiaryLabelColor]',
+            '                          [UIColor tertiarySystemFillColor];'
+            'Foo(UIColor.yellowColor)',
+            'Foo(UIColor.yellowColor)',
+            'Bar([UIColor yellowColor])',
+            '    return UIColor.quaternarySystemFillColor;',
+            'NSForegroundColorAttributeName : UIColor.systemIndigoColor,'
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo.mm', bad_lines),
+        ]
+
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckUsageOfSystemColors(mock_input, mock_output)
+
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+
+        for i in range(1, len(bad_lines)):
+            self.assertTrue(f'ios/path/foo.mm:{i}' in errors[0].items)
+
+    def testExemptedUsagesOfSystemColors(self):
+        allowed_usage_lines = [
+            '[UIColor whiteColor]',
+            '[UIColor blackColor]',
+            'UIColor* testColor = [UIColor clearColor]',
+            'UIColor.whiteColor',
+            'UIColor.blackColor',
+            'UIColor.clearColor',
+            'Foo(UIColor.whiteColor)',
+            '#import <UIKit/UIKit.h>',
+            '#import "ios/chrome/uicolors/MyColor.h"',
+            'UIColor* GetBackgroundColor() {',
+            'void prepareBackground(UIColor* backgroundColor) {',
+            'auto color = (UIColor*)previousColor',
+            'self.backgroundDimmerView.backgroundColor = UIColor.clearColor;'
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/path/foo.mm',allowed_usage_lines),
+        ]
+
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckUsageOfSystemColors(mock_input, mock_output)
+
+        self.assertEqual(len(errors), 0)
+
+    def testSkipsNonObjectiveCFiles(self):
+        bad_lines = [
+            '[UIColor redColor]',
+            'UIColor.blueColor;',
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/bar.py', bad_lines),
+        ]
+
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckUsageOfSystemColors(mock_input, mock_output)
+
+        self.assertEqual(len(errors), 0)
+
 if __name__ == '__main__':
     unittest.main()

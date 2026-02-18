@@ -22,6 +22,7 @@ BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
 UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
 UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
+SYSTEM_COLORS_PATTERN = r'\[UIColor (?!white|black|clear)[a-z][a-zA-Z]*Color\]|UIColor\.(?!white|black|clear)[a-z][a-zA-Z]*Color'
 
 # Color management constants
 COLOR_SHARED_DIR = 'ios/chrome/common/ui/colors/'
@@ -560,6 +561,31 @@ def _CheckNoFlakyUnitTest(input_api, output_api):
 
     return [output_api.PresubmitError(error_message)]
 
+def _CheckUsageOfSystemColors(input_api, output_api):
+    """ Checks whether there are forbidden system color used in ios code.
+
+    Only white, black and clear colors are accepted.
+    """
+    system_colors_regex = input_api.re.compile(SYSTEM_COLORS_PATTERN)
+
+    errors = []
+    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.h'))
+    for f in input_api.AffectedSourceFiles(file_filter):
+        for line_num, line in f.ChangedContents():
+            if system_colors_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+
+    plural_suffix = '' if len(errors) == 1 else 's'
+    warning_message = ('Found forbidden usage%(plural)s of system colors. '
+                       'Only white, black and clear colors are accepted. '
+                     'Prefer semantic colors in ios code instead of the system ones:' % {
+                         'plural': plural_suffix
+                     })
+
+    return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
+
 
 def CheckChange(input_api, output_api):
     results = []
@@ -580,6 +606,7 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckOmniboxTextInEgtest(input_api, output_api))
     results.extend(_CheckUmbrellaHeaderUsage(input_api, output_api))
     results.extend(_CheckNoFlakyUnitTest(input_api, output_api))
+    results.extend(_CheckUsageOfSystemColors(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):
