@@ -428,6 +428,8 @@ class CC_EXPORT PictureLayerImpl
                          const gfx::Rect& scaled_recorded_bounds);
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
+
+  void ComputeCheckerboardedNeedsRecord(AppendQuadsData* append_quads_data);
 };
 
 }  // namespace cc
