@@ -542,6 +542,8 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
       const bool will_open_shared_group =
           group->is_shared_tab_group() && !group->local_group_id().has_value();
 
+      base::RecordAction(
+          base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
       tab_group_service_->OpenTabGroup(
           group->saved_guid(), std::make_unique<TabGroupActionContextDesktop>(
                                    browser_->GetBrowserForMigrationOnly(),
