@@ -327,6 +327,9 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_TITLE" desc="Title for the non-modal default browser promotion banner when sharing a URL via the 'Share Chromium' action or the share icon in the Omnibox.">
         Make Chromium your own
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_PICTURE_IN_PICTURE_TITLE_TEXT" desc="Title for the default browser picture in picture promo. [iOS only]">
+        Set Chromium as default
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_DESCRIPTION" desc="Chromium version of the description for the 'All your tabs' default browser promotion modal. [iOS only]">
         Set Chromium as default to sync your tabs, passwords, and payment info on all your devices
       </message>

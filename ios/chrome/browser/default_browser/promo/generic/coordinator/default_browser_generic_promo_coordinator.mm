@@ -13,19 +13,34 @@
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/generic/public/default_browser_generic_promo_commands.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
+
+namespace {
+// The video name for the settings destination.
+NSString* kDefaultBrowserPromoSettingsDestinationVideo =
+    @"default_browser_promo_settings_destination";
+NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
+    @"default_browser_promo_default_apps_destination";
+}  // namespace
 
 @interface DefaultBrowserGenericPromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -83,6 +98,26 @@ using base::UserMetricsAction;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [_handler hidePromo];
+    PictureInPictureConfiguration* config =
+        [[PictureInPictureConfiguration alloc] init];
+    NSString* viewSource = _promoWasFromOffCycleTrigger
+                               ? kDefaultBrowserPromoDefaultAppsDestinationVideo
+                               : kDefaultBrowserPromoSettingsDestinationVideo;
+    config.videoURL = [[NSBundle mainBundle] URLForResource:viewSource
+                                              withExtension:@"mp4"];
+    config.title = l10n_util::GetNSString(
+        IDS_IOS_DEFAULT_BROWSER_PICTURE_IN_PICTURE_TITLE_TEXT);
+    config.primaryButtonTitle = l10n_util::GetNSString(
+        IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
+    config.feature = PictureInPictureFeature::kDefaultBrowser;
+    id<PictureInPictureCommands> pipHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), PictureInPictureCommands);
+    [pipHandler showPictureInPictureWithConfig:config];
+    return;
+  }
+
   [_mediator didTapPrimaryActionButton:
                  /*useDefaultAppsDestination=*/_promoWasFromOffCycleTrigger];
   if (!_firstInteractionRecorded) {

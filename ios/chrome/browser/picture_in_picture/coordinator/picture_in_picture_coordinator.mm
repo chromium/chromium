@@ -49,6 +49,7 @@
            initWithTitle:_configuration.title
       primaryButtonTitle:_configuration.primaryButtonTitle
                 videoURL:_configuration.videoURL];
+
   _viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self

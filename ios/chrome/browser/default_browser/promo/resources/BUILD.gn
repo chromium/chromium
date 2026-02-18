@@ -37,3 +37,11 @@ bundle_data("animation_files") {
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
+
+bundle_data("default_browser_promo_videos") {
+  sources = [
+    "default_browser_promo_default_apps_destination.mp4",
+    "default_browser_promo_settings_destination.mp4",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

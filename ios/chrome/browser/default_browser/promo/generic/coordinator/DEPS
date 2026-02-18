@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/picture_in_picture/public",
   "+ios/chrome/browser/promos_manager/coordinator",
   "+ios/chrome/browser/promos_manager/model",
   # keep-sorted end
