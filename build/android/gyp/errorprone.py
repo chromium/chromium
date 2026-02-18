@@ -24,10 +24,15 @@ ERRORPRONE_CHECKS_TO_APPLY = [
 TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Can hurt readability to enforce this on test classes.
     'FieldCanBeStatic',
-    # These are allowed in tests.
-    'NoStreams',
     # Too much effort to enable.
     'UnusedVariable',
+]
+
+# Checks from Chromium's custom Error Prone plugin to disable in tests.
+# These are only valid when the plugin is loaded (--has-chromium-plugin).
+CHROMIUM_PLUGIN_TESTONLY_WARNINGS_TO_DISABLE = [
+    # These are allowed in tests.
+    'NoStreams',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -232,6 +237,9 @@ def main():
                       action='append',
                       default=[],
                       help='Error Prone -Xep: flags to pass to the plugin')
+  parser.add_argument('--has-chromium-plugin',
+                      action='store_true',
+                      help='Whether the Chromium Error Prone plugin is loaded.')
   options, compile_java_argv = parser.parse_known_args()
 
   compile_java_argv += ['--jar-path', options.stamp]
@@ -314,6 +322,10 @@ def main():
   if options.testonly:
     errorprone_flags.extend('-Xep:{}:OFF'.format(x)
                             for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
+    if options.has_chromium_plugin:
+      errorprone_flags.extend(
+          '-Xep:{}:OFF'.format(x)
+          for x in CHROMIUM_PLUGIN_TESTONLY_WARNINGS_TO_DISABLE)
     errorprone_flags += ['-XepCompilingTestOnlyCode']
 
   # To enable CheckReturnValue to be opt-out rather than opt-in:
