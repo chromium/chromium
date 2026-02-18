@@ -170,6 +170,16 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
       .WillRepeatedly(Return(std::nullopt));
   EXPECT_FALSE(key_store()->GetDeviceSupportsHardwareKeys());
 }
+
+TEST_F(BrowserBoundKeyStoreDesktopTest,
+       GetDeviceSupportsHardwareKeys_MultipleCallsCachesData) {
+  EXPECT_CALL(*key_provider(), SelectAlgorithm(_))
+      .Times(1)
+      .WillOnce(Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+
+  EXPECT_TRUE(key_store()->GetDeviceSupportsHardwareKeys());
+  EXPECT_TRUE(key_store()->GetDeviceSupportsHardwareKeys());
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(BrowserBoundKeyStoreDesktopTest,

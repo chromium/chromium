@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_STORE_ANDROID_H_
 #define COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_STORE_ANDROID_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
@@ -33,6 +34,7 @@ class BrowserBoundKeyStoreAndroid : public BrowserBoundKeyStore {
  private:
   // The implementation Java object.
   jni_zero::ScopedJavaGlobalRef<jobject> impl_;
+  std::optional<bool> device_supports_hardware_keys_;
 };
 
 }  // namespace payments

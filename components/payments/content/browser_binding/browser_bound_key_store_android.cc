@@ -57,8 +57,13 @@ void BrowserBoundKeyStoreAndroid::DeleteBrowserBoundKey(
 }
 
 bool BrowserBoundKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_BrowserBoundKeyStore_getDeviceSupportsHardwareKeys(env);
+  if (!device_supports_hardware_keys_.has_value()) {
+    JNIEnv* env = jni_zero::AttachCurrentThread();
+    device_supports_hardware_keys_ =
+        Java_BrowserBoundKeyStore_getDeviceSupportsHardwareKeys(env);
+  }
+
+  return device_supports_hardware_keys_.value();
 }
 
 BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;

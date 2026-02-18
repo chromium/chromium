@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 
 namespace crypto {
@@ -36,6 +38,7 @@ class BrowserBoundKeyStoreDesktop : public BrowserBoundKeyStore {
 
  private:
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider_;
+  std::optional<bool> device_supports_hardware_keys_;
 };
 
 }  // namespace payments

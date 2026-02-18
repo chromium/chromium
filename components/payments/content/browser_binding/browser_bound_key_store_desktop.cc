@@ -111,23 +111,26 @@ void BrowserBoundKeyStoreDesktop::DeleteBrowserBoundKey(
 }
 
 bool BrowserBoundKeyStoreDesktop::GetDeviceSupportsHardwareKeys() {
+  if (!device_supports_hardware_keys_.has_value()) {
 #if BUILDFLAG(IS_MAC)
-  return key_provider_ != nullptr;
+    device_supports_hardware_keys_ = key_provider_ != nullptr;
 #elif BUILDFLAG(IS_WIN)
-  if (!key_provider_) {
-    return false;
-  }
-  // On Windows, the existence of a key provider does not guarantee that
-  // hardware-backed keys are supported. Check if we can create a key with
-  // either of the two algorithms we support.
-  return key_provider_->SelectAlgorithm(
-             {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-              crypto::SignatureVerifier::SignatureAlgorithm::
-                  RSA_PKCS1_SHA256}) != std::nullopt;
+    // On Windows, the existence of a key provider does not guarantee that
+    // hardware-backed keys are supported. Check if we can create a key with
+    // either of the two algorithms we support.
+    device_supports_hardware_keys_ =
+        key_provider_ &&
+        key_provider_->SelectAlgorithm(
+            {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+             crypto::SignatureVerifier::SignatureAlgorithm::
+                 RSA_PKCS1_SHA256}) != std::nullopt;
 #else  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   // Hardware based browser bound keys are not supported on Linux or ChromeOS.
-  return false;
+  device_supports_hardware_keys_ = false;
 #endif
+  }
+
+  return device_supports_hardware_keys_.value();
 }
 
 BrowserBoundKeyStoreDesktop::~BrowserBoundKeyStoreDesktop() = default;
