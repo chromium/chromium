@@ -14,6 +14,8 @@ desc: |-
   - Instead of blocking chrome://settings/certificates, use <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME">CACertificateManagementAllowed</ph>.
 
   - Instead of blocking chrome-untrusted://crosh, use <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME">SystemFeaturesDisableList</ph>.
+
+  - Instead of blocking devtools://*, use one of the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph>, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> or <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME">DeveloperToolsAvailabilityBlocklist</ph> policies.
 example_value:
 - example.com
 - https://ssl.server.com
