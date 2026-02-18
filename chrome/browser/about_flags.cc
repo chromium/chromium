@@ -11136,6 +11136,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(safe_browsing::kMaliciousApkDownloadCheck,
                                     kMaliciousApkDownloadCheckChoices,
                                     "MaliciousApkDownloadCheck")},
+
+    {"make-identity-manager-source-of-accounts",
+     flag_descriptions::kMakeIdentityManagerSourceOfAccountsName,
+     flag_descriptions::kMakeIdentityManagerSourceOfAccountsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kMakeIdentityManagerSourceOfAccounts)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

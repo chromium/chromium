@@ -27,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceHistoryOptInScreen,
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kSyncEnableBookmarksInTransportMode,
+    &switches::kMakeIdentityManagerSourceOfAccounts,
     &switches::kMigrateAccountManagerDelegate,
     &switches::kFullscreenSignInPromoUseDate,
     &switches::kSmartEmailLineBreaking,

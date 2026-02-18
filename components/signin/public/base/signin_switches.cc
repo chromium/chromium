@@ -400,6 +400,8 @@ BASE_FEATURE(kIdentityInAuthErrorFollowUps, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMakeIdentityManagerSourceOfAccounts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled a new library is used to fetch accounts via
 // AccountManagerAccountManagerDelegate
 BASE_FEATURE(kMigrateAccountManagerDelegate, base::FEATURE_DISABLED_BY_DEFAULT);

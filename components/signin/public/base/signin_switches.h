@@ -334,6 +334,11 @@ BASE_DECLARE_FEATURE(kIdentityInAuthErrorFollowUps);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// Allow to switch the source of truth for accounts from AccountManagerFacade to
+// IdentityManager.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kMakeIdentityManagerSourceOfAccounts);
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMigrateAccountManagerDelegate);
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -6407,6 +6407,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "make-identity-manager-source-of-accounts",
+    "owners": ["lbarczynski@google.com", "chrome-signin-mobile-team@google.com"],
+    "expiry_milestone":152
+  },
+  {
     "name": "malicious-apk-download-check",
     "owners": [ "chlily@chromium.org", "//components/safe_browsing/OWNERS"],
     "expiry_milestone": 142

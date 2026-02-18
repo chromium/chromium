@@ -5436,6 +5436,12 @@ inline constexpr char kMaliciousApkDownloadCheckName[] =
 inline constexpr char kMaliciousApkDownloadCheckDescription[] =
     "Check APK downloads on Android for malware.";
 
+inline constexpr char kMakeIdentityManagerSourceOfAccountsName[] =
+    "Make IdentityManager source of accounts";
+inline constexpr char kMakeIdentityManagerSourceOfAccountsDescription[] =
+    "Make IdentityManager the source of accounts in Chrome on Android, as "
+    "opposed to AccountManagerFacade, when this feature is disabled.";
+
 inline constexpr char kMediaCodecLowDelayModeName[] =
     "MediaCodec low delay mode";
 inline constexpr char kMediaCodecLowDelayModeDescription[] =

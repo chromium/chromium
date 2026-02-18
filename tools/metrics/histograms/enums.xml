@@ -10259,6 +10259,7 @@ from previous Chrome versions.
   <int value="-1425919952" label="EnableLauncherSearchNormalization:enabled"/>
   <int value="-1425697035" label="AppProvisioningStatic:enabled"/>
   <int value="-1425360465" label="BatterySaverModeAvailable:disabled"/>
+  <int value="-1423429743" label="MakeIdentityManagerSourceOfAccounts:enabled"/>
   <int value="-1423348289" label="NupPrinting:disabled"/>
   <int value="-1423193305"
       label="AutofillRationalizeRepeatedServerPredictions:enabled"/>
@@ -14332,6 +14333,7 @@ from previous Chrome versions.
   <int value="-27287076" label="DesktopPWAsTabStripSettings:disabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
   <int value="-26261014" label="DsePreload2:enabled"/>
+  <int value="-26024219" label="MakeIdentityManagerSourceOfAccounts:disabled"/>
   <int value="-25726674" label="CompressionDictionaryTransport:enabled"/>
   <int value="-25537346" label="WebAuthenticationScreenReaderMode:disabled"/>
   <int value="-25303818" label="CCTResizableSideSheetForThirdParties:disabled"/>
