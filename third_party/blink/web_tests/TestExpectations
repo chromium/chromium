@@ -1610,8 +1610,6 @@ crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape
 crbug.com/346759360 external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-018.html [ Failure Pass ]
 crbug.com/424365 external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-024.html [ Failure ]
 crbug.com/330203257 [ Mac ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure Pass ]
-crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-016.html [ Failure ]
-crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-010.html [ Failure ]
 
 crbug.com/1024331 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html [ Failure ]
 crbug.com/1140728 external/wpt/css/css-text/hyphens/hyphens-span-002.html [ Failure ]
