@@ -720,23 +720,24 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   void InitializeAacDecoder(int channels, int sample_rate) {
     aac_decoder_ = std::make_unique<media::FFmpegAudioDecoder>(
         scheduler::GetSequencedTaskRunnerForTesting(), &media_log_);
-    media::ChannelLayout channel_layout = media::CHANNEL_LAYOUT_NONE;
+    media::ChannelLayoutConfig channel_layout_config;
     switch (channels) {
       case 1:
-        channel_layout = media::ChannelLayout::CHANNEL_LAYOUT_MONO;
+        channel_layout_config = media::ChannelLayoutConfig::Mono();
         break;
       case 2:
-        channel_layout = media::ChannelLayout::CHANNEL_LAYOUT_STEREO;
+        channel_layout_config = media::ChannelLayoutConfig::Stereo();
         break;
       case 6:
-        channel_layout = media::ChannelLayout::CHANNEL_LAYOUT_5_1_BACK;
+        channel_layout_config = media::ChannelLayoutConfig::FromLayout<
+            media::CHANNEL_LAYOUT_5_1_BACK>();
         break;
       default:
         NOTREACHED();
     }
     media::AudioDecoderConfig config(media::AudioCodec::kAAC,
                                      media::SampleFormat::kSampleFormatS16,
-                                     channel_layout, sample_rate,
+                                     channel_layout_config, sample_rate,
                                      /*extra_data=*/std::vector<uint8_t>(),
                                      media::EncryptionScheme::kUnencrypted);
     EXPECT_CALL(*this, InitCb);

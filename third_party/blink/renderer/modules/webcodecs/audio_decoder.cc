@@ -313,10 +313,11 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
     format = PcmCodecToSampleFormat(config.codec());
   }
 
-  media_config.Initialize(audio_type->codec, format, channel_layout,
-                          config.sampleRate(), extra_data, encryption_scheme,
-                          base::TimeDelta() /* seek preroll */,
-                          0 /* codec delay */);
+  media_config.Initialize(
+      audio_type->codec, format,
+      {channel_layout, static_cast<int>(config.numberOfChannels())},
+      config.sampleRate(), extra_data, encryption_scheme,
+      /*seek_preroll=*/base::TimeDelta(), /*codec_delay=*/0);
   if (!media_config.IsValidConfig()) {
     *js_error_message = "Unsupported config.";
     return std::nullopt;

@@ -46,8 +46,8 @@ namespace {
 // Constants to specify the type of audio data used.
 constexpr media::AudioCodec kCodec = media::AudioCodec::kVorbis;
 constexpr media::SampleFormat kSampleFormat = media::kSampleFormatPlanarF32;
-constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
-constexpr int kChannels = 2;
+constexpr media::ChannelLayoutConfig kChannelLayoutConfig =
+    media::ChannelLayoutConfig::Stereo();
 constexpr int kSamplesPerSecond = 44100;
 constexpr int kInputFramesChunk = 256;
 
@@ -77,9 +77,10 @@ class FakeAudioDecoder : public media::MockAudioDecoder {
     std::move(done_cb).Run(media::DecoderStatus::Codes::kOk);
 
     if (!buffer->end_of_stream()) {
-      output_cb_.Run(MakeAudioBuffer(kSampleFormat, kChannelLayout, kChannels,
-                                     kSamplesPerSecond, 1.0f, 0.0f,
-                                     kInputFramesChunk, buffer->timestamp()));
+      output_cb_.Run(
+          MakeAudioBuffer(kSampleFormat, kChannelLayoutConfig.channel_layout(),
+                          kChannelLayoutConfig.channels(), kSamplesPerSecond,
+                          1.0f, 0.0f, kInputFramesChunk, buffer->timestamp()));
     }
   }
 
@@ -309,7 +310,7 @@ media::AudioDecoderConfig MakeVorbisConfig() {
                           reinterpret_cast<char*>(&extradata[0]), file_size))
       << "Failed to read '" << extradata_name << "'";
 
-  return media::AudioDecoderConfig(kCodec, kSampleFormat, kChannelLayout,
+  return media::AudioDecoderConfig(kCodec, kSampleFormat, kChannelLayoutConfig,
                                    kSamplesPerSecond, std::move(extradata),
                                    media::EncryptionScheme::kUnencrypted);
 }
@@ -361,7 +362,7 @@ TEST_F(AudioDecoderBrokerTest, Decode_WithMojoDecoder) {
 
   // Use an MpegH config to prevent FFmpeg from being selected.
   InitializeDecoder(media::AudioDecoderConfig(
-      media::AudioCodec::kMpegHAudio, kSampleFormat, kChannelLayout,
+      media::AudioCodec::kMpegHAudio, kSampleFormat, kChannelLayoutConfig,
       kSamplesPerSecond, media::EmptyExtraData(),
       media::EncryptionScheme::kUnencrypted));
   EXPECT_EQ(GetDecoderType(), media::AudioDecoderType::kTesting);
