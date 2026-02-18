@@ -162,8 +162,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     } else {
       [_groupConsumer
           setTabGroupColorPalette:[[TabGroupColorPalette alloc]
-                                      initWithSeedColorId:tabGroup
-                                                              ->GetColor()]];
+                                      initWithColorId:tabGroup->GetColor()]];
     }
 
     _messagingService = messagingService;
@@ -569,8 +568,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
       if (IsTabGroupColorOnSurfaceEnabled()) {
         [_groupConsumer
             setTabGroupColorPalette:[[TabGroupColorPalette alloc]
-                                        initWithSeedColorId:tabGroup
-                                                                ->GetColor()]];
+                                        initWithColorId:tabGroup->GetColor()]];
 
       } else {
         [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
@@ -656,8 +654,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     if (IsTabGroupColorOnSurfaceEnabled()) {
       [_groupConsumer
           setTabGroupColorPalette:[[TabGroupColorPalette alloc]
-                                      initWithSeedColorId:_tabGroup
-                                                              ->GetColor()]];
+                                      initWithColorId:_tabGroup->GetColor()]];
     } else {
       [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
                                         _tabGroup->GetColor())];

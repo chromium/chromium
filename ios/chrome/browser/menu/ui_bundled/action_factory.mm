@@ -732,7 +732,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
     UIColor* imageColor;
     if (IsTabGroupColorOnSurfaceEnabled()) {
       imageColor =
-          [[TabGroupColorPalette alloc] initWithSeedColorId:group->GetColor()]
+          [[TabGroupColorPalette alloc] initWithColorId:group->GetColor()]
               .commonColor;
     } else {
       imageColor = tab_groups::ColorForTabGroupColorId(group->GetColor());

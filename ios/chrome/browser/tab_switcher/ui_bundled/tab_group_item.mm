@@ -61,7 +61,7 @@
   if (!_tabGroupColorPalette || _colorId != currentColorId) {
     _colorId = currentColorId;
     _tabGroupColorPalette =
-        [[TabGroupColorPalette alloc] initWithSeedColorId:_colorId];
+        [[TabGroupColorPalette alloc] initWithColorId:_colorId];
   }
   return _tabGroupColorPalette;
 }

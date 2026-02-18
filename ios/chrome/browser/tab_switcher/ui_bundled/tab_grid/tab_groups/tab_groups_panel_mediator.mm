@@ -389,7 +389,7 @@ NSString* CreationText(base::Time creation_date) {
   }
   if (IsTabGroupColorOnSurfaceEnabled()) {
     itemData.color =
-        [[TabGroupColorPalette alloc] initWithSeedColorId:group->color()]
+        [[TabGroupColorPalette alloc] initWithColorId:group->color()]
             .commonColor;
   } else {
     itemData.color = tab_groups::ColorForTabGroupColorId(group->color());

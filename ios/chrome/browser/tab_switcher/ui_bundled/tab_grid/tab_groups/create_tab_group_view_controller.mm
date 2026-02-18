@@ -514,8 +514,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
     UIColor* buttonColor;
     if (IsTabGroupColorOnSurfaceEnabled()) {
-      buttonColor = [[TabGroupColorPalette alloc] initWithSeedColorId:colorID]
-                        .commonColor;
+      buttonColor =
+          [[TabGroupColorPalette alloc] initWithColorId:colorID].commonColor;
     } else {
       buttonColor = tab_groups::ColorForTabGroupColorId(colorID);
     }

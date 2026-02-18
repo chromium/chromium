@@ -177,7 +177,7 @@ using tab_groups::SharingState;
         [_consumer setTabGroupTitle:tabGroup->GetTitle() groupColor:groupColor];
       } else {
         TabGroupColorPalette* tabGroupColorPalette =
-            [[TabGroupColorPalette alloc] initWithSeedColorId:tabGroupColorId];
+            [[TabGroupColorPalette alloc] initWithColorId:tabGroupColorId];
 
         [_consumer setTabGroupTitle:tabGroup->GetTitle()
                tabGroupColorPalette:tabGroupColorPalette];
