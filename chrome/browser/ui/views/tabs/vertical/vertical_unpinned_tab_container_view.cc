@@ -224,6 +224,10 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
   }
   if (node) {
     GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
+    // Synchronously force a layout here to update the target layout. Since all
+    // the calculations are based off on target layout, we need to ensure it is
+    // updated where there are model change.
+    DeprecatedLayoutImmediately();
   }
 }
 

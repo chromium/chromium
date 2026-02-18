@@ -368,12 +368,16 @@ views::View* VerticalDraggedTabsContainer::GetViewForDragBounds(
       continue;
     }
 
-    if (HasMinimumOverlap(
-            dragged_tab_bounds, child_layout.bounds,
-            IsHorizontalDragSupported()
-                ? std::make_optional(child_layout.bounds.width() * 0.5)
-                : std::nullopt,
-            child_layout.bounds.height() * 0.5)) {
+    // The percentage overlap between dragged tabs and the view at its
+    // target position to be considered the view over current drag bounds.
+    constexpr float kEntryThreshold = 0.6f;
+
+    if (HasMinimumOverlap(dragged_tab_bounds, child_layout.bounds,
+                          IsHorizontalDragSupported()
+                              ? std::make_optional(child_layout.bounds.width() *
+                                                   kEntryThreshold)
+                              : std::nullopt,
+                          child_layout.bounds.height() * kEntryThreshold)) {
       return child_layout.child_view;
     }
   }
