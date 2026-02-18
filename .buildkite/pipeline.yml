@@ -68,20 +68,19 @@ steps:
     artifact_paths:
       - "build_id/linux/x86_64/**"
 
-  # TODO: re-enable E2E tests once linux builds are stable
-  # - label: "📝 E2E Tests (linux-x86_64)"
-  #   trigger: "runtime-fe-end-to-end-tests"
-  #   depends_on:
-  #     - "build-chromium-linux-x86_64"
-  #   build:
-  #     env:
-  #       OS: "linux"
-  #       ARCH: "x86_64"
-  #       RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
-  #       RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
-  #       RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
-  #       RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
-  #       RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+  - label: "📝 E2E Tests (linux-x86_64)"
+    trigger: "runtime-fe-end-to-end-tests"
+    depends_on:
+      - "build-chromium-linux-x86_64"
+    build:
+      env:
+        OS: "linux"
+        ARCH: "x86_64"
+        RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
+        RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
+        RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
+        RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
+        RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
 
   - label: "🔨 Chromium (mac-x86_64)"
     key: "build-chromium-mac-x86_64"
@@ -158,6 +157,63 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/arm64/**"
+
+  - label: "🕵️‍♀️ Verify cross-arch build integrity"
+    key: "verify-cross-arch-pak-sizes"
+    commands:
+      - "be_cmd download-macos-arm64-gclient_entries -- buildkite-agent artifact download build_id/macOS/arm64/entries ."
+      - "be_cmd download-macos-x86_64-gclient_entries -- buildkite-agent artifact download build_id/macOS/x86_64/entries ."
+      - "be_cmd macos-diff-gclient-entries -- diff -u build_id/macOS/arm64/entries build_id/macOS/x86_64/entries"
+      - "be_cmd download-macos-arm64-pak-sizes -- buildkite-agent artifact download build_id/macOS/arm64/pak-sizes ."
+      - "be_cmd download-macos-x86_64-pak-sizes -- buildkite-agent artifact download build_id/macOS/x86_64/pak-sizes ."
+      - "be_cmd macos-diff-pak-sizes -- diff -u build_id/macOS/arm64/pak-sizes build_id/macOS/x86_64/pak-sizes"
+    depends_on:
+      - "build-chromium-mac-x86_64"
+      - "build-chromium-mac-arm64"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /home/ubuntu/chromium/src
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+      - replayio/buildevents#76b6f57: ~
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
+
+  - label: "📝 Command Tests (macos-arm64)"
+    trigger: "runtime-command-tests"
+    build:
+      commit: "${REPLAY_BACKEND_REV}"
+    depends_on:
+      - "build-chromium-mac-x86_64"
+      - "build-chromium-mac-arm64"
+
+  - label: "📝 Live Tests"
+    trigger: "testing-runtime-e2e"
+    depends_on:
+      - "build-chromium-linux-x86_64"
+      - "build-chromium-mac-x86_64"
+      - "build-chromium-mac-arm64"
+
+  - label: "📝 E2E Tests (macos-arm64)"
+    trigger: "runtime-fe-end-to-end-tests"
+    depends_on:
+      - "build-chromium-mac-x86_64"
+      - "build-chromium-mac-arm64"
+    build:
+      env:
+        OS: "macos"
+        ARCH: "arm64"
+        RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
+        RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
+        RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
+        RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
+        RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+        CI: "1"
 
   # TODO: re-enable buildevents watch once builds are stable
   # - wait: ~
