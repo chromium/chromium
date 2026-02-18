@@ -328,12 +328,16 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_18 = 18;
   // A model using only operations that are supported by 2.20.0.
   MODEL_ENGINE_VERSION_TFLITE_2_20_0 = 19;
-  // A model using only operations that are supported by 2.20.0.
+  // A model using only operations that are supported by 2.20.1.
   // This adds GATHER v4 to the supported operations.
   MODEL_ENGINE_VERSION_TFLITE_2_20_1 = 20;
-  // A model using only operations that are supported by 2.20.0.
+  // A model using only operations that are supported by 2.20.2.
   // This adds BROADCAST_TO to the supported operations.
   MODEL_ENGINE_VERSION_TFLITE_2_20_2 = 21;
+  // A model using only operations that are supported by 2.22.0.
+  // This, along with 2.21.0, adds int2/4/8, and uint4 support to a bunch
+  // of operations.
+  MODEL_ENGINE_VERSION_TFLITE_2_22_0 = 22;
 }
 
 // The set of parameters that the server can use to vary the served model for
