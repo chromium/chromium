@@ -139,7 +139,7 @@
 - (void)execute {
   switch (_source) {
     case TaskSource::TaskSourceColdStart:
-      // TODO(crbug.com/462018636): Handle cold start logic.
+      [self executeColdStart];
       break;
     case TaskSource::TaskSourceContextURL:
       [self executeContextURL];
@@ -167,6 +167,16 @@
     }
   }
   return nil;
+}
+
+- (void)executeColdStart {
+  if (self.shortcutItem) {
+    [self executeShortcutItem];
+  } else if (self.userActivity) {
+    // TODO(crbug.com/462018636): Handle cold start with userActivity.
+  } else if (self.URLContext) {
+    [self executeContextURLFromColdStart];
+  }
 }
 
 - (void)executeShortcutItem {
@@ -230,4 +240,19 @@
                   initStage:profileState.initStage];
 }
 
+- (void)executeContextURLFromColdStart {
+  SceneState* sceneState = [self sceneStateFromSessionID];
+  CHECK(sceneState);
+
+  URLOpenerParams* options =
+      [[URLOpenerParams alloc] initWithUIOpenURLContext:self.URLContext];
+  ProfileState* profileState = sceneState.profileState;
+
+  [URLOpener handleLaunchOptions:options
+                       tabOpener:sceneState.controller
+           connectionInformation:sceneState.controller
+              startupInformation:profileState.startupInformation
+                     prefService:profileState.profile->GetPrefs()
+                       initStage:profileState.initStage];
+}
 @end
