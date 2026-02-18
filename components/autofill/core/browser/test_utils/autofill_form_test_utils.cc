@@ -38,80 +38,254 @@ Message DescribeFormData(const FormData& form_data) {
 
 // Returns the form field relevant to the `role`.
 FormFieldData CreateFieldByRole(FieldType role) {
+  DCHECK(role != FieldType::MAX_VALID_FIELD_TYPE)
+      << "MAX_VALID_FIELD_TYPE is not a valid field type.";
   FormFieldData field;
-  // TODO(crbug.com/406073718): Add the missing roles and/or fail loudly.
+  // Set the name and label of the field based on the `role`.
   switch (role) {
     case FieldType::USERNAME:
-      field.set_label(u"Username");
       field.set_name(u"username");
+      field.set_label(u"Username");
       break;
     case FieldType::NAME_FULL:
-      field.set_label(u"Full name");
-      field.set_name(u"fullname");
+      field.set_name(u"name");
+      field.set_label(u"Name");
       break;
     case FieldType::NAME_FIRST:
-      field.set_label(u"First Name");
       field.set_name(u"firstName");
-      break;
-    case FieldType::NAME_MIDDLE:
-      field.set_label(u"Middle Name");
-      field.set_name(u"middleName");
+      field.set_label(u"First name");
       break;
     case FieldType::NAME_LAST:
-      field.set_label(u"Last Name");
       field.set_name(u"lastName");
+      field.set_label(u"Last name");
       break;
     case FieldType::EMAIL_ADDRESS:
-      field.set_label(u"E-mail address");
       field.set_name(u"email");
+      field.set_label(u"E-mail address");
       break;
     case FieldType::ADDRESS_HOME_LINE1:
-      field.set_label(u"Address");
       field.set_name(u"home_line_one");
+      field.set_label(u"Address line 1");
       break;
     case FieldType::ADDRESS_HOME_CITY:
-      field.set_label(u"City");
       field.set_name(u"city");
+      field.set_label(u"City");
       break;
     case FieldType::ADDRESS_HOME_STATE:
-      field.set_label(u"State");
       field.set_name(u"state");
+      field.set_label(u"State");
       break;
     case FieldType::ADDRESS_HOME_COUNTRY:
-      field.set_label(u"Country");
       field.set_name(u"country");
+      field.set_label(u"Country");
       break;
     case FieldType::ADDRESS_HOME_ZIP:
-      field.set_label(u"Zip Code");
       field.set_name(u"zipCode");
+      field.set_label(u"ZIP code");
       break;
     case FieldType::PHONE_HOME_NUMBER:
-      field.set_label(u"Phone");
       field.set_name(u"phone");
+      field.set_label(u"Phone");
       break;
     case FieldType::COMPANY_NAME:
-      field.set_label(u"Company");
       field.set_name(u"company");
+      field.set_label(u"Company");
       break;
     case FieldType::CREDIT_CARD_NUMBER:
-      field.set_label(u"Card Number");
       field.set_name(u"cardNumber");
+      field.set_label(u"Credit card number");
       break;
     case FieldType::PASSWORD:
-      field.set_label(u"Password");
       field.set_name(u"password");
+      field.set_label(u"Password");
       break;
-    case FieldType::LOYALTY_MEMBERSHIP_ID:
-      field.set_label(u"Frequent Flyer Number");
-      field.set_name(u"frequentflyer");
+    case FieldType::ADDRESS_HOME_ADMIN_LEVEL2:
+      field.set_name(u"admin_level2");
+      field.set_label(u"Admin level 2");
+      break;
+    case FieldType::ADDRESS_HOME_APT:
+      field.set_name(u"apartment");
+      field.set_label(u"Apartment");
+      break;
+    case FieldType::ADDRESS_HOME_APT_NUM:
+      field.set_name(u"apt_num");
+      field.set_label(u"Apt/Suite");
+      break;
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS:
+      field.set_name(u"between_streets");
+      field.set_label(u"Between streets");
+      break;
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS_1:
+      field.set_name(u"between_streets_1");
+      field.set_label(u"Between streets 1");
+      break;
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS_2:
+      field.set_name(u"between_streets_2");
+      field.set_label(u"Between streets 2");
+      break;
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+      field.set_name(u"between_streets_or_landmark");
+      field.set_label(u"Between streets or landmark");
+      break;
+    case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
+      field.set_name(u"dependent_locality");
+      field.set_label(u"Dependent locality");
+      break;
+    case FieldType::ADDRESS_HOME_HOUSE_NUMBER:
+      field.set_name(u"house_number");
+      field.set_label(u"House number");
+      break;
+    case FieldType::ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      field.set_name(u"house_number_and_apt");
+      field.set_label(u"House number and apt");
+      break;
+    case FieldType::ADDRESS_HOME_LANDMARK:
+      field.set_name(u"landmark");
+      field.set_label(u"Landmark");
+      break;
+    case FieldType::ADDRESS_HOME_LINE2:
+      field.set_name(u"address2");
+      field.set_label(u"Address line 2");
+      break;
+    case FieldType::ADDRESS_HOME_LINE3:
+      field.set_name(u"address3");
+      field.set_label(u"Address line 3");
+      break;
+    case FieldType::ADDRESS_HOME_OVERFLOW:
+      field.set_name(u"overflow");
+      field.set_label(u"Overflow");
+      break;
+    case FieldType::ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+      field.set_name(u"overflow_and_landmark");
+      field.set_label(u"Overflow and landmark");
+      break;
+    case FieldType::ADDRESS_HOME_STREET_ADDRESS:
+      field.set_name(u"street_address");
+      field.set_label(u"Street address");
+      break;
+    case FieldType::ADDRESS_HOME_STREET_LOCATION:
+      field.set_name(u"street_location");
+      field.set_label(u"Street location");
+      break;
+    case FieldType::ADDRESS_HOME_STREET_NAME:
+      field.set_name(u"street_name");
+      field.set_label(u"Street name");
+      break;
+    case FieldType::ALTERNATIVE_FAMILY_NAME:
+      field.set_name(u"alt_family_name");
+      field.set_label(u"Alternative family name");
+      break;
+    case FieldType::ALTERNATIVE_FULL_NAME:
+      field.set_name(u"alt_full_name");
+      field.set_label(u"Alternative full name");
+      break;
+    case FieldType::ALTERNATIVE_GIVEN_NAME:
+      field.set_name(u"alternative_given_name");
+      field.set_label(u"Alternative given name");
+      break;
+    case FieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR:
+      field.set_name(u"exp_year_2_digit");
+      field.set_label(u"Credit card expiration year 2-digit");
+      break;
+    case FieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR:
+      field.set_name(u"cc_exp_year_4_digit");
+      field.set_label(u"Credit card expiration year 4-digit");
+      break;
+    case FieldType::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+      field.set_name(u"cc_exp_date_2_digit_year");
+      field.set_label(u"Credit card expiration date 2-digit year");
+      break;
+    case FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      field.set_name(u"cc_exp_date_4_digit_year");
+      field.set_label(u"Credit card expiration date 4-digit year");
+      break;
+    case FieldType::CREDIT_CARD_EXP_MONTH:
+      field.set_name(u"cc_exp_month");
+      field.set_label(u"Credit card expiration month");
+      break;
+    case FieldType::CREDIT_CARD_NAME_FIRST:
+      field.set_name(u"cc_name_first");
+      field.set_label(u"Credit card first name");
+      break;
+    case FieldType::CREDIT_CARD_NAME_FULL:
+      field.set_name(u"cc_name_full");
+      field.set_label(u"Credit card full name");
+      break;
+    case FieldType::CREDIT_CARD_NAME_LAST:
+      field.set_name(u"cc_name_last");
+      field.set_label(u"Credit card last name");
+      break;
+    case FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+      field.set_name(u"cc_csc_standalone");
+      field.set_label(u"Credit card verification code standalone");
+      break;
+    case FieldType::CREDIT_CARD_TYPE:
+      field.set_name(u"cc_type");
+      field.set_label(u"Credit card type");
+      break;
+    case FieldType::CREDIT_CARD_VERIFICATION_CODE:
+      field.set_name(u"cc_csc");
+      field.set_label(u"Credit card verification code");
+      break;
+    case FieldType::IBAN_VALUE:
+      field.set_name(u"iban");
+      field.set_label(u"IBAN");
       break;
     case FieldType::EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
-      field.set_label(u"Email or Frequent Flyer Number");
-      field.set_name(u"email_or_frequentflyer");
+      field.set_name(u"email_or_loyalty_card_number");
+      field.set_label(u"email or loyalty card number");
+      break;
+    case FieldType::LOYALTY_MEMBERSHIP_ID:
+      field.set_name(u"loyalty_card_number");
+      field.set_label(u"loyalty card number");
+      break;
+    case FieldType::MERCHANT_PROMO_CODE:
+      field.set_name(u"promo_code");
+      field.set_label(u"Promo code");
+      break;
+    case FieldType::NAME_HONORIFIC_PREFIX:
+      field.set_name(u"honorific_prefix");
+      field.set_label(u"Honorific prefix");
+      break;
+    case FieldType::NAME_LAST_FIRST:
+      field.set_name(u"lname_first");
+      field.set_label(u"Last name first");
+      break;
+    case FieldType::NAME_LAST_SECOND:
+      field.set_name(u"lname_second");
+      field.set_label(u"Last name second");
+      break;
+    case FieldType::NAME_MIDDLE:
+      field.set_name(u"mname");
+      field.set_label(u"Middle name");
+      break;
+    case FieldType::NAME_MIDDLE_INITIAL:
+      field.set_name(u"minitial");
+      field.set_label(u"Middle initial");
+      break;
+    case FieldType::NUMERIC_QUANTITY:
+      field.set_name(u"numeric_quantity");
+      field.set_label(u"Numeric quantity");
+      break;
+    case FieldType::PHONE_HOME_CITY_CODE:
+      field.set_name(u"phone_city_code");
+      field.set_label(u"Phone city code");
       break;
     case FieldType::PHONE_HOME_COUNTRY_CODE:
-      field.set_label(u"Phone Country");
-      field.set_name(u"phone_country");
+      field.set_name(u"phone_country_code");
+      field.set_label(u"Phone country code");
+      break;
+    case FieldType::PHONE_HOME_EXTENSION:
+      field.set_name(u"phone_ext");
+      field.set_label(u"Phone extension");
+      break;
+    case FieldType::PHONE_HOME_NUMBER_PREFIX:
+      field.set_name(u"phone_prefix");
+      field.set_label(u"Phone number prefix");
+      break;
+    case FieldType::PHONE_HOME_NUMBER_SUFFIX:
+      field.set_name(u"phone_suffix");
+      field.set_label(u"Phone number suffix");
       break;
     case FieldType::PHONE_HOME_WHOLE_NUMBER:
     case FieldType::PHONE_HOME_CITY_AND_NUMBER:
@@ -119,13 +293,246 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_label(u"Phone Number");
       field.set_name(u"phone_number");
       break;
+    case FieldType::PRICE:
+      field.set_name(u"price");
+      field.set_label(u"Price");
+      break;
+    case FieldType::SEARCH_TERM:
+      field.set_name(u"search");
+      field.set_label(u"Search");
+      break;
+    case FieldType::UNKNOWN_TYPE:
     case FieldType::EMPTY_TYPE:
       break;
-    default:
-      LOG(WARNING) << "The field created by " << __func__ << "("
-                   << FieldTypeToStringView(role)
-                   << ") will probably not be assigned the the expected "
-                      "FieldType by the local heuristics!";
+    case FieldType::NOT_NEW_PASSWORD:
+    case FieldType::NO_SERVER_DATA:
+    case FieldType::PASSPORT_NUMBER:
+    case FieldType::PASSPORT_ISSUING_COUNTRY:
+    case FieldType::PASSPORT_EXPIRATION_DATE:
+    case FieldType::PASSPORT_ISSUE_DATE:
+    case FieldType::LOYALTY_MEMBERSHIP_PROGRAM:
+    case FieldType::LOYALTY_MEMBERSHIP_PROVIDER:
+    case FieldType::VEHICLE_LICENSE_PLATE:
+    case FieldType::VEHICLE_VIN:
+    case FieldType::VEHICLE_MAKE:
+    case FieldType::VEHICLE_MODEL:
+    case FieldType::DRIVERS_LICENSE_REGION:
+    case FieldType::DRIVERS_LICENSE_NUMBER:
+    case FieldType::DRIVERS_LICENSE_EXPIRATION_DATE:
+    case FieldType::DRIVERS_LICENSE_ISSUE_DATE:
+    case FieldType::VEHICLE_YEAR:
+    case FieldType::VEHICLE_PLATE_STATE:
+    case FieldType::NATIONAL_ID_CARD_NUMBER:
+    case FieldType::NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case FieldType::NATIONAL_ID_CARD_ISSUE_DATE:
+    case FieldType::NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case FieldType::KNOWN_TRAVELER_NUMBER:
+    case FieldType::KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FieldType::REDRESS_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FieldType::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FieldType::FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case FieldType::NAME_SUFFIX:
+    case FieldType::MERCHANT_EMAIL_SIGNUP:
+    case FieldType::ACCOUNT_CREATION_PASSWORD:
+    case FieldType::ADDRESS_HOME_SORTING_CODE:
+    case FieldType::NOT_ACCOUNT_CREATION_PASSWORD:
+    case FieldType::USERNAME_AND_EMAIL_ADDRESS:
+    case FieldType::NEW_PASSWORD:
+    case FieldType::PROBABLY_NEW_PASSWORD:
+    case FieldType::NOT_PASSWORD:
+    case FieldType::CONFIRMATION_PASSWORD:
+    case FieldType::AMBIGUOUS_TYPE:
+    case FieldType::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case FieldType::NAME_LAST_PREFIX:
+    case FieldType::NAME_LAST_CORE:
+    case FieldType::ADDRESS_HOME_ZIP_PREFIX:
+    case FieldType::ADDRESS_HOME_ZIP_SUFFIX:
+    case FieldType::ADDRESS_HOME_ZIP_AND_CITY:
+    case FieldType::SINGLE_USERNAME:
+    case FieldType::NOT_USERNAME:
+    case FieldType::ADDRESS_HOME_SUBPREMISE:
+    case FieldType::ADDRESS_HOME_OTHER_SUBUNIT:
+    case FieldType::NAME_LAST_CONJUNCTION:
+    case FieldType::ADDRESS_HOME_ADDRESS:
+    case FieldType::ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case FieldType::ADDRESS_HOME_FLOOR:
+    case FieldType::PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+    case FieldType::ONE_TIME_CODE:
+    case FieldType::DELIVERY_INSTRUCTIONS:
+    case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case FieldType::SINGLE_USERNAME_FORGOT_PASSWORD:
+    case FieldType::ADDRESS_HOME_APT_TYPE:
+    case FieldType::ORDER_ID:
+    case FieldType::ORDER_DATE:
+    case FieldType::ORDER_MERCHANT_NAME:
+    case FieldType::ORDER_MERCHANT_DOMAIN:
+    case FieldType::ORDER_PRODUCT_NAMES:
+    case FieldType::ORDER_ACCOUNT:
+    case FieldType::ORDER_GRAND_TOTAL:
+    case FieldType::MAX_VALID_FIELD_TYPE:
+      LOG(ERROR) << "The field created by " << __func__ << "("
+                 << FieldTypeToStringView(role)
+                 << ") will not get a name and label assigned";
+      break;
+  }
+
+  // Provide a warning if the role type is not predictable by the local
+  // heuristics.
+  switch (role) {
+    // The following types are predicted by the local heuristics.
+    case FieldType::NAME_FULL:
+    case FieldType::NAME_FIRST:
+    case FieldType::NAME_LAST:
+    case FieldType::EMAIL_ADDRESS:
+    case FieldType::ADDRESS_HOME_LINE1:
+    case FieldType::ADDRESS_HOME_CITY:
+    case FieldType::ADDRESS_HOME_STATE:
+    case FieldType::ADDRESS_HOME_COUNTRY:
+    case FieldType::ADDRESS_HOME_ZIP:
+    case FieldType::PHONE_HOME_NUMBER:
+    case FieldType::COMPANY_NAME:
+    case FieldType::CREDIT_CARD_NUMBER:
+    case FieldType::PASSWORD:
+    case FieldType::ADDRESS_HOME_ADMIN_LEVEL2:
+    case FieldType::ADDRESS_HOME_APT:
+    case FieldType::ADDRESS_HOME_APT_NUM:
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS:
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS_1:
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS_2:
+    case FieldType::ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case FieldType::ADDRESS_HOME_HOUSE_NUMBER:
+    case FieldType::ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+    case FieldType::ADDRESS_HOME_LANDMARK:
+    case FieldType::ADDRESS_HOME_LINE2:
+    case FieldType::ADDRESS_HOME_LINE3:
+    case FieldType::ADDRESS_HOME_OVERFLOW:
+    case FieldType::ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case FieldType::ADDRESS_HOME_STREET_ADDRESS:
+    case FieldType::ADDRESS_HOME_STREET_LOCATION:
+    case FieldType::ADDRESS_HOME_STREET_NAME:
+    case FieldType::ALTERNATIVE_FAMILY_NAME:
+    case FieldType::ALTERNATIVE_FULL_NAME:
+    case FieldType::ALTERNATIVE_GIVEN_NAME:
+    case FieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case FieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case FieldType::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case FieldType::CREDIT_CARD_EXP_MONTH:
+    case FieldType::CREDIT_CARD_NAME_FIRST:
+    case FieldType::CREDIT_CARD_NAME_FULL:
+    case FieldType::CREDIT_CARD_NAME_LAST:
+    case FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+    case FieldType::CREDIT_CARD_TYPE:
+    case FieldType::CREDIT_CARD_VERIFICATION_CODE:
+    case FieldType::EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+    case FieldType::IBAN_VALUE:
+    case FieldType::LOYALTY_MEMBERSHIP_ID:
+    case FieldType::MERCHANT_PROMO_CODE:
+    case FieldType::NAME_HONORIFIC_PREFIX:
+    case FieldType::NAME_LAST_FIRST:
+    case FieldType::NAME_LAST_SECOND:
+    case FieldType::NAME_MIDDLE:
+    case FieldType::NAME_MIDDLE_INITIAL:
+    case FieldType::NUMERIC_QUANTITY:
+    case FieldType::PHONE_HOME_CITY_AND_NUMBER:
+    case FieldType::PHONE_HOME_CITY_CODE:
+    case FieldType::PHONE_HOME_COUNTRY_CODE:
+    case FieldType::PHONE_HOME_EXTENSION:
+    case FieldType::PHONE_HOME_NUMBER_PREFIX:
+    case FieldType::PHONE_HOME_NUMBER_SUFFIX:
+    case FieldType::PHONE_HOME_WHOLE_NUMBER:
+    case FieldType::PRICE:
+    case FieldType::SEARCH_TERM:
+    case FieldType::UNKNOWN_TYPE:
+    case FieldType::EMPTY_TYPE:
+      break;
+
+    // The following types cannot be predicted by the local heuristics.
+    case FieldType::USERNAME:
+    case FieldType::NOT_NEW_PASSWORD:
+    case FieldType::SINGLE_USERNAME:
+    case FieldType::NO_SERVER_DATA:
+    case FieldType::PASSPORT_NUMBER:
+    case FieldType::PASSPORT_ISSUING_COUNTRY:
+    case FieldType::PASSPORT_EXPIRATION_DATE:
+    case FieldType::PASSPORT_ISSUE_DATE:
+    case FieldType::LOYALTY_MEMBERSHIP_PROGRAM:
+    case FieldType::LOYALTY_MEMBERSHIP_PROVIDER:
+    case FieldType::VEHICLE_LICENSE_PLATE:
+    case FieldType::VEHICLE_VIN:
+    case FieldType::VEHICLE_MAKE:
+    case FieldType::VEHICLE_MODEL:
+    case FieldType::DRIVERS_LICENSE_REGION:
+    case FieldType::DRIVERS_LICENSE_NUMBER:
+    case FieldType::DRIVERS_LICENSE_EXPIRATION_DATE:
+    case FieldType::DRIVERS_LICENSE_ISSUE_DATE:
+    case FieldType::VEHICLE_YEAR:
+    case FieldType::VEHICLE_PLATE_STATE:
+    case FieldType::NATIONAL_ID_CARD_NUMBER:
+    case FieldType::NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case FieldType::NATIONAL_ID_CARD_ISSUE_DATE:
+    case FieldType::NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case FieldType::KNOWN_TRAVELER_NUMBER:
+    case FieldType::KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FieldType::REDRESS_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FieldType::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FieldType::FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case FieldType::PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+    case FieldType::NAME_SUFFIX:
+    case FieldType::MERCHANT_EMAIL_SIGNUP:
+    case FieldType::ACCOUNT_CREATION_PASSWORD:
+    case FieldType::ADDRESS_HOME_SORTING_CODE:
+    case FieldType::NOT_ACCOUNT_CREATION_PASSWORD:
+    case FieldType::USERNAME_AND_EMAIL_ADDRESS:
+    case FieldType::NEW_PASSWORD:
+    case FieldType::PROBABLY_NEW_PASSWORD:
+    case FieldType::NOT_PASSWORD:
+    case FieldType::CONFIRMATION_PASSWORD:
+    case FieldType::AMBIGUOUS_TYPE:
+    case FieldType::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case FieldType::NAME_LAST_PREFIX:
+    case FieldType::NAME_LAST_CORE:
+    case FieldType::ADDRESS_HOME_ZIP_PREFIX:
+    case FieldType::ADDRESS_HOME_ZIP_SUFFIX:
+    case FieldType::ADDRESS_HOME_ZIP_AND_CITY:
+    case FieldType::NOT_USERNAME:
+    case FieldType::ADDRESS_HOME_SUBPREMISE:
+    case FieldType::ADDRESS_HOME_OTHER_SUBUNIT:
+    case FieldType::NAME_LAST_CONJUNCTION:
+    case FieldType::ADDRESS_HOME_ADDRESS:
+    case FieldType::ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case FieldType::ADDRESS_HOME_FLOOR:
+    case FieldType::PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+    case FieldType::ONE_TIME_CODE:
+    case FieldType::DELIVERY_INSTRUCTIONS:
+    case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case FieldType::SINGLE_USERNAME_FORGOT_PASSWORD:
+    case FieldType::ADDRESS_HOME_APT_TYPE:
+    case FieldType::ORDER_ID:
+    case FieldType::ORDER_DATE:
+    case FieldType::ORDER_MERCHANT_NAME:
+    case FieldType::ORDER_MERCHANT_DOMAIN:
+    case FieldType::ORDER_PRODUCT_NAMES:
+    case FieldType::ORDER_ACCOUNT:
+    case FieldType::ORDER_GRAND_TOTAL:
+    case FieldType::MAX_VALID_FIELD_TYPE:
+      LOG(ERROR) << "The field created by " << __func__ << "("
+                 << FieldTypeToStringView(role)
+                 << ") will not be assigned to the expected "
+                    "FieldType by the local heuristics!";
       break;
   }
   return field;
