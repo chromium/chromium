@@ -231,7 +231,6 @@ void BuildFallbackConfig(const omnibox::AimEligibilityResponse& response,
   }
   if (response.is_image_generation_eligible()) {
     rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-    rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
     auto* tool_config = fallback_config.add_tool_configs();
     tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     auto* image_gen_rule = rule_set->add_tool_rules();
