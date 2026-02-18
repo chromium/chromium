@@ -14,7 +14,7 @@ namespace media {
 // CodecImage with a mocked ReleaseCodecBuffer.
 class MockCodecImage : public CodecImage {
  public:
-  MockCodecImage(const gfx::Size& coded_size);
+  MockCodecImage();
 
   MockCodecImage(const MockCodecImage&) = delete;
   MockCodecImage& operator=(const MockCodecImage&) = delete;

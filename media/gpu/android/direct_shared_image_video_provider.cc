@@ -136,8 +136,7 @@ void GpuSharedImageVideoFactory::CreateImage(
     return;
   }
 
-  auto codec_image =
-      base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
+  auto codec_image = base::MakeRefCounted<CodecImage>(drdc_lock);
 
   TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
 
@@ -166,42 +165,6 @@ void GpuSharedImageVideoFactory::CreateImage(
       std::move(drdc_lock));
 
   std::move(image_ready_cb).Run(std::move(record));
-}
-
-bool GpuSharedImageVideoFactory::CreateImageInternal(
-    const SharedImageVideoProvider::ImageSpec& spec,
-    gpu::Mailbox mailbox,
-    scoped_refptr<CodecImage> image,
-    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!MakeContextCurrent(stub_))
-    return false;
-
-  const auto& coded_size = spec.coded_size;
-
-  auto shared_context = GetSharedContext(stub_);
-  if (!shared_context) {
-    DLOG(ERROR)
-        << "GpuSharedImageVideoFactory: Unable to get a shared context.";
-    return false;
-  }
-
-  // Create a shared image.
-  // TODO(vikassoni): This shared image need to be thread safe eventually for
-  // webview to work with shared images.
-  auto shared_image = gpu::AndroidVideoImageBacking::Create(
-      mailbox, coded_size, spec.color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, /*debug_label=*/"DirectSIVideo", std::move(image),
-      std::move(shared_context), std::move(drdc_lock));
-
-  // Register it with shared image mailbox. This keeps |shared_image| around
-  // until its destruction cb is called. NOTE: Currently none of the video
-  // mailbox consumer uses shared image mailbox.
-  DCHECK(stub_->channel()->gpu_channel_manager()->shared_image_manager());
-  stub_->channel()->shared_image_stub()->factory()->RegisterBacking(
-      std::move(shared_image));
-
-  return true;
 }
 
 void GpuSharedImageVideoFactory::OnWillDestroyStub(bool have_context) {

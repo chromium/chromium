@@ -15,9 +15,8 @@
 
 namespace media {
 
-CodecImage::CodecImage(const gfx::Size& coded_size,
-                       scoped_refptr<gpu::RefCountedLock> drdc_lock)
-    : RefCountedLockHelperDrDc(std::move(drdc_lock)), coded_size_(coded_size) {}
+CodecImage::CodecImage(scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
 
 CodecImage::~CodecImage() {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);

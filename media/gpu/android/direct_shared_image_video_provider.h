@@ -90,12 +90,6 @@ class GpuSharedImageVideoFactory
                    scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
  private:
-  // Creates a SharedImage for |mailbox|, and returns success or failure.
-  bool CreateImageInternal(const SharedImageVideoProvider::ImageSpec& spec,
-                           gpu::Mailbox mailbox,
-                           scoped_refptr<CodecImage> image,
-                           scoped_refptr<gpu::RefCountedLock>);
-
   void OnWillDestroyStub(bool have_context) override;
 
   raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;

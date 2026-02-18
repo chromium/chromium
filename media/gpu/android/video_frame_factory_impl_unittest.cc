@@ -148,8 +148,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
             *flag = true;
         },
         base::Unretained(release_cb_called_flag));
-    auto codec_image =
-        base::MakeRefCounted<MockCodecImage>(gfx::Size(100, 100));
+    auto codec_image = base::MakeRefCounted<MockCodecImage>();
     record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
         task_runner_, codec_image,
         features::NeedThreadSafeAndroidMedia()

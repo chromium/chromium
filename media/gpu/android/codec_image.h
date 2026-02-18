@@ -50,8 +50,7 @@ class MEDIA_GPU_EXPORT CodecImage
   // destroying it.
   using UnusedCB = base::OnceCallback<void(CodecImage*)>;
 
-  CodecImage(const gfx::Size& coded_size,
-             scoped_refptr<gpu::RefCountedLock> drdc_lock);
+  explicit CodecImage(scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   CodecImage(const CodecImage&) = delete;
   CodecImage& operator=(const CodecImage&) = delete;
@@ -138,9 +137,6 @@ class MEDIA_GPU_EXPORT CodecImage
 
   // The bounds last sent to the overlay.
   gfx::Rect most_recent_bounds_;
-
-  // Coded size of the image.
-  gfx::Size coded_size_;
 
   // Callback to notify about promotion hints and overlay position.
   PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb_;

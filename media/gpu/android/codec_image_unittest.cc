@@ -117,8 +117,7 @@ class CodecImageTest : public testing::Test {
         &CodecImageTest::OnFrameInfoReady, base::Unretained(this)));
 
     scoped_refptr<CodecImage> image =
-        new CodecImage(buffer_renderer->size(),
-                       features::NeedThreadSafeAndroidMedia()
+        new CodecImage(features::NeedThreadSafeAndroidMedia()
                            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
                            : nullptr);
     image->Initialize(

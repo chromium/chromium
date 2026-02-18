@@ -22,9 +22,6 @@
 namespace media {
 
 namespace {
-// Size used to create MockCodecImage.
-constexpr gfx::Size kMockImageSize(100, 100);
-
 // Subclass of CodecImageGroup which will notify us when it's destroyed.
 class CodecImageGroupWithDestructionHook : public CodecImageGroup {
  public:
@@ -132,7 +129,7 @@ TEST_F(CodecImageGroupTest, ImagesRetainRefToGroup) {
   bool was_destroyed = false;
   rec.image_group->SetDestructionCallback(
       base::BindOnce([](bool* flag) -> void { *flag = true; }, &was_destroyed));
-  scoped_refptr<CodecImage> image = new MockCodecImage(kMockImageSize);
+  scoped_refptr<CodecImage> image = base::MakeRefCounted<MockCodecImage>();
   // We're supposed to call this from |gpu_task_runner_|, but all
   // CodecImageGroup really cares about is being single sequence.
   rec.image_group->AddCodecImage(image.get());
@@ -151,8 +148,10 @@ TEST_F(CodecImageGroupTest, ImageGroupDropsForwardsSurfaceDestruction) {
   // also verify that the image group drops its ref to the surface bundle, so
   // that it doesn't prevent destruction of the overlay that provided it.
   Record rec = CreateImageGroup();
-  scoped_refptr<MockCodecImage> image_1 = new MockCodecImage(kMockImageSize);
-  scoped_refptr<MockCodecImage> image_2 = new MockCodecImage(kMockImageSize);
+  scoped_refptr<MockCodecImage> image_1 =
+      base::MakeRefCounted<MockCodecImage>();
+  scoped_refptr<MockCodecImage> image_2 =
+      base::MakeRefCounted<MockCodecImage>();
   rec.image_group->AddCodecImage(image_1.get());
   rec.image_group->AddCodecImage(image_2.get());
 
