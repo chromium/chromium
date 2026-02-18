@@ -335,13 +335,25 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildShareListItem(shouldShowIconBeforeItem()));
         }
 
+        // Save and print
+        if (shouldShowSaveAndPrintParentItem(
+                currentTab, isNativePage, isFileScheme, isContentScheme, url)) {
+            modelList.add(
+                    buildSaveAndPrintParentItem(
+                            currentTab, isNativePage, isFileScheme, isContentScheme, url));
+        }
+
         // Download Page
-        if (shouldShowDownloadPageMenuItem(currentTab)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowDownloadPageMenuItem(currentTab)) {
             modelList.add(buildDownloadPageItem(currentTab));
         }
 
         // Print
-        if (shouldShowPrintItem(currentTab)) modelList.add(buildPrintItem(currentTab));
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowPrintItem(currentTab)) {
+            modelList.add(buildPrintItem(currentTab));
+        }
 
         // Price Tracking (enable / disable)
         MVCListAdapter.ListItem priceTrackingItem =
@@ -378,8 +390,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Universal Install / Open Web APK
-        if (shouldShowHomeScreenMenuItem(
-                isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowHomeScreenMenuItem(
+                        isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
             assert currentTab != null;
             modelList.add(buildAddToHomescreenListItem(currentTab, shouldShowIconBeforeItem()));
         }
@@ -401,7 +414,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Paint Preview
-        if (shouldShowPaintPreview(isNativePage, currentTab)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowPaintPreview(isNativePage, currentTab)) {
             modelList.add(buildPaintPreviewItem(isNativePage, currentTab));
         }
 
@@ -794,6 +808,76 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.page_zoom_id,
                         R.string.page_zoom_menu_title,
                         shouldShowIconBeforeItem() ? R.drawable.ic_zoom : 0));
+    }
+
+    private boolean shouldShowSaveAndPrintParentItem(
+            @Nullable Tab currentTab,
+            boolean isNativePage,
+            boolean isFileScheme,
+            boolean isContentScheme,
+            GURL url) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            return false;
+        }
+
+        if (shouldShowDownloadPageMenuItem(currentTab)) {
+            return true;
+        }
+
+        if (shouldShowHomeScreenMenuItem(
+                isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
+            return true;
+        }
+
+        if (shouldShowPrintItem(currentTab)) {
+            return true;
+        }
+
+        if (shouldShowPaintPreview(isNativePage, currentTab)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private MVCListAdapter.ListItem buildSaveAndPrintParentItem(
+            @Nullable Tab currentTab,
+            boolean isNativePage,
+            boolean isFileScheme,
+            boolean isContentScheme,
+            GURL url) {
+        assert shouldShowSaveAndPrintParentItem(
+                currentTab, isNativePage, isFileScheme, isContentScheme, url);
+
+        List<ListItem> submenuItems = new ArrayList<>();
+
+        if (shouldShowDownloadPageMenuItem(currentTab)) {
+            submenuItems.add(buildDownloadPageItem(currentTab));
+        }
+
+        if (shouldShowHomeScreenMenuItem(
+                isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
+            assert currentTab != null;
+            submenuItems.add(buildAddToHomescreenListItem(currentTab, shouldShowIconBeforeItem()));
+        }
+
+        if (shouldShowPrintItem(currentTab)) {
+            submenuItems.add(buildPrintItem(currentTab));
+        }
+
+        if (shouldShowPaintPreview(isNativePage, currentTab)) {
+            submenuItems.add(buildPaintPreviewItem(isNativePage, currentTab));
+        }
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.save_and_print_parent_menu_id,
+                        R.string.menu_save_and_print,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_file_save_24dp
+                                : Resources.ID_NULL,
+                        submenuItems));
     }
 
     private MVCListAdapter.ListItem buildDownloadPageItem(Tab currentTab) {

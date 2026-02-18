@@ -322,6 +322,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_error.xml",
   "java/res/drawable/ic_features_24dp.xml",
   "java/res/drawable/ic_feedback_24dp.xml",
+  "java/res/drawable/ic_file_save_24dp.xml",
   "java/res/drawable/ic_find_in_page.xml",
   "java/res/drawable/ic_folder_outline_24dp.xml",
   "java/res/drawable/ic_forward_arrow_black_24dp.xml",

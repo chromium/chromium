@@ -657,6 +657,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         List<Integer> expectedItems = new ArrayList<>();
         List<Integer> expectedTitles = new ArrayList<>();
 
+        List<Integer> saveAndPrintExpectedItems = new ArrayList<>();
+        List<Integer> saveAndPrintExpectedTitles = new ArrayList<>();
+
         expectedItems.add(R.id.icon_row_menu_id);
         expectedTitles.add(0);
         expectedItems.add(R.id.new_tab_menu_id);
@@ -689,12 +692,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(0);
         expectedItems.add(R.id.share_menu_id);
         expectedTitles.add(R.string.menu_share_page);
+        expectedItems.add(R.id.save_and_print_parent_menu_id);
+        expectedTitles.add(R.string.menu_save_and_print);
+        saveAndPrintExpectedItems.add(R.id.universal_install);
+        saveAndPrintExpectedTitles.add(R.string.menu_add_to_homescreen);
         expectedItems.add(R.id.find_in_page_id);
         expectedTitles.add(R.string.menu_find_in_page);
         expectedItems.add(R.id.translate_id);
         expectedTitles.add(R.string.menu_translate);
-        expectedItems.add(R.id.universal_install);
-        expectedTitles.add(R.string.menu_add_to_homescreen);
         if (!DeviceInfo.isDesktop()) {
             expectedItems.add(R.id.request_desktop_site_id);
             expectedTitles.add(R.string.menu_request_desktop_site);
@@ -717,6 +722,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         };
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
         assertMenuTitlesAreEqual(modelList, expectedTitles.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
+        assertMenuTitlesAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedTitles.toArray(new Integer[0]));
         assertActionBarItemsAreEqual(modelList, expectedActionBarItems);
     }
 
@@ -833,6 +844,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         List<Integer> expectedItems = new ArrayList<>();
         List<Integer> expectedTitles = new ArrayList<>();
 
+        List<Integer> saveAndPrintExpectedItems = new ArrayList<>();
+        List<Integer> saveAndPrintExpectedTitles = new ArrayList<>();
+
         expectedItems.add(R.id.icon_row_menu_id);
         expectedTitles.add(0);
         expectedItems.add(R.id.new_tab_menu_id);
@@ -863,12 +877,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(0);
         expectedItems.add(R.id.share_menu_id);
         expectedTitles.add(R.string.menu_share_page);
+        expectedItems.add(R.id.save_and_print_parent_menu_id);
+        expectedTitles.add(R.string.menu_save_and_print);
+        saveAndPrintExpectedItems.add(R.id.universal_install);
+        saveAndPrintExpectedTitles.add(R.string.menu_add_to_homescreen);
         expectedItems.add(R.id.find_in_page_id);
         expectedTitles.add(R.string.menu_find_in_page);
         expectedItems.add(R.id.translate_id);
         expectedTitles.add(R.string.menu_translate);
-        expectedItems.add(R.id.universal_install);
-        expectedTitles.add(R.string.menu_add_to_homescreen);
         if (!DeviceInfo.isDesktop()) {
             expectedItems.add(R.id.request_desktop_site_id);
             expectedTitles.add(R.string.menu_request_desktop_site);
@@ -891,6 +907,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         };
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
         assertMenuTitlesAreEqual(modelList, expectedTitles.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
+        assertMenuTitlesAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedTitles.toArray(new Integer[0]));
         assertActionBarItemsAreEqual(modelList, expectedActionBarItems);
     }
 
@@ -925,18 +947,24 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.recent_tabs_menu_id,
                                 R.id.divider_line_id,
                                 R.id.share_menu_id,
+                                R.id.save_and_print_parent_menu_id,
                                 R.id.find_in_page_id,
                                 R.id.translate_id,
-                                R.id.universal_install,
                                 // Request desktop site is hidden.
                                 R.id.auto_dark_web_contents_id,
                                 R.id.divider_line_id,
                                 R.id.preferences_id,
                                 R.id.help_id));
+
+        List<Integer> saveAndPrintExpectedItems =
+                new ArrayList<>(Arrays.asList(R.id.universal_install));
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(R.id.extensions_parent_menu_id);
         }
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
     }
 
     @Test
@@ -983,8 +1011,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.recent_tabs_menu_id,
                                 R.id.translate_id,
                                 R.id.share_menu_id,
+                                R.id.save_and_print_parent_menu_id,
                                 R.id.find_in_page_id,
-                                R.id.universal_install,
                                 R.id.reader_mode_prefs_id,
                                 R.id.auto_dark_web_contents_id,
                                 R.id.preferences_id,
@@ -992,7 +1020,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(R.id.extensions_parent_menu_id);
         }
+
+        List<Integer> saveAndPrintExpectedItems =
+                new ArrayList<>(Arrays.asList(R.id.universal_install));
+
         assertMenuItemsHaveIcons(modelList, expectedItems.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
     }
 
     @Test
@@ -1246,9 +1281,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.recent_tabs_menu_id,
                                 R.id.divider_line_id,
                                 R.id.share_menu_id,
+                                R.id.save_and_print_parent_menu_id,
                                 R.id.get_image_descriptions_id,
                                 R.id.find_in_page_id,
-                                R.id.universal_install,
                                 R.id.auto_dark_web_contents_id,
                                 R.id.divider_line_id,
                                 R.id.preferences_id,
@@ -1260,7 +1295,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             expectedItems.add(R.id.extensions_parent_menu_id);
         }
 
+        List<Integer> saveAndPrintExpectedItems =
+                new ArrayList<>(Arrays.asList(R.id.universal_install));
+
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
 
         // Ensure the text of the menu item is correct
         assertEquals(
@@ -1323,8 +1364,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.recent_tabs_menu_id,
                                 R.id.divider_line_id,
                                 R.id.share_menu_id,
+                                R.id.save_and_print_parent_menu_id,
                                 R.id.find_in_page_id,
-                                R.id.universal_install,
                                 R.id.auto_dark_web_contents_id,
                                 R.id.divider_line_id,
                                 R.id.preferences_id,
@@ -1339,7 +1380,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             expectedItems.add(R.id.extensions_parent_menu_id);
         }
 
+        List<Integer> saveAndPrintExpectedItems =
+                new ArrayList<>(Arrays.asList(R.id.universal_install));
+
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
     }
 
     @Test
@@ -1375,8 +1422,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.recent_tabs_menu_id,
                                 R.id.divider_line_id,
                                 R.id.share_menu_id,
+                                R.id.save_and_print_parent_menu_id,
                                 R.id.find_in_page_id,
-                                R.id.universal_install,
                                 R.id.auto_dark_web_contents_id,
                                 R.id.divider_line_id,
                                 R.id.preferences_id,
@@ -1391,7 +1438,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             expectedItems.add(R.id.extensions_parent_menu_id);
         }
 
+        List<Integer> saveAndPrintExpectedItems =
+                new ArrayList<>(Arrays.asList(R.id.universal_install));
+
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+        assertMenuItemsAreEqual(
+                createModelList(getSubmenuItems(modelList, R.id.save_and_print_parent_menu_id)),
+                saveAndPrintExpectedItems.toArray(new Integer[0]));
     }
 
     @Test
@@ -1512,8 +1565,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
-        assertTrue(isMenuVisible(modelList, R.id.universal_install));
-        assertFalse(isMenuVisible(modelList, R.id.open_webapk_id));
+        assertTrue(
+                isMenuVisibleInSubmenu(
+                        modelList, R.id.save_and_print_parent_menu_id, R.id.universal_install));
+
+        assertFalse(
+                isMenuVisibleInSubmenu(
+                        modelList, R.id.save_and_print_parent_menu_id, R.id.open_webapk_id));
     }
 
     @Test
@@ -2714,6 +2772,40 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private boolean isMenuVisible(MVCListAdapter.ModelList modelList, int itemId) {
         return findItemById(modelList, itemId) != null;
+    }
+
+    private MVCListAdapter.ModelList createModelList(List<MVCListAdapter.ListItem> items) {
+        MVCListAdapter.ModelList modelList = new MVCListAdapter.ModelList();
+        if (items != null) {
+            for (MVCListAdapter.ListItem item : items) {
+                modelList.add(item);
+            }
+        }
+        return modelList;
+    }
+
+    private List<MVCListAdapter.ListItem> getSubmenuItems(
+            MVCListAdapter.ModelList modelList, int parentId) {
+        for (MVCListAdapter.ListItem item : modelList) {
+            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == parentId) {
+                return item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+            }
+        }
+        return null;
+    }
+
+    private boolean isMenuVisibleInSubmenu(
+            MVCListAdapter.ModelList modelList, int parentId, int itemId) {
+        List<MVCListAdapter.ListItem> submenu = getSubmenuItems(modelList, parentId);
+
+        if (submenu == null) return false;
+
+        for (MVCListAdapter.ListItem subItem : submenu) {
+            if (subItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isMenuVisibleWithCorrectTitle(

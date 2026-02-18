@@ -163,6 +163,7 @@ found in the LICENSE file.
     <item type="id" name="page_zoom_id" />
     <item type="id" name="share_menu_id" />
     <item type="id" name="direct_share_menu_id" />
+    <item type="id" name="save_and_print_parent_menu_id" />
     <item type="id" name="download_page_id" />
     <item type="id" name="enable_price_tracking_menu_id" />
     <item type="id" name="disable_price_tracking_menu_id" />
