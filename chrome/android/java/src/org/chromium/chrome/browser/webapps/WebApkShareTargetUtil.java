@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 /** Computes data for Post Share Target. */
 @NullMarked
@@ -64,11 +66,30 @@ public class WebApkShareTargetUtil {
         }
     }
 
+    private static @Nullable Function<Uri, String> sFileTypeGetterForTesting;
+    private static @Nullable Function<Uri, String> sFileNameGetterForTesting;
+
+    public static void setFileTypeGetterForTesting(Function<Uri, String> getter) {
+        sFileTypeGetterForTesting = getter;
+        ResettersForTesting.register(() -> sFileTypeGetterForTesting = null);
+    }
+
+    public static void setFileNameGetterForTesting(Function<Uri, String> getter) {
+        sFileNameGetterForTesting = getter;
+        ResettersForTesting.register(() -> sFileNameGetterForTesting = null);
+    }
+
     private static @Nullable String getFileTypeFromContentUri(Uri uri) {
+        if (sFileTypeGetterForTesting != null) {
+            return sFileTypeGetterForTesting.apply(uri);
+        }
         return ContextUtils.getApplicationContext().getContentResolver().getType(uri);
     }
 
     private static @Nullable String getFileNameFromContentUri(Uri uri) {
+        if (sFileNameGetterForTesting != null) {
+            return sFileNameGetterForTesting.apply(uri);
+        }
         if (Objects.equals(uri.getScheme(), "content")) {
             try (Cursor cursor =
                     ContextUtils.getApplicationContext()

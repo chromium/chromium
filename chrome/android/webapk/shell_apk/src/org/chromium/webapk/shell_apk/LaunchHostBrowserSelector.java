@@ -18,12 +18,20 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
+import java.util.function.Consumer;
+
 /** Selects host browser to launch. */
 @NullMarked
 public class LaunchHostBrowserSelector {
     private static final String LAST_RESORT_HOST_BROWSER = "com.android.chrome";
     private static final String LAST_RESORT_HOST_BROWSER_APPLICATION_NAME = "Google Chrome";
     private static final String TAG = "cr_LaunchHostBrowserSelector";
+
+    private static @Nullable Consumer<Callback> sMockWrapperForTesting;
+
+    public static void setMockForTesting(Consumer<Callback> mock) {
+        sMockWrapperForTesting = mock;
+    }
 
     private final Context mContext;
 
@@ -63,6 +71,11 @@ public class LaunchHostBrowserSelector {
      * selectCallback} with the result.
      */
     public void selectHostBrowser(Callback selectCallback) {
+        if (sMockWrapperForTesting != null) {
+            sMockWrapperForTesting.accept(selectCallback);
+            return;
+        }
+
         Bundle metadata = WebApkUtils.readMetaData(mContext);
         if (metadata == null) {
             selectCallback.onBrowserSelected(null, /* dialogShown= */ false);

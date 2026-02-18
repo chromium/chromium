@@ -10,12 +10,14 @@ import androidx.mediarouter.media.MediaRouteSelector;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.MediaSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /** Abstracts parsing the Cast application id and other parameters from the source ID. */
 @NullMarked
@@ -77,12 +79,23 @@ public class CastMediaSource implements MediaSource {
     /** Defines the capabilities of the particular application id. Can be null. */
     private final String @Nullable [] mCapabilities;
 
+    private static @Nullable Function<String, CastMediaSource> sMockBuilderForTesting;
+
+    public static void setMockBuilderForTesting(Function<String, CastMediaSource> builder) {
+        sMockBuilderForTesting = builder;
+        ResettersForTesting.register(() -> sMockBuilderForTesting = null);
+    }
+
     /**
      * Initializes the media source from the source id.
+     *
      * @param sourceId the source id for the Cast media source (a presentation url).
      * @return an initialized media source if the id is valid, null otherwise.
      */
     public static @Nullable CastMediaSource from(String sourceId) {
+        if (sMockBuilderForTesting != null) {
+            return sMockBuilderForTesting.apply(sourceId);
+        }
         assert sourceId != null;
         return sourceId.startsWith(CAST_URL_PROTOCOL)
                 ? fromCastUrl(sourceId)

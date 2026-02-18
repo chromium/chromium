@@ -10,11 +10,10 @@ import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
@@ -24,10 +23,22 @@ import java.util.List;
 
 /** Tests WebApkShareTargetUtil. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {WebApkShareTargetUtilTest.WebApkShareTargetUtilShadow.class})
+@Config(manifest = Config.NONE)
 public class WebApkShareTargetUtilTest {
+    @Before
+    public void setUp() {
+        WebApkShareTargetUtil.setFileTypeGetterForTesting(
+                (uri) -> {
+                    String uriString = uri.toString();
+                    if (uriString.startsWith("text")) {
+                        return "text/plain";
+                    }
+                    return "image/gif";
+                });
+        WebApkShareTargetUtil.setFileNameGetterForTesting(
+                (uri) -> String.format("file-name-for-%s", uri.toString()));
+    }
+
     /** Builder class for {@link WebApkShareTarget} */
     public static class ShareTargetBuilder {
         private final String mAction;
@@ -125,29 +136,6 @@ public class WebApkShareTargetUtilTest {
         Assert.assertEquals(postData.types.size(), types.length);
         for (int i = 0; i < types.length; i++) {
             Assert.assertEquals(postData.types.get(i), types[i]);
-        }
-    }
-
-    /** Shadow class for {@link WebApkShareTargetUtil} which mocks out ContentProvider queries. */
-    @Implements(WebApkShareTargetUtil.class)
-    public static class WebApkShareTargetUtilShadow extends WebApkShareTargetUtil {
-        @Implementation
-        public static byte[] readStringFromContentUri(Uri uri) {
-            return String.format("content-for-%s", uri.toString()).getBytes();
-        }
-
-        @Implementation
-        public static String getFileTypeFromContentUri(Uri uri) {
-            String uriString = uri.toString();
-            if (uriString.startsWith("text")) {
-                return "text/plain";
-            }
-            return "image/gif";
-        }
-
-        @Implementation
-        public static String getFileNameFromContentUri(Uri uri) {
-            return String.format("file-name-for-%s", uri.toString());
         }
     }
 
