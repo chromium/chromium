@@ -15,12 +15,6 @@ BASE_FEATURE(kWelcomeBack, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kWelcomeBackParam[] = "WelcomeBackParam";
 
-BASE_FEATURE_PARAM(int,
-                   kWelcomeBackParamFeature,
-                   &kWelcomeBack,
-                   kWelcomeBackParam,
-                   1);
-
 bool IsWelcomeBackEnabled() {
   return base::FeatureList::IsEnabled(kWelcomeBack) &&
          !base::FeatureList::IsEnabled(
@@ -39,5 +33,6 @@ WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType() {
     return WelcomeBackScreenVariationType::kDisabled;
   }
   return static_cast<WelcomeBackScreenVariationType>(
-      kWelcomeBackParamFeature.Get());
+      base::GetFieldTrialParamByFeatureAsInt(kWelcomeBack, kWelcomeBackParam,
+                                             1));
 }

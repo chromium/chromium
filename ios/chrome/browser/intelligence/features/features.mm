@@ -7,7 +7,6 @@
 #import <optional>
 
 #import "base/check.h"
-#import "base/metrics/field_trial_params.h"
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/time/time.h"
@@ -129,26 +128,16 @@ bool IsDirectBWGEntryPoint() {
 
 const char kBWGSessionValidityDurationParam[] = "BWGSessionValidityDuration";
 
-BASE_FEATURE_PARAM(int,
-                   kBWGSessionValidityDurationFeatureParam,
-                   &kPageActionMenu,
-                   kBWGSessionValidityDurationParam,
-                   30);
-
 const base::TimeDelta BWGSessionValidityDuration() {
-  return base::Minutes(kBWGSessionValidityDurationFeatureParam.Get());
+  return base::Minutes(base::GetFieldTrialParamByFeatureAsInt(
+      kPageActionMenu, kBWGSessionValidityDurationParam, 30));
 }
 
 const char kBWGPromoConsentParams[] = "BWGPromoConsentVariations";
 
-BASE_FEATURE_PARAM(int,
-                   kBWGPromoConsentFeatureParam,
-                   &kBWGPromoConsent,
-                   kBWGPromoConsentParams,
-                   0);
-
 BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
-  int param = kBWGPromoConsentFeatureParam.Get();
+  int param = base::GetFieldTrialParamByFeatureAsInt(kBWGPromoConsent,
+                                                     kBWGPromoConsentParams, 0);
   if (!IsPageActionMenuEnabled()) {
     return BWGPromoConsentVariations::kDisabled;
   }
@@ -184,14 +173,9 @@ BASE_FEATURE(kBWGPromoConsent, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kExplainGeminiEditMenuParams[] = "PositionForExplainGeminiEditMenu";
 
-BASE_FEATURE_PARAM(int,
-                   kExplainGeminiEditMenuFeatureParam,
-                   &kExplainGeminiEditMenu,
-                   kExplainGeminiEditMenuParams,
-                   0);
-
 PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
-  int param = kExplainGeminiEditMenuFeatureParam.Get();
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kExplainGeminiEditMenu, kExplainGeminiEditMenuParams, 0);
   if (param == 1) {
     return PositionForExplainGeminiEditMenu::kAfterEdit;
   }
@@ -233,24 +217,6 @@ const char kPersistTabContextStorageParam[] = "storage_implementation";
 const char kPersistTabContextExtractionTimingParam[] = "extraction_timing";
 const char kPersistTabContextDataParam[] = "data_extracted";
 
-BASE_FEATURE_PARAM(int,
-                   kPersistTabContextStorageFeatureParam,
-                   &kPersistTabContext,
-                   kPersistTabContextStorageParam,
-                   static_cast<int>(PersistTabStorageType::kFileSystem));
-
-BASE_FEATURE_PARAM(int,
-                   kPersistTabContextExtractionTimingFeatureParam,
-                   &kPersistTabContext,
-                   kPersistTabContextExtractionTimingParam,
-                   static_cast<int>(PersistTabExtractionTiming::kOnWasHidden));
-
-BASE_FEATURE_PARAM(int,
-                   kPersistTabContextDataFeatureParam,
-                   &kPersistTabContext,
-                   kPersistTabContextDataParam,
-                   static_cast<int>(PersistTabDataExtracted::kApcAndInnerText));
-
 bool IsPersistTabContextEnabled() {
   if (IsSmartTabGroupingEnabled()) {
     return true;
@@ -259,7 +225,9 @@ bool IsPersistTabContextEnabled() {
 }
 
 PersistTabStorageType GetPersistTabContextStorageType() {
-  int param = kPersistTabContextStorageFeatureParam.Get();
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, kPersistTabContextStorageParam,
+      static_cast<int>(PersistTabStorageType::kFileSystem));
   if (param == static_cast<int>(PersistTabStorageType::kSQLite) &&
       base::FeatureList::IsEnabled(
           page_content_annotations::features::kPageContentCache)) {
@@ -269,7 +237,9 @@ PersistTabStorageType GetPersistTabContextStorageType() {
 }
 
 PersistTabExtractionTiming GetPersistTabContextExtractionTiming() {
-  int param = kPersistTabContextExtractionTimingFeatureParam.Get();
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, kPersistTabContextExtractionTimingParam,
+      static_cast<int>(PersistTabExtractionTiming::kOnWasHidden));
   if (param ==
       static_cast<int>(PersistTabExtractionTiming::kOnWasHiddenAndPageLoad)) {
     return PersistTabExtractionTiming::kOnWasHiddenAndPageLoad;
@@ -278,7 +248,9 @@ PersistTabExtractionTiming GetPersistTabContextExtractionTiming() {
 }
 
 PersistTabDataExtracted GetPersistTabContextDataExtracted() {
-  int param = kPersistTabContextDataFeatureParam.Get();
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, kPersistTabContextDataParam,
+      static_cast<int>(PersistTabDataExtracted::kApcAndInnerText));
   if (param == static_cast<int>(PersistTabDataExtracted::kInnerTextOnly)) {
     return PersistTabDataExtracted::kInnerTextOnly;
   }
@@ -294,14 +266,9 @@ bool IsCleanupPersistedTabContextsEnabled() {
 // The default Time-To-Live in days for persisted contexts.
 constexpr int kPersistTabContextDefaultTTL = 21;
 
-BASE_FEATURE_PARAM(int,
-                   kPersistTabContextTTLParam,
-                   &kPersistTabContext,
-                   "ttl_days",
-                   kPersistTabContextDefaultTTL);
-
 base::TimeDelta GetPersistedContextEffectiveTTL(PrefService* prefs) {
-  int persist_ttl_days = kPersistTabContextTTLParam.Get();
+  int persist_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, "ttl_days", kPersistTabContextDefaultTTL);
   if (persist_ttl_days < 0) {
     // Fallback to a safe default if the Finch value is invalid.
     persist_ttl_days = kPersistTabContextDefaultTTL;
@@ -506,12 +473,6 @@ BASE_FEATURE(kModelBasedPageClassification, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kModelBasedPageClassificationExecutionRateParam[] = "execution_rate";
 
-BASE_FEATURE_PARAM(int,
-                   kModelBasedPageClassificationExecutionRateFeatureParam,
-                   &kModelBasedPageClassification,
-                   kModelBasedPageClassificationExecutionRateParam,
-                   0);
-
 bool IsModelBasedPageClassificationEnabled() {
   // Check strict eligibility similar to other AI features.
   // Launched in en-US. Checks for the country (US) and locale (en-US).
@@ -537,7 +498,9 @@ bool IsModelBasedPageClassificationEnabled() {
 int GetModelBasedPageClassificationExecutionRate() {
   // Finch parameter for execution rate, we will want to keep it low so it runs
   // on a random small percentage of page loads.
-  return kModelBasedPageClassificationExecutionRateFeatureParam.Get();
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kModelBasedPageClassification,
+      kModelBasedPageClassificationExecutionRateParam, 0);
 }
 
 BASE_FEATURE(kPageActionMenuIcon, base::FEATURE_DISABLED_BY_DEFAULT);

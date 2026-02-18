@@ -6,15 +6,6 @@
 
 #import "components/segmentation_platform/public/features.h"
 
-namespace {
-BASE_FEATURE_PARAM(
-    int,
-    kDefaultBrowserMagicStackIosVariationFeature,
-    &segmentation_platform::features::kDefaultBrowserMagicStackIos,
-    kDefaultBrowserMagicStackIosVariation,
-    1);
-}  // namespace
-
 const char kDefaultBrowserMagicStackIosVariation[] =
     "DefaultBrowserMagicStackIosVariation";
 
@@ -26,5 +17,7 @@ GetDefaultBrowserMagicStackIosVariation() {
   }
 
   return static_cast<DefaultBrowserMagicStackIosVariationType>(
-      kDefaultBrowserMagicStackIosVariationFeature.Get());
+      base::GetFieldTrialParamByFeatureAsInt(
+          segmentation_platform::features::kDefaultBrowserMagicStackIos,
+          kDefaultBrowserMagicStackIosVariation, 1));
 }

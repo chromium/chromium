@@ -280,7 +280,7 @@ extern const char kNAUHistogramName[];
 extern const char kContentNotificationActionHistogramName[];
 
 // The max amount of NAU sends per session.
-inline const int kDeliveredNAUMaxSendsPerSession = 30;
+extern const int kDeliveredNAUMaxSendsPerSession;
 
 // Key for the desktop_to_mobile_promo::PromoType of the associated notification
 // in the push notification payload. Used for Cross Platform Growth Promo
