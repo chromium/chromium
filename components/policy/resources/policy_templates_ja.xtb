@@ -494,7 +494,7 @@ URL パターンは、<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" /
 <translation id="1379689277107868399">DoNotPrompt に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> はブラウザに対する再認証をユーザーに自動的に求めません。
 
 PromptInTab に設定した場合は、ユーザーの認証が期限切れになるとすぐに新しいタブで Google ログインページが開かれます。これは、<ph name="CHROME_SYNC_NAME" />を使用している場合にのみ発生します。</translation>
-<translation id="1384040387986918863">透かしテキストの塗りつぶしの透明度、0（透明）～100（不透明）。</translation>
+<translation id="1384040387986918863">透かしテキストの塗りつぶしの不透明度、0（透明）～100（不透明）。</translation>
 <translation id="1384459581748403878">参考: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">このポリシーでは、ブラウザで破棄しないようにする URL のパターンを <ph name="URL_BLOCKLIST_POLICY_NAME" /> フィルタ形式で指定できます。
       この例外は、メモリ負荷の発生時や高効率モード時のページ破棄に適用されます。

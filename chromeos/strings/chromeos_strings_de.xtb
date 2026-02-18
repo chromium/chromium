@@ -174,7 +174,7 @@
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1651925268237749928">Du hast ein geteiltes Album ausgewählt. Andere Personen können Fotos hinzufügen oder ändern. Für deinen Hintergrund können Fotos verwendet werden, die sich derzeit nicht in diesem Album befinden.</translation>
 <translation id="1661512400125589646">Pausieren</translation>
-<translation id="1661865805917886535">Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Daten unter Einhaltung unserer Datenschutzerklärung (<ph name="PRIVACYPOLICYURL" />) und Nutzungsbedingungen (<ph name="TERMSOFSERVICEURL" />) dazu, technische Probleme zu beheben und unsere Dienste zu optimieren. Inhaltsänderungen kannst du in der Rechtliche Hinweise-Hilfe (<ph name="LEGALHELPPAGEURL" />) anfragen.</translation>
+<translation id="1661865805917886535">Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Daten unter Einhaltung unserer Datenschutzerklärung (<ph name="PRIVACYPOLICYURL" />) und Nutzungsbedingungen (<ph name="TERMSOFSERVICEURL" />) dazu, technische Probleme zu beheben und unsere Dienste zu optimieren. Inhaltsänderungen kannst du in der Rechtsthemen-Hilfe (<ph name="LEGALHELPPAGEURL" />) anfragen.</translation>
 <translation id="1662699081856352167">Zusammenfassung erfolgreich generiert</translation>
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1664796644829245314">Vorschau anzeigen für „<ph name="PREVIEW_OBJECT" />“</translation>
@@ -1528,7 +1528,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">Tastaturbeleuchtung</translation>
-<translation id="7730077286107534951">Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Daten unter Einhaltung unserer <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> dazu, technische Probleme zu beheben und unsere Dienste zu optimieren. Inhaltsänderungen kannst du in der <ph name="BEGIN_LINK1" />Rechtliche Hinweise-Hilfe<ph name="END_LINK1" /> anfragen.</translation>
+<translation id="7730077286107534951">Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Daten unter Einhaltung unserer <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> dazu, technische Probleme zu beheben und unsere Dienste zu optimieren. Inhaltsänderungen kannst du in der <ph name="BEGIN_LINK1" />Rechtsthemen-Hilfe<ph name="END_LINK1" /> anfragen.</translation>
 <translation id="773153675489693198">Ladezyklen</translation>
 <translation id="7746357909584236306">bearbeitbar</translation>
 <translation id="7747039790905080783">Vorinstallierter Schlüssel</translation>

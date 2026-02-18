@@ -1307,7 +1307,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Pesquisa por QR code</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 favorito excluído}one{{count} favorito excluído}other{{count} favoritos excluídos}}</translation>
-<translation id="5972844218283131174">Desmarcar tudo</translation>
+<translation id="5972844218283131174">Desmarcar todas</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5986043348928676121">Avançar</translation>

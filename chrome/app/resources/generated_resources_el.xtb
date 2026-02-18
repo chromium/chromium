@@ -595,7 +595,7 @@
 <translation id="1396120028054416908">Επιστροφή στον φάκελο <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Σφάλμα κατά τη ρύθμιση του εκτυπωτή</translation>
 <translation id="1398853756734560583">Μεγιστοποίηση</translation>
-<translation id="1399261165075500043">Δεν είναι δυνατή η φόρτωση των Όρων Παροχής Υπηρεσιών του Google Play</translation>
+<translation id="1399261165075500043">Δεν είναι δυνατή η φόρτωση των Όρων παροχής υπηρεσιών του Google Play</translation>
 <translation id="1400243387594338234">Μπορείτε να χρησιμοποιήσετε αυτό το PIN, για να συνδεθείτε στη συσκευή σας</translation>
 <translation id="1401216725754314428">Μάθετε περισσότερα για τους σχετικούς ιστοτόπους σε μια νέα καρτέλα</translation>
 <translation id="1402426911829176748">Σύνδεση στη συσκευή σας</translation>
@@ -2233,7 +2233,7 @@
 <translation id="2484909293434545162">Εάν ένας ιστότοπος χρησιμοποιεί cookie, θα εμφανίζονται εδώ</translation>
 <translation id="2485394160472549611">Κορυφαίες επιλογές για εσάς</translation>
 <translation id="2485422356828889247">Απεγκατάσταση</translation>
-<translation id="2485681265915754872">Όροι Παροχής Υπηρεσιών Google Play</translation>
+<translation id="2485681265915754872">Όροι παροχής υπηρεσιών Google Play</translation>
 <translation id="248676429071089168">Σύρετε προς τα επάνω για να μετακινήσετε τη σελίδα προς τα κάτω</translation>
 <translation id="2487067538648443797">Προσθήκη νέου σελιδοδείκτη</translation>
 <translation id="2489686758589235262">Αντιστοίχιση δύο ακόμα διακοπτών</translation>
@@ -4209,7 +4209,7 @@
 <translation id="3827548509471720579">Φωτεινότητα οθόνης</translation>
 <translation id="3827774300009121996">&amp;Πλήρης Οθόνη</translation>
 <translation id="3828029223314399057">Αναζήτηση σελιδοδεικτών</translation>
-<translation id="3828953470056652895">Έχω διαβάσει και αποδεχτεί τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" />, τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Chrome και του ChromeOS<ph name="END_LINK2" /> και τους <ph name="BEGIN_LINK3" />Όρους Παροχής Υπηρεσιών του Play<ph name="END_LINK3" />.</translation>
+<translation id="3828953470056652895">Έχω διαβάσει και αποδεχτεί τους <ph name="BEGIN_LINK1" />Όρους παροχής υπηρεσιών της Google<ph name="END_LINK1" />, τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους παροχής υπηρεσιών του Chrome και του ChromeOS<ph name="END_LINK2" /> και τους <ph name="BEGIN_LINK3" />Όρους παροχής υπηρεσιών του Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Υψηλή χρήση μνήμης - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Κοινή χρήση αρχείου SMB</translation>
 <translation id="3830470485672984938">Χρήση διαφορετικού κλειδιού πρόσβασης</translation>
@@ -5976,7 +5976,7 @@
 <translation id="5071892329440114717">Εμφάνιση λεπτομερειών βασικής ασφάλειας</translation>
 <translation id="5072500507106264618">Μόνο οι υπηρεσίες συστήματος μπορούν να χρησιμοποιήσουν την τοποθεσία σας</translation>
 <translation id="5072836811783999860">Εμφάνιση διαχειριζόμενων σελιδοδεικτών</translation>
-<translation id="5072900412896857127">Δεν είναι δυνατή η φόρτωση των Όρων Παροχής Υπηρεσιών του Google Play. Ελέγξτε τη σύνδεση δικτύου σας και δοκιμάστε ξανά.</translation>
+<translation id="5072900412896857127">Δεν είναι δυνατή η φόρτωση των Όρων παροχής υπηρεσιών του Google Play. Ελέγξτε τη σύνδεση δικτύου σας και δοκιμάστε ξανά.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> και # ακόμη}}</translation>
 <translation id="5074318175948309511">Αυτή η σελίδα ενδεχομένως να πρέπει να φορτωθεί εκ νέου προτού ενεργοποιηθούν οι νέες ρυθμίσεις.</translation>
 <translation id="5074761966806028321">Απαιτείται ακόμη άδεια για την ολοκλήρωση της ρύθμισης</translation>
