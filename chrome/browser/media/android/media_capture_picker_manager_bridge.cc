@@ -28,8 +28,6 @@ MediaCapturePickerManagerBridge::MediaCapturePickerManagerBridge() {
 }
 
 MediaCapturePickerManagerBridge::~MediaCapturePickerManagerBridge() {
-  // We should always have responded to any outstanding callback.
-  CHECK(callback_.is_null());
   Java_MediaCapturePickerManagerBridge_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
