@@ -1444,26 +1444,6 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
   return chrome::CanSavePage(this);
 }
 
-bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
-  // Don't show favicon when on an interstitial.
-  security_interstitials::SecurityInterstitialTabHelper*
-      security_interstitial_tab_helper = security_interstitials::
-          SecurityInterstitialTabHelper::FromWebContents(web_contents);
-  if (security_interstitial_tab_helper &&
-      security_interstitial_tab_helper->IsDisplayingInterstitial()) {
-    return false;
-  }
-
-  // Remove for all other tabbed web apps.
-  if (auto* const app_browser_controller = app_controller();
-      app_browser_controller && app_browser_controller->has_tab_strip()) {
-    return false;
-  }
-
-  // Otherwise, always display the favicon.
-  return true;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void Browser::UpdateUIForNavigationInTab(WebContents* contents,

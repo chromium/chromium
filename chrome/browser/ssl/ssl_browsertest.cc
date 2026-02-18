@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
@@ -118,6 +119,7 @@
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -1251,9 +1253,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestNoFaviconOnInterstitial) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_expired_.GetURL("/ssl/google.html")));
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
-  EXPECT_FALSE(browser()->ShouldDisplayFavicon(tab));
+  tabs::TabInterface* const tab_interface =
+      browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      tab_interface->GetContents()));
+  EXPECT_FALSE(TabUIHelper::From(tab_interface)->ShouldDisplayFavicon());
 }
 
 class SSLUITestWithWebApps : public SSLUITest {

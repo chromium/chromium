@@ -649,9 +649,6 @@ class Browser : public TabStripModelObserver,
   // Saving can be disabled e.g. for the DevTools window.
   bool CanSaveContents(content::WebContents* web_contents) const;
 
-  // Returns whether favicon should be shown.
-  bool ShouldDisplayFavicon(content::WebContents* web_contents) const;
-
   /////////////////////////////////////////////////////////////////////////////
 
   // Called by Navigate() when a navigation has occurred in a tab in

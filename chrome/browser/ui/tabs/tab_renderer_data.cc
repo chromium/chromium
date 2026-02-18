@@ -32,8 +32,6 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
@@ -93,7 +91,6 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.title = tab_ui_helper->GetTitle();
   data.needs_attention = tab_ui_helper->needs_attention();
   auto* const bwi = tab->GetBrowserWindowInterface();
-  Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
   // Note that in unit tests, this may be null.
   if (bwi) {
@@ -131,16 +128,11 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.should_display_url = should_display_url;
   data.is_crashed = tab_ui_helper->IsCrashed();
   data.pinned = tab->IsPinned();
-  data.show_icon =
-      data.pinned || (browser && browser->ShouldDisplayFavicon(contents));
+  data.show_icon = tab_ui_helper->ShouldDisplayFavicon();
   data.blocked = tab->IsBlocked();
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
   data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
-
-  content::NavigationEntry* entry =
-      contents->GetController().GetLastCommittedEntry();
-  data.should_themify_favicon =
-      entry && favicon::ShouldThemifyFaviconForEntry(entry);
+  data.should_themify_favicon = tab_ui_helper->ShouldThemifyFavicon();
 
   data.should_show_discard_status = tab_ui_helper->ShouldShowDiscardStatus();
   data.discarded_memory_savings =

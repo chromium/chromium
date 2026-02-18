@@ -57,6 +57,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -829,8 +830,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, NoFavicons) {
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   // No favicons shown for web apps.
-  EXPECT_FALSE(
-      app_browser->ShouldDisplayFavicon(tab_strip->GetActiveWebContents()));
+  tabs::TabInterface* const tab_interface = tab_strip->GetActiveTab();
+  EXPECT_FALSE(TabUIHelper::From(tab_interface)->ShouldDisplayFavicon());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,

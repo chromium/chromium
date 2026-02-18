@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -190,8 +191,9 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, TabsTest) {
       Browser::WindowFeature::kFeatureTabStrip));
 
   // No favicons shown for web apps.
-  EXPECT_FALSE(app_browser_->ShouldDisplayFavicon(
-      app_browser_->tab_strip_model()->GetActiveWebContents()));
+  tabs::TabInterface* const tab_interface =
+      app_browser_->tab_strip_model()->GetActiveTab();
+  EXPECT_FALSE(TabUIHelper::From(tab_interface)->ShouldDisplayFavicon());
 
   // Tabbed PWAs only open URLs within the scope of the app. The manifest is
   // another URL besides |tabbed_app_url_| in scope.

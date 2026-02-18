@@ -51,6 +51,12 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
 
   bool ShouldRenderLoadingTitle();
 
+  bool ShouldThemifyFavicon();
+
+#if !BUILDFLAG(IS_ANDROID)
+  bool ShouldDisplayFavicon();
+#endif
+
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
   ui::ImageModel GetFavicon() const;

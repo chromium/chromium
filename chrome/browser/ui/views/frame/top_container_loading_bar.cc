@@ -126,15 +126,11 @@ void TopContainerLoadingBar::SetWebContents(
 
 void TopContainerLoadingBar::UpdateLoadingProgress() {
   DCHECK(web_contents());
-  if (!browser_->ShouldDisplayFavicon(web_contents())) {
-    HideImmediately();
-    return;
-  }
-
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::GetFromContents(web_contents());
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
-  if (tab_ui_helper->ShouldHideThrobber()) {
+  if (!tab_ui_helper->ShouldDisplayFavicon() ||
+      tab_ui_helper->ShouldHideThrobber()) {
     HideImmediately();
     return;
   }

@@ -20,7 +20,9 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -94,6 +96,44 @@ bool TabUIHelper::ShouldRenderLoadingTitle() {
   return GetTitle().empty() &&
          !GetVisibleURL().SchemeIs(content::kChromeUIUntrustedScheme);
 }
+
+bool TabUIHelper::ShouldThemifyFavicon() {
+  content::NavigationEntry* const entry =
+      tab().GetContents()->GetController().GetLastCommittedEntry();
+  return entry && favicon::ShouldThemifyFaviconForEntry(entry);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+bool TabUIHelper::ShouldDisplayFavicon() {
+  // BrowserWindowInterface can be null during unit tests
+  BrowserWindowInterface* const browser_window_interface =
+      tab().GetBrowserWindowInterface();
+  if (browser_window_interface) {
+    // Remove for all tabbed web apps.
+    web_app::AppBrowserController* const app_browser_controller =
+        web_app::AppBrowserController::From(browser_window_interface);
+    if (app_browser_controller && app_browser_controller->has_tab_strip()) {
+      return false;
+    }
+  }
+
+  if (tab().IsPinned()) {
+    return true;
+  }
+
+  // Don't show favicon when on an interstitial.
+  security_interstitials::SecurityInterstitialTabHelper* const
+      security_interstitial_tab_helper = security_interstitials::
+          SecurityInterstitialTabHelper::FromWebContents(tab().GetContents());
+  if (security_interstitial_tab_helper &&
+      security_interstitial_tab_helper->IsDisplayingInterstitial()) {
+    return false;
+  }
+
+  // Otherwise, always display the favicon.
+  return true;
+}
+#endif
 
 ui::ImageModel TabUIHelper::GetFavicon() const {
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
