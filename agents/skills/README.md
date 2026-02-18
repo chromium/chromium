@@ -13,8 +13,7 @@ symlink is preferred so that the skill stays up-to-date when you sync your
 local checkout:
 
 ```bash
-mkdir -p .<agent>/skills
-ln -s "$(pwd)/agents/skills/<skill-name>" .<agent>/skills/
+gemini skills link agents/skills/<skill-name> --scope workspace
 ```
 
 Once installed, your agent (e.g. the Gemini CLI when using `.gemini/skills`)
