@@ -1,10 +1,16 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {page, session, dp} = await testRunner.startBlank(
+  const {page, session} = await testRunner.startBlank(
       'Verify that Target.exposeDevToolsProtocol scoped to the default execution context.');
-  await dp.Target.exposeDevToolsProtocol(
-      {targetId: page._targetId, bindingName: 'cdp'});
 
+  const browserSession = await testRunner.attachFullBrowserSession();
+  const bp = browserSession.protocol;
+
+  await bp.Target.exposeDevToolsProtocol(
+      {targetId: page.targetId(), bindingName: 'cdp'});
+
+  const dp = session.protocol;
   await dp.Runtime.enable();
+  await dp.Page.enable();
   dp.Page.createIsolatedWorld({frameId: page._targetId, worldName: 'foo'});
   const contextFoo =
       (await dp.Runtime.onceExecutionContextCreated()).params.context.id;
