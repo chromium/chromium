@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(HAMMERD) FakeHammerdClient : public HammerdClient {
   void FireInvalidBaseConnectedSignal();
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

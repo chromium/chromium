@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 
@@ -21,14 +22,11 @@ namespace ash {
 // running outside of Chrome.
 class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when DetectionSignal is received.
     virtual void OnDetectionSignal(
         const mri::MediaPerception& media_perception) = 0;
-
-   protected:
-    virtual ~Observer() = default;
   };
 
   // Creates and initializes the global instance. |bus| must not be null.

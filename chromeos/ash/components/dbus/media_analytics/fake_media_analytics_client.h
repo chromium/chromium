@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
   void OnMediaPerception(const mri::MediaPerception& media_perception);
 
   // Observers for receiving MediaPerception proto messages.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // A fake current state for the media analytics process.
   mri::State current_state_;

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 
 namespace dbus {
 class Bus;
@@ -27,10 +28,8 @@ namespace ash {
 // data extracted from the signal object).
 class COMPONENT_EXPORT(HAMMERD) HammerdClient {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Base firmware requires an update.
     virtual void BaseFirmwareUpdateNeeded() = 0;
 

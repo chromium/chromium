@@ -143,7 +143,7 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   // Stores the saved fingerprint records path.
   base::FilePath fake_biod_db_filepath_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

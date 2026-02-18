@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/biod/constants.pb.h"
 #include "chromeos/ash/components/dbus/biod/messages.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
@@ -35,7 +36,7 @@ using AuthScanMatches =
 class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
  public:
   // Interface for observing changes from the biometrics manager.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when biometrics manager powers up or is restarted.
     virtual void BiodServiceRestarted() {}
@@ -63,9 +64,6 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
     // failure. Any enrollment that was underway is thrown away and auth will
     // no longer be happening.
     virtual void BiodSessionFailedReceived() {}
-
-   protected:
-    virtual ~Observer() {}
   };
 
   // Creates and initializes the global instance. |bus| must not be null.

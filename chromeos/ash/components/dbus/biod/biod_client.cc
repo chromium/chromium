@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/biod/constants.pb.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
@@ -437,7 +438,7 @@ class BiodClientImpl : public BiodClient {
 
   raw_ptr<dbus::Bus> bus_ = nullptr;
   raw_ptr<dbus::ObjectProxy> biod_proxy_ = nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   std::unique_ptr<dbus::ObjectPath> current_enroll_session_path_;
   std::unique_ptr<dbus::ObjectPath> current_auth_session_path_;
 
