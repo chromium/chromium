@@ -1832,6 +1832,9 @@ std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
     // is currently active.
     if (suggestion_group_id.value() == omnibox::GROUP_CONTEXTUAL_SEARCH &&
         (has_toolbelt_lens_action || has_lens_search_chip)) {
+      if (base::FeatureList::IsEnabled(omnibox::kHideContextualGroupHeaders)) {
+        return u"";
+      }
       // TODO(khalidpeer): Make direct use of `header_text` once we start
       //     receiving a non-empty contextual search header from the server.
       return header_text.empty()

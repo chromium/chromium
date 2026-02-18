@@ -3190,6 +3190,13 @@ inline constexpr char kOmniboxHideSuggestionGroupHeadersDescription[] =
     "If enabled, suggestion group headers will be hidden in the Omnibox popup "
     "(e.g. to minimize visual clutter in the zero-prefix state)";
 
+inline constexpr char kOmniboxHideContextualGroupHeadersName[] =
+    "Hide contextual suggestion group headers in the Omnibox popup";
+inline constexpr char kOmniboxHideContextualGroupHeadersDescription[] =
+    "If enabled, contextual suggestion group headers will be hidden in the "
+    "Omnibox popup "
+    "(e.g. to minimize visual clutter in the zero-prefix state)";
+
 inline constexpr char kOmniboxUrlSuggestionsOnFocus[] =
     "Omnibox on-focus URL suggestions on web and SRP";
 inline constexpr char kOmniboxUrlSuggestionsOnFocusDescription[] =

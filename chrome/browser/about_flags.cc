@@ -6567,6 +6567,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxHideSuggestionGroupHeadersDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kHideSuggestionGroupHeaders)},
 
+    {"omnibox-hide-contextual-group-headers",
+     flag_descriptions::kOmniboxHideContextualGroupHeadersName,
+     flag_descriptions::kOmniboxHideContextualGroupHeadersDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kHideContextualGroupHeaders)},
+
     {"omnibox-url-suggestions-on-focus",
      flag_descriptions::kOmniboxUrlSuggestionsOnFocus,
      flag_descriptions::kOmniboxUrlSuggestionsOnFocusDescription, kOsDesktop,
