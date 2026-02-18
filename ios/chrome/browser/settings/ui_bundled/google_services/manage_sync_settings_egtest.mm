@@ -1692,7 +1692,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Verify the account settings view remains on top of screen.
   [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
       performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
-                                                           0.5, 0.25)];
+                                                           0.5, 0.2)];
   // And it displays the new account.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
