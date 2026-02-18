@@ -28545,6 +28545,11 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="MobileMenuTaskManager">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Task manager' in the app menu.</description>
+</action>
+
 <action name="MobileMenuTextZoom">
   <owner>rkgibson@google.com</owner>
   <description>User pressed 'Zoom Text' in the app menu</description>

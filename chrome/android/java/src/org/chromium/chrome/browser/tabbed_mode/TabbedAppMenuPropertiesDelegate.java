@@ -998,12 +998,31 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.sharing_print : 0));
     }
 
+    private boolean shouldShowTaskManagerItem() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK);
+    }
+
+    private MVCListAdapter.ListItem buildTaskManagerItem() {
+        assert shouldShowTaskManagerItem();
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.task_manager,
+                        R.string.menu_task_manager,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_task_manager_24dp : 0));
+    }
+
     private boolean shouldShowMoreToolsItem(@Nullable Tab currentTab) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
             return false;
         }
 
         if (shouldShowReaderModeItem(currentTab)) {
+            return true;
+        }
+
+        if (shouldShowTaskManagerItem()) {
             return true;
         }
 
@@ -1016,6 +1035,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         List<ListItem> submenuItems = new ArrayList<>();
         if (shouldShowReaderModeItem(currentTab)) {
             submenuItems.add(buildReaderModeItem(currentTab));
+        }
+
+        if (shouldShowTaskManagerItem()) {
+            submenuItems.add(buildTaskManagerItem());
         }
 
         return new MVCListAdapter.ListItem(

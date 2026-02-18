@@ -363,6 +363,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_sync_on_48dp.xml",
   "java/res/drawable/ic_tab_close_24dp.xml",
   "java/res/drawable/ic_tab_icon_24dp.xml",
+  "java/res/drawable/ic_task_manager_24dp.xml",
   "java/res/drawable/ic_toolbar_24dp.xml",
   "java/res/drawable/ic_toolbar_share_offset_24dp.xml",
   "java/res/drawable/ic_translate.xml",
