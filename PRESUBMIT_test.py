@@ -3070,6 +3070,23 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertEqual(results[8].locations[0].start_line, 2)
         self.assertEqual(results[8].locations[0].end_line, 2)
 
+    def testBannedMemoryPressureListener(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('some/cpp/problematic/file.cc',
+                     ['MemoryPressureListener* listener;']),
+            MockFile('base/memory/memory_pressure_listener.cc',
+                     ['void MemoryPressureListener::NotifyMemoryPressure() {']),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
+
+        self.assertEqual(1, len(results))
+        self.assertIn('some/cpp/problematic/file.cc', results[0].message)
+        self.assertTrue(
+            all('base/memory/memory_pressure_listener.cc' not in r.message
+                for r in results))
+
     def testBannedCppRandomFunctions(self):
         banned_rngs = [
             'absl::BitGen',

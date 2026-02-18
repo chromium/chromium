@@ -103,6 +103,8 @@ enum class MemoryPressureListenerTag {
   kMemoryPressureListenerPolicy = 69,
 };
 
+// base::MemoryPressureListener is deprecated. Use base::MemoryConsumer instead.
+//
 // To start listening, derive from MemoryPressureListener, and use
 // MemoryPressureListenerRegistration to register your class with the global
 // registry. To stop listening, simply delete the registration object, which

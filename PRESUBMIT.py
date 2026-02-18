@@ -587,6 +587,19 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (),
     ),
     BanRule(
+        r'/\bMemoryPressureListener\b',
+        (
+            'base::MemoryPressureListener is deprecated. Use base::MemoryConsumer ',
+            'instead.',
+        ),
+        False,
+        (
+            r'^base/memory/memory_pressure_listener\.(cc|h)$',
+            r'^base/memory/memory_pressure_listener_unittest\.cc$',
+            r'^base/memory/mock_memory_pressure_listener\.(cc|h)$',
+        ),
+    ),
+    BanRule(
         r'/\b(?!(Sequenced|SingleThread))\w*TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)',
         (
             'It is not allowed to call these methods from the subclasses ',
