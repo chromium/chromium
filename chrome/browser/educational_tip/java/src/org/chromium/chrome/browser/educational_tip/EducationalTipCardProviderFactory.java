@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordin
 import org.chromium.chrome.browser.educational_tip.cards.PasswordCheckupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.SavePasswordsPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.SetupListCelebratoryPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.SignInPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
@@ -66,6 +67,9 @@ public class EducationalTipCardProviderFactory {
                         onModuleClickedCallback, callbackController, actionDelegate);
             case ModuleType.PASSWORD_CHECKUP_PROMO:
                 return new PasswordCheckupPromoCoordinator(onModuleClickedCallback, actionDelegate);
+            case ModuleType.SETUP_LIST_CELEBRATORY_PROMO:
+                return new SetupListCelebratoryPromoCoordinator(
+                        onModuleClickedCallback, actionDelegate);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

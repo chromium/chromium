@@ -924,6 +924,10 @@ public final class ChromePreferenceKeys {
     public static final String SETUP_LIST_FIRST_SHOWN_TIMESTAMP =
             "Chrome.SetupList.FirstShownTimestamp";
 
+    /** Boolean preference indicating whether the celebratory promo has been shown. */
+    public static final String SETUP_LIST_CELEBRATORY_PROMO_SHOWN =
+            "Chrome.SetupList.CelebratoryPromoShown";
+
     /**
      * Key prefix for boolean preferences indicating whether a specific Setup List item has been
      * completed by the user. The ModuleType integer is appended to this prefix to form the unique
@@ -1354,6 +1358,7 @@ public final class ChromePreferenceKeys {
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SERIAL_NOTIFICATION_IDS,
                 SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                SETUP_LIST_CELEBRATORY_PROMO_SHOWN,
                 SETUP_LIST_COMPLETED_KEY_PREFIX.pattern(),
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,

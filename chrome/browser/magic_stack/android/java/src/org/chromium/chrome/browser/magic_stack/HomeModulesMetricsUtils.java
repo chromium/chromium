@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAVE_PASSWORDS_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SETUP_LIST_CELEBRATORY_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SIGN_IN_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
@@ -151,6 +152,8 @@ public class HomeModulesMetricsUtils {
                 return "SavePasswordsPromo";
             case PASSWORD_CHECKUP_PROMO:
                 return "PasswordCheckupPromo";
+            case SETUP_LIST_CELEBRATORY_PROMO:
+                return "SetupListCelebratoryPromo";
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);
@@ -191,6 +194,8 @@ public class HomeModulesMetricsUtils {
                 return SAVE_PASSWORDS_PROMO;
             case "PasswordCheckupPromo":
                 return PASSWORD_CHECKUP_PROMO;
+            case "SetupListCelebratoryPromo":
+                return SETUP_LIST_CELEBRATORY_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

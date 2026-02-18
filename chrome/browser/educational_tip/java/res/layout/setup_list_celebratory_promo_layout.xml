@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.educational_tip.EducationalTipModuleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/setup_list_celebratory_promo_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/setup_list_celebratory_promo_min_height"
+    android:layout_marginTop="@dimen/single_tab_module_padding_top"
+    android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+    android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
+    android:paddingTop="0dp"
+    android:paddingBottom="@dimen/setup_list_celebratory_promo_padding_bottom"
+    android:background="@drawable/home_surface_ui_background"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/educational_tip_module_content_image"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/educational_tip_module_content_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setup_list_celebratory_promo_text_margin_lateral"
+        android:layout_marginEnd="@dimen/setup_list_celebratory_promo_text_margin_lateral"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.Headline2Thick"/>
+
+    <TextView
+        android:id="@+id/educational_tip_module_content_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/setup_list_celebratory_promo_description_margin_top"
+        android:layout_marginStart="@dimen/setup_list_celebratory_promo_text_margin_lateral"
+        android:layout_marginEnd="@dimen/setup_list_celebratory_promo_text_margin_lateral"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.TextSmall" />
+
+    <!-- Hidden button to satisfy the EducationalTipModuleView binding -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/educational_tip_module_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+</org.chromium.chrome.browser.educational_tip.EducationalTipModuleView>

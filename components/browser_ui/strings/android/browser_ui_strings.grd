@@ -1408,6 +1408,14 @@
         Switch the position to customize your browsing experience
       </message>
 
+      <!-- Setup list celebratory promo strings -->
+      <message name="IDS_SETUP_LIST_CELEBRATORY_PROMO_TITLE" desc="Title for the celebratory promo shown when all setup tasks are completed.">
+        You’re all set!
+      </message>
+      <message name="IDS_SETUP_LIST_CELEBRATORY_PROMO_DESCRIPTION" desc="Description for the celebratory promo shown when all setup tasks are completed.">
+        You’ll now get the most out of Chrome on your device.
+      </message>
+
       <message name="IDS_EDUCATIONAL_TIP_BUTTON_GO_TO_SETTINGS" desc="Text on the clickable button for promos that invites users to adjust settings in the educational tip module on NTP.">
         Go to settings
       </message>

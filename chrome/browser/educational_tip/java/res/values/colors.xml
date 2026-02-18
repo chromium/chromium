@@ -16,4 +16,15 @@ found in the LICENSE file.
   <color name="educational_tip_card_logo_color_8">@color/material_secondary_80</color>
   <color name="educational_tip_card_logo_color_9">@color/material_tertiary_80</color>
   <color name="educational_tip_card_logo_color_10">?attr/colorSurface</color>
+
+  <!-- Setup List celebratory promo colors -->
+  <macro name="setup_list_celebratory_promo_yellow">@color/setup_list_celebratory_promo_yellow_base</macro>
+  <macro name="setup_list_celebratory_promo_green">@color/baseline_tertiary_80</macro>
+  <macro name="setup_list_celebratory_promo_blue">@color/baseline_primary_80</macro>
+  <macro name="setup_list_celebratory_promo_blue_alt">@color/baseline_primary_70</macro>
+  <macro name="setup_list_celebratory_promo_blue_light">@color/baseline_primary_90</macro>
+  <color name="setup_list_celebratory_promo_gradient_blue_start">@color/baseline_primary_90</color>
+  <color name="setup_list_celebratory_promo_gradient_blue_end">@color/baseline_primary_80</color>
+  <color name="setup_list_celebratory_promo_gradient_green_start">@color/baseline_tertiary_90</color>
+  <color name="setup_list_celebratory_promo_gradient_green_end">@color/baseline_tertiary_80</color>
 </resources>

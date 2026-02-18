@@ -15,6 +15,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.ViewGroup;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -79,6 +83,8 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Before
     public void setUp() {
+        Context context = ApplicationProvider.getApplicationContext();
+        when(mActionDelegate.getContext()).thenReturn(context);
         SetupListManager.setInstanceForTesting(mSetupListManager);
         when(mSetupListManager.isSetupListActive()).thenReturn(false);
         when(mSetupListManager.getManualRank(anyInt())).thenReturn(null);
@@ -108,6 +114,25 @@ public class EducationalTipModuleBuilderUnitTest {
 
         mModuleBuilder =
                 new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateView_CelebratoryPromoUsesCustomLayout() {
+        EducationalTipModuleBuilder celebratoryBuilder =
+                new EducationalTipModuleBuilder(
+                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO, mActionDelegate);
+        ViewGroup view = celebratoryBuilder.createView(null);
+        assertEquals(R.id.setup_list_celebratory_promo_layout, view.getId());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateView_RegularPromoUsesStandardLayout() {
+        EducationalTipModuleBuilder regularBuilder =
+                new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
+        ViewGroup view = regularBuilder.createView(null);
+        assertEquals(R.id.educational_tip_module_layout, view.getId());
     }
 
     @Test

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="@dimen/setup_list_celebratory_promo_logo_width"
+    android:height="@dimen/setup_list_celebratory_promo_logo_height"
+    android:viewportWidth="379"
+    android:viewportHeight="105">
+    <group>
+        <clip-path
+            android:pathData="M0,0h379v105h-379z"/>
+        <group>
+            <clip-path
+                android:pathData="M168,45h42v42h-42z"/>
+            <path
+                android:pathData="M189,76.5C194.8,76.5 199.5,71.8 199.5,66C199.5,60.2 194.8,55.5 189,55.5C183.2,55.5 178.5,60.2 178.5,66C178.5,71.8 183.2,76.5 189,76.5Z"
+                android:fillColor="@android:color/white"/>
+            <path
+                android:pathData="M179.91,71.25L170.82,55.5C168.97,58.69 168,62.32 168,66C168,69.69 168.97,73.31 170.81,76.5C172.66,79.69 175.31,82.34 178.5,84.19C181.69,86.03 185.32,87 189,87L198.09,71.25V71.25C197.17,72.84 195.85,74.17 194.25,75.09C192.65,76.01 190.84,76.5 189,76.5C187.16,76.5 185.35,76.02 183.75,75.09C182.15,74.17 180.83,72.85 179.91,71.25Z"
+                android:fillColor="@color/google_logo_green" />
+            <path
+                android:pathData="M198.09,71.25L189,87C192.69,87 196.31,86.03 199.5,84.18C202.69,82.34 205.34,79.69 207.19,76.5C209.03,73.31 210,69.68 210,66C210,62.31 209.03,58.69 207.18,55.5H189L189,55.5C190.84,55.5 192.65,55.98 194.25,56.91C195.85,57.83 197.17,59.15 198.09,60.75C199.01,62.34 199.5,64.16 199.5,66C199.5,67.84 199.01,69.65 198.09,71.25H198.09Z"
+                android:fillColor="@color/google_logo_yellow" />
+            <path
+                android:pathData="M189,74.31C193.59,74.31 197.31,70.59 197.31,66C197.31,61.41 193.59,57.69 189,57.69C184.41,57.69 180.69,61.41 180.69,66C180.69,70.59 184.41,74.31 189,74.31Z"
+                android:fillColor="@color/google_logo_blue"/>
+            <path
+                android:pathData="M189,55.5H207.18C205.34,52.31 202.69,49.66 199.5,47.81C196.31,45.97 192.68,45 189,45C185.31,45 181.69,45.97 178.5,47.81C175.31,49.66 172.66,52.31 170.82,55.5L179.91,71.25L179.91,71.25C178.99,69.66 178.5,67.84 178.5,66C178.5,64.16 178.98,62.35 179.91,60.75C180.83,59.15 182.15,57.83 183.75,56.91C185.35,55.98 187.16,55.5 189,55.5Z"
+                android:fillColor="@color/google_logo_red" />
+        </group>
+        <path
+            android:pathData="M85.26,57.76C48.79,41.16 10.16,41.6 -17.01,56.03"
+            android:strokeWidth="12"
+            android:fillColor="@android:color/transparent"
+            android:strokeLineCap="round">
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:startX="-48.1"
+                    android:startY="67.97"
+                    android:endX="85.45"
+                    android:endY="62.06"
+                    android:type="linear">
+                    <item android:offset="0" android:color="@color/setup_list_celebratory_promo_gradient_blue_start"/>
+                    <item android:offset="1" android:color="@color/setup_list_celebratory_promo_gradient_blue_end"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path
+            android:pathData="M109.15,68.14m-4.5,0.2a4.5,4.5 76.61,1 1,8.99 -0.4a4.5,4.5 76.61,1 1,-8.99 0.4"
+            android:fillColor="@macro/setup_list_celebratory_promo_green"/>
+        <path
+            android:pathData="M138.31,75.31C143.07,76.31 146.59,70.97 143.79,66.99L143.33,66.33C142.48,65.12 142.17,63.61 142.47,62.15L142.64,61.37C143.64,56.61 138.29,53.09 134.32,55.88L133.66,56.35C132.45,57.2 130.93,57.51 129.48,57.21L128.69,57.04C123.94,56.04 120.42,61.39 123.21,65.36L123.67,66.02C124.53,67.23 124.84,68.75 124.53,70.2L124.37,70.99C123.37,75.74 128.71,79.26 132.69,76.47L133.35,76.01C134.56,75.15 136.07,74.84 137.53,75.15L138.31,75.31Z"
+            android:fillColor="@macro/setup_list_celebratory_promo_yellow"/>
+        <path
+            android:pathData="M109.07,43.62m-3,0.13a3,3 96.25,1 1,5.99 -0.27a3,3 96.25,1 1,-5.99 0.27"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue_light"/>
+        <path
+            android:pathData="M101.38,39.46m-2.5,0.11a2.5,2.5 62.55,1 1,5 -0.22a2.5,2.5 62.55,1 1,-5 0.22"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue_light"/>
+        <path
+            android:pathData="M92.73,36.33m-2,0.09a2,2 99.85,1 1,4 -0.18a2,2 99.85,1 1,-4 0.18"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue_light"/>
+        <path
+            android:pathData="M238.56,55.5C238.67,55.4 238.72,55.35 238.77,55.3C239.89,54.25 241.57,54.07 242.89,54.86C242.95,54.89 243.01,54.93 243.13,55.01C243.19,55.05 243.22,55.07 243.24,55.09C243.87,55.48 244.6,55.66 245.33,55.6C245.36,55.6 245.4,55.6 245.46,55.59C245.61,55.58 245.68,55.57 245.75,55.57C247.28,55.48 248.69,56.43 249.19,57.88C249.21,57.94 249.23,58.01 249.28,58.15C249.29,58.22 249.3,58.25 249.31,58.28C249.54,58.98 249.98,59.59 250.58,60.02C250.61,60.04 250.63,60.05 250.69,60.09C250.81,60.18 250.87,60.22 250.92,60.26C252.16,61.18 252.63,62.81 252.07,64.24C252.05,64.31 252.02,64.37 251.96,64.51C251.94,64.57 251.93,64.6 251.91,64.63C251.64,65.31 251.58,66.06 251.77,66.77C251.77,66.81 251.78,66.84 251.8,66.9C251.84,67.04 251.86,67.11 251.87,67.18C252.23,68.68 251.54,70.23 250.19,70.97C250.14,71 250.07,71.04 249.94,71.1C249.88,71.13 249.85,71.15 249.82,71.16C249.17,71.51 248.65,72.05 248.33,72.71C248.32,72.74 248.3,72.77 248.27,72.83C248.21,72.97 248.18,73.03 248.15,73.09C247.46,74.46 245.94,75.21 244.43,74.92C244.36,74.9 244.29,74.89 244.15,74.85C244.08,74.84 244.05,74.83 244.02,74.82C243.3,74.67 242.55,74.75 241.88,75.05C241.85,75.07 241.82,75.08 241.76,75.11C241.63,75.17 241.56,75.2 241.5,75.23C240.09,75.84 238.44,75.43 237.48,74.23C237.43,74.18 237.39,74.12 237.3,74C237.26,73.95 237.24,73.93 237.22,73.9C236.77,73.32 236.15,72.9 235.44,72.7C235.41,72.69 235.38,72.68 235.31,72.67C235.17,72.63 235.1,72.61 235.04,72.59C233.56,72.15 232.56,70.78 232.59,69.24C232.59,69.17 232.6,69.1 232.6,68.95C232.61,68.89 232.61,68.85 232.61,68.82C232.64,68.09 232.43,67.36 232.01,66.76C231.99,66.73 231.98,66.7 231.94,66.65C231.85,66.53 231.81,66.47 231.77,66.41C230.93,65.13 231.05,63.43 232.06,62.27C232.1,62.22 232.15,62.17 232.25,62.06C232.3,62.01 232.32,61.99 232.34,61.97C232.83,61.42 233.14,60.73 233.21,60C233.21,59.97 233.22,59.94 233.22,59.87C233.23,59.72 233.24,59.65 233.25,59.58C233.43,58.06 234.6,56.83 236.13,56.59C236.19,56.58 236.26,56.58 236.41,56.56C236.48,56.55 236.51,56.55 236.54,56.54C237.27,56.44 237.94,56.11 238.47,55.6C238.49,55.57 238.52,55.55 238.56,55.5Z"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue_alt"/>
+        <path
+            android:pathData="M406.32,-6.9C402.36,37.74 350.88,70.02 291.32,65.19"
+            android:strokeWidth="12"
+            android:fillColor="@android:color/transparent"
+            android:strokeLineCap="round">
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:startX="344.4"
+                    android:startY="18.28"
+                    android:endX="358.86"
+                    android:endY="53.82"
+                    android:type="linear">
+                    <item android:offset="0" android:color="@color/setup_list_celebratory_promo_gradient_green_start"/>
+                    <item android:offset="1" android:color="@color/setup_list_celebratory_promo_gradient_green_end"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path
+            android:pathData="M274.19,81.69a2.97,3 50.35,1 0,4.62 -3.83a2.97,3 50.35,1 0,-4.62 3.83z"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue"/>
+        <path
+            android:pathData="M284.04,85.74a2.47,2.5 50.35,1 0,3.85 -3.19a2.47,2.5 50.35,1 0,-3.85 3.19z"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue_light"/>
+        <path
+            android:pathData="M293.36,87.57a1.98,2 50.35,1 0,3.08 -2.55a1.98,2 50.35,1 0,-3.08 2.55z"
+            android:fillColor="@macro/setup_list_celebratory_promo_blue_light"/>
+        <path
+            android:pathData="M268.38,68.1C267.94,68.47 267.03,68.21 265.95,67.48C265.53,68.7 264.96,69.47 264.38,69.42C263.81,69.38 263.35,68.55 263.11,67.28C261.94,67.84 261,67.97 260.62,67.54C260.24,67.1 260.51,66.19 261.24,65.12C260.01,64.69 259.25,64.12 259.29,63.54C259.33,62.97 260.17,62.51 261.44,62.27C260.88,61.1 260.74,60.16 261.18,59.78C261.61,59.4 262.53,59.67 263.6,60.4C264.03,59.17 264.6,58.41 265.17,58.45C265.75,58.49 266.2,59.33 266.45,60.6C267.62,60.04 268.56,59.9 268.94,60.34C269.31,60.78 269.05,61.69 268.32,62.76C269.54,63.19 270.3,63.76 270.26,64.33C270.22,64.91 269.39,65.37 268.11,65.61C268.68,66.78 268.81,67.72 268.38,68.1Z"
+            android:fillColor="@macro/setup_list_celebratory_promo_green"
+            android:fillType="evenOdd"/>
+    </group>
+</vector>

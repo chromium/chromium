@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="QuickDeletePromo"/>
   <variant name="SafetyHub"/>
   <variant name="SavePasswordsPromo"/>
+  <variant name="SetupListCelebratoryPromo"/>
   <variant name="SignInPromo"/>
   <variant name="SingleTab"/>
   <variant name="TabGroupPromo"/>

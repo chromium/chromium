@@ -221,6 +221,17 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testShowSetupList_CelebratoryPromo() {
+        // Test showing celebratory promo card.
+        testShowModuleImpl(
+                ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
+                R.string.setup_list_celebratory_promo_title,
+                R.string.setup_list_celebratory_promo_description,
+                R.drawable.setup_list_celebratory_promo_logo);
+    }
+
+    @Test
+    @SmallTest
     public void testShowSetupList_Completed() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.isSetupListModule(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))

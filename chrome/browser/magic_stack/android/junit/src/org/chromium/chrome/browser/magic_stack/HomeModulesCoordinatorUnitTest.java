@@ -276,7 +276,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
                         ModuleType.SIGN_IN_PROMO,
                         ModuleType.SAVE_PASSWORDS_PROMO,
-                        ModuleType.PASSWORD_CHECKUP_PROMO);
+                        ModuleType.PASSWORD_CHECKUP_PROMO,
+                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO);
         when(mModuleRegistry.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
 

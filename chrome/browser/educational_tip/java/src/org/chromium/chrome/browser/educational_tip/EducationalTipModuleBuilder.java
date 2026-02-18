@@ -65,10 +65,14 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder {
     /** Create view for the educational tip module. */
     @Override
     public ViewGroup createView(ViewGroup parentView) {
+        int layoutId =
+                mModuleType == ModuleType.SETUP_LIST_CELEBRATORY_PROMO
+                        ? R.layout.setup_list_celebratory_promo_layout
+                        : R.layout.educational_tip_module_layout;
         ViewGroup moduleView =
                 (ViewGroup)
                         LayoutInflater.from(mActionDelegate.getContext())
-                                .inflate(R.layout.educational_tip_module_layout, parentView, false);
+                                .inflate(layoutId, parentView, false);
 
         if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
             // Setup List images don't have a background

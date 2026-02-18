@@ -124,4 +124,9 @@ found in the LICENSE file.
     <color name="ntp_color_fuchsia_primary_dark">#CF8DC5</color>
     <color name="ntp_color_violet_primary_light">#6B5395</color>
     <color name="ntp_color_violet_primary_dark">#B196DE</color>
+
+    <!-- Colors used in Setup List celebratory promo illustration -->
+    <color name="setup_list_celebratory_promo_yellow_base">#FCC934</color>
+    <color name="setup_list_celebratory_promo_green_dark_base">#1AA64A</color>
+    <color name="setup_list_celebratory_promo_blue_dark_base">#4E8FF8</color>
 </resources>

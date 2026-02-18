@@ -49,4 +49,12 @@ found in the LICENSE file.
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_height">36dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_description_margin_top">4dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_description_margin_bottom">24dp</dimen>
+
+  <!-- Educational tip setup list celebratory promo dimens -->
+  <dimen name="setup_list_celebratory_promo_padding_bottom">34dp</dimen>
+  <dimen name="setup_list_celebratory_promo_text_margin_lateral">16dp</dimen>
+  <dimen name="setup_list_celebratory_promo_description_margin_top">4dp</dimen>
+  <dimen name="setup_list_celebratory_promo_min_height">184dp</dimen>
+  <dimen name="setup_list_celebratory_promo_logo_width">200dp</dimen>
+  <dimen name="setup_list_celebratory_promo_logo_height">55dp</dimen>
 </resources>
