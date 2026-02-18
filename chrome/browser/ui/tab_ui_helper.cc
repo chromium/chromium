@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -44,6 +45,14 @@ namespace {
 BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsNTP(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         (url.GetHost() == chrome::kChromeUINewTabHost ||
+#if !BUILDFLAG(IS_ANDROID)
+          url.GetHost() == chrome::kChromeUITabSearchHost ||
+#endif  // !BUILDFLAG(IS_ANDROID)
+          url.GetHost() == chrome::kChromeUINewTabPageHost);
+}
 }  // namespace
 
 DEFINE_USER_DATA(TabUIHelper);
@@ -177,6 +186,21 @@ bool TabUIHelper::IsCrashed() {
           crashed_status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
           crashed_status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
           crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);
+}
+
+bool TabUIHelper::ShouldDisplayURL() {
+  content::WebContents* const web_contents = tab().GetContents();
+  // If the tab is showing a lookalike interstitial ("Did you mean example.com"
+  // on éxample.com), don't show the URL in the hover card because it's
+  // misleading.
+  security_interstitials::SecurityInterstitialTabHelper*
+      security_interstitial_tab_helper = security_interstitials::
+          SecurityInterstitialTabHelper::FromWebContents(web_contents);
+  // NTP URLs are hidden to match the omnibox behavior.
+  return !IsNTP(web_contents->GetVisibleURL()) &&
+         (!security_interstitial_tab_helper ||
+          !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
+          security_interstitial_tab_helper->ShouldDisplayURL());
 }
 
 GURL TabUIHelper::GetVisibleURL() {

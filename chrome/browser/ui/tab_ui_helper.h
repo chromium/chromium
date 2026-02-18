@@ -69,6 +69,8 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // Returns true if the tab is crashed and false otherwise.
   bool IsCrashed();
 
+  bool ShouldDisplayURL();
+
   GURL GetVisibleURL();
 
   // tabs::ContentsObservingTabFeature override:

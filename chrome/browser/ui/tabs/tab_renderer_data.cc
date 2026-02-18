@@ -30,7 +30,6 @@
 #include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
-#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -55,13 +54,6 @@ GetCollaborationMessage(tabs::TabInterface* tab) {
   return data->GetWeakPtr();
 }
 
-bool IsNTP(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.GetHost() == chrome::kChromeUINewTabHost ||
-          url.GetHost() == chrome::kChromeUINewTabPageHost ||
-          url.GetHost() == chrome::kChromeUITabSearchHost);
-}
-
 }  // namespace
 
 // static
@@ -69,20 +61,6 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   CHECK(tab);
   content::WebContents* const contents = tab->GetContents();
   CHECK(contents);
-
-  // If the tab is showing a lookalike interstitial ("Did you mean example.com"
-  // on éxample.com), don't show the URL in the hover card because it's
-  // misleading.
-  security_interstitials::SecurityInterstitialTabHelper*
-      security_interstitial_tab_helper = security_interstitials::
-          SecurityInterstitialTabHelper::FromWebContents(contents);
-
-  bool should_display_url =
-      // NTP URLs are hidden to match the omnibox behavior.
-      !IsNTP(contents->GetVisibleURL()) &&
-      (!security_interstitial_tab_helper ||
-       !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
-       security_interstitial_tab_helper->ShouldDisplayURL());
 
   TabRendererData data;
 
@@ -125,7 +103,7 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.visible_url = tab_ui_helper->GetVisibleURL();
   data.should_render_loading_title = tab_ui_helper->ShouldRenderLoadingTitle();
   data.last_committed_url = contents->GetLastCommittedURL();
-  data.should_display_url = should_display_url;
+  data.should_display_url = tab_ui_helper->ShouldDisplayURL();
   data.is_crashed = tab_ui_helper->IsCrashed();
   data.pinned = tab->IsPinned();
   data.show_icon = tab_ui_helper->ShouldDisplayFavicon();
