@@ -148,9 +148,9 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   // widget.
   ui_web_contents->SetColorProviderSource(this);
 
-  widget_->Show();
-  // Give our main web contents the focus so that accelerators work.
-  ui_web_contents->SetInitialFocus();
+  paint_as_active_subscription_ =
+      widget_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &WebUIBrowserWindow::PaintAsActiveChanged, base::Unretained(this)));
 
   LoadAccelerators();
 }
@@ -201,8 +201,42 @@ WebUIBrowserWindow* WebUIBrowserWindow::FromNativeWindow(
                 : nullptr;
 }
 
+// The code about Browser's activation state is copied from
+// BrowserView::Show().
 void WebUIBrowserWindow::Show() {
-  NOTIMPLEMENTED_LOG_ONCE();
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
+  // The Browser associated with this browser window must become the active
+  // browser at the time Show() is called. This is the natural behavior under
+  // Windows and Chrome OS, but other platforms will not trigger
+  // OnWidgetActivationChanged() until we return to the runloop. Therefore any
+  // calls to Browser::GetLastActive() will return the wrong result if we do
+  // not explicitly set it here.
+  browser_->DidBecomeActive();
+#endif
+
+  // If the window is already visible, just activate it.
+  if (widget_->IsVisible()) {
+    widget_->Activate();
+    return;
+  }
+
+  widget_->Show();
+
+  // Give our main web contents the focus so that accelerators work.
+  // This must happen after Show() since focusing triggers widget activation,
+  // which calls PaintAsActiveChanged() -> Browser::DidBecomeActive(). The
+  // Browser must be fully constructed by that point.
+  web_view_->GetWebContents()->SetInitialFocus();
+}
+
+// The code about Browser's activation state is copied from
+// BrowserView::PaintAsActiveChanged().
+void WebUIBrowserWindow::PaintAsActiveChanged() {
+  if (widget_->ShouldPaintAsActive()) {
+    browser_->DidBecomeActive();
+  } else {
+    browser_->DidBecomeInactive();
+  }
 }
 
 void WebUIBrowserWindow::ShowInactive() {

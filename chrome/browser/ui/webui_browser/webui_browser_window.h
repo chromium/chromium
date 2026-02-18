@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
@@ -296,6 +297,12 @@ class WebUIBrowserWindow : public BrowserWindow,
   ui::ColorProviderKey::ThemeInitializerSupplier* GetThemeInitializerSupplier()
       const;
 
+  // Called when the widget's ShouldPaintAsActive() state changes.
+  // Unlike OnWidgetActivationChanged(), this correctly handles child widget
+  // activation (e.g., modal dialogs) by not marking the browser inactive
+  // when a child widget takes focus.
+  void PaintAsActiveChanged();
+
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
 
   const raw_ptr<Browser> browser_;
@@ -314,6 +321,11 @@ class WebUIBrowserWindow : public BrowserWindow,
   std::unique_ptr<WebUIBrowserExtensionsContainer> extensions_container_;
   std::unique_ptr<ui::ScopedUnownedUserData<ExtensionsContainer>>
       scoped_extensions_container_user_data_;
+
+  // Subscription for paint-as-active changes on the widget. Used to call
+  // DidBecomeActive/DidBecomeInactive at the right time, accounting for child
+  // widget focus (e.g., modal dialogs keeping the parent "active").
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_
