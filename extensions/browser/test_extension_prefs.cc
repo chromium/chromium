@@ -216,7 +216,9 @@ void TestExtensionPrefs::AddExtension(const Extension* extension) {
 std::unique_ptr<PrefService> TestExtensionPrefs::CreateIncognitoPrefService()
     const {
   return pref_service_->CreateIncognitoPrefService(
-      new ExtensionPrefStore(extension_pref_value_map_.get(), true), {});
+      base::MakeRefCounted<ExtensionPrefStore>(extension_pref_value_map_.get(),
+                                               true),
+      {});
 }
 
 void TestExtensionPrefs::set_extensions_disabled(bool extensions_disabled) {

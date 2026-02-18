@@ -127,7 +127,8 @@ std::string LoadLocalState(
   InitializeLocalState(chrome_feature_list_creator);
 
   chrome_feature_list_creator->local_state()->UpdateCommandLinePrefStore(
-      new ChromeCommandLinePrefStore(base::CommandLine::ForCurrentProcess()));
+      base::MakeRefCounted<ChromeCommandLinePrefStore>(
+          base::CommandLine::ForCurrentProcess()));
 
   return InitResourceBundleAndDetermineLocale(
       chrome_feature_list_creator->local_state(), is_running_tests);

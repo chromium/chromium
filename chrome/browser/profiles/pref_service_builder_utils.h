@@ -57,7 +57,7 @@ void RegisterProfilePrefs(bool is_signin_profile,
 // Creates the PrefService.
 std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-    PrefStore* extension_pref_store,
+    scoped_refptr<PrefStore> extension_pref_store,
     policy::PolicyService* policy_service,
     policy::ChromeBrowserPolicyConnector* browser_policy_connector,
     mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>

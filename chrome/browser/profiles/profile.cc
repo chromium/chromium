@@ -496,12 +496,14 @@ void Profile::MaybeSendDestroyedNotification() {
 }
 
 // static
-PrefStore* Profile::CreateExtensionPrefStore(Profile* profile,
-                                             bool incognito_pref_store) {
+scoped_refptr<PrefStore> Profile::CreateExtensionPrefStore(
+    Profile* profile,
+    bool incognito_pref_store) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ExtensionPrefValueMap* pref_value_map =
           ExtensionPrefValueMapFactory::GetForBrowserContext(profile)) {
-    return new ExtensionPrefStore(pref_value_map, incognito_pref_store);
+    return base::MakeRefCounted<ExtensionPrefStore>(pref_value_map,
+                                                    incognito_pref_store);
   }
 #endif
   return nullptr;

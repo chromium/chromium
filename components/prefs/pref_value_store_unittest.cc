@@ -105,10 +105,9 @@ class PrefValueStoreTest : public testing::Test {
 
     // Create a fresh PrefValueStore.
     pref_value_store_ = std::make_unique<PrefValueStore>(
-        managed_pref_store_.get(), supervised_user_pref_store_.get(),
-        extension_pref_store_.get(), command_line_pref_store_.get(),
-        user_pref_store_.get(), recommended_pref_store_.get(),
-        default_pref_store_.get(), &pref_notifier_);
+        managed_pref_store_, supervised_user_pref_store_, extension_pref_store_,
+        command_line_pref_store_, user_pref_store_, recommended_pref_store_,
+        default_pref_store_, &pref_notifier_);
   }
 
   void CreateManagedPrefs() {

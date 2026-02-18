@@ -264,10 +264,10 @@ class PowerPrefsTest : public NoSessionAshTestBase {
   void SetUpLocalState() {
     auto pref_notifier = std::make_unique<PrefNotifierImpl>();
     auto pref_value_store = std::make_unique<PrefValueStore>(
-        managed_pref_store_.get() /* managed_prefs */,
+        managed_pref_store_ /* managed_prefs */,
         nullptr /* supervised_user_prefs */, nullptr /* extension_prefs */,
-        nullptr /* command_line_prefs */, user_pref_store_.get(),
-        nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
+        nullptr /* command_line_prefs */, user_pref_store_,
+        nullptr /* recommended_prefs */, pref_registry_->defaults(),
         pref_notifier.get());
     local_state_ = std::make_unique<PrefService>(
         std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,

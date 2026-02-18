@@ -520,12 +520,14 @@ void PrefService::SetUserPrefValue(std::string_view path,
   user_pref_store_->SetValue(path, std::move(new_value), GetWriteFlags(pref));
 }
 
-void PrefService::UpdateCommandLinePrefStore(PrefStore* command_line_store) {
-  pref_value_store_->UpdateCommandLinePrefStore(command_line_store);
+void PrefService::UpdateCommandLinePrefStore(
+    scoped_refptr<PrefStore> command_line_store) {
+  pref_value_store_->UpdateCommandLinePrefStore(std::move(command_line_store));
 }
 
-void PrefService::UpdateExtensionPrefStore(PrefStore* extension_store) {
-  pref_value_store_->UpdateExtensionPrefStore(extension_store);
+void PrefService::UpdateExtensionPrefStore(
+    scoped_refptr<PrefStore> extension_store) {
+  pref_value_store_->UpdateExtensionPrefStore(std::move(extension_store));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

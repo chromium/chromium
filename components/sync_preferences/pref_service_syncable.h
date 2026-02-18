@@ -79,7 +79,7 @@ class PrefServiceSyncable : public PrefService,
   // incognito windows). |persistent_pref_names| is a list of preference names
   // whose changes will be persisted by the returned incognito pref service.
   std::unique_ptr<PrefServiceSyncable> CreateIncognitoPrefService(
-      PrefStore* incognito_extension_pref_store,
+      scoped_refptr<PrefStore> incognito_extension_pref_store,
       const std::vector<const char*>& persistent_pref_names);
 
   // Returns true if preferences state has synchronized with the remote
@@ -106,7 +106,8 @@ class PrefServiceSyncable : public PrefService,
   syncer::SyncableService* GetSyncableService(const syncer::DataType& type);
 
   // Do not call this after having derived an incognito or per tab pref service.
-  void UpdateCommandLinePrefStore(PrefStore* cmd_line_store) override;
+  void UpdateCommandLinePrefStore(
+      scoped_refptr<PrefStore> cmd_line_store) override;
 
   void AddSyncedPrefObserver(const std::string& name,
                              SyncedPrefObserver* observer);

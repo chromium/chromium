@@ -166,7 +166,7 @@ PrefServiceSyncable::~PrefServiceSyncable() {
 
 std::unique_ptr<PrefServiceSyncable>
 PrefServiceSyncable::CreateIncognitoPrefService(
-    PrefStore* incognito_extension_pref_store,
+    scoped_refptr<PrefStore> incognito_extension_pref_store,
     const std::vector<const char*>& persistent_pref_names) {
   pref_service_forked_ = true;
   auto pref_notifier = std::make_unique<PrefNotifierImpl>();
@@ -185,16 +185,15 @@ PrefServiceSyncable::CreateIncognitoPrefService(
   auto pref_value_store = pref_value_store_->CloneAndSpecialize(
       nullptr,  // managed
       nullptr,  // supervised_user
-      incognito_extension_pref_store,
+      std::move(incognito_extension_pref_store),
       nullptr,  // command_line_prefs
-      incognito_pref_store.get(),
+      incognito_pref_store,
       nullptr,  // recommended
       forked_registry->defaults().get(), pref_notifier.get());
   return std::make_unique<PrefServiceSyncable>(
       std::move(pref_notifier), std::move(pref_value_store),
-      incognito_pref_store,
-      std::move(forked_registry), pref_sync_associator_.client(),
-      read_error_callback_, false);
+      std::move(incognito_pref_store), std::move(forked_registry),
+      pref_sync_associator_.client(), read_error_callback_, false);
 }
 
 bool PrefServiceSyncable::IsSyncing() {
@@ -243,11 +242,11 @@ syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
 }
 
 void PrefServiceSyncable::UpdateCommandLinePrefStore(
-    PrefStore* cmd_line_store) {
+    scoped_refptr<PrefStore> cmd_line_store) {
   // If |pref_service_forked_| is true, then this PrefService and the forked
   // copies will be out of sync.
   DCHECK(!pref_service_forked_);
-  PrefService::UpdateCommandLinePrefStore(cmd_line_store);
+  PrefService::UpdateCommandLinePrefStore(std::move(cmd_line_store));
 }
 
 void PrefServiceSyncable::AddSyncedPrefObserver(const std::string& name,

@@ -437,21 +437,21 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 class PrefServiceSyncableMergeTest : public testing::Test {
  public:
   PrefServiceSyncableMergeTest()
-      : prefs_(
-            std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
-            std::make_unique<PrefValueStore>(managed_prefs_.get(),
-                                             new TestingPrefStore,
-                                             new TestingPrefStore,
-                                             new TestingPrefStore,
-                                             new TestingPrefStore,
-                                             user_prefs_.get(),
-                                             pref_registry_->defaults().get(),
-                                             pref_notifier_),
-            user_prefs_,
-            pref_registry_,
-            client_,
-            /*read_error_callback=*/base::DoNothing(),
-            /*async=*/false) {}
+      : prefs_(std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
+               std::make_unique<PrefValueStore>(
+                   managed_prefs_,
+                   base::MakeRefCounted<TestingPrefStore>(),
+                   base::MakeRefCounted<TestingPrefStore>(),
+                   base::MakeRefCounted<TestingPrefStore>(),
+                   base::MakeRefCounted<TestingPrefStore>(),
+                   user_prefs_,
+                   pref_registry_->defaults(),
+                   pref_notifier_),
+               user_prefs_,
+               pref_registry_,
+               client_,
+               /*read_error_callback=*/base::DoNothing(),
+               /*async=*/false) {}
 
   void SetUp() override {
     pref_registry_->RegisterStringPref(kUnsyncedPreferenceName,
@@ -1033,10 +1033,9 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
     prefs_ = std::make_unique<PrefServiceSyncable>(
         std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
         std::make_unique<PrefValueStore>(
-            managed_prefs_.get(), supervised_user_prefs_.get(),
-            extension_prefs_.get(), command_line_prefs_.get(),
-            user_prefs_.get(), recommended_prefs_.get(),
-            pref_registry_->defaults().get(), pref_notifier_),
+            managed_prefs_, supervised_user_prefs_, extension_prefs_,
+            command_line_prefs_, user_prefs_, recommended_prefs_,
+            pref_registry_->defaults(), pref_notifier_),
         user_prefs_, pref_registry_, client_,
         /*read_error_callback=*/base::DoNothing(),
         /*async=*/false);

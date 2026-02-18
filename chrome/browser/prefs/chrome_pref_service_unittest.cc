@@ -38,7 +38,8 @@ TEST(ChromePrefServiceTest, UpdateCommandLinePrefStore) {
   cmd_line.AppendSwitch(switches::kDisable3DAPIs);
 
   // Call UpdateCommandLinePrefStore and check to see if the value has changed.
-  prefs.UpdateCommandLinePrefStore(new ChromeCommandLinePrefStore(&cmd_line));
+  prefs.UpdateCommandLinePrefStore(
+      base::MakeRefCounted<ChromeCommandLinePrefStore>(&cmd_line));
   pref = prefs.FindPreference(prefs::kDisable3DAPIs);
   ASSERT_TRUE(pref);
   value = pref->GetValue();

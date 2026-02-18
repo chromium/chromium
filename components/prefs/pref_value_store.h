@@ -78,13 +78,13 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   //
   // |pref_notifier| facilitates broadcasting preference change notifications
   // to the world.
-  PrefValueStore(PrefStore* managed_prefs,
-                 PrefStore* supervised_user_prefs,
-                 PrefStore* extension_prefs,
-                 PrefStore* command_line_prefs,
-                 PrefStore* user_prefs,
-                 PrefStore* recommended_prefs,
-                 PrefStore* default_prefs,
+  PrefValueStore(scoped_refptr<PrefStore> managed_prefs,
+                 scoped_refptr<PrefStore> supervised_user_prefs,
+                 scoped_refptr<PrefStore> extension_prefs,
+                 scoped_refptr<PrefStore> command_line_prefs,
+                 scoped_refptr<PrefStore> user_prefs,
+                 scoped_refptr<PrefStore> recommended_prefs,
+                 scoped_refptr<PrefStore> default_prefs,
                  PrefNotifier* pref_notifier);
 
   PrefValueStore(const PrefValueStore&) = delete;
@@ -97,13 +97,13 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   //
   // The new PrefValueStore is passed the |delegate| in its constructor.
   std::unique_ptr<PrefValueStore> CloneAndSpecialize(
-      PrefStore* managed_prefs,
-      PrefStore* supervised_user_prefs,
-      PrefStore* extension_prefs,
-      PrefStore* command_line_prefs,
-      PrefStore* user_prefs,
-      PrefStore* recommended_prefs,
-      PrefStore* default_prefs,
+      scoped_refptr<PrefStore> managed_prefs,
+      scoped_refptr<PrefStore> supervised_user_prefs,
+      scoped_refptr<PrefStore> extension_prefs,
+      scoped_refptr<PrefStore> command_line_prefs,
+      scoped_refptr<PrefStore> user_prefs,
+      scoped_refptr<PrefStore> recommended_prefs,
+      scoped_refptr<PrefStore> default_prefs,
       PrefNotifier* pref_notifier);
 
   // Returns the pref store type identifying the source that controls the
@@ -156,10 +156,10 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   bool PrefValueExtensionModifiable(const std::string& name) const;
 
   // Update the command line PrefStore with |command_line_prefs|.
-  void UpdateCommandLinePrefStore(PrefStore* command_line_prefs);
+  void UpdateCommandLinePrefStore(scoped_refptr<PrefStore> command_line_prefs);
 
   // Updates the extension PrefStore with `extension_prefs`.
-  void UpdateExtensionPrefStore(PrefStore* extension_prefs);
+  void UpdateExtensionPrefStore(scoped_refptr<PrefStore> extension_prefs);
 
   bool IsInitializationComplete() const;
 
@@ -179,11 +179,13 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
     // Takes ownership of |pref_store|.
     void Initialize(PrefValueStore* store,
-                    PrefStore* pref_store,
+                    scoped_refptr<PrefStore> pref_store,
                     PrefStoreType type);
 
     PrefStore* store() { return pref_store_.get(); }
     const PrefStore* store() const { return pref_store_.get(); }
+
+    scoped_refptr<PrefStore> store_ref() const { return pref_store_; }
 
    private:
     // PrefStore::Observer implementation.
@@ -241,7 +243,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
   // Initializes a pref store keeper. Sets up a PrefStoreKeeper that will take
   // ownership of the passed |pref_store|.
-  void InitPrefStore(PrefStoreType type, PrefStore* pref_store);
+  void InitPrefStore(PrefStoreType type, scoped_refptr<PrefStore> pref_store);
 
   // Checks whether initialization is completed and tells the notifier if that
   // is the case.
@@ -254,6 +256,12 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   }
   const PrefStore* GetPrefStore(PrefStoreType type) const {
     return pref_stores_[type].store();
+  }
+
+  // Like GetPrefStore, but returns a scoped_refptr so caller may share
+  // ownership.
+  scoped_refptr<PrefStore> GetPrefStoreRef(PrefStoreType type) const {
+    return pref_stores_[type].store_ref();
   }
 
   // Keeps the PrefStore references in order of precedence.

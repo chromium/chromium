@@ -39,7 +39,7 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
                     scoped_refptr<JsonPrefStore> user_pref_store,
                     policy::PolicyService* policy_service,
                     policy::BrowserPolicyConnector* policy_connector,
-                    const scoped_refptr<PrefStore>& supervised_user_prefs) {
+                    scoped_refptr<PrefStore> supervised_user_prefs) {
   if (policy_service || policy_connector) {
     DCHECK(policy_service && policy_connector);
     factory->SetManagedPolicies(policy_service, policy_connector);
@@ -47,7 +47,7 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
   }
 
   if (supervised_user_prefs) {
-    factory->set_supervised_user_prefs(supervised_user_prefs);
+    factory->set_supervised_user_prefs(std::move(supervised_user_prefs));
   }
 
   factory->set_user_prefs(std::move(user_pref_store));
@@ -84,7 +84,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
     const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry,
     policy::PolicyService* policy_service,
     policy::BrowserPolicyConnector* policy_connector,
-    const scoped_refptr<PrefStore>& supervised_user_prefs,
+    scoped_refptr<PrefStore> supervised_user_prefs,
     bool async) {
   // chrome_prefs::CreateProfilePrefs uses ProfilePrefStoreManager to create
   // the preference store however since Chrome on iOS does not need to track
@@ -97,7 +97,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
           std::unique_ptr<PrefFilter>(), pref_io_task_runner);
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, local_pref_store, policy_service, policy_connector,
-                 supervised_user_prefs);
+                 std::move(supervised_user_prefs));
   if (base::FeatureList::IsEnabled(
           switches::kEnablePreferencesAccountStorage)) {
     base::FilePath account_prefs_filepath =
