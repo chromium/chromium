@@ -12,7 +12,7 @@ import '//resources/cr_components/composebox/recent_tab_chip.js';
 import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
+import {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {RecentTabChipElement} from '//resources/cr_components/composebox/recent_tab_chip.js';
@@ -32,7 +32,7 @@ import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/o
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {ModelMode, ToolMode, InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 

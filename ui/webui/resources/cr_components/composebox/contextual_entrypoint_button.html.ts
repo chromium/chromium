@@ -4,7 +4,7 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {GlifAnimationState} from './context_menu_entrypoint.js';
+import {GlifAnimationState} from './common.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 
 export function getHtml(this: ContextualEntrypointButtonElement) {
