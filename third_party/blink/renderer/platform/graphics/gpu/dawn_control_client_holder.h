@@ -60,7 +60,10 @@ class PLATFORM_EXPORT DawnControlClientHolder
   void MarkContextLost();
   bool IsContextLost() const;
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      const SkImageInfo& info);
+      viz::SharedImageFormat format,
+      gfx::Size size,
+      const gfx::ColorSpace& color_space,
+      SkAlphaType alpha_type);
 
   // Flush commands on this client immediately.
   void Flush();

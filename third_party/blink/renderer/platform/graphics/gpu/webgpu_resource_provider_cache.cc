@@ -41,15 +41,11 @@ WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
 
 std::unique_ptr<RecyclableCanvasResource>
 WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
-    const SkImageInfo& info) {
+    viz::SharedImageFormat format,
+    gfx::Size size,
+    const gfx::ColorSpace& color_space,
+    SkAlphaType alpha_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  gfx::Size size = gfx::Size(info.width(), info.height());
-  viz::SharedImageFormat format =
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType());
-  SkAlphaType alpha_type = info.alphaType();
-  gfx::ColorSpace color_space =
-      SkColorSpaceToGfxColorSpace(info.refColorSpace());
 
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> provider =
       AcquireCachedProvider(size, format, alpha_type, color_space);

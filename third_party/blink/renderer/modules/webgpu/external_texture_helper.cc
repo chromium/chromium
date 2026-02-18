@@ -429,16 +429,14 @@ ExternalTexture CreateExternalTexture(
   }
 
   // High bit depth formats should also use F16, but do not yet.
-  auto sk_color_type = kN32_SkColorType;
+  auto format = GetN32FormatForCanvas();
   if (media_video_frame->format() == media::PIXEL_FORMAT_RGBAF16) {
-    sk_color_type = kRGBA_F16_SkColorType;
+    format = viz::SinglePlaneFormat::kRGBA_F16;
   }
 
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          SkImageInfo::Make(natural_size.width(), natural_size.height(),
-                            sk_color_type, kPremul_SkAlphaType,
-                            resource_color_space.ToSkColorSpace()));
+          format, natural_size, resource_color_space, kPremul_SkAlphaType);
   if (!recyclable_canvas_resource) {
     return external_texture;
   }

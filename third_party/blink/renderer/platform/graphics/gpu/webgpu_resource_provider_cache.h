@@ -52,7 +52,10 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   ~WebGPURecyclableResourceCache() = default;
 
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      const SkImageInfo& info);
+      viz::SharedImageFormat format,
+      gfx::Size size,
+      const gfx::ColorSpace& color_space,
+      SkAlphaType alpha_type);
 
   // When the holder is destroyed, move the resource provider to
   // |unused_providers_| if the cache is not full.

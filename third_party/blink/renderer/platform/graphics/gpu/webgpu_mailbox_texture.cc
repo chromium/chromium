@@ -77,7 +77,9 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       dawn_control_client->GetOrCreateCanvasResource(
-          recyclable_canvas_resource_info);
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
+          gfx::Size(mailbox_texture_width, mailbox_texture_height),
+          SkColorSpaceToGfxColorSpace(info.refColorSpace()), info.alphaType());
 
   if (!recyclable_canvas_resource) {
     return nullptr;
