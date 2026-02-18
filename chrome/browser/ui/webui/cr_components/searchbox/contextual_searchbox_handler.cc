@@ -407,7 +407,7 @@ void ContextualSearchboxHandler::AddFileContext(
   // TODO(crbug.com/483526904): Return synchronous error in the callback.
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
-    std::move(callback).Run(base::UnguessableToken());
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -435,7 +435,7 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
   // TODO(crbug.com/483526904): Return synchronous error in the callback.
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
-    std::move(callback).Run(base::UnguessableToken());
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

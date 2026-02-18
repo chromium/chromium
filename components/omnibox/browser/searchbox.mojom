@@ -331,7 +331,7 @@ interface PageHandler {
   //   2. Listen for status changes from browser-process.
   AddFileContext(SelectedFileInfo file_info,
                  mojo_base.mojom.BigBuffer file_bytes) =>
-      (mojo_base.mojom.UnguessableToken token);
+      (mojo_base.mojom.UnguessableToken? token);
 
   // Attach a tab to the query context. If the tab cannot be attached, the
   // result will contain an error, otherwise it will contain the token

@@ -189,7 +189,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       int32_t tab_id,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
-  void OnVisualSelectionAdded(const base::UnguessableToken& token);
+  void OnVisualSelectionAdded(
+      const std::optional<base::UnguessableToken>& token);
 
   LensSearchController* GetLensSearchController() const;
 

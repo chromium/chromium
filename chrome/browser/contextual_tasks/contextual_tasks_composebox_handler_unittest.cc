@@ -1670,10 +1670,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
   // Run add file context's callback via mock so can store token in test.
   base::MockCallback<ContextualTasksComposeboxHandler::AddFileContextCallback>
       callback;
-  base::UnguessableToken current_token;
+  std::optional<base::UnguessableToken> current_token;
   base::RunLoop run_loop;
   EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](const base::UnguessableToken& token) {
+      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
         current_token = token;
         run_loop.Quit();
       });
@@ -1682,7 +1682,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
                            callback.Get());
   run_loop.Run();
 
-  ASSERT_FALSE(current_token.is_empty()) << "AddFileContext failed.";
+  ASSERT_TRUE(current_token.has_value()) << "AddFileContext failed.";
 
   // File is not finished uploading.
   contextual_search::FileInfo uploading_info{};
@@ -1691,7 +1691,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
       contextual_search::FileUploadStatus::kProcessing;
   uploading_info.tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
-  EXPECT_CALL(*mock_controller_, GetFileInfo(current_token))
+  EXPECT_CALL(*mock_controller_, GetFileInfo(*current_token))
       .WillRepeatedly(testing::Return(&uploading_info));
 
   handler_->SubmitQuery("What is this?", 0, false, false, false, false);
@@ -1705,7 +1705,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
       contextual_search::FileUploadStatus::kUploadSuccessful;
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(1);
   handler_->OnFileUploadStatusChanged(
-      current_token, lens::MimeType::kPdf,
+      *current_token, lens::MimeType::kPdf,
       contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
 
   ASSERT_FALSE(handler_->IsAnyContextUploading());
@@ -2264,4 +2264,36 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ResetBlocklistedSuggestions) {
   handler_->UpdateSuggestedTabContext(tab_info.Clone());
 
   searchbox_page_receiver_.FlushForTesting();
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
+  // Create a handler with a callback that returns nullptr for session handle.
+  mojo::PendingRemote<composebox::mojom::Page> page_remote;
+  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
+      page_remote.InitWithNewPipeAndPassReceiver();
+
+  auto handler = std::make_unique<TestContextualTasksComposeboxHandler>(
+      mock_ui_.get(), profile(), web_contents(),
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      std::move(page_remote),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      base::BindRepeating(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }));
+
+  auto file_info = searchbox::mojom::SelectedFileInfo::New();
+  std::vector<uint8_t> data = {0x1};
+  mojo_base::BigBuffer file_bytes(data);
+
+  base::MockCallback<ContextualTasksComposeboxHandler::AddFileContextCallback>
+      callback;
+  std::optional<base::UnguessableToken> token;
+
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce(testing::SaveArg<0>(&token));
+
+  handler->AddFileContext(std::move(file_info), std::move(file_bytes),
+                          callback.Get());
+
+  EXPECT_FALSE(token.has_value());
 }
