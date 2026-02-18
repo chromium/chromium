@@ -11,6 +11,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace javascript_dialogs::util {
 
@@ -33,7 +34,8 @@ url::Origin UnwrapOriginIfOpaque(const url::Origin& origin) {
       precursor.scheme(), precursor.host(), precursor.port());
 }
 
-std::u16string DialogTitle(const url::Origin& main_frame_origin,
+std::u16string DialogTitle(const GURL& main_frame_url,
+                           const url::Origin& main_frame_origin,
                            const url::Origin& alerting_frame_origin) {
   // Note that `Origin::Create()` handles unwrapping of `blob:` and
   // `filesystem:` schemed URLs, so no special handling is needed for that.
@@ -47,7 +49,12 @@ std::u16string DialogTitle(const url::Origin& main_frame_origin,
   bool is_same_origin_as_main_frame =
       unwrapped_alerting_frame_origin.IsSameOriginWith(
           unwrapped_main_frame_origin);
-  if (unwrapped_alerting_frame_origin.GetURL().IsStandard() &&
+
+  // Don't display any origin if the top level is a data: URL. URLs with a data:
+  // scheme are rendered with a opaque origin for security reasons so it's
+  // better not to attribute the alert dialog to the precursor origin.
+  if (!main_frame_url.SchemeIs(url::kDataScheme) &&
+      unwrapped_alerting_frame_origin.GetURL().IsStandard() &&
       !unwrapped_alerting_frame_origin.GetURL().SchemeIsFile()) {
     std::u16string origin_string =
         url_formatter::FormatOriginForSecurityDisplay(

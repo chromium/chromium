@@ -453,7 +453,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests that the title for a dialog generated from a page with a non-HTTP URL
 // that was spawned by an HTTP URL has that HTTP URL used for the title.
-IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
+IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest,
+                       TitleForNonHTTPOriginInSubframe) {
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
@@ -484,6 +485,49 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
   EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
                 "a.com:%d says", embedded_test_server()->port())),
             dialog_manager->GetTitle(tab, subframe->GetLastCommittedOrigin()));
+}
+
+IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest,
+                       TitleForNonHTTPOriginInMainFrame) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create a popup / new tab.
+  content::TestNavigationObserver opened_tab_observer(nullptr);
+  opened_tab_observer.StartWatchingNewWebContents();
+  GURL test_url(GetParam());
+  std::string script = content::JsReplace(R"(
+      let a = document.createElement("a");
+      a.href = $1;
+      a.target = "_blank";
+      a.id = "link";
+      a.textContent = "Open a new tab";
+      document.body.appendChild(a);)",
+                                          test_url);
+  ASSERT_TRUE(content::ExecJs(tab, script));
+  content::SimulateMouseClickOrTapElementWithId(tab, "link");
+  opened_tab_observer.Wait();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  content::WebContents* opened_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Wait until newly opened tab is fully loaded.
+  ASSERT_TRUE(WaitForLoadStop(opened_tab));
+
+  // Verify the title that would be used for a dialog spawned by the new tab.
+  javascript_dialogs::AppModalDialogManager* dialog_manager =
+      javascript_dialogs::AppModalDialogManager::GetInstance();
+  EXPECT_EQ(base::UTF8ToUTF16(
+                test_url.SchemeIs("data")
+                    ? "This page says"
+                    : base::StringPrintf("a.com:%d says",
+                                         embedded_test_server()->port())),
+            dialog_manager->GetTitle(
+                opened_tab,
+                opened_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 }
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,

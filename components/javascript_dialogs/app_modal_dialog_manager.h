@@ -14,6 +14,8 @@
 #include "components/javascript_dialogs/app_modal_dialog_manager_delegate.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
+class GURL;
+
 namespace url {
 class Origin;
 }
@@ -81,6 +83,7 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
                      bool reset_state) override;
 
   static std::u16string GetSiteFrameTitle(
+      const GURL& main_frame_url,
       const url::Origin& main_frame_origin,
       const url::Origin& alerting_frame_origin);
 

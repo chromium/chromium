@@ -35,7 +35,7 @@ alert_overlays::ButtonConfig BlockDialogsButtonConfig() {
 NSString* DialogTitle(GURL main_frame_url, url::Origin alerting_frame_origin) {
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
   std::u16string title = javascript_dialogs::util::DialogTitle(
-      main_frame_origin, alerting_frame_origin);
+      main_frame_url, main_frame_origin, alerting_frame_origin);
   return base::SysUTF16ToNSString(title);
 }
 }  // namespace java_script_dialog_overlay

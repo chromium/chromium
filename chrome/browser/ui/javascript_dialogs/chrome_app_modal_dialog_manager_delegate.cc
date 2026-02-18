@@ -45,5 +45,6 @@ std::u16string ChromeAppModalDialogManagerDelegate::GetTitle(
   }
 
   return javascript_dialogs::AppModalDialogManager::GetSiteFrameTitle(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(), origin);
 }

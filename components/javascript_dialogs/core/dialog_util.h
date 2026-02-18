@@ -7,11 +7,16 @@
 
 #include <string>
 
-#include "url/origin.h"
+namespace url {
+class Origin;
+}  // namespace url
+
+class GURL;
 
 namespace javascript_dialogs::util {
 
-std::u16string DialogTitle(const url::Origin& main_frame_origin,
+std::u16string DialogTitle(const GURL& main_frame_url,
+                           const url::Origin& main_frame_origin,
                            const url::Origin& alerting_frame_origin);
 
 }  // namespace javascript_dialogs::util
