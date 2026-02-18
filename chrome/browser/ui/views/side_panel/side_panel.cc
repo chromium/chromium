@@ -919,7 +919,8 @@ bool SidePanel::ShouldShowAnimation() const {
   // Don't show open/close animations for the toolbar height panel on Windows
   // due to jank. The "show from" animation should still run which is the only
   // time |content_starting_bounds_| has a value.
-  if (type_ == SidePanelEntry::PanelType::kToolbar) {
+  if (type_ == SidePanelEntry::PanelType::kToolbar &&
+      !features::UseSidePanelFlyoverAnimation()) {
     should_show_animations &= content_starting_bounds_.has_value();
   }
 #endif

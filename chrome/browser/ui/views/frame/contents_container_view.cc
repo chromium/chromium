@@ -314,6 +314,8 @@ void ContentsContainerView::Layout(PassKey pass_key) {
   if (capture_contents_border_widget_) {
     UpdateCaptureContentsBorderLocation();
   }
+
+  UpdateContentsClip();
 }
 
 void ContentsContainerView::OnViewBoundsChanged(View* observed_view) {
@@ -411,6 +413,16 @@ gfx::Rect ContentsContainerView::GetContentsViewBounds() const {
   return contents_view_bounds;
 }
 
+void ContentsContainerView::SetTargetContentBounds(
+    std::optional<gfx::Outsets> target_content_bounds) {
+  if (target_content_bounds_ == target_content_bounds) {
+    return;
+  }
+
+  target_content_bounds_ = target_content_bounds;
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
 void ContentsContainerView::CreateCaptureContentsBorder() {
   capture_contents_border_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
@@ -485,6 +497,25 @@ void ContentsContainerView::UpdateCaptureContentsBorderLocation() {
 #endif  // BUILDFLAG(IS_MAC)
 
   capture_contents_border_widget_->SetBounds(rect);
+}
+
+void ContentsContainerView::UpdateContentsClip() {
+  bool changed = false;
+  if (auto* const layer = contents_view_->holder()->GetUILayer()) {
+    if (layer->clip_rect() != contents_clip_rect_) {
+      layer->SetClipRect(contents_clip_rect_);
+      changed = true;
+    }
+  }
+  if (auto* const layer = contents_view_->layer()) {
+    if (layer->clip_rect() != contents_clip_rect_) {
+      layer->SetClipRect(contents_clip_rect_);
+      changed = true;
+    }
+  }
+  if (changed) {
+    contents_view_->SchedulePaint();
+  }
 }
 
 views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
@@ -610,6 +641,16 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(container_outline_.get(),
                                        container_outline_->GetVisible(),
                                        gfx::Rect(0, 0, width, height));
+  }
+
+  auto* const content_layout = layouts.GetLayoutFor(contents_view_);
+  if (target_content_bounds_) {
+    content_layout->bounds.Outset(*target_content_bounds_);
+    contents_clip_rect_ =
+        gfx::Rect(gfx::Point(), content_layout->bounds.size());
+    contents_clip_rect_.Inset(-target_content_bounds_->ToInsets());
+  } else {
+    contents_clip_rect_ = gfx::Rect();
   }
 
   layouts.host_size = gfx::Size(width, height);

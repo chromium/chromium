@@ -255,6 +255,16 @@ BASE_FEATURE(kThreeButtonPasswordSaveDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSidePanelFlyoverAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
+bool UseSidePanelFlyoverAnimation() {
+#if BUILDFLAG(IS_MAC)
+  // Mac can smoothly resize contents and does not need flyover.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kSidePanelFlyoverAnimation);
+#endif
+}
+
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu. On managed profiles, a building icon will be used as
 // a badge in the profile menu.

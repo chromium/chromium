@@ -199,7 +199,13 @@ void LayoutManagerBase::LayoutImpl() {
   ApplyLayout(GetProposedLayout(host_view_->size()));
 }
 
+void LayoutManagerBase::BeforeApplyLayout(const ProposedLayout& layout) {
+  // No-op. Override to provide alternative behavior.
+}
+
 void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
+  BeforeApplyLayout(layout);
+
   const SizeBounds new_available_size = GetAvailableHostSize();
 
   for (auto& child_layout : layout.child_layouts) {

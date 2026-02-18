@@ -10,6 +10,7 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_perf_reporter.h"
@@ -92,9 +93,10 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
       side_panel->type() == SidePanelEntry::PanelType::kContent;
 
   AnimationSpecification open_animation_specifications = AnimationSpecification(
-      /*tween_type=*/is_content_height_panel
-          ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
-          : gfx::Tween::Type::ACCEL_45_DECEL_88,
+      /*tween_type=*/features::UseSidePanelFlyoverAnimation()
+          ? gfx::Tween::Type::ACCEL_80_DECEL_20
+          : (is_content_height_panel ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
+                                     : gfx::Tween::Type::ACCEL_45_DECEL_88),
       /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
                       .start = base::Milliseconds(0),
                       .duration = is_content_height_panel

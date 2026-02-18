@@ -43,10 +43,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -333,6 +336,37 @@ void MultiContentsView::OnSwap() {
   delegate_->ReverseWebContents();
 }
 
+void MultiContentsView::TargetContentBounds::Outset(
+    const gfx::Outsets& outsets) {
+  actual_size.set_width(actual_size.width() + outsets.width());
+  actual_size.set_height(actual_size.height() + outsets.height());
+  clipped_area += -outsets.ToInsets();
+}
+
+void MultiContentsView::SetTargetContentBounds(
+    std::optional<TargetContentBounds> target_content_bounds) {
+  // When not split, separators may be shown. In this case, adjust clip area as
+  // if there are no separators, as at the extent of the animation there will
+  // not be.
+  if (target_content_bounds && !IsInSplitView()) {
+    if (contents_separators_.should_show_leading) {
+      target_content_bounds->Outset(
+          gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));
+    }
+    if (contents_separators_.should_show_trailing) {
+      target_content_bounds->Outset(
+          gfx::Outsets::TLBR(0, 0, 0, views::Separator::kThickness));
+    }
+  }
+
+  if (target_content_bounds_ == target_content_bounds) {
+    return;
+  }
+  target_content_bounds_ = target_content_bounds;
+
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
 std::vector<views::View*> MultiContentsView::GetAccessiblePanes() {
   std::vector<views::View*> accessible_panes;
   for (auto* contents_container_view : contents_container_views_) {
@@ -489,6 +523,66 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
 
   layouts.host_size = gfx::Size(width, height);
   return layouts;
+}
+
+void MultiContentsView::BeforeApplyLayout(const views::ProposedLayout& layout) {
+  if (!target_content_bounds_) {
+    for (auto* contents : contents_container_views_) {
+      contents->SetTargetContentBounds(std::nullopt);
+    }
+    return;
+  }
+
+  if (!IsInSplitView()) {
+    auto* const contents = GetActiveContentsContainerView();
+    contents->SetTargetContentBounds(
+        -target_content_bounds_->clipped_area.ToOutsets());
+
+    // Clear out the other contents just in case.
+    for (auto* other : contents_container_views_) {
+      if (other != contents) {
+        other->SetTargetContentBounds(std::nullopt);
+      }
+    }
+    return;
+  }
+
+  // Need to calculate what the layout *would* be at the actual size.
+  //
+  // This is a bit more expensive than a normal layout but only happens during
+  // animation when the target bounds are set.
+  const auto target_layout = CalculateProposedLayout(
+      views::SizeBounds(target_content_bounds_->actual_size));
+
+  const auto& default_clip = target_content_bounds_->clipped_area;
+
+  // Due to the way web contents resize, and the fact that both split views will
+  // grow or shrink as the animation progresses, always clip from the trailing
+  // edge for both split webviews. This reduces jumping/popping for very slow
+  // websites.
+
+  gfx::Outsets first_outsets = gfx::Outsets::TLBR(
+      default_clip.top(), 0, default_clip.bottom(), default_clip.left());
+  auto* const first = contents_container_views_[0];
+  auto* const first_current = layout.GetLayoutFor(first);
+  auto* const first_target = target_layout.GetLayoutFor(first);
+  if (first_current && first_target) {
+    first_outsets.set_right(std::max(
+        0, first_target->bounds.width() - first_current->bounds.width()));
+  }
+
+  gfx::Outsets second_outsets = gfx::Outsets::TLBR(
+      default_clip.top(), 0, default_clip.bottom(), default_clip.right());
+  auto* const second = contents_container_views_[1];
+  auto* const second_current = layout.GetLayoutFor(second);
+  auto* const second_target = target_layout.GetLayoutFor(second);
+  if (second_current && second_target) {
+    second_outsets.set_right(std::max(
+        0, second_target->bounds.width() - second_current->bounds.width()));
+  }
+
+  first->SetTargetContentBounds(first_outsets);
+  second->SetTargetContentBounds(second_outsets);
 }
 
 gfx::Rect MultiContentsView::CalculateDropTargetLayout(

@@ -139,6 +139,10 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   // size and then applying it.
   virtual void LayoutImpl();
 
+  // Handle any processing that only needs to be done before a layout is
+  // applied. Does nothing by default.
+  virtual void BeforeApplyLayout(const ProposedLayout& layout);
+
   // Applies |layout| to the children of the host view.
   void ApplyLayout(const ProposedLayout& layout);
 

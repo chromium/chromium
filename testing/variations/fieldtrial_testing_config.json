@@ -24909,6 +24909,24 @@
             ]
         }
     ],
+    "SidePanelFlyoverAnimation": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SidePanelFlyoverAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelPinningWithResponsiveToolbar": [
         {
             "platforms": [

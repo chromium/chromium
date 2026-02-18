@@ -265,6 +265,14 @@ BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
 // of the browser.
 BASE_DECLARE_FEATURE(kToolbarHeightSidePanel);
 
+// Feature which uses a flyover animation for animating side panels (and
+// expansion/contraction of the Vertical Tab Strip).
+//
+// Call `UseSidePanelFlyoverAnimation()` instead of checking this feature
+// directly.
+BASE_DECLARE_FEATURE(kSidePanelFlyoverAnimation);
+bool UseSidePanelFlyoverAnimation();
+
 // TODO(crbug.com/460764864): Cleanup all the enterprise badging feature flags.
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
 BASE_DECLARE_FEATURE(kEnterpriseBadgingForNtpFooter);

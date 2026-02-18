@@ -16,6 +16,7 @@ class VIEWS_EXPORT LayoutDelegate {
  public:
   virtual ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const = 0;
+  virtual void BeforeApplyLayout(const ProposedLayout& layout) {}
 
  protected:
   virtual ~LayoutDelegate() = default;
@@ -36,6 +37,7 @@ class VIEWS_EXPORT DelegatingLayoutManager final : public LayoutManagerBase {
  protected:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
+  void BeforeApplyLayout(const ProposedLayout&) override;
 
  private:
   raw_ptr<LayoutDelegate> delegate_;

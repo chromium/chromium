@@ -18,6 +18,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 
 class BrowserView;
@@ -117,6 +118,32 @@ class MultiContentsView : public views::View,
   // If in a split view, swaps the order of the two contents views.
   void OnSwap();
 
+  // If non-null, specifies an increase in target size so that web contents
+  // maintain their maximum extents during browser animations to prevent
+  // issues with reflow on some platforms.
+  //
+  // This is the "actual" total area the MultiContentsView should occupy (in
+  // local bounds); the size assigned to the contents views will depend on
+  // layout.
+  struct TargetContentBounds {
+    TargetContentBounds() = default;
+    TargetContentBounds(const TargetContentBounds&) = default;
+    TargetContentBounds(const gfx::Size& actual_size_,
+                        const gfx::Insets& clipped_area_)
+        : actual_size(actual_size_), clipped_area(clipped_area_) {}
+    TargetContentBounds& operator=(const TargetContentBounds&) = default;
+    ~TargetContentBounds() = default;
+
+    gfx::Size actual_size;
+    gfx::Insets clipped_area;
+
+    bool operator==(const TargetContentBounds&) const = default;
+
+    void Outset(const gfx::Outsets& outsets);
+  };
+  void SetTargetContentBounds(
+      std::optional<TargetContentBounds> target_content_bounds);
+
   // If the split view is being resized.
   bool IsSplitResizing() const {
     return initial_start_width_on_resize_.has_value();
@@ -132,7 +159,7 @@ class MultiContentsView : public views::View,
   // views::View:
   void OnThemeChanged() override;
 
-  std::vector<ContentsContainerView*> contents_container_views() const {
+  const std::vector<ContentsContainerView*>& contents_container_views() const {
     return contents_container_views_;
   }
 
@@ -200,6 +227,7 @@ class MultiContentsView : public views::View,
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+  void BeforeApplyLayout(const views::ProposedLayout& layout) override;
 
   // Adds the drop target layout to the given list and return the remaining
   // available space after the layout.
@@ -271,6 +299,9 @@ class MultiContentsView : public views::View,
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.
   double start_ratio_ = 0.5;
+
+  // See `SetTargetContentBounds()`.
+  std::optional<TargetContentBounds> target_content_bounds_;
 
   // Width of `start_contents_.contents_view_` when a resize action began.
   // Nullopt if not currently resizing.

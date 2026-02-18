@@ -82,7 +82,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
     return target_collapse_state_;
   }
 
-  bool is_animating_for_testing() { return resize_animation_.is_animating(); }
+  bool is_animating() { return resize_animation_.is_animating(); }
 
   VerticalTabStripTopContainer* GetTopContainer() {
     return top_button_container_;

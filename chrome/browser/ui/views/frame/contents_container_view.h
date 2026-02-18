@@ -126,9 +126,18 @@ class ContentsContainerView : public views::View,
   // Returns the contents_view bounds including ntp footer.
   gfx::Rect GetContentsViewBounds() const;
 
+  // When set to a non-null value, overrides the target size and position for
+  // this view to `target_bounds` (in local coordinates), to prevent reflow
+  // during browser animation on some platforms. When this is set, the contents
+  // will be resized as if the view were the modified size, then clipped down to
+  // the actual size in the layout.
+  void SetTargetContentBounds(
+      std::optional<gfx::Outsets> target_contents_bounds);
+
  private:
   void CreateCaptureContentsBorder();
   void UpdateCaptureContentsBorderLocation();
+  void UpdateContentsClip();
 
   // Updates the DevTools docked placement. It infers the docked placement from
   // the bounds of contents_webview relative to the local bounds of the
@@ -195,6 +204,14 @@ class ContentsContainerView : public views::View,
 
   std::unique_ptr<views::Widget> capture_contents_border_widget_;
   std::optional<gfx::Rect> dynamic_capture_content_border_bounds_;
+
+  // See `SetTargetContentSize()`.
+  std::optional<gfx::Outsets> target_content_bounds_;
+
+  // This is updated during layout calculation and then applied during layout.
+  // It is non-empty when the contents are larger than the visible region during
+  // browser animations (see `SetTargetContentWidth()`).
+  mutable gfx::Rect contents_clip_rect_;
 
   DevToolsContentsResizingStrategy strategy_;
   base::ScopedObservation<View, ViewObserver> view_bounds_observer_{this};
