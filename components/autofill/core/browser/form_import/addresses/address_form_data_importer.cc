@@ -192,14 +192,6 @@ void AddressFormDataImporter::OnAddressDataChanged() {
   multistep_importer_.OnAddressDataChanged(address_data_manager());
 }
 
-void AddressFormDataImporter::AddMultiStepImportCandidate(
-    const AutofillProfile& profile,
-    const ProfileImportMetadata& import_metadata,
-    bool is_imported) {
-  multistep_importer_.AddMultiStepImportCandidate(profile, import_metadata,
-                                                  is_imported);
-}
-
 size_t AddressFormDataImporter::ExtractAddressProfiles(
     const FormStructure& form,
     std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
