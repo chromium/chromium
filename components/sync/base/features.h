@@ -88,19 +88,6 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 // was enabled.
 BASE_DECLARE_FEATURE_PARAM(bool, kExplicitSigninForExtensions);
 
-// Feature flag to enable an observer for awaiting the sync engine startup.
-BASE_DECLARE_FEATURE(kEnableAwaitSyncServiceStartup);
-
-// Configurable timeout for the sync engine startup observation in the profile
-// picker.
-extern const base::FeatureParam<int>
-    kAwaitSyncServiceStartupInProfilePickerTimeoutSeconds;
-
-// Configurable timeout for the sync engine startup observation when browser is
-// open.
-extern const base::FeatureParam<int>
-    kAwaitSyncServiceStartupInBrowserTimeoutSeconds;
-
 // If enabled, allowlisted priority preferences will be synced even if the
 // preferences user toggle is off. Note that this flag is only meaningful if
 // kEnablePreferencesAccountStorage is enabled.

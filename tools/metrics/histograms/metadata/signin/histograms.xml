@@ -1854,6 +1854,24 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram
+    name="Signin.HistorySyncOptin.SyncStartupAwaitTime.{SyncStartupEvent}"
+    units="ms" expires_after="2026-07-05">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the time spent until {SyncStartupEvent}. It is recorded when the
+    sync service reaches a transport state past the initialization or when we
+    exceed a given timeout and the sync service transport has not been updated.
+  </summary>
+  <token key="SyncStartupEvent">
+    <variant name="Complete"
+        summary="the sync engine completes its initialization"/>
+    <variant name="Timeout"
+        summary="we timeout waiting for the sync engine to initialize"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.HistorySyncOptIn.{OptInFlowEvent}"
     enum="SigninAccessPoint" expires_after="2026-07-19">
   <owner>myuu@google.com</owner>
