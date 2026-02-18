@@ -427,8 +427,10 @@ class ReadAnythingAppController
   // new distillation if the tree is ready.
   void DistillNewTree();
 
-  // Returns the default distillation method state based on feature flags.
-  ReadAnythingAppModel::DistillationMethod GetDefaultDistillationMethod() const;
+  // Returns the initial distillation method state based on feature flags and
+  // page type (e.g. if it's PDF).
+  ReadAnythingAppModel::DistillationMethod GetInitialDistillationMethod(
+      bool is_pdf) const;
 
   void ExecuteJavaScript(const std::string& script);
 

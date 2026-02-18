@@ -733,12 +733,17 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.set_requires_distillation(false);
   model_.set_page_finished_loading(false);
 
+  // Clear any stale distillation content.
+  dom_distiller_title_.clear();
+  dom_distiller_content_html_.clear();
+
   // Reset the distillation method for the new page. Every navigation
   // starts with the flag-determined distillation method before potentially
-  // falling back to Screen2x if needed.
-  // We also update target distillation method since showLoading will clear the
+  // falling back to Screen2x if needed. If the new page is a PDF, the
+  // distillation method is set to Screen2x directly.
+  // We also update |next_distillation_method| since showLoading will clear the
   // previous active distillation in case there's any.
-  auto initial_method = GetDefaultDistillationMethod();
+  auto initial_method = GetInitialDistillationMethod(is_pdf);
   model_.set_next_distillation_method(initial_method);
   model_.set_current_content_distillation_method(initial_method);
 
@@ -751,11 +756,12 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 }
 
 ReadAnythingAppModel::DistillationMethod
-ReadAnythingAppController::GetDefaultDistillationMethod() const {
-  if (features::IsReadAnythingWithReadabilityEnabled()) {
-    return ReadAnythingAppModel::DistillationMethod::kReadability;
-  }
-  return ReadAnythingAppModel::DistillationMethod::kScreen2x;
+ReadAnythingAppController::GetInitialDistillationMethod(bool is_pdf) const {
+  // If |is_pdf| = true, override IsReadAnythingWithReadabilityEnabled flag and
+  // return kScreen2x.
+  return is_pdf || !features::IsReadAnythingWithReadabilityEnabled()
+             ? ReadAnythingAppModel::DistillationMethod::kScreen2x
+             : ReadAnythingAppModel::DistillationMethod::kReadability;
 }
 
 void ReadAnythingAppController::DistillNewTree() {
