@@ -53,6 +53,7 @@ static_library("enterprise") {
     "browser/reporting/saas_usage/saas_usage_aggregation_utils.h",
     "browser/reporting/saas_usage/saas_usage_report_factory.cc",
     "browser/reporting/saas_usage/saas_usage_report_factory.h",
+    "browser/reporting/saas_usage/saas_usage_report_uploader.h",
     "browser/reporting/saas_usage/saas_usage_reporting_controller.cc",
     "browser/reporting/saas_usage/saas_usage_reporting_controller.h",
     "browser/reporting/security_signals_service.h",
