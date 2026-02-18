@@ -86,6 +86,17 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
               std::move(profile_service)));
 }
 
+void UnexportableKeyObsoleteProfileGarbageCollector::
+    OnProfileManagerDestroying() {
+  // Invalidate all weak pointers to prevent any further calls to the profile
+  // manager after it has been destroyed. This should only happen on shutdown.
+  // The profile manager checks in its destructor that no observers are left,
+  // thus it is not sufficient to just rely on the destructor of this class.
+  // See https://crbug.com/485300762.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  profile_manager_observation_.Reset();
+}
+
 void UnexportableKeyObsoleteProfileGarbageCollector::StartGarbageCollection() {
   user_data_dir_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority::kBestEffort,
