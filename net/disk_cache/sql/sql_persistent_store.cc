@@ -5,6 +5,7 @@
 #include "net/disk_cache/sql/sql_persistent_store.h"
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <string_view>
@@ -60,6 +61,13 @@ int64_t CalculateMaxFileSize(int64_t max_bytes) {
   return std::max(base::saturated_cast<int64_t>(
                       max_bytes / kSqlBackendMaxFileRatioDenominator),
                   kSqlBackendMinFileSizeLimit);
+}
+
+// Appends `result` to `results` and returns `results`.
+// This is used as a helper for base::BindOnce to chain callbacks.
+std::vector<bool> AppendResult(std::vector<bool> results, bool result) {
+  results.push_back(result);
+  return results;
 }
 
 }  // namespace
@@ -433,22 +441,34 @@ bool SqlPersistentStore::MaybeRunCleanupDoomedEntries(ErrorCallback callback) {
 
 void SqlPersistentStore::MaybeRunCheckpoint(
     base::OnceCallback<void(bool)> callback) {
+  if (net::features::kSqlDiskCacheSerialCheckpoint.Get()) {
+    std::vector<bool> results;
+    results.reserve(backend_shards_.size());
+    RunNextCheckpoint(std::move(callback), std::move(results));
+    return;
+  }
   auto barrier_callback = base::BarrierCallback<bool>(
-      GetSizeOfShards(), base::BindOnce(
-                             [](base::OnceCallback<void(bool)> callback,
-                                std::vector<bool> results) {
-                               for (auto result : results) {
-                                 if (result) {
-                                   std::move(callback).Run(true);
-                                   return;
-                                 }
-                               }
-                               std::move(callback).Run(false);
-                             },
-                             std::move(callback)));
+      GetSizeOfShards(), base::BindOnce([](std::vector<bool> results) {
+                           return std::ranges::any_of(results, std::identity{});
+                         }).Then(std::move(callback)));
   for (const auto& backend_shard : backend_shards_) {
     backend_shard->MaybeRunCheckpoint(barrier_callback);
   }
+}
+
+void SqlPersistentStore::RunNextCheckpoint(
+    base::OnceCallback<void(bool)> callback,
+    std::vector<bool> results) {
+  if (results.size() == backend_shards_.size()) {
+    std::move(callback).Run(std::ranges::any_of(results, std::identity{}));
+    return;
+  }
+  const auto index = results.size();
+  backend_shards_[index]->MaybeRunCheckpoint(
+      base::BindOnce(&AppendResult, std::move(results))
+          .Then(base::BindOnce(&SqlPersistentStore::RunNextCheckpoint,
+                               weak_factory_.GetWeakPtr(),
+                               std::move(callback))));
 }
 
 void SqlPersistentStore::EnableStrictCorruptionCheckForTesting() {

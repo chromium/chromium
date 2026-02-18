@@ -623,6 +623,21 @@ class SqlPersistentStoreTest : public testing::Test {
 
   void RunCleanupDoomedEntriesTest(base::OnceClosure trigger_cleanup);
 
+  void RunWalCheckpointTest(bool serial_checkpoint, bool multiple_shards);
+
+  // Creates a CacheEntryKey that maps to the first shard (index 0).
+  CacheEntryKey CreateTestCacheEntryKeyForShard0() {
+    const size_t size_of_shards = background_task_runners_.size();
+    std::string key = "key";
+    while (true) {
+      CacheEntryKey cache_entry_key = CacheEntryKey(key);
+      if (cache_entry_key.hash().value() % size_of_shards == 0) {
+        return cache_entry_key;
+      }
+      key += "_";
+    }
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
@@ -4364,8 +4379,7 @@ int SqlPersistentStoreTest::GetNumberForWritesRequiredForCheckpoint(
   int64_t previous_wal_size = wal_size;
 
   int number_of_writes = 0;
-  const CacheEntryKey kKey("my-key");
-  const auto res_id = CreateEntryAndGetResId(kKey);
+  const auto res_id = CreateEntryAndGetResId(entry_key);
   while (true) {
     WriteDataAndAssertSuccess(entry_key, res_id,
                               /*old_body_end=*/number_of_writes,
@@ -4390,15 +4404,26 @@ int SqlPersistentStoreTest::GetNumberForWritesRequiredForCheckpoint(
   return number_of_writes;
 }
 
-TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
+void SqlPersistentStoreTest::RunWalCheckpointTest(bool serial_checkpoint,
+                                                  bool multiple_shards) {
   // Set small thresholds to shorten the test execution time.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{net::features::kDiskCacheBackendExperiment,
         {{net::features::kDiskCacheBackendParam.name, "sql"},
          {net::features::kSqlDiskCacheForceCheckpointThreshold.name, "200"},
-         {net::features::kSqlDiskCacheIdleCheckpointThreshold.name, "100"}}}},
+         {net::features::kSqlDiskCacheIdleCheckpointThreshold.name, "100"},
+         {net::features::kSqlDiskCacheSerialCheckpoint.name,
+          serial_checkpoint ? "true" : "false"}}}},
       {});
+
+  if (multiple_shards) {
+    // Add more task runners to have more shards.
+    background_task_runners_.emplace_back(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+    background_task_runners_.emplace_back(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  }
 
   auto test_helper = PerformanceScenarioTestHelper::Create();
 
@@ -4408,7 +4433,7 @@ TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
   test_helper->SetInputScenario(ScenarioScope::kGlobal,
                                 InputScenario::kNoInput);
 
-  const CacheEntryKey kKey("my-key");
+  const CacheEntryKey kKey = CreateTestCacheEntryKeyForShard0();
   const std::string_view kData = "a";
   int idle_checkpoint_write_count = 0;
   int non_idle_checkpoint_write_count = 0;
@@ -4490,6 +4515,25 @@ TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
   test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
                                   LoadingScenario::kNoPageLoading);
   MaybeRunCheckpoint(/*expected_result=*/true);
+
+  // Checkpoint should be executed and the database size should change.
+  ASSERT_NE(CheckedGetFileSize(db_path), previous_db_size);
+}
+
+TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
+  RunWalCheckpointTest(/*serial_checkpoint=*/false, /*multiple_shards=*/false);
+}
+
+TEST_F(SqlPersistentStoreTest, WalCheckpointSerial) {
+  RunWalCheckpointTest(/*serial_checkpoint=*/true, /*multiple_shards=*/false);
+}
+
+TEST_F(SqlPersistentStoreTest, WalCheckpointMultipleShards) {
+  RunWalCheckpointTest(/*serial_checkpoint=*/false, /*multiple_shards=*/true);
+}
+
+TEST_F(SqlPersistentStoreTest, WalCheckpointSerialMultipleShards) {
+  RunWalCheckpointTest(/*serial_checkpoint=*/true, /*multiple_shards=*/true);
 }
 
 TEST_F(SqlPersistentStoreTest, IndexState) {

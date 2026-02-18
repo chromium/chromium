@@ -565,6 +565,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                           base::TimeTicks start_time,
                           std::vector<ResIdListOrError> results);
 
+  void RunNextCheckpoint(base::OnceCallback<void(bool)> callback,
+                         std::vector<bool> results);
+
   const std::vector<scoped_refptr<base::SequencedTaskRunner>>
       background_task_runners_;
   const std::vector<std::unique_ptr<BackendShard>> backend_shards_;
