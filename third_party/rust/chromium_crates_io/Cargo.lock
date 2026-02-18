@@ -177,6 +177,7 @@ dependencies = [
  "icu_provider",
  "image",
  "indexmap",
+ "itertools",
  "jxl",
  "lazy_static",
  "libc",
