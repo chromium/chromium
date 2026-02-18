@@ -17,7 +17,6 @@ fn test_ticks() {
     // FOR_RELEASE: Right now we're calling init_mojo on a per-test basis, but
     // may be worth seeing if there's some way to do gtest setup/teardown in
     // Rust.
-    test_util::init_mojo_if_needed();
 
     // get_time_ticks_now should increase monotonically.
     let ticks = mojo_ffi::functions::MojoGetTimeTicksNow();

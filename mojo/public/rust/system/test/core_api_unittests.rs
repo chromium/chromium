@@ -19,8 +19,7 @@ fn test_basic_message_write_and_send() {
     // Tests a basic creation of a pipe and tries to send a message over it.
     // FOR_RELEASE: Do we need to invoke this per-test or can it be invoked
     // once?
-    test_util::init_mojo_if_needed();
-
+    //
     // In the C API, creation of a message pipe is done by first instantiating
     // two invalid MojoHandles, passing those to MojoCreateMessagePipe,
     // and checking the result.
@@ -72,8 +71,6 @@ fn test_basic_message_write_and_send() {
 
 #[gtest(RustSystemAPITestSuite, DataPipeWriteAndSendTest)]
 fn test_data_pipe_write_and_send() {
-    test_util::init_mojo_if_needed();
-
     let (producer, consumer) = system::data_pipe::create(5).unwrap();
 
     let hello = b"hello";
@@ -97,8 +94,6 @@ fn test_data_pipe_write_and_send() {
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
-    test_util::init_mojo_if_needed();
-
     // We need a few global values to keep track of our test trap events.
     static TEST_TRAP_EVENT_LIST: LazyLock<Mutex<Vec<system::raw_trap::RawTrapEvent>>> =
         LazyLock::new(|| Mutex::new(Vec::new()));
@@ -264,8 +259,6 @@ fn test_raw_trap_signal_on_readable() {
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_TrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
-    test_util::init_mojo_if_needed();
-
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
     // 1. Create the safe Trap.
@@ -310,8 +303,6 @@ fn test_raw_trap_signal_on_readable() {
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_TrapAutoRearmTest)]
 fn test_trap_auto_rearm() {
-    test_util::init_mojo_if_needed();
-
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
     let endpoint_a = Arc::new(endpoint_a);
     let endpoint_a_weak = Arc::downgrade(&endpoint_a);
@@ -378,7 +369,6 @@ fn test_close_trap_with_active_trigger() {
     //
     // Additionally we expect remove_trigger to be called on each active trigger,
     // and the associated callback to return TrapError::Cancelled.
-    test_util::init_mojo_if_needed();
     let trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
         .expect("Failed to create safe Trap");
     let (ep_a, _ep_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
@@ -402,8 +392,6 @@ fn test_close_trap_with_active_trigger() {
 
 #[gtest(RustSystemAPITestSuite, TestClearTriggers)]
 fn test_trap_clear_triggers() {
-    test_util::init_mojo_if_needed();
-
     let mut trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
         .expect("Failed to create safe Trap");
     let (ep_a, ep_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
@@ -440,7 +428,6 @@ fn test_trap_clear_triggers() {
 
 #[gtest(RustSystemAPITestSuite, SafeTrapMultipleBlockingEvents)]
 fn test_trap_multiple_blocking_events() {
-    test_util::init_mojo_if_needed();
     let trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
         .expect("Failed to create safe Trap");
     const NUM_TRIGGERS: usize = 20; // More than MAX_BLOCKING_EVENTS
@@ -528,8 +515,6 @@ fn test_trap_multiple_blocking_events() {
 // These DataPipe tests are thus somewhat redundant, but fine to keep for now.
 #[gtest(RustSystemAPITestSuite, DataPipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
-    test_util::init_mojo_if_needed();
-
     // We need a few global values to keep track of our test trap events.
     static TEST_TRAP_EVENT_LIST: LazyLock<Mutex<Vec<system::raw_trap::RawTrapEvent>>> =
         LazyLock::new(|| Mutex::new(Vec::new()));
@@ -622,7 +607,6 @@ fn test_raw_trap_signal_on_readable() {
 
 #[gtest(RustSystemAPITestSuite, AttemptToAddOrRemoveTriggerWithSameContextTwice)]
 fn test_raw_trap_c_layer_attempts_to_remove_context_twice() {
-    test_util::init_mojo_if_needed();
     extern "C" fn test_trap_event_handler(_event: &system::raw_trap::RawTrapEvent) {}
     let trap = system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
 
@@ -655,15 +639,11 @@ fn test_raw_trap_c_layer_attempts_to_remove_context_twice() {
 
 #[gtest(RustSystemAPITestSuite, MakeRegularTrap)]
 fn test_make_regular_trap() {
-    test_util::init_mojo_if_needed();
-
     let _trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual).unwrap();
 }
 
 #[gtest(RustSystemAPITestSuite, ReportBadMessage)]
 fn test_report_bad_message() {
-    test_util::init_mojo_if_needed();
-
     let msg = system::message::RawMojoMessage::new_with_bytes(b"moist").unwrap();
 
     let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));

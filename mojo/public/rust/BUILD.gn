@@ -23,7 +23,7 @@ group("tests") {
   # These tests don't work on all configurations yet, but we need to
   # run them as part of this target so we can share its gtest setup. So
   # enable them for at least one known-good configuration.
-  if (is_linux && !is_asan && !is_cfi) {
+  if ((is_chromeos || is_linux) && !is_cfi) {
     deps = [
       "bindings:bindings_unittests",
       "mojom_value_parser:mojom_value_parser_unittests",
