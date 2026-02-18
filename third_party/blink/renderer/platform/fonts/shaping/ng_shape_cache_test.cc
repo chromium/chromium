@@ -23,10 +23,11 @@ class NGShapeCacheTest : public FontTestBase {
 };
 
 TEST_F(NGShapeCacheTest, AddEntriesAndCacheHits) {
-  auto ShapeResultFunc = []() -> const ShapeResult* {
+  auto ShapeResultFunc = []() -> ShaperResult {
     // For the purposes of this test the actual internals of the shape result
     // doesn't matter.
-    return MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr);
+    return {MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr),
+            /*can_cache=*/true};
   };
 
   // Adding an entry is successful.

@@ -47,6 +47,18 @@
 
 namespace blink {
 
+// The `can_cache` flag is used to indicate if this shape-result can be
+// inserted into the cache.
+// In certain circumstances the shape call isn't guaranteed to be idempotent,
+// e.g. when reusing previous shape-results.
+struct ShaperResult {
+  STACK_ALLOCATED();
+
+ public:
+  const ShapeResult* shape_result;
+  bool can_cache;
+};
+
 class NGShapeCache : public GarbageCollected<NGShapeCache>,
                      public base::MemoryConsumer {
   USING_PRE_FINALIZER(NGShapeCache, Dispose);
@@ -98,7 +110,7 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
                                  TextDirection direction,
                                  const ShapeResultFunc& shape_result_func) {
     if (text.length() > kMaxTextLengthOfEntries) {
-      return shape_result_func();
+      return shape_result_func().shape_result;
     }
 
     if (RuntimeEnabledFeatures::MemoryConsumerForNGShapeCacheEnabled()) {
@@ -145,7 +157,7 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     if (map.size() >= kMaxSize) [[unlikely]] {
       const auto it = map.find(text);
       return (it != map.end() && it->value) ? it->value.Get()
-                                            : shape_result_func();
+                                            : shape_result_func().shape_result;
     }
 
     const auto add_result = map.insert(text, nullptr);
@@ -153,15 +165,15 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
       return add_result.stored_value->value;
     }
 
-    const ShapeResult* result = shape_result_func();
+    const auto [shape_result, can_cache] = shape_result_func();
 
     // Only shape-results without font-fallback are valid, because the cache is
     // in the `primary_font_`.
-    if (!result->HasFallbackFonts(primary_font_)) {
-      add_result.stored_value->value = result;
+    if (can_cache && !shape_result->HasFallbackFonts(primary_font_)) {
+      add_result.stored_value->value = shape_result;
     }
 
-    return result;
+    return shape_result;
   }
 
   SmallStringMap ltr_string_map_;
