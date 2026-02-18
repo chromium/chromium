@@ -12,21 +12,19 @@
 namespace blink {
 
 namespace {
+
 Vector<AtomicString> FindUrlPrefixes(AtomicString specifier) {
-  Vector<size_t> positions;
+  // Use a reasonable, simple heurstic to estimate the number of slashes in a
+  // specifier as roughly one every 4 characters with a minimum of 4.
+  Vector<AtomicString> result;
+  result.ReserveInitialCapacity(specifier.length() / 4 + 4);
   constexpr char slash = '/';
   size_t position = specifier.find(slash);
-
   while (position != kNotFound) {
-    positions.push_back(++position);
+    ++position;
+    result.emplace_back(specifier.GetString().Substring(0, position));
     position = specifier.find(slash, position);
   }
-
-  Vector<AtomicString> result;
-  for (size_t pos : positions) {
-    result.push_back(specifier.GetString().Substring(0, pos));
-  }
-
   return result;
 }
 
