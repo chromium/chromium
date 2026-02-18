@@ -219,11 +219,9 @@ public class TraceEvent implements AutoCloseable {
             mNumTasksSinceLastIdle++;
         }
 
-        // Uses android.util.Log.println(), which is not available in org.chromium.base.Log.
-        @SuppressWarnings("NoAndroidLog")
         private static void traceAndLog(int level, String message) {
             TraceEvent.instant("TraceEvent.LooperMonitor:IdleStats", message);
-            android.util.Log.println(level, TAG, message);
+            Log.println(level, TAG, message);
         }
 
         @Override

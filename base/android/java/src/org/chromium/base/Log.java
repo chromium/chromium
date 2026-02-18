@@ -929,6 +929,21 @@ public class Log {
                 t);
     }
 
+    /**
+     * Low-level logging call.
+     *
+     * @see android.util.Log#println(int, String, String)
+     *
+     * @param priority The priority/type of this log message (e.g. {@link #DEBUG}, {@link #INFO}).
+     * @param tag Used to identify the source of a log message. Might be modified in the output
+     *     (see {@link #normalizeTag(String)})
+     * @param message The message you would like logged.
+     */
+    @AlwaysInline
+    public static void println(int priority, String tag, String message) {
+        android.util.Log.println(priority, normalizeTag(tag), message);
+    }
+
     /** Handy function to get a loggable stack trace from a Throwable. */
     public static String getStackTraceString(Throwable tr) {
         return android.util.Log.getStackTraceString(tr);
