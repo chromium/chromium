@@ -1328,6 +1328,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
             g_browser_process->local_state());
 
     g_browser_process->platform_part()->chrome_session_manager()->Initialize(
+        g_browser_process->shared_url_loader_factory(),
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
 

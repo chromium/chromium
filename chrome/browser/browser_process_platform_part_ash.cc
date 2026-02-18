@@ -226,8 +226,8 @@ void BrowserProcessPlatformPart::InitializeSessionManager() {
   CHECK(!chrome_session_manager_);
   session_manager_ = std::make_unique<session_manager::SessionManager>(
       std::make_unique<ash::SessionManagerDelegateImpl>());
-  chrome_session_manager_ =
-      std::make_unique<ash::ChromeSessionManager>(session_manager_.get());
+  chrome_session_manager_ = std::make_unique<ash::ChromeSessionManager>(
+      g_browser_process->local_state(), session_manager_.get());
   // Registers BootTimesRecorder as an observer *after* ChromeSessionManager
   // creation to include ChromeSessionManager operations in UserLoggedIn
   // metrics. ChromeSessionManager registers itself as an observer, too,
