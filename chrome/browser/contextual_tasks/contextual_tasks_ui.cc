@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -192,11 +193,12 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   if (contextual_tasks::ShouldEnableCookieSync()) {
     cookie_synchronizer_ =
         std::make_unique<contextual_tasks::ContextualTasksCookieSynchronizer>(
             web_ui->GetWebContents()->GetBrowserContext(),
-            IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui)));
+            IdentityManagerFactory::GetForProfile(profile));
   }
   inner_web_contents_creation_observer_ =
       std::make_unique<InnerFrameCreationObvserver>(
@@ -205,6 +207,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&ContextualTasksUI::ResetEmbeddedPage,
                               weak_ptr_factory_.GetWeakPtr()));
+  // Add a means of loading images fromexternal sources.
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIContextualTasksHost);
@@ -217,7 +222,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "child-src 'self' https://*.google.com;");
 
   // Add required resources for the searchbox.
-  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui),
+  SearchboxHandler::SetupWebUIDataSource(source, profile,
                                          /*enable_voice_search=*/true,
                                          /*enable_lens_search=*/false);
   // Add strings.js
@@ -304,7 +309,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::GetContextualTasksOnboardingTooltipImpressionDelay());
   source->AddBoolean(
       "isOnboardingTooltipDismissCountBelowCap",
-      Profile::FromWebUI(web_ui)->GetPrefs()->GetInteger(
+      profile->GetPrefs()->GetInteger(
           contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount) <
           contextual_tasks::GetContextualTasksOnboardingTooltipDismissedCap());
   source->AddBoolean("isLensSearchbox", true);
@@ -329,7 +334,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // as it is rendered.
   source->AddBoolean("queryZpsOnLoad", false);
 
-  AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
+  AddContextMenuItemEligibilityLoadTimeData(source, profile);
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
@@ -343,8 +348,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
   source->AddBoolean(
-      "darkMode", ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
-                      ->BrowserUsesDarkColors());
+      "darkMode",
+      ThemeServiceFactory::GetForProfile(profile)->BrowserUsesDarkColors());
   source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
   source->AddBoolean("autoSubmitVoiceSearchQuery",
                      contextual_tasks::GetAutoSubmitVoiceSearchQuery());
@@ -399,7 +404,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "internals/",
       IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
 
-  Profile* profile = Profile::FromWebUI(web_ui);
   AddZeroStateStrings(source, profile);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }
