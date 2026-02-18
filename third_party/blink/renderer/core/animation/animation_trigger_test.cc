@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
@@ -25,9 +26,16 @@ void ExpectRelativeErrorWithinEpsilon(double expected, double observed) {
 
 }  // namespace
 
-class AnimationTriggerTest : public PaintTestConfigurations,
-                             public RenderingTest {
+// TODO(crbug.com/390314945): Rename this file timeline_trigger_test.cc
+class TimelineTriggerTest : public PaintTestConfigurations,
+                            public RenderingTest {
  public:
+  TimelineTriggerTest()
+      : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    EnablePlatform();
+    platform()->SetThreadedAnimationEnabled(true);
+  }
+
   TimelineTrigger::RangeBoundary* MakeRangeOffsetBoundary(
       std::optional<V8TimelineRange::Enum> range,
       std::optional<int> pct) {
@@ -42,11 +50,16 @@ class AnimationTriggerTest : public PaintTestConfigurations,
     }
     return MakeGarbageCollected<TimelineTrigger::RangeBoundary>(offset);
   }
+
+  void AdvanceClockSeconds(double seconds) {
+    PageTestBase::FastForwardBy(base::Seconds(seconds));
+    GetPage().Animator().ServiceScriptedAnimations(platform()->NowTicks());
+  }
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(AnimationTriggerTest);
+INSTANTIATE_PAINT_TEST_SUITE_P(TimelineTriggerTest);
 
-TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
+TEST_P(TimelineTriggerTest, ComputeBoundariesTest) {
   using RangeBoundary = TimelineTrigger::RangeBoundary;
   using TriggerBoundaries = TimelineTrigger::TriggerBoundaries;
   SetBodyInnerHTML(R"HTML(
@@ -176,6 +189,100 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
   ExpectRelativeErrorWithinEpsilon(boundaries.activation_end, contain_80_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_10_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_90_px);
+}
+
+TEST_P(TimelineTriggerTest, BackwardsInterruptsForwards) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+     @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      .subject, .target {
+        height: 50px;
+        width: 50px;
+        background-color: red;
+      }
+      #target {
+        animation: expand linear 5s both;
+        animation-trigger: --trigger play-forwards play-backwards;
+      }
+
+      #subject {
+        timeline-trigger: --trigger view() contain;
+      }
+
+      .scroller {
+        overflow-y: scroll;
+        height: 500px;
+        width: 500px;
+        border: solid 1px;
+        position: relative;
+      }
+      #space {
+        width: 50px;
+        height: 600px;
+      }
+    </style>
+      <div id="scroller" class="scroller">
+        <div id="space"></div>
+        <div id="subject" class="subject" tabindex="0"></div>
+        <div id="space"></div>
+      </div>
+      <div id="target" class="target" tabindex="0"></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ElementAnimations* animations = target->GetElementAnimations();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+  Element* subject = GetDocument().getElementById(AtomicString("subject"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(animation->CurrentTimeInternal().value(), AnimationTimeDelta());
+  EXPECT_EQ(animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kPaused);
+  EXPECT_EQ(animation->EffectivePlaybackRate(), 1);
+
+  // Scroll the subject into view.
+  subject->scrollIntoView(nullptr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(animation->EffectivePlaybackRate(), 1);
+  EXPECT_EQ(animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kRunning);
+
+  AdvanceClockSeconds(0.5);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(animation->EffectivePlaybackRate(), 1);
+  EXPECT_EQ(animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kRunning);
+  AnimationTimeDelta current_time = animation->CurrentTimeInternal().value();
+  EXPECT_GT(current_time, AnimationTimeDelta());
+
+  // Scroll the subject out of view
+  scroller->scrollTo(nullptr, 0, 0);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(animation->EffectivePlaybackRate(), -1);
+  EXPECT_EQ(animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kRunning);
+
+  AdvanceClockSeconds(0.25);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(animation->EffectivePlaybackRate(), -1);
+  EXPECT_EQ(animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kRunning);
+  EXPECT_LT(animation->CurrentTimeInternal().value(), current_time);
+  EXPECT_GT(animation->CurrentTimeInternal().value(), AnimationTimeDelta());
+  current_time = animation->CurrentTimeInternal().value();
+
+  AdvanceClockSeconds(0.3);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(animation->EffectivePlaybackRate(), -1);
+  EXPECT_EQ(animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kFinished);
+  EXPECT_EQ(animation->CurrentTimeInternal().value(), AnimationTimeDelta());
 }
 
 }  // namespace blink
