@@ -8,8 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -18,8 +17,7 @@ class Page;
 class WebContents;
 }  // namespace content
 
-class BrowserWindowInterface;
-class GlobalBrowserCollection;
+class Browser;
 
 // A protocol that allows ObjC objects to receive delegate callbacks from
 // HandoffObserver.
@@ -30,7 +28,7 @@ class GlobalBrowserCollection;
 // This class observes changes to the "active URL". This is defined as the
 // visible URL of the WebContents of the selected tab of the most recently
 // focused browser window.
-class HandoffObserver : public BrowserCollectionObserver,
+class HandoffObserver : public BrowserListObserver,
                         public TabStripModelObserver,
                         public content::WebContentsObserver {
  public:
@@ -41,10 +39,9 @@ class HandoffObserver : public BrowserCollectionObserver,
 
   ~HandoffObserver() override;
 
- private:
-  // BrowserCollectionObserver
-  void OnBrowserActivated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+ private:  // BrowserListObserver
+  void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
   // TabStripModelObserver
   void OnTabStripModelChanged(
@@ -57,7 +54,7 @@ class HandoffObserver : public BrowserCollectionObserver,
   void TitleWasSet(content::NavigationEntry* entry) override;
 
   // Updates the active browser.
-  void SetActiveBrowser(BrowserWindowInterface* active_browser);
+  void SetActiveBrowser(Browser* active_browser);
 
   // Makes this object start observing the WebContents, if it is not already
   // doing so. This method is idempotent.
@@ -71,10 +68,7 @@ class HandoffObserver : public BrowserCollectionObserver,
 
   // This pointer is always up to date, and points to the most recently
   // activated browser, or nullptr if no browsers exist.
-  raw_ptr<BrowserWindowInterface> active_browser_ = nullptr;
-
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
+  raw_ptr<Browser> active_browser_ = nullptr;
 
   // Instances of this class should be owned by their |delegate_|.
   NSObject<HandoffObserverDelegate>* __weak delegate_;
