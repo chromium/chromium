@@ -625,6 +625,9 @@ struct AIPageContentOptions {
 
   // Whether to include data for visible passwords.
   bool include_passwords_for_redaction = false;
+
+  // Whether to include data for visible sensitive payment information.
+  bool include_sensitive_payments_for_redaction = false;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

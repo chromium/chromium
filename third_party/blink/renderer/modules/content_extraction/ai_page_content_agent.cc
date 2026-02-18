@@ -1155,6 +1155,47 @@ void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
   }
 }
 
+bool MayContainSensitvePayment(
+    mojom::blink::FormControlType form_control_type) {
+  switch (form_control_type) {
+    case mojom::blink::FormControlType::kInputEmail:
+    case mojom::blink::FormControlType::kInputMonth:
+    case mojom::blink::FormControlType::kInputNumber:
+    case mojom::blink::FormControlType::kInputPassword:
+    case mojom::blink::FormControlType::kInputSearch:
+    case mojom::blink::FormControlType::kInputTelephone:
+    case mojom::blink::FormControlType::kInputText:
+    case mojom::blink::FormControlType::kInputUrl:
+    case mojom::blink::FormControlType::kSelectOne:
+    case mojom::blink::FormControlType::kTextArea:
+      return true;
+    case mojom::blink::FormControlType::kInputCheckbox:
+    case mojom::blink::FormControlType::kInputRadio:
+    case mojom::blink::FormControlType::kInputDate:
+    case mojom::blink::FormControlType::kButtonButton:
+    case mojom::blink::FormControlType::kButtonSubmit:
+    case mojom::blink::FormControlType::kButtonReset:
+    case mojom::blink::FormControlType::kButtonPopover:
+    case mojom::blink::FormControlType::kFieldset:
+    case mojom::blink::FormControlType::kInputButton:
+    case mojom::blink::FormControlType::kInputColor:
+    case mojom::blink::FormControlType::kInputDatetimeLocal:
+    case mojom::blink::FormControlType::kInputFile:
+    case mojom::blink::FormControlType::kInputHidden:
+    case mojom::blink::FormControlType::kInputImage:
+    case mojom::blink::FormControlType::kInputRange:
+    case mojom::blink::FormControlType::kInputReset:
+    case mojom::blink::FormControlType::kInputSubmit:
+    case mojom::blink::FormControlType::kInputTime:
+    case mojom::blink::FormControlType::kInputWeek:
+    case mojom::blink::FormControlType::kOutput:
+    case mojom::blink::FormControlType::kSelectMultiple:
+      return false;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -2224,13 +2265,40 @@ void AIPageContentAgent::ContentBuilder::TrackPasswordRedactionIfNeeded(
       visible_bounding_box.value_or(ComputeVisibleBoundingBox(object)));
 }
 
+bool AIPageContentAgent::ContentBuilder::ShouldAddNodeGeometry(
+    const LayoutObject& object,
+    const mojom::blink::AIPageContentAttributes& attributes) const {
+  if (actionable_mode()) {
+    return true;
+  }
+
+  // When in non-actionable mode, we only want to add geometry for the
+  // accessibility focused node.
+  if (attributes.dom_node_id == accessibility_focused_node_id_) {
+    return true;
+  }
+
+  // When sensitive payment redaction is enabled,  the redaction decision is
+  // made in the browser using Autofill data. We must provide the geometry for
+  // form control elements that may contain sensitive payments here so the
+  // browser can record their bounding boxes for client-side screenshot
+  // redaction.
+  if (options_->include_sensitive_payments_for_redaction) {
+    if (const auto* form_control_element =
+            DynamicTo<HTMLFormControlElement>(object.GetNode());
+        form_control_element &&
+        MayContainSensitvePayment(form_control_element->FormControlType())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) {
-  // When in non-actionable mode, we only want to add geometry for the
-  // accessibility focused node.
-  if (!actionable_mode() &&
-      attributes.dom_node_id != accessibility_focused_node_id_) {
+  if (!ShouldAddNodeGeometry(object, attributes)) {
     TrackPasswordRedactionIfNeeded(object, attributes);
     return;
   }

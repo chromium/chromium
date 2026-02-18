@@ -70,6 +70,7 @@ struct AIPageContentResult {
   // right frame host.
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers;
   std::vector<gfx::Rect> visible_bounding_boxes_for_password_redaction;
+  std::vector<gfx::Rect> visible_bounding_boxes_for_sensitive_payment_redaction;
 };
 
 // Provides AIPageContentResult (AnnotatedPageContent proto and metadata) for

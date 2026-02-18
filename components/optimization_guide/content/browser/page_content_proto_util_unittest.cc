@@ -96,7 +96,9 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
     AIPageContentResult& page_content,
     const std::optional<GURL>& main_frame_url = {},
     std::optional<content::GlobalRenderFrameHostToken>
-        main_frame_token_override = std::nullopt) {
+        main_frame_token_override = std::nullopt,
+    blink::mojom::AIPageContentMode mode =
+        blink::mojom::AIPageContentMode::kDefault) {
   auto main_frame_token =
       main_frame_token_override.value_or(CreateFrameToken());
   AIPageContentMap page_content_map;
@@ -119,9 +121,11 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
         return std::nullopt;
       });
   FrameTokenSet frame_token_set;
-  return ConvertAIPageContentToProto(
-      blink::mojom::AIPageContentOptions::New(), main_frame_token,
-      page_content_map, get_render_frame_info, frame_token_set, page_content);
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode = mode;
+  return ConvertAIPageContentToProto(std::move(options), main_frame_token,
+                                     page_content_map, get_render_frame_info,
+                                     frame_token_set, page_content);
 }
 
 void CheckTextNodeProto(const proto::ContentNode& node_proto,
@@ -772,7 +776,74 @@ TEST_F(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Form) {
       base::test::ErrorIs("table_row_data present, but node isn't kTableRow"));
 }
 
-TEST_F(PageContentProtoUtilTest, ConvertGeometry) {
+TEST_F(PageContentProtoUtilTest, ConvertGeometry_Default) {
+  auto root_content = CreatePageContent();
+  auto text_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
+  text_node->content_attributes->dom_node_id = 1;
+  text_node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  text_node->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(10, 20, 30, 40);
+  text_node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(11, 21, 31, 41);
+  root_content->root_node->children_nodes.emplace_back(std::move(text_node));
+
+  auto text_node2 =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
+  text_node2->content_attributes->dom_node_id = 2;
+  text_node2->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  text_node2->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(110, 120, 130, 140);
+  text_node2->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(111, 121, 131, 141);
+  root_content->root_node->children_nodes.emplace_back(std::move(text_node2));
+
+  root_content->page_interaction_info =
+      blink::mojom::AIPageContentPageInteractionInfo::New();
+  root_content->page_interaction_info->focused_dom_node_id = 1;
+  root_content->page_interaction_info->accessibility_focused_dom_node_id = 1;
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  EXPECT_EQ(page_content.proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 2);
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  const auto& geometry = page_content.proto.root_node()
+                             .children_nodes(0)
+                             .content_attributes()
+                             .geometry();
+  EXPECT_EQ(geometry.outer_bounding_box().x(), 10);
+  EXPECT_EQ(geometry.outer_bounding_box().y(), 20);
+  EXPECT_EQ(geometry.outer_bounding_box().width(), 30);
+  EXPECT_EQ(geometry.outer_bounding_box().height(), 40);
+  EXPECT_EQ(geometry.visible_bounding_box().x(), 11);
+  EXPECT_EQ(geometry.visible_bounding_box().y(), 21);
+  EXPECT_EQ(geometry.visible_bounding_box().width(), 31);
+  EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
+
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(1)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  // When in non-actionable mode, geometry is only poluated for the
+  // accessibility focused node.
+  EXPECT_FALSE(page_content.proto.root_node()
+                   .children_nodes(1)
+                   .content_attributes()
+                   .has_geometry());
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertGeometry_ActionableElements) {
   auto root_content = CreatePageContent();
   auto text_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
@@ -785,11 +856,15 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry) {
   root_content->root_node->children_nodes.emplace_back(std::move(text_node));
 
   AIPageContentResult page_content;
-  EXPECT_TRUE(
-      ConvertAIPageContentToProto(root_content, page_content).has_value());
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  root_content, page_content, /*main_frame_url=*/std::nullopt,
+                  /*main_frame_token_override=*/std::nullopt,
+                  blink::mojom::AIPageContentMode::kActionableElements)
+                  .has_value());
 
   EXPECT_EQ(page_content.proto.version(),
-            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
   EXPECT_EQ(page_content.proto.root_node()
                 .children_nodes(0)

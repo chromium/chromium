@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -676,6 +677,191 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
   EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+}
+
+class SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {kGlicScreenshotSensitivePaymentRedaction, {}},
+        {optimization_guide::features::
+             kAnnotatedPageContentAutofillCreditCardRedactions,
+         {}},
+        // Effectively disables timeouts.
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "30s"},
+         }},
+        {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
+         {{"timeout", "30s"}}
+
+        }};
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+
+  ~SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest()
+      override = default;
+
+  void SetUp() override {
+    EnablePixelOutput();
+    MultiSourcePageContextFetcherBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
+    BasicRedaction) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL(kHostA, "/optimization_guide/credit_card.html")));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options =
+      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  // cc-number at (0, 0) size 100x100.
+  EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+  // cc-exp at (0, 110) size 100x100.
+  EXPECT_THAT(bitmap.getColor(10, 120),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
+    BasicRedactionInIframe) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GetURL(kHostA,
+             "/optimization_guide/credit_card_in_iframe.html?domain=/"
+             "cross-site/b.test/")));
+
+  // Wait for main frame layout/render.
+  {
+    base::test::TestFuture<bool> future;
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->InsertVisualStateCallback(future.GetCallback());
+    ASSERT_TRUE(future.Wait()) << "Timeout waiting for syncing with renderer";
+  }
+
+  // Wait for cross-site subframe layout/render.
+  {
+    base::test::TestFuture<bool> sub_future;
+    GetSubframe()->GetRenderWidgetHost()->InsertVisualStateCallback(
+        sub_future.GetCallback());
+    ASSERT_TRUE(sub_future.Wait());
+  }
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  // cc-number
+  EXPECT_THAT(bitmap.getColor(120, 120),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+  // cc-exp
+  EXPECT_THAT(bitmap.getColor(120, 240),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
+    RedactionWhenScreenshotReceivedFirst) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL(kHostA, "/optimization_guide/credit_card.html")));
+
+  optimization_guide::NoResponseAIPageContentAgent interceptor(
+      web_contents()->GetPrimaryMainFrame());
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options =
+      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  // Wait until the screenshot is received.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return histograms.GetTotalSum("Glic.PageContextFetcher.GetScreenshot") > 0;
+  }));
+
+  EXPECT_FALSE(future.IsReady());
+
+  interceptor.Respond();
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  // cc-number at (0, 0) size 100x100.
+  EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+  // cc-exp at (0, 110) size 100x100.
+  EXPECT_THAT(bitmap.getColor(10, 120),
               IsColorWithinTolerance(SK_ColorRED, 0x20));
 }
 

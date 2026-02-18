@@ -188,6 +188,10 @@ class MODULES_EXPORT AIPageContentAgent final
         DOMNodeId dom_node_id,
         mojom::blink::AIPageContentAttributes& attributes) const;
 
+    bool ShouldAddNodeGeometry(
+        const LayoutObject& object,
+        const mojom::blink::AIPageContentAttributes& attributes) const;
+
     Vector<gfx::Rect> visible_bounding_box_for_passwords_;
 
     // The set of nodes which are involved in a user interaction and must

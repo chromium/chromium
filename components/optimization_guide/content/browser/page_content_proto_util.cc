@@ -666,6 +666,7 @@ base::expected<void, std::string> ConvertAttributes(
     std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
     ConvertAIPageContentToProtoSession& session,
     const blink::mojom::AIPageContentAttributes& mojom_attributes,
+    bool should_populate_geometry,
     optimization_guide::proto::ContentAttributes* proto_attributes) {
   if (mojom_attributes.dom_node_id.has_value()) {
     proto_attributes->set_common_ancestor_dom_node_id(
@@ -675,7 +676,11 @@ base::expected<void, std::string> ConvertAttributes(
   proto_attributes->set_attribute_type(
       ConvertAttributeType(mojom_attributes.attribute_type));
 
-  if (mojom_attributes.geometry) {
+  // When sensitive payment redaction is enabled, we populate
+  // `mojom_attributes.geometry` for form controls that may contain
+  // sensitive payments to allow for client-side screenshot redaction for
+  // sensitive payment fields, but still omit it from the proto here.
+  if (mojom_attributes.geometry && should_populate_geometry) {
     ConvertGeometry(*mojom_attributes.geometry,
                     proto_attributes->mutable_geometry());
   }
@@ -898,6 +903,16 @@ void ConvertRedactedIframeData(
                          proto_iframe_data->mutable_redacted_frame_metadata());
 }
 
+int GetAccessibilityFocusedNodeId(
+    const blink::mojom::AIPageContent& page_content) {
+  if (!page_content.page_interaction_info) {
+    return 0;
+  }
+
+  return page_content.page_interaction_info->accessibility_focused_dom_node_id
+      .value_or(0);
+}
+
 // Contains the information that remains the same throughout the tree
 // recursion for ConvertAIPageContentToProto.
 class Converter {
@@ -917,11 +932,15 @@ class Converter {
   base::expected<void, std::string> ConvertNode(
       content::GlobalRenderFrameHostToken source_frame_token,
       const blink::mojom::AIPageContentNode& mojom_node,
+      int accessibility_focused_node_id,
       optimization_guide::proto::ContentNode* proto_node) {
     const auto& mojom_attributes = *mojom_node.content_attributes;
-    RETURN_IF_ERROR(
-        ConvertAttributes(source_frame_token, session_, mojom_attributes,
-                          proto_node->mutable_content_attributes()));
+    RETURN_IF_ERROR(ConvertAttributes(
+        source_frame_token, session_, mojom_attributes,
+        ShouldPopulateGeometry(mojom_attributes, accessibility_focused_node_id),
+        proto_node->mutable_content_attributes()));
+    MaybeAddSensitivePaymentData(mojom_attributes,
+                                 proto_node->content_attributes());
 
     std::optional<RenderFrameInfo> render_frame_info;
     if (mojom_attributes.attribute_type ==
@@ -979,15 +998,21 @@ class Converter {
                   auto* proto_child_frame_node =
                       proto_node->add_children_nodes();
 
+                  int iframe_accessibility_focused_node_id =
+                      GetAccessibilityFocusedNodeId(*page_content);
+
                   if (page_content->frame_data &&
                       page_content->frame_data->popup) {
                     RETURN_IF_ERROR(ConvertPopup(
-                        *page_content->frame_data->popup, *render_frame_info));
+                        *page_content->frame_data->popup, *render_frame_info,
+                        iframe_accessibility_focused_node_id));
                   }
 
-                  RETURN_IF_ERROR(ConvertNode(
-                      render_frame_info->global_frame_token,
-                      *page_content->root_node, proto_child_frame_node));
+                  RETURN_IF_ERROR(
+                      ConvertNode(render_frame_info->global_frame_token,
+                                  *page_content->root_node,
+                                  iframe_accessibility_focused_node_id,
+                                  proto_child_frame_node));
 
                   ConvertIframeData(*render_frame_info, iframe_data,
                                     /*mojom_local_frame_data=*/
@@ -1017,7 +1042,7 @@ class Converter {
                 iframe_data.content->get_local_frame_data()->popup) {
               RETURN_IF_ERROR(ConvertPopup(
                   *iframe_data.content->get_local_frame_data()->popup,
-                  *render_frame_info));
+                  *render_frame_info, accessibility_focused_node_id));
             }
             ConvertIframeData(*render_frame_info, iframe_data,
                               /*mojom_local_frame_data=*/
@@ -1057,8 +1082,8 @@ class Converter {
                           : source_frame_token;
     for (const auto& mojom_child : mojom_node.children_nodes) {
       auto* proto_child = proto_node->add_children_nodes();
-      RETURN_IF_ERROR(
-          ConvertNode(source_frame_for_children, *mojom_child, proto_child));
+      RETURN_IF_ERROR(ConvertNode(source_frame_for_children, *mojom_child,
+                                  accessibility_focused_node_id, proto_child));
     }
 
     return base::ok();
@@ -1068,6 +1093,7 @@ class Converter {
   // so their traversal can be greatly simplified.
   base::expected<void, std::string> ConvertPopupNode(
       const blink::mojom::AIPageContentNode& mojom_node,
+      int accessibility_focused_node_id,
       optimization_guide::proto::ContentNode* proto_node) {
     const auto& mojom_attributes = *mojom_node.content_attributes;
     if (mojom_attributes.attribute_type ==
@@ -1075,13 +1101,17 @@ class Converter {
       return base::unexpected("iframe is unexpected in popup");
     }
 
-    RETURN_IF_ERROR(
-        ConvertAttributes(std::nullopt, session_, mojom_attributes,
-                          proto_node->mutable_content_attributes()));
+    RETURN_IF_ERROR(ConvertAttributes(
+        std::nullopt, session_, mojom_attributes,
+        ShouldPopulateGeometry(mojom_attributes, accessibility_focused_node_id),
+        proto_node->mutable_content_attributes()));
+    MaybeAddSensitivePaymentData(mojom_attributes,
+                                 proto_node->content_attributes());
 
     for (const auto& mojom_child : mojom_node.children_nodes) {
       auto* proto_child = proto_node->add_children_nodes();
-      RETURN_IF_ERROR(ConvertPopupNode(*mojom_child, proto_child));
+      RETURN_IF_ERROR(ConvertPopupNode(
+          *mojom_child, accessibility_focused_node_id, proto_child));
     }
 
     return base::ok();
@@ -1089,7 +1119,8 @@ class Converter {
 
   base::expected<void, std::string> ConvertPopup(
       const blink::mojom::AIPageContentPopup& mojom_popup,
-      const RenderFrameInfo& opener_frame_info) {
+      const RenderFrameInfo& opener_frame_info,
+      int accessibility_focused_node_id) {
     if (!base::FeatureList::IsEnabled(
             blink::features::kAIPageContentIncludePopupWindows)) {
       return base::ok();
@@ -1100,6 +1131,7 @@ class Converter {
 
     // First, walk the popup's DOM tree to create proto::ContentNodes.
     RETURN_IF_ERROR(ConvertPopupNode(*mojom_popup.root_node,
+                                     accessibility_focused_node_id,
                                      popup_window->mutable_root_node()));
 
     // Set the document ID to the frame which opened the popup (might be wrong,
@@ -1118,8 +1150,9 @@ class Converter {
     return base::ok();
   }
 
-  const blink::mojom::AIPageContentOptionsPtr& options() const LIFETIME_BOUND {
-    return options_;
+  bool actionable_mode() const LIFETIME_BOUND {
+    return options_->mode ==
+           blink::mojom::AIPageContentMode::kActionableElements;
   }
 
   void AddPasswordRedactionData(
@@ -1148,6 +1181,36 @@ class Converter {
     ConvertFrameData(render_frame_info, mojom_local_frame_data,
                      proto_iframe_data->mutable_frame_data(), page_metadata(),
                      *frame_token_set_);
+  }
+
+  void MaybeAddSensitivePaymentData(
+      const blink::mojom::AIPageContentAttributes& mojom_attributes,
+      const optimization_guide::proto::ContentAttributes& proto_attributes) {
+    if (!options_->include_sensitive_payments_for_redaction) {
+      return;
+    }
+
+    if (proto_attributes.has_form_control_data() &&
+        proto_attributes.form_control_data().redaction_decision() ==
+            proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD) {
+      if (mojom_attributes.geometry) {
+        page_content_result_
+            ->visible_bounding_boxes_for_sensitive_payment_redaction.push_back(
+                mojom_attributes.geometry->visible_bounding_box);
+      } else {
+        LOG(ERROR) << "Missing geometry for the sensitive payment field";
+      }
+    }
+  }
+
+  // See `AIPageContentAgent::ContentBuilder::AddNodeGeometry()`. When in
+  // non-actionable mode, we only want to add geometry for the accessibility
+  // focused node.
+  bool ShouldPopulateGeometry(
+      const blink::mojom::AIPageContentAttributes& mojom_attributes,
+      int accessibility_focused_node_id) const {
+    return actionable_mode() ||
+           mojom_attributes.dom_node_id == accessibility_focused_node_id;
   }
 
   blink::mojom::PageMetadata& page_metadata() {
@@ -1250,8 +1313,12 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
                       page_content_result);
   converter.AddPasswordRedactionData(*main_frame_page_content);
 
+  int accessibility_focused_node_id =
+      GetAccessibilityFocusedNodeId(*main_frame_page_content);
+
   RETURN_IF_ERROR(converter.ConvertNode(
       main_frame_token, *main_frame_page_content->root_node,
+      accessibility_focused_node_id,
       page_content_result.proto.mutable_root_node()));
 
   if (main_frame_page_content->page_interaction_info) {
@@ -1262,8 +1329,7 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
 
   auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
   auto mode = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT;
-  if (converter.options()->mode ==
-      blink::mojom::AIPageContentMode::kActionableElements) {
+  if (converter.actionable_mode()) {
     version = optimization_guide::proto::
         ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0;
     mode = optimization_guide::proto::
@@ -1275,7 +1341,8 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
   // If the page had a popup open, provide that popup to APC as well.
   if (main_frame_page_content->frame_data->popup) {
     RETURN_IF_ERROR(converter.ConvertPopup(
-        *main_frame_page_content->frame_data->popup, *render_frame_info));
+        *main_frame_page_content->frame_data->popup, *render_frame_info,
+        accessibility_focused_node_id));
   }
 
   return base::ok();
