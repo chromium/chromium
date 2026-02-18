@@ -25,9 +25,12 @@ namespace ash::tether {
 // Responses can be retrieved at a later time via getter methods.
 class TetherHostResponseRecorder {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnPreviouslyConnectedHostIdsChanged() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   // Registers the prefs used by this class to |registry|. Must be called before
@@ -85,7 +88,7 @@ class TetherHostResponseRecorder {
       const std::string& pref_name) const;
 
   raw_ptr<PrefService> pref_service_;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace ash::tether

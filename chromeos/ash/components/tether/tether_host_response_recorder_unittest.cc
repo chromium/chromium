@@ -20,7 +20,7 @@ namespace {
 class TestObserver final : public TetherHostResponseRecorder::Observer {
  public:
   TestObserver() = default;
-  ~TestObserver() = default;
+  ~TestObserver() override = default;
 
   uint32_t num_callbacks() { return num_callbacks_; }
 

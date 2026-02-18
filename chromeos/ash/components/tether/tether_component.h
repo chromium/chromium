@@ -14,12 +14,12 @@ namespace tether {
 // Initializes the Tether component.
 class TetherComponent {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    Observer() {}
-    virtual ~Observer() {}
-
     virtual void OnShutdownComplete() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   enum class Status { ACTIVE, SHUTTING_DOWN, SHUT_DOWN };
@@ -59,7 +59,7 @@ class TetherComponent {
 
  private:
   Status status_ = Status::ACTIVE;
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace tether

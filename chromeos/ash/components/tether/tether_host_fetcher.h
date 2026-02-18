@@ -17,9 +17,12 @@ namespace ash::tether {
 // synced via CryptAuth.
 class TetherHostFetcher {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnTetherHostUpdated() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   TetherHostFetcher();
@@ -40,7 +43,7 @@ class TetherHostFetcher {
   std::optional<multidevice::RemoteDeviceRef> tether_host_;
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash::tether

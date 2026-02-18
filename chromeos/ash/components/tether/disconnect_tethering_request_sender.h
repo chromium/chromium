@@ -15,12 +15,12 @@ namespace tether {
 // multiple concurrent messages.
 class DisconnectTetheringRequestSender {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    Observer() {}
-    virtual ~Observer() {}
-
     virtual void OnPendingDisconnectRequestsComplete() {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   DisconnectTetheringRequestSender();
@@ -46,7 +46,7 @@ class DisconnectTetheringRequestSender {
   void NotifyPendingDisconnectRequestsComplete();
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace tether

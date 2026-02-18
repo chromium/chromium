@@ -35,7 +35,7 @@ class MockOperationObserver : public KeepAliveOperation::Observer {
   MockOperationObserver(const MockOperationObserver&) = delete;
   MockOperationObserver& operator=(const MockOperationObserver&) = delete;
 
-  ~MockOperationObserver() = default;
+  ~MockOperationObserver() override = default;
 
   MOCK_METHOD1(OnOperationFinishedRaw, void(DeviceStatus*));
 

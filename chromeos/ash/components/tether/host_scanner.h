@@ -14,12 +14,12 @@ namespace tether {
 // Scans for nearby tether hosts.
 class HostScanner {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void ScanFinished() = 0;
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   HostScanner();
@@ -47,7 +47,7 @@ class HostScanner {
   void NotifyScanFinished();
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace tether

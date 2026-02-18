@@ -43,7 +43,7 @@ class MockOperationObserver : public ConnectTetheringOperation::Observer {
   MockOperationObserver(const MockOperationObserver&) = delete;
   MockOperationObserver& operator=(const MockOperationObserver&) = delete;
 
-  ~MockOperationObserver() = default;
+  ~MockOperationObserver() override = default;
 
   MOCK_METHOD0(OnConnectTetheringRequestSent, void());
   MOCK_METHOD2(OnSuccessfulConnectTetheringResponse,

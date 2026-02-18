@@ -35,13 +35,16 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
     static Factory* factory_instance_;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Alerts observers when the operation has finished for device with ID
     // |device_id|. |success| is true when the operation successfully sends the
     // message and false otherwise.
     virtual void OnOperationFinished(const std::string& device_id,
                                      bool success) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   DisconnectTetheringOperation(const DisconnectTetheringOperation&) = delete;
@@ -76,7 +79,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
 
   void SetClockForTest(base::Clock* clock_for_test);
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   bool has_sent_message_;
 
   raw_ptr<base::Clock> clock_;

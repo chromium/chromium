@@ -27,7 +27,7 @@ namespace {
 class TestObserver : public TetherHostFetcher::Observer {
  public:
   TestObserver() = default;
-  virtual ~TestObserver() = default;
+  ~TestObserver() override = default;
 
   size_t num_updates() { return num_updates_; }
 

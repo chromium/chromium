@@ -19,9 +19,12 @@ namespace tether {
 // enabled in order to utilize Instant Tethering.
 class GmsCoreNotificationsStateTracker {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnGmsCoreNotificationStateChanged() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   GmsCoreNotificationsStateTracker();
@@ -46,7 +49,7 @@ class GmsCoreNotificationsStateTracker {
   void NotifyGmsCoreNotificationStateChanged();
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace tether

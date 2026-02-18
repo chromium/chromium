@@ -45,7 +45,7 @@ class TestObserver final : public GmsCoreNotificationsStateTracker::Observer {
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
-  ~TestObserver() = default;
+  ~TestObserver() override = default;
 
   uint32_t change_count() const { return change_count_; }
 

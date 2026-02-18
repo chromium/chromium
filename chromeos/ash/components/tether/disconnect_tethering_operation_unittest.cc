@@ -37,7 +37,7 @@ class MockOperationObserver : public DisconnectTetheringOperation::Observer {
   MockOperationObserver(const MockOperationObserver&) = delete;
   MockOperationObserver& operator=(const MockOperationObserver&) = delete;
 
-  ~MockOperationObserver() = default;
+  ~MockOperationObserver() override = default;
 
   MOCK_METHOD2(OnOperationFinished, void(const std::string&, bool));
 };

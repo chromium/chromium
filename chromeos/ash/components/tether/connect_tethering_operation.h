@@ -65,7 +65,7 @@ class ConnectTetheringOperation : public MessageTransferOperation {
     static Factory* factory_instance_;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnConnectTetheringRequestSent() = 0;
     virtual void OnSuccessfulConnectTetheringResponse(
@@ -73,6 +73,9 @@ class ConnectTetheringOperation : public MessageTransferOperation {
         const std::string& password) = 0;
     virtual void OnConnectTetheringFailure(
         HostResponseErrorCode error_code) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   ConnectTetheringOperation(const ConnectTetheringOperation&) = delete;
@@ -143,7 +146,7 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   HostResponseErrorCode error_code_to_return_;
   base::Time connect_tethering_request_start_time_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<ConnectTetheringOperation> weak_ptr_factory_{this};
 };

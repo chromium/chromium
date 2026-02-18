@@ -25,9 +25,12 @@ class HostScanCache {
 
   virtual ~HostScanCache();
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnCacheBecameEmpty() {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   void AddObserver(Observer* observer);
@@ -61,7 +64,7 @@ class HostScanCache {
       const std::string& tether_network_guid) = 0;
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace tether

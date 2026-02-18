@@ -36,12 +36,15 @@ class KeepAliveOperation : public MessageTransferOperation {
     static Factory* factory_instance_;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // |device_status| points to a valid DeviceStatus if the operation completed
     // successfully and is null if the operation was not successful.
     virtual void OnOperationFinished(
         std::unique_ptr<DeviceStatus> device_status) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   KeepAliveOperation(const KeepAliveOperation&) = delete;
@@ -75,7 +78,7 @@ class KeepAliveOperation : public MessageTransferOperation {
   void SetClockForTest(base::Clock* clock_for_test);
 
   raw_ptr<base::Clock> clock_;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::Time keep_alive_tickle_request_start_time_;
 };
