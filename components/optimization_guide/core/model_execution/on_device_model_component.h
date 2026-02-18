@@ -334,11 +334,6 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     return GetDebugState();
   }
 
-  // Get free disk space available for on device model for logging in global
-  // state.
-  void GetFreeDiskSpaceForLogging(
-      base::OnceCallback<void(std::optional<base::ByteCount>)> callback);
-
   // Functions called by the component installer:
 
   // Creates the on-device component state, only called after VerifyInstallation

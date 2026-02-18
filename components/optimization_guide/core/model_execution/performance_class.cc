@@ -336,8 +336,6 @@ void PerformanceClassifier::OnDeviceAndPerformanceInfo(
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
         performance_class);
-    base::UmaHistogramMemoryLargeMB(
-        "OptimizationGuide.OnDeviceModel.DetectedVram", perf_info->vram_mb);
     UpdatePerformanceClassPref(local_state_, performance_class);
     UpdateDeviceInfoPrefs(local_state_, device_info->vendor_id,
                           device_info->device_id, device_info->driver_version,

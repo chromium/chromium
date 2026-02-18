@@ -104,12 +104,8 @@ class OnDeviceModelComponentTest : public testing::Test {
   }
 
   void DoStartup() {
-    base::HistogramTester startup_histograms;
     broker_.GetOrCreateBrokerState();  // Force instantiation.
     task_environment_.FastForwardBy(base::Seconds(1));
-    startup_histograms.ExpectUniqueSample(
-        "OptimizationGuide.OnDeviceModel.OnDeviceModelComponentInstantiated",
-        true, 1);
   }
 
   void SimulateShutdown() { broker_.SimulateShutdown(); }
@@ -552,8 +548,6 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
   const OnDeviceModelComponentState* state = manager().GetState();
   ASSERT_TRUE(state);
 
-  histograms_.ExpectTotalCount("OptimizationGuide.OnDeviceModel.InstalledModel",
-                               1);
   EXPECT_FALSE(state->GetInstallDirectory().empty());
   EXPECT_EQ(state->GetComponentVersion(), base::Version("0.0.1"));
 
