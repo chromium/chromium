@@ -18,6 +18,7 @@ import logging
 import optparse
 import os
 import re
+import struct
 import subprocess
 import sys
 
@@ -128,7 +129,7 @@ HISTOGRAM_MACRO_SUFFIXES = frozenset([
     'COUNTS',
     'MEMORY_MB',
     'CUSTOM_ENUMERATION',
-    # The following suffixes are not defined in //base/metrics.
+    # The following macro name suffixes are not defined in //base/metrics.
     'SCROLL_LATENCY_SHORT',
     'SCROLL_LATENCY_LONG',
     'TOUCH_TO_SCROLL_LATENCY',
@@ -142,15 +143,24 @@ HISTOGRAM_MACRO_SUFFIXES = frozenset([
     'MINUTES',
     'MBYTES',
     'ASPECT_RATIO',
+    'LOAD_TIME',
     'LOCATION_RESPONSE_TIMES',
     'LOCK_TIMES',
     'OOM_KILL_TIME_INTERVAL',
+    'MICRO_TIMES',
+    'CUSTOM_EXACT_LINEAR',
+    'EVENT_LATENCY_TIMES',
+    'RASTER_TIME_CUSTOM_MICROSECONDS',
 ])
 OTHER_HISTOGRAM_MACROS = frozenset([
     'SCOPED_UMA_HISTOGRAM_TIMER',
     'SCOPED_UMA_HISTOGRAM_LONG_TIMER',
     'SCOPED_UMA_HISTOGRAM_TIMER_MICROS',
     'SCOPED_BLINK_UMA_HISTOGRAM_TIMER',
+    'SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES',
+    'SCOPED_UMA_HISTOGRAM_MICRO_TIMER',
+    'SCOPED_UMA_HISTOGRAM_THREAD_TIMER',
+    'SCOPED_UMA_HISTOGRAM_MICRO_THREAD_TIMER',
 ])
 HISTOGRAM_FUNCTION_SUFFIXES = frozenset([
     # Note: Order matches histogram_functions.h.
@@ -177,10 +187,12 @@ HISTOGRAM_FUNCTION_SUFFIXES = frozenset([
     'MemoryMB',
     'MemoryLargeMB',
     'Sparse',
+    # The following function name suffixes are not defined in //base/metrics.
+    'FileError',
 ])
 
 
-def RunGit(command):
+def _run_git(command: list[str]) -> str:
   """Run a git subcommand, returning its output."""
   # On Windows, use shell=True to get PATH interpretation.
   command = ['git'] + command
@@ -193,20 +205,22 @@ def RunGit(command):
 
 class DirectoryNotFoundException(Exception):
   """Base class to distinguish locally defined exceptions from standard ones."""
-  def __init__(self, msg):
+
+  def __init__(self, msg: str):
     self.msg = msg
 
   def __str__(self):
     return self.msg
 
 
-def keep_only_newlines(match_object):
+def _keep_only_newlines(match_object: re.Match) -> str:
   """Remove everything from a matched string except for the newline characters.
-  Takes a MatchObject argument so that it can be used directly as the repl
+
+  Takes a Match object argument so that it can be used directly as the repl
   argument to re.sub().
 
   Args:
-    match_object: A MatchObject referencing the string to be substituted, e.g.
+    match_object: A Match object referencing the string to be substituted, e.g.
     '  // My histogram\n   '
 
   Returns:
@@ -216,9 +230,10 @@ def keep_only_newlines(match_object):
   return NON_NEWLINE.sub('', match_object.group(0))
 
 
-def remove_comments(string):
-  """Remove any comments from an expression, including leading and trailing
-  whitespace. This does not correctly ignore comments embedded in strings, but
+def _remove_comments(string: str) -> str:
+  """Remove comments from a string, including leading and trailing whitespace.
+
+  This does not correctly ignore comments embedded in strings, but
   that shouldn't matter for this script. Newlines in the removed text are
   preserved so that line numbers don't change.
 
@@ -230,10 +245,10 @@ def remove_comments(string):
     The string with comments removed, e.g. '"\nMy.Important.Counts" '
 
   """
-  return CPP_COMMENT.sub(keep_only_newlines, string)
+  return CPP_COMMENT.sub(_keep_only_newlines, string)
 
 
-def collapse_adjacent_c_strings(string):
+def _collapse_adjacent_c_strings(string: str) -> str:
   """Collapses any adjacent C strings into a single string.
 
   Useful to re-combine strings that were split across multiple lines to satisfy
@@ -253,9 +268,9 @@ def collapse_adjacent_c_strings(string):
     string = collapsed
 
 
-def log_non_literal_histogram(filename, symbol_name, histogram):
-  """Logs a statement warning about a non-literal histogram name found in the
-  Chromium source.
+def log_non_literal_histogram(filename: str, symbol_name: str,
+                              histogram: str) -> None:
+  """Logs a warning about a non-literal histogram name found in the source.
 
   Filters out known acceptable exceptions.
 
@@ -279,7 +294,7 @@ def log_non_literal_histogram(filename, symbol_name, histogram):
     return
 
   # A blank value wouldn't compile unless it was in a comment.
-  if histogram == '':
+  if not histogram:
     return
 
   # String concatenations involving macros are always constant.
@@ -292,39 +307,37 @@ def log_non_literal_histogram(filename, symbol_name, histogram):
                   symbol_name, histogram)
 
 
-def read_chromium_histograms():
+def _read_chromium_histograms() -> dict[str, str]:
   """Searches the Chromium source for all histogram names.
 
   Prints warnings for any invocations of the UMA_HISTOGRAM_* macros with
   names that might vary during a single run of the app.
 
   Returns:
-    A tuple of
-      a set containing any found literal histogram names, and
-      a set mapping histogram name to first filename:line where it was found
+    A dict mapping histogram name to first filename:line where it was found.
   """
   # Note: For functions, we don't require literals (no warnings printed), but
   # we also are limited to finding unmapped names coming from literals.
   logging.info('Scanning Chromium source for histograms functions...')
-  histograms, location_map = find_histograms('UmaHistogram',
-                                             HISTOGRAM_FUNCTION_REGEX,
-                                             HISTOGRAM_FUNCTION_SUFFIXES, [],
-                                             require_literals=False)
+  location_map = _find_histograms('UmaHistogram',
+                                  HISTOGRAM_FUNCTION_REGEX,
+                                  HISTOGRAM_FUNCTION_SUFFIXES, [],
+                                  require_literals=False)
 
   logging.info('Scanning Chromium source for histograms macros...')
-  histograms2, location_map2 = find_histograms('UMA_HISTOGRAM',
-                                               HISTOGRAM_MACRO_REGEX,
-                                               HISTOGRAM_MACRO_SUFFIXES,
-                                               OTHER_HISTOGRAM_MACROS,
-                                               require_literals=True)
+  location_map2 = _find_histograms('UMA_HISTOGRAM',
+                                   HISTOGRAM_MACRO_REGEX,
+                                   HISTOGRAM_MACRO_SUFFIXES,
+                                   OTHER_HISTOGRAM_MACROS,
+                                   require_literals=True)
 
-  histograms.update(histograms2)
   location_map.update(location_map2)
-  return histograms, location_map
+  return location_map
 
 
-def find_histograms(grep_expression, regex, all_suffixes, all_others,
-                    require_literals):
+def _find_histograms(grep_expression: str, regex: re.Pattern,
+                     all_suffixes: list[str], all_others: list[str],
+                     require_literals: bool) -> dict[str, str]:
   """Searches the Chromium source for histogram names.
 
   If `regex` is 'UMA_HISTOGRAM', prints warnings for any invocations the macros
@@ -339,32 +352,28 @@ def find_histograms(grep_expression, regex, all_suffixes, all_others,
     require_literals: Whether errors should be printed about non-literal args.
 
   Returns:
-    A tuple of
-      a set containing any found literal histogram names, and
-      a set mapping histogram name to first filename:line where it was found
+    A dict mapping histogram name to first filename:line where it was found.
   """
   # Use git grep to find all invocations of the UMA_HISTOGRAM_* macros.
   # Examples:
   #   'path/to/foo.cc:420:  UMA_HISTOGRAM_COUNTS_100("FooGroup.FooName",'
   #   'path/to/bar.cc:632:  UMA_HISTOGRAM_ENUMERATION('
-  locations = RunGit(['gs', grep_expression]).split('\n')
+  locations = _run_git(['gs', grep_expression]).split('\n')
   all_filenames = set(location.split(':')[0] for location in locations);
   filenames = [f for f in all_filenames
                if C_FILENAME.match(f) and not TEST_FILENAME.match(f)]
 
-  histograms = set()
   location_map = dict()
   unknown_symbols = set()
   for filename in filenames:
-    contents = ''
     with open(filename, 'r') as f:
-      contents = remove_comments(f.read())
+      contents = _remove_comments(f.read())
 
     for match in regex.finditer(contents):
       line_number = contents[:match.start()].count('\n') + 1
       full_symbol_name = match.group(1)
       symbol_suffix = match.group(2)
-      metric_name = collapse_adjacent_c_strings(match.group(3).strip())
+      metric_name = _collapse_adjacent_c_strings(match.group(3).strip())
 
       if (symbol_suffix not in all_suffixes
           and full_symbol_name not in all_others):
@@ -389,14 +398,13 @@ def find_histograms(grep_expression, regex, all_suffixes, all_others,
         # Not a literal name. Skip.
         continue
 
-      if metric_name_stripped not in histograms:
-        histograms.add(metric_name_stripped)
+      if metric_name_stripped not in location_map:
         location_map[metric_name_stripped] = '%s:%d' % (filename, line_number)
 
-  return histograms, location_map
+  return location_map
 
 
-def read_all_xml_histograms():
+def _read_all_xml_histograms() -> set[str]:
   """Parses all histogram names defined in |histogram_paths.ALL_XMLS|.
 
   Returns:
@@ -407,7 +415,7 @@ def read_all_xml_histograms():
   return set(extract_histograms.ExtractNames(histograms))
 
 
-def read_xml_histograms(histograms_file_location):
+def _read_xml_histograms(histograms_file_location: str) -> set[str]:
   """Parses all histogram names from |histograms_file_location|.
 
   Args:
@@ -421,44 +429,83 @@ def read_xml_histograms(histograms_file_location):
   return set(extract_histograms.ExtractNames(histograms))
 
 
-def hash_histogram_name(name):
-  """Computes the hash of a histogram name.
+def _hash_histogram_name_to_int(t: str) -> int:
+  """Computes the hash of a Chrome histogram name.
+
+  The histogram ID is derived from the first 8 bytes of the md5 hash of the
+  histogram's name. Those 64 bits are interpreted as an integer (big-endian
+  unsigned long long). See HashMetricName here:
+  https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/metrics_hashes.cc
 
   Args:
-    name: The string to hash (a histogram name).
+    t: The string to hash (a histogram name).
 
   Returns:
-    Histogram hash as a string representing a hex number (with leading 0x).
+    Histogram hash as an integer.
   """
-  return '0x' + hashlib.md5(name.encode('utf-8')).hexdigest()[:16]
+  # >Q: 8 bytes, big endian.
+  return struct.unpack('>Q', hashlib.md5(t.encode('utf-8')).digest()[:8])[0]
 
 
-def output_csv(unmapped_histograms, location_map):
+def _hash_histogram_name(t: str) -> str:
+  """Computes the hash of a Chrome histogram name.
+
+  Args:
+    t: The string to hash (a histogram name).
+
+  Returns:
+    Histogram hash as a string representing a hex number, zero-padded to
+    fixed length.
+  """
+  return f'0x{_hash_histogram_name_to_int(t):016x}'
+
+
+def _cast_to_int32(n):
+  """Simulates C++ style (int32_t) casting from a larger integer type."""
+  # Mask to get the lower 32 bits
+  n = n & 0xFFFFFFFF
+  # Check if the sign bit (bit 31) is set
+  if n & 0x80000000:
+    # Negative number: apply two's complement
+    return n - 0x100000000
+  else:
+    # Positive number
+    return n
+
+
+def _output_csv(unmapped_histograms: list[str],
+                location_map: dict[str, str]) -> None:
   for histogram in sorted(unmapped_histograms):
     parts = location_map[histogram].split(':')
     assert len(parts) == 2
     (filename, line_number) = parts
     print('%s,%s,%s,%s' %
-          (filename, line_number, histogram, hash_histogram_name(histogram)))
+          (filename, line_number, histogram, _hash_histogram_name(histogram)))
 
 
-def output_log(unmapped_histograms, location_map, verbose):
-  if len(unmapped_histograms):
-    logging.info('')
-    logging.info('')
-    logging.info('Histograms in Chromium but not in XML files:')
-    logging.info('-------------------------------------------------')
-    for histogram in sorted(unmapped_histograms):
-      if verbose:
-        logging.info('%s: %s - %s', location_map[histogram], histogram,
-                     hash_histogram_name(histogram))
-      else:
-        logging.info('  %s - %s', histogram, hash_histogram_name(histogram))
-  else:
+def _output_log(unmapped_histograms: list[str], location_map: dict[str, str],
+                verbose: bool) -> None:
+  if not unmapped_histograms:
     logging.info('Success!  No unmapped histograms found.')
+    return
+
+  logging.info('')
+  logging.info('')
+  logging.info('Histograms in Chromium but not in XML files:')
+  logging.info('-------------------------------------------------')
+  for histogram in sorted(unmapped_histograms):
+    line = ''
+    if verbose:
+      line += f'{location_map[histogram]}: '
+    name_hash = _hash_histogram_name(histogram)
+    name_hash_int = _hash_histogram_name_to_int(histogram)
+    line += f'{histogram} - {name_hash} ({name_hash_int})'
+    if verbose:
+      line += f' (int32: {_cast_to_int32(name_hash_int)})'
+    logging.info(line)
 
 
-def main():
+def main() -> None:
   # Find default paths.
   default_root = path_util.GetInputFile('/')
 
@@ -486,8 +533,8 @@ def main():
                     action='store_true',
                     dest='verbose',
                     default=False,
-                    help=('print file position information with histograms ' +
-                          '[optional, defaults to %default]'))
+                    help=('print file location and int32 hashes for ' +
+                          'histograms [optional, defaults to %default]'))
 
   (options, args) = parser.parse_args()
   if args:
@@ -499,15 +546,16 @@ def main():
   try:
     os.chdir(options.root_directory)
   except EnvironmentError as e:
-    logging.error("Could not change to root directory: %s", e)
+    logging.error('Could not change to root directory: %s', e)
     sys.exit(1)
-  chromium_histograms, location_map = read_chromium_histograms()
-  xml_histograms = read_all_xml_histograms()
+  location_map = _read_chromium_histograms()
+  chromium_histograms = set(location_map.keys())
+  xml_histograms = _read_all_xml_histograms()
   unmapped_histograms = chromium_histograms - xml_histograms
 
   if options.extra_histograms_file_location:
     if os.path.isfile(options.extra_histograms_file_location):
-      xml_histograms2 = read_xml_histograms(
+      xml_histograms2 = _read_xml_histograms(
           options.extra_histograms_file_location)
       unmapped_histograms -= xml_histograms2
     else:
@@ -515,9 +563,9 @@ def main():
                       options.extra_histograms_file_location)
 
   if options.output_as_csv:
-    output_csv(unmapped_histograms, location_map)
+    _output_csv(unmapped_histograms, location_map)
   else:
-    output_log(unmapped_histograms, location_map, options.verbose)
+    _output_log(unmapped_histograms, location_map, options.verbose)
 
 
 if __name__ == '__main__':
