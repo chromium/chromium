@@ -468,8 +468,8 @@ template("define_autorolled_targets") {
       # Rules are unnecessary.
       ignore_proguard_configs = true
 
-      # Chrome does not use the APIs that require the native library.
-      ignore_native_libraries = true
+      # ChromeXR does use the APIs that require the native library.
+      extract_native_libraries = true
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
