@@ -121,7 +121,9 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
   enum class CacheLoadResult {
     kMiss = 0,
     kMissNoDiskCache = 1,
-    kMaxMissValue = kMissNoDiskCache,
+    kMissTimeout = 2,
+    kMissTransactionError = 3,
+    kMaxMissValue = kMissTransactionError,
     // Extra enum space for future miss results
     kHitMemory = 10,
     kHitDisk = 11,

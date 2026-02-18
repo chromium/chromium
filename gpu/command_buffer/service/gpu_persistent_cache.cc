@@ -186,8 +186,9 @@ struct GpuPersistentCache::DiskCache
       const GpuPersistentCache::AsyncDiskWriteOpts& async_write_options,
       scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count);
 
-  bool Load(std::string_view key,
-            persistent_cache::BufferProvider buffer_provider);
+  GpuPersistentCache::CacheLoadResult Load(
+      std::string_view key,
+      persistent_cache::BufferProvider buffer_provider);
   void Store(scoped_refptr<MemoryCacheEntry> entry);
 
   const persistent_cache::PersistentCache& persistent_cache() const {
@@ -249,7 +250,7 @@ void GpuPersistentCache::DiskCache::SignalUsingCacheComplete() {
   cache_in_use_cond_var_.Signal();
 }
 
-bool GpuPersistentCache::DiskCache::Load(
+GpuPersistentCache::CacheLoadResult GpuPersistentCache::DiskCache::Load(
     std::string_view key,
     persistent_cache::BufferProvider buffer_provider) {
   ScopedHistogramTimer timer(GetHistogramName(cache_prefix_, "Load"));
@@ -268,7 +269,7 @@ bool GpuPersistentCache::DiskCache::Load(
     if (!TimedWait(cache_in_use_cond_var_, kDiskOpWaitTimeoutMs,
                    [this]() { return cache_in_use_; })) {
       // Treat as cache miss
-      return false;
+      return CacheLoadResult::kMissTimeout;
     }
 
     cache_in_use_ = true;
@@ -290,10 +291,12 @@ bool GpuPersistentCache::DiskCache::Load(
                    [&](persistent_cache::TransactionError error) {
                      HandlePersistentCacheError(
                          &use_shader_cache_shm_count_->data, error);
-                     return false;
+                     return CacheLoadResult::kMissTransactionError;
                    });
 
-  return metadata.has_value();  // Hit if present; miss otherwise.
+  // Hit if present; miss otherwise.
+  return metadata.has_value() ? CacheLoadResult::kHitDisk
+                              : CacheLoadResult::kMiss;
 }
 
 void GpuPersistentCache::DiskCache::Store(
@@ -426,9 +429,9 @@ void GpuPersistentCache::InitializeCache(
     memory_cache_->ForEach([this](MemoryCacheEntry* memory_entry) {
       // Query the existence of the disk cache entry by providing an empty
       // buffer so no data is copied.
-      bool exists = disk_cache_->Load(
+      CacheLoadResult result = disk_cache_->Load(
           memory_entry->Key(), [](size_t) { return base::span<uint8_t>(); });
-      if (!exists) {
+      if (!IsCacheHitResult(result)) {
         disk_cache_->Store(memory_entry);
       }
     });
@@ -615,8 +618,10 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
         return base::span<uint8_t>(local_allocated_buffer);  // Case 3.
       };
 
-  if (!disk_cache_->Load(key, wrapped_buffer_provider)) {
-    return CacheLoadResult::kMiss;
+  CacheLoadResult disk_load_result =
+      disk_cache_->Load(key, wrapped_buffer_provider);
+  if (!IsCacheHitResult(disk_load_result)) {
+    return disk_load_result;
   }
 
   if (memory_cache_) {
@@ -636,7 +641,7 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
     }
   }
 
-  return CacheLoadResult::kHitDisk;
+  return disk_load_result;
 }
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)

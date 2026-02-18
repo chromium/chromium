@@ -1049,6 +1049,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <summary>The cache hit/miss results of GpuPersistentCache.</summary>
   <int value="0" label="Miss"/>
   <int value="1" label="Miss (disk cache not available)"/>
+  <int value="2" label="Miss (disk cache timeout)"/>
+  <int value="3" label="Miss (transaction error)"/>
   <int value="10" label="Hit (memory)"/>
   <int value="11" label="Hit (disk)"/>
 </enum>
