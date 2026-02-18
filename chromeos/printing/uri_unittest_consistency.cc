@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/printing/uri.h"
 #include "chromeos/printing/uri_unittest.h"
@@ -34,7 +35,7 @@ std::string Encode(const std::string& input, const std::string& allowed_chars) {
       out.push_back(c);
     } else {
       out.push_back('%');
-      out.append(base::HexEncode(&c, 1));
+      out.append(base::HexEncode(base::byte_span_from_ref(c)));
     }
   }
   return out;

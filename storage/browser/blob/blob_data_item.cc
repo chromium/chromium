@@ -241,7 +241,7 @@ void PrintTo(const BlobDataItem& x, ::std::ostream* os) {
     case BlobDataItem::Type::kBytes: {
       uint64_t length = std::min(x.length(), kMaxDataPrintLength);
       *os << "kBytes, data: ["
-          << base::HexEncode(x.bytes().data(), static_cast<size_t>(length));
+          << base::HexEncode(x.bytes().first(static_cast<size_t>(length)));
       if (length < x.length()) {
         *os << "<...truncated due to length...>";
       }
