@@ -173,6 +173,7 @@ found in the LICENSE file.
     <item type="id" name="find_in_page_id" />
     <item type="id" name="translate_id" />
     <item type="id" name="readaloud_menu_id" />
+    <item type="id" name="more_tools_menu_id" />
     <item type="id" name="reader_mode_menu_id" />
     <item type="id" name="open_with_id" />
     <item type="id" name="universal_install" />

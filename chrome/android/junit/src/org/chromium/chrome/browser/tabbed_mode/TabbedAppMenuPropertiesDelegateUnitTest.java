@@ -1730,7 +1730,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
-        assertTrue(isMenuVisible(modelList, R.id.reader_mode_menu_id));
+        assertTrue(
+                isMenuVisible(
+                        createModelList(getSubmenuItems(modelList, R.id.more_tools_menu_id)),
+                        R.id.reader_mode_menu_id));
     }
 
     @Test
@@ -1746,7 +1749,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Context context = ContextUtils.getApplicationContext();
         assertTrue(
                 isMenuVisibleWithCorrectTitle(
-                        modelList,
+                        createModelList(getSubmenuItems(modelList, R.id.more_tools_menu_id)),
                         R.id.reader_mode_menu_id,
                         context.getString(R.string.show_reading_mode_text)));
     }
@@ -1764,7 +1767,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Context context = ContextUtils.getApplicationContext();
         assertTrue(
                 isMenuVisibleWithCorrectTitle(
-                        modelList,
+                        createModelList(getSubmenuItems(modelList, R.id.more_tools_menu_id)),
                         R.id.reader_mode_menu_id,
                         context.getString(R.string.hide_reading_mode_text)));
     }

@@ -389,8 +389,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Readaloud
         observeAndMaybeAddReadAloud(modelList, currentTab);
 
+        // More tools
+        if (shouldShowMoreToolsItem(currentTab)) {
+            modelList.add(buildMoreToolsItem(currentTab));
+        }
+
         // Reader mode
-        if (shouldShowReaderModeItem(currentTab)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && shouldShowReaderModeItem(currentTab)) {
             modelList.add(buildReaderModeItem(currentTab));
         }
 
@@ -990,6 +996,37 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.print_id,
                         R.string.menu_print,
                         shouldShowIconBeforeItem() ? R.drawable.sharing_print : 0));
+    }
+
+    private boolean shouldShowMoreToolsItem(@Nullable Tab currentTab) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            return false;
+        }
+
+        if (shouldShowReaderModeItem(currentTab)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private MVCListAdapter.ListItem buildMoreToolsItem(@Nullable Tab currentTab) {
+        assert shouldShowMoreToolsItem(currentTab);
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        if (shouldShowReaderModeItem(currentTab)) {
+            submenuItems.add(buildReaderModeItem(currentTab));
+        }
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.more_tools_menu_id,
+                        R.string.menu_more_tools,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_more_tools_24dp
+                                : Resources.ID_NULL,
+                        submenuItems));
     }
 
     @Contract("null -> false")
