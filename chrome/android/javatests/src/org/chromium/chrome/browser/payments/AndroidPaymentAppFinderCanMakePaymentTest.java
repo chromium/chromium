@@ -15,15 +15,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.MockPaymentApp;
 import org.chromium.components.payments.MockPaymentAppInstaller;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 /** Tests the PaymentRequest.canMakePayment() behavior with Android payment apps. */
@@ -52,26 +49,9 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
         mMockPaymentAppInstaller.reset();
     }
 
-    /**
-     * Absence of payment apps should return "false" from canMakePayment(). This test case disables
-     * the ALLOW_SHOW_WITHOUT_READY_TO_PAY feature.
-     */
+    /** Absence of payment apps should return "false" from canMakePayment(). */
     @Test
     @MediumTest
-    @DisableFeatures(PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)
-    public void testCannotMakePaymentWithoutAppsAndShowProhibited() throws Exception {
-        assertEquals("\"false\"", getCanMakePaymentResult());
-        assertEquals("\"false\"", getHasEnrolledInstrumentResult());
-        assertEquals("\"NotSupportedError\"", getShowResult());
-    }
-
-    /**
-     * Absence of payment apps should return "false" from canMakePayment(). This test case enables
-     * the ALLOW_SHOW_WITHOUT_READY_TO_PAY feature.
-     */
-    @Test
-    @MediumTest
-    @EnableFeatures(PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)
     public void testCannotMakePaymentWithoutAppsAndShowAllowed() throws Exception {
         assertEquals("\"false\"", getCanMakePaymentResult());
         assertEquals("\"false\"", getHasEnrolledInstrumentResult());
@@ -79,45 +59,11 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
     }
 
     /**
-     * When ALLOW_SHOW_WITHOUT_READY_TO_PAY feature is disabled and an Android payment app returns
-     * "true" from the IS_READY_TO_PAY intent service, then PaymentRequest API returns "true" from
-     * the canMakePayment() call.
+     * When an Android payment app returns "true" from the IS_READY_TO_PAY intent service, then
+     * PaymentRequest API returns "true" from the canMakePayment() call.
      */
     @Test
     @MediumTest
-    @DisableFeatures(PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)
-    public void testCanMakePaymentWithAndroidPaymentAppReadyToPayAndShowProhibited()
-            throws Exception {
-        mMockPaymentAppInstaller.addApp(createPaymentApp()).setReadyToPay(true).install();
-        assertEquals("\"true\"", getCanMakePaymentResult());
-        assertEquals("\"true\"", getHasEnrolledInstrumentResult());
-        assertEquals("\"success\"", getShowResult());
-    }
-
-    /**
-     * When ALLOW_SHOW_WITHOUT_READY_TO_PAY feature is disabled and an Android payment app returns
-     * "false" from the IS_READY_TO_PAY intent service, then PaymentRequest API returns "false" from
-     * the canMakePayment() call.
-     */
-    @Test
-    @MediumTest
-    @DisableFeatures(PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)
-    public void testCannotMakePaymentWithAndroidPaymentAppNotReadyToPayAndShowProhibited()
-            throws Exception {
-        mMockPaymentAppInstaller.addApp(createPaymentApp()).setReadyToPay(false).install();
-        assertEquals("\"false\"", getCanMakePaymentResult());
-        assertEquals("\"false\"", getHasEnrolledInstrumentResult());
-        assertEquals("\"NotSupportedError\"", getShowResult());
-    }
-
-    /**
-     * When ALLOW_SHOW_WITHOUT_READY_TO_PAY feature is enabled and an Android payment app returns
-     * "true" from the IS_READY_TO_PAY intent service, then PaymentRequest API returns "true" from
-     * the canMakePayment() call.
-     */
-    @Test
-    @MediumTest
-    @EnableFeatures(PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)
     public void testCanMakePaymentWithAndroidPaymentAppReadyToPayAndShowAllowed() throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).setReadyToPay(true).install();
         assertEquals("\"true\"", getCanMakePaymentResult());
@@ -126,13 +72,11 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
     }
 
     /**
-     * When ALLOW_SHOW_WITHOUT_READY_TO_PAY feature is enabled and an Android payment app returns
-     * "false" from the IS_READY_TO_PAY intent service, then PaymentRequest API returns "true" from
-     * the canMakePayment() call.
+     * When an Android payment app returns "false" from the IS_READY_TO_PAY intent service, then
+     * PaymentRequest API should still return "true" from the canMakePayment() call.
      */
     @Test
     @MediumTest
-    @EnableFeatures(PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)
     public void testCanMakePaymentWithAndroidPaymentAppNotReadyToPayAndShowAllowed()
             throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).setReadyToPay(false).install();

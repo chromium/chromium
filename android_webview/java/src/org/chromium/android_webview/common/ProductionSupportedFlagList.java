@@ -958,10 +958,6 @@ public final class ProductionSupportedFlagList {
                 "Omit the deprecated parameters from the intents that are sent to "
                         + "Android payment apps in the PaymentRequest API."),
         Flag.baseFeature(
-                PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY,
-                "Make Android payment apps available to show even if their"
-                        + " \"is ready to pay\" query returns false."),
-        Flag.baseFeature(
                 GpuFeatures.WEB_GPU_ENABLE_RANGE_ANALYSIS_FOR_ROBUSTNESS,
                 "Use range analysis to remove unnecessary bounds checks"),
         Flag.baseFeature("RunBeforeUnloadClosureOnStackInvestigation"),
