@@ -122,18 +122,16 @@ std::pair<bool, bool> CheckJustificationOpportunity(
   return {expand_before, true};
 }
 
-std::pair<bool, bool> CheckJustificationOpportunity8(
+std::pair<bool, bool> JustificationContext::CheckOpportunity8(
     TextJustify method,
-    LChar ch,
-    JustificationContext& context) {
-  return CheckJustificationOpportunity<LChar>(method, ch, context);
+    LChar ch) {
+  return CheckJustificationOpportunity<LChar>(method, ch, *this);
 }
 
-std::pair<bool, bool> CheckJustificationOpportunity16(
+std::pair<bool, bool> JustificationContext::CheckOpportunity16(
     TextJustify method,
-    UChar32 ch,
-    JustificationContext& context) {
-  return CheckJustificationOpportunity<UChar>(method, ch, context);
+    UChar32 ch) {
+  return CheckJustificationOpportunity<UChar>(method, ch, *this);
 }
 
 }  // namespace blink

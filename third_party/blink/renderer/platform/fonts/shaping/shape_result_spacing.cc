@@ -164,13 +164,12 @@ ShapeResultSpacing::ComputeExpansion(TextJustify method,
   bool opportunity_before = false;
   bool opportunity_after = false;
   if (text_.Is8Bit()) {
-    auto pair = CheckJustificationOpportunity8(method, text_[index],
-                                               justification_context_);
+    auto pair = justification_context_.CheckOpportunity8(method, text_[index]);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   } else {
-    auto pair = CheckJustificationOpportunity16(
-        method, CodePointAt(text_.Span16(), index), justification_context_);
+    auto pair = justification_context_.CheckOpportunity16(
+        method, CodePointAt(text_.Span16(), index));
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   }
@@ -186,7 +185,7 @@ ShapeResultSpacing::ComputeExpansion(TextJustify method, UChar ch) {
   DCHECK(!normalize_space_);
   DCHECK(!allow_tabs_);
   auto [opportunity_before, opportunity_after] =
-      CheckJustificationOpportunity16(method, ch, justification_context_);
+      justification_context_.CheckOpportunity16(method, ch);
   return FinalizeComputeExpansion(opportunity_before, opportunity_after);
 }
 
