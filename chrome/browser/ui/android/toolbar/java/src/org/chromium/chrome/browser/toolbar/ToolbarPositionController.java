@@ -151,6 +151,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final SharedPreferences mSharedPreferences;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
     private int mTopInset;
+    private boolean mIsFirstPositionChange;
 
     private final SettableNonNullObservableSupplier<Integer> mCurrentPosition;
     private final NonNullObservableSupplier<Integer> mKeyboardHeightSupplier;
@@ -232,6 +233,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mCurrentPosition.set(mBrowserControlsSizer.getControlsPosition());
         mProfileSupplier = profileSupplier;
 
+        mIsFirstPositionChange = true;
         mHairlineHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
 
@@ -518,7 +520,15 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         } else {
             // When the toolbar is at bottom, it shouldn't add any top inset. Calling
             // onToEdgeChange() immediately to remove the top padding of Toolbar if exists.
-            onToEdgeChange(/* systemTopInset= */ 0, /* consumeTopInset= */ false);
+            boolean isLayoutChanged =
+                    onToEdgeChange(/* systemTopInset= */ 0, /* consumeTopInset= */ false);
+            // During toolbar swiping, it is possible that the toolbar's layout has been forced to
+            // update before its position is moved to the bottom. In this case, skips calling
+            // maybeForceLayoutUpdateAndCapture() again.
+            if (isLayoutChanged) {
+                maybeForceLayoutUpdateAndCapture();
+            }
+
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
             mLayerVisibility = LayerVisibility.VISIBLE;
             CoordinatorLayout.LayoutParams progressBarLayoutParams =
@@ -581,6 +591,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (newControlsPosition == ControlsPosition.BOTTOM && mProfileSupplier.get() != null) {
             UserPrefs.get(mProfileSupplier.get()).setBoolean(BOTTOM_OMNIBOX_EVER_USED_PREF, true);
         }
+
+        mIsFirstPositionChange = false;
     }
 
     @VisibleForTesting
@@ -779,16 +791,31 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *     always bigger than 0.
      * @param consumeTopInset Determines if the toolbar should utilize this top inset, extending
      *     across the full height of both the status bar and itself.
+     * @return Whether the layout is changed.
      */
     @VisibleForTesting
-    void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+    boolean onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
         // Exits early if the top padding doesn't need adjusting.
         if (NtpCustomizationUtils.shouldSkipTopInsetsChange(
                 mTopInset, systemTopInset, consumeTopInset)) {
-            return;
+            return false;
         }
 
         mTopInset = consumeTopInset ? systemTopInset : 0;
         mToolbarLayout.onToEdgeChange(mTopInset);
+        return true;
+    }
+
+    /**
+     * Forces layout update and capture a new toolbar bitmap when toolbar position changes. Skips
+     * the first time when the toolbar position is set.
+     */
+    private void maybeForceLayoutUpdateAndCapture() {
+        if (mIsFirstPositionChange) {
+            // Skips forcing capture the first time when toolbar position is set.
+            return;
+        }
+
+        mControlContainer.doSynchronousLayoutAndCapture();
     }
 }
