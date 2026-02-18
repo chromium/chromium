@@ -5,8 +5,6 @@
 #ifndef ASH_CONSTANTS_URL_CONSTANTS_H_
 #define ASH_CONSTANTS_URL_CONSTANTS_H_
 
-#include "base/component_export.h"
-
 // Contains constants for known URLs for ash components. URL constants for
 // ash-chrome should be in chrome/common/url_contants.h.
 //
@@ -20,30 +18,32 @@ inline constexpr char kGooglePrivacyPolicyUrl[] =
     "https://policies.google.com/privacy";
 
 // The URL for the "Learn more" link for Android Messages.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kAndroidMessagesLearnMoreURL[];
+inline constexpr char kAndroidMessagesLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=multi_device_messages";
 
 // "Learn more" URL for APN settings.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char16_t kApnSettingsLearnMoreUrl[];
+inline constexpr char16_t kApnSettingsLearnMoreUrl[] =
+    u"https://support.google.com/chromebook?p=apn";
 
 // "Learn more" URL for Help Me Read and Help Me Write feature on ChromeOS.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kHelpMeReadWriteLearnMoreURL[];
+inline constexpr char kHelpMeReadWriteLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
 // "Learn more" URL for Lobster feature on ChromeOS.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kLobsterLearnMoreURL[];
+inline constexpr char kLobsterLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=dugong2";
 
 // "Learn more" URL for Scanner feature on ChromeOS.
 inline constexpr char kScannerLearnMoreUrl[] =
     "https://support.google.com/chromebook?p=dugong3";
 
 // The URL for additional help that is given when Linux export/import fails.
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLinuxExportImportHelpURL[];
+inline constexpr char kLinuxExportImportHelpURL[] =
+    "https://support.google.com/chromebook?p=linux_backup_restore";
 
 // The URL for the "Learn more" link in the connected devices.
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMultiDeviceLearnMoreURL[];
+inline constexpr char kMultiDeviceLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=multi_device";
 
 inline constexpr char kSafetyPixelbookURL[] = "https://g.co/Pixelbook/legal";
 inline constexpr char kSafetyPixelSlateURL[] = "https://g.co/PixelSlate/legal";

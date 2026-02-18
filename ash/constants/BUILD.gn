@@ -31,7 +31,6 @@ component("constants") {
     "personalization_entry_point.h",
     "quick_settings_catalogs.h",
     "tray_background_view_catalog.h",
-    "url_constants.cc",
     "url_constants.h",
     "web_app_id_constants.h",
     "webui_url_constants.h",
