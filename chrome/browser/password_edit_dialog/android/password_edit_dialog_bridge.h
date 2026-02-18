@@ -103,15 +103,15 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   // |username| and
   // |password| which are going to be saved.
   void OnDialogAccepted(JNIEnv* env,
-                        std::u16string& username,
-                        std::u16string& password);
+                        const std::u16string& username,
+                        const std::u16string& password);
 
   // Called from Java when the modal dialog is dismissed.
   void OnDialogDismissed(JNIEnv* env, bool dialogAccepted);
 
   // Called from Java to identify whether the credential to be saved/updated
   // will be saved/updated in the account storage.
-  bool IsUsingAccountStorage(JNIEnv* env, std::u16string& username);
+  bool IsUsingAccountStorage(JNIEnv* env, const std::u16string& username);
 
  private:
   PasswordEditDialogBridge(

@@ -204,7 +204,7 @@ class TabAndroid : public tabs::TabInterface,
       int32_t width,
       int32_t height);
   void SetActiveNavigationEntryTitleForUrl(const std::string& jurl,
-                                           std::u16string& jtitle);
+                                           const std::u16string& jtitle);
   void LoadOriginalImage();
   void OnShow();
   void NotifyPinnedStateChanged(bool is_pinned);

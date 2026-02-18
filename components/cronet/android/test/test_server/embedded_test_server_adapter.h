@@ -43,7 +43,7 @@ class EmbeddedTestServerAdapter {
   // This will run the server in default mode (HTTP/1 with no SSL)
   bool Start(JNIEnv* env);
 
-  void EnableConnectProxy(JNIEnv* env, std::vector<std::string>& urls);
+  void EnableConnectProxy(JNIEnv* env, const std::vector<std::string>& urls);
 
   // Returns port number of the server.
   int GetPort(JNIEnv* env);

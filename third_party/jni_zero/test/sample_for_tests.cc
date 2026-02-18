@@ -53,13 +53,13 @@ CPPClass::~CPPClass() = default;
 // static
 void CPPClass::Destroy(JNIEnv* env,
                        const JavaRef<jobject>& caller,
-                       std::vector<uint8_t>& bytes) {
+                       const std::vector<uint8_t>& bytes) {
   delete this;
 }
 
 jint CPPClass::Method(JNIEnv* env,
                       const JavaRef<jobject>& caller,
-                      std::vector<std::string>& strArray) {
+                      const std::vector<std::string>& strArray) {
   return 0;
 }
 
@@ -98,7 +98,8 @@ static jlong JNI_SampleForTests_Init(
     const JavaRef<jstring>& param,
     jni_zero::ByteArrayView&& bytes,
     CPPClass* converted_type,
-    std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& non_converted_array) {
+    const std::vector<jni_zero::ScopedJavaLocalRef<jobject>>&
+        non_converted_array) {
   return static_cast<jlong>(bytes.size());
 }
 
@@ -116,7 +117,8 @@ static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
 }
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
-JNI_SampleForTests_ListTest2(JNIEnv* env, std::vector<std::string>& items) {
+JNI_SampleForTests_ListTest2(JNIEnv* env,
+                             const std::vector<std::string>& items) {
   return Java_SampleForTests_listTest1(env, items);
 }
 
@@ -156,19 +158,19 @@ static ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(
 
 static std::map<std::string, std::string> JNI_SampleForTests_MapTest2(
     JNIEnv* env,
-    std::map<std::string, std::string>& arg0) {
+    const std::map<std::string, std::string>& arg0) {
   return Java_SampleForTests_mapTest1(env, arg0);
 }
 
 static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
     JNIEnv* env,
-    std::vector<uint8_t>& b,
-    std::vector<uint16_t>& c,
-    std::vector<int16_t>& s,
-    std::vector<int32_t>& i,
-    std::vector<int64_t>& l,
-    std::vector<float>& f,
-    std::vector<double>& d) {
+    const std::vector<uint8_t>& b,
+    const std::vector<uint16_t>& c,
+    const std::vector<int16_t>& s,
+    const std::vector<int32_t>& i,
+    const std::vector<int64_t>& l,
+    const std::vector<float>& f,
+    const std::vector<double>& d) {
   return Java_SampleForTests_primitiveArrays(env, b, c, s, i, l, f, d);
 }
 
@@ -215,7 +217,7 @@ static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {
 static std::vector<int> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     JNIEnv* env,
     int zint,
-    std::vector<int>& ints,
+    const std::vector<int>& ints,
     jlong zlong,
     const JavaRef<jlongArray>& longs,
     jshort zshort,
@@ -242,9 +244,9 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const JavaRef<jstring>& string,
     const JavaRef<jobjectArray>& strings,
     const std::string& convertedString,
-    std::vector<std::string>& convertedStrings,
-    std::optional<std::string>& optionalString,
-    std::optional<FuncType> optionalFunc,
+    const std::vector<std::string>& convertedStrings,
+    const std::optional<std::string>& optionalString,
+    const std::optional<FuncType> optionalFunc,
     const JavaRef<jobject>& tStruct,
     const JavaRef<jobjectArray>& structs,
     const JavaRef<jobject>& obj,
@@ -253,7 +255,7 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const JavaRef<jobject>& nestedInterface,
     const JavaRef<jobject>& view,
     const JavaRef<jobject>& context,
-    std::vector<jni_zero::tests::CPPClass>& convertedObjs) {}
+    const std::vector<jni_zero::tests::CPPClass>& convertedObjs) {}
 
 static ScopedJavaLocalRef<jthrowable>
 JNI_SampleForAnnotationProcessor_ReturnThrowable(JNIEnv* env) {

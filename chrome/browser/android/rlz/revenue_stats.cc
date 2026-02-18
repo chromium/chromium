@@ -32,7 +32,7 @@ static void JNI_RevenueStats_SetCustomTabSearchClient(
 }
 
 static void JNI_RevenueStats_SetRlzParameterValue(JNIEnv* env,
-                                                  std::u16string& rlz) {
+                                                  const std::u16string& rlz) {
   SearchTermsDataAndroid::GetRlzParameterValue() = rlz;
 }
 

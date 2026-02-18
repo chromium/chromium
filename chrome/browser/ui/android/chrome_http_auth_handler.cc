@@ -88,8 +88,8 @@ void ChromeHttpAuthHandler::OnLoginModelDestroying() {
 }
 
 void ChromeHttpAuthHandler::SetAuth(JNIEnv* env,
-                                    std::u16string& username,
-                                    std::u16string& password) {
+                                    const std::u16string& username,
+                                    const std::u16string& password) {
   // SetAuthSync can result in destruction of `this`. We post task to make
   // destruction asynchronous and avoid re-entrancy.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

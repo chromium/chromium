@@ -57,7 +57,7 @@ static void JNI_AutofillTestHelper_AddServerCreditCard(
 static void JNI_AutofillTestHelper_AddServerCreditCardWithAdditionalFields(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jcard,
-    std::u16string& nickname,
+    const std::u16string& nickname,
     int32_t jcard_issuer) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(jcard, env,

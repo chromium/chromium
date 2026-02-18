@@ -34,7 +34,7 @@ void ClearRevokedPermissionsReviewList(Profile* profile);
 
 void RestoreRevokedPermissionsReviewList(
     Profile* profile,
-    std::vector<PermissionsData>& permissions_data_list);
+    const std::vector<PermissionsData>& permissions_data_list);
 
 namespace jni_zero {
 

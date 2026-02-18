@@ -201,7 +201,7 @@ void PlayerCompositorDelegateAndroid::CompositeResponseFramesToVectors(
 
 int32_t PlayerCompositorDelegateAndroid::RequestBitmap(
     JNIEnv* env,
-    std::optional<base::UnguessableToken>& frame_guid,
+    const std::optional<base::UnguessableToken>& frame_guid,
     const JavaRef<jobject>& j_bitmap_callback,
     base::OnceClosure&& error_callback,
     float j_scale_factor,
@@ -279,7 +279,7 @@ void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
 
 ScopedJavaLocalRef<jstring> PlayerCompositorDelegateAndroid::OnClick(
     JNIEnv* env,
-    std::optional<base::UnguessableToken>& frame_guid,
+    const std::optional<base::UnguessableToken>& frame_guid,
     int32_t j_x,
     int32_t j_y) {
   if (!frame_guid.has_value()) {

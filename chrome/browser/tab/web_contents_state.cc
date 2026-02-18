@@ -543,11 +543,11 @@ static ScopedJavaLocalRef<jobject>
 JNI_WebContentsState_CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
     Profile* profile,
-    std::optional<std::u16string>& title,
+    const std::optional<std::u16string>& title,
     const std::string& url,
-    std::optional<std::string>& referrer_url,
+    const std::optional<std::string>& referrer_url,
     int referrer_policy,
-    std::optional<url::Origin>& initiator_origin) {
+    const std::optional<url::Origin>& initiator_origin) {
   return WebContentsState::CreateSingleNavigationStateAsByteBuffer(
       env, profile, title, url, referrer_url, referrer_policy,
       initiator_origin);
@@ -559,11 +559,11 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     const JavaRef<jobject>& state,
     int saved_state_version,
     bool clobber_current_entry,
-    std::optional<std::u16string>& title,
+    const std::optional<std::u16string>& title,
     const std::string& url,
-    std::optional<std::string>& referrer_url,
+    const std::optional<std::string>& referrer_url,
     int referrer_policy,
-    std::optional<url::Origin>& initiator_origin) {
+    const std::optional<url::Origin>& initiator_origin) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 

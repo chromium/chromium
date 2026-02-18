@@ -293,12 +293,12 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
     const base::Token& tab_group_id_token,
-    std::u16string& serialized_saved_tab_group_id,
-    std::u16string& title,
+    const std::u16string& serialized_saved_tab_group_id,
+    const std::u16string& title,
     int32_t jcolor,
-    std::vector<TabAndroid*>& tabs_android,
+    const std::vector<TabAndroid*>& tabs_android,
     const JavaRef<jobjectArray>& jbyte_buffers,
-    std::vector<int32_t>& saved_state_versions) {
+    const std::vector<int32_t>& saved_state_versions) {
   tab_groups::TabGroupId tab_group_id =
       tab_groups::TabGroupId::FromRawToken(tab_group_id_token);
   std::optional<base::Uuid> saved_tab_group_id =
@@ -319,15 +319,15 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
-    std::vector<std::optional<base::Token>>& tab_group_token_ids,
-    std::vector<std::u16string>& serialized_saved_tab_group_ids,
-    std::vector<std::u16string>& group_titles,
-    std::vector<int>& group_colors,
-    std::vector<std::optional<base::Token>>&
+    const std::vector<std::optional<base::Token>>& tab_group_token_ids,
+    const std::vector<std::u16string>& serialized_saved_tab_group_ids,
+    const std::vector<std::u16string>& group_titles,
+    const std::vector<int>& group_colors,
+    const std::vector<std::optional<base::Token>>&
         per_tab_optional_tab_group_token_ids,
-    std::vector<TabAndroid*>& tabs,
+    const std::vector<TabAndroid*>& tabs,
     const JavaRef<jobjectArray>& jbyte_buffers,
-    std::vector<int32_t>& saved_state_versions) {
+    const std::vector<int32_t>& saved_state_versions) {
   std::vector<std::optional<tab_groups::TabGroupId>> tab_group_ids =
       TokensToTabGroupIds(tab_group_token_ids);
   std::vector<std::optional<base::Uuid>> saved_tab_group_ids =

@@ -378,7 +378,7 @@ EmbeddedTestServerAdapter::~EmbeddedTestServerAdapter() = default;
 
 void EmbeddedTestServerAdapter::EnableConnectProxy(
     JNIEnv* env,
-    std::vector<std::string>& urls) {
+    const std::vector<std::string>& urls) {
   std::vector<net::HostPortPair> destinations;
   for (auto& url : urls) {
     destinations.push_back(net::HostPortPair::FromURL(GURL(url)));

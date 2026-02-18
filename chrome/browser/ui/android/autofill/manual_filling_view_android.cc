@@ -276,7 +276,7 @@ void ManualFillingViewAndroid::OnFillingTriggered(
 void ManualFillingViewAndroid::OnPasskeySelected(
     JNIEnv* env,
     int32_t tab_type,
-    std::vector<uint8_t>& passkey) {
+    const std::vector<uint8_t>& passkey) {
   controller_->OnPasskeySelected(
       static_cast<autofill::AccessoryTabType>(tab_type), passkey);
 }
@@ -328,8 +328,8 @@ ManualFillingViewAndroid::GetOrCreateJavaObject() {
 static void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    std::vector<std::string>& usernames,
-    std::vector<std::string>& passwords,
+    const std::vector<std::string>& usernames,
+    const std::vector<std::string>& passwords,
     bool j_blocklisted) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);

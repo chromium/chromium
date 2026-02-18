@@ -81,8 +81,8 @@ void AllPasswordsBottomSheetViewImpl::Show(
 
 void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(
     JNIEnv* env,
-    std::u16string& username,
-    std::u16string& password,
+    const std::u16string& username,
+    const std::u16string& password,
     bool requests_to_fill_password) {
   controller_->OnCredentialSelected(
       username, password,

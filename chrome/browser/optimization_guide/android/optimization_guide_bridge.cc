@@ -251,7 +251,7 @@ OptimizationGuideBridge::CanApplyOptimizationSync(JNIEnv* env,
 
 void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     JNIEnv* env,
-    std::vector<GURL>& urls,
+    const std::vector<GURL>& urls,
     const JavaRef<jintArray>& optimization_types,
     int32_t request_context,
     const JavaRef<jobject>& java_callback,

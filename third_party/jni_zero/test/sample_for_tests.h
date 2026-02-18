@@ -49,11 +49,11 @@ class CPPClass {
 
   void Destroy(JNIEnv* env,
                const jni_zero::JavaRef<jobject>& caller,
-               std::vector<uint8_t>& bytes);
+               const std::vector<uint8_t>& bytes);
 
   jint Method(JNIEnv* env,
               const jni_zero::JavaRef<jobject>& caller,
-              std::vector<std::string>& strings);
+              const std::vector<std::string>& strings);
 
   void AddStructB(JNIEnv* env,
                   const jni_zero::JavaRef<jobject>& caller,

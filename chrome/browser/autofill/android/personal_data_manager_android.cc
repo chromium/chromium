@@ -361,7 +361,7 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardByGUID(
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardForNumber(
     JNIEnv* env,
-    std::u16string& card_number) {
+    const std::u16string& card_number) {
   // A local card with empty GUID.
   CreditCard card("", "");
   card.SetNumber(card_number);
@@ -671,7 +671,7 @@ std::string PersonalDataManagerAndroid::AddOrUpdateLocalIban(
 }
 
 bool PersonalDataManagerAndroid::IsValidIban(JNIEnv* env,
-                                             std::u16string& iban_value) {
+                                             const std::u16string& iban_value) {
   return Iban::IsValid(iban_value);
 }
 
@@ -708,7 +708,7 @@ bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
 // is true.
 static std::string JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
     JNIEnv* env,
-    std::u16string& card_number,
+    const std::u16string& card_number,
     const bool jempty_if_invalid) {
   if (jempty_if_invalid && !IsValidCreditCardNumber(card_number)) {
     return "";
@@ -721,7 +721,7 @@ static std::string JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
 // the application locale, or an empty string.
 static std::string JNI_PersonalDataManager_ToCountryCode(
     JNIEnv* env,
-    std::u16string& country_name) {
+    const std::u16string& country_name) {
   return CountryNames::GetInstance()->GetCountryCode(country_name);
 }
 

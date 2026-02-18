@@ -350,7 +350,7 @@ JNI_TranslateBridge_GetUserAcceptLanguages(JNIEnv* env,
 static void JNI_TranslateBridge_SetLanguageOrder(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    std::vector<std::string>& order) {
+    const std::vector<std::string>& order) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
   translate_prefs->SetLanguageOrder(order);

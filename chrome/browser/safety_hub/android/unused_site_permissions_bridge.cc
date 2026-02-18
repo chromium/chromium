@@ -116,7 +116,7 @@ void ClearRevokedPermissionsReviewList(Profile* profile) {
 
 void RestoreRevokedPermissionsReviewList(
     Profile* profile,
-    std::vector<PermissionsData>& permissions_data_list) {
+    const std::vector<PermissionsData>& permissions_data_list) {
   RevokedPermissionsService* service =
       RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
@@ -124,7 +124,7 @@ void RestoreRevokedPermissionsReviewList(
 }
 
 std::vector<std::u16string> ContentSettingsTypeToString(
-    std::vector<int32_t>& content_settings_type_list) {
+    const std::vector<int32_t>& content_settings_type_list) {
   std::vector<std::u16string> content_settings_string_list;
   for (int32_t content_settings_type : content_settings_type_list) {
     content_settings_string_list.push_back(PageInfoUI::PermissionTypeToUIString(
@@ -157,13 +157,13 @@ static void JNI_UnusedSitePermissionsBridge_ClearRevokedPermissionsReviewList(
 
 static void JNI_UnusedSitePermissionsBridge_RestoreRevokedPermissionsReviewList(
     Profile* profile,
-    std::vector<PermissionsData>& permissions_data_list) {
+    const std::vector<PermissionsData>& permissions_data_list) {
   RestoreRevokedPermissionsReviewList(profile, permissions_data_list);
 }
 
 static std::vector<std::u16string>
 JNI_UnusedSitePermissionsBridge_ContentSettingsTypeToString(
-    std::vector<std::int32_t>& content_settings_type_list) {
+    const std::vector<std::int32_t>& content_settings_type_list) {
   return ContentSettingsTypeToString(content_settings_type_list);
 }
 

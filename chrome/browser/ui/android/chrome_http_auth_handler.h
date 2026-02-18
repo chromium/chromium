@@ -58,8 +58,8 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
 
   // Submits the username and password to the observer.
   void SetAuth(JNIEnv* env,
-               std::u16string& username,
-               std::u16string& password);
+               const std::u16string& username,
+               const std::u16string& password);
 
   // Cancels the authentication attempt of the observer.
   void CancelAuth(JNIEnv* env);

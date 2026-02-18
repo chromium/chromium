@@ -55,7 +55,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       const base::android::JavaRef<jobject>& j_user_info_field);
   void OnPasskeySelected(JNIEnv* env,
                          int32_t tab_type,
-                         std::vector<uint8_t>& passkey);
+                         const std::vector<uint8_t>& passkey);
   void OnOptionSelected(JNIEnv* env, int32_t selected_action);
   void OnToggleChanged(JNIEnv* env, int32_t selected_action, bool enabled);
   void RequestAccessorySheet(JNIEnv* env, int32_t tab_type);

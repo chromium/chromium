@@ -45,8 +45,8 @@ void HttpClientBridge::SendNetworkRequest(
     JNIEnv* env,
     GURL& gurl,
     const std::string& request_type,
-    std::vector<uint8_t>& request_body,
-    std::map<std::string, std::string> headers,
+    const std::vector<uint8_t>& request_body,
+    const std::map<std::string, std::string>& headers,
     int32_t j_network_annotation_hashcode,
     const base::android::JavaRef<jobject>& j_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -59,8 +59,10 @@ void HttpClientBridge::SendNetworkRequest(
       &HttpClientBridge::OnResult, weak_ptr_factory_.GetWeakPtr(),
       ScopedJavaGlobalRef<jobject>(env, j_callback));
 
-  http_client_->Send(gurl, request_type, std::move(request_body),
-                     std::move(headers), tag, std::move(callback));
+  std::vector<uint8_t> request_body_copy(request_body);
+  std::map<std::string, std::string> headers_copy(headers);
+  http_client_->Send(gurl, request_type, std::move(request_body_copy),
+                     std::move(headers_copy), tag, std::move(callback));
 }
 
 void HttpClientBridge::OnResult(

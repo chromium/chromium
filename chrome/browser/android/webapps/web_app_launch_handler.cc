@@ -18,7 +18,7 @@ static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
     bool start_new_navigation,
     const std::string& start_url,
     const std::string& package_name,
-    std::vector<std::string>& file_uris) {
+    const std::vector<std::string>& file_uris) {
   webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = start_new_navigation;
   launch_params.app_id = package_name;

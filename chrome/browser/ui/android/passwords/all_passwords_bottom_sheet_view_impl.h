@@ -38,8 +38,8 @@ class AllPasswordsBottomSheetViewImpl : public AllPasswordsBottomSheetView {
   // Invoked in case the user chooses an entry from the credential list
   // presented to them.
   void OnCredentialSelected(JNIEnv* env,
-                            std::u16string& username,
-                            std::u16string& password,
+                            const std::u16string& username,
+                            const std::u16string& password,
                             bool requests_to_fill_password);
 
   // Called from Java bridge when user dismisses the BottomSheet.

@@ -141,7 +141,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // used for cards that are not saved.
   base::android::ScopedJavaLocalRef<jobject> GetCreditCardForNumber(
       JNIEnv* env,
-      std::u16string& jcard_number);
+      const std::u16string& jcard_number);
 
   // Adds or modifies a local credit card.  If `guid` is an empty string, we
   // are creating a new card. Else we are updating an existing card. Always
@@ -210,7 +210,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaRef<jobject>& jiban);
 
   // Checks if `jiban_value` is a valid IBAN.
-  static bool IsValidIban(JNIEnv* env, std::u16string& jiban_value);
+  static bool IsValidIban(JNIEnv* env, const std::u16string& jiban_value);
 
   // Returns whether the `Add IBAN` button should be shown on the payment
   // methods settings page.

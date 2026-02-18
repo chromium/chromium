@@ -39,7 +39,7 @@ static bool JNI_OriginMatcher_Matches(JNIEnv* env,
 static std::vector<std::string> JNI_OriginMatcher_SetRuleList(
     JNIEnv* env,
     int64_t ptr,
-    std::vector<std::string>& rules) {
+    const std::vector<std::string>& rules) {
   auto* matcher = FromPtr(ptr);
 
   OriginMatcher new_rules_matcher;
