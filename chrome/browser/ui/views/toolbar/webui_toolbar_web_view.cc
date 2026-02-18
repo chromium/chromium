@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
@@ -141,7 +142,6 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_contents->SetIgnoreZoomGestures(true);
-  web_view->SetID(VIEW_ID_RELOAD_BUTTON);
 
   // We must save the pointer to the WebView so we can load the URL after the
   // view is added to a widget.
@@ -375,6 +375,10 @@ WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
   }
   auto* controller = web_ui->GetController();
   return controller ? controller->GetAs<WebUIToolbarUI>() : nullptr;
+}
+
+void WebUIToolbarWebView::PermitLaunchUrl() {
+  ExternalProtocolHandler::PermitLaunchUrl();
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)

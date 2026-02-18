@@ -135,6 +135,17 @@ void BrowserControlsService::ReloadFromClick(
     bool bypass_cache,
     const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
         click_flags) {
+  // This is called in order to signal that external protocol dialogs are
+  // allowed to show due to a user action, which are likely to happen on the
+  // next page load after the reload button is clicked.
+  // Ideally, the browser UI's event system would notify ExternalProtocolHandler
+  // that a user action occurred and we are OK to open the dialog, but for some
+  // reason that isn't happening every time the reload button is clicked. See
+  // http://crbug.com/1206456
+  if (delegate_) {
+    delegate_->PermitLaunchUrl();
+  }
+
   command_updater_->ExecuteCommandWithDisposition(
       bypass_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
       ui::DispositionFromEventFlags(ToUIEventFlags(click_flags)));
@@ -269,6 +280,11 @@ void BrowserControlsService::OnTouchUiChanged() {
   if (observer_) {
     observer_->OnLayoutChanged(GetLayoutConstantsStruct());
   }
+}
+
+void BrowserControlsService::SetDelegate(
+    BrowserControlsServiceDelegate* delegate) {
+  delegate_ = delegate;
 }
 
 void BrowserControlsService::OnMeasureResultAndClearMark(

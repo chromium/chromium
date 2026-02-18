@@ -148,8 +148,10 @@ void WebUIToolbarUI::OnContextMenuStateChanged(
 
 void WebUIToolbarUI::SetDelegate(
     BrowserControlsService::BrowserControlsServiceDelegate* delegate) {
-  DCHECK(!browser_controls_service_);
   delegate_ = delegate;
+  if (browser_controls_service_) {
+    browser_controls_service_->SetDelegate(delegate);
+  }
 }
 
 BrowserControlsService* WebUIToolbarUI::browser_controls_service_for_testing() {

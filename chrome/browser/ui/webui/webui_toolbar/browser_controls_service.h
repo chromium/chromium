@@ -38,6 +38,7 @@ class BrowserControlsService
         gfx::Point viewport_coordinate_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
     virtual void OnPageInitialized() = 0;
+    virtual void PermitLaunchUrl() = 0;
   };
 
   BrowserControlsService(
@@ -60,6 +61,8 @@ class BrowserControlsService
   void OnContextMenuStateChanged(
       browser_controls_api::mojom::ContextMenuType menu_type,
       browser_controls_api::mojom::ContextMenuState state);
+
+  void SetDelegate(BrowserControlsServiceDelegate* delegate);
 
   // browser_controls_api::mojom::BrowserControlsService:
   void AddObserver(

@@ -67,6 +67,7 @@ class MockWebWebUIToolbarDelegate
                ui::mojom::MenuSourceType),
               (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
+  MOCK_METHOD(void, PermitLaunchUrl, (), (override));
 };
 
 }  // namespace
@@ -170,6 +171,7 @@ TEST_F(BrowserControlsServiceReloadTest, ReloadByMouseRelease) {
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(
                   IDC_RELOAD, WindowOpenDisposition::CURRENT_TAB, testing::_));
+  EXPECT_CALL(delegate(), PermitLaunchUrl()).Times(1);
 
   const base::TimeDelta duration = base::Milliseconds(10);
   ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);

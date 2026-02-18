@@ -46,6 +46,7 @@ class WebUIToolbarWebView
                          gfx::Point viewport_coordinate_css_pixels,
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
+  void PermitLaunchUrl() override;
 
   // views::View:
   void AddedToWidget() override;
