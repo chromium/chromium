@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -194,12 +195,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest,
           }),
 
           // Close the browser so Picker is the only thing (minimized).
-          Do([this]() {
-            ui_test_utils::BrowserDestroyedObserver observer(browser());
-            chrome::CloseAllBrowsers();
-            observer.Wait();
-            EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-          }),
+          Do([this]() { browser()->GetWindow()->Close(); }),
+          WaitForHide(kBrowserViewElementId),
+          Do([]() { EXPECT_EQ(0u, chrome::GetTotalBrowserCount()); }),
 
           // Simulate Reopen.
           // This should call ProfilePicker::Show() which unminimizes and
