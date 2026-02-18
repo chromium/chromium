@@ -33,9 +33,13 @@ class FileConductor {
   bool DeleteEntry(const base::FilePath& path);
 
   // Moves `source` to `destination` non-destructively (fails if `destination`
-  // exists).
+  // exists). Returns true if `source` is fully moved to `destination` (i.e.,
+  // `source` no longer exists) or if `lenient_deletion` is true and some or all
+  // of `source` could not be deleted following moving/copying it to
+  // `destination`.
   bool MoveEntry(const base::FilePath& source,
-                 const base::FilePath& destination);
+                 const base::FilePath& destination,
+                 bool lenient_deletion = false);
 
   // Makes a best-effort attempt to reverse all operations performed.
   void Undo();
@@ -82,8 +86,12 @@ class FileConductor {
   //    `source.
   // 3) If `source` does not name a directory, it is copied to `destination` and
   //    deleted.
+  // Returns `kNoSource` if `source` does not exist; `kSucceeded` if `source`
+  // was entirely moved to `destination` or if `lenient_deletion` is true and
+  // some or all of `source` could not be deleted; or `kFailed` otherwise.
   MoveResult RobustMove(const base::FilePath& source,
                         const base::FilePath& destination,
+                        bool lenient_deletion,
                         bool cleanup);
 
   // Moves `source` to `destination` using a copy-and-delete approach. If
@@ -91,6 +99,7 @@ class FileConductor {
   // at destruction.
   bool CopyAndDelete(const base::FilePath& source,
                      const base::FilePath& destination,
+                     bool lenient_deletion,
                      bool cleanup);
 
   // Runs `operation` on each file and directory in `source`; providing it with

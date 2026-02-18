@@ -11,14 +11,14 @@ MoveTreeWorkItem::~MoveTreeWorkItem() = default;
 MoveTreeWorkItem::MoveTreeWorkItem(const base::FilePath& source_path,
                                    const base::FilePath& dest_path,
                                    const base::FilePath& temp_path,
-                                   MoveTreeOption duplicate_option)
+                                   MoveTreeOptions options)
     : source_path_(source_path),
       dest_path_(dest_path),
       file_conductor_(temp_path),
-      duplicate_option_(duplicate_option) {}
+      options_(options) {}
 
 bool MoveTreeWorkItem::DoImpl() {
-  if (duplicate_option_ == CHECK_DUPLICATES &&
+  if (options_.check_for_duplicates &&
       installer::IsIdenticalFileHierarchy(source_path_, dest_path_)) {
     // `dest_path_` is identical to `source_path_`, so satisfy the move by
     // simply deleting `source_path_`.
@@ -28,7 +28,8 @@ bool MoveTreeWorkItem::DoImpl() {
   // Otherwise, clear `dest_path_` (by moving it aside) and then put
   // `source_path_` into the desired location.
   return file_conductor_.DeleteEntry(dest_path_) &&
-         file_conductor_.MoveEntry(source_path_, dest_path_);
+         file_conductor_.MoveEntry(source_path_, dest_path_,
+                                   options_.lenient_deletion);
 }
 
 void MoveTreeWorkItem::RollbackImpl() {

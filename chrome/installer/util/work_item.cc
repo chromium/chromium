@@ -76,9 +76,8 @@ MoveTreeWorkItem* WorkItem::CreateMoveTreeWorkItem(
     const base::FilePath& source_path,
     const base::FilePath& dest_path,
     const base::FilePath& temp_path,
-    MoveTreeOption duplicate_option) {
-  return new MoveTreeWorkItem(source_path, dest_path, temp_path,
-                              duplicate_option);
+    MoveTreeOptions options) {
+  return new MoveTreeWorkItem(source_path, dest_path, temp_path, options);
 }
 
 SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(

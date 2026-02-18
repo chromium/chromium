@@ -75,12 +75,6 @@ class WorkItem {
     NEW_NAME_IF_IN_USE  // Copy to a new path if dest is in use(only files).
   };
 
-  // Options for the MoveTree work item.
-  enum MoveTreeOption {
-    ALWAYS_MOVE,      // Always attempt to do a move operation.
-    CHECK_DUPLICATES  // Only move if the move target is different.
-  };
-
   // Abstract base class for the conditions used by ConditionWorkItemList.
   // TODO(robertshield): Move this out of WorkItem.
   class Condition {
@@ -141,11 +135,17 @@ class WorkItem {
 
   // Create a MoveTreeWorkItem that recursively moves a file system hierarchy
   // from source path to destination path.
+  struct MoveTreeOptions {
+    // If true, only move if dest_path is different.
+    bool check_for_duplicates = false;
+    // If true, do not fail if source_path cannot be fully deleted.
+    bool lenient_deletion = false;
+  };
   static MoveTreeWorkItem* CreateMoveTreeWorkItem(
       const base::FilePath& source_path,
       const base::FilePath& dest_path,
       const base::FilePath& temp_path,
-      MoveTreeOption duplicate_option);
+      MoveTreeOptions options);
 
   // Create a SetRegValueWorkItem that sets a registry value with REG_SZ type
   // at the key with specified path.

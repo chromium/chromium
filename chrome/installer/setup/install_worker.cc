@@ -245,11 +245,13 @@ void AddChromeWorkItems(const InstallParams& install_params,
       target_path.AppendASCII(new_version.GetString());
   bool check_for_duplicates =
       (current_version.IsValid() && current_version == new_version);
+  // Allow items in `src_path` to be left behind. It is in a temporary directory
+  // that will eventually be cleaned up.
   install_list->AddMoveTreeWorkItem(
       src_path.AppendASCII(new_version.GetString()), target_version_dir,
       temp_path,
-      check_for_duplicates ? WorkItem::CHECK_DUPLICATES
-                           : WorkItem::ALWAYS_MOVE);
+      WorkItem::MoveTreeOptions{.check_for_duplicates = check_for_duplicates,
+                                .lenient_deletion = true});
 
   // Delete an old VisualElementsManifest unconditionally.
   const base::FilePath manifest_path =
@@ -826,11 +828,13 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
           product_rename_cmd.GetCommandLineString(), true);
     }
 
-    // Delay deploying the new chrome_proxy while chrome is running.
+    // Delay deploying the new chrome_proxy while chrome is running. Allow items
+    // in `src_path` to be left behind. It is in a temporary directory that will
+    // eventually be cleaned up.
     in_use_update_work_items->AddMoveTreeWorkItem(
         src_path.Append(kChromeProxyExe),
         target_path.Append(kChromeProxyNewExe), temp_path,
-        WorkItem::ALWAYS_MOVE);
+        WorkItem::MoveTreeOptions{.lenient_deletion = true});
   }
 
   // Append work items that will be executed if this was NOT an in-use update.
@@ -865,10 +869,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     }
 
     // Only move chrome_proxy.exe directly when chrome.exe isn't in use to avoid
-    // different versions getting mixed up between the two binaries.
+    // different versions getting mixed up between the two binaries. Allow items
+    // in `src_path` to be left behind. It is in a temporary directory that will
+    // eventually be cleaned up.
     regular_update_work_items->AddMoveTreeWorkItem(
         src_path.Append(kChromeProxyExe), target_path.Append(kChromeProxyExe),
-        temp_path, WorkItem::ALWAYS_MOVE);
+        temp_path, WorkItem::MoveTreeOptions{.lenient_deletion = true});
   }
 
   post_install_task_list->AddWorkItem(WorkItem::CreateConditionalWorkItem(

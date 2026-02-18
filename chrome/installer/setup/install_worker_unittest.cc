@@ -88,7 +88,7 @@ class MockWorkItemList : public WorkItemList {
                WorkItem*(const base::FilePath&,
                          const base::FilePath&,
                          const base::FilePath&,
-                         MoveTreeOption));
+                         MoveTreeOptions));
   // Workaround for gmock problems with disambiguating between string pointers
   // and DWORD.
   WorkItem* AddSetRegValueWorkItem(HKEY a1,

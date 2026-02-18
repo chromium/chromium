@@ -601,6 +601,46 @@ TEST_P(FileConductorTest, MoveSingleFile) {
   EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
 }
 
+// Tests that a single read-only file can be moved and undone when there are no
+// conflicts.
+TEST_P(FileConductorTest, MoveSingleReadOnlyFile) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+  auto attributes = ::GetFileAttributes(source.value().c_str());
+  ASSERT_NE(attributes, INVALID_FILE_ATTRIBUTES);
+  ASSERT_NE(::SetFileAttributes(source.value().c_str(),
+                                attributes | FILE_ATTRIBUTE_READONLY),
+            0);
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.MoveEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup with Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_FALSE(base::PathExists(destination));
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.MoveEntry(source, destination));
+    EXPECT_FALSE(base::PathExists(source));
+    EXPECT_PRED1(base::PathExists, destination);
+  }
+
+  // After cleanup without Undo.
+  EXPECT_FALSE(base::PathExists(source));
+  EXPECT_PRED1(base::PathExists, destination);
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
 // Move fails if the destination exists.
 TEST_P(FileConductorTest, MoveDestinationExists) {
   base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
@@ -836,6 +876,72 @@ TEST_P(FileConductorTest, MoveDirectorySourceInUse) {
   EXPECT_THAT(GetDirectoryContents(source), UnorderedElementsAre(file1));
   EXPECT_FALSE(base::PathExists(destination));
   EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Tests that a single file cannot be moved when it cannot be deleted in strict
+// mode.
+TEST_P(FileConductorTest, MoveSingleFileCantDeleteSource) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+
+  std::optional<base::MemoryMappedFile> mapped_source;
+  ASSERT_TRUE(mapped_source.emplace().Initialize(
+      base::File(source, base::File::FLAG_OPEN | base::File::FLAG_READ)));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.MoveEntry(source, destination));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+    file_conductor.Undo();
+  }
+
+  // After cleanup following undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_FALSE(base::PathExists(destination));
+}
+
+// Tests that a single file can be moved when it cannot be deleted in lenient
+// mode.
+TEST_P(FileConductorTest, MoveSingleFileCantDeleteSourceLenient) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+
+  std::optional<base::MemoryMappedFile> mapped_source;
+  ASSERT_TRUE(mapped_source.emplace().Initialize(
+      base::File(source, base::File::FLAG_OPEN | base::File::FLAG_READ)));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.MoveEntry(source, destination,
+                                         /*lenient_deletion=*/true));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+    file_conductor.Undo();
+  }
+
+  // After cleanup following Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_FALSE(base::PathExists(destination));
+
+  // Do it again without undo.
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.MoveEntry(source, destination,
+                                         /*lenient_deletion=*/true));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+  }
+
+  // After cleanup following undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_PRED1(base::PathExists, destination);
 }
 
 // Run all tests three times -- once with both directories on the same volume,

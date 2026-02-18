@@ -87,7 +87,7 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectory) {
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::MoveTreeOptions{}));
   EXPECT_TRUE(work_item->Do());
 
   EXPECT_FALSE(base::PathExists(from_dir1));
@@ -139,7 +139,7 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectoryDestExists) {
 
   // test Do(), don't check for duplicates.
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::MoveTreeOptions{}));
   EXPECT_TRUE(work_item->Do());
 
   EXPECT_FALSE(base::PathExists(from_dir1));
@@ -179,7 +179,8 @@ TEST_F(MoveTreeWorkItemTest, MoveAFile) {
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_file, to_file, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_file, to_file, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{}));
   EXPECT_TRUE(work_item->Do());
 
   EXPECT_TRUE(base::PathExists(from_dir));
@@ -223,7 +224,8 @@ TEST_F(MoveTreeWorkItemTest, MoveFileDestExists) {
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_file, to_dir, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_file, to_dir, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{}));
   EXPECT_TRUE(work_item->Do());
 
   EXPECT_TRUE(base::PathExists(from_dir));
@@ -278,7 +280,8 @@ TEST_F(MoveTreeWorkItemTest, MoveFileDestInUse) {
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_file, to_file, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_file, to_file, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{}));
   EXPECT_TRUE(work_item->Do());
 
   EXPECT_TRUE(base::PathExists(from_dir));
@@ -337,7 +340,8 @@ TEST_F(MoveTreeWorkItemTest, MoveFileInUse) {
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_file, to_file, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_file, to_file, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{}));
   EXPECT_TRUE(work_item->Do());
 
   EXPECT_TRUE(base::PathExists(from_dir));
@@ -364,6 +368,106 @@ TEST_F(MoveTreeWorkItemTest, MoveFileInUse) {
   EXPECT_TRUE(base::ContentsEqual(exe_full_path, from_file));
   EXPECT_TRUE(base::PathExists(to_dir));
   EXPECT_EQ(0, ReadTextFile(to_file).compare(kTextContent1));
+}
+
+// Move one file that cannot be deleted in strict mode.
+TEST_F(MoveTreeWorkItemTest, MoveUndeletableFileStrict) {
+  // Create a source file
+  base::FilePath from_dir = temp_from_dir_.GetPath().AppendASCII("From_Dir");
+  base::CreateDirectory(from_dir);
+  ASSERT_TRUE(base::PathExists(from_dir));
+
+  base::FilePath from_file = from_dir.AppendASCII("From_File");
+  ASSERT_TRUE(base::WriteFile(from_file, base::as_byte_span(kTextContent1)));
+  ASSERT_TRUE(base::PathExists(from_file));
+
+  // Create a destination dir and generate destination file name.
+  base::FilePath to_dir = temp_from_dir_.GetPath().AppendASCII("To_Dir");
+  base::CreateDirectory(to_dir);
+  ASSERT_TRUE(base::PathExists(to_dir));
+
+  base::FilePath to_file = to_dir.AppendASCII("To_File");
+
+  // Open the source file so that it cannot be deleted.
+  base::File open_file(from_file,
+                       base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  // test Do()
+  std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
+      from_file, to_file, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{}));
+  EXPECT_FALSE(work_item->Do());
+
+  EXPECT_TRUE(base::PathExists(from_dir));
+  EXPECT_TRUE(base::PathExists(from_file));
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_TRUE(base::ContentsEqual(from_file, to_file));
+
+  // Close the file and make sure all the conditions after Do() are still true.
+  open_file.Close();
+
+  EXPECT_TRUE(base::PathExists(from_dir));
+  EXPECT_TRUE(base::PathExists(from_file));
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_TRUE(base::ContentsEqual(from_file, to_file));
+
+  // test rollback()
+  work_item->Rollback();
+
+  EXPECT_TRUE(base::PathExists(from_dir));
+  EXPECT_TRUE(base::PathExists(from_file));
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_FALSE(base::PathExists(to_file));
+}
+
+// Move one file that cannot be deleted in lenient mode.
+TEST_F(MoveTreeWorkItemTest, MoveUndeletableFileLenient) {
+  // Create a source file
+  base::FilePath from_dir = temp_from_dir_.GetPath().AppendASCII("From_Dir");
+  base::CreateDirectory(from_dir);
+  ASSERT_TRUE(base::PathExists(from_dir));
+
+  base::FilePath from_file = from_dir.AppendASCII("From_File");
+  ASSERT_TRUE(base::WriteFile(from_file, base::as_byte_span(kTextContent1)));
+  ASSERT_TRUE(base::PathExists(from_file));
+
+  // Create a destination dir and generate destination file name.
+  base::FilePath to_dir = temp_from_dir_.GetPath().AppendASCII("To_Dir");
+  base::CreateDirectory(to_dir);
+  ASSERT_TRUE(base::PathExists(to_dir));
+
+  base::FilePath to_file = to_dir.AppendASCII("To_File");
+
+  // Open the source file so that it cannot be deleted.
+  base::File open_file(from_file,
+                       base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  // test Do()
+  std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
+      from_file, to_file, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{.lenient_deletion = true}));
+  EXPECT_TRUE(work_item->Do());
+
+  EXPECT_TRUE(base::PathExists(from_dir));
+  EXPECT_TRUE(base::PathExists(from_file));
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_TRUE(base::ContentsEqual(from_file, to_file));
+
+  // Close the file and make sure all the conditions after Do() are still true.
+  open_file.Close();
+
+  EXPECT_TRUE(base::PathExists(from_dir));
+  EXPECT_TRUE(base::PathExists(from_file));
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_TRUE(base::ContentsEqual(from_file, to_file));
+
+  // test rollback()
+  work_item->Rollback();
+
+  EXPECT_TRUE(base::PathExists(from_dir));
+  EXPECT_TRUE(base::PathExists(from_file));
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_FALSE(base::PathExists(to_file));
 }
 
 // Move one directory from source to destination when destination already
@@ -398,13 +502,15 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectoryDestExistsCheckForDuplicatesFull) {
 
   // First check that we can't do the regular Move().
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::ALWAYS_MOVE));
+      from_dir1, to_dir, temp_to_dir_.GetPath(),
+      WorkItem::WorkItem::MoveTreeOptions{}));
   EXPECT_FALSE(work_item->Do());
   work_item->Rollback();
 
   // Now test Do() with the check for duplicates. This should pass.
   work_item.reset(WorkItem::CreateMoveTreeWorkItem(
-      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::CHECK_DUPLICATES));
+      from_dir1, to_dir, temp_to_dir_.GetPath(),
+      WorkItem::MoveTreeOptions{.check_for_duplicates = true}));
   EXPECT_TRUE(work_item->Do());
 
   // Make sure that we "moved" the files, i.e. that the source directory isn't
@@ -472,7 +578,8 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectoryDestExistsCheckForDuplicatesPartial) {
 
   // test Do(), check for duplicates.
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
-      from_dir1, to_dir, temp_to_dir_.GetPath(), WorkItem::CHECK_DUPLICATES));
+      from_dir1, to_dir, temp_to_dir_.GetPath(),
+      WorkItem::MoveTreeOptions{.check_for_duplicates = true}));
   EXPECT_TRUE(work_item->Do());
 
   // Make sure that we "moved" the files, i.e. that the source directory isn't
@@ -536,7 +643,7 @@ TEST_F(MoveTreeWorkItemTest, RollbackRecovers) {
   // copy-and-delete flow, which will succeed to copy everything and then fail
   // during the delete phase on account of the in-use file.
   auto work_item = base::WrapUnique(WorkItem::CreateMoveTreeWorkItem(
-      source_dir, dest_dir, temp_dir, WorkItem::ALWAYS_MOVE));
+      source_dir, dest_dir, temp_dir, WorkItem::WorkItem::MoveTreeOptions{}));
   ASSERT_FALSE(work_item->Do());
 
   // Expect that the mapped file (at least) remains in the dest.
