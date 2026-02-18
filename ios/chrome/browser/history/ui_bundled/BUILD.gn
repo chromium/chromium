@@ -9,7 +9,7 @@ source_set("coordinator_factory") {
   ]
   deps = [
     ":coordinator",
-    "//build/config/ios:buildflags",
+    "//build/config/ios:swift_buildflags",
   ]
 }
 

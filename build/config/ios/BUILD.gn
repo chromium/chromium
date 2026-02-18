@@ -356,14 +356,20 @@ action("xctest_runner_without_arm64e") {
   }
 }
 
-# Generates build flags to allow code to detect specific compilation contexts:
-# - Whether the target is an App Extension (which cannot access APIs like
-#   UIApplication.sharedApplication).
-# - Whether Swift/C++ interoperability is enabled.
+# Generates build flags to allow code to detect whether the target is an App
+# Extension (which cannot access APIs like UIApplication.sharedApplication).
 buildflag_header("buildflags") {
   header = "buildflags.h"
+  flags = [ "IOS_IS_APP_EXTENSION=$ios_is_app_extension" ]
+}
+
+# Generates build flags to allow code to detect specific compilation contexts:
+# - Whether Swift/C++ interoperability is enabled.
+# - Whether Swift 6.3 (XCode 27.*) is supported.
+buildflag_header("swift_buildflags") {
+  header = "swift_buildflags.h"
   flags = [
     "ENABLE_SWIFT_CXX_INTEROP=$enable_swift_cxx_interop",
-    "IOS_IS_APP_EXTENSION=$ios_is_app_extension",
+    "HAS_SWIFT_6_3_SUPPORT=$has_swift_6_3_support",
   ]
 }

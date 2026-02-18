@@ -17,7 +17,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
-#import "build/config/ios/buildflags.h"
+#import "build/config/ios/swift_buildflags.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"

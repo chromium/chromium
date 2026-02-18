@@ -39,7 +39,7 @@ source_set("ui_bundled") {
     ":safe_area_provider",
     "//base",
     "//base:i18n",
-    "//build/config/ios:buildflags",
+    "//build/config/ios:swift_buildflags",
     "//components/bookmarks/browser",
     "//components/collaboration/public",
     "//components/commerce/core:feature_list",

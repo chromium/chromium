@@ -37,6 +37,9 @@ declare_args() {
   # Set to `target_platform` to generate Xcode project with the
   # corresponding platform SDK.
   target_xcode_platform = target_platform
+
+  # True when Swift 6.3 is used (= the XCode version is >=2700).
+  has_swift_6_3_support = false
 }
 
 # Building XCTests requires copying XCTRunner.app which is part of the iOS
@@ -139,3 +142,4 @@ if (ios_sdk_path == "") {
 
 _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
 ios_sdk_logs = [ "ios_sdk_path=${_sdk_root}" ]
+has_swift_6_3_support = has_swift_6_3_support || xcode_version_int >= 2700
