@@ -120,7 +120,8 @@ IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, SimpleInstall) {
       /*scope=*/https_server()->GetURL("/banners/"),
       /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
       {apps::IconInfo(GetManifestIcon(), kIconSize)},
-      {apps::IconInfo(GetTrustedIcon(), kIconSize)});
+      {apps::IconInfo(GetTrustedIcon(), kIconSize)},
+      /*migrated_from_manifest_id=*/std::nullopt);
   provider->command_manager().ScheduleCommand(
       std::make_unique<InstallFromSyncCommand>(
           profile(), params,
@@ -161,7 +162,8 @@ IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, TwoInstalls) {
         /*scope=*/https_server()->GetURL("/banners/"),
         /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(GetManifestIcon(), kIconSize)},
-        {apps::IconInfo(GetTrustedIcon(), kIconSize)});
+        {apps::IconInfo(GetTrustedIcon(), kIconSize)},
+        /*migrated_from_manifest_id=*/std::nullopt);
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
             profile(), params,
@@ -178,7 +180,8 @@ IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, TwoInstalls) {
         /*scope=*/https_server()->GetURL("/banners/"),
         /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(GetManifestIcon(), other_icon_size)},
-        {apps::IconInfo(GetTrustedIcon(), other_icon_size)});
+        {apps::IconInfo(GetTrustedIcon(), other_icon_size)},
+        /*migrated_from_manifest_id=*/std::nullopt);
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
             profile(), params,

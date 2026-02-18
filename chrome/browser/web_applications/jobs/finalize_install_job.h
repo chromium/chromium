@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -88,6 +89,7 @@ struct FinalizeJobOptions {
   bool add_to_applications_menu = true;
   bool add_to_desktop = true;
   bool add_to_quick_launch_bar = true;
+  std::optional<RunOnOsLoginMode> run_on_os_login_mode;
 
   // Controls fetching and validation of web_app_origin_association data
   // from web origins found in manifest scope_extensions entries. If true,

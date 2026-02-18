@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/common/chrome_features.h"
@@ -134,9 +137,12 @@ class InstallFromSyncTest : public base::test::WithFeatureOverride,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  InstallFromSyncCommand::Params CreateParams(webapps::AppId app_id,
-                                              webapps::ManifestId manifest_id,
-                                              GURL start_url) {
+  InstallFromSyncCommand::Params CreateParams(
+      webapps::AppId app_id,
+      webapps::ManifestId manifest_id,
+      GURL start_url,
+      std::optional<webapps::ManifestId> migrated_from_manifest_id =
+          std::nullopt) {
     // In production, trusted icons are a subset of manifest icons, so mimic
     // that behavior here.
     return InstallFromSyncCommand::Params(
@@ -146,18 +152,24 @@ class InstallFromSyncTest : public base::test::WithFeatureOverride,
         /*manifest_icons=*/
         {apps::IconInfo(kFallbackIconUrl, kIconSize)},
         /*trusted_icons=*/
-        {apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)});
+        {apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)},
+        migrated_from_manifest_id);
   }
 
-  InstallResult InstallFromSyncAndWait(GURL start_url,
-                                       webapps::ManifestId manifest_id) {
+  InstallResult InstallFromSyncAndWait(
+      GURL start_url,
+      webapps::ManifestId manifest_id,
+      std::optional<webapps::ManifestId> migrated_from_manifest_id =
+          std::nullopt) {
     const webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
     InstallResult result;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         future;
     std::unique_ptr<InstallFromSyncCommand> command =
         std::make_unique<InstallFromSyncCommand>(
-            profile(), CreateParams(app_id, manifest_id, start_url),
+            profile(),
+            CreateParams(app_id, manifest_id, start_url,
+                         migrated_from_manifest_id),
             future.GetCallback());
     command->SetFallbackTriggeredForTesting(
         base::BindLambdaForTesting([&](webapps::InstallResultCode code) {
@@ -209,6 +221,115 @@ class InstallFromSyncTest : public base::test::WithFeatureOverride,
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id));
   }
 };
+
+TEST_P(InstallFromSyncTest, MigrationFromSourceApp) {
+  const webapps::AppId source_app_id =
+      GenerateAppIdFromManifestId(kOtherWebAppManifestId);
+  const webapps::AppId target_app_id =
+      GenerateAppIdFromManifestId(kWebAppManifestId);
+
+  // Install source app with OS integration (simulated)
+  test::InstallWebApp(
+      profile(),
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kOtherWebAppStartUrl),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::SYNC);
+  {
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
+    WebApp* source_app = update->UpdateApp(source_app_id);
+    source_app->SetInstallState(
+        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  }
+
+  // Setup fake OS integration data
+  auto* fake_os_manager =
+      provider()->os_integration_manager().AsTestOsIntegrationManager();
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.in_quick_launch_bar = true;
+  fake_os_manager->SetAppExistingShortcuts(kOtherWebAppStartUrl, locations);
+  fake_os_manager->SetShortcutInfoForApp(source_app_id,
+                                         std::make_unique<ShortcutInfo>());
+
+  // Page setup for target app
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
+  fake_page_state.manifest_before_default_processing =
+      CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
+
+  // Icons
+  web_contents_manager().GetOrCreateIconState(kManifestIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(kIconSize, kManifestIconColor)};
+  web_contents_manager().GetOrCreateIconState(kTrustedIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(kTrustedIconSize, kTrustedIconColor)};
+
+  // Install target app from sync with migration
+  InstallResult result = InstallFromSyncAndWait(
+      kWebAppStartUrl, kWebAppManifestId, kOtherWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result.install_code);
+
+  // Verify target app installed with OS integration
+  EXPECT_EQ(registrar().GetInstallState(target_app_id),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+}
+
+TEST_P(InstallFromSyncTest, MigrationFromSourceAppNotInstalledLocally) {
+  const webapps::AppId source_app_id =
+      GenerateAppIdFromManifestId(kOtherWebAppManifestId);
+  const webapps::AppId target_app_id =
+      GenerateAppIdFromManifestId(kWebAppManifestId);
+
+  // Install source app WITHOUT OS integration (simulated sync suggested app)
+  test::InstallWebApp(
+      profile(),
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kOtherWebAppStartUrl),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::SYNC);
+  {
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
+    WebApp* source_app = update->UpdateApp(source_app_id);
+    source_app->SetInstallState(
+        proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
+  }
+
+  // Setup page setup for target app
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
+  fake_page_state.manifest_before_default_processing =
+      CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
+
+  // Icons
+  web_contents_manager().GetOrCreateIconState(kManifestIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(kIconSize, kManifestIconColor)};
+  web_contents_manager().GetOrCreateIconState(kTrustedIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(kTrustedIconSize, kTrustedIconColor)};
+
+  // Install target app from sync with migration
+  InstallResult result = InstallFromSyncAndWait(
+      kWebAppStartUrl, kWebAppManifestId, kOtherWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result.install_code);
+
+  // Verify target app is NOT fully installed (matching source app state)
+  // unless AreAppsLocallyInstalledBySync() is true (ChromeOS).
+  EXPECT_EQ(registrar().GetInstallState(target_app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
+}
 
 TEST_P(InstallFromSyncTest, SuccessWithManifest) {
   const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);

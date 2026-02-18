@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_FROM_SYNC_COMMAND_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/gather_migration_source_info_job.h"
+#include "chrome/browser/web_applications/jobs/gather_migration_source_info_job_result.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -57,7 +60,8 @@ class InstallFromSyncCommand
            const std::optional<SkColor>& theme_color,
            const std::optional<mojom::UserDisplayMode>& user_display_mode,
            const std::vector<apps::IconInfo>& manifest_icons,
-           const std::vector<apps::IconInfo>& trusted_icons);
+           const std::vector<apps::IconInfo>& trusted_icons,
+           const std::optional<webapps::ManifestId>& migrated_from_manifest_id);
     const webapps::AppId app_id;
     const webapps::ManifestId manifest_id;
     const GURL start_url;
@@ -67,6 +71,7 @@ class InstallFromSyncCommand
     const std::optional<mojom::UserDisplayMode> user_display_mode;
     const std::vector<apps::IconInfo> manifest_icons;
     const std::vector<apps::IconInfo> trusted_icons;
+    const std::optional<webapps::ManifestId> migrated_from_manifest_id;
   };
   using DataRetrieverFactory =
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
@@ -106,6 +111,11 @@ class InstallFromSyncCommand
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
 
+  void CheckForMigrationAndGatherInfo(FinalizeMode mode);
+  void OnMigrationSourceInfoGathered(
+      FinalizeMode mode,
+      std::optional<GatherMigrationSourceInfoJobResult> migration_source_info);
+
   void FinalizeInstall(FinalizeMode mode);
 
   void OnInstallFinalized(FinalizeMode mode,
@@ -122,9 +132,15 @@ class InstallFromSyncCommand
   const raw_ptr<Profile> profile_;
   const Params params_;
 
+  // The app id of the app that this app is migrated from, if any.
+  std::optional<webapps::AppId> source_app_id_;
+  std::optional<GatherMigrationSourceInfoJobResult> migration_source_info_;
+
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  std::unique_ptr<GatherMigrationSourceInfoJob>
+      gather_migration_source_info_job_;
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;

@@ -411,6 +411,9 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
     DCHECK(web_app_info_.user_display_mode.has_value());
     web_app->SetUserDisplayMode(*web_app_info_.user_display_mode);
   }
+  if (options_.run_on_os_login_mode.has_value()) {
+    web_app->SetRunOnOsLoginMode(options_.run_on_os_login_mode.value());
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyUserDisplayModeSyncMitigations(options_, *web_app);
 #endif  // BUILDFLAG(IS_CHROMEOS)

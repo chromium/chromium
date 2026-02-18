@@ -19,13 +19,16 @@
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -84,7 +87,8 @@ InstallFromSyncCommand::Params::Params(
     const std::optional<SkColor>& theme_color,
     const std::optional<mojom::UserDisplayMode>& user_display_mode,
     const std::vector<apps::IconInfo>& manifest_icons,
-    const std::vector<apps::IconInfo>& trusted_icons)
+    const std::vector<apps::IconInfo>& trusted_icons,
+    const std::optional<webapps::ManifestId>& migrated_from_manifest_id)
     : app_id(app_id),
       manifest_id(manifest_id),
       start_url(start_url),
@@ -93,7 +97,8 @@ InstallFromSyncCommand::Params::Params(
       theme_color(theme_color),
       user_display_mode(user_display_mode),
       manifest_icons(manifest_icons),
-      trusted_icons(trusted_icons) {
+      trusted_icons(trusted_icons),
+      migrated_from_manifest_id(migrated_from_manifest_id) {
   CHECK(!app_id.empty());
   CHECK(manifest_id.is_valid());
   CHECK(!manifest_id.is_empty());
@@ -109,7 +114,13 @@ InstallFromSyncCommand::InstallFromSyncCommand(
                     const webapps::AppId&,
                     webapps::InstallResultCode>(
           "InstallFromSyncCommand",
-          SharedWebContentsWithAppLockDescription({params.app_id}),
+          SharedWebContentsWithAppLockDescription(
+              params.migrated_from_manifest_id
+                  ? base::flat_set<
+                        webapps::AppId>{params.app_id,
+                                        GenerateAppIdFromManifestId(
+                                            *params.migrated_from_manifest_id)}
+                  : base::flat_set<webapps::AppId>{params.app_id}),
           std::move(install_callback),
           /*args_for_shutdown=*/
           std::make_tuple(params.app_id,
@@ -121,6 +132,10 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
   DCHECK(params_.start_url.is_valid());
+  if (params_.migrated_from_manifest_id) {
+    source_app_id_ =
+        GenerateAppIdFromManifestId(*params_.migrated_from_manifest_id);
+  }
   fallback_install_info_ = std::make_unique<WebAppInstallInfo>(
       params_.manifest_id, params_.start_url);
   fallback_install_info_->title = base::UTF8ToUTF16(params_.title);
@@ -131,6 +146,11 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   fallback_install_info_->trusted_icons = params_.trusted_icons;
   GetMutableDebugValue().Set("app_id", params_.app_id);
   GetMutableDebugValue().Set("manifest_id", params_.manifest_id.spec());
+  if (params.migrated_from_manifest_id) {
+    GetMutableDebugValue().Set("source_app_id", *source_app_id_);
+    GetMutableDebugValue().Set("migrated_from_manifest_id",
+                               params.migrated_from_manifest_id->spec());
+  }
   GetMutableDebugValue().Set("title", params_.title);
   GetMutableDebugValue().Set(
       "user_display_mode",
@@ -265,7 +285,7 @@ void InstallFromSyncCommand::
   CHECK(!install_info_);
   install_info_ = std::move(install_info);
   install_info_->user_display_mode = params_.user_display_mode;
-  FinalizeInstall(FinalizeMode::kNormalWebAppInfo);
+  CheckForMigrationAndGatherInfo(FinalizeMode::kNormalWebAppInfo);
 }
 
 void InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo(
@@ -289,7 +309,32 @@ void InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo(
   if (!icon_errors.empty()) {
     GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
   }
-  FinalizeInstall(FinalizeMode::kFallbackWebAppInfo);
+  CheckForMigrationAndGatherInfo(FinalizeMode::kFallbackWebAppInfo);
+}
+
+void InstallFromSyncCommand::CheckForMigrationAndGatherInfo(FinalizeMode mode) {
+  if (!source_app_id_.has_value()) {
+    FinalizeInstall(mode);
+    return;
+  }
+
+  gather_migration_source_info_job_ =
+      std::make_unique<GatherMigrationSourceInfoJob>(
+          *lock_, *source_app_id_, params_.app_id,
+          base::BindOnce(&InstallFromSyncCommand::OnMigrationSourceInfoGathered,
+                         weak_ptr_factory_.GetWeakPtr(), mode));
+  gather_migration_source_info_job_->Start();
+}
+
+void InstallFromSyncCommand::OnMigrationSourceInfoGathered(
+    FinalizeMode mode,
+    std::optional<GatherMigrationSourceInfoJobResult> migration_source_info) {
+  if (migration_source_info) {
+    GetMutableDebugValue().Set("migration_source_info",
+                               migration_source_info->ToDebugValue());
+  }
+  migration_source_info_ = std::move(migration_source_info);
+  FinalizeInstall(mode);
 }
 
 void InstallFromSyncCommand::FinalizeInstall(FinalizeMode mode) {
@@ -300,8 +345,25 @@ void InstallFromSyncCommand::FinalizeInstall(FinalizeMode mode) {
       generated_icon_fix_util::CreateInitialTimeWindow(
           proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL);
 
+  FinalizeJobOptions finalize_options = GetFinalizerOptionForSyncInstall();
+
+  if (migration_source_info_) {
+    finalize_options.install_state = migration_source_info_->install_state;
+    finalize_options.add_to_desktop =
+        migration_source_info_->shortcut_locations.on_desktop;
+    finalize_options.add_to_quick_launch_bar =
+        migration_source_info_->shortcut_locations.in_quick_launch_bar;
+    if (migration_source_info_->run_on_os_login_mode !=
+        RunOnOsLoginMode::kNotRun) {
+      finalize_options.run_on_os_login_mode =
+          migration_source_info_->run_on_os_login_mode;
+    }
+
+    current_info->user_display_mode = migration_source_info_->user_display_mode;
+  }
+
   lock_->install_finalizer().FinalizeInstall(
-      *current_info, GetFinalizerOptionForSyncInstall(),
+      *current_info, finalize_options,
       base::BindOnce(&InstallFromSyncCommand::OnInstallFinalized,
                      weak_ptr_factory_.GetWeakPtr(), mode));
 }
