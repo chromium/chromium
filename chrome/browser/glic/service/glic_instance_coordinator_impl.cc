@@ -62,10 +62,6 @@ constexpr base::FeatureParam<base::MemoryPressureLevel>
                                      base::MEMORY_PRESSURE_LEVEL_CRITICAL,
                                      &kGlicMemoryPressureResponseLevelOptions};
 
-base::TimeDelta GetTimeSinceLastActive(GlicInstanceImpl* instance) {
-  return instance->GetTimeSinceLastActive();
-}
-
 GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kGlicTabRestoration)) {
@@ -452,7 +448,7 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
   if (base::FeatureList::IsEnabled(
           features::kGlicDefaultToLastActiveConversation) &&
       last_active_instance_ &&
-      GetTimeSinceLastActive(last_active_instance_) < kSidePanelMaxRecency) {
+      last_active_instance_->GetTimeSinceLastActive() < kSidePanelMaxRecency) {
     return last_active_instance_;
   }
 
@@ -579,7 +575,7 @@ GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
   auto* floaty_instance = GetInstanceWithFloaty();
   if (!floaty_instance && last_active_instance_ &&
-      GetTimeSinceLastActive(last_active_instance_) < kFloatyMaxRecency) {
+      last_active_instance_->GetTimeSinceLastActive() < kFloatyMaxRecency) {
     floaty_instance = last_active_instance_;
   }
 
@@ -724,7 +720,7 @@ GlicInstanceCoordinatorImpl::GetSortedRecentInstances(size_t limit) const {
       continue;
     }
     if (base::FeatureList::IsEnabled(kGlicMaxRecency) &&
-        GetTimeSinceLastActive(instance.get()) > kGlicMaxRecencyValue.Get()) {
+        instance->GetTimeSinceLastActive() > kGlicMaxRecencyValue.Get()) {
       continue;
     }
     sorted_instances.push_back(instance.get());
