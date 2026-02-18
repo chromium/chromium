@@ -2810,4 +2810,34 @@ suite('NewTabPageAppReducedMotionTest', () => {
           });
     });
   });
+
+  suite('ReducedMotionIntegration', () => {
+    setup(() => {
+      loadTimeData.overrideValues({
+        ntpNextFeaturesEnabled: true,
+        ntpRealboxNextEnabled: true,
+        actionChipsEnabled: true,
+      });
+      createSetup();
+    });
+
+    test(
+        'action chips receive reduced-motion-preferred attribute', async () => {
+          setReducedMotionPreference(true);
+          await createAndAppendApp();
+
+          const actionChips = app.shadowRoot.querySelector('ntp-action-chips')!;
+          assertTrue(actionChips.hasAttribute('reduced-motion-preferred'));
+        });
+
+    test(
+        'action chips do not have reduced-motion-preferred attr. when disabled',
+        async () => {
+          setReducedMotionPreference(false);
+          await createAndAppendApp();
+
+          const actionChips = app.shadowRoot.querySelector('ntp-action-chips')!;
+          assertFalse(actionChips.hasAttribute('reduced-motion-preferred'));
+        });
+  });
 });

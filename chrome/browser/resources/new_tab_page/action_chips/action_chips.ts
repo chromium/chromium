@@ -66,32 +66,38 @@ export class ActionChipsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      actionChips_: {type: Array, state: true},
-      showSimplifiedUI_: {
-        type: Boolean,
-        reflect: true,
-      },
-      showDismissalUI_: {
+      reducedMotionPreferred: {
         type: Boolean,
         reflect: true,
       },
       showBackground: {type: Boolean, reflect: true},
+      actionChips_: {type: Array, state: true},
+      showDismissalUI_: {
+        type: Boolean,
+        reflect: true,
+      },
+      showSimplifiedUI_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
-  private handler: ActionChipsHandlerInterface;
-  private callbackRouter: PageCallbackRouter;
-  protected accessor actionChips_: ActionChip[] = [];
+  accessor reducedMotionPreferred: boolean = false;
   accessor showBackground: boolean = false;
-  protected accessor showSimplifiedUI_: boolean =
-      loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
+
+  protected accessor actionChips_: ActionChip[] = [];
   protected accessor showDismissalUI_: boolean =
       loadTimeData.getBoolean('ntpNextShowDismissalUIEnabled');
-  private onActionChipChangedListenerId_: number|null = null;
-  private initialLoadStartTime_: number|null = null;
+  protected accessor showSimplifiedUI_: boolean =
+      loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
 
+  private callbackRouter: PageCallbackRouter;
   private delayTabUploads_: boolean =
       loadTimeData.getBoolean('addTabUploadDelayOnActionChipClick');
+  private handler: ActionChipsHandlerInterface;
+  private initialLoadStartTime_: number|null = null;
+  private onActionChipChangedListenerId_: number|null = null;
 
   protected getAdditionalIconClasses_(chip: ActionChip): string {
     switch (chip.type) {

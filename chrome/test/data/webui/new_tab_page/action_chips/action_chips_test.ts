@@ -512,4 +512,38 @@ suite('NewTabPageActionChipsTest', () => {
       assertEquals(2, allChips.length);
     });
   });
+
+  suite('ReducedMotion', () => {
+    test(
+        'animations are disabled when reduced motion is preferred',
+        async () => {
+          await initializeChips({
+            actionChips: [
+              {
+                type: ChipType.kImage,
+                title: 'Nano Banana',
+                subtitle: 'Subtitle for image',
+                suggestion: 'Suggestion for image',
+                tab: null,
+              },
+            ],
+          });
+
+          // Act.
+          chips.reducedMotionPreferred = true;
+          await microtasksFinished();
+
+          // Assert.
+          const container =
+              chips.shadowRoot.querySelector('.action-chips-container')!;
+          const chip = chips.shadowRoot.querySelector('.action-chip')!;
+          assertEquals(
+              'none',
+              window.getComputedStyle(container).getPropertyValue(
+                  'animation-name'));
+          assertEquals(
+              'none',
+              window.getComputedStyle(chip).getPropertyValue('animation-name'));
+        });
+  });
 });
