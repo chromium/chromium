@@ -190,10 +190,8 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
-    guest_contents->SetSupportsDraggableRegions(true);
-  }
-#endif
+  guest_contents->SetSupportsDraggableRegions(true);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   service->GuestAdded(guest_contents);
 
