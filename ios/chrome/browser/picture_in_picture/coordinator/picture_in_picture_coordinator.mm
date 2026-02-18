@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
 
+#import <AVKit/AVKit.h>
+
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_mediator.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/picture_in_picture/ui/picture_in_picture_view_controller.h"
@@ -32,6 +35,14 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  if (![AVPictureInPictureController isPictureInPictureSupported]) {
+    // Picture in picture is not supported, open the feature's destination
+    // directly.
+    [self openFeatureDestination];
+    [self dismiss];
+    return;
+  }
+
   _mediator =
       [[PictureInPictureMediator alloc] initWithConfiguration:_configuration];
   _viewController = [[PictureInPictureViewController alloc]
@@ -68,4 +79,14 @@
       self.browser->GetCommandDispatcher(), PictureInPictureCommands);
   [handler dismissPictureInPicture];
 }
+
+// Opens the feature's destination.
+- (void)openFeatureDestination {
+  switch (_configuration.feature) {
+    case PictureInPictureFeature::kDefaultBrowser:
+      OpenIOSDefaultBrowserSettingsPage(YES);
+      break;
+  }
+}
+
 @end
