@@ -21,6 +21,8 @@ PasswordAndMetadata& PasswordAndMetadata::operator=(PasswordAndMetadata&&) =
     default;
 PasswordAndMetadata::~PasswordAndMetadata() = default;
 
+TriggeringField::TriggeringField() = default;
+
 TriggeringField::TriggeringField(const FormFieldData& field,
                                  AutofillSuggestionTriggerSource trigger_source,
                                  const std::u16string& typed_username,
@@ -50,7 +52,6 @@ TriggeringField::TriggeringField(FieldRendererId element_id,
       show_identity_credentials(show_identity_credentials),
       bounds(bounds) {}
 
-TriggeringField::TriggeringField() = default;
 TriggeringField::TriggeringField(const TriggeringField&) = default;
 TriggeringField& TriggeringField::operator=(const TriggeringField&) = default;
 TriggeringField::TriggeringField(TriggeringField&&) = default;
