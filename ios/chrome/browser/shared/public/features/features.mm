@@ -1055,3 +1055,9 @@ BASE_FEATURE(kDisableComposeboxFromAIMNTP, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsDisableComposeboxFromAIMNTPEnabled() {
   return base::FeatureList::IsEnabled(kDisableComposeboxFromAIMNTP);
 }
+
+BASE_FEATURE(kAIMCobrowseDebugEntrypoint, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAIMCobrowseDebugEntrypointEnabled() {
+  return base::FeatureList::IsEnabled(kAIMCobrowseDebugEntrypoint);
+}

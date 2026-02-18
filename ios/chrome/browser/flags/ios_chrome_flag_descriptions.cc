@@ -15,6 +15,10 @@ const char kAIHubNewBadgeName[] = "AI Hub New Badge";
 const char kAIHubNewBadgeDescription[] =
     "Enables showing a new badge on the AI Hub button in the toolbar.";
 
+const char kAIMCobrowseDebugEntrypointName[] = "AIM Cobrowse debug entrypoint";
+const char kAIMCobrowseDebugEntrypointDescription[] =
+    "Enables the AIM Cobrowse debug entrypoint feature.";
+
 const char kAIMEligibilityRefreshNTPModulesName[] =
     "AIMEligibilityRefreshNTPModules";
 const char kAIMEligibilityRefreshNTPModulesDescription[] =

@@ -933,4 +933,10 @@ BASE_DECLARE_FEATURE(kDisableComposeboxFromAIMNTP);
 // Returns true if the DisableComposeboxFromAIMNTP feature is enabled.
 bool IsDisableComposeboxFromAIMNTPEnabled();
 
+// Enables the AIMCobrowseDebugEntrypoint feature.
+BASE_DECLARE_FEATURE(kAIMCobrowseDebugEntrypoint);
+
+// Returns true if the AIMCobrowseDebugEntrypoint feature is enabled.
+bool IsAIMCobrowseDebugEntrypointEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

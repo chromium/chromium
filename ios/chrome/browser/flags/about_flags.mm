@@ -2712,6 +2712,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSSaveToPhotosSignedOutName,
      flag_descriptions::kIOSSaveToPhotosSignedOutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToPhotosSignedOut)},
+    {"aim-cobrowse-debug-entrypoint",
+     flag_descriptions::kAIMCobrowseDebugEntrypointName,
+     flag_descriptions::kAIMCobrowseDebugEntrypointDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAIMCobrowseDebugEntrypoint)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
