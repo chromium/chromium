@@ -6,14 +6,10 @@
 
 #include <algorithm>
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "printing/buildflags/buildflags.h"
 
 BrowserManagerService::BrowserManagerService(Profile* profile)
     : ProfileBrowserCollection(profile), profile_(profile) {
@@ -23,9 +19,6 @@ BrowserManagerService::BrowserManagerService(Profile* profile)
 BrowserManagerService::~BrowserManagerService() = default;
 
 void BrowserManagerService::Shutdown() {
-  // TODO(crbug.com/485265751): Make sure we emit browser-close events during
-  // shutdown instead of just clearing browsers.
-  browsers_activation_order_.clear();
   browsers_and_subscriptions_.clear();
 }
 
@@ -40,17 +33,14 @@ size_t BrowserManagerService::GetSize() const {
 void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
   CHECK(browsers_and_subscriptions_for_testing_.empty());
   BrowserWindowInterface* const browser_ptr = browser.get();
-  // Prefer push_back, see totw/112.
-  // NOLINTNEXTLINE(modernize-use-emplace)
-  browsers_and_subscriptions_.push_back(BrowserAndSubscriptions(
+  browsers_and_subscriptions_.push_back(std::pair(
       std::move(browser),
-      browser_ptr->RegisterDidBecomeActive(base::BindRepeating(
-          &BrowserManagerService::OnBrowserActivated, base::Unretained(this))),
-      browser_ptr->RegisterDidBecomeInactive(
-          base::BindRepeating(&BrowserManagerService::OnBrowserDeactivated,
-                              base::Unretained(this))),
-      browser_ptr->RegisterBrowserDidClose(base::BindRepeating(
-          &BrowserManagerService::OnBrowserClosed, base::Unretained(this)))));
+      std::pair(browser->RegisterDidBecomeActive(base::BindRepeating(
+                    &BrowserManagerService::OnBrowserActivated,
+                    base::Unretained(this))),
+                browser->RegisterDidBecomeInactive(base::BindRepeating(
+                    &BrowserManagerService::OnBrowserDeactivated,
+                    base::Unretained(this))))));
 
   // Push the browser to the back of the activation order list. It will be moved
   // to the front when the browser is eventually activated (which may or may
@@ -74,10 +64,10 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
       browsers_and_subscriptions_,
       [&removed_browser](
           const BrowserAndSubscriptions& browser_and_subscriptions) {
-        return browser_and_subscriptions.browser.get() == removed_browser;
+        return browser_and_subscriptions.first.get() == removed_browser;
       });
   if (it != browsers_and_subscriptions_.end()) {
-    std::erase(browsers_activation_order_, it->browser.get());
+    std::erase(browsers_activation_order_, it->first.get());
     target_browser_and_subscriptions = std::move(*it);
     browsers_and_subscriptions_.erase(it);
   } else {
@@ -85,34 +75,8 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
     return;
   }
 
-  // The system incognito profile should not try be destroyed using
-  // ProfileDestroyer::DestroyProfileWhenAppropriate(). This profile can be
-  // used, at least, by the user manager window. This window is not a browser,
-  // therefore, chrome::IsOffTheRecordBrowserActiveForProfile(profile_) returns
-  // false, while the user manager window is still opened. This cannot be fixed
-  // in ProfileDestroyer::DestroyProfileWhenAppropriate(), because the
-  // ProfileManager needs to be able to destroy all profiles when it is
-  // destroyed. See crbug.com/527035
-  //
-  // Non-primary OffTheRecord profiles should not be destroyed directly by
-  // Browser (e.g. for offscreen tabs, https://crbug.com/664351).
-  //
-  // TODO(crbug.com/40159237): Use ScopedProfileKeepAlive for Incognito too,
-  // instead of separate logic for Incognito and regular profiles.
-  target_browser_and_subscriptions->browser.reset();
-  if (browsers_and_subscriptions_.empty() && profile_->IsIncognitoProfile() &&
-      !profile_->IsSystemProfile()) {
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-    // The Printing Background Manager holds onto preview dialog WebContents
-    // whose corresponding print jobs have not yet fully spooled. Make sure
-    // these get destroyed before tearing down the incognito profile so that
-    // their RenderFrameHosts can exit in time - see crbug.com/579155
-    g_browser_process->background_printing_manager()
-        ->DeletePreviewContentsForBrowserContext(profile_);
-#endif
-    // An incognito profile is no longer needed, this indirectly frees
-    // its cache and cookies once it gets destroyed at the appropriate time.
-    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile_);
+  for (BrowserCollectionObserver& observer : observers()) {
+    observer.OnBrowserClosed(target_browser_and_subscriptions->first.get());
   }
 }
 
@@ -122,8 +86,6 @@ void BrowserManagerService::AddBrowserForTesting(
   // via `Browser::DeprecatedCreateOwnedForTesting()`, which calls into this
   // method.
   CHECK(browsers_and_subscriptions_.empty());
-  // Prefer push_back, see totw/112.
-  // NOLINTNEXTLINE(modernize-use-emplace)
   browsers_and_subscriptions_for_testing_.push_back(
       UnownedBrowserAndSubscriptions(
           browser,
@@ -167,9 +129,7 @@ BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
     browsers.reserve(browsers_and_subscriptions_.size());
     std::ranges::transform(browsers_and_subscriptions_,
                            std::back_inserter(browsers),
-                           [](const auto& browser_and_subscriptions) {
-                             return browser_and_subscriptions.browser.get();
-                           });
+                           [](const auto& pair) { return pair.first.get(); });
   }
 
   return browsers;
@@ -194,12 +154,6 @@ void BrowserManagerService::OnBrowserDeactivated(
   }
 }
 
-void BrowserManagerService::OnBrowserClosed(BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers()) {
-    observer.OnBrowserClosed(browser);
-  }
-}
-
 void BrowserManagerService::OnBrowserClosedForTesting(
     BrowserWindowInterface* browser) {
   // Tests manually creating owned browsers must create all their instances
@@ -218,22 +172,6 @@ void BrowserManagerService::OnBrowserClosedForTesting(
     return;
   }
 }
-
-BrowserManagerService::BrowserAndSubscriptions::BrowserAndSubscriptions(
-    std::unique_ptr<BrowserWindowInterface> browser,
-    base::CallbackListSubscription activated_subscription,
-    base::CallbackListSubscription deactivated_subscription,
-    base::CallbackListSubscription closed_subscription)
-    : browser(std::move(browser)),
-      activated_subscription(std::move(activated_subscription)),
-      deactivated_subscription(std::move(deactivated_subscription)),
-      closed_subscription(std::move(closed_subscription)) {}
-
-BrowserManagerService::BrowserAndSubscriptions::BrowserAndSubscriptions(
-    BrowserAndSubscriptions&&) = default;
-
-BrowserManagerService::BrowserAndSubscriptions::~BrowserAndSubscriptions() =
-    default;
 
 BrowserManagerService::UnownedBrowserAndSubscriptions::
     UnownedBrowserAndSubscriptions(

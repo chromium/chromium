@@ -196,7 +196,6 @@ Browser* WaitForBrowserToOpen();
 // Blocks until a Browser is removed from the BrowserList. If |browser| is null,
 // the removal of any browser will suffice; otherwise the removed browser must
 // match |browser|.
-// DEPRECATED: Please use BrowserDestroyedObserver.
 void WaitForBrowserToClose(BrowserWindowInterface* browser = nullptr);
 
 // Download the given file and waits for the download to complete.
@@ -622,15 +621,8 @@ class BrowserDestroyedObserver : public BrowserCollectionObserver {
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
-  // True if a closed event has been observed for `browser_`.
-  bool browser_was_closed_ = false;
-
-  // WeakPtr captured when the target browser was closed.
-  base::WeakPtr<BrowserWindowInterface> browser_;
-
-  // SessionID of the target browser.
+  bool was_removed_ = false;
   const std::optional<SessionID> session_id_;
-
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};

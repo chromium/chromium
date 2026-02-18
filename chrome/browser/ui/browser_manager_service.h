@@ -39,9 +39,7 @@ class BrowserManagerService : public KeyedService,
   // Adds a new Browser to be owned by the service.
   void AddBrowser(std::unique_ptr<Browser> browser);
 
-  // Destroys `browser` if owned and managed by the service. It is expected that
-  // `browser` has first emitted a did-close event and `OnBrowserClosed()` is
-  // called before `DeleteBrowser()`.
+  // Destroys `browser` if owned and managed by the service.
   void DeleteBrowser(Browser* browser);
 
   // Adds a new unowned Browser created by unit tests.
@@ -54,32 +52,15 @@ class BrowserManagerService : public KeyedService,
   BrowserVector GetBrowsers(Order order) override;
 
  private:
-  // Browser event listeners ---------------------------------------------------
-  // This service owns and manages browser objects associated with its profile.
-  // The browser objects themselves emit browser-specific events such as
-  // activation / deactivation / window-close. This service listens for these
-  // events on each browser instance it manages and aggregates the events
-  // for propagation to collection observers.
-
-  // Triggered by events emitted by browsers managed by this service. Triggered
-  // when a browser's backing window becomes active.
+  // Called when a browser in this profile became active.
   void OnBrowserActivated(BrowserWindowInterface* browser);
 
-  // Triggered by events emitted by browsers managed by this service. Triggered
-  // when a browser's backing window becomes inactive.
+  // Called when a browser in this profile became inactive.
   void OnBrowserDeactivated(BrowserWindowInterface* browser);
 
-  // Triggered by events emitted by browsers managed by this service. Triggered
-  // when a browser has closed (i.e. all tabs are destroyed and the browser
-  // enters a pending-delete state, after which it is destroyed asynchronously
-  // via a call into `DeleteBrowser()`).
-  void OnBrowserClosed(BrowserWindowInterface* browser);
-
   // Called when browsers in `browsers_and_subscriptions_for_testing_` have
-  // closed. Removes `browser` from `browsers_and_subscriptions_for_testing_`.
+  // closed.
   void OnBrowserClosedForTesting(BrowserWindowInterface* browser);
-
-  // ---------------------------------------------------------------------------
 
   // Profile associated with this service.
   const raw_ptr<Profile> profile_;
@@ -88,26 +69,13 @@ class BrowserManagerService : public KeyedService,
   // most recently activated browser appearing at the front of the vector.
   std::vector<raw_ptr<BrowserWindowInterface>> browsers_activation_order_;
 
-  // We need to hold subscriptions for each Browser. Stores the browser in
-  // creation order, with the least recently created browser appearing at the
-  // front of the vector.
-  struct BrowserAndSubscriptions {
-    BrowserAndSubscriptions(
-        std::unique_ptr<BrowserWindowInterface> browser,
-        base::CallbackListSubscription activated_subscription,
-        base::CallbackListSubscription deactivated_subscription,
-        base::CallbackListSubscription closed_subscription);
-    BrowserAndSubscriptions(const BrowserAndSubscriptions&) = delete;
-    BrowserAndSubscriptions& operator=(const BrowserAndSubscriptions&) = delete;
-    BrowserAndSubscriptions(BrowserAndSubscriptions&&);
-    BrowserAndSubscriptions& operator=(BrowserAndSubscriptions&&) = default;
-    ~BrowserAndSubscriptions();
-
-    std::unique_ptr<BrowserWindowInterface> browser;
-    base::CallbackListSubscription activated_subscription;
-    base::CallbackListSubscription deactivated_subscription;
-    base::CallbackListSubscription closed_subscription;
-  };
+  // We need to hold 2 subscriptions for each Browser: one for DidBecomeActive
+  // and one for DidBecomeInactive. Stores the browser in creation order, with
+  // the least recently created browser appearing at the front of the vector.
+  using BrowserAndSubscriptions =
+      std::pair<std::unique_ptr<Browser>,
+                std::pair<base::CallbackListSubscription,
+                          base::CallbackListSubscription>>;
   std::vector<BrowserAndSubscriptions> browsers_and_subscriptions_;
 
   // `browsers_and_subscriptions_for_testing_` and `browsers_and_subscriptions_`
