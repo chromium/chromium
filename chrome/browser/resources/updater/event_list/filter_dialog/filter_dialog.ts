@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -33,7 +34,20 @@ export class FilterDialogElement extends CrLitElement {
     };
   }
 
+  private eventTracker: EventTracker = new EventTracker();
   accessor anchorElement: HTMLElement|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker.add(window, 'scroll', () => {
+      this.positionDialog();
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
+  }
 
   override firstUpdated() {
     this.$.dialog.showModal();
