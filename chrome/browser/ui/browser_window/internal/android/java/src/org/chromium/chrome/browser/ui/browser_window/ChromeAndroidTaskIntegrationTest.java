@@ -1009,6 +1009,68 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM /* test needs freeform windows */)
+    public void createPendingTask_requestShowInactive_dispatchesShowInactive() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var taskTracker =
+                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
+                            ChromeAndroidTaskTrackerImpl
+                                    .pausePendingTaskActivityCreationForTesting();
+                            return taskTracker;
+                        });
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Arrange : Request SHOW_INACTIVE on pending task.
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var task =
+                                    chromeAndroidTaskTracker.createPendingTask(
+                                            createParams, /* callback= */ null);
+                            assertNotNull(task);
+
+                            var pendingTaskInfo = task.getPendingTaskInfo();
+                            assertNotNull(pendingTaskInfo);
+
+                            task.showInactive();
+
+                            ChromeAndroidTaskTrackerImpl
+                                    .resumePendingTaskActivityCreationForTesting(
+                                            pendingTaskInfo.mPendingTaskId);
+
+                            return task;
+                        });
+
+        // Assert: Verify that pending actions are dispatched and the task is inactive.
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            assumeNonNull(newActivity.getWindowAndroid()).isTopResumedActivity(),
+                            Matchers.is(false));
+                },
+                /* maxTimeoutMs= */ 15_000L,
+                /* checkIntervalMs= */ 1000L);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(chromeAndroidTask.isActive());
+                });
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @Test
+    @MediumTest
     public void
             createPendingTask_requestPendingActions_lastActionHasHighestPriority_dispatchesLastAction() {
         // Arrange.
