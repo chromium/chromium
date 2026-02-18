@@ -568,6 +568,11 @@ class COMPONENT_EXPORT(SQL) Database {
   // an uninitialized or already-closed database.
   void Close();
 
+  // Fast path for closing and deleting an open database. This avoids
+  // checkpointing the WAL file (if any) since the data will be deleted right
+  // away. When not in WAL mode, this is shorthand for `Close()` + `Delete()`.
+  bool CloseAndDelete();
+
   // Release all non-essential memory associated with this database connection.
   void TrimMemory();
 
@@ -620,7 +625,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // used on a database which is not opened by any Database instance. Open
   // Database instances pointing to the database can cause odd results or
   // corruption (for instance if a hot journal is deleted but the associated
-  // database is not).
+  // database is not). See `CloseAndDelete()` for deleting an open database.
   //
   // Returns true if the database file and associated journals no
   // longer exist, false otherwise.  If the database has never

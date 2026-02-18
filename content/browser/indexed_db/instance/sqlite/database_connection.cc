@@ -891,14 +891,12 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
 // static
 void DatabaseConnection::CloseDatabase(
     std::unique_ptr<sql::Database> db,
-    const base::FilePath& db_path,
     const base::FilePath& legacy_blob_directory,
     bool should_delete,
     bool should_attempt_recovery,
     std::optional<std::set<int64_t>> known_legacy_blob_ids) {
   if (should_delete) {
-    db.reset();
-    sql::Database::Delete(db_path);
+    db->CloseAndDelete();
     if (!base::DeletePathRecursively(legacy_blob_directory)) {
       base::UmaHistogramEnumeration(
           "IndexedDB.SQLite.SpecificEvent.OnDisk",
@@ -1005,7 +1003,7 @@ base::OnceClosure DatabaseConnection::DestroySoon(bool force_closing) && {
 
   db_->DetachFromSequence();
   return base::BindOnce(
-      &DatabaseConnection::CloseDatabase, std::move(db_), path_,
+      &DatabaseConnection::CloseDatabase, std::move(db_),
       GetLegacyBlobDirectory(), should_delete_db, should_attempt_recovery,
       should_delete_legacy_blobs ? std::move(legacy_blob_files_)
                                  : std::nullopt);

@@ -276,7 +276,6 @@ class CONTENT_EXPORT DatabaseConnection {
 
   static void CloseDatabase(
       std::unique_ptr<sql::Database> db,
-      const base::FilePath& db_path,
       const base::FilePath& legacy_blob_directory,
       bool should_delete,
       bool should_attempt_recovery,

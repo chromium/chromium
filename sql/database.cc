@@ -1341,6 +1341,16 @@ bool Database::Delete(const base::FilePath& path) {
   return !journal_exists && !wal_exists && !path_exists;
 }
 
+bool Database::CloseAndDelete() {
+  CHECK(is_open());
+  if (UseWALMode()) {
+    sqlite3_db_config(db_, SQLITE_DBCONFIG_NO_CKPT_ON_CLOSE, 1, nullptr);
+  }
+  const base::FilePath path = DbPath();
+  Close();
+  return Delete(path);
+}
+
 bool Database::BeginTransaction(InternalApiToken) {
   TRACE_EVENT0("sql", "Database::BeginTransaction");
 
