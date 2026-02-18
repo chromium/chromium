@@ -80,8 +80,8 @@ int main(int argc, const char* argv[]) {
   net::tld_cleanup::NormalizeResult result =
       net::tld_cleanup::NormalizeFile(input_file, output_file);
   if (result != net::tld_cleanup::NormalizeResult::kSuccess) {
-    fprintf(stderr,
-            "Errors or warnings processing file.  See log in tld_cleanup.log.");
+    std::cerr << "Errors or warnings processing file.  See log in "
+              << settings.log_file_path << "." << std::endl;
   }
 
   if (result == net::tld_cleanup::NormalizeResult::kError)
