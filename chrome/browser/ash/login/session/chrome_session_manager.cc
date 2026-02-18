@@ -497,8 +497,8 @@ void ChromeSessionManager::OnSessionCreated(const AccountId& account_id) {
   // Initialize the session length limiter and start it only if
   // session limit is defined by the policy.
   session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
-      base::DefaultClock::GetInstance(), &session_manager_.get(),
-      browser_restart);
+      &local_state_.get(), base::DefaultClock::GetInstance(),
+      &session_manager_.get(), browser_restart);
 }
 
 }  // namespace ash

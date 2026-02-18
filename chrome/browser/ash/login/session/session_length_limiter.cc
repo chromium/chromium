@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -37,6 +36,7 @@ void SessionLengthLimiter::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 SessionLengthLimiter::SessionLengthLimiter(
+    PrefService* local_state,
     base::Clock* clock,
     session_manager::SessionManager* session_manager,
     bool browser_restarted)
@@ -44,12 +44,12 @@ SessionLengthLimiter::SessionLengthLimiter(
       session_manager_(CHECK_DEREF(session_manager)),
       session_start_time_tracker_(
           std::make_unique<session_manager::SessionStartTimeTracker>(
-              g_browser_process->local_state(),
+              local_state,
               clock,
               browser_restarted)) {
+  CHECK(local_state);
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  PrefService* local_state = g_browser_process->local_state();
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       prefs::kSessionLengthLimit,

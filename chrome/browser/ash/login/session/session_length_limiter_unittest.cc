@@ -242,6 +242,7 @@ void SessionLengthLimiterTest::CreateSessionLengthLimiter(
   user_activity_seen_ = false;
   session_start_time_ = runner_->Now();
   session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       runner_->GetMockClock(), session_manager_.get(), browser_restarted);
 }
 

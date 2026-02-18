@@ -34,9 +34,10 @@ class SessionLengthLimiter
   // Registers preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // `clock` and `session_manager` must not be nullptr, and they must outlive
-  // this instance.
-  SessionLengthLimiter(base::Clock* clock,
+  // `local_state`, `clock` and `session_manager` must not be nullptr, and they
+  // must outlive this instance.
+  SessionLengthLimiter(PrefService* local_state,
+                       base::Clock* clock,
                        session_manager::SessionManager* session_manager,
                        bool browser_restarted);
 
