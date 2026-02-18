@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_METRICS_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_METRICS_H_
 
-#include <vector>
-
+#include "base/containers/span.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/remote_suggestions_service_simple.h"
 
 namespace action_chips {
@@ -31,7 +30,7 @@ void RecordActionChipsRequestStatus(
 
 // Records impression metrics for the generated chips.
 void RecordImpressionMetrics(
-    const std::vector<action_chips::mojom::ActionChipPtr>& chips);
+    base::span<const action_chips::mojom::ActionChipPtr> chips);
 
 // Records whether any action chips were shown.
 void RecordActionChipsAnyShown(bool any_shown);
