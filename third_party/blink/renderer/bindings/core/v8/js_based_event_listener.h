@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "v8/include/v8.h"
 
@@ -16,6 +17,7 @@ namespace blink {
 class DOMWrapperWorld;
 class Event;
 class EventTarget;
+class ResourceTimingContext;
 class ScriptState;
 class SourceLocation;
 
@@ -26,6 +28,7 @@ class SourceLocation;
 class CORE_EXPORT JSBasedEventListener : public EventListener {
  public:
   ~JSBasedEventListener() override;
+  void Trace(Visitor*) const override;
 
   // blink::EventListener overrides:
   bool BelongsToTheCurrentWorld(ExecutionContext*) const final;
@@ -82,6 +85,8 @@ class CORE_EXPORT JSBasedEventListener : public EventListener {
   virtual void InvokeInternal(EventTarget&,
                               Event&,
                               v8::Local<v8::Value> js_event) = 0;
+
+  Member<ResourceTimingContext> resource_timing_context_;
 };
 
 template <>
