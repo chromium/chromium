@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.j
 import 'chrome://resources/cr_elements/icons.html.js';
 import './error_page.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -127,6 +128,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   /** Initializes dialog. */
   override connectedCallback() {
     super.connectedCallback();
+    ColorChangeUpdater.forDocument().start();
     SkillsDialogBrowserProxy.getInstance().handler.getInitialSkill().then(
         ({skill}) => {
           if (skill) {
