@@ -338,6 +338,7 @@ source_set("unit_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
+    ":test_support",
     ":ui",
     ":ui_impl",
     "//base",
@@ -435,4 +436,20 @@ if (is_android) {
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_contextual_tasks_panel_controller.cc",
+    "mock_contextual_tasks_panel_controller.h",
+  ]
+  deps = [
+    ":contextual_tasks",
+    "//base",
+    "//components/contextual_search:public",
+    "//components/contextual_tasks/public",
+    "//testing/gmock",
+    "//third_party/omnibox_proto",
+  ]
 }
