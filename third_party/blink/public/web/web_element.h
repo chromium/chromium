@@ -108,6 +108,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   // element
   void SelectText(bool select_all);
 
+  // Simulates a click on `this` element.
+  void Click();
+
   // Simulates a paste of `text` event into `this` element.
   //
   // There are three different behaviors depending on `replace_all` and which

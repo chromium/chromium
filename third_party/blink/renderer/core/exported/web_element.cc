@@ -221,6 +221,11 @@ void WebElement::SelectText(bool select_all) {
   }
 }
 
+void WebElement::Click() {
+  auto* element = Unwrap<Element>();
+  element->DispatchSimulatedClick(nullptr);
+}
+
 void WebElement::PasteText(const WebString& text, bool replace_all) {
   if (!IsEditable()) {
     return;

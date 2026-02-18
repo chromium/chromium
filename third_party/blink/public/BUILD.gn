@@ -364,6 +364,7 @@ source_set("blink_headers") {
     "web/web_print_params.h",
     "web/web_print_preset_options.h",
     "web/web_range.h",
+    "web/web_record_replay_client.h",
     "web/web_remote_frame.h",
     "web/web_render_theme.h",
     "web/web_savable_resources_test_support.h",

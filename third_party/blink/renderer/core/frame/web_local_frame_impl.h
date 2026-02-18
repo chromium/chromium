@@ -129,6 +129,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebLocalFrameClient* Client() const override { return client_; }
   void SetAutofillClient(WebAutofillClient*) override;
   WebAutofillClient* AutofillClient() override;
+  void SetRecordReplayClient(WebRecordReplayClient*) override;
+  WebRecordReplayClient* RecordReplayClient() override;
   void SetContentCaptureClient(WebContentCaptureClient*) override;
   WebContentCaptureClient* ContentCaptureClient() const override;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
@@ -691,6 +693,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   Member<WebDevToolsAgentImpl> dev_tools_agent_;
 
   WebAutofillClient* autofill_client_ = nullptr;
+
+  WebRecordReplayClient* record_replay_client_ = nullptr;
 
   WebContentCaptureClient* content_capture_client_ = nullptr;
 

@@ -2690,6 +2690,15 @@ WebAutofillClient* WebLocalFrameImpl::AutofillClient() {
   return autofill_client_;
 }
 
+void WebLocalFrameImpl::SetRecordReplayClient(
+    WebRecordReplayClient* record_replay_client) {
+  record_replay_client_ = record_replay_client;
+}
+
+WebRecordReplayClient* WebLocalFrameImpl::RecordReplayClient() {
+  return record_replay_client_;
+}
+
 void WebLocalFrameImpl::SetContentCaptureClient(
     WebContentCaptureClient* content_capture_client) {
   content_capture_client_ = content_capture_client;

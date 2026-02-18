@@ -52,12 +52,18 @@ RecordReplayAgent::RecordReplayAgent(
     content::RenderFrame* render_frame,
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame) {
-  // TODO(b/476101114): Set `this` as WebRecordReplayClient.
+  render_frame->GetWebFrame()->SetRecordReplayClient(this);
   registry->AddInterface<mojom::RecordReplayAgent>(base::BindRepeating(
       &RecordReplayAgent::BindPendingReceiver, base::Unretained(this)));
 }
 
 RecordReplayAgent::~RecordReplayAgent() = default;
+
+void RecordReplayAgent::WillDetach(blink::DetachReason detach_reason) {
+  if (auto* frame = render_frame()) {
+    frame->GetWebFrame()->SetRecordReplayClient(this);
+  }
+}
 
 // Destroys itself asynchronously because OnDestruct() can be triggered
 // synchronously by JavaScript, and that JavaScript might be triggered
@@ -130,7 +136,7 @@ void RecordReplayAgent::DoClick(int64_t dom_node_id,
     std::move(cb).Run(false);
     return;
   }
-  // TODO(b/476101114): Emit click on `element`.
+  element.Click();
   std::move(cb).Run(true);
 }
 

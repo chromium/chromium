@@ -218,7 +218,6 @@ TEST_F(RecordReplayAgentTest, RecordingSelect) {
   blink::WebFormControlElement select =
       GetWebElementById("select").DynamicTo<blink::WebFormControlElement>();
   select.SetValue("value2");
-  test_api(agent()).SelectControlSelectionChanged(select);
 }
 
 // Tests that value changes of text form controls are recorded.

@@ -56,6 +56,7 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_popup_menu_info.h"
+#include "third_party/blink/public/web/web_record_replay_client.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
@@ -1274,9 +1275,13 @@ void ChromeClientImpl::ShowVirtualKeyboardOnElementFocus(LocalFrame& frame) {
 }
 
 void ChromeClientImpl::OnMouseDown(Node& mouse_down_node) {
-  if (auto* fill_client =
-          AutofillClientFromFrame(mouse_down_node.GetDocument().GetFrame())) {
+  LocalFrame* frame = mouse_down_node.GetDocument().GetFrame();
+  if (auto* fill_client = AutofillClientFromFrame(frame)) {
     fill_client->DidReceiveLeftMouseDownOrGestureTapInNode(
+        WebNode(&mouse_down_node));
+  }
+  if (auto* record_replay_client = RecordReplayClientFromFrame(frame)) {
+    record_replay_client->DidReceiveLeftMouseDownOrGestureTapInNode(
         WebNode(&mouse_down_node));
   }
 }
@@ -1337,9 +1342,13 @@ void ChromeClientImpl::DidUserChangeContentEditableContent(Element& element) {
 
 void ChromeClientImpl::DidEndEditingOnTextField(
     HTMLInputElement& input_element) {
-  if (auto* fill_client =
-          AutofillClientFromFrame(input_element.GetDocument().GetFrame())) {
+  LocalFrame* frame = input_element.GetDocument().GetFrame();
+  if (auto* fill_client = AutofillClientFromFrame(frame)) {
     fill_client->TextFieldDidEndEditing(WebInputElement(&input_element));
+  }
+  if (auto* record_replay_client = RecordReplayClientFromFrame(frame)) {
+    record_replay_client->TextFieldDidEndEditing(
+        WebInputElement(&input_element));
   }
 }
 
@@ -1360,9 +1369,13 @@ void ChromeClientImpl::TextFieldDataListChanged(HTMLInputElement& input) {
 
 void ChromeClientImpl::DidChangeSelectionInSelectControl(
     HTMLFormControlElement& element) {
-  Document& doc = element.GetDocument();
-  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+  LocalFrame* frame = element.GetDocument().GetFrame();
+  if (auto* fill_client = AutofillClientFromFrame(frame)) {
     fill_client->SelectControlSelectionChanged(WebFormControlElement(&element));
+  }
+  if (auto* record_replay_client = RecordReplayClientFromFrame(frame)) {
+    record_replay_client->SelectControlSelectionChanged(
+        WebFormControlElement(&element));
   }
 }
 
@@ -1438,6 +1451,15 @@ WebAutofillClient* ChromeClientImpl::AutofillClientFromFrame(
   }
 
   return WebLocalFrameImpl::FromFrame(frame)->AutofillClient();
+}
+
+WebRecordReplayClient* ChromeClientImpl::RecordReplayClientFromFrame(
+    LocalFrame* frame) {
+  if (!frame) {
+    return nullptr;
+  }
+
+  return WebLocalFrameImpl::FromFrame(frame)->RecordReplayClient();
 }
 
 void ChromeClientImpl::DidUpdateTextAutosizerPageInfo(

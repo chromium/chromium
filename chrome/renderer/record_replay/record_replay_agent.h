@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/web/web_record_replay_client.h"
 
 namespace blink {
 class WebDocument;
@@ -27,8 +28,8 @@ class RenderFrame;
 
 namespace record_replay {
 
-// TODO(b/476101114): Add blink::WebRecordReplayClient and derive from it.
 class RecordReplayAgent : public content::RenderFrameObserver,
+                          public blink::WebRecordReplayClient,
                           public mojom::RecordReplayAgent {
  public:
   RecordReplayAgent(content::RenderFrame* render_frame,
@@ -65,13 +66,15 @@ class RecordReplayAgent : public content::RenderFrameObserver,
   blink::WebDocument GetDocument();
 
   // content::RenderFrameObserver:
+  void WillDetach(blink::DetachReason detach_reason) override;
   void OnDestruct() override;
 
-  // TODO(b/476101114): Wire up to blink::WebRecordReplayClient:
-  void DidReceiveLeftMouseDownOrGestureTapInNode(const blink::WebNode& node);
+  // blink::WebRecordReplayClient:
+  void DidReceiveLeftMouseDownOrGestureTapInNode(
+      const blink::WebNode& node) override;
   void SelectControlSelectionChanged(
-      const blink::WebFormControlElement& element);
-  void TextFieldDidEndEditing(const blink::WebInputElement& element);
+      const blink::WebFormControlElement& element) override;
+  void TextFieldDidEndEditing(const blink::WebInputElement& element) override;
 
   mojo::AssociatedReceiver<mojom::RecordReplayAgent> receiver_{this};
   mojo::AssociatedRemote<mojom::RecordReplayDriver> driver_;
