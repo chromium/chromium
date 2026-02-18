@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,9 +59,9 @@ constexpr int64_t kIndex3 = 35;
 MATCHER_P(SliceEq,
           str,
           std::string(negation ? "isn't" : "is") + " equal to " +
-              base::HexEncode(str.data(), str.size())) {
-  *result_listener << "which is " << base::HexEncode(arg.data(), arg.size());
-  return std::string(arg.data(), arg.size()) == str;
+              base::HexEncode(str)) {
+  *result_listener << "which is " << base::HexEncode(base::as_byte_span(arg));
+  return std::string_view(arg) == str;
 }
 
 leveldb_env::Options GetLevelDBOptions() {

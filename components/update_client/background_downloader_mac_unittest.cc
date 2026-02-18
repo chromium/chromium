@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -216,9 +217,8 @@ TEST_F(BackgroundDownloaderTest, DISABLED_DownloadDiscoveredInCache) {
 
   // Place a download in the cache.
   ASSERT_TRUE(base::CreateDirectory(download_cache_));
-  uint32_t url_hash = base::PersistentHash(GetURL().spec());
-  base::FilePath cached_download_path = download_cache_.Append(
-      base::HexEncode(reinterpret_cast<uint8_t*>(&url_hash), sizeof(url_hash)));
+  base::FilePath cached_download_path = download_cache_.Append(base::HexEncode(
+      base::byte_span_from_ref(base::PersistentHash(GetURL().spec()))));
   ASSERT_TRUE(base::WriteFile(cached_download_path, kSmallDownloadData));
 
   base::RunLoop run_loop;
