@@ -588,19 +588,6 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForFlightReservations) {
   EXPECT_THAT(entities, ElementsAre(flight1, flight2));
 }
 
-// Tests that `SetEntities()` does not add vehicle entities when the vehicle
-// sync feature is disabled.
-TEST_F(ValuableSyncBridgeTest, SetEntities_VehicleSyncDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kSyncWalletVehicleRegistrations);
-
-  EXPECT_CALL(backend(), CommitChanges);
-  EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
-  EXPECT_TRUE(SyncEntityInstances({GetServerVehicleEntityInstance()}));
-  EXPECT_THAT(GetAllEntityInstancesFromTable(), IsEmpty());
-}
-
 // Tests that `SetEntities()` correctly adds vehicle entities to the table.
 TEST_F(ValuableSyncBridgeTest, SetEntities_AddsVehicles) {
   const EntityInstance vehicle1 = GetServerVehicleEntityInstance(

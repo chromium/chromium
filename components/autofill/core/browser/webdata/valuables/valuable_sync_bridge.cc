@@ -531,9 +531,7 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
       EntityInstance::RecordType::kServerWallet);
 
   for (const EntityInstance& entity : entities) {
-    if (IsPassTypeEnabled(entity.type().name())) {
-      success &= entity_table->AddOrUpdateEntityInstance(entity);
-    }
+    success &= entity_table->AddOrUpdateEntityInstance(entity);
   }
 
   return success ? ValuableDatabaseOperationResult::kDataChanged
