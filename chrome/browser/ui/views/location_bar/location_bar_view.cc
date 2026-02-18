@@ -2061,14 +2061,14 @@ bool LocationBarView::IsEditingOrEmpty() const {
   return omnibox_view_ && omnibox_view_->IsEditingOrEmpty();
 }
 
-void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
+bool LocationBarView::OpenContextMenu() {
   if (browser_ &&
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
     if (!omnibox_popup_aim_presenter_ ||
         !omnibox_popup_aim_presenter_->GetWebUIContent() ||
         !omnibox_popup_aim_presenter_->GetWebUIContent()
              ->GetWrappedWebContents()) {
-      return;
+      return false;
     }
 
     omnibox_context_menu_ = std::make_unique<OmniboxContextMenu>(
@@ -2078,6 +2078,26 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
     gfx::Point point(0, location_icon_view_->height());
     views::View::ConvertPointToScreen(location_icon_view_, &point);
     run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);
+    return true;
+  }
+  return false;
+}
+
+void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap:
+    case ui::EventType::kGestureTwoFingerTap:
+      OpenContextMenu();
+      break;
+    default:
+      break;
+  }
+}
+
+void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
+  if (!OpenContextMenu()) {
     return;
   }
 

@@ -39,6 +39,9 @@ class LocationIconView : public IconLabelBubbleView {
     // Determines whether the omnibox (if any) is editing or empty.
     virtual bool IsEditingOrEmpty() const = 0;
 
+    // Called when the location icon is touched, with the event.
+    virtual void OnLocationIconGestureEvent(ui::GestureEvent* event) {}
+
     // Called when the location icon is pressed, with the event.
     virtual void OnLocationIconPressed(const ui::MouseEvent& event) {}
 
@@ -83,6 +86,7 @@ class LocationIconView : public IconLabelBubbleView {
   bool ShouldShowLabelAfterAnimation() const override;
   bool ShowBubble(const ui::Event& event) override;
   bool IsBubbleShowing() const override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
