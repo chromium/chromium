@@ -1541,7 +1541,7 @@
                   'ios/web_view/internal/language'
     },
     'legion': {
-      'filepath': 'components/legion|'\
+      'filepath': 'components/private_ai|'\
                   'chrome/browser/legion'
     },
     'lens_desktop': {

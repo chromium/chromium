@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/legion/private_ai_service.h"
-#include "components/legion/phosphor/blind_sign_auth_factory.h"
-#include "components/legion/phosphor/mock_blind_sign_auth.h"
+#include "components/private_ai/phosphor/blind_sign_auth_factory.h"
+#include "components/private_ai/phosphor/mock_blind_sign_auth.h"
 
 class PrefService;
 class Profile;

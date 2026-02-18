@@ -58,8 +58,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
-#include "components/legion/oak_session_service/oak_session_service.h"  // nogncheck
 #include "components/mirroring/service/mirroring_service.h"
+#include "components/private_ai/oak_session_service/oak_session_service.h"  // nogncheck
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck

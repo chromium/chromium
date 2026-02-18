@@ -8,8 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/legion/features.h"
-#include "components/legion/phosphor/blind_sign_auth_factory_impl.h"
+#include "components/private_ai/features.h"
+#include "components/private_ai/phosphor/blind_sign_auth_factory_impl.h"
 
 namespace private_ai {
 

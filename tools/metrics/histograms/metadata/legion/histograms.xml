@@ -102,7 +102,7 @@ reviewer.
     Records the server-side errors that occur during the request lifecycle.
     Recorded for every failed request due to a server error. The error codes are
     based on the canonical Google RPC codes. See
-    components/legion/proto/google_rpc_code.proto for the enum values.
+    components/private_ai/proto/google_rpc_code.proto for the enum values.
   </summary>
 </histogram>
 

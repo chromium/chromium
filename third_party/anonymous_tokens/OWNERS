@@ -1,4 +1,4 @@
-file://components/legion/OWNERS
+file://components/private_ai/OWNERS
 
 # Since Anonymous Tokens is used by BlindSignAuth in QUICHE, have the
 # //net OWNERS as secondary owners in case they need to roll this library to

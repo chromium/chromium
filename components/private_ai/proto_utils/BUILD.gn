@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("proto_utils") {
+  sources = [
+    "attestation_evidence_utils.cc",
+    "attestation_evidence_utils.h",
+    "generate_content_response_utils.cc",
+    "generate_content_response_utils.h",
+    "google_rpc_code.cc",
+    "google_rpc_code.h",
+  ]
+  deps = [
+    "//base",
+    "//components/private_ai:proto",
+    "//components/private_ai/attestation",
+    "//third_party/oak:oak_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "attestation_evidence_utils_unittest.cc",
+    "generate_content_response_utils_unittest.cc",
+    "google_rpc_code_unittest.cc",
+  ]
+  deps = [
+    ":proto_utils",
+    "//base/test:test_support",
+    "//components/private_ai:proto",
+    "//components/private_ai/attestation",
+    "//testing/gtest",
+    "//third_party/oak:oak_proto",
+  ]
+}

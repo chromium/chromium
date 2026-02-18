@@ -6,12 +6,12 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/legion/proto/legion.pb.h"
-#include "components/legion/testing/mock_legion_client.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
+#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/testing/mock_legion_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

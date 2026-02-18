@@ -8,8 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
-#include "components/legion/client.h"
-#include "components/legion/common/legion_logger.h"
+#include "components/private_ai/client.h"
+#include "components/private_ai/common/legion_logger.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

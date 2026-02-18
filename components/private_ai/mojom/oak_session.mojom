@@ -1,0 +1,43 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module private_ai.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+struct HandshakeMessage {
+  // Length of a P-256 public key in uncompressed X9.62 format.
+  //
+  // Same as `kP256X962Length` in components/private_ai/crypto/constants.h.
+  array<uint8, 65> ephemeral_public_key;
+  array<uint8> ciphertext;
+};
+
+// Interface for bootstrapping an oak session by creating a handshake request
+// and completing a handshake response received from a server.
+//
+// Once the handshake is completed, this interface can be used to encrypt/
+// decrypt data between client and server.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface OakSession {
+  // Creates a handshake request which is used to initiate a handshake.
+  //
+  // Should be called once.
+  InitiateHandshake() => (HandshakeMessage request);
+
+  // Process a handshake response from a server to complete a handshake.
+  //
+  // Should be called once and after `InitiateHandshake()`.
+  CompleteHandshake(HandshakeMessage response) => (bool success);
+
+  // Encrypts data that will be sent to the server.
+  //
+  // Should be called only after successful handshake completion.
+  Encrypt(array<uint8> input) => (array<uint8>? output);
+
+  // Decrypts data received from the server.
+  //
+  // Should be called only after successful handshake completion.
+  Decrypt(array<uint8> input) => (array<uint8>? output);
+};

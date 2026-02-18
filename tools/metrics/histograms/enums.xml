@@ -7601,7 +7601,7 @@ shown properly on the user-facing crash UI.
   <int value="11" label="ClientAttestationFailed"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/legion/error_code.h:ErrorCode) -->
+<!-- LINT.ThenChange(//components/private_ai/error_code.h:ErrorCode) -->
 
 <!-- LINT.IfChange(LegionFeatureName) -->
 
@@ -7612,7 +7612,7 @@ shown properly on the user-facing crash UI.
   <int value="700" label="FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/legion/proto/legion.proto:FeatureName) -->
+<!-- LINT.ThenChange(//components/private_ai/proto/legion.proto:FeatureName) -->
 
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>

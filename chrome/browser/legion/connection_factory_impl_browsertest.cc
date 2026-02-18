@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/connection_factory_impl.h"
+#include "components/private_ai/connection_factory_impl.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
@@ -12,9 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/legion/common/legion_logger.h"
-#include "components/legion/features.h"
-#include "components/legion/phosphor/token_manager.h"
+#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/features.h"
+#include "components/private_ai/phosphor/token_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"

@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("attestation") {
+  sources = [
+    "handler.h",
+    "handler_impl.cc",
+    "handler_impl.h",
+    "server_evidence.cc",
+    "server_evidence.h",
+    "server_verification_key.cc",
+    "server_verification_key.h",
+    "server_verification_key_data.inc",
+    "verification_key_utils.cc",
+    "verification_key_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/private_ai:features",
+    "//crypto",
+    "//third_party/oak:oak_proto",
+    "//third_party/oak:oak_proto_extras",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "handler_impl_unittest.cc",
+    "server_verification_key_unittest.cc",
+    "verification_key_utils_unittest.cc",
+  ]
+  deps = [
+    ":attestation",
+    "//base/test:test_support",
+    "//components/private_ai:features",
+    "//testing/gtest",
+    "//third_party/oak:oak_proto",
+    "//third_party/oak:oak_proto_extras",
+    "//third_party/oak:oak_proto_test_extras",
+  ]
+}

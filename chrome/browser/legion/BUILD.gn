@@ -12,7 +12,7 @@ if (!is_android) {
     ]
     public_deps = [
       "//chrome/browser:browser_public_dependencies",
-      "//components/legion/phosphor",
+      "//components/private_ai/phosphor",
     ]
     deps = [
       "//base",
@@ -21,10 +21,10 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//components/keyed_service/core",
-      "//components/legion",
-      "//components/legion:proto",
-      "//components/legion/common",
       "//components/prefs",
+      "//components/private_ai",
+      "//components/private_ai:proto",
+      "//components/private_ai/common",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//content/public/browser",
@@ -40,8 +40,8 @@ if (!is_android) {
     ]
     public_deps = [
       ":legion",
-      "//components/legion/phosphor",
-      "//components/legion/phosphor:test_support",
+      "//components/private_ai/phosphor",
+      "//components/private_ai/phosphor:test_support",
     ]
     deps = [
       "//net/third_party/quiche:blind_sign_auth",
@@ -61,8 +61,8 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/profiles:test_support",
       "//chrome/test:test_support",
-      "//components/legion:features",
-      "//components/legion/phosphor:test_support",
+      "//components/private_ai:features",
+      "//components/private_ai/phosphor:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//content/test:test_support",
       "//testing/gmock",
@@ -87,13 +87,13 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/test:test_support",
-      "//components/legion",
-      "//components/legion:proto",
-      "//components/legion:proto_extras",
-      "//components/legion/common",
-      "//components/legion/crypto",
-      "//components/legion/crypto:test_support",
-      "//components/legion/phosphor:test_support",
+      "//components/private_ai",
+      "//components/private_ai:proto",
+      "//components/private_ai:proto_extras",
+      "//components/private_ai/common",
+      "//components/private_ai/crypto",
+      "//components/private_ai/crypto:test_support",
+      "//components/private_ai/phosphor:test_support",
       "//content/test:test_support",
       "//net/third_party/quiche:blind_sign_auth",
       "//testing/gmock",

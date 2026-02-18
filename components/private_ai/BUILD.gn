@@ -1,0 +1,156 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/proto_extras/proto_extras.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [
+    "proto/google_rpc_code.proto",
+    "proto/legion.proto",
+  ]
+
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}
+
+# Generate serialization helper.
+proto_extras("proto_extras") {
+  sources = [
+    "proto/google_rpc_code.proto",
+    "proto/legion.proto",
+  ]
+
+  deps = [ ":proto" ]
+  extras_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto_extras",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("private_ai") {
+  assert(!is_android,
+         "The target //components/private_ai is not supported on Android.")
+  sources = [
+    "client.cc",
+    "client.h",
+    "client_impl.cc",
+    "client_impl.h",
+    "connection.h",
+    "connection_basic.cc",
+    "connection_basic.h",
+    "connection_factory.h",
+    "connection_factory_impl.cc",
+    "connection_factory_impl.h",
+    "connection_metrics.cc",
+    "connection_metrics.h",
+    "connection_proxy.cc",
+    "connection_proxy.h",
+    "connection_timeout.cc",
+    "connection_timeout.h",
+    "connection_token_attestation.cc",
+    "connection_token_attestation.h",
+    "error_code.h",
+    "legion_common.h",
+    "secure_channel.h",
+    "secure_channel_impl.cc",
+    "secure_channel_impl.h",
+    "secure_session.h",
+    "secure_session_async_impl.cc",
+    "secure_session_async_impl.h",
+    "transport.h",
+    "websocket_client.cc",
+    "websocket_client.h",
+  ]
+  public_deps = [ ":features" ]
+  deps = [
+    ":proto",
+    ":proto_extras",
+    "//base",
+    "//components/private_ai/attestation",
+    "//components/private_ai/common",
+    "//components/private_ai/crypto",
+    "//components/private_ai/mojom",
+    "//components/private_ai/oak_session_service",
+    "//components/private_ai/phosphor",
+    "//components/private_ai/proto_utils",
+    "//content/public/browser",
+    "//crypto",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/cert_verifier/public/mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/boringssl",
+    "//third_party/oak:oak_proto",
+    "//third_party/oak:oak_proto_extras",
+    "//url",
+  ]
+}
+
+source_set("testing") {
+  testonly = true
+  sources = [
+    "testing/fake_connection.cc",
+    "testing/fake_connection.h",
+    "testing/fake_token_manager.cc",
+    "testing/fake_token_manager.h",
+    "testing/mock_legion_client.h",
+  ]
+  public_deps = [
+    ":private_ai",
+    ":proto",
+    "//base",
+    "//components/private_ai/phosphor",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "client_impl_unittest.cc",
+    "connection_basic_unittest.cc",
+    "connection_metrics_unittest.cc",
+    "connection_proxy_unittest.cc",
+    "connection_timeout_unittest.cc",
+    "connection_token_attestation_unittest.cc",
+    "legion_logger_unittest.cc",
+    "secure_channel_impl_unittest.cc",
+    "secure_session_async_impl_unittest.cc",
+  ]
+  deps = [
+    ":private_ai",
+    ":proto",
+    ":testing",
+    "//base",
+    "//base/test:test_support",
+    "//components/private_ai/attestation",
+    "//components/private_ai/attestation:unit_tests",
+    "//components/private_ai/common",
+    "//components/private_ai/crypto:unit_tests",
+    "//components/private_ai/mojom",
+    "//components/private_ai/phosphor",
+    "//components/private_ai/phosphor:unit_tests",
+    "//components/private_ai/proto_utils:unit_tests",
+    "//content/test:test_support",
+    "//mojo/public/cpp/system",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/oak:oak_proto",
+    "//third_party/oak:oak_proto_extras",
+    "//third_party/oak:oak_proto_test_extras",
+  ]
+}

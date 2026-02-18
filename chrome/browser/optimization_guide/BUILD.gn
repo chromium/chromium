@@ -43,7 +43,7 @@ source_set("optimization_guide") {
     public_deps += [ "//chrome/browser/bookmarks/android" ]
   } else {
     sources += [ "legion_model_execution_fetcher.h" ]
-    public_deps += [ "//components/legion" ]
+    public_deps += [ "//components/private_ai" ]
   }
 }
 
@@ -89,9 +89,9 @@ source_set("impl") {
       "//chrome/browser/legion",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//components/legion",
-      "//components/legion:proto",
-      "//components/legion/phosphor",
+      "//components/private_ai",
+      "//components/private_ai:proto",
+      "//components/private_ai/phosphor",
     ]
   }
 }
@@ -203,9 +203,9 @@ source_set("unit_tests") {
       "optimization_guide_tab_url_provider_unittest.cc",
     ]
     deps += [
-      "//components/legion",
-      "//components/legion:proto",
-      "//components/legion:testing",
+      "//components/private_ai",
+      "//components/private_ai:proto",
+      "//components/private_ai:testing",
     ]
   }
 }

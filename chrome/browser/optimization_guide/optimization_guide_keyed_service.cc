@@ -97,8 +97,8 @@
 #include "chrome/browser/legion/private_ai_service_factory.h"
 #include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
-#include "components/legion/client.h"    // nogncheck
-#include "components/legion/features.h"  // nogncheck
+#include "components/private_ai/client.h"    // nogncheck
+#include "components/private_ai/features.h"  // nogncheck
 #endif
 
 namespace {

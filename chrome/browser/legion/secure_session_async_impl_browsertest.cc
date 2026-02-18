@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/secure_session_async_impl.h"
+#include "components/private_ai/secure_session_async_impl.h"
 
 #include <stdint.h>
 
@@ -12,8 +12,8 @@
 #include "base/containers/to_vector.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/legion/crypto/constants.h"
-#include "components/legion/crypto/test_server_secure_session.h"
+#include "components/private_ai/crypto/constants.h"
+#include "components/private_ai/crypto/test_server_secure_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

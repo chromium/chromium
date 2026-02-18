@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("phosphor") {
+  sources = [
+    "blind_sign_auth_factory.h",
+    "blind_sign_auth_factory_impl.cc",
+    "blind_sign_auth_factory_impl.h",
+    "config_http.cc",
+    "config_http.h",
+    "data_types.h",
+    "feature_token_manager.cc",
+    "feature_token_manager.h",
+    "oauth_token_provider.h",
+    "token_fetcher.h",
+    "token_fetcher_helper.cc",
+    "token_fetcher_helper.h",
+    "token_fetcher_impl.cc",
+    "token_fetcher_impl.h",
+    "token_manager.h",
+    "token_manager_impl.cc",
+    "token_manager_impl.h",
+  ]
+  public_deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+  deps = [
+    "//base",
+    "//components/private_ai:features",
+    "//components/private_ai:proto",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_blind_sign_auth.cc",
+    "mock_blind_sign_auth.h",
+  ]
+  public_deps = [
+    "//net/third_party/quiche:blind_sign_auth",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "config_http_unittest.cc",
+    "feature_token_manager_unittest.cc",
+    "token_fetcher_impl_unittest.cc",
+    "token_manager_impl_unittest.cc",
+  ]
+  deps = [
+    ":phosphor",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/private_ai:features",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

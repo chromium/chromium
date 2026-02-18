@@ -11,7 +11,7 @@
 #include "chrome/browser/legion/private_ai_service.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/legion/features.h"
+#include "components/private_ai/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

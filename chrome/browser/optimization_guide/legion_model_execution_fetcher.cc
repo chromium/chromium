@@ -8,9 +8,6 @@
 
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
-#include "components/legion/client.h"
-#include "components/legion/error_code.h"
-#include "components/legion/proto/legion.pb.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -18,6 +15,9 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/private_ai/client.h"
+#include "components/private_ai/error_code.h"
+#include "components/private_ai/proto/legion.pb.h"
 
 namespace optimization_guide {
 namespace {

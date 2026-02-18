@@ -4104,8 +4104,8 @@ if (!is_android) {
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/renderer/actor:browser_tests",
         "//chrome/renderer/webui_browser:browser_tests",
-        "//components/legion",
-        "//components/legion:testing",
+        "//components/private_ai",
+        "//components/private_ai:testing",
       ]
     }
 

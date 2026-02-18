@@ -61,9 +61,9 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/legion/private_ai_service.h"
 #include "chrome/browser/legion/private_ai_service_factory.h"
-#include "components/legion/client.h"
-#include "components/legion/features.h"
-#include "components/legion/legion_common.h"
+#include "components/private_ai/client.h"
+#include "components/private_ai/features.h"
+#include "components/private_ai/legion_common.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
