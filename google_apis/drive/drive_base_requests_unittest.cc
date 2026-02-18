@@ -112,7 +112,7 @@ class DriveBaseRequestsTest : public testing::Test {
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::OriginatingProcess::browser();
+    params->process_id = network::OriginatingProcessId::browser();
     params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));

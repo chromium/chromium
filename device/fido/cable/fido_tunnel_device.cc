@@ -145,7 +145,7 @@ FidoTunnelDevice::FidoTunnelDevice(
   network_context_factory.Run()->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
-      /*additional_headers=*/{}, network::OriginatingProcess::browser(),
+      /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
       url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
@@ -203,7 +203,7 @@ FidoTunnelDevice::FidoTunnelDevice(
   network_context_factory.Run()->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
-      std::move(headers), network::OriginatingProcess::browser(),
+      std::move(headers), network::OriginatingProcessId::browser(),
       url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),

@@ -23,7 +23,7 @@
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
-#include "services/network/public/cpp/originating_process.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // note: `url_loader_network_service_observer` must not be null.
   CorsURLLoader(
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
-      OriginatingProcess process_id,
+      OriginatingProcessId process_id,
       int32_t request_id,
       uint32_t options,
       DeleteCallback delete_callback,
@@ -236,7 +236,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   mojo::Receiver<mojom::URLLoader> receiver_;
 
   // We need to save these for redirect, and DevTools.
-  const OriginatingProcess process_id_;
+  const OriginatingProcessId process_id_;
   const int32_t request_id_;
   const uint32_t options_;
 

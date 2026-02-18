@@ -148,8 +148,8 @@ CorsURLLoaderTestBase::ResetFactoryParams::ResetFactoryParams() {
 
 CorsURLLoaderTestBase::ResetFactoryParams::~ResetFactoryParams() = default;
 
-const OriginatingProcess CorsURLLoaderTestBase::kRendererProcessId =
-    OriginatingProcess::renderer(RendererProcess(573));
+const OriginatingProcessId CorsURLLoaderTestBase::kRendererProcessId =
+    OriginatingProcessId::renderer(RendererProcessId(573));
 
 // CORS URL LOADER TEST BASE
 // =========================
@@ -271,7 +271,7 @@ void CorsURLLoaderTestBase::AddBlockListEntryForOrigin(
 }
 
 void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
-                                         OriginatingProcess process_id,
+                                         OriginatingProcessId process_id,
                                          const ResetFactoryParams& params) {
   if (!process_id.is_browser()) {
     DCHECK(initiator.has_value());

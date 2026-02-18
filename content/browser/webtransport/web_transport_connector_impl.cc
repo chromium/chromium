@@ -257,7 +257,7 @@ void WebTransportConnectorImpl::OnThrottleDone(
     url_loader_network_observer =
         static_cast<StoragePartitionImpl*>(storage_partition)
             ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                ToOriginatingProcess(
+                ToOriginatingProcessId(
                     ChildProcessId::FromUnsafeValue(process_id_)),
                 origin_);
   }

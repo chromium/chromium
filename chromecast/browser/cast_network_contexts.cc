@@ -151,7 +151,7 @@ CastNetworkContexts::GetSystemURLLoaderFactory() {
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::OriginatingProcess::browser();
+  params->process_id = network::OriginatingProcessId::browser();
   params->is_orb_enabled = false;
   params->is_trusted = true;
   GetSystemContext()->CreateURLLoaderFactory(

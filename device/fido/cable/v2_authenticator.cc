@@ -381,7 +381,7 @@ class TunnelTransport : public Transport {
     network_context_factory_.Run()->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
-        /*additional_headers=*/{}, network::OriginatingProcess::browser(),
+        /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
         url::Origin::Create(target_),
         network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,

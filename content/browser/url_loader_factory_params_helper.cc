@@ -85,7 +85,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
 
-  params->process_id = ToOriginatingProcess(process->GetID());
+  params->process_id = ToOriginatingProcessId(process->GetID());
   params->request_initiator_origin_lock = request_initiator_origin_lock;
 
   params->is_trusted = is_trusted;

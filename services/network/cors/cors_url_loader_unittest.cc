@@ -128,7 +128,7 @@ TEST_F(CorsURLLoaderTest, ForbiddenMethods) {
           url::Origin::Create(GURL("https://example.com"));
       ResetFactory(
           url::Origin::Create(GURL("https://example.com")) /* initiator */,
-          OriginatingProcess::browser());
+          OriginatingProcessId::browser());
 
       bool expect_allowed = (mode == mojom::RequestMode::kNoCors &&
                              test_case.expect_allowed_for_no_cors);
@@ -193,7 +193,7 @@ TEST_F(CorsURLLoaderTest, NoCorsWithoutInitiator) {
   // `request_initiator`.  A renderer process would have run into NOTREACHED and
   // mojo::ReportBadMessage via InitiatorLockCompatibility::kNoInitiator case in
   // CorsURLLoaderFactory::IsValidRequest.
-  ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+  ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNoCors;
@@ -235,7 +235,7 @@ TEST_F(CorsURLLoaderTest, CorsWithoutInitiator) {
 }
 
 TEST_F(CorsURLLoaderTest, NavigateWithoutInitiator) {
-  ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+  ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNavigate;
@@ -257,7 +257,7 @@ TEST_F(CorsURLLoaderTest, NavigateWithoutInitiator) {
 }
 
 TEST_F(CorsURLLoaderTest, NavigateWithEarlyHints) {
-  ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+  ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNavigate;
@@ -489,7 +489,7 @@ TEST_F(CorsURLLoaderTest, CorsEnabledSameCustomSchemeRequest) {
   // Scheme check can be skipped via the factory params.
   ResetFactoryParams factory_params;
   factory_params.skip_cors_enabled_scheme_check = true;
-  ResetFactory(url::Origin::Create(origin), OriginatingProcess::browser(),
+  ResetFactory(url::Origin::Create(origin), OriginatingProcessId::browser(),
                factory_params);
 
   // "Access-Control-Allow-Origin: *" accepts the custom scheme.
@@ -1783,7 +1783,7 @@ TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeWithoutInitiator) {
   // `request_initiator`.  A renderer process would have run into NOTREACHED and
   // mojo::ReportBadMessage via InitiatorLockCompatibility::kNoInitiator case in
   // CorsURLLoaderFactory::IsValidRequest.
-  ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+  ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNoCors;
@@ -1806,7 +1806,7 @@ TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeWithoutInitiator) {
 }
 
 TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeOnNavigation) {
-  ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+  ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNavigate;
@@ -1830,7 +1830,7 @@ TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeOnNavigation) {
 }
 
 TEST_F(CorsURLLoaderTest, OmitCredentialsModeOnNavigation) {
-  ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+  ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNavigate;
@@ -2242,7 +2242,7 @@ TEST_F(CorsURLLoaderTest, NetLogCrossOriginSimpleRequest) {
 
 TEST_F(CorsURLLoaderTest, NetLogPreflightMissingAllowOrigin) {
   auto initiator = url::Origin::Create(GURL("https://foo.example"));
-  ResetFactory(initiator, OriginatingProcess::browser());
+  ResetFactory(initiator, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.method = "PUT";
@@ -2274,7 +2274,7 @@ TEST_F(CorsURLLoaderTest, NetLogPreflightMissingAllowOrigin) {
 
 TEST_F(CorsURLLoaderTest, NetLogPreflightMethodDisallowed) {
   auto initiator = url::Origin::Create(GURL("https://foo.example"));
-  ResetFactory(initiator, OriginatingProcess::browser());
+  ResetFactory(initiator, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.method = "PUT";
@@ -2314,7 +2314,7 @@ TEST_F(CorsURLLoaderTest, NetLogPreflightMethodDisallowed) {
 
 TEST_F(CorsURLLoaderTest, NetLogPreflightNetError) {
   auto initiator = url::Origin::Create(GURL("https://foo.example"));
-  ResetFactory(initiator, OriginatingProcess::browser());
+  ResetFactory(initiator, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.method = "PUT";
@@ -2340,7 +2340,7 @@ TEST_F(CorsURLLoaderTest, NetLogPreflightNetError) {
 
 TEST_F(CorsURLLoaderTest, PreflightMissingAllowOrigin) {
   auto initiator = url::Origin::Create(GURL("https://foo.example"));
-  ResetFactory(initiator, OriginatingProcess::browser());
+  ResetFactory(initiator, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.method = "PUT";
@@ -2447,7 +2447,7 @@ TEST_F(CorsURLLoaderTest, ManualRedirectWithoutFlagDoesNotCensor) {
   const GURL url("https://example.com/foo.png");
   const GURL file_redirect("file:///etc/passwd");
 
-  ResetFactory(std::nullopt, OriginatingProcess::browser());
+  ResetFactory(std::nullopt, OriginatingProcessId::browser());
 
   ResourceRequest request;
   request.url = url;

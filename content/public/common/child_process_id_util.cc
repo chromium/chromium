@@ -6,37 +6,37 @@
 
 namespace content {
 
-network::OriginatingProcess ToOriginatingProcess(ChildProcessId process) {
+network::OriginatingProcessId ToOriginatingProcessId(ChildProcessId process) {
   // This normalises invalid input to invalid output.  Note that an invalid
   // input could have the values 0 or -1, however an invalid output will always
   // have the value -1.  This disallows the use of the magic value 0 from
   // meaning the browser process.
   if (!process) {
-    return network::OriginatingProcess();
+    return network::OriginatingProcessId();
   }
-  return network::OriginatingProcess::renderer(ToRendererProcess(process));
+  return network::OriginatingProcessId::renderer(ToRendererProcessId(process));
 }
 
-network::RendererProcess ToRendererProcess(ChildProcessId process) {
+network::RendererProcessId ToRendererProcessId(ChildProcessId process) {
   // This normalises invalid input to invalid output.  Note that an invalid
   // input could have the values 0 or -1, however an invalid output will always
   // have the value -1.  This disallows the use of the magic value 0 from
   // meaning the browser process.
   if (!process) {
-    return network::RendererProcess();
+    return network::RendererProcessId();
   }
-  return network::RendererProcess(process.value());
+  return network::RendererProcessId(process.value());
 }
 
-ChildProcessId ToChildProcessId(network::RendererProcess process) {
+ChildProcessId ToChildProcessId(network::RendererProcessId process) {
   return ChildProcessId(process.value());
 }
 
-network::OriginatingProcess ToOriginatingProcessUnsafe(int32_t process_id) {
+network::OriginatingProcessId ToOriginatingProcessIdUnsafe(int32_t process_id) {
   if (process_id == 0) {
-    return network::OriginatingProcess::browser();
+    return network::OriginatingProcessId::browser();
   }
-  return ToOriginatingProcess(ChildProcessId::FromUnsafeValue(process_id));
+  return ToOriginatingProcessId(ChildProcessId::FromUnsafeValue(process_id));
 }
 
 }  // namespace content

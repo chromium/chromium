@@ -70,8 +70,8 @@ class ResourceTrackerTest : public testing::Test {
                                             resources);
   }
 
-  const network::OriginatingProcess process_id_ =
-      network::OriginatingProcess::browser();
+  const network::OriginatingProcessId process_id_ =
+      network::OriginatingProcessId::browser();
 
   page_load_metrics::ResourceTracker resource_tracker_;
 };

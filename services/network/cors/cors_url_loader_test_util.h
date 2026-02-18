@@ -136,7 +136,7 @@ class CorsURLLoaderTestBase : public testing::Test {
 
  protected:
   // A process ID attributed to a renderer process. See `ResetFactory()`.
-  static const OriginatingProcess kRendererProcessId;
+  static const OriginatingProcessId kRendererProcessId;
 
   // A header that is exempt from the usual CORS rules.
   static constexpr char kTestCorsExemptHeader[] = "x-test-cors-exempt";
@@ -292,7 +292,7 @@ class CorsURLLoaderTestBase : public testing::Test {
 
   // Resets `cors_url_loader_factory_` with the given parameters.
   void ResetFactory(std::optional<url::Origin> initiator,
-                    OriginatingProcess process_id,
+                    OriginatingProcessId process_id,
                     const ResetFactoryParams& params = ResetFactoryParams());
 
   NetworkContext* network_context() { return network_context_.get(); }

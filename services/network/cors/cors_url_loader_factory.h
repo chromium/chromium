@@ -196,7 +196,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   // Retained from URLLoaderFactoryParams:
   const bool disable_web_security_;
-  const OriginatingProcess process_id_;
+  const OriginatingProcessId process_id_;
   const std::optional<url::Origin> request_initiator_origin_lock_;
   const bool ignore_isolated_world_origin_;
   const mojom::TrustTokenOperationPolicyVerdict trust_token_issuance_policy_;

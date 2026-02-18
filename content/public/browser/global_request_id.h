@@ -9,7 +9,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/originating_process.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace content {
@@ -18,12 +18,12 @@ namespace content {
 struct CONTENT_EXPORT GlobalRequestID {
   GlobalRequestID() = default;
 
-  GlobalRequestID(const network::OriginatingProcess& child_id,
+  GlobalRequestID(const network::OriginatingProcessId& child_id,
                   base::StrictNumeric<int32_t> request_id)
       : child_id(child_id), request_id(request_id) {}
 
   // The unique ID of the child process (different from OS's PID).
-  network::OriginatingProcess child_id;
+  network::OriginatingProcessId child_id;
 
   // The request ID (unique for the child).
   int32_t request_id = -1;

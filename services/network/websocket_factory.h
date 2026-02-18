@@ -24,7 +24,7 @@ class GURL;
 namespace net {
 class IsolationInfo;
 class SiteForCookies;
-class OriginatingProcess;
+class OriginatingProcessId;
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketFactory final {
       net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
-      const network::OriginatingProcess& process_id,
+      const network::OriginatingProcessId& process_id,
       const url::Origin& origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,

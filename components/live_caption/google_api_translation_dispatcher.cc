@@ -169,7 +169,7 @@ void GoogleApiTranslationDispatcher::GetTranslation(
 void GoogleApiTranslationDispatcher::ResetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::OriginatingProcess::browser();
+  params->process_id = network::OriginatingProcessId::browser();
   params->is_trusted = false;
   params->automatically_assign_isolation_info = true;
   network::mojom::NetworkContext* network_context =

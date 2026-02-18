@@ -100,7 +100,7 @@ BruschettaNetworkContext::GetURLLoaderFactory() {
     network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     url_loader_factory_params->process_id =
-        network::OriginatingProcess::browser();
+        network::OriginatingProcessId::browser();
     url_loader_factory_params->is_orb_enabled = false;
     url_loader_factory_params->is_trusted = true;
     url_loader_observers_.Add(

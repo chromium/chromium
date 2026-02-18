@@ -94,12 +94,12 @@ class NetworkServiceIntegrationTest : public testing::Test {
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin();
-    StartLoadingURL(request, network::OriginatingProcess::browser(), options);
+    StartLoadingURL(request, network::OriginatingProcessId::browser(), options);
     client_->RunUntilComplete();
   }
 
   void StartLoadingURL(const network::ResourceRequest& request,
-                       network::OriginatingProcess process_id,
+                       network::OriginatingProcessId process_id,
                        int options = network::mojom::kURLLoadOptionNone) {
     client_ = std::make_unique<network::TestURLLoaderClient>();
     mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;

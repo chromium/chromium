@@ -792,7 +792,7 @@ void NetworkService::ConfigureHttpAuthPrefs(
 }
 
 void NetworkService::SetRawHeadersAccess(
-    network::RendererProcess process_id,
+    network::RendererProcessId process_id,
     const std::vector<url::Origin>& origins) {
   DCHECK(process_id);
   if (!origins.size()) {
@@ -817,14 +817,14 @@ void NetworkService::SetMaxConnectionsPerProxyChain(uint32_t max_connections) {
 }
 
 bool NetworkService::HasRawHeadersAccess(
-    const network::OriginatingProcess& process_id,
+    const network::OriginatingProcessId& process_id,
     const GURL& resource_url) const {
   // Allow raw headers for browser-initiated requests.
   if (process_id.is_browser()) {
     return true;
   }
   auto it =
-      raw_headers_access_origins_by_pid_.find(process_id.renderer_process());
+      raw_headers_access_origins_by_pid_.find(process_id.renderer_process_id());
   if (it == raw_headers_access_origins_by_pid_.end()) {
     return false;
   }

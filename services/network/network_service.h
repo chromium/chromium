@@ -179,7 +179,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::HttpAuthStaticParamsPtr http_auth_static_params) override;
   void ConfigureHttpAuthPrefs(
       mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_params) override;
-  void SetRawHeadersAccess(network::RendererProcess process_id,
+  void SetRawHeadersAccess(network::RendererProcessId process_id,
                            const std::vector<url::Origin>& origins) override;
   void SetMaxConnectionsPerProxyChain(uint32_t max_connections) override;
   void GetNetworkChangeManager(
@@ -303,7 +303,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif  // BUILDFLAG(IS_LINUX)
 
   bool quic_disabled() const { return quic_disabled_; }
-  bool HasRawHeadersAccess(const network::OriginatingProcess& process_id,
+  bool HasRawHeadersAccess(const network::OriginatingProcessId& process_id,
                            const GURL& resource_url) const;
 
   net::NetworkQualityEstimator* network_quality_estimator() {
@@ -513,7 +513,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.
-  std::map<network::RendererProcess, base::flat_set<url::Origin>>
+  std::map<network::RendererProcessId, base::flat_set<url::Origin>>
       raw_headers_access_origins_by_pid_;
 
   bool quic_disabled_ = false;

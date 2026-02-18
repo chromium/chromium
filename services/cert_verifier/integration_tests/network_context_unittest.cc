@@ -124,8 +124,8 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
     const network::ResourceRequest& request,
     network::NetworkContext* network_context,
     int url_loader_options = network::mojom::kURLLoadOptionNone,
-    network::OriginatingProcess process_id =
-        network::OriginatingProcess::browser(),
+    network::OriginatingProcessId process_id =
+        network::OriginatingProcessId::browser(),
     network::mojom::URLLoaderFactoryParamsPtr params = nullptr) {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
   if (!params)

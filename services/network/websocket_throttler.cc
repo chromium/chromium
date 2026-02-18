@@ -79,12 +79,12 @@ WebSocketThrottler::WebSocketThrottler() {}
 WebSocketThrottler::~WebSocketThrottler() {}
 
 bool WebSocketThrottler::HasTooManyPendingConnections(
-    const network::OriginatingProcess& process_id) const {
+    const network::OriginatingProcessId& process_id) const {
   if (process_id.is_browser()) {
     return false;
   }
 
-  auto it = per_process_throttlers_.find(process_id.renderer_process());
+  auto it = per_process_throttlers_.find(process_id.renderer_process_id());
   if (it == per_process_throttlers_.end())
     return false;
 
@@ -92,12 +92,12 @@ bool WebSocketThrottler::HasTooManyPendingConnections(
 }
 
 base::TimeDelta WebSocketThrottler::CalculateDelay(
-    const network::OriginatingProcess& process_id) const {
+    const network::OriginatingProcessId& process_id) const {
   if (process_id.is_browser()) {
     return base::TimeDelta();
   }
 
-  auto it = per_process_throttlers_.find(process_id.renderer_process());
+  auto it = per_process_throttlers_.find(process_id.renderer_process_id());
   if (it == per_process_throttlers_.end())
     return base::TimeDelta();
 
@@ -106,17 +106,17 @@ base::TimeDelta WebSocketThrottler::CalculateDelay(
 
 std::optional<WebSocketThrottler::PendingConnection>
 WebSocketThrottler::IssuePendingConnectionTracker(
-    const network::OriginatingProcess& process_id) {
+    const network::OriginatingProcessId& process_id) {
   if (process_id.is_browser()) {
     // The browser process is not throttled.
     return std::nullopt;
   }
 
-  auto it = per_process_throttlers_.find(process_id.renderer_process());
+  auto it = per_process_throttlers_.find(process_id.renderer_process_id());
   if (it == per_process_throttlers_.end()) {
     it = per_process_throttlers_
              .insert(std::make_pair(
-                 process_id.renderer_process(),
+                 process_id.renderer_process_id(),
                  std::make_unique<WebSocketPerProcessThrottler>()))
              .first;
   }

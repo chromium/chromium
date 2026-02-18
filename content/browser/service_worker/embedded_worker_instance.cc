@@ -888,7 +888,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           std::move(dip_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                  ToOriginatingProcess(rph->GetID()), origin),
+                  ToOriginatingProcessId(rph->GetID()), origin),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
           std::move(client_security_state),
           /*network_restrictions_id=*/std::nullopt,

@@ -278,7 +278,7 @@ constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
 CorsURLLoader::CorsURLLoader(
     mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
-    OriginatingProcess process_id,
+    OriginatingProcessId process_id,
     int32_t request_id,
     uint32_t options,
     DeleteCallback delete_callback,
@@ -692,7 +692,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
     net::RedirectInfo censored_redirect_info = redirect_info;
     const bool is_browser_navigation =
         request_.mode == mojom::RequestMode::kNavigate &&
-        process_id_ == OriginatingProcess::browser();
+        process_id_ == OriginatingProcessId::browser();
     if (!is_browser_navigation &&
         !redirect_info.new_url.SchemeIsHTTPOrHTTPS()) {
       censored_redirect_info.new_url = GURL("data:,");

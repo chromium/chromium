@@ -20,7 +20,7 @@ import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
-import "services/network/public/mojom/originating_process.mojom";
+import "services/network/public/mojom/originating_process_id.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
@@ -290,7 +290,7 @@ interface NetworkService {
   // Granting a permission increases risks in case the child process becomes
   // compromised, so this should be done only in specific cases
   // (e.g. DevTools attached).
-  SetRawHeadersAccess(network.mojom.RendererProcess process_id,
+  SetRawHeadersAccess(network.mojom.RendererProcessId process_id,
                       array<url.mojom.Origin> origins);
 
   // Sets the maximum number of connections for a proxy chain.

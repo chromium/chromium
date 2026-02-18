@@ -5,16 +5,16 @@
 module network.mojom;
 
 // The originating process was the browser process.
-struct BrowserProcess {};
+struct BrowserProcessId {};
 
 // The originating process was a specific renderer.
-struct RendererProcess {
+struct RendererProcessId {
   int32 process_id;
 };
 
 // Describes which process the request originally came from.  This is useful
 // to provide security context to the response data from the network.
-union OriginatingProcess {
-  BrowserProcess browser_process;
-  RendererProcess renderer_process;
+union OriginatingProcessId {
+  BrowserProcessId browser_process_id;
+  RendererProcessId renderer_process_id;
 };

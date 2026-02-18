@@ -533,7 +533,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           std::move(coep_reporter), std::move(dip_reporter),
           GetStoragePartitionImpl()
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                  ToOriginatingProcess(GetProcessHost()->GetID()), origin),
+                  ToOriginatingProcessId(GetProcessHost()->GetID()), origin),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
           /*network_restrictions_id=*/std::nullopt,

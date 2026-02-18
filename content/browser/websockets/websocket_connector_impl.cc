@@ -116,14 +116,14 @@ void WebSocketConnectorImpl::Connect(
           frame_id_.frame_routing_id == IPC::mojom::kRoutingIdNone
               ? static_cast<StoragePartitionImpl*>(storage_partition)
                     ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                        ToOriginatingProcess(frame_id_.child_id), origin_)
+                        ToOriginatingProcessId(frame_id_.child_id), origin_)
               : storage_partition->CreateURLLoaderNetworkObserverForFrame(
                     frame_id_);
 
   storage_partition->GetNetworkContext()->CreateWebSocket(
       url, requested_protocols, site_for_cookies, storage_access_api_status,
       isolation_info_, std::move(headers),
-      ToOriginatingProcess(frame_id_.child_id), origin_,
+      ToOriginatingProcessId(frame_id_.child_id), origin_,
       client_security_state_->Clone(), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
@@ -157,7 +157,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
       url, requested_protocols, site_for_cookies, storage_access_api_status,
       isolation_info, std::move(additional_headers),
-      ToOriginatingProcess(frame_id.child_id), origin,
+      ToOriginatingProcessId(frame_id.child_id), origin,
       std::move(client_security_state), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),

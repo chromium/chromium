@@ -65,7 +65,7 @@ class CRLSetComponentInstallerTest : public PlatformTest {
     mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::OriginatingProcess::browser();
+    params->process_id = network::OriginatingProcessId::browser();
     params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));

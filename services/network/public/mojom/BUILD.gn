@@ -1814,7 +1814,7 @@ mojom("mojom") {
     "network_service.mojom",
     "network_service_test.mojom",
     "oblivious_http_request.mojom",
-    "originating_process.mojom",
+    "originating_process_id.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
     "reporting_service.mojom",
@@ -2092,28 +2092,30 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "network.mojom.RendererProcess"
-          cpp = "::network::RendererProcess"
+          mojom = "network.mojom.RendererProcessId"
+          cpp = "::network::RendererProcessId"
           copyable_pass_by_value = true
         },
       ]
       traits_headers =
-          [ "//services/network/public/cpp/renderer_process_mojom_traits.h" ]
-      traits_sources =
-          [ "//services/network/public/cpp/renderer_process_mojom_traits.cc" ]
+          [ "//services/network/public/cpp/renderer_process_id_mojom_traits.h" ]
+      traits_sources = [
+        "//services/network/public/cpp/renderer_process_id_mojom_traits.cc",
+      ]
       traits_public_deps = [ "//base" ]
     },
     {
       types = [
         {
-          mojom = "network.mojom.OriginatingProcess"
-          cpp = "::network::OriginatingProcess"
+          mojom = "network.mojom.OriginatingProcessId"
+          cpp = "::network::OriginatingProcessId"
         },
       ]
-      traits_headers =
-          [ "//services/network/public/cpp/originating_process_mojom_traits.h" ]
+      traits_headers = [
+        "//services/network/public/cpp/originating_process_id_mojom_traits.h",
+      ]
       traits_sources = [
-        "//services/network/public/cpp/originating_process_mojom_traits.cc",
+        "//services/network/public/cpp/originating_process_id_mojom_traits.cc",
       ]
       traits_public_deps = [
         "//base",

@@ -25,7 +25,7 @@ import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/ct_policy.mojom";
-import "services/network/public/mojom/originating_process.mojom";
+import "services/network/public/mojom/originating_process_id.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
@@ -769,12 +769,12 @@ struct URLLoaderFactoryParams {
   // SECURITY NOTE: Factories with `network.mojom.BrowserProcess` should not be
   // sent to untrustworthy processes.
   //
-  // Set to `network.mojom.RendererProcess` with `process_id` set to
+  // Set to `network.mojom.RendererProcessId` with `process_id` set to
   // RenderProcessHost::GetID() to indicate a renderer process.
   // SECURITY NOTE: Factories should not be shared among multiple renderer
   // processes (e.g. |request_initiator_origin_lock| is specific to a single
   // renderer process).
-  network.mojom.OriginatingProcess process_id;
+  network.mojom.OriginatingProcessId process_id;
 
   // If specified, then |request_initiator_origin_lock| locks
   // |ResourceRequest::request_initiator| to the specified origin.
@@ -1439,7 +1439,7 @@ interface NetworkContext {
       StorageAccessApiStatus storage_access_api_status,
       IsolationInfo isolation_info,
       array<HttpHeader> additional_headers,
-      network.mojom.OriginatingProcess process_id,
+      network.mojom.OriginatingProcessId process_id,
       url.mojom.Origin origin,
       ClientSecurityState client_security_state,
       uint32 options,

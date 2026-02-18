@@ -802,7 +802,7 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
   // navigation requests. Applying the same logic here so that we can correctly
   // identify the request.
   if (is_request_for_navigation) {
-    proxied_request_id.child_id = network::OriginatingProcess();
+    proxied_request_id.child_id = network::OriginatingProcessId();
   }
 
   // NOTE: This request may be proxied on behalf of an incognito frame, but

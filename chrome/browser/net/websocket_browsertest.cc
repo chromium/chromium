@@ -173,7 +173,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies,
         net::StorageAccessApiStatus::kNone, isolation_info,
-        std::move(additional_headers), ToOriginatingProcess(process->GetID()),
+        std::move(additional_headers), ToOriginatingProcessId(process->GetID()),
         origin, network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),

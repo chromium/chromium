@@ -34,7 +34,7 @@ namespace {
 class CorsURLLoaderTAOTest : public CorsURLLoaderTestBase {
  protected:
   void CreateLoaderAndStartNavigation(const GURL& origin, const GURL& url) {
-    ResetFactory(std::nullopt /* initiator */, OriginatingProcess::browser());
+    ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
     CreateLoaderAndStart(origin, url, mojom::RequestMode::kNavigate,
                          mojom::RedirectMode::kManual,
                          mojom::CredentialsMode::kInclude);

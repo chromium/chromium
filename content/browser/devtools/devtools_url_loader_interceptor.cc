@@ -1025,7 +1025,7 @@ InterceptionJob::InterceptionJob(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager)
     : id_prefix_(id),
-      global_req_id_(ToOriginatingProcessUnsafe(process_id),
+      global_req_id_(ToOriginatingProcessIdUnsafe(process_id),
                      create_loader_params->request_id),
       frame_token_(frame_token),
       report_upload_(!!create_loader_params->request.request_body),

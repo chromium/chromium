@@ -828,7 +828,7 @@ base::ByteCount AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
     return base::ByteCount(0);
   }
   content::GlobalRequestID global_request_id(
-      content::ToOriginatingProcessUnsafe(process_id), resource->request_id);
+      content::ToOriginatingProcessIdUnsafe(process_id), resource->request_id);
 
   // Resource just started loading.
   if (!GetDelegate().GetResourceTracker().HasPreviousUpdateForResource(

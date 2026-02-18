@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   // Make a get request, which should be blocked.
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::OriginatingProcess::browser();
+  params->process_id = network::OriginatingProcessId::browser();
   params->is_orb_enabled = false;
   params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
 
@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   // Make another get request, which should still be blocked.
   network::mojom::URLLoaderFactoryParamsPtr new_params =
       network::mojom::URLLoaderFactoryParams::New();
-  new_params->process_id = network::OriginatingProcess::browser();
+  new_params->process_id = network::OriginatingProcessId::browser();
   new_params->is_orb_enabled = false;
   new_params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
 

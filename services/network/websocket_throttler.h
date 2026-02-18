@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "services/network/public/cpp/originating_process.h"
+#include "services/network/public/cpp/originating_process_id.h"
 
 namespace network {
 
@@ -124,24 +124,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketThrottler final {
 
   // Returns true if there are too many pending connections for |process_id|.
   bool HasTooManyPendingConnections(
-      const network::OriginatingProcess& process_id) const;
+      const network::OriginatingProcessId& process_id) const;
 
   // Calculates connection delay for |process_id|.
   base::TimeDelta CalculateDelay(
-      const network::OriginatingProcess& process_id) const;
+      const network::OriginatingProcessId& process_id) const;
 
   // Returns a pending connection for |process_id|. This function can be called
   // only when |HasTooManyPendingConnections(process_id)| is false. May return
   // |std::nullopt| if |process_id| is not throttled.
   std::optional<PendingConnection> IssuePendingConnectionTracker(
-      const network::OriginatingProcess& process_id);
+      const network::OriginatingProcessId& process_id);
 
   size_t GetSizeForTesting() const { return per_process_throttlers_.size(); }
 
  private:
   void OnTimer();
 
-  std::map<network::RendererProcess,
+  std::map<network::RendererProcessId,
            std::unique_ptr<WebSocketPerProcessThrottler>>
       per_process_throttlers_;
   base::RepeatingTimer throttling_period_timer_;

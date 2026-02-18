@@ -383,7 +383,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
-      const network::OriginatingProcess& process_id,
+      const network::OriginatingProcessId& process_id,
       const url::Origin& origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,
@@ -599,9 +599,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // The following methods are used to track the number of requests per process
   // and ensure it doesn't go over a reasonable limit.
-  void LoaderCreated(const OriginatingProcess& process_id);
-  void LoaderDestroyed(const OriginatingProcess& process_id);
-  bool CanCreateLoader(const OriginatingProcess& process_id);
+  void LoaderCreated(const OriginatingProcessId& process_id);
+  void LoaderDestroyed(const OriginatingProcessId& process_id);
+  bool CanCreateLoader(const OriginatingProcessId& process_id);
 
   void set_max_loaders_per_process_for_testing(uint32_t count) {
     max_loaders_per_process_ = count;
@@ -927,7 +927,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       web_transports_;
 
   // A count of outstanding requests per initiating process.
-  std::map<OriginatingProcess, uint32_t> loader_count_per_process_;
+  std::map<OriginatingProcessId, uint32_t> loader_count_per_process_;
 
   static constexpr uint32_t kMaxOutstandingRequestsPerProcess = 2700;
   uint32_t max_loaders_per_process_ = kMaxOutstandingRequestsPerProcess;

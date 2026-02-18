@@ -163,7 +163,7 @@ void WebSocketClient::Connect() {
       net::StorageAccessApiStatus::kNone,
       net::IsolationInfo::CreateForInternalRequest(
           url::Origin::Create(service_url_)),
-      std::move(additional_headers), network::OriginatingProcess::browser(),
+      std::move(additional_headers), network::OriginatingProcessId::browser(),
       url::Origin::Create(service_url_),
       network::mojom::ClientSecurityState::New(),
       network::mojom::kWebSocketOptionBlockAllCookies,

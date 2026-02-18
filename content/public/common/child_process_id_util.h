@@ -7,30 +7,30 @@
 
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_id.h"
-#include "services/network/public/cpp/originating_process.h"
+#include "services/network/public/cpp/originating_process_id.h"
 
 namespace content {
 
-// Converts a `content::ChildProcessId` to a `network::OriginatingProcess` for
+// Converts a `content::ChildProcessId` to a `network::OriginatingProcessId` for
 // passing to network services.
-network::OriginatingProcess CONTENT_EXPORT
-ToOriginatingProcess(ChildProcessId process);
+network::OriginatingProcessId CONTENT_EXPORT
+ToOriginatingProcessId(ChildProcessId process);
 
-// Converts a `content::ChildProcessId` to a `network::RendererProcess` for
+// Converts a `content::ChildProcessId` to a `network::RendererProcessId` for
 // passing to network services.  This requires that the process is valid.
-network::RendererProcess CONTENT_EXPORT
-ToRendererProcess(ChildProcessId process);
+network::RendererProcessId CONTENT_EXPORT
+ToRendererProcessId(ChildProcessId process);
 
-// Converts a `network::RendererProcess` to a `content::ChildProcessId` for
+// Converts a `network::RendererProcessId` to a `content::ChildProcessId` for
 // reading from network services.
 ChildProcessId CONTENT_EXPORT
-ToChildProcessId(network::RendererProcess process);
+ToChildProcessId(network::RendererProcessId process);
 
-// Converts a deprecated int32_t process_id to a `network::OriginatingProcess`
+// Converts a deprecated int32_t process_id to a `network::OriginatingProcessId`
 // while all of the usages are ported.
 // TODO(crbug.com/379869738) Remove unsafe usages.
-network::OriginatingProcess CONTENT_EXPORT
-ToOriginatingProcessUnsafe(int32_t process_id);
+network::OriginatingProcessId CONTENT_EXPORT
+ToOriginatingProcessIdUnsafe(int32_t process_id);
 
 }  // namespace content
 

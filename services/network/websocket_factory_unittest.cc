@@ -85,7 +85,7 @@ class WebSocketFactoryTest : public testing::Test {
     factory_->CreateWebSocket(
         url, requested_protocols, net::SiteForCookies(),
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(), {},
-        network::OriginatingProcess::browser(), url::Origin::Create(url),
+        network::OriginatingProcessId::browser(), url::Origin::Create(url),
         /*client_security_state=*/nullptr, /*options=*/0,
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(handshake_client),
         mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),

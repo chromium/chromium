@@ -455,7 +455,7 @@ class LoginHandlerDelegate {
       const net::AuthChallengeInfo& auth_info,
       bool is_request_for_primary_main_frame_navigation,
       bool is_request_for_navigation,
-      const network::OriginatingProcess& process_id,
+      const network::OriginatingProcessId& process_id,
       base::StrictNumeric<int32_t> request_id,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -2133,8 +2133,8 @@ void StoragePartitionImpl::OnAuthRequired(
   if (!is_navigation_request.has_value()) {
     is_navigation_request = context.IsNavigationRequestContext();
   }
-  network::OriginatingProcess process_id =
-      network::OriginatingProcess::browser();
+  network::OriginatingProcessId process_id =
+      network::OriginatingProcessId::browser();
   if (original_context.type() == ContextType::kSharedOrServiceWorkerContext) {
     // If the request was initiated by a service worker, use the service
     // worker's process ID. This ensures the `GlobalRequestID` used to look up
@@ -2148,7 +2148,7 @@ void StoragePartitionImpl::OnAuthRequired(
     // `render_frame_host` is not null. If `render_frame_host` is null,
     // later logic will call OnAuthCredentials() with a nullopt that triggers
     // CancelAuth().
-    process_id = network::OriginatingProcess();
+    process_id = network::OriginatingProcessId();
 
     // `navigation_or_document_` can be null when `context` is created with
     // an invalid RenderFrameHost after a page is destroyed.
@@ -2164,7 +2164,7 @@ void StoragePartitionImpl::OnAuthRequired(
       auto* render_frame_host = context.navigation_or_document()->GetDocument();
       if (render_frame_host) {
         process_id =
-            ToOriginatingProcess(render_frame_host->GetGlobalId().child_id);
+            ToOriginatingProcessId(render_frame_host->GetGlobalId().child_id);
       }
     }
   }
@@ -2424,7 +2424,7 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(permission_type),
         content::RenderProcessHost::FromID(
-            ToChildProcessId(context.process_id().renderer_process())),
+            ToChildProcessId(context.process_id().renderer_process_id())),
         context.worker_origin().value());
 
     // If the request was loaded from cache, prefer retrying over the network
@@ -2733,7 +2733,7 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 StoragePartitionImpl::CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-    const network::OriginatingProcess& process_id,
+    const network::OriginatingProcessId& process_id,
     const url::Origin& worker_origin) {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
@@ -3815,7 +3815,7 @@ StoragePartitionImpl::CreateURLLoaderFactoryParams() {
       network::mojom::URLLoaderFactoryParams::New();
   // This method is used for browser-process initiated requests for which there
   // is no corresponding RenderProcessHost.
-  params->process_id = network::OriginatingProcess::browser();
+  params->process_id = network::OriginatingProcessId::browser();
   params->automatically_assign_isolation_info = true;
   params->is_orb_enabled = false;
   params->is_trusted = true;
@@ -4026,7 +4026,7 @@ StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
-    const network::OriginatingProcess& process_id,
+    const network::OriginatingProcessId& process_id,
     const url::Origin& worker_origin)
     : type_(Type::kSharedOrServiceWorkerContext),
       process_id_(process_id),

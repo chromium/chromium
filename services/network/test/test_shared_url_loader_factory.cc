@@ -26,7 +26,7 @@ TestSharedURLLoaderFactory::TestSharedURLLoaderFactory(
       /*cors_exempt_header_list=*/std::vector<std::string>());
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
-  params->process_id = OriginatingProcess::browser();
+  params->process_id = OriginatingProcessId::browser();
   params->is_orb_enabled = false;
   params->is_trusted = is_trusted;
   network_context_->CreateURLLoaderFactory(

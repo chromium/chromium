@@ -36,7 +36,7 @@ void ResourceTracker::ProcessResourceUpdate(
     return;
 
   content::GlobalRequestID global_id(
-      content::ToOriginatingProcessUnsafe(process_id), resource->request_id);
+      content::ToOriginatingProcessIdUnsafe(process_id), resource->request_id);
   auto it = unfinished_resources_.find(global_id);
 
   // This is the first update received for a resource.

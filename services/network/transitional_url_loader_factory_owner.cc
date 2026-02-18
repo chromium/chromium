@@ -99,7 +99,7 @@ TransitionalURLLoaderFactoryOwner::GetURLLoaderFactory() {
         network_context_remote_.BindNewPipeAndPassReceiver());
     auto url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
-    url_loader_factory_params->process_id = OriginatingProcess::browser();
+    url_loader_factory_params->process_id = OriginatingProcessId::browser();
     url_loader_factory_params->is_orb_enabled = false;
     url_loader_factory_params->is_trusted = is_trusted_;
     network_context_remote_->CreateURLLoaderFactory(

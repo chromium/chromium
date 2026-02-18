@@ -2627,7 +2627,8 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
 
   mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
       partition->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-          network::OriginatingProcess::renderer(network::RendererProcess(1)),
+          network::OriginatingProcessId::renderer(
+              network::RendererProcessId(1)),
           worker_origin));
 
   base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;

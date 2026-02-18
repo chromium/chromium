@@ -267,7 +267,7 @@ void FrameTreeData::ProcessResourceLoadInFrame(
     int process_id,
     const ResourceTracker& resource_tracker) {
   content::GlobalRequestID global_id(
-      content::ToOriginatingProcessUnsafe(process_id), resource->request_id);
+      content::ToOriginatingProcessIdUnsafe(process_id), resource->request_id);
   if (!resource_tracker.HasPreviousUpdateForResource(global_id))
     num_resources_++;
   resource_data_.ProcessResourceLoad(resource);

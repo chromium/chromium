@@ -690,7 +690,7 @@ class SimpleURLLoaderTestBase {
 
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
-    params->process_id = OriginatingProcess::browser();
+    params->process_id = OriginatingProcessId::browser();
     params->is_orb_enabled = false;
     url::Origin origin = url::Origin::Create(test_server_.base_url());
     params->isolation_info =
