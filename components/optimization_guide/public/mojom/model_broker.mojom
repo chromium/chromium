@@ -82,7 +82,6 @@ interface ModelSubscriber {
 // Options for ModelBroker::Subscribe
 struct ModelSubscriptionOptions {
   OnDeviceFeature feature;
-  bool mark_used;
 };
 
 // Broker for using the on-device models. The remote end may be held by any
@@ -97,4 +96,8 @@ interface ModelBroker {
   [EnableIfNot=is_android]
   AddModelDownloadProgressObserver(
       pending_remote<on_device_model.mojom.DownloadObserver> observer);
+
+  // Request model assets of the provided feature. Must be called before a model
+  // solution can be available.
+  RequestAssetsFor(OnDeviceFeature feature);
 };

@@ -99,6 +99,7 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   void Subscribe(
       mojom::ModelSubscriptionOptionsPtr options,
       mojo::PendingRemote<mojom::ModelSubscriber> subscriber) override;
+  void RequestAssetsFor(mojom::OnDeviceFeature feature) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void AddModelDownloadProgressObserver(
@@ -110,6 +111,8 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   void SubscribeInternal(
       mojom::ModelSubscriptionOptionsPtr options,
       mojo::PendingRemote<mojom::ModelSubscriber> subscriber);
+  // Finishes `RequestAssetsFor` after initialization is finished.
+  void RequestAssetsForInternal(mojom::OnDeviceFeature feature);
 
   raw_ref<UsageTracker> usage_tracker_;
   EnsureInitCallback ensure_init_callback_;

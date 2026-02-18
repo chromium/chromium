@@ -45,10 +45,20 @@ void ModelBrokerImpl::SubscribeInternal(
     mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
   TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SubscribeInternal");
-  if (options->mark_used) {
-    usage_tracker_->OnDeviceEligibleFeatureUsed(options->feature);
-  }
   GetSolutionProvider(options->feature).AddSubscriber(std::move(subscriber));
+}
+
+void ModelBrokerImpl::RequestAssetsFor(mojom::OnDeviceFeature feature) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RequestAssetsFor");
+  ensure_init_callback_.Run(
+      base::BindOnce(&ModelBrokerImpl::RequestAssetsForInternal,
+                     weak_ptr_factory_.GetWeakPtr(), feature));
+}
+
+void ModelBrokerImpl::RequestAssetsForInternal(mojom::OnDeviceFeature feature) {
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerImpl::RequestAssetsForInternal");
+  usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
 }
 
 ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(

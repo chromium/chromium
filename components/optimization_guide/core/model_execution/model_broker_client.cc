@@ -198,7 +198,8 @@ ModelSubscriber& ModelBrokerClient::GetSubscriber(
     mojo::PendingRemote<mojom::ModelSubscriber> pending;
     ptr = std::make_unique<ModelSubscriber>(
         pending.InitWithNewPipeAndPassReceiver());
-    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(feature, true),
+    remote_->RequestAssetsFor(feature);
+    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(feature),
                        std::move(pending));
   }
   return *ptr;
