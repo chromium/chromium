@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import {ActionChipsHandlerRemote, ChipType, IconType, PageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {ActionChip, PageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
@@ -38,6 +38,7 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: [
         {
           type: ChipType.kRecentTab,
+          suggestTemplateInfo: {typeIcon: IconType.kFavicon},
           title: 'Example Tab',
           subtitle: 'Subtitle for recent tab',
           suggestion: 'Suggestion for recent tab',
@@ -50,6 +51,7 @@ suite('NewTabPageActionChipsTest', () => {
         },
         {
           type: ChipType.kImage,
+          suggestTemplateInfo: {typeIcon: IconType.kBanana},
           title: 'Nano Banana',
           subtitle: 'Subtitle for image',
           suggestion: 'Suggestion for image',
@@ -57,6 +59,7 @@ suite('NewTabPageActionChipsTest', () => {
         },
         {
           type: ChipType.kDeepSearch,
+          suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
           title: 'Deep Search',
           subtitle: 'Subtitle for deep search',
           suggestion: 'Suggestion for deep search',
@@ -120,6 +123,7 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: [
         {
           type: ChipType.kRecentTab,
+          suggestTemplateInfo: {typeIcon: IconType.kFavicon},
           title: 'Example Tab',
           subtitle: 'Subtitle for recent tab',
           suggestion: 'Suggestion for recent tab',
@@ -153,6 +157,7 @@ suite('NewTabPageActionChipsTest', () => {
     await initializeChips({
       actionChips: [{
         type: ChipType.kRecentTab,
+        suggestTemplateInfo: {typeIcon: IconType.kFavicon},
         title: 'Example Tab',
         subtitle: 'Subtitle for recent tab',
         suggestion: 'Suggestion for recent tab',
@@ -173,6 +178,7 @@ suite('NewTabPageActionChipsTest', () => {
     await initializeChips({
       actionChips: [{
         type: ChipType.kDeepDive,
+        suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
         title: 'Example Tab',
         subtitle: 'Subtitle for deep dive',
         suggestion: 'Suggestion for deep dive',
@@ -187,7 +193,7 @@ suite('NewTabPageActionChipsTest', () => {
 
     // Check correct classes are rendered
     const deepDiveChipIcon = chips.shadowRoot.querySelector<HTMLElement>(
-        '.action-chip-icon-container.deep-dive');
+        '.action-chip-icon-container.icon-type-sub-arrow-right');
     assertTrue(!!deepDiveChipIcon);
 
     // Check chip title is not rendered
@@ -263,6 +269,7 @@ suite('NewTabPageActionChipsTest', () => {
       await initializeChips({
         actionChips: [{
           type: ChipType.kDeepDive,
+          suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
           title: 'Example Tab',
           subtitle: 'Subtitle for deep dive',
           suggestion: 'Suggestion for deep dive',
@@ -452,6 +459,7 @@ suite('NewTabPageActionChipsTest', () => {
           await initializeChips({
             actionChips: [{
               type: ChipType.kDeepSearch,
+              suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
               title: 'Deep Search',
               subtitle: 'Subtitle for deep search',
               suggestion: '',
@@ -476,6 +484,7 @@ suite('NewTabPageActionChipsTest', () => {
           await initializeChips({
             actionChips: [{
               type: ChipType.kDeepSearch,
+              suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
               title: 'Deep Search',
               subtitle: '',
               suggestion: '',
@@ -521,6 +530,7 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [
               {
                 type: ChipType.kImage,
+                suggestTemplateInfo: {typeIcon: IconType.kBanana},
                 title: 'Nano Banana',
                 subtitle: 'Subtitle for image',
                 suggestion: 'Suggestion for image',

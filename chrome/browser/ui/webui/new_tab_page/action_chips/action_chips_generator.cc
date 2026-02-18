@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
@@ -57,6 +58,9 @@ using ::action_chips::RemoteSuggestionsServiceSimpleImpl;
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
 using ::action_chips::mojom::ChipType;
+using ::action_chips::mojom::IconType;
+using ::action_chips::mojom::SuggestTemplateInfo;
+using ::action_chips::mojom::SuggestTemplateInfoPtr;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
 using ::tabs::TabInterface;
@@ -74,6 +78,30 @@ enum class ChipsGenerationScenario {
   // the tab's title and url.
   kDeepDive,
 };
+
+// Creates a SuggestTemplateInfoPtr from an omnibox::SuggestTemplateInfo.
+// Returns nullptr if we cannot handle the proto (e.g., the enum is not
+// available on our side).
+SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
+    const omnibox::SuggestTemplateInfo& suggest_template_info) {
+  // The remote endpoint may send the icon type unknown to us.
+  // When this occurs, we get the following:
+  // - the default value of the enum (when the closed enum is used as in proto2)
+  // - the actual (invalid) value (when the open enum is used)
+  if (suggest_template_info.type_icon() ==
+          omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED ||
+      !omnibox::SuggestTemplateInfo::IconType_IsValid(
+          suggest_template_info.type_icon())) {
+    VLOG(1) << "Invalid icon type is returned from the remote endpoint.";
+    return nullptr;
+  }
+  SuggestTemplateInfoPtr mojom_suggest_template_info =
+      SuggestTemplateInfo::New();
+  // Assumption: The mojom enum values are in sync with the proto enum values.
+  mojom_suggest_template_info->type_icon =
+      static_cast<IconType>(suggest_template_info.type_icon());
+  return mojom_suggest_template_info;
+}
 
 bool IsDeepDiveTab(const TabInterface& tab,
                    OptimizationGuideKeyedService* optimization_guide_decider) {
@@ -137,6 +165,8 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   chip->subtitle = tab->title;
   chip->suggestion = std::string();
   chip->tab = std::move(tab);
+  chip->suggest_template_info = SuggestTemplateInfo::New();
+  chip->suggest_template_info->type_icon = IconType::kFavicon;
   return chip;
 }
 
@@ -149,6 +179,8 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY);
   chip->suggestion = std::string();
+  chip->suggest_template_info = SuggestTemplateInfo::New();
+  chip->suggest_template_info->type_icon = IconType::kGlobeWithSearchLoop;
   return chip;
 }
 
@@ -171,6 +203,8 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1);
   chip->suggestion = std::string();
+  chip->suggest_template_info = SuggestTemplateInfo::New();
+  chip->suggest_template_info->type_icon = IconType::kBanana;
   return chip;
 }
 
@@ -192,6 +226,8 @@ ActionChipPtr CreateDeepDiveChip(TabInfoPtr tab,
   chip->subtitle = suggestion_string;
   chip->suggestion = suggestion_string;
   chip->tab = std::move(tab);
+  chip->suggest_template_info = SuggestTemplateInfo::New();
+  chip->suggest_template_info->type_icon = IconType::kSubArrowRight;
   return chip;
 }
 
@@ -305,6 +341,59 @@ TitleAndUrl GetTitleAndUrl(base::optional_ref<const TabInterface> tab) {
       .url = contents.GetLastCommittedURL(),
   };
 }
+struct ParsedActionChipData {
+  SuggestTemplateInfoPtr suggest_template_info;
+  omnibox::GroupId group_id;
+  ChipType chip_type;
+};
+
+std::optional<ParsedActionChipData> ExtractActionChipData(
+    const SearchSuggestionParser::SuggestResult& suggestion,
+    std::optional<const omnibox::PageVertical> page_vertical) {
+  if (suggestion.suggest_type() != omnibox::SuggestType::TYPE_FUSEBOX_ACTION) {
+    VLOG(1) << "Skipping a suggestion whose suggest type was: "
+            << suggestion.suggest_type();
+    return std::nullopt;
+  }
+
+  if (!suggestion.suggestion_group_id().has_value()) {
+    VLOG(1) << "A suggestion did not have a group ID. Its match_contents was: "
+            << suggestion.match_contents();
+    return std::nullopt;
+  }
+  if (!suggestion.suggest_template_info().has_value()) {
+    VLOG(1) << "A suggestion did not have a SuggestTemplateInfo. Its "
+               "match_contents was: "
+            << suggestion.match_contents();
+    return std::nullopt;
+  }
+  SuggestTemplateInfoPtr mojom_suggest_template_info =
+      CreateSuggestTemplateInfo(*suggestion.suggest_template_info());
+  if (mojom_suggest_template_info.is_null()) {
+    return std::nullopt;
+  }
+  const omnibox::GroupId group_id = *suggestion.suggestion_group_id();
+  const std::optional<ChipType> chip_type =
+      GetChipType(group_id, page_vertical);
+
+  if (!chip_type.has_value()) {
+    if (VLOG_IS_ON(1)) {
+      std::vector<std::string_view> subtypes;
+      std::ranges::transform(
+          suggestion.subtypes(), std::back_inserter(subtypes),
+          [](int subtype) { return omnibox::SuggestSubtype_Name(subtype); });
+      VLOG(1) << "Skipping a suggestion since its chip type cannot be "
+                 "determined. Its group ID is "
+              << omnibox::GroupId_Name(group_id) << ", its subtypes are "
+              << base::JoinString(subtypes, ", ");
+    }
+    return std::nullopt;
+  }
+
+  return ParsedActionChipData{std::move(mojom_suggest_template_info), group_id,
+                              *chip_type};
+}
+
 }  // namespace
 
 ActionChipsGeneratorImpl::ActionChipsGeneratorImpl(Profile* profile)
@@ -341,8 +430,7 @@ ActionChipsGeneratorImpl::~ActionChipsGeneratorImpl() = default;
 
 void ActionChipsGeneratorImpl::GenerateActionChips(
     base::optional_ref<const TabInterface> tab,
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback) {
+    base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
   // Cancel the existing chips generation by destructing the
   // loader.
   loader_.reset();
@@ -366,8 +454,7 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
     base::optional_ref<const TabInterface> tab,
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback) {
+    base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
   std::optional<omnibox::PageVertical> page_vertical;
   if (ntp_features::kNtpNextShowDeepDiveSuggestionsParam.Get() &&
       tab.has_value() && IsDeepDiveTab(*tab, optimization_guide_decider_)) {
@@ -386,8 +473,7 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromScenario(
     base::optional_ref<const TabInterface> tab,
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback) {
+    base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
   switch (GetScenario(tab, optimization_guide_decider_, *client_)) {
     case ChipsGenerationScenario::kDeepDive: {
       // In the deep-dive scenario, we have a previous tab available.
@@ -413,9 +499,8 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromScenario(
 }
 
 void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
-    action_chips::mojom::TabInfoPtr tab,
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback,
+    TabInfoPtr tab,
+    base::OnceCallback<void(std::vector<ActionChipPtr>)> callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
   if (!result.has_value() || result->size() <= 1) {
     std::move(callback).Run(
@@ -427,10 +512,9 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
 }
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
-    action_chips::mojom::TabInfoPtr tab,
+    TabInfoPtr tab,
     std::optional<const omnibox::PageVertical> page_vertical,
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback,
+    base::OnceCallback<void(std::vector<ActionChipPtr>)> callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
   RecordActionChipsRequestStatus(result);
   if (!result.has_value()) {
@@ -441,48 +525,27 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
 
   std::vector<ActionChipPtr> chips;
   for (const auto& suggestion : *result) {
-    if (suggestion.suggest_type() !=
-        omnibox::SuggestType::TYPE_FUSEBOX_ACTION) {
-      VLOG(1) << "Skipping a suggestion whose suggest type was: "
-              << suggestion.suggest_type();
-      continue;
-    }
-
-    if (!suggestion.suggestion_group_id().has_value()) {
-      VLOG(1)
-          << "A suggestion did not have a group ID. Its match_contents was: "
-          << suggestion.match_contents();
-      continue;
-    }
-    const omnibox::GroupId group_id = *suggestion.suggestion_group_id();
-    const std::optional<ChipType> chip_type =
-        GetChipType(group_id, page_vertical);
-
-    if (!chip_type.has_value()) {
-      if (VLOG_IS_ON(1)) {
-        std::vector<std::string_view> subtypes;
-        std::ranges::transform(
-            suggestion.subtypes(), std::back_inserter(subtypes),
-            [](int subtype) { return omnibox::SuggestSubtype_Name(subtype); });
-        VLOG(1) << "Skipping a suggestion since its chip type cannot be "
-                   "determined. Its group ID is "
-                << omnibox::GroupId_Name(group_id) << ", its subtypes are "
-                << base::JoinString(subtypes, ", ");
-      }
+    std::optional<ParsedActionChipData> parsed_data =
+        ExtractActionChipData(suggestion, page_vertical);
+    if (!parsed_data.has_value()) {
       continue;
     }
 
     ActionChipPtr chip = ActionChip::New();
     // In the deep-dive state, the first chip needs to be a recent tab chip.
-    chip->type = chips.empty() && *chip_type == ChipType::kDeepDive
+    chip->type = chips.empty() && parsed_data->chip_type == ChipType::kDeepDive
                      ? ChipType::kRecentTab
-                     : *chip_type;
+                     : parsed_data->chip_type;
     chip->title = base::UTF16ToUTF8(suggestion.match_contents());
     chip->subtitle = base::UTF16ToUTF8(suggestion.annotation());
     chip->suggestion = base::UTF16ToUTF8(suggestion.suggestion());
-    if (group_id == omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION) {
-      chip->tab = tab->Clone();
+    if (parsed_data->group_id ==
+        omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION) {
+      if (tab) {
+        chip->tab = tab->Clone();
+      }
     }
+    chip->suggest_template_info = std::move(parsed_data->suggest_template_info);
     chips.push_back(std::move(chip));
   }
   std::move(callback).Run(std::move(chips));
