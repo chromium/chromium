@@ -116,6 +116,11 @@ bool AndroidBrowserWindow::IsDeleteScheduled() const {
       AttachCurrentThread(), java_android_browser_window_);
 }
 
+base::CallbackListSubscription AndroidBrowserWindow::RegisterBrowserDidClose(
+    BrowserDidCloseCallback callback) {
+  return browser_did_close_callback_list_.Add(std::move(callback));
+}
+
 BrowserWindowInterface::Type AndroidBrowserWindow::GetType() const {
   return type_;
 }

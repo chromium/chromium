@@ -31,10 +31,6 @@
 // or on DesktopBrowserWindowCapabilities.
 
 #if !BUILDFLAG(IS_ANDROID)
-namespace base {
-class CallbackListSubscription;
-}  // namespace base
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -51,6 +47,10 @@ class ExclusiveAccessManager;
 class GURL;
 class TabStripModel;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace base {
+class CallbackListSubscription;
+}  // namespace base
 
 namespace ui {
 class BaseWindow;
@@ -116,6 +116,13 @@ class BrowserWindowInterface : public content::PageNavigator {
   // stopped. This is true after all the various tab unload handlers and similar
   // have ran.
   virtual bool IsDeleteScheduled() const = 0;
+
+  // Register callbacks invoked when browser has successfully processed its
+  // close request and has been scheduled for deletion.
+  using BrowserDidCloseCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterBrowserDidClose(
+      BrowserDidCloseCallback callback) = 0;
 
   // SessionService::WindowType mirrors these values.  If you add to this
   // enum, look at SessionService::WindowType to see if it needs to be
@@ -239,13 +246,6 @@ class BrowserWindowInterface : public content::PageNavigator {
 
   // Returns true if the browser controls are hidden due to being in fullscreen.
   virtual bool ShouldHideUIForFullscreen() const = 0;
-
-  // Register callbacks invoked when browser has successfully processed its
-  // close request and has been scheduled for deletion.
-  using BrowserDidCloseCallback =
-      base::RepeatingCallback<void(BrowserWindowInterface*)>;
-  virtual base::CallbackListSubscription RegisterBrowserDidClose(
-      BrowserDidCloseCallback callback) = 0;
 
   // Register callbacks invoked when browser attempted to close but the close
   // operation was cancelled.
