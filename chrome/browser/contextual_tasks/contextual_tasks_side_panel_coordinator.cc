@@ -282,16 +282,11 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
                                 *this) {
   CreateAndRegisterEntry(SidePanelRegistry::From(browser_window_));
   active_task_context_provider_->SetContextualTasksPanelController(this);
-  if (base::FeatureList::IsEnabled(kContextualTasksTabListInterfaceObserver)) {
-    TabListInterface::From(browser_window_)->AddTabListInterfaceObserver(this);
-  } else {
-    browser_window_->GetTabStripModel()->AddObserver(this);
-  }
+  TabListInterface::From(browser_window_)->AddTabListInterfaceObserver(this);
 }
 
 ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
   active_task_context_provider_->SetContextualTasksPanelController(nullptr);
-  browser_window_->GetTabStripModel()->RemoveObserver(this);
   TabListInterface::From(browser_window_)->RemoveTabListInterfaceObserver(this);
 
   RecordSessionEndMetrics();
@@ -791,62 +786,6 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
   NotifyActiveTaskContextProvider();
 
   CleanUpUnusedWebContents();
-}
-
-void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& content : change.GetInsert()->contents) {
-      // If the new tab is already associated with a task, do nothing.
-      if (contextual_tasks_service_->GetContextualTaskForTab(
-              sessions::SessionTabHelper::IdForTab(content.contents))) {
-        continue;
-      }
-
-      // If the new tab has an opener and it's associated to a task, associate
-      // the new tab to the same task.
-      tabs::TabInterface* opener =
-          tab_strip_model->GetOpenerOfTabAt(content.index);
-      if (!opener) {
-        continue;
-      }
-      // Check if the new tab is opened through a link click
-      content::NavigationController& controller =
-          content.contents->GetController();
-      if (!controller.GetActiveEntry() ||
-          !ui::PageTransitionCoreTypeIs(
-              controller.GetActiveEntry()->GetTransitionType(),
-              ui::PAGE_TRANSITION_LINK)) {
-        continue;
-      }
-      std::optional<ContextualTask> task =
-          contextual_tasks_service_->GetContextualTaskForTab(
-              sessions::SessionTabHelper::IdForTab(opener->GetContents()));
-      if (task) {
-        ui_service_->AssociateWebContentsToTask(content.contents,
-                                                task->GetTaskId());
-      }
-    }
-  } else if (change.type() == TabStripModelChange::kRemoved) {
-    for (const auto& content : change.GetRemove()->contents) {
-      // Do not disassociate the tab from the task if insert into side panel or
-      // another tab strip.
-      if (content.remove_reason != TabRemovedReason::kInsertedIntoSidePanel &&
-          content.remove_reason !=
-              TabRemovedReason::kInsertedIntoOtherTabStrip) {
-        DisassociateTabFromTask(content.contents);
-      }
-    }
-
-  } else if (change.type() == TabStripModelChange::kReplaced) {
-    DisassociateTabFromTask(change.GetReplace()->old_contents);
-  }
-
-  if (selection.active_tab_changed() && !tab_strip_model->empty()) {
-    OnActiveTabChanged(tab_strip_model->GetActiveTab());
-  }
 }
 
 std::unique_ptr<views::View>
