@@ -176,8 +176,11 @@ enum class SuggestionType {
   // Throbber suggestion to indicate loading state.
   kLoadingThrobber = 77,
 
-  // Next ID: 78
-  kMaxValue = kLoadingThrobber
+  // Memory search result for @memory feature.
+  kAtMemorySearchResult = 78,
+
+  // Next ID: 79
+  kMaxValue = kAtMemorySearchResult
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

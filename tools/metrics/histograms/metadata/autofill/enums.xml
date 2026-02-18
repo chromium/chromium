@@ -4491,6 +4491,7 @@ Called by update_autofill_enums.py.-->
   <int value="75" label="Manage identity docs information"/>
   <int value="76" label="Manage travel information"/>
   <int value="77" label="Loading throbber"/>
+  <int value="78" label="@memory search result"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->
