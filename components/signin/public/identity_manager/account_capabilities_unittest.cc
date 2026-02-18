@@ -39,7 +39,7 @@ TEST_F(AccountCapabilitiesTest, GetSupportedAccountCapabilityNames) {
 TEST_F(AccountCapabilitiesTest,
        GetSupportedAccountCapabilityNames_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableFakeCapabilityForTesting);
+  feature_list.InitAndDisableFeature(switches::kEnableFakeCapabilityForTesting);
 
   auto names =
       AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
@@ -50,7 +50,8 @@ TEST_F(AccountCapabilitiesTest,
 
 TEST_F(AccountCapabilitiesTest,
        GetSupportedAccountCapabilityNames_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list{kEnableFakeCapabilityForTesting};
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableFakeCapabilityForTesting};
 
   auto names =
       AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
@@ -523,7 +524,7 @@ TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolUnknown) {
 #if !defined(NDEBUG)
 TEST_F(AccountCapabilitiesTest, ConversionWithJNI_FlagGuardDisabled_JavaToCpp) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableFakeCapabilityForTesting);
+  feature_list.InitAndDisableFeature(switches::kEnableFakeCapabilityForTesting);
 
   // C++ shouldn't support the fake capability.
   EXPECT_THAT(AccountCapabilities::GetSupportedAccountCapabilityNamesInternal(),
@@ -558,7 +559,7 @@ TEST_F(AccountCapabilitiesTest, ConversionWithJNI_FlagGuardDisabled_JavaToCpp) {
 
 TEST_F(AccountCapabilitiesTest, ConversionWithJNI_FlagGuardDisabled_CppToJava) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableFakeCapabilityForTesting);
+  feature_list.InitAndDisableFeature(switches::kEnableFakeCapabilityForTesting);
 
   // C++ shouldn't support the fake capability.
   EXPECT_THAT(AccountCapabilities::GetSupportedAccountCapabilityNamesInternal(),

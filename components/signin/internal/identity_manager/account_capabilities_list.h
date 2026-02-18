@@ -156,7 +156,7 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
 ACCOUNT_CAPABILITY_F(kFakeCapabilityForTestingName,
                      FAKE_CAPABILITY_FOR_TESTING_NAME,
                      "accountcapabilities/fakecapabilityfortesting",
-                     kEnableFakeCapabilityForTesting)
+                     switches::kEnableFakeCapabilityForTesting)
 #endif
 
 // keep-sorted end
