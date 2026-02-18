@@ -39,10 +39,13 @@ class CORE_EXPORT HTMLHRElement final : public HTMLElement {
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
+  HTMLOptGroupElement* NearestAncestorOptgroup() const;
+
   void Trace(Visitor*) const override;
 
  private:
   HTMLSelectElement* OwnerSelectElement() const;
+  void UpdateAncestors();
 
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
@@ -52,7 +55,8 @@ class CORE_EXPORT HTMLHRElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
-  Member<HTMLSelectElement> owner_select_;
+  Member<HTMLSelectElement> nearest_ancestor_select_;
+  Member<HTMLOptGroupElement> nearest_ancestor_optgroup_;
 };
 
 }  // namespace blink

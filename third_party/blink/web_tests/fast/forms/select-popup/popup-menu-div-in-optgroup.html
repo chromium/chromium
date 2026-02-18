@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<select>
+  <option>one</option>
+  <optgroup label=optgroup>
+    <option>two</option>
+    <span class=hr></span>
+    <div>
+      <option>three</option>
+      <span class=hr></span>
+      <option>four</option>
+    </div>
+  </optgroup>
+</select>
+
+<script>
+document.querySelectorAll('.hr').forEach(hr => {
+  // The parser doesn't allow <hr> in <optgroup>.
+  hr.outerHTML = '<hr>';
+});
+window.onload = openPickerAppearanceOnly(document.querySelector('select'));
+</script>

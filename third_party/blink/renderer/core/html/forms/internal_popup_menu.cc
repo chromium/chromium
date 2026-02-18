@@ -413,15 +413,25 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
   for (; context.list_index_ < items.size(); ++context.list_index_) {
     Element& child = *items[context.list_index_];
-    // TODO this shouldn't just look at parentNode right??
-    if (!IsA<HTMLOptGroupElement>(child.parentNode()))
-      context.FinishGroupIfNecessary();
-    if (auto* option = DynamicTo<HTMLOptionElement>(child))
+    if (auto* option = DynamicTo<HTMLOptionElement>(child)) {
+      if (!option->NearestAncestorOptgroup()) {
+        context.FinishGroupIfNecessary();
+      }
       AddOption(context, *option);
-    else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(child))
+    } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(child)) {
+      // Nested optgroups are not supported, so we can always end any existing
+      // optgroup before starting the next one.
+      context.FinishGroupIfNecessary();
       AddOptGroup(context, *optgroup);
-    else if (auto* hr = DynamicTo<HTMLHRElement>(child))
+    } else if (auto* hr = DynamicTo<HTMLHRElement>(child)) {
+      // The parser doesn't allow <hr> inside <optgroup>, but the popup seems to
+      // support rendering it, so only close the active optgroup if there is an
+      // optgroup ancestor.
+      if (!hr->NearestAncestorOptgroup()) {
+        context.FinishGroupIfNecessary();
+      }
       AddSeparator(context, *hr);
+    }
   }
   context.FinishGroupIfNecessary();
   PagePopupClient::AddString("],\n", data);

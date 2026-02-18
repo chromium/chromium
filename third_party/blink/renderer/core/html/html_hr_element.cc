@@ -122,38 +122,51 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
 
 HTMLSelectElement* HTMLHRElement::OwnerSelectElement() const {
   DCHECK_EQ(
-      owner_select_,
+      nearest_ancestor_select_,
       HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this).select);
-  return owner_select_;
+  return nearest_ancestor_select_;
+}
+
+HTMLOptGroupElement* HTMLHRElement::NearestAncestorOptgroup() const {
+  DCHECK_EQ(nearest_ancestor_optgroup_,
+            HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this)
+                .optgroup);
+  return nearest_ancestor_optgroup_;
 }
 
 Node::InsertionNotificationRequest HTMLHRElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
-  owner_select_ =
-      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this).select;
-  if (owner_select_) {
-    owner_select_->HrInsertedOrRemoved(*this);
+  UpdateAncestors();
+  if (nearest_ancestor_select_) {
+    nearest_ancestor_select_->HrInsertedOrRemoved(*this);
   }
   return kInsertionDone;
 }
 
 void HTMLHRElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-  HTMLSelectElement* new_ancestor_select =
-      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this).select;
-  if (owner_select_ != new_ancestor_select) {
+  HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
+  UpdateAncestors();
+  if (old_ancestor_select != nearest_ancestor_select_) {
     // When removing, we can only lose an associated <select>
-    CHECK(owner_select_);
-    CHECK(!new_ancestor_select);
-    owner_select_->HrInsertedOrRemoved(*this);
-    owner_select_ = new_ancestor_select;
+    CHECK(old_ancestor_select);
+    CHECK(!nearest_ancestor_select_);
+    old_ancestor_select->HrInsertedOrRemoved(*this);
   }
+}
+
+void HTMLHRElement::UpdateAncestors() {
+  HTMLSelectElement::SelectOptgroupDatalist ancestors =
+      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this);
+  nearest_ancestor_select_ = ancestors.select;
+  nearest_ancestor_optgroup_ = ancestors.optgroup;
 }
 
 void HTMLHRElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
-  visitor->Trace(owner_select_);
+  visitor->Trace(nearest_ancestor_select_);
+  visitor->Trace(nearest_ancestor_optgroup_);
 }
 
 }  // namespace blink
