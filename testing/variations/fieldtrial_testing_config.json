@@ -11828,7 +11828,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GeminiCopresence"
+                        "GeminiCopresence",
+                        "GeminiResponseViewDynamicResizing"
                     ]
                 }
             ]
