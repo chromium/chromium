@@ -326,7 +326,7 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
   searchbox_context_data->SetPendingContext(std::move(context));
 
   edit_model()->OpenAiMode(false, /*via_context_menu=*/false);
-  std::move(callback).Run(base::ok(base::UnguessableToken()));
+  std::move(callback).Run(base::ok(base::UnguessableToken::Create()));
 }
 
 void WebuiOmniboxHandler::OnShow() {
