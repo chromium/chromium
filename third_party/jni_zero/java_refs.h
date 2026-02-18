@@ -53,6 +53,13 @@ template <typename T = jobject>
   requires internal::IsJobject<T>
 class JavaRef;
 
+namespace internal {
+// Create an instance of JavaRef<T> without DCHECK'ing that it is a local ref.
+// Should only be used by the JNI Zero code generator.
+template <typename T>
+JavaRef<T> AsJavaRef(const T& obj);
+}  // namespace internal
+
 // Template specialization of JavaRef, which acts as the base class for all
 // other JavaRef<> template types. This allows you to e.g. pass
 // ScopedJavaLocalRef<jstring> into a function taking const JavaRef<jobject>&
@@ -105,6 +112,10 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
  protected:
 #endif
 
+  // Alternative constructor that does not DCHECK that it is a local ref.
+  // Should only be used by the JNI Zero code generator.
+  explicit JavaRef(jobject obj) : obj_(obj) {}
+
   // Used for move semantics. obj_ must have been released first if non-null.
   void steal(JavaRef&& other) {
     obj_ = other.obj_;
@@ -149,6 +160,8 @@ class JavaRef : public JavaRef<jobject> {
 
   T obj() const { return static_cast<T>(JavaRef<jobject>::obj()); }
 
+  T operator->() const { return obj(); }
+
   // Get a JavaObjectArrayReader for the array pointed to by this reference.
   // Only defined for JavaRef<jobjectArray>.
   // You must pass the type of the array elements (usually jobject) as the
@@ -170,6 +183,14 @@ class JavaRef : public JavaRef<jobject> {
  protected:
 #endif
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
+
+ private:
+  // Alternative constructor that does not DCHECK that it is a local ref.
+  // Should only be used by the JNI Zero code generator.
+  explicit JavaRef(T obj) : JavaRef<jobject>(obj) {}
+
+  template <typename U>
+  friend JavaRef<U> jni_zero::internal::AsJavaRef(const U& obj);
 };
 
 // Holds a local reference to a Java object. The local reference is scoped

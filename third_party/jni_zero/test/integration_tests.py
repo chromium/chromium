@@ -51,7 +51,8 @@ class CliOptions:
     self.input_files = []
     self.jar_file = None
     self.output_dir = None
-    self.output_files = None if is_final else []
+    self.shared_header_files = None if is_final else []
+    self.unshared_header_files = None if is_final else []
     self.header_path = None
     self.enable_jni_multiplexing = False
     self.enable_definition_macros = False
@@ -88,9 +89,12 @@ class CliOptions:
     if self.input_files:
       for f in self.input_files:
         ret += ['--input-file', f]
-    if self.output_files:
-      for f in self.output_files:
-        ret += ['--output-name', f]
+    if self.shared_header_files:
+      for f in self.shared_header_files:
+        ret += ['--shared-header-name', f]
+    if self.unshared_header_files:
+      for f in self.unshared_header_files:
+        ret += ['--unshared-header-name', f]
     if self.jar_file:
       ret += ['--jar-file', self.jar_file]
     if self.extra_include:
@@ -167,7 +171,8 @@ class BaseTest(unittest.TestCase):
       for i in input_files:
         basename_and_folder = os.path.splitext(i)[0]
         basename = os.path.basename(basename_and_folder)
-        options.output_files.append(f'{basename}_jni.h')
+        options.shared_header_files.append(f'{basename}_shared_jni.h')
+        options.unshared_header_files.append(f'{basename}_jni.h')
         if srcjar:
           name_to_goldens.update({
               f'org/jni_zero/{basename_and_folder}Jni.java':
@@ -205,7 +210,7 @@ class BaseTest(unittest.TestCase):
 
       logging.info('Running: %s', shlex.join(cmd))
       subprocess.check_call(cmd, env=env)
-      for o in options.output_files:
+      for o in (options.shared_header_files + options.unshared_header_files):
         output_path = os.path.join(tdir, o)
         with open(output_path, 'r') as f:
           contents = f.read()
@@ -298,7 +303,8 @@ class BaseTest(unittest.TestCase):
       pathlib.Path(input_file).write_text(input_data)
       options = CliOptions()
       options.input_files = [input_file]
-      options.output_files = [f'{input_file}_jni.h']
+      options.shared_header_files = [f'{input_file}_shared_jni.h']
+      options.unshared_header_files = [f'{input_file}_jni.h']
       options.output_dir = tdir
       cmd = options.to_args()
 

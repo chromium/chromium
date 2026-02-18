@@ -13,21 +13,21 @@
 // static
 std::string LocaleManager::GetYandexReferralID() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef jlocale_manager =
-      Java_LocaleManager_getInstance(env);
+  base::android::ScopedJavaLocalRef<JLocaleManager> jlocale_manager =
+      JLocaleManagerClass::getInstance(env);
   if (jlocale_manager.is_null())
     return "";
-  return Java_LocaleManager_getYandexReferralId(env, jlocale_manager);
+  return jlocale_manager->getYandexReferralId(env);
 }
 
 // static
 std::string LocaleManager::GetMailRUReferralID() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef jlocale_manager =
-      Java_LocaleManager_getInstance(env);
+  base::android::ScopedJavaLocalRef<JLocaleManager> jlocale_manager =
+      JLocaleManagerClass::getInstance(env);
   if (jlocale_manager.is_null())
     return "";
-  return Java_LocaleManager_getMailRUReferralId(env, jlocale_manager);
+  return jlocale_manager->getMailRUReferralId(env);
 }
 
 DEFINE_JNI(LocaleManager)

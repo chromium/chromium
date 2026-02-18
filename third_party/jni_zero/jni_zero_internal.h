@@ -138,6 +138,13 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
   jmethodID method_id_;
 };
 
+// Create an instance of JavaRef<T> without DCHECK'ing that it is a local ref.
+// Should only be used by the JNI Zero code generator.
+template <typename T>
+JavaRef<T> AsJavaRef(const T& obj) {
+  return JavaRef<T>(obj);
+}
+
 }  // namespace jni_zero::internal
 
 #endif  // JNI_ZERO_JNI_ZERO_INTERNAL_H

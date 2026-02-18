@@ -20,16 +20,15 @@ namespace {
 class OfflineItemBridgeTest : public ::testing::Test {
  public:
   OfflineItemBridgeTest()
-      : j_test_(
-            Java_OfflineItemBridgeUnitTest_Constructor(AttachCurrentThread())) {
-  }
+      : j_test_(JOfflineItemBridgeUnitTestClass::Constructor(
+            AttachCurrentThread())) {}
 
-  const base::android::ScopedJavaGlobalRef<jobject>& j_test() {
+  const jni_zero::ScopedJavaGlobalRef<JOfflineItemBridgeUnitTest>& j_test() {
     return j_test_;
   }
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> j_test_;
+  jni_zero::ScopedJavaGlobalRef<JOfflineItemBridgeUnitTest> j_test_;
 };
 
 // Verfies a default offline item can be created in Java.
@@ -37,8 +36,7 @@ TEST_F(OfflineItemBridgeTest, CreateOfflineItem) {
   OfflineItem item;
   auto* env = AttachCurrentThread();
   auto j_offline_item = OfflineItemBridge::CreateOfflineItem(env, item);
-  Java_OfflineItemBridgeUnitTest_testCreateDefaultOfflineItem(env, j_test(),
-                                                              j_offline_item);
+  j_test()->testCreateDefaultOfflineItem(env, j_offline_item);
 }
 
 }  // namespace

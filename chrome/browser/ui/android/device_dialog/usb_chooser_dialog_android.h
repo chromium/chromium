@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "chrome/android/chrome_jni_headers/UsbChooserDialog_shared_jni.h"
 #include "components/permissions/chooser_controller.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -26,7 +27,7 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
  public:
   // The callback type for creating the java dialog object.
   using CreateJavaDialogCallback =
-      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>(
+      base::OnceCallback<base::android::ScopedJavaLocalRef<JUsbChooserDialog>(
           JNIEnv*,
           const base::android::JavaRef<jobject>&,
           const std::u16string&,

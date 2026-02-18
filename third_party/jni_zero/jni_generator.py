@@ -339,104 +339,150 @@ def _CollectReferencedClasses(jni_obj):
   return sorted(ret)
 
 
-def _generate_header(jni_mode,
-                     jni_obj,
-                     gen_jni_class,
-                     output_file,
-                     *,
-                     enable_definition_macros,
-                     include_path_prefix,
-                     extra_includes=None,
-                     add_natives_macro_definition=True):
-  if os.path.isabs(output_file):
-    output_file = os.path.basename(output_file)
+def _GroupByJavaClass(jni_obj):
+  by_java_class = collections.defaultdict(list)
+  for cbn in jni_obj.called_by_natives:
+    by_java_class[cbn.java_class].append(cbn)
+  for native in jni_obj.natives:
+    # Assign empty list when @CalledByNative does not exist
+    # but @NativeMethods exists.
+    by_java_class[native.java_class]
+  return by_java_class
+
+
+def _generate_headers(jni_mode,
+                      jni_obj,
+                      gen_jni_class,
+                      shared_header_file,
+                      unshared_header_file,
+                      *,
+                      enable_definition_macros,
+                      include_path_prefix,
+                      extra_includes=None,
+                      add_natives_macro_definition=True):
+  if os.path.isabs(shared_header_file):
+    shared_header_file = os.path.basename(shared_header_file)
+  if os.path.isabs(unshared_header_file):
+    unshared_header_file = os.path.basename(unshared_header_file)
+
   user_includes = [f'{include_path_prefix}jni_zero_internal.h']
   if extra_includes:
     user_includes += extra_includes
   system_includes = ['jni.h']
-
   if any(f.const_value in ('Infinity', '-Infinity', 'NaN')
          for f in jni_obj.fields):
     system_includes.append('limits')
 
-  preamble, epilogue = header_common.header_preamble(
+  shared_preamble, shared_epilogue = header_common.header_preamble(
       GetScriptName(),
       jni_obj.java_class,
       system_includes=system_includes,
-      user_includes=user_includes)
-  sb = common.StringBuilder()
-  sb(preamble)
+      user_includes=user_includes,
+      is_shared_header=True)
+  shared_sb = common.StringBuilder()
+  shared_sb(shared_preamble)
+
+  user_includes.append(os.path.basename(shared_header_file))
+  unshared_preamble, unshared_epilogue = header_common.header_preamble(
+      GetScriptName(),
+      jni_obj.java_class,
+      system_includes=system_includes,
+      user_includes=user_includes,
+      is_shared_header=False)
+  unshared_sb = common.StringBuilder()
+  unshared_sb(unshared_preamble)
+
+  by_java_class = _GroupByJavaClass(jni_obj)
+  with shared_sb.section('C++ classes that mirror the Java classes:'):
+    if jni_obj.jni_namespace:
+      shared_sb('// Declare the namespace so that it can be used by '
+                '"using namespace"\n')
+      shared_sb(f'namespace {jni_obj.jni_namespace} {{}}\n')
+      shared_sb('\n')
+    for java_class, cbns in by_java_class.items():
+      called_by_native_header.mirrored_cpp_class_declaration(
+          shared_sb, java_class, cbns, jni_obj.jni_namespace)
 
   if add_natives_macro_definition:
     natives_header.natives_macro_definition(
-        sb,
+        unshared_sb,
         jni_mode,
         jni_obj,
         gen_jni_class,
-        output_file,
+        unshared_header_file,
         enable_definition_macros=enable_definition_macros)
 
   java_classes = _CollectReferencedClasses(jni_obj)
   if java_classes:
-    with sb.section('Class Accessors'):
-      header_common.class_accessors(sb, java_classes, jni_obj.module_name)
+    with unshared_sb.section('Class Accessors'):
+      header_common.class_accessors(unshared_sb, java_classes,
+                                    jni_obj.module_name)
 
   if jni_obj.fields:
     non_const_fields = [f for f in jni_obj.fields if f.const_value is None]
     if non_const_fields:
-      with sb.section('FieldId Accessors'):
-        sb('#pragma clang diagnostic push\n')
-        sb('#pragma clang diagnostic ignored "-Wunique-object-duplication"\n')
-        called_by_native_header.field_accessors(sb, jni_obj.java_class,
+      with unshared_sb.section('FieldId Accessors'):
+        unshared_sb('#pragma clang diagnostic push\n')
+        unshared_sb(
+            '#pragma clang diagnostic ignored "-Wunique-object-duplication"\n')
+        called_by_native_header.field_accessors(unshared_sb, jni_obj.java_class,
                                                 non_const_fields)
-        sb('#pragma clang diagnostic pop\n')
+        unshared_sb('#pragma clang diagnostic pop\n')
 
-  with sb.namespace(jni_obj.jni_namespace):
+  with unshared_sb.namespace(jni_obj.jni_namespace):
     constant_fields = [
         f for f in jni_obj.fields
         if f.const_value and f.java_type == java_types.INT
     ]
     if constant_fields:
-      with sb.section('Constants'):
-        called_by_native_header.constants_enums(sb, jni_obj.java_class,
+      with unshared_sb.section('Constants'):
+        called_by_native_header.constants_enums(unshared_sb, jni_obj.java_class,
                                                 constant_fields)
 
     if jni_obj.natives and not enable_definition_macros:
-      with sb.section('Java to native functions'):
+      with unshared_sb.section('Java to native functions'):
         for native in jni_obj.natives:
-          natives_header.entry_point_method(sb,
+          natives_header.entry_point_method(unshared_sb,
                                             jni_mode,
                                             jni_obj,
                                             native,
                                             gen_jni_class,
-                                            output_file,
+                                            unshared_header_file,
                                             include_forward_declaration=True)
 
     if jni_obj.called_by_natives or jni_obj.fields:
-      with sb.section('Native to Java functions'):
+      with unshared_sb.section('Native to Java functions'):
         for called_by_native in jni_obj.called_by_natives:
-          called_by_native_header.method_definition(sb, called_by_native)
+          called_by_native_header.method_definition(unshared_sb,
+                                                    called_by_native)
       if jni_obj.fields:
-        with sb.section('Field Accessors'):
+        with unshared_sb.section('Field Accessors'):
           for field in jni_obj.fields:
-            called_by_native_header.field_definition(sb, jni_obj.java_class,
-                                                     field)
+            called_by_native_header.field_definition(unshared_sb,
+                                                     jni_obj.java_class, field)
 
-  sb(epilogue)
-  return sb.to_string()
+  if jni_obj.called_by_natives:
+    with unshared_sb.section('C++ classes that mirror the Java classes:'):
+      for _, cbns in by_java_class.items():
+        called_by_native_header.mirrored_cpp_class_definition(
+            unshared_sb, cbns, jni_obj.jni_namespace)
+
+  shared_sb(shared_epilogue)
+  unshared_sb(unshared_epilogue)
+  return shared_sb.to_string(), unshared_sb.to_string()
 
 
 def GetScriptName():
   return '//third_party/jni_zero/jni_zero.py'
 
 
-def _RemoveStaleHeaders(path, output_names):
+def _RemoveStaleHeaders(path, shared_header_names, unshared_header_names):
   if not os.path.isdir(path):
     return
   # Do not remove output files so that timestamps on declared outputs are not
   # modified unless their contents are changed (avoids reverse deps needing to
   # be rebuilt).
-  preserve = set(output_names)
+  preserve = set(shared_header_names + unshared_header_names)
   for root, _, files in os.walk(path):
     for f in files:
       if f not in preserve:
@@ -569,7 +615,8 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
 
 def _WriteHeaders(jni_mode,
                   jni_objs,
-                  output_names,
+                  shared_header_names,
+                  unshared_header_names,
                   output_dir,
                   *,
                   include_path_prefix,
@@ -581,27 +628,33 @@ def _WriteHeaders(jni_mode,
     java_types.CPP_UNDERLYING_TYPE_BY_JAVA_TYPE = \
         java_types.CPP_TYPE_BY_JAVA_TYPE
 
-  for jni_obj, header_name in zip(jni_objs, output_names):
-    output_file = os.path.join(output_dir, header_name)
-    content = _generate_header(
+  for jni_obj, shared_header_name, unshared_header_name in zip(
+      jni_objs, shared_header_names, unshared_header_names):
+    shared_header_file = os.path.join(output_dir, shared_header_name)
+    unshared_header_file = os.path.join(output_dir, unshared_header_name)
+    shared_header_content, unshared_header_content = _generate_headers(
         jni_mode,
         jni_obj,
         gen_jni_class,
-        output_file,
+        shared_header_file,
+        unshared_header_file,
         enable_definition_macros=enable_definition_macros,
         include_path_prefix=include_path_prefix,
         extra_includes=extra_includes,
         add_natives_macro_definition=add_natives_macro_definition)
 
-    with common.atomic_output(output_file, 'w') as f:
-      f.write(content)
+    with common.atomic_output(shared_header_file, 'w') as f:
+      f.write(shared_header_content)
+    with common.atomic_output(unshared_header_file, 'w') as f:
+      f.write(unshared_header_content)
 
 
 def GenerateFromSource(parser, args, jni_mode):
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
   # incremental builds will usually not catch this).
-  _RemoveStaleHeaders(args.output_dir, args.output_names)
+  _RemoveStaleHeaders(args.output_dir, args.shared_header_names,
+                      args.unshared_header_names)
 
   try:
     parsed_files = [
@@ -631,7 +684,8 @@ def GenerateFromSource(parser, args, jni_mode):
 
   _WriteHeaders(jni_mode,
                 jni_objs,
-                args.output_names,
+                args.shared_header_names,
+                args.unshared_header_names,
                 args.output_dir,
                 include_path_prefix=args.include_path_prefix,
                 gen_jni_class=gen_jni_class,
@@ -678,7 +732,8 @@ def GenerateFromJar(parser, args, jni_mode):
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
   # incremental builds will usually not catch this).
-  _RemoveStaleHeaders(args.output_dir, args.output_names)
+  _RemoveStaleHeaders(args.output_dir, args.shared_header_names,
+                      args.unshared_header_names)
 
   try:
     jni_objs = _ParseClassFiles(args.jar_file, args.input_files, args)
@@ -688,7 +743,8 @@ def GenerateFromJar(parser, args, jni_mode):
 
   _WriteHeaders(jni_mode,
                 jni_objs,
-                args.output_names,
+                args.shared_header_names,
+                args.unshared_header_names,
                 args.output_dir,
                 include_path_prefix=args.include_path_prefix,
                 extra_includes=args.extra_includes,

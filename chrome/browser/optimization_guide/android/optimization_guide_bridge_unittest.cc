@@ -64,9 +64,8 @@ class OptimizationGuideBridgeTest : public testing::Test {
                                         -> std::unique_ptr<KeyedService> {
                   return std::make_unique<MockOptimizationGuideKeyedService>();
                 })));
-    j_test_ = Java_OptimizationGuideBridgeNativeUnitTest_Constructor(
-        env_,
-        optimization_guide_keyed_service_->GetJavaObject());
+    j_test_ = JOptimizationGuideBridgeNativeUnitTestClass::Constructor(
+        env_, optimization_guide_keyed_service_->GetJavaObject());
   }
 
   void RegisterOptimizationTypes() {
@@ -76,7 +75,8 @@ class OptimizationGuideBridgeTest : public testing::Test {
   }
 
  protected:
-  base::android::ScopedJavaGlobalRef<jobject> j_test_;
+  base::android::ScopedJavaGlobalRef<JOptimizationGuideBridgeNativeUnitTest>
+      j_test_;
   raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
@@ -95,8 +95,7 @@ TEST_F(OptimizationGuideBridgeTest, RegisterOptimizationTypes) {
                   optimization_guide::proto::LOADING_PREDICTOR,
                   optimization_guide::proto::DEFER_ALL_SCRIPT)));
 
-  Java_OptimizationGuideBridgeNativeUnitTest_testRegisterOptimizationTypes(
-      env_, j_test_);
+  j_test_->testRegisterOptimizationTypes(env_);
 }
 
 TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
@@ -113,8 +112,7 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(metadata)));
 
-  Java_OptimizationGuideBridgeNativeUnitTest_testCanApplyOptimizationHasHint(
-      env_, j_test_);
+  j_test_->testCanApplyOptimizationHasHint(env_);
 }
 
 TEST_F(OptimizationGuideBridgeTest, SyncCanApplyOptimizationHasHint) {
@@ -131,8 +129,7 @@ TEST_F(OptimizationGuideBridgeTest, SyncCanApplyOptimizationHasHint) {
           DoAll(SetArgPointee<2>(metadata),
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
-  Java_OptimizationGuideBridgeNativeUnitTest_testSyncCanApplyOptimizationHasHint(
-      env_, j_test_);
+  j_test_->testSyncCanApplyOptimizationHasHint(env_);
 }
 
 TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
@@ -177,8 +174,7 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
                       base::test::RunCallback<3>(GURL("https://example2.com/"),
                                                  ByRef(url2_decisions))));
 
-  Java_OptimizationGuideBridgeNativeUnitTest_testCanApplyOptimizationOnDemand(
-      env_, j_test_);
+  j_test_->testCanApplyOptimizationOnDemand(env_);
 }
 
 }  // namespace android

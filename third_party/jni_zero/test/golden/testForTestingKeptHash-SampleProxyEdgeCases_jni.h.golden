@@ -10,6 +10,7 @@
 
 #include "overridden/jni_zero_internal.h"
 #include "extra_include.h"
+#include "SampleProxyEdgeCases_shared_jni.h"
 
 // Macro for transition to enable_definition_macros=true.
 #define DEFINE_JNI_FOR_SampleProxyEdgeCases()

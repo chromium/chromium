@@ -59,7 +59,7 @@ class TabGroupSyncServiceAndroidTest : public testing::Test {
   ~TabGroupSyncServiceAndroidTest() override = default;
 
   void SetUp() override {
-    j_test_ = Java_TabGroupSyncServiceAndroidUnitTest_Constructor(
+    j_test_ = JTabGroupSyncServiceAndroidUnitTestClass::Constructor(
         AttachCurrentThread());
     CreateBridge();
     SetUpJavaTestObserver();
@@ -76,8 +76,7 @@ class TabGroupSyncServiceAndroidTest : public testing::Test {
 
   void SetUpJavaTestObserver() {
     auto* env = AttachCurrentThread();
-    Java_TabGroupSyncServiceAndroidUnitTest_setUpTestObserver(env, j_test_,
-                                                              j_service_);
+    j_test_->setUpTestObserver(env, j_service_);
   }
 
   void TearDown() override {
@@ -87,15 +86,15 @@ class TabGroupSyncServiceAndroidTest : public testing::Test {
   MockTabGroupSyncService tab_group_sync_service_;
   std::unique_ptr<TabGroupSyncServiceAndroid> bridge_;
   base::android::ScopedJavaLocalRef<jobject> j_service_;
-  base::android::ScopedJavaGlobalRef<jobject> j_test_;
+  base::android::ScopedJavaGlobalRef<JTabGroupSyncServiceAndroidUnitTest>
+      j_test_;
   LocalTabGroupID test_tab_group_id_ = base::Token(4, 5);
   MockVersioningMessageController versioning_message_controller_;
 };
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnInitialized) {
   bridge_->OnInitialized();
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnInitialized(
-      AttachCurrentThread(), j_test_);
+  j_test_->testOnInitialized(AttachCurrentThread());
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UuidConversion) {
@@ -137,8 +136,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_NativeToJava) {
                         "creator_cache_guid", "last_updater_cache_guid");
   group.AddTabLocally(tab3);
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
-  Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversionNativeToJava(
-      env, j_test_, j_group);
+  j_test_->testSavedTabGroupConversionNativeToJava(env, j_group);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
@@ -147,7 +145,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
   group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kBlue);
   bridge_->OnTabGroupAdded(group, TriggerSource::REMOTE);
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupAdded(env, j_test_);
+  j_test_->testOnTabGroupAdded(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUpdated) {
@@ -156,7 +154,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUpdated) {
   group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kBlue);
   bridge_->OnTabGroupUpdated(group, TriggerSource::REMOTE);
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupUpdated(env, j_test_);
+  j_test_->testOnTabGroupUpdated(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupRemoved) {
@@ -164,15 +162,14 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupRemoved) {
   base::Uuid group_id = base::Uuid::GenerateRandomV4();
   bridge_->OnTabGroupRemoved(test_tab_group_id_, TriggerSource::REMOTE);
   bridge_->OnTabGroupRemoved(group_id, TriggerSource::REMOTE);
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupRemoved(env, j_test_);
+  j_test_->testOnTabGroupRemoved(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupLocalIdChanged) {
   auto* env = AttachCurrentThread();
   base::Uuid group_id = base::Uuid::GenerateRandomV4();
   bridge_->OnTabGroupLocalIdChanged(group_id, test_tab_group_id_);
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupLocalIdChanged(env,
-                                                                       j_test_);
+  j_test_->testOnTabGroupLocalIdChanged(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, AddGroup) {
@@ -181,7 +178,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, AddGroup) {
   EXPECT_CALL(tab_group_sync_service_, AddGroup(_))
       .WillOnce(SaveArg<0>(&captured_group));
 
-  Java_TabGroupSyncServiceAndroidUnitTest_testAddGroup(env, j_test_);
+  j_test_->testAddGroup(env);
 
   EXPECT_EQ(test_tab_group_id_, captured_group.local_group_id());
   EXPECT_EQ(kTestGroupTitle, captured_group.title());
@@ -199,8 +196,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroupByLocalId) {
 
   EXPECT_CALL(tab_group_sync_service_, RemoveGroup(test_tab_group_id_))
       .Times(1);
-  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroupByLocalId(env,
-                                                                   j_test_);
+  j_test_->testRemoveGroupByLocalId(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroupBySyncId) {
@@ -210,8 +206,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroupBySyncId) {
   auto j_uuid = UuidToJavaString(env, uuid);
 
   EXPECT_CALL(tab_group_sync_service_, RemoveGroup(uuid)).Times(1);
-  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroupBySyncId(env, j_test_,
-                                                                  j_uuid);
+  j_test_->testRemoveGroupBySyncId(env, j_uuid);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateVisualData) {
@@ -219,7 +214,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateVisualData) {
 
   EXPECT_CALL(tab_group_sync_service_,
               UpdateVisualData(Eq(test_tab_group_id_), _));
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateVisualData(env, j_test_);
+  j_test_->testUpdateVisualData(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, MakeTabGroupShared) {
@@ -243,8 +238,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, MakeTabGroupShared) {
 
   ScopedJavaLocalRef<jstring> j_collaboration_id =
       base::android::ConvertUTF8ToJavaString(env, collaboration_id.value());
-  Java_TabGroupSyncServiceAndroidUnitTest_testMakeTabGroupShared(
-      env, j_test_, j_collaboration_id);
+  j_test_->testMakeTabGroupShared(env, j_collaboration_id);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, AboutToUnShareTabGroup) {
@@ -252,8 +246,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, AboutToUnShareTabGroup) {
 
   EXPECT_CALL(tab_group_sync_service_,
               AboutToUnShareTabGroup(Eq(test_tab_group_id_), _));
-  Java_TabGroupSyncServiceAndroidUnitTest_testAboutToUnShareTabGroup(env,
-                                                                     j_test_);
+  j_test_->testAboutToUnShareTabGroup(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUnShareComplete) {
@@ -261,8 +254,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUnShareComplete) {
 
   EXPECT_CALL(tab_group_sync_service_,
               OnTabGroupUnShareComplete(Eq(test_tab_group_id_), _));
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupUnShareComplete(
-      env, j_test_);
+  j_test_->testOnTabGroupUnShareComplete(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {
@@ -276,7 +268,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {
   EXPECT_CALL(tab_group_sync_service_,
               AddTab(Eq(test_tab_group_id_), Eq(kTabId2), Eq(kTestTabTitle),
                      Eq(url), Eq(std::nullopt)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testAddTab(env, j_test_);
+  j_test_->testAddTab(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, NavigateTab) {
@@ -289,7 +281,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, NavigateTab) {
   EXPECT_CALL(tab_group_sync_service_,
               NavigateTab(Eq(test_tab_group_id_), Eq(kTabId2), Eq(url),
                           Eq(kTestTabTitle)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateTab(env, j_test_);
+  j_test_->testUpdateTab(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, RemoveTab) {
@@ -297,7 +289,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, RemoveTab) {
 
   EXPECT_CALL(tab_group_sync_service_,
               RemoveTab(Eq(test_tab_group_id_), Eq(kTabId1)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveTab(env, j_test_);
+  j_test_->testRemoveTab(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, MoveTab) {
@@ -305,7 +297,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, MoveTab) {
 
   EXPECT_CALL(tab_group_sync_service_,
               MoveTab(Eq(test_tab_group_id_), Eq(kTabId1), Eq(kPosition)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testMoveTab(env, j_test_);
+  j_test_->testMoveTab(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetAllGroups) {
@@ -313,8 +305,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetAllGroups) {
   std::vector<SavedTabGroup> expectedGroups = {group};
   EXPECT_CALL(tab_group_sync_service_, GetAllGroups())
       .WillOnce(Return(expectedGroups));
-  Java_TabGroupSyncServiceAndroidUnitTest_testGetAllGroups(
-      AttachCurrentThread(), j_test_);
+  j_test_->testGetAllGroups(AttachCurrentThread());
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetGroupBySyncId) {
@@ -329,8 +320,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupBySyncId) {
 
   auto j_uuid1 = UuidToJavaString(env, group1.saved_guid());
   auto j_uuid2 = UuidToJavaString(env, uuid2);
-  Java_TabGroupSyncServiceAndroidUnitTest_testGetGroupBySyncId(
-      env, j_test_, j_uuid1, j_uuid2);
+  j_test_->testGetGroupBySyncId(env, j_uuid1, j_uuid2);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
@@ -348,8 +338,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_1);
   auto j_local_id_2 =
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_2);
-  Java_TabGroupSyncServiceAndroidUnitTest_testGetGroupByLocalId(
-      env, j_test_, j_local_id_1, j_local_id_2);
+  j_test_->testGetGroupByLocalId(env, j_local_id_1, j_local_id_2);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetDeletedGroupIds) {
@@ -357,8 +346,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetDeletedGroupIds) {
   std::vector<LocalTabGroupID> expectedGroupIds = {local_id_1};
   EXPECT_CALL(tab_group_sync_service_, GetDeletedGroupIds())
       .WillOnce(Return(expectedGroupIds));
-  Java_TabGroupSyncServiceAndroidUnitTest_testGetDeletedGroupIds(
-      AttachCurrentThread(), j_test_);
+  j_test_->testGetDeletedGroupIds(AttachCurrentThread());
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
@@ -371,16 +359,16 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
       tab_group_sync_service_,
       UpdateLocalTabGroupMapping(Eq(group_id), Eq(test_tab_group_id_),
                                  Eq(OpeningSource::kAutoOpenedFromSync)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateLocalTabGroupMapping(
-      AttachCurrentThread(), j_test_, j_group_id,
+  j_test_->testUpdateLocalTabGroupMapping(
+      AttachCurrentThread(), j_group_id,
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_));
 
   // Remove the mapping.
   EXPECT_CALL(tab_group_sync_service_,
               RemoveLocalTabGroupMapping(Eq(test_tab_group_id_),
                                          Eq(ClosingSource::kDeletedByUser)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveLocalTabGroupMapping(
-      AttachCurrentThread(), j_test_,
+  j_test_->testRemoveLocalTabGroupMapping(
+      AttachCurrentThread(),
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_));
 }
 
@@ -391,8 +379,8 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabId) {
 
   EXPECT_CALL(tab_group_sync_service_,
               UpdateLocalTabId(Eq(test_tab_group_id_), Eq(tab_id), Eq(4)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateLocalTabId(
-      AttachCurrentThread(), j_test_,
+  j_test_->testUpdateLocalTabId(
+      AttachCurrentThread(),
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_),
       j_tab_id, 4);
 }
@@ -407,8 +395,8 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
   EXPECT_CALL(
       tab_group_sync_service_,
       OnTabSelected(Eq(test_tab_group_id_), Eq(tab_id), Eq(kTestTabTitle)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabSelected(
-      AttachCurrentThread(), j_test_,
+  j_test_->testOnTabSelected(
+      AttachCurrentThread(),
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_),
       tab_id, j_tab_title);
 
@@ -417,9 +405,9 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
   EXPECT_CALL(tab_group_sync_service_,
               OnTabSelected(Eq(std::nullopt), Eq(non_grouped_tab_id),
                             Eq(kTestTabTitle)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabSelected(
-      AttachCurrentThread(), j_test_, ScopedJavaLocalRef<jobject>(),
-      non_grouped_tab_id, j_tab_title);
+  j_test_->testOnTabSelected(AttachCurrentThread(),
+                             ScopedJavaLocalRef<jobject>(), non_grouped_tab_id,
+                             j_tab_title);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateArchivalStatus) {
@@ -430,8 +418,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateArchivalStatus) {
 
   EXPECT_CALL(tab_group_sync_service_, UpdateArchivalStatus(uuid, true))
       .Times(1);
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateArchivalStatus(
-      env, j_test_, j_uuid, true);
+  j_test_->testUpdateArchivalStatus(env, j_uuid, true);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, IsInitialized) {
@@ -439,7 +426,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, IsInitialized) {
   EXPECT_CALL(versioning_message_controller_, IsInitialized)
       .Times(1)
       .WillOnce(Return(true));
-  Java_TabGroupSyncServiceAndroidUnitTest_testIsInitialized(env, j_test_);
+  j_test_->testIsInitialized(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, ShouldShowMessageUi) {
@@ -460,7 +447,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, ShouldShowMessageUi) {
           VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE))
       .Times(1)
       .WillOnce(Return(true));
-  Java_TabGroupSyncServiceAndroidUnitTest_testShouldShowMessageUi(env, j_test_);
+  j_test_->testShouldShowMessageUi(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, ShouldShowMessageUiAsync) {
@@ -474,8 +461,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, ShouldShowMessageUiAsync) {
           testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
-  Java_TabGroupSyncServiceAndroidUnitTest_testShouldShowMessageUiAsync(env,
-                                                                       j_test_);
+  j_test_->testShouldShowMessageUiAsync(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnMessageUiShown) {
@@ -484,7 +470,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnMessageUiShown) {
               OnMessageUiShown(VersioningMessageController::MessageType::
                                    VERSION_OUT_OF_DATE_INSTANT_MESSAGE))
       .Times(1);
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnMessageUiShown(env, j_test_);
+  j_test_->testOnMessageUiShown(env);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnMessageUiDismissed) {
@@ -493,8 +479,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnMessageUiDismissed) {
               OnMessageUiDismissed(VersioningMessageController::MessageType::
                                        VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE))
       .Times(1);
-  Java_TabGroupSyncServiceAndroidUnitTest_testOnMessageUiDismissed(env,
-                                                                   j_test_);
+  j_test_->testOnMessageUiDismissed(env);
 }
 
 }  // namespace tab_groups

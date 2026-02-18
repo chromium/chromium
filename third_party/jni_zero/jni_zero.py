@@ -55,11 +55,18 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
                         required=True,
                         dest='input_files',
                         help=help_text)
-    outputs.add_argument('--output-name',
-                         action='append',
-                         required=True,
-                         dest='output_names',
-                         help='Output filenames within output directory.')
+    outputs.add_argument(
+        '--shared-header-name',
+        action='append',
+        required=True,
+        dest='shared_header_names',
+        help='Output filenames of shared headers within output directory.')
+    outputs.add_argument(
+        '--unshared-header-name',
+        action='append',
+        required=True,
+        dest='unshared_header_names',
+        help='Output filenames of unshared headers within output directory.')
     outputs.add_argument('--output-dir',
                          required=True,
                          help='Output directory. '
