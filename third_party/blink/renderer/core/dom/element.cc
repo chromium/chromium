@@ -12196,6 +12196,9 @@ DOMTokenList& Element::part() {
 }
 
 DOMTokenList* Element::GetMarker() const {
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
+    return nullptr;
+  }
   if (const ElementRareDataVector* data = RareData()) {
     return data->GetMarker();
   }
