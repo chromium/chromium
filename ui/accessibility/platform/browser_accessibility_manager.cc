@@ -1179,7 +1179,7 @@ void BrowserAccessibilityManager::ScrollToMakeVisible(
   // manager.
   BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (root_manager) {
-    UpdateAccessibilityFocus(this, node);
+    root_manager->UpdateAccessibilityFocus(this, node);
   }
 #endif
 }

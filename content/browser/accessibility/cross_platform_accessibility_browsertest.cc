@@ -3199,6 +3199,36 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       TestAccessibilityFocusInIframe) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <iframe srcdoc="
+          <!DOCTYPE html>
+          <html>
+          <body>
+            <button>ok</button>
+          </body>
+          </html>
+        "></iframe>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "ok");
+
+  ui::BrowserAccessibility* button_node = FindNode("ok");
+  ASSERT_NE(button_node, nullptr);
+
+  ui::BrowserAccessibilityManager* manager = button_node->manager();
+  manager->ScrollToMakeVisible(*button_node, gfx::Rect());
+
+  EXPECT_EQ(GetManager()->GetAccessibilityFocus(), button_node);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class AriaNotifyCrossPlatformAccessibilityBrowserTest
     : public CrossPlatformAccessibilityBrowserTest {
  public:
