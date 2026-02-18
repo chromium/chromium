@@ -115,3 +115,4 @@ enum SelectionMode { "select", "start", "end", "preserve" };
 };
 
 HTMLInputElement includes PopoverTargetAttributes;
+HTMLInputElement includes FormControlRangeCreation;

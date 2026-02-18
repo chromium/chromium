@@ -68,3 +68,5 @@
                            unsigned long end,
                            optional DOMString direction);
 };
+
+HTMLTextAreaElement includes FormControlRangeCreation;

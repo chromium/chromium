@@ -808,6 +808,7 @@ html element input
     property formMethod
     property formNoValidate
     property formTarget
+    property getValueRange
     property height
     property incremental
     property indeterminate
@@ -1168,6 +1169,7 @@ html element textarea
     property dirName
     property disabled
     property form
+    property getValueRange
     property labels
     property maxLength
     property minLength

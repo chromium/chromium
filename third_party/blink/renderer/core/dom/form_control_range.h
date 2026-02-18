@@ -14,49 +14,42 @@ namespace blink {
 class Document;
 class DOMRect;
 class DOMRectList;
-class ExceptionState;
 class Node;
 class Range;
 class TextControlElement;
 
-// A live range over a single text-control element (<input> or <textarea>).
-// Endpoints are exposed as (host element, UTF-16 `value` indices) rather than
-// internal shadow-DOM nodes.
+// A live range over a text-control element (<input>, <textarea>). Containers
+// return null to hide internal DOM structure. startOffset/endOffset are live
+// UTF-16 code unit indices into the element's text content. Created via
+// getValueRange(startOffset, endOffset) on elements that support it.
 class CORE_EXPORT FormControlRange final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static FormControlRange* Create(Document&);
+  static FormControlRange* Create(Document&,
+                                  TextControlElement*,
+                                  unsigned start_offset,
+                                  unsigned end_offset);
 
-  explicit FormControlRange(Document&);
+  FormControlRange(Document&,
+                   TextControlElement*,
+                   unsigned start_offset,
+                   unsigned end_offset);
 
   void Trace(Visitor* visitor) const override;
 
   // AbstractRange implementation:
-  // For FormControlRange, both containers are the host form control element.
-  Node* startContainer() const override;
-  Node* endContainer() const override;
+  // Containers return null to hide internal DOM structure.
+  Node* startContainer() const override { return nullptr; }
+  Node* endContainer() const override { return nullptr; }
 
-  // Offsets are indices into the host's `.value`.
+  // Offsets are UTF-16 code unit indices into the element's text content.
   unsigned startOffset() const override;
   unsigned endOffset() const override;
 
   bool collapsed() const override;
   bool IsStaticRange() const override;
   Document& OwnerDocument() const override;
-
-  // Sets the range on a <textarea> or text-supporting <input>.
-  // Offsets are UTF-16 indices into element.value; throws on unsupported
-  // elements or out-of-bounds offsets. Backwards ranges (start_offset >
-  // end_offset) are auto-collapsed to [start_offset, start_offset] to match
-  // standard Range behavior.
-  void setFormControlRange(Node* element,
-                           unsigned start_offset,
-                           unsigned end_offset,
-                           ExceptionState&);
-
-  // Returns the substring of element.value; empty string if unset or invalid.
-  String toString() const;
 
   // Update `form_control_` after a text replacement at `change_offset`: removes
   // `deleted_count` code units and adds `inserted_count`.
@@ -71,9 +64,9 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
 
  private:
   // Internal helper that prepares a DOM Range anchored to the inner editor
-  // text node that holds a copy of the control's `.value`. Offsets are clamped
-  // to the current text length. Returns nullptr if geometry is unavailable
-  // (e.g. control unset or disconnected, missing inner editor, etc).
+  // text node. Offsets are clamped to the current text length. Returns nullptr
+  // if geometry is unavailable (e.g. element disconnected, missing inner
+  // editor, etc).
   Range* BuildValueGeometryContext() const;
 
   Member<Document> owner_document_;
@@ -81,8 +74,8 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
   // The observed form control.
   Member<TextControlElement> form_control_;
 
-  // Offsets into the form control’s `.value` for the range endpoints; updated
-  // live on text edits.
+  // UTF-16 code unit offsets into the element's text content; updated live on
+  // text edits.
   unsigned start_offset_in_value_ = 0;
   unsigned end_offset_in_value_ = 0;
 };

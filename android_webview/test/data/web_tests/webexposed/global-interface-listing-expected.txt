@@ -2991,8 +2991,6 @@ interface FormControlRange : AbstractRange
     method constructor
     method getBoundingClientRect
     method getClientRects
-    method setFormControlRange
-    method toString
 interface FormData
     attribute @@toStringTag
     method @@iterator
@@ -4402,6 +4400,7 @@ interface HTMLInputElement : HTMLElement
     getter willValidate
     method checkValidity
     method constructor
+    method getValueRange
     method reportValidity
     method select
     method setCustomValidity
@@ -5120,6 +5119,7 @@ interface HTMLTextAreaElement : HTMLElement
     getter wrap
     method checkValidity
     method constructor
+    method getValueRange
     method reportValidity
     method select
     method setCustomValidity

@@ -4,31 +4,34 @@
 <body></body>
 <script>
 test(() => {
-  const range = new FormControlRange();
+  document.body.innerHTML = '<textarea>Hello</textarea>';
+  const textarea = document.body.firstElementChild;
+  const range = textarea.getValueRange(0, 5);
+
   assert_true(range instanceof FormControlRange, "|range| should be an instance of FormControlRange.");
   assert_true(range instanceof AbstractRange, "|range| should also be an instance of AbstractRange.");
   assert_false(range instanceof Range, "|range| should not be an instance of Range.");
-}, "Tests FormControlRange constructor and inheritance.");
+}, "Tests getValueRange returns FormControlRange that extends AbstractRange.");
 
 test(() => {
-  const range = new FormControlRange();
+  document.body.innerHTML = '<textarea>Hello</textarea>';
+  const textarea = document.body.firstElementChild;
+  const range = textarea.getValueRange(1, 4);
 
-  // Default values when no form control is set.
-  assert_equals(range.startContainer, null);
-  assert_equals(range.endContainer, null);
-  assert_equals(range.startOffset, 0);
-  assert_equals(range.endOffset, 0);
-  assert_true(range.collapsed);
-  assert_equals(range.toString(), "");
-}, "Tests FormControlRange default values when no form control is set.");
+  assert_equals(range.startContainer, null, "startContainer should be null.");
+  assert_equals(range.endContainer, null, "endContainer should be null.");
+  assert_equals(range.startOffset, 1);
+  assert_equals(range.endOffset, 4);
+  assert_false(range.collapsed);
+}, "FormControlRange handles getValueRange correctly.");
 
 test(() => {
   document.body.innerHTML = '<input type="text" value="">';
   const input = document.body.firstElementChild;
-  const range = new FormControlRange();
+  const range = input.getValueRange(0, 0);
 
-  range.setFormControlRange(input, 0, 0);
-  assert_equals(range.toString(), "");
+  assert_equals(range.startOffset, 0);
+  assert_equals(range.endOffset, 0);
   assert_true(range.collapsed);
 }, "FormControlRange handles empty value correctly.");
 </script>

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/form_control_range.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -2216,6 +2217,22 @@ void HTMLInputElement::setRangeText(const String& replacement,
 
   TextControlElement::setRangeText(replacement, start, end, selection_mode,
                                    exception_state);
+}
+
+FormControlRange* HTMLInputElement::getValueRange(
+    unsigned start_offset,
+    unsigned end_offset,
+    ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
+  if (!InputSupportsSelectionAPI()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "<input> element must be of a text field type: text, search, url, tel, "
+        "or password.");
+    return nullptr;
+  }
+  return TextControlElement::getValueRange(start_offset, end_offset,
+                                           exception_state);
 }
 
 bool HTMLInputElement::SetupDateTimeChooserParameters(

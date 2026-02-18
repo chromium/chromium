@@ -1329,6 +1329,29 @@ void TextControlElement::UnregisterFormControlRange(FormControlRange* range) {
   }
 }
 
+FormControlRange* TextControlElement::getValueRange(
+    unsigned start_offset,
+    unsigned end_offset,
+    ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
+
+  const String value = Value();
+  if (start_offset > value.length() || end_offset > value.length()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        "Start or end offset exceeds value length.");
+    return nullptr;
+  }
+
+  // Auto-collapse backwards ranges to match Range behavior.
+  if (start_offset > end_offset) {
+    end_offset = start_offset;
+  }
+
+  return FormControlRange::Create(GetDocument(), this, start_offset,
+                                  end_offset);
+}
+
 void TextControlElement::NotifyFormControlRangesOfTextChange(
     unsigned change_offset,
     unsigned deleted_count,

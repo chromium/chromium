@@ -22,12 +22,6 @@ function setup(control, value) {
   return element;
 }
 
-function makeFormControlRange(element, start, end) {
-  const range = new FormControlRange();
-  range.setFormControlRange(element, start, end);
-  return range;
-}
-
 function setupEditable(value) {
   // Create a contenteditable div with a single text node.
   const editable = document.createElement('div');
@@ -57,7 +51,7 @@ controls.forEach(control => {
 
     // FormControlRange: full .value replacement (shorter) collapses to [0,0].
     let element = setup(control, 'ABCDEFG');
-    let range = makeFormControlRange(element, 2, 5);
+    let range = element.getValueRange(2, 5);
     element.value = 'XY';
     assert_equals(range.startOffset, 0, 'FormControlRange shorter: start collapsed to 0');
     assert_equals(range.endOffset, 0, 'FormControlRange shorter: end collapsed to 0');
@@ -71,7 +65,7 @@ controls.forEach(control => {
 
     // FormControlRange: full .value replacement (longer) collapses to [0,0].
     element = setup(control, 'ABC');
-    range = makeFormControlRange(element, 1, 3);
+    range = element.getValueRange(1, 3);
     element.value = 'ABCDEFGHIJKLMNOP';
     assert_equals(range.startOffset, 0, 'FormControlRange longer: start collapsed to 0');
     assert_equals(range.endOffset, 0, 'FormControlRange longer: end collapsed to 0');
@@ -87,7 +81,7 @@ controls.forEach(control => {
 
     // FormControlRange: same scenario.
     const element = setup(control, 'ABCDE');
-    const range = makeFormControlRange(element, 0, 5);
+    const range = element.getValueRange(0, 5);
     element.value = 'VWXYZ';
     assert_equals(range.startOffset, 0, 'FormControlRange whole-old: start collapsed to 0');
     assert_equals(range.endOffset, 0, 'FormControlRange whole-old: end collapsed to 0');
@@ -103,7 +97,7 @@ controls.forEach(control => {
 
     // FormControlRange: same scenario.
     const element = setup(control, 'ABCDE');
-    const range = makeFormControlRange(element, 1, 4);
+    const range = element.getValueRange(1, 4);
     element.value = 'VWXYZ';
     assert_equals(range.startOffset, 0, 'FormControlRange equal-length: start collapsed to 0');
     assert_equals(range.endOffset, 0, 'FormControlRange equal-length: end collapsed to 0');
@@ -120,7 +114,7 @@ controls.forEach(control => {
 
     // FormControlRange: same replace via setRangeText.
     const element = setup(control, '0123456789');
-    const range = makeFormControlRange(element, 2, 8);
+    const range = element.getValueRange(2, 8);
     element.setRangeText('XX', 3, 7);
     assert_equals(element.value, '012XX789', 'FormControlRange value reflects setRangeText replace');
     assert_equals(range.startOffset, 2, 'FormControlRange start unchanged before replaced segment');
@@ -136,7 +130,7 @@ controls.forEach(control => {
 
     // FormControlRange: setting same value (no-op); range unchanged.
     const element = setup(control, 'HELLO');
-    const range = makeFormControlRange(element, 1, 4);
+    const range = element.getValueRange(1, 4);
     element.value = 'HELLO';
     assert_equals(range.startOffset, 1, 'FormControlRange start unchanged on no-op');
     assert_equals(range.endOffset, 4, 'FormControlRange end unchanged on no-op');
@@ -153,12 +147,11 @@ controls.forEach(control => {
 
     // FormControlRange: same insert via setRangeText.
     const element = setup(control, 'ABCDE');
-    const range = makeFormControlRange(element, 2, 4);
+    const range = element.getValueRange(2, 4);
     element.setRangeText('Q', 1, 1);
     assert_equals(element.value, 'AQBCDE', 'FormControlRange value after insertion before range');
     assert_equals(range.startOffset, 3, 'FormControlRange start +1');
     assert_equals(range.endOffset, 5, 'FormControlRange end +1');
-    assert_equals(range.toString(), 'CD', 'FormControlRange range text stable');
   }, `Insertion before range shifts both endpoints (${control})`);
 
   test(() => {
@@ -172,12 +165,11 @@ controls.forEach(control => {
 
     // FormControlRange: same delete via setRangeText.
     const element = setup(control, 'ABCDE');
-    const range = makeFormControlRange(element, 1, 5);
+    const range = element.getValueRange(1, 5);
     element.setRangeText('', 2, 3);
     assert_equals(element.value, 'ABDE', 'FormControlRange value after interior deletion');
     assert_equals(range.startOffset, 1, 'FormControlRange start unchanged');
     assert_equals(range.endOffset, 4, 'FormControlRange end -1');
-    assert_equals(range.toString(), 'BDE', 'FormControlRange range reflects deletion');
   }, `Interior deletion shrinks end (${control})`);
 
   test(() => {
@@ -191,12 +183,11 @@ controls.forEach(control => {
 
     // FormControlRange: same replacement via setRangeText.
     const element = setup(control, 'ABCDEFGHIJ');
-    const range = makeFormControlRange(element, 7, 10);
+    const range = element.getValueRange(7, 10);
     element.setRangeText('Z', 2, 5);
     assert_equals(element.value, 'ABZFGHIJ', 'FormControlRange value after before-range shrink');
     assert_equals(range.startOffset, 5, 'FormControlRange start -2');
     assert_equals(range.endOffset, 8, 'FormControlRange end -2');
-    assert_equals(range.toString(), 'HIJ', 'FormControlRange text unchanged');
   }, `Before-range shrink shifts left (${control})`);
 
   test(() => {
@@ -210,12 +201,11 @@ controls.forEach(control => {
 
     // FormControlRange: same replacement via setRangeText.
     const element = setup(control, 'ABCDEFGHIJ');
-    const range = makeFormControlRange(element, 2, 5);
+    const range = element.getValueRange(2, 5);
     element.setRangeText('WXYZ', 7, 9);
     assert_equals(element.value, 'ABCDEFGWXYZJ', 'FormControlRange value after after-range grow');
     assert_equals(range.startOffset, 2, 'FormControlRange start unchanged');
     assert_equals(range.endOffset, 5, 'FormControlRange end unchanged');
-    assert_equals(range.toString(), 'CDE', 'FormControlRange text unchanged');
   }, `After-range grow leaves range unchanged (${control})`);
 
   test(() => {
@@ -229,7 +219,7 @@ controls.forEach(control => {
 
     // FormControlRange: same replacement via setRangeText.
     const element = setup(control, 'ABCDEFG');
-    const range = makeFormControlRange(element, 2, 5);
+    const range = element.getValueRange(2, 5);
     element.setRangeText('Q', 1, 6);
     assert_equals(element.value, 'AQG', 'FormControlRange value after superset replacement');
     assert_equals(range.startOffset, 1, 'FormControlRange collapsed to change start');
@@ -248,7 +238,7 @@ controls.forEach(control => {
 
     // FormControlRange: same insertion via setRangeText.
     const element = setup(control, 'ABCDE');
-    const range = makeFormControlRange(element, 2, 4);
+    const range = element.getValueRange(2, 4);
     element.setRangeText('QQ', 2, 2);
     assert_equals(element.value, 'ABQQCDE', 'FormControlRange value after insert at start boundary');
     assert_equals(range.startOffset, 2, 'FormControlRange start unchanged at boundary');
@@ -266,7 +256,7 @@ controls.forEach(control => {
 
     // FormControlRange: same insertion via setRangeText.
     const element = setup(control, 'ABCDE');
-    const range = makeFormControlRange(element, 2, 4);
+    const range = element.getValueRange(2, 4);
     element.setRangeText('QQ', 4, 4);
     assert_equals(element.value, 'ABCDQQE', 'FormControlRange value after insert at end boundary');
     assert_equals(range.startOffset, 2, 'FormControlRange start unchanged');
@@ -283,11 +273,10 @@ controls.forEach(control => {
 
     // FormControlRange: same replacement via setRangeText.
     const element = setup(control, 'A😀BC');
-    const range = makeFormControlRange(element, 1, 4);
+    const range = element.getValueRange(1, 4);
     element.setRangeText('🙂🙂', 1, 3);
     assert_equals(range.startOffset, 1, 'FormControlRange start unchanged inside growth');
     assert_equals(range.endOffset, 6, 'FormControlRange end +2 code units');
-    assert_true(range.toString().length >= 3, 'FormControlRange range text non-empty after expansion');
   }, `Surrogate pair expansion grows end (${control})`);
 
   test(() => {
@@ -302,13 +291,12 @@ controls.forEach(control => {
 
     // FormControlRange: same edits via setRangeText.
     const element = setup(control, '012345');
-    const range = makeFormControlRange(element, 2, 5);
+    const range = element.getValueRange(2, 5);
     element.setRangeText('XX', 3, 4);
     element.setRangeText('', 3, 5);
     assert_equals(element.value, '01245', 'FormControlRange final value after chained edits');
     assert_equals(range.startOffset, 2, 'FormControlRange start unchanged across interior edits');
     assert_equals(range.endOffset, 4, 'FormControlRange end reflects cumulative delta');
-    assert_equals(range.toString(), '24', 'FormControlRange final range text');
   }, `Chained interior edits cumulatively adjust range (${control})`);
 });
 </script>

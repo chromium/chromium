@@ -13,32 +13,34 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-FormControlRange* FormControlRange::Create(Document& document) {
-  return MakeGarbageCollected<FormControlRange>(document);
+FormControlRange* FormControlRange::Create(Document& document,
+                                           TextControlElement* element,
+                                           unsigned start_offset,
+                                           unsigned end_offset) {
+  return MakeGarbageCollected<FormControlRange>(document, element, start_offset,
+                                                end_offset);
 }
 
-FormControlRange::FormControlRange(Document& document)
-    : owner_document_(&document) {
+FormControlRange::FormControlRange(Document& document,
+                                   TextControlElement* element,
+                                   unsigned start_offset,
+                                   unsigned end_offset)
+    : owner_document_(&document),
+      form_control_(element),
+      start_offset_in_value_(start_offset),
+      end_offset_in_value_(end_offset) {
   CHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
+  element->RegisterFormControlRange(this);
 }
 
 void FormControlRange::Trace(Visitor* visitor) const {
   visitor->Trace(owner_document_);
   visitor->Trace(form_control_);
   ScriptWrappable::Trace(visitor);
-}
-
-Node* FormControlRange::startContainer() const {
-  return form_control_;
-}
-
-Node* FormControlRange::endContainer() const {
-  return form_control_;
 }
 
 unsigned FormControlRange::startOffset() const {
@@ -59,72 +61,6 @@ bool FormControlRange::IsStaticRange() const {
 
 Document& FormControlRange::OwnerDocument() const {
   return *owner_document_;
-}
-
-void FormControlRange::setFormControlRange(Node* element,
-                                           unsigned start_offset,
-                                           unsigned end_offset,
-                                           ExceptionState& exception_state) {
-  // Validate element is a supported text control.
-  auto* text_control = DynamicTo<TextControlElement>(element);
-  if (!text_control) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Element must be an <input> or a <textarea>.");
-    return;
-  }
-
-  // For <input>, ensure it supports the Selection API.
-  if (auto* input_element = DynamicTo<HTMLInputElement>(element)) {
-    if (!input_element->InputSupportsSelectionAPI()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "<input> element must be of a text field type: text, search, url, "
-          "tel, or password.");
-      return;
-    }
-  }
-
-  const String value = text_control->Value();
-  if (start_offset > value.length() || end_offset > value.length()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        "Start or end offset exceeds value length.");
-    return;
-  }
-
-  // Auto-collapse backwards ranges to match Range behavior.
-  if (start_offset > end_offset) {
-    end_offset = start_offset;
-  }
-
-  // Rebind to the new control if changed and update registration to receive
-  // value mutation notifications.
-  if (form_control_ != text_control) {
-    if (form_control_) {
-      form_control_->UnregisterFormControlRange(this);
-    }
-    form_control_ = text_control;
-    form_control_->RegisterFormControlRange(this);
-  }
-  start_offset_in_value_ = start_offset;
-  end_offset_in_value_ = end_offset;
-}
-
-String FormControlRange::toString() const {
-  if (!form_control_) {
-    return g_empty_string;
-  }
-
-  const String value = form_control_->Value();
-  const unsigned len = value.length();
-  const unsigned end_offset = std::min(end_offset_in_value_, len);
-  if (start_offset_in_value_ >= end_offset) {
-    return g_empty_string;
-  }
-
-  return value.Substring(start_offset_in_value_,
-                         end_offset - start_offset_in_value_);
 }
 
 void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
@@ -231,10 +167,9 @@ Range* FormControlRange::BuildValueGeometryContext() const {
   }
 
   Text* text_node = nullptr;
-  // `.value` is copied into shadow-DOM text nodes under the inner editor, but
-  // there is no accessor yet. Iterate the children to locate that copy. The
-  // first text node is returned for now.
-  // TODO: Aggregate copied text when it spans multiple nodes.
+  // The element's text content is rendered in shadow-DOM text nodes under the
+  // inner editor. Iterate the children to locate the first text node.
+  // TODO(crbug.com/482337697): Aggregate text when it spans multiple nodes.
   for (Node* n = inner->firstChild(); n; n = n->nextSibling()) {
     if (auto* t = DynamicTo<Text>(n)) {
       text_node = t;

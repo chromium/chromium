@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 // https://dom.spec.whatwg.org/#interface-abstractrange
+// Note: This interface diverges from the spec to support FormControlRange
+// (crbug.com/421421332), which when the FormControlRange feature flag is
+// enabled, returns null for startContainer/endContainer to hide internal
+// DOM structure.
 
 [
     Exposed=Window
 ] interface AbstractRange {
-    readonly attribute Node startContainer;
+    readonly attribute Node? startContainer;
     readonly attribute unsigned long startOffset;
-    readonly attribute Node endContainer;
+    readonly attribute Node? endContainer;
     readonly attribute unsigned long endOffset;
     readonly attribute boolean collapsed;
 };

@@ -199,6 +199,12 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void RegisterFormControlRange(FormControlRange* range);
   void UnregisterFormControlRange(FormControlRange* range);
 
+  // Creates and returns a new FormControlRange for this element's value.
+  // Throws if offsets are out of bounds.
+  virtual FormControlRange* getValueRange(unsigned start_offset,
+                                          unsigned end_offset,
+                                          ExceptionState&);
+
   // Use the pre-edit baseline to compute and apply the edit once an observable
   // value mutation occurs, before 'input' listeners run.
   void CommitFormControlRangeEdit();
