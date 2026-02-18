@@ -27,7 +27,8 @@ ChromeAimEligibilityService::ChromeAimEligibilityService(
                             template_url_service,
                             url_loader_factory,
                             identity_manager,
-                            is_off_the_record) {}
+                            is_off_the_record,
+                            GetLocale()) {}
 
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
 

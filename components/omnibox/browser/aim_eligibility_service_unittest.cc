@@ -8,12 +8,23 @@
 #include <string>
 #include <utility>
 
-#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search/search.h"
+#include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/template_url_service.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/aim_eligibility_client_request.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "url/gurl.h"
 
@@ -28,8 +39,16 @@ namespace {
 // functions to use.
 class MockAimEligibilityServiceForInterception : public AimEligibilityService {
  public:
-  MockAimEligibilityServiceForInterception(PrefService& pref_service)
-      : AimEligibilityService(pref_service, nullptr, nullptr, nullptr, false) {}
+  MockAimEligibilityServiceForInterception(
+      PrefService& pref_service,
+      TemplateURLService* template_url_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : AimEligibilityService(pref_service,
+                              template_url_service,
+                              std::move(url_loader_factory),
+                              nullptr,
+                              false,
+                              "en-US") {}
   ~MockAimEligibilityServiceForInterception() override = default;
 
   MOCK_METHOD(const omnibox::AimEligibilityResponse&,
@@ -65,14 +84,21 @@ class AimEligibilityServiceTest : public testing::Test {
   explicit AimEligibilityServiceTest() {}
 
   void SetUp() override {
+    AimEligibilityService::RegisterProfilePrefs(
+        search_engines_test_environment_.pref_service().registry());
     aim_eligibility_service_ =
-        std::make_unique<MockAimEligibilityServiceForInterception>(prefs_);
+        std::make_unique<MockAimEligibilityServiceForInterception>(
+            search_engines_test_environment_.pref_service(),
+            search_engines_test_environment_.template_url_service(),
+            test_url_loader_factory_.GetSafeWeakWrapper());
   }
 
   void TearDown() override { aim_eligibility_service_ = nullptr; }
 
  protected:
-  TestingPrefServiceSimple prefs_;
+  base::test::TaskEnvironment task_environment_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<MockAimEligibilityServiceForInterception>
       aim_eligibility_service_;
 };
@@ -148,4 +174,135 @@ TEST_F(AimEligibilityServiceTest, UrlInterceptRules_NoRules) {
   GURL url("https://google.com?c=1");
 
   EXPECT_FALSE(aim_eligibility_service_->HasAimUrlParams(url));
+}
+
+TEST_F(AimEligibilityServiceTest, ClientLocaleParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAimServerEligibilityIncludeClientLocale,
+      {{"mode", "get_with_locale"}});
+
+  // Set the locale.
+  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+      .WillRepeatedly(testing::Return("es-419"));
+
+  // Trigger the request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  // Verify that the request URL contains the client_locale query param.
+  const network::ResourceRequest* request =
+      &test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_TRUE(request);
+  std::string value;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(request->url, "client_locale", &value));
+  EXPECT_EQ(value, "es-419");
+}
+
+TEST_F(AimEligibilityServiceTest, RequestMode_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimServerEligibilityIncludeClientLocale);
+
+  EXPECT_EQ(AimEligibilityService::GetServerEligibilityRequestMode(),
+            AimEligibilityService::ServerEligibilityRequestMode::kLegacyGet);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  const network::ResourceRequest* request =
+      &test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_TRUE(request);
+  EXPECT_EQ(request->method, "GET");
+  std::string value;
+  // Legacy GET (disabled) should NOT have client_locale.
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(request->url, "client_locale", &value));
+}
+
+TEST_F(AimEligibilityServiceTest, RequestMode_GetWithLocale) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAimServerEligibilityIncludeClientLocale,
+      {{"mode", "get_with_locale"}});
+
+  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+      .WillRepeatedly(testing::Return("es-419"));
+
+  EXPECT_EQ(
+      AimEligibilityService::GetServerEligibilityRequestMode(),
+      AimEligibilityService::ServerEligibilityRequestMode::kGetWithLocale);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  const network::ResourceRequest* request =
+      &test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_TRUE(request);
+  EXPECT_EQ(request->method, "GET");
+  std::string value;
+  // GET with Locale SHOULD have client_locale.
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(request->url, "client_locale", &value));
+  EXPECT_EQ(value, "es-419");
+}
+
+TEST_F(AimEligibilityServiceTest, RequestMode_EnabledDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilityIncludeClientLocale);
+
+  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+      .WillRepeatedly(testing::Return("es-419"));
+
+  // Default when enabled without params is now GetWithLocale.
+  EXPECT_EQ(
+      AimEligibilityService::GetServerEligibilityRequestMode(),
+      AimEligibilityService::ServerEligibilityRequestMode::kGetWithLocale);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  const network::ResourceRequest* request =
+      &test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_TRUE(request);
+  EXPECT_EQ(request->method, "GET");
+  std::string value;
+  // GET with Locale SHOULD have client_locale.
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(request->url, "client_locale", &value));
+  EXPECT_EQ(value, "es-419");
+}
+
+TEST_F(AimEligibilityServiceTest, RequestMode_PostWithProto) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAimServerEligibilityIncludeClientLocale,
+      {{"mode", "post_with_proto"}});
+
+  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+      .WillRepeatedly(testing::Return("es-419"));
+
+  EXPECT_EQ(
+      AimEligibilityService::GetServerEligibilityRequestMode(),
+      AimEligibilityService::ServerEligibilityRequestMode::kPostWithProto);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  const network::ResourceRequest* request =
+      &test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_TRUE(request);
+  EXPECT_EQ(request->method, "POST");
+  std::string value;
+  // POST with Proto should NOT have client_locale in query params.
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(request->url, "client_locale", &value));
+
+  // Verify body contains proto.
+  std::string body = network::GetUploadData(*request);
+  omnibox::AimEligibilityClientRequest client_request;
+  EXPECT_TRUE(client_request.ParseFromString(body));
+  EXPECT_EQ(client_request.client_locale(), "es-419");
 }
