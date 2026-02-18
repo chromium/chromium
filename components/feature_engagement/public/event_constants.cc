@@ -55,6 +55,7 @@ const char kGlicOnboardingCompleted[] = "glic_onboarding_completed";
 
 #if BUILDFLAG(IS_IOS)
 const char kChromeOpened[] = "chrome_opened";
+const char kChromeActiveSessionDay[] = "chrome_active_session_day";
 const char kIncognitoTabOpened[] = "incognito_tab_opened";
 const char kClearedBrowsingData[] = "cleared_browsing_data";
 const char kViewedReadingList[] = "viewed_reading_list";

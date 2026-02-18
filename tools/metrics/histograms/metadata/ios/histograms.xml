@@ -5327,6 +5327,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PreviousActiveDays{Days}" units="count"
+    expires_after="2027-03-01">
+  <owner>gujen@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the total number of days during which the client was active in a
+    lookback window of {Days} days. A client is considered active on a given day
+    if it emitted either Session.IsActive=Active or any value to
+    Session.TotalDuration. Recorded the first time a session starts or ends per
+    calendar day (based on current local time).
+  </summary>
+  <token key="Days">
+    <variant name="7"/>
+    <variant name="14"/>
+    <variant name="28"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.PriceInsights.Model.CanTrack" enum="Boolean"
     expires_after="2027-03-01">
   <owner>cheickcisse@google.com</owner>

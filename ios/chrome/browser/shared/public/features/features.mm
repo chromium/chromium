@@ -1100,3 +1100,9 @@ BASE_FEATURE(kAIMCobrowseDebugEntrypoint, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAIMCobrowseDebugEntrypointEnabled() {
   return base::FeatureList::IsEnabled(kAIMCobrowseDebugEntrypoint);
 }
+
+BASE_FEATURE(kRecordRecentActiveDays, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsRecordRecentActiveDaysEnabled() {
+  return base::FeatureList::IsEnabled(kRecordRecentActiveDays);
+}

@@ -943,4 +943,10 @@ BASE_DECLARE_FEATURE(kAIMCobrowseDebugEntrypoint);
 // Returns true if the AIMCobrowseDebugEntrypoint feature is enabled.
 bool IsAIMCobrowseDebugEntrypointEnabled();
 
+// Enables recording the number of recent days with active sessions.
+BASE_DECLARE_FEATURE(kRecordRecentActiveDays);
+
+// Returns true if kRecordRecentActiveDays is enabled.
+bool IsRecordRecentActiveDaysEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
