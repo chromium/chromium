@@ -3210,26 +3210,24 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
   // Elements may inherit touch action from parent frame, so we need to report
   // touchstart handler if the root layout object has non-auto effective touch
   // action.
-  TouchAction old_touch_action = TouchAction::kAuto;
-  bool is_document_element = GetNode() && IsDocumentElement();
-  if (style_)
-    old_touch_action = style_->EffectiveTouchAction();
-  TouchAction new_touch_action = new_style.EffectiveTouchAction();
-  if (GetNode() && !GetNode()->IsTextNode() &&
-      (old_touch_action == TouchAction::kAuto) !=
-          (new_touch_action == TouchAction::kAuto)) {
+  const bool is_old_touch_action_auto =
+      style_ ? (style_->EffectiveTouchAction() == TouchAction::kAuto) : true;
+  const bool is_new_touch_action_auto =
+      new_style.EffectiveTouchAction() == TouchAction::kAuto;
+  if (GetNode() && !IsText() &&
+      is_old_touch_action_auto != is_new_touch_action_auto) {
     EventHandlerRegistry& registry =
         GetDocument().GetFrame()->GetEventHandlerRegistry();
-    if (new_touch_action != TouchAction::kAuto) {
-      registry.DidAddEventHandler(*GetNode(),
-                                  EventHandlerRegistry::kTouchAction);
-    } else {
+    if (is_new_touch_action_auto) {
       registry.DidRemoveEventHandler(*GetNode(),
                                      EventHandlerRegistry::kTouchAction);
+    } else {
+      registry.DidAddEventHandler(*GetNode(),
+                                  EventHandlerRegistry::kTouchAction);
     }
     MarkEffectiveAllowedTouchActionChanged();
   }
-  if (is_document_element && style_ && style_->Opacity() == 0.0f &&
+  if (IsDocumentElement() && style_ && style_->Opacity() == 0.0f &&
       new_style.Opacity() != 0.0f) {
     if (LocalFrameView* frame_view = GetFrameView())
       frame_view->GetPaintTimingDetector().ReportIgnoredContent();
@@ -3961,6 +3959,8 @@ RespectImageOrientationEnum LayoutObject::GetImageOrientation(
 
 void LayoutObject::WillBeDestroyed() {
   NOT_DESTROYED();
+  DCHECK(!IsText());
+
   // Destroy any leftover anonymous children.
   LayoutObjectChildList* children = VirtualChildren();
   if (children)
@@ -3978,8 +3978,7 @@ void LayoutObject::WillBeDestroyed() {
   // for text nodes so don't try removing for one too. Need to check if
   // m_style is null in cases of partial construction. Any handler we added
   // previously may have already been removed by the Document independently.
-  if (GetNode() && !GetNode()->IsTextNode() && style_ &&
-      style_->GetTouchAction() != TouchAction::kAuto) {
+  if (GetNode() && style_ && style_->GetTouchAction() != TouchAction::kAuto) {
     EventHandlerRegistry& registry =
         GetDocument().GetFrame()->GetEventHandlerRegistry();
     if (registry.EventHandlerTargets(EventHandlerRegistry::kTouchAction)
@@ -3990,8 +3989,9 @@ void LayoutObject::WillBeDestroyed() {
   }
 
   // Remove this object as ImageResourceObserver.
-  if (style_ && !IsText())
+  if (style_) {
     UpdateImageObservers(style_.Get(), nullptr);
+  }
 
   // We must have removed all image observers.
   SECURITY_CHECK(!bitfields_.RegisteredAsFirstLineImageObserver());
