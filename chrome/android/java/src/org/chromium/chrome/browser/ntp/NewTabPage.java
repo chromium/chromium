@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
@@ -90,6 +91,7 @@ import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoord
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.single_tab.SingleTabSwitcherCoordinator;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
@@ -652,9 +654,11 @@ public class NewTabPage
         initializeMainView(
                 activity,
                 windowAndroid,
+                activityResultTracker,
                 snackbarManager,
                 isInNightMode,
                 shareDelegateSupplier,
+                modalDialogManagerSupplier,
                 url,
                 edgeToEdgeControllerSupplier,
                 startupMetricsTracker);
@@ -737,6 +741,7 @@ public class NewTabPage
      *
      * @param activity The activity used to initialize the view.
      * @param windowAndroid Provides the current active tab.
+     * @param activityResultTracker Tracker of activity results.
      * @param snackbarManager {@link SnackbarManager} object.
      * @param isInNightMode {@code true} if the night mode setting is on.
      * @param shareDelegateSupplier Supplies a delegate used to open SharingHub.
@@ -748,9 +753,11 @@ public class NewTabPage
     protected void initializeMainView(
             Activity activity,
             WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
             SnackbarManager snackbarManager,
             boolean isInNightMode,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             String url,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             StartupMetricsTracker startupMetricsTracker) {
@@ -761,21 +768,27 @@ public class NewTabPage
         Log.i(TAG, "NewTabPageLayout inflate");
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
-        FeedActionDelegate actionDelegate =
-                new FeedActionDelegateImpl(
-                        activity,
-                        snackbarManager,
-                        mNewTabPageManager.getNavigationDelegate(),
-                        BookmarkModel.getForProfile(profile),
-                        mTabModelSelector,
-                        profile,
-                        mBottomSheetController) {
-                    @Override
-                    public void openHelpPage() {
-                        NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
-                        super.openHelpPage();
-                    }
-                };
+        FeedSurfaceCoordinator.ActionDelegateFactory createActionDelegate =
+                () ->
+                        new FeedActionDelegateImpl(
+                                activity,
+                                windowAndroid,
+                                activityResultTracker,
+                                SigninAndHistorySyncActivityLauncherImpl.get(),
+                                DeviceLockActivityLauncherImpl.get(),
+                                snackbarManager,
+                                modalDialogManagerSupplier,
+                                mNewTabPageManager.getNavigationDelegate(),
+                                BookmarkModel.getForProfile(profile),
+                                mTabModelSelector,
+                                profile,
+                                mBottomSheetController) {
+                            @Override
+                            public void openHelpPage() {
+                                NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
+                                super.openHelpPage();
+                            }
+                        };
 
         mFeedSurfaceProvider =
                 new FeedSurfaceCoordinator(
@@ -798,7 +811,7 @@ public class NewTabPage
                         FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                         /* overScrollDisabled= */ false,
                         /* viewportView= */ null,
-                        actionDelegate,
+                        createActionDelegate,
                         mTabStripHeightSupplier,
                         edgeToEdgeControllerSupplier,
                         assumeNonNull(mModuleRegistrySupplier).get());

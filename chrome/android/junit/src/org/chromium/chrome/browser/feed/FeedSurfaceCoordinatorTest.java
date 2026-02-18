@@ -645,7 +645,7 @@ public class FeedSurfaceCoordinatorTest {
                 null,
                 false,
                 /* viewportView= */ null,
-                mFeedActionDelegate,
+                () -> mFeedActionDelegate,
                 mTabStripHeightSupplier,
                 mEdgeToEdgeSupplier,
                 mModuleRegistry);

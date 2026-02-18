@@ -121,4 +121,7 @@ public interface FeedActionDelegate {
     default void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
             BottomSheetController mBottomSheetController) {}
+
+    /** Cleans up resources used by the delegate. */
+    default void destroy() {}
 }

@@ -43,10 +43,16 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Tests for FeedActionDelegateImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,6 +71,14 @@ public final class FeedActionDelegateImplTest {
 
     @Mock private Activity mActivity;
 
+    @Mock private WindowAndroid mWindowAndroid;
+
+    @Mock private ActivityResultTracker mActivityResultTracker;
+
+    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+
+    @Mock private ModalDialogManager mModalDialogManager;
+
     @Mock private TabModelSelector mTabModelSelector;
 
     @Mock private Profile mProfile;
@@ -72,6 +86,8 @@ public final class FeedActionDelegateImplTest {
     @Mock private BottomSheetController mBottomSheetController;
 
     @Mock private Intent mSigninIntent;
+
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     @Captor ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -82,21 +98,15 @@ public final class FeedActionDelegateImplTest {
 
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
                 mMockSigninAndHistorySyncActivityLauncher);
-        mFeedActionDelegateImpl =
-                new FeedActionDelegateImpl(
-                        mActivity,
-                        mMockSnackbarManager,
-                        mMockNavigationDelegate,
-                        mMockBookmarkModel,
-                        mTabModelSelector,
-                        mProfile,
-                        mBottomSheetController);
+        mFeedActionDelegateImpl = buildFeedActionDelegateImpl();
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
-
-        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
     }
 
     @Test
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
     public void testStartSigninFlow_shownWhenFlagEnabled() {
         when(mActivity.getString(anyInt())).thenReturn("string");
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
@@ -123,6 +133,10 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
     public void testShowSigninInterstitial() {
         when(mActivity.getString(anyInt())).thenReturn("string");
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
@@ -149,9 +163,54 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CORMORANT)
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testStartSigninFlow_seamlessEnabled() {
+        when(mMockSigninAndHistorySyncActivityLauncher
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                                anyInt()))
+                .thenReturn(mSigninCoordinator);
+        mFeedActionDelegateImpl = buildFeedActionDelegateImpl();
+
+        when(mActivity.getString(anyInt())).thenReturn("string");
+
+        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
+
+        verify(mSigninCoordinator).startSigninFlow(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testShowSigninInterstitial_seamlessEnabled() {
+        when(mMockSigninAndHistorySyncActivityLauncher
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                                anyInt()))
+                .thenReturn(mSigninCoordinator);
+        mFeedActionDelegateImpl = buildFeedActionDelegateImpl();
+
+        when(mActivity.getString(anyInt())).thenReturn("string");
+
+        mFeedActionDelegateImpl.showSignInInterstitial(
+                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null);
+
+        verify(mSigninCoordinator).startSigninFlow(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
     public void testOpenWebFeed_enabledWhenCormorantFlagEnabled() {
         String webFeedName = "SomeFeedName";
+        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
 
         mFeedActionDelegateImpl.openWebFeed(webFeedName, SingleWebFeedEntryPoint.OTHER);
 
@@ -163,10 +222,30 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CORMORANT)
+    @DisableFeatures({
+        ChromeFeatureList.CORMORANT,
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
     public void testOpenWebFeed_disabledWhenCormorantFlagDisabled() {
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(false);
         mFeedActionDelegateImpl.openWebFeed("SomeFeedName", SingleWebFeedEntryPoint.OTHER);
         verify(mActivity, never()).startActivity(any());
+    }
+
+    private FeedActionDelegateImpl buildFeedActionDelegateImpl() {
+        return new FeedActionDelegateImpl(
+                mActivity,
+                mWindowAndroid,
+                mActivityResultTracker,
+                mMockSigninAndHistorySyncActivityLauncher,
+                mDeviceLockActivityLauncher,
+                mMockSnackbarManager,
+                () -> mModalDialogManager,
+                mMockNavigationDelegate,
+                mMockBookmarkModel,
+                mTabModelSelector,
+                mProfile,
+                mBottomSheetController);
     }
 }

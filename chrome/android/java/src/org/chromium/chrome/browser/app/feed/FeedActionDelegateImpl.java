@@ -9,6 +9,7 @@ import android.content.Intent;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.creator.CreatorActivity;
@@ -35,22 +36,34 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 /** Implements some actions for the Feed */
 @NullMarked
-public class FeedActionDelegateImpl implements FeedActionDelegate {
+public class FeedActionDelegateImpl
+        implements FeedActionDelegate, BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
     private final NativePageNavigationDelegate mNavigationDelegate;
     private final BookmarkModel mBookmarkModel;
@@ -60,9 +73,21 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
 
+    private static final @SigninAccessPoint int[] FEED_ACTION_ACCESS_POINTS =
+            new int[] {
+                SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO
+            };
+    private final Map<@SigninAccessPoint Integer, BottomSheetSigninAndHistorySyncCoordinator>
+            mSigninCoordinators = new HashMap<>();
+
     public FeedActionDelegateImpl(
             Activity activity,
+            WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
             SnackbarManager snackbarManager,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             NativePageNavigationDelegate navigationDelegate,
             BookmarkModel bookmarkModel,
             TabModelSelector tabModelSelector,
@@ -75,6 +100,34 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
         mBottomSheetController = bottomSheetController;
+
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            for (@SigninAccessPoint int accessPoint : FEED_ACTION_ACCESS_POINTS) {
+                OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+                profileSupplier.set(profile);
+                mSigninCoordinators.put(
+                        accessPoint,
+                        signinLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                windowAndroid,
+                                activity,
+                                activityResultTracker,
+                                this,
+                                deviceLockActivityLauncher,
+                                profileSupplier,
+                                () -> bottomSheetController,
+                                modalDialogManagerSupplier,
+                                snackbarManager,
+                                accessPoint));
+            }
+        }
+    }
+
+    @Override
+    public void destroy() {
+        for (BottomSheetSigninAndHistorySyncCoordinator coordinator :
+                mSigninCoordinators.values()) {
+            coordinator.destroy();
+        }
     }
 
     @Override
@@ -191,12 +244,19 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                 mActivity.getString(R.string.history_sync_subtitle))
                         .build();
 
-        @Nullable Intent intent =
-                SigninAndHistorySyncActivityLauncherImpl.get()
-                        .createBottomSheetSigninIntentOrShowError(
-                                mActivity, mProfile, config, signinAccessPoint);
-        if (intent != null) {
-            mActivity.startActivity(intent);
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            BottomSheetSigninAndHistorySyncCoordinator coordinator =
+                    mSigninCoordinators.get(signinAccessPoint);
+            assert coordinator != null : "Unexpected SigninAccessPoint: " + signinAccessPoint;
+            coordinator.startSigninFlow(config);
+        } else {
+            @Nullable Intent intent =
+                    SigninAndHistorySyncActivityLauncherImpl.get()
+                            .createBottomSheetSigninIntentOrShowError(
+                                    mActivity, mProfile, config, signinAccessPoint);
+            if (intent != null) {
+                mActivity.startActivity(intent);
+            }
         }
     }
 
@@ -224,12 +284,19 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                 mActivity.getString(R.string.history_sync_subtitle))
                         .build();
 
-        @Nullable Intent intent =
-                SigninAndHistorySyncActivityLauncherImpl.get()
-                        .createBottomSheetSigninIntentOrShowError(
-                                mActivity, mProfile, config, signinAccessPoint);
-        if (intent != null) {
-            mActivity.startActivity(intent);
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            BottomSheetSigninAndHistorySyncCoordinator coordinator =
+                    mSigninCoordinators.get(signinAccessPoint);
+            assert coordinator != null : "Unexpected SigninAccessPoint: " + signinAccessPoint;
+            coordinator.startSigninFlow(config);
+        } else {
+            @Nullable Intent intent =
+                    SigninAndHistorySyncActivityLauncherImpl.get()
+                            .createBottomSheetSigninIntentOrShowError(
+                                    mActivity, mProfile, config, signinAccessPoint);
+            if (intent != null) {
+                mActivity.startActivity(intent);
+            }
         }
     }
 
