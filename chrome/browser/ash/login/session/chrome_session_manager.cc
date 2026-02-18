@@ -376,7 +376,8 @@ ChromeSessionManager::ChromeSessionManager(
       session_manager_(CHECK_DEREF(session_manager)),
       oobe_configuration_(std::make_unique<OobeConfiguration>()),
       user_session_initializer_(
-          std::make_unique<UserSessionInitializer>(session_manager)) {
+          std::make_unique<UserSessionInitializer>(local_state,
+                                                   session_manager)) {
   CHECK(session_manager);
   observation_.Observe(session_manager);
 }

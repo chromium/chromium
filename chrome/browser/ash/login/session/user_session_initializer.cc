@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/media/media_notification_provider.h"
+#include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -131,7 +132,9 @@ void OnGotNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
 }  // namespace
 
 UserSessionInitializer::UserSessionInitializer(
-    session_manager::SessionManager* session_manager) {
+    PrefService* local_state,
+    session_manager::SessionManager* session_manager)
+    : local_state_(CHECK_DEREF(local_state)) {
   CHECK(session_manager);
   DCHECK(!g_instance);
   g_instance = this;
@@ -216,11 +219,8 @@ void UserSessionInitializer::InitRlz(Profile* profile) {
   // if it is empty.  The latter is to correct a problem in older builds where
   // an empty brand code would be persisted if the first login after OOBE was
   // a guest session.
-  if (!g_browser_process->local_state()->HasPrefPath(::prefs::kRLZBrand) ||
-      g_browser_process->local_state()
-          ->GetValue(::prefs::kRLZBrand)
-          .GetString()
-          .empty()) {
+  if (!local_state_->HasPrefPath(::prefs::kRLZBrand) ||
+      local_state_->GetValue(::prefs::kRLZBrand).GetString().empty()) {
     // Read brand code asynchronously from an OEM data and repost ourselves.
     google_brand::chromeos::InitBrand(base::BindOnce(
         &UserSessionInitializer::InitRlz, weak_factory_.GetWeakPtr(), profile));
@@ -318,8 +318,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     BocaManagerFactory::GetInstance()->GetForProfile(profile);
   }
 
-  screen_ai::dlc_installer::ManageInstallation(
-      g_browser_process->local_state());
+  screen_ai::dlc_installer::ManageInstallation(&local_state_.get());
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
@@ -418,16 +417,15 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
   //     sessions have ever been used on this device. This is the only
   //     situation where the enrollment state is NOT KNOWN at this point.
 
-  PrefService* local_state = g_browser_process->local_state();
   if (params.disabled || (profile->IsGuestSession() &&
                           !InstallAttributes::Get()->IsDeviceLocked())) {
     // Empty brand code means an organic install (no RLZ pings are sent).
     google_brand::chromeos::ClearBrandForCurrentSession();
   }
-  if (params.disabled != local_state->GetBoolean(::prefs::kRLZDisabled)) {
+  if (params.disabled != local_state_->GetBoolean(::prefs::kRLZDisabled)) {
     // When switching to RLZ enabled/disabled state, clear all recorded events.
     rlz::RLZTracker::ClearRlzState();
-    local_state->SetBoolean(::prefs::kRLZDisabled, params.disabled);
+    local_state_->SetBoolean(::prefs::kRLZDisabled, params.disabled);
   }
   // Init the RLZ library.
   int ping_delay =
