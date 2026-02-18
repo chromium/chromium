@@ -265,11 +265,13 @@ public class ShareDelegateImpl implements ShareDelegate {
                             LinkToTextHelper.getExistingSelectorsAllFrames(
                                     currentTab,
                                     (selectors) -> {
-                                        GURL canonicalUrl =
-                                                new GURL(
-                                                        LinkToTextHelper.getUrlToShare(
-                                                                assumeNonNull(result).getSpec(),
-                                                                selectors));
+                                        GURL canonicalUrl = null;
+                                        if (result != null) {
+                                            canonicalUrl =
+                                                    new GURL(
+                                                            LinkToTextHelper.getUrlToShare(
+                                                                    result.getSpec(), selectors));
+                                        }
                                         logCanonicalUrlResult(visibleUrl, canonicalUrl);
                                         triggerShareWithCanonicalUrlResolved(
                                                 window,
