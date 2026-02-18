@@ -26,7 +26,7 @@ export function getHtml(this: UpdaterAppElement) {
   </div>
   <div>
     <h2>$i18n{installedAppsTitle}</h2>
-    <app-list></app-list>
+    <app-list .apps="${this.apps}" .error="${this.appStateError}"></app-list>
   </div>
   <div>
     <h2>Enterprise Policies</h2>

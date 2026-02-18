@@ -18,6 +18,10 @@ class UpdaterBrowserTest : public WebUIMochaBrowserTest {
 
 typedef UpdaterBrowserTest UpdaterAppTest;
 
+IN_PROC_BROWSER_TEST_F(UpdaterAppTest, AppTest) {
+  RunTest("updater/app_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(UpdaterAppTest, AppListTest) {
   RunTest("updater/app_list/app_list_test.js", "mocha.run();");
 }
