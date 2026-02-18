@@ -4,6 +4,7 @@
 
 #include "components/contextual_tasks/internal/gemini_thread_sync_bridge.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/uuid.h"
 #include "components/sync/model/data_batch.h"
@@ -111,8 +112,9 @@ std::string GeminiThreadSyncBridge::GetStorageKey(
 
 void GeminiThreadSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // TODO(crbug.com/483956034) Implement
-  NOTIMPLEMENTED();
+  gemini_thread_specifics_.clear();
+  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 bool GeminiThreadSyncBridge::IsEntityDataValid(
