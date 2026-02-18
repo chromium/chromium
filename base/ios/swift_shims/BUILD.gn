@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+if (enable_swift_cxx_interop) {
+  source_set("_shims") {
+    sources = [
+      "sys_info.cc",
+      "sys_info.h",
+      "time.cc",
+      "time.h",
+    ]
+    deps = [ "//base" ]
+    visibility = [ ":*" ]
+  }
+
+  swift_cxx_import("sys_info") {
+    sources = [ "sys_info.h" ]
+    public_deps = [ ":_shims" ]
+  }
+
+  swift_cxx_import("time") {
+    sources = [ "time.h" ]
+    public_deps = [ ":_shims" ]
+  }
+}
