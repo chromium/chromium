@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
@@ -118,7 +117,7 @@ void ArcOptInPreferenceHandler::SendMetricsMode(
   if (IsAllowedToUpdateUserConsent(ownership_status)) {
     observer_->OnMetricsModeChanged(GetUserMetrics(),
                                     IsMetricsReportingPolicyManaged());
-  } else if (g_browser_process->local_state()) {
+  } else {
     bool enabled = ash::StatsReportingController::Get()->IsEnabled();
     observer_->OnMetricsModeChanged(enabled, IsMetricsReportingPolicyManaged());
   }
