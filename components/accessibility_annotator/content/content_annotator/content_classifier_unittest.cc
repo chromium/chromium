@@ -17,13 +17,6 @@ TEST(ContentClassificationInputTest, IsComplete) {
   complete_input.navigation_timestamp = base::Time::Now();
   complete_input.adopted_language = "en";
   complete_input.page_title = "Example Page";
-  scoped_refptr<
-      base::RefCountedData<optimization_guide::proto::AnnotatedPageContent>>
-      annotated_page_content = base::MakeRefCounted<base::RefCountedData<
-          optimization_guide::proto::AnnotatedPageContent>>();
-  annotated_page_content->data.mutable_main_frame_data()->set_title(
-      "Test Title");
-  complete_input.annotated_page_content = annotated_page_content;
   EXPECT_TRUE(complete_input.IsComplete());
 
   {
@@ -44,11 +37,6 @@ TEST(ContentClassificationInputTest, IsComplete) {
   {
     ContentClassificationInput input = complete_input;
     input.page_title.reset();
-    EXPECT_FALSE(input.IsComplete());
-  }
-  {
-    ContentClassificationInput input = complete_input;
-    input.annotated_page_content.reset();
     EXPECT_FALSE(input.IsComplete());
   }
 

@@ -13,8 +13,7 @@ ContentClassificationInput::ContentClassificationInput(
 
 bool ContentClassificationInput::IsComplete() const {
   return sensitivity_score.has_value() && navigation_timestamp.has_value() &&
-         adopted_language.has_value() && page_title.has_value() &&
-         annotated_page_content;
+         adopted_language.has_value() && page_title.has_value();
 }
 
 ContentClassificationResult RunContentClassification(
