@@ -367,8 +367,6 @@ class CommandBufferSetup {
     gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
 #endif
-    auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-        config_.workarounds, gpu_feature_info);
     command_buffer_.reset(new CommandBufferDirect());
 
     if (gpu_preferences_.use_passthrough_cmd_decoder) {
@@ -389,7 +387,8 @@ class CommandBufferSetup {
         config_.workarounds.use_virtualized_gl_contexts, base::DoNothing(),
         gpu_preferences_.gr_context_type);
     context_state_->InitializeSkia(gpu_preferences_, config_.workarounds);
-    context_state_->InitializeGL(gpu_preferences_, feature_info);
+    context_state_->InitializeGL(gpu_preferences_, config_.workarounds,
+                                 gpu_feature_info);
 
     shared_image_manager_ = std::make_unique<SharedImageManager>();
     shared_image_factory_ = std::make_unique<SharedImageFactory>(

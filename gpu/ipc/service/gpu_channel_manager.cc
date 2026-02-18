@@ -954,10 +954,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
       /*created_on_compositor_gpu_thread=*/false, gr_context_options_provider_);
 
   // Initialize GL context, so Vulkan and GL interop can work properly.
-  auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-      gpu_driver_bug_workarounds(), gpu_feature_info());
-  if (!shared_context_state->InitializeGL(gpu_preferences_,
-                                          feature_info.get())) {
+  if (!shared_context_state->InitializeGL(
+          gpu_preferences_, gpu_driver_bug_workarounds(), gpu_feature_info())) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize GL for "
                   " SharedContextState";
     *result = ContextResult::kFatalFailure;
@@ -966,7 +964,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
   // Log crash reports when GL errors are generated.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      enable_angle_validation && feature_info->feature_flags().khr_debug) {
+      enable_angle_validation &&
+      shared_context_state->feature_info()->feature_flags().khr_debug) {
     // Limit the total number of gl error crash reports to 1 per GPU
     // process.
     static int remaining_gl_error_reports = 1;

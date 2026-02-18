@@ -532,9 +532,8 @@ class NdkVideoEncoderAcceleratorTest
         base::MakeRefCounted<gl::GLShareGroup>(), gl_surface_, gl_context_,
         /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
         gpu::GrContextType::kGL);
-    ASSERT_TRUE(context_state_->InitializeGL(
-        gpu_preferences, base::MakeRefCounted<gpu::gles2::FeatureInfo>(
-                             gpu_workarounds, gpu_feature_info)));
+    ASSERT_TRUE(context_state_->InitializeGL(gpu_preferences, gpu_workarounds,
+                                             gpu_feature_info));
 
     backing_factory_ =
         std::make_unique<gpu::AHardwareBufferImageBackingFactory>(

@@ -106,9 +106,8 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
   context_state_ = base::MakeRefCounted<SharedContextState>(
       share_group_, surface_, context_, use_virtualized_gl_context,
       base::DoNothing(), gpu_preferences_.gr_context_type);
-  auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-      gpu_driver_bug_workarounds, gpu_feature_info_);
-  context_state_->InitializeGL(gpu_preferences_, feature_info);
+  context_state_->InitializeGL(gpu_preferences_, gpu_driver_bug_workarounds,
+                               gpu_feature_info_);
   context_state_->InitializeSkia(gpu_preferences_, gpu_driver_bug_workarounds);
 
   task_executor_ = std::make_unique<GpuInProcessThreadService>(

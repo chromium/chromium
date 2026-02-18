@@ -77,10 +77,10 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
 
     GpuFeatureInfo gpu_feature_info;
     GpuDriverBugWorkarounds workarounds;
-    auto feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, gpu_feature_info);
     gles2::TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         &gl_interface, gl_extensions, "ANGLE", gl_version, context_type);
+    auto feature_info =
+        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, gpu_feature_info);
     feature_info->Initialize(gpu::CONTEXT_TYPE_OPENGLES2,
                              false /* passthrough */,
                              gles2::DisallowedFeatures());
@@ -105,7 +105,7 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
         GrContextType::kGL);
 
     bool result =
-        shared_context_state->InitializeGL(GpuPreferences(), feature_info);
+        shared_context_state->InitializeGLWithFeatureInfo(feature_info);
     EXPECT_FALSE(result);
   }
   gl::GLSurfaceTestSupport::ShutdownGL(display);

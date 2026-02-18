@@ -45,9 +45,8 @@ class SharedImageFactoryTest : public testing::Test {
     GpuPreferences preferences;
     GpuDriverBugWorkarounds workarounds;
 
-    bool initialize_gl = context_state_->InitializeGL(
-        preferences, base::MakeRefCounted<gles2::FeatureInfo>(
-                         workarounds, GpuFeatureInfo()));
+    bool initialize_gl = context_state_->InitializeGL(preferences, workarounds,
+                                                      GpuFeatureInfo());
     ASSERT_TRUE(initialize_gl);
 
     bool initialize_skia =

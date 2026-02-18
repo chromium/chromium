@@ -125,11 +125,11 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   context_->GLContextStub::MakeCurrentImpl(surface_.get());
 
   GpuFeatureInfo gpu_feature_info;
-  feature_info_ = base::MakeRefCounted<gles2::FeatureInfo>(init.workarounds,
-                                                           gpu_feature_info);
   gles2::TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
       gl_.get(), all_extensions.c_str(), "", init.gl_version.c_str(),
       context_type);
+  feature_info_ = base::MakeRefCounted<gles2::FeatureInfo>(init.workarounds,
+                                                           gpu_feature_info);
   feature_info_->Initialize(context_type,
                             gpu_preferences_.use_passthrough_cmd_decoder,
                             gles2::DisallowedFeatures());
@@ -154,7 +154,7 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
       feature_info()->workarounds().use_virtualized_gl_contexts,
       base::DoNothing(), GpuPreferences().gr_context_type);
   shared_context_state_->disable_check_reset_status_throttling_for_test_ = true;
-  shared_context_state_->InitializeGL(GpuPreferences(), feature_info_);
+  shared_context_state_->InitializeGLWithFeatureInfo(feature_info_);
 
   command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
 

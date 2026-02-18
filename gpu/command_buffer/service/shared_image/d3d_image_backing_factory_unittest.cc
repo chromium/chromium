@@ -182,9 +182,8 @@ class D3DImageBackingFactoryTest
         gr_context_type, /*vulkan_context_provider=*/nullptr,
         dawn_context_provider_.get());
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
-    auto feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
+    context_state_->InitializeGL(GpuPreferences(), workarounds,
+                                 GpuFeatureInfo());
     copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
     copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
   }

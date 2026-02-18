@@ -46,9 +46,8 @@ class GrCacheControllerTest : public testing::Test {
         false /* use_virtualized_gl_contexts */, base::DoNothing(),
         GrContextType::kGL);
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
-    auto feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
+    context_state_->InitializeGL(GpuPreferences(), workarounds,
+                                 GpuFeatureInfo());
 
     controller_ = base::WrapUnique(
         new GrCacheController(context_state_.get(), task_runner_));

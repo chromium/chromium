@@ -74,9 +74,8 @@ class DCompImageBackingFactoryTest : public testing::Test {
         /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
         GrContextType::kGL);
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
-    auto feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
+    context_state_->InitializeGL(GpuPreferences(), workarounds,
+                                 GpuFeatureInfo());
 
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
     gl::InitializeDirectComposition(d3d11_device_);

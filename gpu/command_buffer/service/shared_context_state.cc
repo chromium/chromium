@@ -663,16 +663,10 @@ bool SharedContextState::InitializeGraphite(
 
 bool SharedContextState::InitializeGL(
     const GpuPreferences& gpu_preferences,
-    scoped_refptr<gles2::FeatureInfo> feature_info) {
-  // We still need initialize GL when Vulkan is used, because RasterDecoder
-  // depends on GL.
-  // TODO(penghuang): don't initialize GL when RasterDecoder can work without
-  // GL.
-  if (IsGLInitialized()) {
-    DCHECK(feature_info == feature_info_);
-    DCHECK(context_state_);
-    return true;
-  }
+    const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
+    const GpuFeatureInfo& gpu_feature_info) {
+  auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
+      gpu_driver_bug_workarounds, gpu_feature_info);
 
   DCHECK(context_->IsCurrent(nullptr));
 
@@ -682,11 +676,15 @@ bool SharedContextState::InitializeGL(
   // See https://crbug.com/914976
   DCHECK(!use_passthrough_cmd_decoder || !use_virtualized_gl_contexts_);
 
+  feature_info->Initialize(feature_info->context_type(),
+                           use_passthrough_cmd_decoder,
+                           gles2::DisallowedFeatures());
+  return InitializeGLWithFeatureInfo(std::move(feature_info));
+}
+bool SharedContextState::InitializeGLWithFeatureInfo(
+    scoped_refptr<gles2::FeatureInfo> feature_info) {
+  CHECK(!feature_info_);
   feature_info_ = std::move(feature_info);
-  feature_info_->Initialize(feature_info_->context_type(),
-                            use_passthrough_cmd_decoder,
-                            gles2::DisallowedFeatures());
-
   auto* api = gl::g_current_gl_context;
   const GLint kGLES2RequiredMinimumVertexAttribs = 8u;
   GLint max_vertex_attribs = 0;

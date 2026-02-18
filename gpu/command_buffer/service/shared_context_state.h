@@ -67,6 +67,7 @@ class GpuDriverBugWorkarounds;
 class GpuProcessShmCount;
 class ServiceTransferCache;
 class GraphiteSharedContext;
+struct GpuFeatureInfo;
 
 namespace gles2 {
 class FeatureInfo;
@@ -140,7 +141,9 @@ class GPU_GLES2_EXPORT SharedContextState
   bool IsGraphiteDawnVulkanSwiftShader() const;
 
   bool InitializeGL(const GpuPreferences& gpu_preferences,
-                    scoped_refptr<gles2::FeatureInfo> feature_info);
+                    const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
+                    const GpuFeatureInfo& gpu_feature_info);
+
   bool IsGLInitialized() const { return !!feature_info_; }
 
   void FlushAndSubmit(bool sync_to_cpu);
@@ -294,12 +297,16 @@ class GPU_GLES2_EXPORT SharedContextState
  private:
   friend class base::RefCounted<SharedContextState>;
   friend class raster::RasterDecoderTestBase;
+  FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest, InitFailsIfLostContext);
   FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest,
                            GLOptionsProviderSetsCustomOptions);
   FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest,
                            VulkanOptionsProviderSetsCustomOptions);
 
   ~SharedContextState() override;
+
+  bool InitializeGLWithFeatureInfo(
+      scoped_refptr<gles2::FeatureInfo> feature_info);
 
   bool InitializeGanesh(
       const GpuPreferences& gpu_preferences,

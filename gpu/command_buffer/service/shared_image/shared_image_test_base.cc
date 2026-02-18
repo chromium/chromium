@@ -214,8 +214,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   );
 
   bool initialize_gl = context_state_->InitializeGL(
-      gpu_preferences_, base::MakeRefCounted<gles2::FeatureInfo>(
-                            gpu_workarounds_, GpuFeatureInfo()));
+      gpu_preferences_, gpu_workarounds_, GpuFeatureInfo());
   ASSERT_TRUE(initialize_gl);
 
   bool initialize_skia =

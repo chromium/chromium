@@ -222,11 +222,9 @@ void OutputSurfaceProviderWebView::InitializeContext() {
       /*created_on_compositor_gpu_thread=*/false,
       aw_gr_context_options_provider_.get());
   if (!enable_vulkan_) {
-    auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
-        workarounds, GpuServiceWebView::GetInstance()->gpu_feature_info());
     shared_context_state_->InitializeGL(
-        GpuServiceWebView::GetInstance()->gpu_preferences(),
-        std::move(feature_info));
+        GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds,
+        GpuServiceWebView::GetInstance()->gpu_feature_info());
   }
 
   shared_context_state_->InitializeSkia(

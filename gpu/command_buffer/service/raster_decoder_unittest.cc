@@ -192,15 +192,14 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
-    auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-        workarounds, gpu_feature_info_);
 
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), std::move(surface), std::move(context),
         false /* use_virtualized_gl_contexts */, base::DoNothing(),
         GpuPreferences().gr_context_type);
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
-    context_state_->InitializeGL(GpuPreferences(), feature_info);
+    context_state_->InitializeGL(GpuPreferences(), workarounds,
+                                 gpu_feature_info_);
 
     decoder_ = CreateDecoder();
 

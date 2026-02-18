@@ -57,9 +57,8 @@ class ImageReaderGLOwnerTest : public testing::Test {
         false /* use_virtualized_gl_contexts */, base::DoNothing(),
         GrContextType::kGL);
     context_state->InitializeSkia(GpuPreferences(), workarounds);
-    auto feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    context_state->InitializeGL(GpuPreferences(), std::move(feature_info));
+    context_state->InitializeGL(GpuPreferences(), workarounds,
+                                GpuFeatureInfo());
 
     image_reader_ = new ImageReaderGLOwner(
         SecureMode(), std::move(context_state),

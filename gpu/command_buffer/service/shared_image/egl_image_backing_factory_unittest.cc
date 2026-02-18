@@ -82,8 +82,7 @@ bool IsEglImageSupported() {
 void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
                          scoped_refptr<gl::GLSurface>& surface,
                          scoped_refptr<gl::GLContext>& context,
-                         scoped_refptr<SharedContextState>& context_state,
-                         scoped_refptr<gles2::FeatureInfo>& feature_info) {
+                         scoped_refptr<SharedContextState>& context_state) {
   surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
                                                gfx::Size());
   ASSERT_TRUE(surface);
@@ -94,14 +93,12 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
   ASSERT_TRUE(result);
 
   scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
-  feature_info =
-      base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
   context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), surface, context,
       /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
       GrContextType::kGL);
   context_state->InitializeSkia(GpuPreferences(), workarounds);
-  context_state->InitializeGL(GpuPreferences(), feature_info);
+  context_state->InitializeGL(GpuPreferences(), workarounds, GpuFeatureInfo());
 }
 
 class EGLImageBackingFactoryThreadSafeTest
@@ -137,9 +134,7 @@ class EGLImageBackingFactoryThreadSafeTest
 
     GpuDriverBugWorkarounds workarounds;
 
-    scoped_refptr<gles2::FeatureInfo> feature_info;
-    CreateSharedContext(workarounds, surface_, context_, context_state_,
-                        feature_info);
+    CreateSharedContext(workarounds, surface_, context_, context_state_);
 
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = use_passthrough();
@@ -151,11 +146,7 @@ class EGLImageBackingFactoryThreadSafeTest
         std::make_unique<SharedImageRepresentationFactory>(
             shared_image_manager_.get(), nullptr);
 
-    // Create 2nd context/context_state which are not part of same shared group.
-    scoped_refptr<gles2::FeatureInfo> feature_info2;
-    CreateSharedContext(workarounds, surface2_, context2_, context_state2_,
-                        feature_info2);
-    feature_info2.reset();
+    CreateSharedContext(workarounds, surface2_, context2_, context_state2_);
   }
 
   bool use_passthrough() {

@@ -1993,9 +1993,8 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
       std::move(gl_context),
       /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
       GrContextType::kGL);
-  auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-      workarounds, group->gpu_feature_info());
-  if (!shared_context_state_->InitializeGL(gpu_preferences, feature_info)) {
+  if (!shared_context_state_->InitializeGL(gpu_preferences, workarounds,
+                                           group->gpu_feature_info())) {
     impl_->InsertError(GL_INVALID_OPERATION,
                        "ContextResult::kFatalFailure: Failed to Initialize GL "
                        "for SharedContextState");
