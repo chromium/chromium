@@ -83,6 +83,11 @@
 #include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-primitive.h"
 
+#if defined(ENABLE_PRINTING)
+#include "printing/metafile_skia.h"
+#include "printing/print_settings.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
 // incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
@@ -522,6 +527,7 @@ bool BeginSmoothDrag(GpuBenchmarkingContext* context,
 }
 
 static void PrintDocument(blink::WebLocalFrame* frame, SkDocument* doc) {
+#if defined(ENABLE_PRINTING)
   const float kPageWidth = 612.0f;   // 8.5 inch
   const float kPageHeight = 792.0f;  // 11 inch
   const float kMarginTop = 29.0f;    // 0.40 inch
@@ -531,14 +537,18 @@ static void PrintDocument(blink::WebLocalFrame* frame, SkDocument* doc) {
   blink::WebPrintParams params(gfx::SizeF(kContentWidth, kContentHeight));
   params.printer_dpi = 300;
   uint32_t page_count = frame->PrintBegin(params, blink::WebNode());
+  printing::MetafileSkia metafile(printing::mojom::SkiaDocumentType::kMSKP,
+                                  printing::PrintSettings::NewCookie());
   for (uint32_t i = 0; i < page_count; ++i) {
     SkCanvas* sk_canvas = doc->beginPage(kPageWidth, kPageHeight);
     cc::SkiaPaintCanvas canvas(sk_canvas);
+    canvas.SetPrintingMetafile(&metafile);
     cc::PaintCanvasAutoRestore auto_restore(&canvas, true);
     canvas.translate(kMarginLeft, kMarginTop);
     frame->PrintPage(i, &canvas);
   }
   frame->PrintEnd();
+#endif
 }
 
 static void PrintDocumentTofile(v8::Isolate* isolate,

@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//media/media_options.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -280,7 +281,6 @@ target(link_target_type, "renderer") {
     "//media/webrtc",
     "//mojo/public/cpp/bindings",
     "//net",
-    "//printing/buildflags",
     "//sandbox",
     "//services/audio/public/mojom",
     "//services/device/public/cpp/generic_sensor",
@@ -421,6 +421,14 @@ target(link_target_type, "renderer") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+
+  if (enable_printing) {
+    deps += [
+      "//printing:metafile",
+      "//printing:settings",
+    ]
+    defines += [ "ENABLE_PRINTING" ]
   }
 
   if (enable_ipc_fuzzer) {
