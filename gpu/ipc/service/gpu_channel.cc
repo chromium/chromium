@@ -1115,18 +1115,9 @@ void GpuChannel::CacheBlob(gpu::GpuDiskCacheType type,
 }
 
 uint64_t GpuChannel::GetMemoryUsage() const {
-  // Collect the unique memory trackers in use by the |stubs_|.
-  base::flat_set<MemoryTracker*> unique_memory_trackers;
-  unique_memory_trackers.reserve(stubs_.size());
   uint64_t size = 0;
   for (const auto& kv : stubs_) {
     size += kv.second->GetMemoryTracker()->GetSize();
-    MemoryTracker* tracker = kv.second->GetContextGroupMemoryTracker();
-    if (!tracker || !unique_memory_trackers.insert(tracker).second) {
-      // We already counted that tracker.
-      continue;
-    }
-    size += tracker->GetSize();
   }
   size += shared_image_stub_->GetSize();
 

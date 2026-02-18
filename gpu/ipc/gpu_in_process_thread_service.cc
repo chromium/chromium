@@ -47,10 +47,6 @@ bool GpuInProcessThreadService::ForceVirtualizedGLContexts() const {
   return false;
 }
 
-bool GpuInProcessThreadService::ShouldCreateMemoryTracker() const {
-  return true;
-}
-
 std::unique_ptr<SingleTaskSequence>
 GpuInProcessThreadService::CreateSequence() {
   return std::make_unique<SchedulerSequence>(scheduler_, task_runner_);

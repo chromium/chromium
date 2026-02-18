@@ -31,7 +31,6 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub final
   gpu::ContextResult Initialize(
       const mojom::CreateCommandBufferParams& init_params,
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
-  MemoryTracker* GetContextGroupMemoryTracker() const override;
   base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
  private:

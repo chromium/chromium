@@ -110,7 +110,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   MemoryTracker* GetMemoryTracker() const;
-  virtual MemoryTracker* GetContextGroupMemoryTracker() const = 0;
 
   virtual base::WeakPtr<CommandBufferStub> AsWeakPtr() = 0;
 

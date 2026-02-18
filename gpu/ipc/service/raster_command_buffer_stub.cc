@@ -137,10 +137,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   return gpu::ContextResult::kSuccess;
 }
 
-MemoryTracker* RasterCommandBufferStub::GetContextGroupMemoryTracker() const {
-  return nullptr;
-}
-
 base::WeakPtr<CommandBufferStub> RasterCommandBufferStub::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

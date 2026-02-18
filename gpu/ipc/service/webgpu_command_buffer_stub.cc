@@ -138,10 +138,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
-MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {
-  return nullptr;
-}
-
 base::WeakPtr<CommandBufferStub> WebGPUCommandBufferStub::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

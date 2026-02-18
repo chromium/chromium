@@ -58,9 +58,6 @@ class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
   // Always use virtualized GL contexts if this returns true.
   virtual bool ForceVirtualizedGLContexts() const = 0;
 
-  // Creates a memory tracker for the context group if this returns true.
-  virtual bool ShouldCreateMemoryTracker() const = 0;
-
   // Schedules |task| to run out of order with respect to other sequenced tasks.
   virtual void ScheduleOutOfOrderTask(base::OnceClosure task) = 0;
 
