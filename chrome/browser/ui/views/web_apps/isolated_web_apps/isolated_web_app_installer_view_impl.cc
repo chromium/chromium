@@ -241,7 +241,14 @@ class InstallerDialogView : public views::BoxLayoutView {
   }
 
   void SetTitle(const ToU16String& title) {
-    title_label_->SetText(title.get());
+    const std::u16string& title_text = title.get();
+    title_label_->SetText(title_text);
+
+    views::StyledLabel::RangeStyleInfo bold_style;
+    bold_style.custom_font = title_label_->GetFontList().Derive(
+        0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD);
+
+    title_label_->AddStyleRange(gfx::Range(0, title_text.length()), bold_style);
   }
 
   void SetSubtitle(int subtitle_id,
