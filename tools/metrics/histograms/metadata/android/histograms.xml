@@ -1540,65 +1540,71 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ContactsPicker.ContactCount" units="Contacts"
-    expires_after="2024-08-04">
+    expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Measures the total number of contacts shown in the contacts picker. Measured
-    once when the Contacts Picker dialog is dismissed.
+    once when the Contacts Picker dialog is dismissed. Warning: this histogram
+    was expired from 2024-08-04 to 2026-02-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.ContactsPicker.DialogAction"
-    enum="ContactsPickerDialogAction" expires_after="2024-08-04">
+    enum="ContactsPickerDialogAction" expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records which action the user takes in the ContactsPickerDialog. Measured
-    once when the Contacts Picker dialog is dismissed.
+    once when the Contacts Picker dialog is dismissed. Warning: this histogram
+    was expired from 2024-08-04 to 2026-02-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.ContactsPicker.PropertiesRequested"
-    enum="ContactsPickerProperties" expires_after="2024-08-04">
+    enum="ContactsPickerProperties" expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     The contact properties requested by the website (names, emails, telephone
     numbers). Measured once when the Contacts Picker dialog is dismissed. Note:
-    This metric was not logged in June 2023.
+    This metric was not logged in June 2023. Warning: this histogram was expired
+    from 2024-08-04 to 2026-02-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.ContactsPicker.PropertiesUserRejected"
-    enum="ContactsPickerProperties" expires_after="2024-10-06">
+    enum="ContactsPickerProperties" expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     The contact properties requested by the website but rejected by the user.
-    Measured once when the Contacts Picker dialog is dismissed.
+    Measured once when the Contacts Picker dialog is dismissed. Warning: this
+    histogram was expired from 2024-10-06 to 2026-02-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.ContactsPicker.SelectCount" units="Contacts"
-    expires_after="2024-08-04">
+    expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Measures the total number of contacts selected in the contacts picker.
     Measured once when the Contacts Picker dialog is dismissed. Note: This
-    metric was not logged in June 2023.
+    metric was not logged in June 2023. Warning: this histogram was expired from
+    2024-08-04 to 2026-02-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.ContactsPicker.SelectPercentage" units="%"
-    expires_after="2024-08-04">
+    expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Measures the percentage of contacts selected in the contacts picker.
     Measured once when the Contacts Picker dialog is dismissed. Note: This
-    metric was not logged in June 2023.
+    metric was not logged in June 2023. Warning: this histogram was expired from
+    2024-08-04 to 2026-02-17; data may be missing.
   </summary>
 </histogram>
 
