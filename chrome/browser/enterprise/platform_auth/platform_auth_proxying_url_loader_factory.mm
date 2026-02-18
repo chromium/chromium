@@ -22,6 +22,7 @@
 #include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/enterprise/platform_auth/url_session_helper.h"
 #include "components/enterprise/platform_auth/url_session_url_loader.h"
+#include "components/enterprise/platform_auth/url_session_url_loader_bridge.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -104,11 +105,12 @@ void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     } else {
       if (g_use_mock_server_for_testing) {
         CHECK_IS_TEST();
-        URLSessionURLLoader::CreateAndStartForTesting(  // IN-TEST
-            request, std::move(loader_receiver), std::move(client));
+        enterprise_auth::
+            CreateURLSessionURLLoaderAndStartForTesting(  // IN-TEST
+                request, std::move(loader_receiver), std::move(client));
       } else {
-        URLSessionURLLoader::CreateAndStart(request, std::move(loader_receiver),
-                                            std::move(client));
+        enterprise_auth::CreateURLSessionURLLoaderAndStart(
+            request, std::move(loader_receiver), std::move(client));
       }
     }
   } else {
