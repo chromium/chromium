@@ -2391,12 +2391,19 @@ public class AwContents implements SmartClipProvider {
             throw new IllegalArgumentException("This API does not support javascript URLs");
         }
 
-        // TODO(crbug.com/408128748): Add support for extra headers.
+        IllegalArgumentException headerException = validateAdditionalHeaders(params.extraHeaders);
+        if (headerException != null) {
+            throw headerException;
+        }
+
         // TODO(crbug.com/408974593): Consider adding a fixupUrl option.
         // TODO(crbug.com/408974593): Allow developers to set the PageTransition type.
         LoadUrlParams loadUrlParams = new LoadUrlParams(params.url, PageTransition.TYPED);
         loadUrlParams.setShouldReplaceCurrentEntry(params.shouldReplaceCurrentEntry);
-
+        loadUrlParams.setExtraHeaders(params.extraHeaders);
+        // Remove extra headers for cross origin redirects to avoid data leakage - see
+        // crbug.com/40051073
+        loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
         loadUrlParams.setOverrideUserAgent(UserAgentOverrideOption.TRUE);
 
         NavigationHandle handle = mNavigationController.loadUrl(loadUrlParams);
