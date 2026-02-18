@@ -691,3 +691,14 @@ config("lean_and_mean") {
 config("nominmax") {
   defines = [ "NOMINMAX" ]
 }
+
+# Wincrypt use symbol prefix ---------------------------------------------------
+
+# Some third party code might not compile with WINCRYPT_USE_SYMBOL_PREFIX so we
+# have to have a separate config for it. Remove this config from your target to
+# get the unprefixed versions of the wincrypt.h symbols. Note this will mean
+# your target cannot include wincrypt.h and OpenSSL/BoringSSL headers at the
+# same time.
+config("wincrypt_use_symbol_prefix") {
+  defines = [ "WINCRYPT_USE_SYMBOL_PREFIX" ]
+}
