@@ -184,8 +184,6 @@ CreateInputDataFromAnnotatedPageContent(
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   // Service to check for AI mode eligibility.
   raw_ptr<AimEligibilityService> _aimEligibilityService;
-  // Subscription for AIM eligibility changes.
-  base::CallbackListSubscription _aimEligibilitySubscription;
   // The preference service.
   raw_ptr<PrefService> _prefService;
 
@@ -262,20 +260,7 @@ CreateInputDataFromAnnotatedPageContent(
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
     _aimEligibilityService = aimEligibilityService;
-    if (_aimEligibilityService) {
-      __weak __typeof(self) weakSelf = self;
-      _aimEligibilitySubscription =
-          _aimEligibilityService->RegisterEligibilityChangedCallback(
-              base::BindRepeating(^{
-                [weakSelf didUpdateAimEligiblity];
-              }));
-
-      [self createInputStateModel];
-      [self startInputStateObservation];
-    }
-
-    _items = [[ComposeboxInputItemCollection alloc]
-        initWithAttachmentLimit:[self totalAttachmentLimit]];
+    _items = [[ComposeboxInputItemCollection alloc] init];
     _items.delegate = self;
   }
   return self;
@@ -291,7 +276,6 @@ CreateInputDataFromAnnotatedPageContent(
   _persistTabContextAgent = nullptr;
   _searchEngineObserver.reset();
   _templateURLService = nullptr;
-  _aimEligibilitySubscription = {};
   [self invalidateInputStateSubscription];
   _aimEligibilityService = nullptr;
   _inputStateModel = nullptr;
@@ -344,7 +328,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (NSUInteger)remainingAttachmentCapacity {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  NSUInteger availableSlots = _items.availableSlots;
+  NSUInteger availableSlots = [self totalAttachmentLimit] - _items.count;
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
     case ComposeboxMode::kCanvas:
@@ -579,6 +563,34 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
+- (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig {
+  // Only preselect when there was already a input state model created.
+  // Otherwise it's safe to assume it is the first time a searchbox config is
+  // loaded.
+  BOOL needPreselection = _inputStateModel != nil;
+
+  contextual_search::InputState previousInputState = _inputState;
+
+  contextual_search::ContextualSearchSessionHandle* sessionHandle =
+      _contextualSearchSession.get();
+  _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
+      *sessionHandle, *searchboxConfig);
+
+  if (needPreselection) {
+    // Try maintaining the same options if there was no change in their
+    // availability.
+    __weak __typeof(self) weakSelf = self;
+    [self preselectPreferencesIfAvailable:previousInputState
+                               completion:^{
+                                 [weakSelf startInputStateObservation];
+                               }];
+  } else {
+    [self startInputStateObservation];
+  }
+
+  [self commitUIUpdates];
+}
+
 // Returns the model option required by the given input state.
 - (ComposeboxModelOption)requiredModelOptionForInputState:
     (const contextual_search::InputState&)inputState {
@@ -632,13 +644,13 @@ CreateInputDataFromAnnotatedPageContent(
       }
       [_items clearItems];
       _imageUploadCount = 0;
-      _inputStateModel->setActiveTool(omnibox::TOOL_MODE_UNSPECIFIED);
+      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
       break;
     case ComposeboxMode::kAIM:
       if (![self isEligibleToAIM]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
-      _inputStateModel->setActiveTool(omnibox::TOOL_MODE_UNSPECIFIED);
+      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
       break;
     case ComposeboxMode::kImageGeneration:
       if (![self imageToolAllowed]) {
@@ -651,13 +663,13 @@ CreateInputDataFromAnnotatedPageContent(
       if (![self canvasToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
-      _inputStateModel->setActiveTool(omnibox::TOOL_MODE_CANVAS);
+      [self setActiveTool:omnibox::TOOL_MODE_CANVAS];
       break;
     case ComposeboxMode::kDeepSearch:
       if (![self deepSearchToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
-      _inputStateModel->setActiveTool(omnibox::TOOL_MODE_DEEP_SEARCH);
+      [self setActiveTool:omnibox::TOOL_MODE_DEEP_SEARCH];
       break;
   }
 
@@ -929,7 +941,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)attachCurrentTabContent {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_items.canAddMoreAttachments) {
+  if (![self canAddMoreAttachments]) {
     [self.delegate showAttachmentLimitError];
     return;
   }
@@ -2141,22 +2153,10 @@ CreateInputDataFromAnnotatedPageContent(
   _isUpdatingCompactMode = NO;
 }
 
-#pragma mark - AIM eligibility observing.
-
-// Called when the AIM eligibility service is updated.
-- (void)didUpdateAimEligiblity {
-  contextual_search::InputState previousInputState = _inputState;
-  [self createInputStateModel];
-
-  // Try maintaining the same options if there was no change in their
-  // availability.
-  __weak __typeof(self) weakSelf = self;
-  [self preselectPreferencesIfAvailable:previousInputState
-                             completion:^{
-                               [weakSelf startInputStateObservation];
-                             }];
-
-  [self commitUIUpdates];
+- (void)setActiveTool:(omnibox::ToolMode)activeTool {
+  if (_inputStateModel) {
+    _inputStateModel->setActiveTool(activeTool);
+  }
 }
 
 #pragma mark - Input State Subscription
@@ -2206,7 +2206,7 @@ CreateInputDataFromAnnotatedPageContent(
   bool canSelectTool =
       [self canSelectToolBasedOnInputState:preselectionState.active_tool];
   if (canSelectTool) {
-    _inputStateModel->setActiveTool(preselectionState.active_tool);
+    [self setActiveTool:preselectionState.active_tool];
   }
 }
 
@@ -2261,6 +2261,8 @@ CreateInputDataFromAnnotatedPageContent(
   _isMultiline = sender.numberOfLines > 1;
   [self commitUIUpdates];
 }
+
+#pragma mark - ComposeboxInputItemCollectionDelegate
 
 - (void)composeboxInputItemCollectionDidUpdateItems:
     (ComposeboxInputItemCollection*)composeboxInputItemCollection {

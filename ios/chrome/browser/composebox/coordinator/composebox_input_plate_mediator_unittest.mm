@@ -42,6 +42,7 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/omnibox_proto/searchbox_config.pb.h"
 
 // Mock consumer for the mediator.
 @interface TestComposeboxInputPlateConsumer
@@ -164,16 +165,12 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(0).Activate());
 
+    searchboxConfig.Clear();
     aim_eligibility_service_ =
         std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
             pref_service_, template_url_service(),
             test_url_loader_factory->GetSafeWeakWrapper(),
             IdentityManagerFactory::GetForProfile(profile_.get()));
-    EXPECT_CALL(*aim_eligibility_service_,
-                RegisterEligibilityChangedCallback(testing::_))
-        .WillOnce(
-            testing::DoAll(testing::SaveArg<0>(&aim_callback_),
-                           testing::Return(base::CallbackListSubscription())));
     auto session_handle = service_->CreateSession(
         std::move(config_params),
         contextual_search::ContextualSearchSource::kUnknown,
@@ -249,36 +246,54 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   void SetAIMEligible(bool AIMEligible) {
     EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
         .WillRepeatedly(testing::Return(AIMEligible));
-    ASSERT_FALSE(aim_callback_.is_null());
-
-    aim_callback_.Run();
   }
 
   void SetCreateImageEligible(bool createImagesEligible) {
     EXPECT_CALL(*aim_eligibility_service_, IsCreateImagesEligible())
         .WillRepeatedly(testing::Return(createImagesEligible));
-    ASSERT_FALSE(aim_callback_.is_null());
-    aim_callback_.Run();
+
+    if (createImagesEligible) {
+      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+    }
+
+    ForwardSearchboxConfig();
   }
 
   void SetCanvasEligible(bool canvasEligible) {
     EXPECT_CALL(*aim_eligibility_service_, IsCanvasEligible())
         .WillRepeatedly(testing::Return(canvasEligible));
-    ASSERT_FALSE(aim_callback_.is_null());
-    aim_callback_.Run();
+    if (canvasEligible) {
+      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_CANVAS);
+    }
+    ForwardSearchboxConfig();
   }
 
   void SetDeepSearchEligible(bool deepSearchEligible) {
     EXPECT_CALL(*aim_eligibility_service_, IsDeepSearchEligible())
         .WillRepeatedly(testing::Return(deepSearchEligible));
-    ASSERT_FALSE(aim_callback_.is_null());
-    aim_callback_.Run();
+    if (deepSearchEligible) {
+      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    }
+    ForwardSearchboxConfig();
   }
 
   void SetOmniboxText(const std::u16string& text) {
     [mediator_ omniboxDidChangeText:text
                       isSearchQuery:NO
                 userInputInProgress:NO];
+  }
+
+  void SetToolAllowed(omnibox::ToolMode tool) {
+    auto* rule_set = searchboxConfig.mutable_rule_set();
+    rule_set->add_allowed_tools(tool);
+    auto* rule = rule_set->add_tool_rules();
+    rule->set_tool(tool);
+    rule->set_allow_all_input_types(true);
+  }
+
+  void ForwardSearchboxConfig() {
+    [mediator_ setSearchboxConfig:&searchboxConfig];
   }
 
   void EraseOmniboxText() { SetOmniboxText(u""); }
@@ -331,12 +346,12 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   std::unique_ptr<contextual_search::ContextualSearchService> service_;
   std::unique_ptr<testing::NiceMock<MockAimEligibilityService>>
       aim_eligibility_service_;
-  base::RepeatingClosure aim_callback_;
   std::unique_ptr<FakeWebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   TestComposeboxInputPlateConsumer* consumer_;
   ComposeboxInputPlateMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  omnibox::SearchboxConfig searchboxConfig;
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {

@@ -36,8 +36,6 @@ class MockAimEligibilityService : public AimEligibilityService {
               (),
               (const, override));
 
-  const omnibox::SearchboxConfig* GetSearchboxConfig() const override;
-
  private:
   // Mock searchbox config object.
   mutable omnibox::SearchboxConfig mock_config;
