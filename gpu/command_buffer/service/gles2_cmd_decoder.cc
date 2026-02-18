@@ -3321,7 +3321,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.image_ab30 = feature_info_->feature_flags().chromium_image_ab30;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
-  caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
 

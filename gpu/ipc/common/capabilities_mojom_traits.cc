@@ -24,10 +24,8 @@ bool StructTraits<gpu::mojom::CapabilitiesDataView, gpu::Capabilities>::Read(
   out->render_buffer_format_bgra8888 = data.render_buffer_format_bgra8888();
   out->msaa_is_slow = data.msaa_is_slow();
   out->avoid_stencil_buffers = data.avoid_stencil_buffers();
-  out->disable_2d_canvas_copy_on_write = data.disable_2d_canvas_copy_on_write();
   out->supports_rgb_to_yuv_conversion = data.supports_rgb_to_yuv_conversion();
   out->supports_yuv_readback = data.supports_yuv_readback();
-  out->chromium_gpu_fence = data.chromium_gpu_fence();
   out->mesa_framebuffer_flip_y = data.mesa_framebuffer_flip_y();
   out->context_supports_distance_field_text =
       data.context_supports_distance_field_text();

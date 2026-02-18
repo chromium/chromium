@@ -60,17 +60,11 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool avoid_stencil_buffers(const gpu::Capabilities& cap) {
     return cap.avoid_stencil_buffers;
   }
-  static bool disable_2d_canvas_copy_on_write(const gpu::Capabilities& cap) {
-    return cap.disable_2d_canvas_copy_on_write;
-  }
   static bool supports_rgb_to_yuv_conversion(const gpu::Capabilities& cap) {
     return cap.supports_rgb_to_yuv_conversion;
   }
   static bool supports_yuv_readback(const gpu::Capabilities& cap) {
     return cap.supports_yuv_readback;
-  }
-  static bool chromium_gpu_fence(const gpu::Capabilities& cap) {
-    return cap.chromium_gpu_fence;
   }
   static bool mesa_framebuffer_flip_y(const gpu::Capabilities& cap) {
     return cap.mesa_framebuffer_flip_y;

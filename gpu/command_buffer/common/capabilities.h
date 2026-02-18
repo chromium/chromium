@@ -52,12 +52,8 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   bool msaa_is_slow = false;
   bool avoid_stencil_buffers = false;
 
-  bool disable_2d_canvas_copy_on_write = false;
-
   bool supports_rgb_to_yuv_conversion = false;
   bool supports_yuv_readback = false;
-
-  bool chromium_gpu_fence = false;
 
   bool mesa_framebuffer_flip_y = false;
 

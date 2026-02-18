@@ -1316,7 +1316,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   // Technically, YUV readback is handled on the client side, but enable it here
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
-  caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
 

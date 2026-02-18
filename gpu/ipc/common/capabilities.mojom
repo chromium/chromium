@@ -24,10 +24,8 @@ struct Capabilities {
   bool render_buffer_format_bgra8888;
   bool msaa_is_slow;
   bool avoid_stencil_buffers;
-  bool disable_2d_canvas_copy_on_write;
   bool supports_rgb_to_yuv_conversion;
   bool supports_yuv_readback;
-  bool chromium_gpu_fence;
   bool mesa_framebuffer_flip_y;
   bool context_supports_distance_field_text;
   bool using_vulkan_context;
