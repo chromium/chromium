@@ -25,9 +25,8 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_functional_browsertest.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -63,6 +62,7 @@ namespace {
 
 using ::base::test::TestFuture;
 using ::base::test::ValueIs;
+using ::glic::test::ErrorHasSubstr;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ActionsResult;
 using ::optimization_guide::proto::ClickAction;
@@ -137,23 +137,6 @@ MATCHER_P(HasResultCode, expected_code, "") {
   return arg.action_result() == static_cast<int32_t>(expected_code);
 }
 
-// Matches a base::expected<T, std::string> which has an error string
-// that contains `expected_substring`.
-MATCHER_P(ErrorHasSubstr, expected_substring, "") {
-  return testing::Matches(
-      base::test::ErrorIs(testing::HasSubstr(expected_substring)))(arg);
-}
-
-// Helper to convert a content::EvalJsResult to a
-// base::expected<base::Value, std::string>.
-base::expected<base::Value, std::string> ToExpected(
-    content::EvalJsResult result) {
-  if (!result.is_ok()) {
-    return base::unexpected(result.ExtractError());
-  }
-  return base::ok(std::move(result).TakeValue());
-}
-
 Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
                           std::optional<tabs::TabHandle> observe_tab_handle,
                           TaskId task_id) {
@@ -224,7 +207,8 @@ class AsyncActionWaiter {
   std::string request_id_;
 };
 
-class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
+class ActorFunctionalBrowserTest
+    : public glic::test::GlicFunctionalBrowserTestBase {
  public:
   static constexpr base::TimeDelta kShortWaitTime = base::Milliseconds(10);
   static constexpr base::TimeDelta kLongWaitTime = base::Minutes(2);
@@ -243,17 +227,9 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
 
  protected:
   void SetUpOnMainThread() override {
-    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+    glic::test::GlicFunctionalBrowserTestBase::SetUpOnMainThread();
     // TODO(crbug.com/461825458): Add support for kAttached window mode in test.
     RunTestSequence(OpenGlic());
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  tabs::TabInterface* active_tab() {
-    return browser()->tab_strip_model()->GetActiveTab();
   }
 
   actor::ActorKeyedService* actor_keyed_service() {
@@ -281,50 +257,12 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     return task->GetState();
   }
 
-  // Common helper to run EvalJs in the Glic frame.
-  base::expected<base::Value, std::string> EvalJsInGlic(
-      const std::string_view script) {
-    return ToExpected(content::EvalJs(FindGlicGuestMainFrame(), script));
-  }
-
-  // Helper for JavaScript calls expected to return an integer value.
-  base::expected<int, std::string> EvalJsInGlicForInt(
-      const std::string_view script) {
-    ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
-    if (std::optional<int> result = js_result.GetIfInt()) {
-      return *result;
-    }
-    return base::unexpected("Expected an integer value from JavaScript.");
-  }
-
-  base::expected<std::string, std::string> EvalJsInGlicForString(
-      const std::string_view script) {
-    ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
-    if (std::string* result = js_result.GetIfString()) {
-      return base::ok(*result);
-    }
-    return base::unexpected("Expected a string value from JavaScript.");
-  }
-
   base::expected<glic::mojom::CancelActionsResult, std::string> CancelActions(
       TaskId task_id) {
     std::string script = "window.client.browser.cancelActions($1)";
     ASSIGN_OR_RETURN(int result_int, EvalJsInGlicForInt(content::JsReplace(
                                          script, task_id.value())));
     return base::ok(static_cast<glic::mojom::CancelActionsResult>(result_int));
-  }
-
-  // Helper for JavaScript calls that return a Base64 encoded string
-  // representing a serialized protobuf of type `ProtoType`.
-  template <typename ProtoType>
-  base::expected<ProtoType, std::string> EvalJsInGlicForBase64Proto(
-      std::string_view script) {
-    ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
-    const std::string* result_base64 = js_result.GetIfString();
-    if (!result_base64) {
-      return base::unexpected("Expected a string value from JavaScript.");
-    }
-    return ParseBase64Proto<ProtoType>(*result_base64);
   }
 
   // Helper to call the CreateTask TS API.

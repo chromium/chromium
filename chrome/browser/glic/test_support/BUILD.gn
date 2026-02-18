@@ -19,6 +19,8 @@ source_set("test_support") {
     sources += [
       "glic_api_test.cc",
       "glic_api_test.h",
+      "glic_functional_browsertest.cc",
+      "glic_functional_browsertest.h",
       "interactive_glic_test.cc",
       "interactive_glic_test.h",
       "interactive_test_util.cc",
