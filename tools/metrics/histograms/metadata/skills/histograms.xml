@@ -22,14 +22,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Skills.Actions" enum="SkillsActions"
-    expires_after="2026-07-01">
+<histogram name="Skills.Dialog.{DialogType}.Action" enum="SkillsDialogAction"
+    expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
-    Tracks native UI interactions for the Skills feature. Recorded when the
-    backend successfully performs an action (e.g., saving or executing a skill)
-    or when the user interacts with native browser UI (e.g., toasts).
+    Records user actions (e.g., Save, Cancel, Refine) specifically within the
+    Skills {DialogType} dialog.
+  </summary>
+  <token key="DialogType">
+    <variant name="Creation" summary="Creation dialog for new skills"/>
+    <variant name="Edit" summary="Edit dialog for existing skills"/>
+  </token>
+</histogram>
+
+<histogram name="Skills.Invoke.Action" enum="SkillsInvokeAction"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records executions of Skills, categorized by the skill source.
   </summary>
 </histogram>
 

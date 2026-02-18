@@ -99,15 +99,15 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        ShowDialogOpensWidget) {
   EXPECT_FALSE(IsDialogVisible());
-  histogram_tester_.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kOpenedCreationDialog, 0);
-  skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kOpened, 0);
+  skills::Skill test_skill("", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   EXPECT_TRUE(IsDialogVisible());
   EXPECT_NE(nullptr, GetDialogWebContents());
-  histogram_tester_.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kOpenedCreationDialog, 1);
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kOpened, 1);
 }
 
 // Verify calling ShowDialog twice doesn't open two dialogs.
@@ -252,16 +252,15 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
   // creation.
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
-  skills::Skill test_skill("id", "name", "icon", "prompt");
+  skills::Skill test_skill("", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   content::WebContents* web_contents = GetDialogWebContents();
   ASSERT_TRUE(web_contents);
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
-  histogram_tester_.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kClickedCancelInCreationDialog,
-      0);
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kCancelled, 0);
 
   // Setup Listener.
   base::test::TestFuture<void> close_future;
@@ -286,9 +285,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   ASSERT_TRUE(close_future.Wait());
   EXPECT_FALSE(IsDialogVisible());
 
-  histogram_tester_.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kClickedCancelInCreationDialog,
-      1);
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kCancelled, 1);
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 #endif
 }

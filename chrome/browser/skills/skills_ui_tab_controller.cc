@@ -91,7 +91,9 @@ void SkillsUiTabController::ShowDialog(Skill skill) {
     // Dialog is already open.
     return;
   }
-  RecordSkillsAction(skills::SkillsActions::kOpenedCreationDialog);
+  // TODO(crbug.com/477385216): Update to use an enum for creation mode.
+  RecordSkillsDialogAction(SkillsDialogAction::kOpened,
+                           /*is_edit_mode=*/!skill.id.empty());
 
   current_skill_ = skill;
 
@@ -251,10 +253,13 @@ void SkillsUiTabController::NotifySkillToInvokeChanged() {
 
   switch (skill->source) {
     case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
-      RecordSkillsAction(skills::SkillsActions::kUsed1stPartySkill);
+      RecordSkillsInvokeAction(SkillsInvokeAction::kFirstParty);
       break;
     case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
-      RecordSkillsAction(skills::SkillsActions::kUsedUserCreatedSkill);
+      RecordSkillsInvokeAction(SkillsInvokeAction::kUserCreated);
+      break;
+    case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
+      RecordSkillsInvokeAction(SkillsInvokeAction::kDerivedFromFirstParty);
       break;
     default:
       break;

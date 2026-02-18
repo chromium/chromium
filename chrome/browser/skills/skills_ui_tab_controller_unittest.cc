@@ -162,8 +162,8 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
   controller_->InvokeSkill(kTestSkillId);
 
   // Verify Metrics
-  histogram_tester.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kUsedUserCreatedSkill, 1);
+  histogram_tester.ExpectBucketCount("Skills.Invoke.Action",
+                                     SkillsInvokeAction::kUserCreated, 1);
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
@@ -190,9 +190,9 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
   controller_->InvokeSkill(kTestSkillId);
 
   // Verify Metrics
-  histogram_tester.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kUsed1stPartySkill, 1);
-  histogram_tester.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kUsedUserCreatedSkill, 0);
+  histogram_tester.ExpectBucketCount("Skills.Invoke.Action",
+                                     SkillsInvokeAction::kFirstParty, 1);
+  histogram_tester.ExpectBucketCount("Skills.Invoke.Action",
+                                     SkillsInvokeAction::kUserCreated, 0);
 }
 }  // namespace skills

@@ -45,7 +45,6 @@ void SkillsUiWindowController::ShowSkillToast(ToastId toast_id) {
 }
 
 void SkillsUiWindowController::InvokeLastSavedSkill() {
-  RecordSkillsAction(skills::SkillsActions::kClickedTryItNow);
   InvokeSkill(last_saved_skill_id_);
 }
 

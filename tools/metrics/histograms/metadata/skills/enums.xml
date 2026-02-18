@@ -24,20 +24,26 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(SkillsActions) -->
+<!-- LINT.IfChange(SkillsDialogAction) -->
 
-<enum name="SkillsActions">
-  <int value="0" label="Saved New Skill"/>
-  <int value="1" label="Clicked 'Try It Now' (Toast)"/>
-  <int value="2" label="Used 1st Party Skill"/>
-  <int value="3" label="Used User-Created Skill"/>
-  <int value="4" label="Opened Creation Dialog"/>
-  <int value="5" label="Clicked Cancel in Creation Dialog"/>
-  <int value="6" label="Clicked Refine in Creation Dialog"/>
-  <int value="7" label="Opened Manage Skills Page"/>
+<enum name="SkillsDialogAction">
+  <int value="0" label="Opened Dialog"/>
+  <int value="1" label="Saved New Skill"/>
+  <int value="2" label="Clicked Cancel in Dialog"/>
+  <int value="3" label="Clicked Refine in Dialog"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsActions) -->
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDialogAction) -->
+
+<!-- LINT.IfChange(SkillsInvokeAction) -->
+
+<enum name="SkillsInvokeAction">
+  <int value="0" label="Used 1st Party Skill"/>
+  <int value="1" label="Used User-Created Skill"/>
+  <int value="2" label="Used Derived from 1st Party (Remixed) Skill"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsInvokeAction) -->
 
 </enums>
 

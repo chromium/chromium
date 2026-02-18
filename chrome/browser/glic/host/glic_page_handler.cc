@@ -1405,7 +1405,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "ShowManageSkillsUi cannot be called without Skills enabled.");
       return;
     }
-    skills::RecordSkillsAction(skills::SkillsActions::kOpenedManageSkillsPage);
     NavigateParams params(profile_, GURL(chrome::kChromeUISkillsURL),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     params.disposition = WindowOpenDisposition::SINGLETON_TAB;
