@@ -195,7 +195,7 @@ class LocationBarMediator
     private final LocationBarEmbedderUiOverrides mEmbedderUiOverrides;
     private final LocationBarEmbedder mLocationBarEmbedder;
     private StatusCoordinator mStatusCoordinator;
-    private AutocompleteCoordinator mAutocompleteCoordinator;
+    private @Nullable AutocompleteCoordinator mAutocompleteCoordinator;
     private @Nullable OmniboxPrerender mOmniboxPrerender;
     private UrlBarCoordinator mUrlCoordinator;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -637,6 +637,8 @@ class LocationBarMediator
     }
 
     /* package */ void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch) {
+        if (mAutocompleteCoordinator == null) return;
+
         // TODO (https://crbug.com/1152501): Refactor the LBM/LBC relationship such that LBM doesn't
         // need to communicate with other coordinators like this.
         String userText = mUrlCoordinator.getTextWithoutAutocomplete();
@@ -958,7 +960,7 @@ class LocationBarMediator
     }
 
     /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {
-        if (mUrlCoordinator == null) return;
+        if (mAutocompleteCoordinator == null || mUrlCoordinator == null) return;
         mIsUrlFocusChangeInProgress = inProgress;
         if (!inProgress) {
             updateButtonVisibility();
@@ -1022,6 +1024,7 @@ class LocationBarMediator
     @EnsuresNonNullIf("mCurrentInput")
     @VisibleForTesting
     boolean beginOrResumeInput(boolean activateNewSession) {
+        if (mAutocompleteCoordinator == null) return false;
         // Do not instantiate a new ephemeral session unless we're activating it as well.
         var session = FuseboxSessionState.from(mLocationBarDataProvider);
 
@@ -1060,8 +1063,10 @@ class LocationBarMediator
                         mCurrentInput.setPageClassification(
                                 mLocationBarDataProvider.getPageClassification(
                                         /* prefetch= */ false));
-                        mAutocompleteCoordinator.beginInput(mCurrentInput);
-                        mFuseboxCoordinator.beginInput(mCurrentInput);
+                        if (mAutocompleteCoordinator != null) {
+                            mAutocompleteCoordinator.beginInput(mCurrentInput);
+                            mFuseboxCoordinator.beginInput(mCurrentInput);
+                        }
                     });
         }
 
@@ -1070,7 +1075,7 @@ class LocationBarMediator
 
     /** Ends the current Omnibox input session. */
     private void endInput() {
-        if (mCurrentInput == null) return;
+        if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
@@ -1753,7 +1758,8 @@ class LocationBarMediator
         try (TraceEvent e = TraceEvent.scoped("LocationBarMediator.handleKeyEvent")) {
             if (keyCode == KeyEvent.KEYCODE_ESCAPE) return false;
             boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-            if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
+            if (mAutocompleteCoordinator != null
+                    && mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
                 return true;
             } else if ((!isRtl && KeyNavigationUtil.isGoRight(event))
                     || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
@@ -1770,7 +1776,8 @@ class LocationBarMediator
     @Override
     public Boolean handleEscPress() {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
-        if (!mAutocompleteCoordinator.handleKeyEvent(KeyEvent.KEYCODE_ESCAPE, event)) {
+        if (mAutocompleteCoordinator != null
+                && !mAutocompleteCoordinator.handleKeyEvent(KeyEvent.KEYCODE_ESCAPE, event)) {
             revertChanges();
         }
         return true;
@@ -1872,6 +1879,7 @@ class LocationBarMediator
 
     @Override
     public void hintZeroSuggestRefresh() {
+        if (mAutocompleteCoordinator == null) return;
         mAutocompleteCoordinator.prefetchZeroSuggestResults(mLocationBarDataProvider.getTab());
     }
 
@@ -2002,7 +2010,7 @@ class LocationBarMediator
     /** {@see VoiceRecognitionHandler.Delegate#getAutocompleteCoordinator()} */
     @Override
     public AutocompleteCoordinator getAutocompleteCoordinator() {
-        return mAutocompleteCoordinator;
+        return assertNonNull(mAutocompleteCoordinator);
     }
 
     /** {@see VoiceRecognitionHandler.Delegate#getWindowAndroid()} */
