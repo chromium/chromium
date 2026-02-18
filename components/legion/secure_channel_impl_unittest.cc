@@ -213,7 +213,8 @@ class SecureChannelImplTest : public ::testing::Test {
   void CreateSecureChannel(SecureChannel::ResponseCallback callback) {
     secure_channel_ = std::make_unique<SecureChannelImpl>(
         std::move(callback), std::move(transport_ptr_),
-        std::move(secure_session_ptr_), std::move(attestation_handler_ptr_));
+        std::move(secure_session_ptr_), std::move(attestation_handler_ptr_),
+        &logger_);
   }
 
   void SetUpAttestation();
@@ -223,6 +224,7 @@ class SecureChannelImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 
+  LegionLogger logger_;
   std::unique_ptr<SecureChannelImpl> secure_channel_;
 
   std::unique_ptr<MockTransport> transport_ptr_;

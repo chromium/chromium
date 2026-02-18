@@ -51,7 +51,8 @@ class SecureChannelImpl : public SecureChannel {
   SecureChannelImpl(ResponseCallback callback,
                     std::unique_ptr<Transport> transport,
                     std::unique_ptr<SecureSession> secure_session,
-                    std::unique_ptr<AttestationHandler> attestation_handler);
+                    std::unique_ptr<AttestationHandler> attestation_handler,
+                    LegionLogger* logger);
   ~SecureChannelImpl() override;
 
   SecureChannelImpl(const SecureChannelImpl&) = delete;
@@ -106,6 +107,7 @@ class SecureChannelImpl : public SecureChannel {
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<AttestationHandler> attestation_handler_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<LegionLogger> logger_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       State::kPerformingAttestation;

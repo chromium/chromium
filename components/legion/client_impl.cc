@@ -169,7 +169,7 @@ void ClientImpl::OnReponseReceived(
     OnRequestCompletedCallback cb,
     base::expected<proto::LegionResponse, ErrorCode> legion_response) {
   if (legion_response.has_value()) {
-    logger_->LogInfo(FROM_HERE, "Response received");
+    logger_->LogInfo(FROM_HERE, "Response received.");
   } else {
     logger_->LogError(FROM_HERE,
                       "Error: " + base::ToString(legion_response.error()));

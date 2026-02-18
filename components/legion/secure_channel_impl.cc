@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation/handler.h"
@@ -47,21 +49,24 @@ std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
 
   return std::make_unique<SecureChannelImpl>(
       std::move(callback), std::move(transport), std::move(secure_session),
-      std::move(attestation_handler));
+      std::move(attestation_handler), logger_);
 }
 
 SecureChannelImpl::SecureChannelImpl(
     ResponseCallback callback,
     std::unique_ptr<Transport> transport,
     std::unique_ptr<SecureSession> secure_session,
-    std::unique_ptr<AttestationHandler> attestation_handler)
+    std::unique_ptr<AttestationHandler> attestation_handler,
+    LegionLogger* logger)
     : transport_(std::move(transport)),
       secure_session_(std::move(secure_session)),
       attestation_handler_(std::move(attestation_handler)),
+      logger_(logger),
       response_callback_(std::move(callback)) {
   CHECK(transport_);
   CHECK(secure_session_);
   CHECK(attestation_handler_);
+  CHECK(logger_);
 
   transport_->SetResponseCallback(base::BindRepeating(
       &SecureChannelImpl::OnResponseReceived, weak_factory_.GetWeakPtr()));
@@ -93,7 +98,7 @@ bool SecureChannelImpl::Write(const Request& request) {
       ProcessPendingEncryptionRequests();
       return true;
     case State::kClosed:
-      LOG(ERROR) << "SecureChannel is closed.";
+      logger_->LogError(FROM_HERE, "SecureChannel is closed.");
       return false;
   }
 }
@@ -118,8 +123,10 @@ void SecureChannelImpl::OnResponseReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!response.has_value()) {
-    DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error())
-                << " in state: " << static_cast<int>(state_);
+    logger_->LogError(FROM_HERE,
+                      base::StringPrintf("Transport error: %d in state: %d",
+                                         static_cast<int>(response.error()),
+                                         static_cast<int>(state_)));
 
     ErrorCode error_code = ErrorCode::kError;
     switch (state_) {
@@ -140,8 +147,10 @@ void SecureChannelImpl::OnResponseReceived(
         //
         // Nevertheless, we do not crash here as this branch could be triggered
         // by misbehaving server.
-        LOG(ERROR) << "Unexpected transport error in state: "
-                   << static_cast<int>(state_);
+        logger_->LogError(
+            FROM_HERE,
+            base::StringPrintf("Unexpected transport error in state: %d",
+                               static_cast<int>(state_)));
         break;
     }
 
@@ -166,8 +175,10 @@ void SecureChannelImpl::OnResponseReceived(
     case State::kWaitingHandshakeMessage:
     case State::kVerifyingHandshake:
     case State::kClosed:
-      LOG(ERROR) << "Received unexpected response in state: "
-                 << static_cast<int>(state_);
+      logger_->LogError(
+          FROM_HERE,
+          base::StringPrintf("Received unexpected response in state: %d",
+                             static_cast<int>(state_)));
       break;
   }
 }
@@ -179,7 +190,8 @@ void SecureChannelImpl::OnAttestationResponse(
   DCHECK_EQ(state_, State::kPerformingAttestation);
 
   if (!session_response.has_attest_response()) {
-    LOG(ERROR) << "Response proto does not have attestation message.";
+    logger_->LogError(FROM_HERE,
+                      "Response proto does not have attestation message.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendAttestationRequestLatency.Error",
         base::TimeTicks::Now() -
@@ -195,7 +207,7 @@ void SecureChannelImpl::OnAttestationResponse(
   std::optional<AttestationEvidence> attestation_evidence =
       ConvertToAttestationEvidence(response);
   if (!attestation_evidence) {
-    DLOG(ERROR) << "Attestation evidence conversion failed.";
+    logger_->LogError(FROM_HERE, "Attestation evidence conversion failed.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendAttestationRequestLatency.Error",
         base::TimeTicks::Now() -
@@ -205,7 +217,7 @@ void SecureChannelImpl::OnAttestationResponse(
   }
 
   if (!attestation_handler_->VerifyAttestationResponse(*attestation_evidence)) {
-    DLOG(ERROR) << "Attestation verification failed.";
+    logger_->LogError(FROM_HERE, "Attestation verification failed.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendAttestationRequestLatency.Error",
         base::TimeTicks::Now() -
@@ -213,7 +225,7 @@ void SecureChannelImpl::OnAttestationResponse(
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
     return;
   }
-  DVLOG(1) << "Attestation verified successfully.";
+  logger_->LogInfo(FROM_HERE, "Attestation verified successfully.");
   base::UmaHistogramMediumTimes(
       "Legion.SecureChannel.SendAttestationRequestLatency.Success",
       base::TimeTicks::Now() -
@@ -234,7 +246,7 @@ void SecureChannelImpl::OnHandshakeMessageReady(
   DCHECK_EQ(state_, State::kWaitingHandshakeMessage);
 
   if (!handshake_request.has_value()) {
-    DLOG(ERROR) << "Failed to generate handshake request.";
+    logger_->LogError(FROM_HERE, "Failed to generate handshake request.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.GetHandshakeMessageLatency.Error",
         base::TimeTicks::Now() -
@@ -275,7 +287,8 @@ void SecureChannelImpl::OnHandshakeResponse(
   DCHECK_EQ(state_, State::kPerformingHandshake);
 
   if (!session_response.has_handshake_response()) {
-    LOG(ERROR) << "Response proto does not have handshake message.";
+    logger_->LogError(FROM_HERE,
+                      "Response proto does not have handshake message.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendHandshakeRequestLatency.Error",
         base::TimeTicks::Now() -
@@ -301,7 +314,7 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
   DCHECK_EQ(state_, State::kVerifyingHandshake);
 
   if (!handshake_verified) {
-    DLOG(ERROR) << "Failed to handle handshake response.";
+    logger_->LogError(FROM_HERE, "Failed to handle handshake response.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendHandshakeRequestLatency.Error",
         base::TimeTicks::Now() -
@@ -309,7 +322,7 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
     FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
     return;
   }
-  DVLOG(1) << "Handshake response handled successfully.";
+  logger_->LogInfo(FROM_HERE, "Session established.");
 
   base::UmaHistogramMediumTimes(
       "Legion.SecureChannel.SendHandshakeRequestLatency.Success",
@@ -328,7 +341,8 @@ void SecureChannelImpl::OnEncryptedResponse(
   DCHECK_EQ(state_, State::kEstablished);
 
   if (!session_response.has_encrypted_message()) {
-    LOG(ERROR) << "Response proto does not have encrypted message.";
+    logger_->LogError(FROM_HERE,
+                      "Response proto does not have encrypted message.");
     FailAllRequestsAndClose(ErrorCode::kDecryptionFailed);
     return;
   }
@@ -347,7 +361,7 @@ void SecureChannelImpl::OnDecryptedResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!decrypted_response.has_value()) {
-    DLOG(ERROR) << "Failed to decrypt response.";
+    logger_->LogError(FROM_HERE, "Failed to decrypt response.");
     FailAllRequestsAndClose(ErrorCode::kDecryptionFailed);
     return;
   }
@@ -364,12 +378,14 @@ void SecureChannelImpl::StartSessionEstablishment() {
 
   DCHECK_EQ(state_, State::kPerformingAttestation);
 
+  logger_->LogInfo(FROM_HERE, "Starting session.");
+
   // Step 1: Get and Send Attestation Request
   auto get_attestation_start_time = base::TimeTicks::Now();
   std::optional<oak::session::v1::AttestRequest> attestation_req =
       attestation_handler_->GetAttestationRequest();
   if (!attestation_req.has_value()) {
-    DLOG(ERROR) << "Failed to get attestation request.";
+    logger_->LogError(FROM_HERE, "Failed to get attestation request.");
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.GetAttestationRequestLatency.Error",
         base::TimeTicks::Now() - get_attestation_start_time);
@@ -394,6 +410,10 @@ void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
   if (state_ == State::kClosed) {
     return;
   }
+
+  logger_->LogError(
+      FROM_HERE, base::StringPrintf("SecureChannel closed with error code: %d",
+                                    static_cast<int>(error_code)));
 
   RecordSessionDurationMetrics();
 
@@ -433,7 +453,7 @@ void SecureChannelImpl::OnRequestEncrypted(
   }
 
   if (!encrypted_request.has_value()) {
-    DLOG(ERROR) << "Failed to encrypt request.";
+    logger_->LogError(FROM_HERE, "Failed to encrypt request.");
     FailAllRequestsAndClose(ErrorCode::kEncryptionFailed);
     return;
   }
