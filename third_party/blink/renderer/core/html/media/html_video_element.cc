@@ -649,10 +649,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     snapshot_provider_.reset();
     sw_draw_info_.reset();
 
-    // Providing a null |raster_context_provider| results in a software draw.
-    if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-      sw_draw_info_ = required_provider_info;
-    } else {
+    if (ShouldCreateAcceleratedImages(raster_context_provider)) {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
           required_provider_info.size, required_provider_info.format,
           required_provider_info.alpha_type, required_provider_info.color_space,
@@ -662,6 +659,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       if (!snapshot_provider_) {
         return nullptr;
       }
+    } else {
+      sw_draw_info_ = required_provider_info;
     }
 
     allow_accelerated_images_ = allow_accelerated_images;
