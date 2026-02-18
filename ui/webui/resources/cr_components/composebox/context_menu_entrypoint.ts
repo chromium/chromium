@@ -74,6 +74,7 @@ export class ContextMenuEntrypointElement extends
       },
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
+      showMenuOnClick: {type: Boolean},
       searchboxLayoutMode: {type: String},
       glifAnimationState: {type: String, reflect: true},
 
@@ -107,6 +108,7 @@ export class ContextMenuEntrypointElement extends
   accessor hasImageFiles: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
+  accessor showMenuOnClick: boolean = true;
   accessor searchboxLayoutMode: string = '';
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
@@ -190,7 +192,9 @@ export class ContextMenuEntrypointElement extends
       x: entrypoint.getBoundingClientRect().left,
       y: entrypoint.getBoundingClientRect().bottom,
     });
-    this.showMenuAtEntrypoint_();
+    if (this.showMenuOnClick) {
+      this.showMenuAtEntrypoint_();
+    }
   }
 
   protected onTabClick_(e: Event) {

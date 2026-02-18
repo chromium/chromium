@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './composebox_tool_chip.js';
-import './contextual_entrypoint_and_menu.js';
+import './context_menu_entrypoint.js';
 import './contextual_entrypoint_button.js';
 import './composebox_lens_search.js';
 import './file_carousel.js';
@@ -29,9 +29,10 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {GlifAnimationState, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
-import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import type {RecentTabChipElement} from './recent_tab_chip.js';
 
@@ -39,7 +40,8 @@ export interface ContextualEntrypointAndCarouselElement {
   $: {
     fileInput: HTMLInputElement,
     fileUploadButton: CrIconButtonElement,
-    contextEntrypoint: ContextualEntrypointAndMenuElement,
+    contextEntrypoint: ContextMenuEntrypointElement|
+    ContextualEntrypointButtonElement,
     carousel: ComposeboxFileCarouselElement,
     imageInput: HTMLInputElement,
     imageUploadButton: CrIconButtonElement,
@@ -407,11 +409,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   closeMenu() {
-    const entrypointAndMenu =
-        this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#contextEntrypoint');
-    if (entrypointAndMenu) {
-      entrypointAndMenu.closeMenu();
+    if (this.contextMenuEnabled_) {
+      this.$.contextEntrypoint.closeMenu();
     }
   }
 
@@ -422,12 +421,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         // If the composebox is being initialized with tab context from the
         // context menu, we want to keep the context menu open to allow for
         // multi-tab selection.
-        const entrypointAndMenu =
-            this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-                '#contextEntrypoint');
-        if (entrypointAndMenu &&
+        if (this.contextMenuEnabled_ &&
             file.origin === TabUploadOrigin.CONTEXT_MENU) {
-          entrypointAndMenu.openMenuForMultiSelection();
+          this.$.contextEntrypoint.openMenuForMultiSelection();
         }
         this.addTabContext_(new CustomEvent('addTabContext', {
           detail: {
@@ -484,7 +480,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           default:
             break;
         }
-        this.closeMenu();
+        if (this.contextMenuEnabled_) {
+          this.$.contextEntrypoint.closeMenu();
+        }
       } else {
         file = {...file, status: status};
         this.files_.set(token, file);
@@ -779,7 +777,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     this.recordFileValidationMetric_(metric);
-    this.closeMenu();
+    if (this.contextMenuEnabled_) {
+      this.$.contextEntrypoint.closeMenu();
+    }
     this.fire('on-file-validation-error', {
       errorMessage: this.i18n(errorMessage),
     });
