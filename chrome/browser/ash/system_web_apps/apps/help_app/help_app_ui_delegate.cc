@@ -27,12 +27,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -97,17 +98,29 @@ std::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
 }
 
 void ChromeHelpAppUIDelegate::ShowOnDeviceAppControls() {
-  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      Profile::FromWebUI(web_ui_));
+  if (!user) {
+    // TODO(crbug.com/447287122): Revisit here to see if we always have the
+    // user.
+    return;
+  }
   // The "Apps" section of OS Settings contains app controls.
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile, chromeos::settings::mojom::kAppsSectionPath);
+  ash::SettingsAppManager::Get()->Open(
+      *user, {.sub_page = chromeos::settings::mojom::kAppsSectionPath});
 }
 
 void ChromeHelpAppUIDelegate::ShowParentalControls() {
-  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      Profile::FromWebUI(web_ui_));
+  if (!user) {
+    // TODO(crbug.com/447287122): Revisit here to see if we always have the
+    // user.
+    return;
+  }
   // The "People" section of OS Settings contains parental controls.
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile, chromeos::settings::mojom::kPeopleSectionPath);
+  ash::SettingsAppManager::Get()->Open(
+      *user, {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
 }
 
 void ChromeHelpAppUIDelegate::TriggerWelcomeTipCallToAction(
@@ -189,65 +202,86 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
 
 void ChromeHelpAppUIDelegate::OpenSettings(
     ash::help_app::mojom::SettingsComponent component) {
-  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      Profile::FromWebUI(web_ui_));
+  if (!user) {
+    // TODO(crbug.com/447287122): Revisit here to see if we always have the
+    // user.
+    return;
+  }
 
   switch (component) {
     case ash::help_app::mojom::SettingsComponent::HOME:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile);
+      ash::SettingsAppManager::Get()->Open(*user, {});
       return;
     case ash::help_app::mojom::SettingsComponent::ACCESSIBILITY:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kAccessibilitySectionPath);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kAccessibilitySectionPath});
       return;
     case ash::help_app::mojom::SettingsComponent::BLUETOOTH:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+      ash::SettingsAppManager::Get()->Open(
+          *user, {.sub_page =
+                      chromeos::settings::mojom::kBluetoothDevicesSubpagePath});
       return;
     case ash::help_app::mojom::SettingsComponent::DISPLAY:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kDisplaySubpagePath);
+      ash::SettingsAppManager::Get()->Open(
+          *user, {.sub_page = chromeos::settings::mojom::kDisplaySubpagePath});
       return;
     case ash::help_app::mojom::SettingsComponent::INPUT:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kInputSubpagePath);
+      ash::SettingsAppManager::Get()->Open(
+          *user, {.sub_page = chromeos::settings::mojom::kInputSubpagePath});
       return;
     case ash::help_app::mojom::SettingsComponent::MULTI_DEVICE:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kMultiDeviceSectionPath);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kMultiDeviceSectionPath});
       return;
     case ash::help_app::mojom::SettingsComponent::PEOPLE:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPeopleSectionPath);
+      ash::SettingsAppManager::Get()->Open(
+          *user, {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
       return;
     case ash::help_app::mojom::SettingsComponent::PER_DEVICE_KEYBOARD:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page =
+               chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath});
       return;
     case ash::help_app::mojom::SettingsComponent::PER_DEVICE_TOUCHPAD:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page =
+               chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath});
       return;
     case ash::help_app::mojom::SettingsComponent::PERSONALIZATION:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPersonalizationSectionPath);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kPersonalizationSectionPath});
       return;
     case ash::help_app::mojom::SettingsComponent::PRINTING:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
       return;
     case ash::help_app::mojom::SettingsComponent::SECURITY_AND_SIGN_IN:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page =
+               chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2});
       return;
     case ash::help_app::mojom::SettingsComponent::TOUCHPAD_REVERSE_SCROLLING:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
-          chromeos::settings::mojom::Setting::kTouchpadReverseScrolling);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
+           .setting_id =
+               chromeos::settings::mojom::Setting::kTouchpadReverseScrolling});
       return;
     case ash::help_app::mojom::SettingsComponent::TOUCHPAD_SIMULATE_RIGHT_CLICK:
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
-          chromeos::settings::mojom::Setting::kTouchpadSimulateRightClick);
+      ash::SettingsAppManager::Get()->Open(
+          *user,
+          {.sub_page = chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
+           .setting_id = chromeos::settings::mojom::Setting::
+               kTouchpadSimulateRightClick});
       return;
   }
 

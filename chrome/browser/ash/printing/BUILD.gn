@@ -130,6 +130,7 @@ static_library("printing") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/printscanmgr",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/printing",
     "//chromeos/services/network_config/public/cpp",
     "//components/device_event_log",

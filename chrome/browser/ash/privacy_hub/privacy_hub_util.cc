@@ -29,10 +29,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/ash/components/camera_presence_notifier/camera_presence_notifier.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::privacy_hub_util {
 
@@ -394,8 +397,15 @@ void OpenSystemSettings(ContentType type) {
     }
   }
 
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(), settings_path);
+  // TODO(crbug.com/447287122): Take user from the caller.
+  auto* session = session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    return;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUser(session->account_id())),
+      {.sub_page = settings_path});
 }
 
 ScopedUserPermissionPrefForTest::ScopedUserPermissionPrefForTest(

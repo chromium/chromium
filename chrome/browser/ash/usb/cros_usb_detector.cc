@@ -35,13 +35,14 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
@@ -216,8 +217,13 @@ class CrosUsbNotificationDelegate
   }
 
   void HandleShowSettings(const std::string& sub_page) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile(),
-                                                                 sub_page);
+    auto* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+    if (user) {
+      // TODO(crbug.com/447287122): Revisit here to see if we always have the
+      // user.
+      ash::SettingsAppManager::Get()->Open(*user, {.sub_page = sub_page});
+    }
     Close(false);
   }
 

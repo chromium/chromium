@@ -6,6 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -13,8 +14,9 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image.h"
@@ -83,11 +85,11 @@ void UsbPrinterNotification::Click(const std::optional<int>& button_index,
       // If we are in guest mode then we need to use the OffTheRecord profile to
       // open the Settings page. There is a check in Browser::Browser that only
       // OffTheRecord profiles can open browser windows in guest mode.
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_->IsGuestSession()
-              ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-              : profile_.get(),
-          chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+      auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          profile_.get());
+      ash::SettingsAppManager::Get()->Open(
+          CHECK_DEREF(user),
+          {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
     }
     return;
   }

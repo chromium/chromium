@@ -6,29 +6,22 @@
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "base/check_deref.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::print_management {
 
-namespace {
-
-// Look up primary user's profile.
-Profile* GetProfile() {
-  return Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser()));
-}
-
-}  // namespace
-
 void PrintManagementDelegateImpl::LaunchPrinterSettings() {
-  auto* profile = GetProfile();
-  CHECK(profile);
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+  auto* session = session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(session);
+  auto* user =
+      user_manager::UserManager::Get()->FindUser(session->account_id());
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(user),
+      {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
 }
 
 }  // namespace ash::print_management

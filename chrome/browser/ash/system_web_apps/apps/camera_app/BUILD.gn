@@ -59,6 +59,7 @@ static_library("camera_app") {
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/camera:camera_save_handler",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/constants",
     "//chromeos/ui/base",
     "//components/language/core/browser",
