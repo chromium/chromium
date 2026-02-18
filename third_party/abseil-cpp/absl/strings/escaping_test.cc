@@ -683,8 +683,7 @@ TEST(Base64, DISABLED_HugeData) {
   static_assert(kSize % 3 == 0, "kSize must be divisible by 3");
   const std::string huge(kSize, 'x');
 
-  std::string escaped;
-  absl::Base64Escape(huge, &escaped);
+  std::string escaped = absl::Base64Escape(huge);
 
   // Generates the string that should match a base64 encoded "xxx..." string.
   // "xxx" in base64 is "eHh4".

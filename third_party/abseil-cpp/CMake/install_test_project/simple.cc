@@ -14,7 +14,6 @@
 // limitations under the License.
 
 #include <iostream>
-
 #include "absl/base/config.h"
 #include "absl/strings/substitute.h"
 

@@ -954,19 +954,6 @@ bool WebSafeBase64Unescape(absl::string_view src,
   return Base64UnescapeInternal(src.data(), src.size(), dest, kUnWebSafeBase64);
 }
 
-void Base64Escape(absl::string_view src, std::string* absl_nonnull dest) {
-  strings_internal::Base64EscapeInternal(
-      reinterpret_cast<const unsigned char*>(src.data()), src.size(), dest,
-      true, strings_internal::kBase64Chars);
-}
-
-void WebSafeBase64Escape(absl::string_view src,
-                         std::string* absl_nonnull dest) {
-  strings_internal::Base64EscapeInternal(
-      reinterpret_cast<const unsigned char*>(src.data()), src.size(), dest,
-      false, strings_internal::kWebSafeBase64Chars);
-}
-
 std::string Base64Escape(absl::string_view src) {
   std::string dest;
   strings_internal::Base64EscapeInternal(
