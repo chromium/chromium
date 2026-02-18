@@ -11,6 +11,8 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -477,7 +479,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
   iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   EXPECT_EQ(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(
+          autofill_client_.GetFormDataImporter()->GetPaymentsFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed(),
       NonInteractivePaymentMethodType::kLocalIban);
 }
@@ -499,7 +502,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
   iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   EXPECT_EQ(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(
+          autofill_client_.GetFormDataImporter()->GetPaymentsFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed(),
       NonInteractivePaymentMethodType::kServerIban);
 }

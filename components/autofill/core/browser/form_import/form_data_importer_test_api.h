@@ -27,33 +27,20 @@ class FormDataImporterTestApi {
 
   explicit FormDataImporterTestApi(FormDataImporter* fdi) : fdi_(*fdi) {}
 
-  std::optional<NonInteractivePaymentMethodType>
-  payment_method_type_if_non_interactive_authentication_flow_completed() const {
-    return fdi_
-        ->payment_method_type_if_non_interactive_authentication_flow_completed_;
-  }
-
   void set_credit_card_save_manager(
       std::unique_ptr<CreditCardSaveManager> ccsm) {
     fdi_->credit_card_save_manager_ = std::move(ccsm);
   }
 
-  void set_iban_save_manager(
-      std::unique_ptr<IbanSaveManager> iban_save_manager) {
-    fdi_->iban_save_manager_ = std::move(iban_save_manager);
-  }
-
-  FormDataImporter::CreditCardImportType credit_card_import_type() const {
+  payments::PaymentsFormDataImporter::CreditCardImportType
+  credit_card_import_type() const {
     return fdi_->credit_card_import_type_;
   }
 
   void set_credit_card_import_type(
-      FormDataImporter::CreditCardImportType credit_card_import_type) {
+      payments::PaymentsFormDataImporter::CreditCardImportType
+          credit_card_import_type) {
     fdi_->credit_card_import_type_ = credit_card_import_type;
-  }
-
-  IbanSaveManager* iban_save_manager() {
-    return fdi_->iban_save_manager_.get();
   }
 
   std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {

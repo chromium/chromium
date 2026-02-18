@@ -62,6 +62,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -808,7 +810,7 @@ class MockAutofillClient : public TestAutofillClient {
         .set_auto_accept_address_imports(true);
     test_api(*GetFormDataImporter())
         .set_credit_card_save_manager(create_credit_card_save_manager());
-    test_api(*GetFormDataImporter())
+    test_api(GetFormDataImporter()->GetPaymentsFormDataImporter())
         .set_iban_save_manager(std::make_unique<IbanSaveManager>(this));
   }
 

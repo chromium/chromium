@@ -108,8 +108,8 @@ CreditCardAccessManager::~CreditCardAccessManager() {
   // results in us destroying the current CreditCardAccessManager and creating a
   // new one.
   if (auto* form_data_importer = autofill_client().GetFormDataImporter()) {
-    form_data_importer
-        ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+    form_data_importer->GetPaymentsFormDataImporter()
+        .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             std::nullopt);
   }
   // Reset informs observers that pending fetch requests are now considered
@@ -338,11 +338,11 @@ void CreditCardAccessManager::FetchCreditCard(
   form_data_importer->GetPaymentsFormDataImporter()
       .fetched_payments_data_context() =
       payments::PaymentsFormDataImporter::FetchedPaymentsDataContext();
-  // Reset the variable in FormDataImporter that denotes if non-interactive
-  // authentication happened. This variable will be set to a value if a
-  // payments autofill non-interactive flow successfully completes.
-  form_data_importer
-      ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+  // Reset the variable in PaymentsFormDataImporter that denotes if
+  // non-interactive authentication happened. This variable will be set to a
+  // value if a payments autofill non-interactive flow successfully completes.
+  form_data_importer->GetPaymentsFormDataImporter()
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
           std::nullopt);
 
   // Abort if authentication is already in progress, but don't reset status.
@@ -1330,10 +1330,11 @@ void CreditCardAccessManager::FetchLocalCard() {
     OnCreditCardFetched(*card_, /*card_was_fetched_from_cache=*/false);
 
     // This local card autofill flow did not have any interactive
-    // authentication, so notify the FormDataImporter of this.
+    // authentication, so notify the PaymentsFormDataImporter of this.
     autofill_client()
         .GetFormDataImporter()
-        ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+        ->GetPaymentsFormDataImporter()
+        .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             payments::MandatoryReauthManager::
                 GetNonInteractivePaymentMethodType(
                     CreditCard::RecordType::kLocalCard));
@@ -1468,11 +1469,12 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
     // If the server returned a successful response along with the card's
     // real PAN without requiring interactive authentication, set the
     // `card_record_type_if_non_interactive_authentication_flow_completed_`
-    // field in FormDataImporter so that MandatoryReauthManager can decide
-    // whether to offer mandatory re-auth opt-in for this user.
+    // field in PaymentsFormDataImporter so that MandatoryReauthManager can
+    // decide whether to offer mandatory re-auth opt-in for this user.
     autofill_client()
         .GetFormDataImporter()
-        ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+        ->GetPaymentsFormDataImporter()
+        .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             payments::MandatoryReauthManager::
                 GetNonInteractivePaymentMethodType(record_type));
 

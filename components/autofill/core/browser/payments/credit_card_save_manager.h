@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
@@ -127,7 +128,8 @@ class CreditCardSaveManager {
   // server card issue.
   virtual bool ShouldOfferCvcSave(
       const CreditCard& card,
-      FormDataImporter::CreditCardImportType credit_card_import_type,
+      payments::PaymentsFormDataImporter::CreditCardImportType
+          credit_card_import_type,
       bool is_credit_card_upstream_enabled);
 
   // Check and attempt to offer if CVC or card local or upload save should be
@@ -136,7 +138,8 @@ class CreditCardSaveManager {
   virtual bool ProceedWithSavingIfApplicable(
       const FormStructure& submitted_form,
       const CreditCard& card,
-      FormDataImporter::CreditCardImportType credit_card_import_type,
+      payments::PaymentsFormDataImporter::CreditCardImportType
+          credit_card_import_type,
       bool is_credit_card_upstream_enabled,
       ukm::SourceId ukm_source_id);
 

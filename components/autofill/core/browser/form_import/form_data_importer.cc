@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -53,7 +52,8 @@ namespace {
 
 bool ShouldProcessExtractedCreditCard(
     const raw_ref<AutofillClient>& client,
-    FormDataImporter::CreditCardImportType credit_card_import_type) {
+    payments::PaymentsFormDataImporter::CreditCardImportType
+        credit_card_import_type) {
   // Processing should not occur if the current window is a tab modal pop-up, as
   // no credit card save or feature enrollment should happen in this case.
   if (base::FeatureList::IsEnabled(
@@ -65,7 +65,7 @@ bool ShouldProcessExtractedCreditCard(
   // If there is no `credit_card_import_type` from form extraction, the
   // extracted card is not a viable candidate for processing.
   if (credit_card_import_type ==
-      FormDataImporter::CreditCardImportType::kNoCard) {
+      payments::PaymentsFormDataImporter::CreditCardImportType::kNoCard) {
     return false;
   }
 
@@ -90,9 +90,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
     : client_(CHECK_DEREF(client)),
       credit_card_save_manager_(
           std::make_unique<CreditCardSaveManager>(client)),
-#if !BUILDFLAG(IS_IOS)
-      iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
-#endif  // !BUILDFLAG(IS_IOS)
       address_form_data_importer_(client),
       payments_form_data_importer_(client) {
   if (history_service) {
@@ -138,7 +135,8 @@ void FormDataImporter::ImportAndProcessFormData(
   if (extracted_data.extracted_iban.has_value() &&
       payment_methods_autofill_enabled) {
     iban_prompt_potentially_shown =
-        ProcessIbanImportCandidate(*extracted_data.extracted_iban);
+        payments_form_data_importer_.ProcessIbanImportCandidate(
+            *extracted_data.extracted_iban);
   }
 
   // Reset last fetch payments method metadata after all payments related form
@@ -201,7 +199,8 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   // Reset `credit_card_import_type_` every time we extract
   // data from form no matter whether `ExtractCreditCard()` is
   // called or not.
-  credit_card_import_type_ = CreditCardImportType::kNoCard;
+  credit_card_import_type_ =
+      payments::PaymentsFormDataImporter::CreditCardImportType::kNoCard;
   if (payment_methods_autofill_enabled) {
     extracted_form_data.extracted_credit_card =
         ExtractCreditCard(submitted_form);
@@ -247,7 +246,8 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     ukm::SourceId ukm_source_id) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
-      ProceedWithCardMandatoryReauthOptInIfApplicable()) {
+      payments_form_data_importer_
+          .ProceedWithCardMandatoryReauthOptInIfApplicable()) {
     return true;
   }
 
@@ -260,10 +260,12 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   // virtual cards beyond this point. If
   // `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled, try to offer
   // mandatory re-auth before returning.
-  if (credit_card_import_type_ == CreditCardImportType::kVirtualCard) {
+  if (credit_card_import_type_ ==
+      payments::PaymentsFormDataImporter::CreditCardImportType::kVirtualCard) {
     return base::FeatureList::IsEnabled(
                features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
-           ProceedWithCardMandatoryReauthOptInIfApplicable();
+           payments_form_data_importer_
+               .ProceedWithCardMandatoryReauthOptInIfApplicable();
   }
 
   // Do not offer upload save for google domain.
@@ -296,49 +298,13 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
-      ProceedWithCardMandatoryReauthOptInIfApplicable()) {
+      payments_form_data_importer_
+          .ProceedWithCardMandatoryReauthOptInIfApplicable()) {
     // Try to offer mandatory re-auth as the last step.
     return true;
   }
 
   return false;
-}
-
-bool FormDataImporter::ProceedWithCardMandatoryReauthOptInIfApplicable() {
-  // If a flow without interactive authentication was completed and the user
-  // didn't update the result that was filled into the form, re-auth opt-in
-  // flow might be offered.
-  if (auto* mandatory_reauth_manager =
-          client_->GetPaymentsAutofillClient()
-              ->GetOrCreatePaymentsMandatoryReauthManager();
-      credit_card_import_type_ != CreditCardImportType::kNewCard &&
-      mandatory_reauth_manager &&
-      mandatory_reauth_manager->ShouldOfferOptin(
-          payment_method_type_if_non_interactive_authentication_flow_completed_)) {
-    payment_method_type_if_non_interactive_authentication_flow_completed_
-        .reset();
-    mandatory_reauth_manager->StartOptInFlow();
-    return true;
-  }
-  return false;
-}
-
-bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
-  // If a flow where there was no interactive authentication was completed,
-  // re-auth opt-in flow might be offered.
-  if (auto* mandatory_reauth_manager =
-          client_->GetPaymentsAutofillClient()
-              ->GetOrCreatePaymentsMandatoryReauthManager();
-      mandatory_reauth_manager &&
-      mandatory_reauth_manager->ShouldOfferOptin(
-          payment_method_type_if_non_interactive_authentication_flow_completed_)) {
-    payment_method_type_if_non_interactive_authentication_flow_completed_
-        .reset();
-    mandatory_reauth_manager->StartOptInFlow();
-    return true;
-  }
-
-  return iban_save_manager_->AttemptToOfferSave(extracted_iban);
 }
 
 std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
@@ -384,13 +350,15 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // If the extracted card is a known virtual card, return the extracted card.
   if (GetPaymentsFormDataImporter().fetched_virtual_cards_.contains(
           candidate.LastFourDigits())) {
-    credit_card_import_type_ = CreditCardImportType::kVirtualCard;
+    credit_card_import_type_ =
+        payments::PaymentsFormDataImporter::CreditCardImportType::kVirtualCard;
     return candidate;
   }
 
   // Can import one valid card per form. Start by treating it as kNewCard, but
   // overwrite this type if we discover it is already a local or server card.
-  credit_card_import_type_ = CreditCardImportType::kNewCard;
+  credit_card_import_type_ =
+      payments::PaymentsFormDataImporter::CreditCardImportType::kNewCard;
 
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
@@ -402,7 +370,8 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     if (maybe_updated_card.UpdateFromImportedCard(candidate,
                                                   client_->GetAppLocale())) {
       payments_data_manager().UpdateCreditCard(maybe_updated_card);
-      credit_card_import_type_ = CreditCardImportType::kLocalCard;
+      credit_card_import_type_ =
+          payments::PaymentsFormDataImporter::CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.
       // `UpdateFromImportedCard` has updated all values except for the
       // extracted CVC, as we will not update that until later after prompting
@@ -454,11 +423,13 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       // If `credit_card_import_type_` was local card, then a local card was
       // extracted from the form. If a server card is now also extracted from
       // the form, the duplicate local and server card case is detected.
-      if (credit_card_import_type_ == CreditCardImportType::kLocalCard) {
-        credit_card_import_type_ =
+      if (credit_card_import_type_ == payments::PaymentsFormDataImporter::
+                                          CreditCardImportType::kLocalCard) {
+        credit_card_import_type_ = payments::PaymentsFormDataImporter::
             CreditCardImportType::kDuplicateLocalServerCard;
       } else {
-        credit_card_import_type_ = CreditCardImportType::kServerCard;
+        credit_card_import_type_ = payments::PaymentsFormDataImporter::
+            CreditCardImportType::kServerCard;
       }
       return server_card_with_cvc;
     } else {
@@ -605,14 +576,6 @@ void FormDataImporter::OnHistoryDeletions(
       .multi_step_import_merger()
       .OnBrowsingHistoryCleared(deletion_info);
   form_associator_.OnBrowsingHistoryCleared(deletion_info);
-}
-
-void FormDataImporter::
-    SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
-        std::optional<NonInteractivePaymentMethodType>
-            payment_method_type_if_non_interactive_authentication_flow_completed) {
-  payment_method_type_if_non_interactive_authentication_flow_completed_ =
-      payment_method_type_if_non_interactive_authentication_flow_completed;
 }
 
 AddressFormDataImporter& FormDataImporter::GetAddressFormDataImporter() {

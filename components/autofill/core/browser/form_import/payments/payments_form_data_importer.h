@@ -19,6 +19,8 @@ class FormDataImporter;
 class FormDataImporterTestApi;
 class FormStructure;
 class Iban;
+class IbanSaveManager;
+enum class NonInteractivePaymentMethodType;
 class PaymentsDataManager;
 
 namespace payments {
@@ -60,6 +62,25 @@ class PaymentsFormDataImporter {
     bool card_submitted_through_save_and_fill = false;
   };
 
+  // Record type of the credit card extracted from the form, if one exists.
+  // TODO(crbug.com/40255227): Remove this enum and user CreditCard::RecordType
+  // instead.
+  enum CreditCardImportType {
+    // No card was successfully extracted from the form.
+    kNoCard,
+    // The extracted card is already stored locally on the device.
+    kLocalCard,
+    // The extracted card is already known to be a server card (either masked or
+    // unmasked).
+    kServerCard,
+    // The extracted card is not currently stored with the browser.
+    kNewCard,
+    // The extracted card is already known to be a virtual card.
+    kVirtualCard,
+    // The extracted card is known to be a duplicate local and server card.
+    kDuplicateLocalServerCard,
+  };
+
   explicit PaymentsFormDataImporter(AutofillClient* client);
   PaymentsFormDataImporter(const PaymentsFormDataImporter&) = delete;
   PaymentsFormDataImporter& operator=(const PaymentsFormDataImporter&) = delete;
@@ -76,6 +97,17 @@ class PaymentsFormDataImporter {
     return fetched_payments_data_context_;
   }
 
+  // Tries to initiate the saving of `extracted_iban` if applicable.
+  bool ProcessIbanImportCandidate(Iban& extracted_iban);
+
+  // This should only set
+  // `payment_method_type_if_non_interactive_authentication_flow_completed_` to
+  // a value when there was an autofill with no interactive authentication,
+  // otherwise it should set to nullopt.
+  void SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+      std::optional<NonInteractivePaymentMethodType>
+          payment_method_type_if_non_interactive_authentication_flow_completed);
+
  private:
   friend class PaymentsFormDataImporterTestApi;
   // TODO(crbug.com/481379161): Remove `FormDataImporter` and
@@ -85,6 +117,11 @@ class PaymentsFormDataImporter {
   //    second, which probably carries slightly higher risk.
   friend class autofill::FormDataImporter;
   friend class autofill::FormDataImporterTestApi;
+
+  // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
+  // function will start the flow and return true. Otherwise, it will return
+  // false.
+  bool ProceedWithCardMandatoryReauthOptInIfApplicable();
 
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);
@@ -99,6 +136,19 @@ class PaymentsFormDataImporter {
   // Struct to record contexts for the last payments data fetch. Should be reset
   // when a new fetch starts.
   FetchedPaymentsDataContext fetched_payments_data_context_;
+
+  // Responsible for managing IBAN save flows.
+  std::unique_ptr<IbanSaveManager> iban_save_manager_;
+
+  // If the most recent payments autofill flow had a non-interactive
+  // authentication,
+  // `payment_method_type_if_non_interactive_authentication_flow_completed_`
+  // will contain the type of payment method that had the non-interactive
+  // authentication, otherwise it will be nullopt. This is for logging purposes
+  // to log the type of non interactive payment method type that triggers
+  // mandatory reauth.
+  std::optional<NonInteractivePaymentMethodType>
+      payment_method_type_if_non_interactive_authentication_flow_completed_;
 };
 
 }  // namespace payments

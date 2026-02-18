@@ -29,11 +29,11 @@ IbanAccessManager::~IbanAccessManager() = default;
 void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
                                    OnIbanFetchedCallback on_iban_fetched) {
   if (auto* form_data_importer = client_->GetFormDataImporter()) {
-    // Reset the variable in FormDataImporter that denotes if non-interactive
-    // authentication happened. This variable will be set to a value if a
-    // payments autofill non-interactive flow successfully completes.
-    form_data_importer
-        ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+    // Reset the variable in PaymentsFormDataImporter that denotes if
+    // non-interactive authentication happened. This variable will be set to a
+    // value if a payments autofill non-interactive flow successfully completes.
+    form_data_importer->GetPaymentsFormDataImporter()
+        .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             std::nullopt);
   }
 
@@ -56,8 +56,8 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
       } else {
         std::move(on_iban_fetched).Run(iban_copy.value());
         if (auto* form_data_importer = client_->GetFormDataImporter()) {
-          form_data_importer
-              ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          form_data_importer->GetPaymentsFormDataImporter()
+              .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
                   payments::MandatoryReauthManager::
                       GetNonInteractivePaymentMethodType(
                           Iban::RecordType::kLocalIban));
@@ -139,8 +139,8 @@ void IbanAccessManager::OnUnmaskResponseReceived(
           /*no_interactive_authentication_callback=*/base::OnceClosure());
       std::move(on_iban_fetched).Run(value);
       if (auto* form_data_importer = client_->GetFormDataImporter()) {
-        form_data_importer
-            ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+        form_data_importer->GetPaymentsFormDataImporter()
+            .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
                 payments::MandatoryReauthManager::
                     GetNonInteractivePaymentMethodType(
                         Iban::RecordType::kServerIban));

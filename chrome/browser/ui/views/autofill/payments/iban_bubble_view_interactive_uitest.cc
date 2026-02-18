@@ -29,6 +29,8 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
@@ -184,9 +186,11 @@ class IbanBubbleViewFullFormBrowserTest
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.
-    iban_save_manager_ =
-        test_api(*autofill_manager()->client().GetFormDataImporter())
-            .iban_save_manager();
+    iban_save_manager_ = test_api(autofill_manager()
+                                      ->client()
+                                      .GetFormDataImporter()
+                                      ->GetPaymentsFormDataImporter())
+                             .iban_save_manager();
     test_api(*iban_save_manager_).SetEventObserverForTesting(this);
     AddEventObserverToController();
   }
