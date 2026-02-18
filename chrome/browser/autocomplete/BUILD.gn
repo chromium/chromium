@@ -107,6 +107,7 @@ source_set("impl") {
     "//components/history/core/common",
     "//components/history_clusters/core",
     "//components/history_embeddings",
+    "//components/history_embeddings/core",
     "//components/language/core/browser",
     "//components/lens",
     "//components/optimization_guide:machine_learning_tflite_buildflags",

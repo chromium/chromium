@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/ml_answerer.h"
+#include "components/history_embeddings/core/ml_answerer.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"

@@ -89,6 +89,7 @@ source_set("impl") {
       "//chrome/common:version_header",
       "//components/bookmarks/common",
       "//components/history_embeddings",
+      "//components/history_embeddings/core",
       "//components/user_education/common",
       "//components/variations/service",
       "//pdf:buildflags",

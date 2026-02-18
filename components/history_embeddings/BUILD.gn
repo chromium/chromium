@@ -6,35 +6,15 @@ import("//components/optimization_guide/features.gni")
 
 static_library("history_embeddings") {
   sources = [
-    "answerer.cc",
-    "answerer.h",
-    "history_embeddings_features.cc",
-    "history_embeddings_features.h",
-    "history_embeddings_search.cc",
-    "history_embeddings_search.h",
     "history_embeddings_service.cc",
     "history_embeddings_service.h",
-    "intent_classifier.h",
-    "ml_answerer.cc",
-    "ml_answerer.h",
-    "ml_intent_classifier.cc",
-    "ml_intent_classifier.h",
-    "mock_answerer.cc",
-    "mock_answerer.h",
-    "mock_intent_classifier.cc",
-    "mock_intent_classifier.h",
-    "passages_util.cc",
-    "passages_util.h",
-    "sql_database.cc",
-    "sql_database.h",
-    "vector_database.cc",
-    "vector_database.h",
   ]
+
+  public_deps = [ "//components/history_embeddings/core" ]
 
   deps = [
     "//base",
     "//components/history/core/browser",
-    "//components/history_embeddings/core",
     "//components/history_embeddings/proto:history_embeddings_proto",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
@@ -53,19 +33,7 @@ static_library("history_embeddings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "history_embeddings_service_unittest.cc",
-    "passages_util_unittest.cc",
-    "search_strings_update_listener_unittest.cc",
-    "sql_database_unittest.cc",
-    "vector_database_unittest.cc",
-  ]
-  if (build_with_model_execution) {
-    sources += [
-      "ml_answerer_unittest.cc",
-      "ml_intent_classifier_unittest.cc",
-    ]
-  }
+  sources = [ "history_embeddings_service_unittest.cc" ]
   deps = [
     ":history_embeddings",
     "//base/test:test_support",

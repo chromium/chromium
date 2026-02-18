@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_PASSAGES_UTIL_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_PASSAGES_UTIL_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_PASSAGES_UTIL_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_PASSAGES_UTIL_H_
 
 #include <optional>
 
@@ -28,4 +28,4 @@ std::optional<proto::PassagesValue> PassagesBlobToProto(
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_PASSAGES_UTIL_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_PASSAGES_UTIL_H_

@@ -2,14 +2,93 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 static_library("core") {
   sources = [
+    "answerer.cc",
+    "answerer.h",
+    "history_embeddings_features.cc",
+    "history_embeddings_features.h",
+    "history_embeddings_search.cc",
+    "history_embeddings_search.h",
+    "intent_classifier.h",
+    "ml_answerer.cc",
+    "ml_answerer.h",
+    "ml_intent_classifier.cc",
+    "ml_intent_classifier.h",
+    "mock_answerer.cc",
+    "mock_answerer.h",
+    "mock_intent_classifier.cc",
+    "mock_intent_classifier.h",
+    "passages_util.cc",
+    "passages_util.h",
     "search_strings_update_listener.cc",
     "search_strings_update_listener.h",
+    "sql_database.cc",
+    "sql_database.h",
+    "vector_database.cc",
+    "vector_database.h",
   ]
 
   deps = [
     "//base",
+    "//components/history/core/browser",
+    "//components/history_embeddings/proto:history_embeddings_proto",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
+    "//components/os_crypt/async/browser",
+    "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core",
+    "//services/passage_embeddings/public/mojom",
+    "//sql",
+    "//third_party/farmhash",
+    "//third_party/zlib/google:compression_utils",
+    "//url",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "passages_util_unittest.cc",
+    "search_strings_update_listener_unittest.cc",
+    "sql_database_unittest.cc",
+    "vector_database_unittest.cc",
+  ]
+  if (build_with_model_execution) {
+    sources += [
+      "ml_answerer_unittest.cc",
+      "ml_intent_classifier_unittest.cc",
+    ]
+  }
+  deps = [
+    ":core",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/history_embeddings/proto:history_embeddings_proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/page_content_annotations/core:test_support",
+    "//components/passage_embeddings/core",
+    "//components/passage_embeddings/core:test_support",
+    "//components/prefs:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/passage_embeddings/public/mojom",
+    "//testing/gtest",
+  ]
+  data = [ "//components/test/data/history_embeddings/" ]
+
+  if (is_ios) {
+    deps += [ "//components/test:history_embeddings_test_bundle_data" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

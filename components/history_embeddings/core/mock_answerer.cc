@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/mock_answerer.h"
+#include "components/history_embeddings/core/mock_answerer.h"
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 
 namespace history_embeddings {

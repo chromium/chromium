@@ -1628,6 +1628,7 @@ static_library("ui") {
       "//components/headless/console_message_logger",
       "//components/headless/policy",
       "//components/history_embeddings",
+      "//components/history_embeddings/core",
       "//components/keep_alive_registry",
       "//components/legion",
       "//components/manta",

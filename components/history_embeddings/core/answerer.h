@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_ANSWERER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_ANSWERER_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_ANSWERER_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_ANSWERER_H_
 
 #include <string>
 #include <unordered_map>
@@ -122,4 +122,4 @@ class Answerer {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_ANSWERER_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_ANSWERER_H_

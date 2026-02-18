@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SEARCH_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SEARCH_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_HISTORY_EMBEDDINGS_SEARCH_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_HISTORY_EMBEDDINGS_SEARCH_H_
 
 #include <optional>
 #include <string>
@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/url_row.h"
-#include "components/history_embeddings/answerer.h"
-#include "components/history_embeddings/vector_database.h"
+#include "components/history_embeddings/core/answerer.h"
+#include "components/history_embeddings/core/vector_database.h"
 
 namespace history_embeddings {
 
@@ -128,4 +128,4 @@ class HistoryEmbeddingsSearch {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SEARCH_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_HISTORY_EMBEDDINGS_SEARCH_H_

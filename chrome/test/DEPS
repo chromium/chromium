@@ -47,6 +47,7 @@ include_rules = [
   "+components/history/content",
   "+components/history/core",
   "+components/history_embeddings",
+  "+components/history_embeddings/core",
   "+components/infobars/content",
   "+components/infobars/core",
   "+components/input",

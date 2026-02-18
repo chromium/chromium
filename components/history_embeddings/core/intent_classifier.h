@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_INTENT_CLASSIFIER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_INTENT_CLASSIFIER_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_INTENT_CLASSIFIER_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_INTENT_CLASSIFIER_H_
 
 #include <string>
 #include <vector>
@@ -51,4 +51,4 @@ class IntentClassifier {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_INTENT_CLASSIFIER_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_INTENT_CLASSIFIER_H_

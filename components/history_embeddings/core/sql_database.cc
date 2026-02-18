@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/sql_database.h"
+#include "components/history_embeddings/core/sql_database.h"
 
 #include <algorithm>
 
@@ -13,8 +13,8 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/history_backend.h"
-#include "components/history_embeddings/history_embeddings_features.h"
-#include "components/history_embeddings/passages_util.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
+#include "components/history_embeddings/core/passages_util.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "sql/init_status.h"

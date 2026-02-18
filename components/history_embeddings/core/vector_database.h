@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_VECTOR_DATABASE_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_VECTOR_DATABASE_H_
 
 #include <optional>
 #include <unordered_set>
@@ -236,4 +236,4 @@ void EraseNonAsciiCharacters(std::vector<std::string>& passages);
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_VECTOR_DATABASE_H_

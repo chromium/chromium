@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/vector_database.h"
+#include "components/history_embeddings/core/vector_database.h"
 
 #include <algorithm>
 #include <queue>
@@ -12,7 +12,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "third_party/farmhash/src/src/farmhash.h"
 
 namespace history_embeddings {

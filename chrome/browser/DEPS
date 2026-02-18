@@ -203,6 +203,7 @@ include_rules = [
   "+components/history_clusters",
   "+components/history_clusters/history_clusters_internals",
   "+components/history_embeddings",
+  "+components/history_embeddings/core",
   "+components/manta",
   "+components/media_effects",
   "+components/memory_pressure",

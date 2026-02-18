@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/history_embeddings/history_embeddings_search.h"
+#include "components/history_embeddings/core/history_embeddings_search.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"

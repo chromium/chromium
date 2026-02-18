@@ -1,18 +1,18 @@
 include_rules = [
   "+components/history/core",
-  "+components/history_embeddings/core",
   "+components/history_embeddings/proto",
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/optimization_guide/public",
   "+components/os_crypt/async",
   "+components/page_content_annotations/core",
-  "+components/passage_embeddings/core",
+  "+components/passage_embeddings",
+  "+components/prefs",
+  "+mojo/public/cpp/bindings",
+  "+services/passage_embeddings",
+  "+sql",
+  "+third_party/farmhash",
+  "+third_party/zlib",
   "+url",
 ]
-
-specific_include_rules = {
-  "history_embeddings_service_unittest\.cc": [
-    "+components/history/core/test",
-  ],
-}

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_ML_INTENT_CLASSIFIER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_ML_INTENT_CLASSIFIER_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_ML_INTENT_CLASSIFIER_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_ML_INTENT_CLASSIFIER_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/history_embeddings/intent_classifier.h"
-#include "components/history_embeddings/mock_intent_classifier.h"
+#include "components/history_embeddings/core/intent_classifier.h"
+#include "components/history_embeddings/core/mock_intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 
 namespace history_embeddings {
@@ -39,4 +39,4 @@ class MlIntentClassifier : public IntentClassifier {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_ML_INTENT_CLASSIFIER_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_ML_INTENT_CLASSIFIER_H_

@@ -148,6 +148,7 @@ source_set("impl") {
       "//components/favicon/content",
       "//components/feature_engagement/public:feature_constants",
       "//components/history_embeddings",
+      "//components/history_embeddings/core",
       "//components/lens",
       "//components/omnibox/browser",
       "//components/omnibox/browser:vector_icons",

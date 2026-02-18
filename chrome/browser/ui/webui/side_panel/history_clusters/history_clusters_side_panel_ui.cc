@@ -27,7 +27,7 @@
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/strings/grit/components_strings.h"

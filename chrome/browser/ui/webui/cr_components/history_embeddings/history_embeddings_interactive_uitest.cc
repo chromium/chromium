@@ -14,7 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"

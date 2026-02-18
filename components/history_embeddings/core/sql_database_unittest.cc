@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/sql_database.h"
+#include "components/history_embeddings/core/sql_database.h"
 
 #include <array>
 
@@ -14,7 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -43,13 +43,9 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
   HistoryEmbeddingsSqlDatabaseTest()
       : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {}
 
-  void SetUp() override {
-    CHECK(history_dir_.CreateUniqueTempDir());
-  }
+  void SetUp() override { CHECK(history_dir_.CreateUniqueTempDir()); }
 
-  void TearDown() override {
-    CHECK(history_dir_.Delete());
-  }
+  void TearDown() override { CHECK(history_dir_.Delete()); }
 
   std::unique_ptr<SqlDatabase> MakeDatabase() {
     return std::make_unique<SqlDatabase>(

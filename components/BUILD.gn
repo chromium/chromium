@@ -499,6 +499,7 @@ test("components_unittests") {
       "//components/history/content/browser:unit_tests",
       "//components/history_clusters/core:unit_tests",
       "//components/history_embeddings:unit_tests",
+      "//components/history_embeddings/core:unit_tests",
       "//components/input:unit_tests",
       "//components/invalidation:legacy_topics_cleanup_unit_tests",
       "//components/invalidation:unit_tests",

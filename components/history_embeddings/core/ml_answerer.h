@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_ML_ANSWERER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_ML_ANSWERER_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_ML_ANSWERER_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_ML_ANSWERER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/history_embeddings/answerer.h"
-#include "components/history_embeddings/mock_answerer.h"
+#include "components/history_embeddings/core/answerer.h"
+#include "components/history_embeddings/core/mock_answerer.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
@@ -51,4 +51,4 @@ class MlAnswerer : public Answerer {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_ML_ANSWERER_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_ML_ANSWERER_H_

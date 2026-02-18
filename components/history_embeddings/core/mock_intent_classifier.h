@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_MOCK_INTENT_CLASSIFIER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_MOCK_INTENT_CLASSIFIER_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_MOCK_INTENT_CLASSIFIER_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_MOCK_INTENT_CLASSIFIER_H_
 
-#include "components/history_embeddings/intent_classifier.h"
+#include "components/history_embeddings/core/intent_classifier.h"
 
 namespace history_embeddings {
 
@@ -22,4 +22,4 @@ class MockIntentClassifier : public IntentClassifier {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_MOCK_INTENT_CLASSIFIER_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_MOCK_INTENT_CLASSIFIER_H_

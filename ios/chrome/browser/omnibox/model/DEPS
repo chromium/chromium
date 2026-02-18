@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/history_embeddings",
+  "+components/history_embeddings/core",
   "+extensions/buildflags/buildflags.h",
   "+extensions/common/constants.h",
   "+extensions/common/extension_features.h",

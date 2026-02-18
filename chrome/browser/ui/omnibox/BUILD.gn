@@ -143,6 +143,7 @@ source_set("impl") {
       "//components/favicon/core",
       "//components/history/core/browser",
       "//components/history_embeddings",
+      "//components/history_embeddings/core",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/navigation_metrics",

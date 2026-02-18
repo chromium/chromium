@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/answerer.h"
+#include "components/history_embeddings/core/answerer.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
 namespace history_embeddings {

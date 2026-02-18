@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_SQL_DATABASE_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_SQL_DATABASE_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_SQL_DATABASE_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_SQL_DATABASE_H_
 
 #include <optional>
 
@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history_embeddings/core/vector_database.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
-#include "components/history_embeddings/vector_database.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "sql/database.h"
@@ -156,4 +156,4 @@ class SqlDatabase : public VectorDatabase {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_SQL_DATABASE_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_SQL_DATABASE_H_

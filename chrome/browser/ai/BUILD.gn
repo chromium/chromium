@@ -75,6 +75,7 @@ source_set("impl") {
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/history_embeddings",
+    "//components/history_embeddings/core",
     "//components/language/core/common",
     "//components/optimization_guide/content/browser",
     "//components/site_engagement/content",

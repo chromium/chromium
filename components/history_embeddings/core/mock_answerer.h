@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_MOCK_ANSWERER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_MOCK_ANSWERER_H_
+#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CORE_MOCK_ANSWERER_H_
+#define COMPONENTS_HISTORY_EMBEDDINGS_CORE_MOCK_ANSWERER_H_
 
-#include "components/history_embeddings/answerer.h"
+#include "components/history_embeddings/core/answerer.h"
 
 namespace history_embeddings {
 
@@ -23,4 +23,4 @@ class MockAnswerer : public Answerer {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_MOCK_ANSWERER_H_
+#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CORE_MOCK_ANSWERER_H_
