@@ -1045,6 +1045,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 @Nullable Boolean isIncognito,
                 boolean isStandardActiveIndex,
                 boolean isIncognitoActiveIndex) -> {
+            if (mCancelIncognitoTabLoads && (isIncognito != null && isIncognito)) {
+                return;
+            }
+
             if (mLoadInProgress) {
                 // If a load and merge are both in progress, that means two metadata files
                 // are being read. If a merge was previously started and interrupted due to the

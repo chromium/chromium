@@ -1222,12 +1222,12 @@ public class TabPersistentStoreTest {
         MockTabPersistentStoreObserver otherMockObserver = testSelector.mTabPersistentStoreObserver;
 
         // Assert state on tab details restored from metadata file.
-        assertTrue(
-                "First restored tab should be incognito.",
+        assertFalse(
+                "First restored tab should be regular.",
                 otherMockObserver.details.get(0).isIncognito);
         assertEquals(
                 "Incorrect URL for first restored tab.",
-                incognitoTab.url,
+                regularTab.url,
                 otherMockObserver.details.get(0).url);
 
         assertFalse(
@@ -1235,16 +1235,8 @@ public class TabPersistentStoreTest {
                 otherMockObserver.details.get(1).isIncognito);
         assertEquals(
                 "Incorrect URL for second restored tab.",
-                regularTab.url,
-                otherMockObserver.details.get(1).url);
-
-        assertFalse(
-                "Third restored tab should be regular.",
-                otherMockObserver.details.get(2).isIncognito);
-        assertEquals(
-                "Incorrect URL for third restored tab.",
                 regularTab2.url,
-                otherMockObserver.details.get(2).url);
+                otherMockObserver.details.get(1).url);
     }
 
     @Test
@@ -1428,12 +1420,12 @@ public class TabPersistentStoreTest {
         MockTabPersistentStoreObserver mockObserver = selector.mTabPersistentStoreObserver;
 
         // Load up the TabModel metadata.
-        int numExpectedTabs = info.numRegularTabs + info.numIncognitoTabs;
+        int numExpectedTabs = info.numRegularTabs + (restoreIncognito ? info.numIncognitoTabs : 0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> store.loadState(/* ignoreIncognitoFiles= */ !restoreIncognito));
         mockObserver.initializedCallback.waitForCallback(0, 1);
         assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
-        mockObserver.detailsReadCallback.waitForCallback(0, info.contents.length);
+        mockObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
 
         assertEquals(numExpectedTabs, mockObserver.details.size());
 
