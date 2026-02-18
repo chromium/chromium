@@ -124,8 +124,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
                                            kTestingSessionId, false, false,
                                            std::move(sr_engine), std::nullopt);
 
-    const int channels =
-        ChannelLayoutToChannelCount(SpeechRecognizerImpl::kChannelLayout);
+    const int channels = SpeechRecognizerImpl::kChannelLayoutConfig.channels();
 
     const int bytes_per_sample =
         SpeechRecognizerImpl::kNumBitsPerAudioSample / 8;

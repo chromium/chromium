@@ -502,8 +502,7 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   int frames_per_buffer = (kAudioSampleRate * chunk_duration_ms) / 1000;
   AudioParameters output_parameters =
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
-                      sample_rate_, frames_per_buffer);
+                      kChannelLayoutConfig, sample_rate_, frames_per_buffer);
   DVLOG(1) << "SRI::output_parameters: "
            << output_parameters.AsHumanReadableString();
 

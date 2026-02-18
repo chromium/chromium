@@ -140,8 +140,7 @@ SodaSpeechRecognitionEngineImplTest::CreateSpeechRecognition(
       (SpeechRecognizerImpl::kAudioSampleRate * chunk_duration_ms) / 1000;
   media::AudioParameters audio_parameters = media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayoutConfig::FromLayout<
-          SpeechRecognizerImpl::kChannelLayout>(),
+      SpeechRecognizerImpl::kChannelLayoutConfig,
       SpeechRecognizerImpl::kAudioSampleRate, frames_per_buffer);
   client_under_test->SetAudioParameters(audio_parameters);
 
