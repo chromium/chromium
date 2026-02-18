@@ -373,7 +373,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     private void maybeCreateAppHeaderCoordinator(@Nullable Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return;
+        if (!ChromeFeatureList.sSearchInSettings.isEnabled()
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
 
         var delegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
