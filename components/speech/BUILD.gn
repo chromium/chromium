@@ -56,7 +56,10 @@ source_set("speech") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "chunked_byte_buffer_unittest.cc" ]
+  sources = [
+    "audio_buffer_unittest.cc",
+    "chunked_byte_buffer_unittest.cc",
+  ]
 
   if (!is_android) {
     sources += [ "endpointer/endpointer_unittest.cc" ]

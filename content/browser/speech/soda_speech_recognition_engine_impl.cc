@@ -251,7 +251,7 @@ SodaSpeechRecognitionEngineImpl::ConvertToAudioDataS16(
   signed_buffer->data.resize(audio_data.NumSamples() *
                              audio_parameters_.channels());
 
-  auto source_bytes = base::as_bytes(base::span(audio_data.AsString()));
+  auto source_bytes = audio_data.data();
   auto dest_bytes = base::as_writable_bytes(base::span(signed_buffer->data));
   CHECK_EQ(source_bytes.size(), dest_bytes.size());
   dest_bytes.copy_from(source_bytes);
