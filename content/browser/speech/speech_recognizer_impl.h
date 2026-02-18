@@ -48,6 +48,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   static constexpr media::ChannelLayoutConfig kChannelLayoutConfig =
       media::ChannelLayoutConfig::Mono();
   static constexpr int kNumBitsPerAudioSample = 16;
+  static constexpr size_t kBytesPerAudioSample = kNumBitsPerAudioSample / 8;
   static constexpr int kNoSpeechTimeoutMs = 8000;
   static constexpr int kEndpointerEstimationTimeMs = 300;
 
