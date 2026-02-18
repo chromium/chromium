@@ -30,7 +30,6 @@ source_set("model") {
     "//components/dom_distiller/core",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
-    "//components/history_embeddings",
     "//components/history_embeddings/core",
     "//components/image_fetcher/core",
     "//components/navigation_metrics",

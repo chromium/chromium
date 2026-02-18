@@ -106,7 +106,7 @@ source_set("impl") {
     "//components/custom_handlers",
     "//components/history/core/common",
     "//components/history_clusters/core",
-    "//components/history_embeddings",
+    "//components/history_embeddings/content",
     "//components/history_embeddings/core",
     "//components/language/core/browser",
     "//components/lens",

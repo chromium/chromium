@@ -202,7 +202,7 @@ include_rules = [
   "+components/media_router/browser",
   "+components/history_clusters",
   "+components/history_clusters/history_clusters_internals",
-  "+components/history_embeddings",
+  "+components/history_embeddings/content",
   "+components/history_embeddings/core",
   "+components/manta",
   "+components/media_effects",

@@ -147,7 +147,7 @@ source_set("impl") {
       "//components/dom_distiller/core",
       "//components/favicon/content",
       "//components/feature_engagement/public:feature_constants",
-      "//components/history_embeddings",
+      "//components/history_embeddings/content",
       "//components/history_embeddings/core",
       "//components/lens",
       "//components/omnibox/browser",

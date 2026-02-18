@@ -20,12 +20,12 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history_embeddings/content/history_embeddings_service.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/history_embeddings/core/ml_answerer.h"
 #include "components/history_embeddings/core/ml_intent_classifier.h"
 #include "components/history_embeddings/core/mock_answerer.h"
 #include "components/history_embeddings/core/mock_intent_classifier.h"
-#include "components/history_embeddings/history_embeddings_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -4,7 +4,7 @@
 
 import("//components/optimization_guide/features.gni")
 
-static_library("history_embeddings") {
+static_library("content") {
   sources = [
     "history_embeddings_service.cc",
     "history_embeddings_service.h",
@@ -35,7 +35,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "history_embeddings_service_unittest.cc" ]
   deps = [
-    ":history_embeddings",
+    ":content",
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",

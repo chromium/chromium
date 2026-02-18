@@ -254,7 +254,7 @@ source_set("browser_tests") {
       "//components/history/core/common",
       "//components/history_clusters/core",
       "//components/history_clusters/history_clusters_internals/webui:constants",
-      "//components/history_embeddings",
+      "//components/history_embeddings/content",
       "//components/history_embeddings/core",
       "//components/language/core/browser",
       "//components/lens:enterprise_policy",

@@ -74,7 +74,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
-    "//components/history_embeddings",
+    "//components/history_embeddings/content",
     "//components/history_embeddings/core",
     "//components/language/core/common",
     "//components/optimization_guide/content/browser",
