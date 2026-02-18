@@ -170,7 +170,20 @@ void SyncBreadcrumbsLog() {
     openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
   DCHECK(!_sceneState.URLContextsToOpen);
   _sceneState.startupHadExternalIntent = YES;
-  _sceneState.URLContextsToOpen = URLContexts;
+  if (IsEnableNewStartupFlowEnabled()) {
+    TaskOrchestrator* taskOrchestrator =
+        _sceneState.profileState.appState.taskOrchestrator;
+    for (UIOpenURLContext* URLContext in URLContexts) {
+      TaskRequest* request = [[TaskRequest alloc]
+          initWithURLContext:URLContext
+                  sceneState:_sceneState
+                  taskSource:TaskSource::TaskSourceContextURL];
+      [taskOrchestrator addTaskRequest:request];
+    }
+
+  } else {
+    _sceneState.URLContextsToOpen = URLContexts;
+  }
 }
 
 - (void)windowScene:(UIWindowScene*)windowScene

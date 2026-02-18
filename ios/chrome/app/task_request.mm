@@ -9,17 +9,22 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/app/application_delegate/url_opener.h"
+#import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_request+testing.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
 @interface TaskRequestForTesting : TaskRequest
 @end
@@ -56,6 +61,9 @@
 // Properties needed to handle a NSUserActivity item.
 @property(nonatomic, strong) NSUserActivity* userActivity;
 
+// Property needed to handle a URL context.
+@property(nonatomic, strong) UIOpenURLContext* URLContext;
+
 @end
 
 @implementation TaskRequest
@@ -78,6 +86,7 @@
     _source = taskSource;
     _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
     _sceneSessionID = sceneState.sceneSessionID;
+    _URLContext = URLContext;
   }
   return self;
 }
@@ -198,7 +207,27 @@
 }
 
 - (void)executeContextURL {
-  // TODO(crbug.com/462018636): Add implementation.
+  SceneState* sceneState = [self sceneStateFromSessionID];
+  CHECK(sceneState);
+
+  NSSet* URLContextSet = [NSSet setWithObject:self.URLContext];
+  // If the SystemIdentityManager handles the URL context, return early to avoid
+  // opening the URL twice.
+  if (GetApplicationContext()
+          ->GetSystemIdentityManager()
+          ->HandleSessionOpenURLContexts(sceneState.scene, URLContextSet)) {
+    return;
+  }
+  ProfileState* profileState = sceneState.profileState;
+  URLOpenerParams* options =
+      [[URLOpenerParams alloc] initWithUIOpenURLContext:self.URLContext];
+  [URLOpener openURL:options
+          applicationActive:YES
+                  tabOpener:sceneState.controller
+      connectionInformation:sceneState.controller
+         startupInformation:profileState.startupInformation
+                prefService:profileState.profile->GetPrefs()
+                  initStage:profileState.initStage];
 }
 
 @end
