@@ -508,6 +508,13 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // of times we can retry a request on reused sockets is limited.
   size_t retry_attempts_ = 0;
 
+  // Number of retries made for connection errors on reused sockets like
+  // ERR_CONNECTION_RESET, ERR_CONNECTION_CLOSED, ERR_CONNECTION_ABORTED,
+  // ERR_SOCKET_NOT_CONNECTED and ERR_EMPTY_RESPONSE.
+  // If this count reaches kMaxRetryAttemptsOnConnectionErrors, we crash via
+  // NOTREACHED() as it indicates a potential infinite retry loop.
+  size_t retry_attempts_on_connection_errors_ = 0;
+
   // Number of times the transaction was restarted via a RestartWith* call.
   size_t num_restarts_ = 0;
 
