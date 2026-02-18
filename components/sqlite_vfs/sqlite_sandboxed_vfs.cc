@@ -4,7 +4,6 @@
 
 #include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
 
-#include <mutex>
 #include <optional>
 #include <tuple>
 #include <utility>
@@ -29,7 +28,6 @@ namespace sqlite_vfs {
 
 namespace {
 
-std::once_flag g_register_vfs_once_flag;
 SqliteSandboxedVfsDelegate* g_instance = nullptr;
 
 FileType GetFileType(int sqlite_requested_type) {
@@ -75,11 +73,12 @@ SqliteSandboxedVfsDelegate::~SqliteSandboxedVfsDelegate() {
 SqliteSandboxedVfsDelegate* SqliteSandboxedVfsDelegate::GetInstance() {
   // When requesting the the global instance the first time make sure it exists
   // and register it.
-  std::call_once(g_register_vfs_once_flag, []() {
+  [[maybe_unused]] static const bool registered = [] {
     sql::SandboxedVfs::Register(kSqliteVfsName,
                                 std::make_unique<SqliteSandboxedVfsDelegate>(),
                                 /*make_default=*/false);
-  });
+    return true;
+  }();
   return g_instance;
 }
 
