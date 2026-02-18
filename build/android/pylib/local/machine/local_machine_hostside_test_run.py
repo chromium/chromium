@@ -189,8 +189,9 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         '--max-testcase-run-count',
         str(self._test_instance.max_tries),
         '--template:map',
-        'reporters=../../build/android/pylib/local/machine/'
-        'local_machine_hostside_tradefed_config.xml',
+        f'''reporters={(
+            os.path.abspath(os.path.join(os.path.dirname(__file__),
+            'local_machine_hostside_tradefed_config.xml')))}''',
     ]
 
     return _Job(
