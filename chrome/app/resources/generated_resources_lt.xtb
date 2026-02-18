@@ -560,7 +560,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1362865166188278099">Mechaninė problema. Patikrinkite spausdintuvą</translation>
 <translation id="1363585519747660921">Reikia konfigūruoti USB spausdintuvą</translation>
 <translation id="136378536198524553">Energijos taupymo priemonė įjungta</translation>
-<translation id="136522805455656552">Kad užtikrintumėte įrenginio saugą, programinę įrangą turėtumėte paleisti ir įdiegti tik iš patikimų šaltinių ir kūrėjų. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Pakelti antakius</translation>
 <translation id="1367817137674340530">Sugeneruota vaizdų: <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">„Linux“ nepalaikoma „<ph name="DEVICE_TYPE" />“ įrenginyje. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -1234,7 +1233,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="18139523105317219">EDI šalies pavadinimas</translation>
 <translation id="1815083418640426271">Įklijuoti kaip grynąjį tekstą</translation>
 <translation id="1815097521077272760">Buvote pakviesti išbandyti šio žaidimo valdymą klaviatūra.</translation>
-<translation id="1815181278146012280">Klausti, kai svetainė nori pasiekti HID įrenginius</translation>
 <translation id="181577467034453336">Dar <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Klaviatūros nuskaitymo sparta</translation>
 <translation id="1817871734039893258">„Microsoft“ failų atkūrimas</translation>
@@ -2574,6 +2572,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="271033894570825754">Nauja kolekcija</translation>
 <translation id="2710507903599773521">Jūsų „<ph name="DEVICE_TYPE" />“ dabar atrakintas</translation>
 <translation id="2710676967944965821">Iš naujo nustatyti visus išmaniojo kortelių skaitytuvo leidimus?</translation>
+<translation id="2710883118091822664">Prisijunkite, kad galėtumėte lengvai tęsti visuose įrenginiuose</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2714180132046334502">Tamsus fonas</translation>
@@ -7421,6 +7420,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6021293122504240352">„<ph name="APPS" />“ programos nebepalaikomos</translation>
 <translation id="6021969570711251331">Intarpuojama</translation>
 <translation id="6022526133015258832">Atidaryti viso ekrano režimu</translation>
+<translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
 <translation id="6023643151125006053">Šį įrenginį (serijos Nr. <ph name="SERIAL_NUMBER" />) užrakino <ph name="SAML_DOMAIN" /> administratorius.</translation>
 <translation id="6024317249717725918">&amp;Ieškoti vaizdo įrašo rėmelio naudojant „<ph name="VISUAL_SEARCH_PROVIDER" />“</translation>
 <translation id="6025215716629925253">Dėklo pėdsakas</translation>
@@ -12223,7 +12223,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Peržiūrėkite 1 svetainę, kuri neseniai išsiuntė daug pranešimų}one{Peržiūrėkite {NUM_SITES} svetainę, kuri neseniai išsiuntė daug pranešimų}few{Peržiūrėkite {NUM_SITES} svetaines, kurios neseniai išsiuntė daug pranešimų}many{Peržiūrėkite {NUM_SITES} svetainės, kurios neseniai išsiuntė daug pranešimų}other{Peržiūrėkite {NUM_SITES} svetainių, kurios neseniai išsiuntė daug pranešimų}}</translation>
 <translation id="966588271015727539">Pasirinkti „Bluetooth“ Brailio rašmenų ekraną</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Šio profilio uždarymas}one{&amp;Šio profilio uždarymas (# langas)}few{&amp;Šio profilio uždarymas (# langai)}many{&amp;Šio profilio uždarymas (# lango)}other{&amp;Šio profilio uždarymas (# langų)}}</translation>
-<translation id="967398046773905967">Neleisti svetainėms pasiekti HID įrenginių</translation>
 <translation id="96756691973639907">Daugiau veiksmų („<ph name="MODULE_NAME" />“)</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>
 <translation id="96774243435178359">Tvarkomi spausdintuvai</translation>

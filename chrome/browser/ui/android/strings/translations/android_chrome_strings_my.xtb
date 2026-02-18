@@ -396,6 +396,7 @@
 <translation id="2702516483241149200">အသစ်- ဤစာသားသို့ လှိမ့်သွားသည့် လင့်ခ်ကို မျှဝေနိုင်သည်</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> ဘရောက်ဇာတွင် ဖွင့်ရန်</translation>
 <translation id="271033894570825754">အသစသ်</translation>
+<translation id="2710883118091822664">သင့်စက်အားလုံးတွင် အလွယ်တကူ ဆက်လုပ်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2718352093833049315">ဝိုင်ဖိုင်တွင်သာ</translation>
 <translation id="2718846868787000099">အကြောင်းအရာများကို သင်၏ဦးစားပေး ဘာသာစကားများဖြင့် ပြရန်အတွက် သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်များက သင်၏ဦးစားပေးချက်များကို ကြည့်နိုင်သည်</translation>
 <translation id="2723001399770238859">အသံ</translation>
@@ -531,6 +532,7 @@
 <translation id="3268048651973962414">ရှာဖွေမှုရလဒ်များ ကြည့်ရန် အပေါ်ဖိဆွဲပါ</translation>
 <translation id="3269093882174072735">ပုံကူးတင်ရန်</translation>
 <translation id="3280562213547448728">အသံဖြင့် ရှာဖွေခြင်း</translation>
+<translation id="3282568296779691940">Chrome သို့ လက်မှတ်ထိုး ဝင်</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />၊ တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{<ph name="TAB_GROUPS_PART" />၊ တဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{စကားဝှက် ၁ ခုကို ဤစက်တွင်သာ သိမ်းသည်။ အခြားစက်များ၌သုံးရန် ၎င်းကို သင်၏ Google Account တွင် သိမ်းပါ။}other{စကားဝှက် # ခုကို ဤစက်တွင်သာ သိမ်းသည်။ အခြားစက်များ၌သုံးရန် ၎င်းတို့ကို သင်၏ Google Account တွင် သိမ်းပါ။}}</translation>
 <translation id="3293181007446299124">ကြည့်ရှုမှုမှတ်တမ်းကို သင့်စက်တွင် သီးသန့်ထားရှိပြီး သင့်အထောက်အထားကို ကာကွယ်ရန် အစီရင်ခံစာများအား စောင့်ဆိုင်း၍ ပို့သည်</translation>

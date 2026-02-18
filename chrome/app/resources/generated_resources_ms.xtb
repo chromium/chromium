@@ -557,7 +557,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1362865166188278099">Masalah mekanikal. Semak pencetak</translation>
 <translation id="1363585519747660921">Pencetak USB memerlukan konfigurasi</translation>
 <translation id="136378536198524553">Penjimat Kuasa dihidupkan</translation>
-<translation id="136522805455656552">Untuk memastikan peranti anda selamat, anda harus menjalankan dan memasang perisian daripada sumber dan pembangun yang dipercayai sahaja. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Angkat kening</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> imej dijana</translation>
 <translation id="1368603372088757436">Linux tidak disokong pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -1231,7 +1230,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="18139523105317219">Nama Pihak EDI</translation>
 <translation id="1815083418640426271">Tampalkan Sebagai Teks Biasa</translation>
 <translation id="1815097521077272760">Anda telah diundang untuk mencuba kawalan papan kekunci untuk permainan ini.</translation>
-<translation id="1815181278146012280">Tanya apabila tapak mahu mengakses peranti HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> lagi...</translation>
 <translation id="1816036116994822943">Kelajuan pengimbasan papan kekunci</translation>
 <translation id="1817871734039893258">Pemulihan Fail Microsoft</translation>
@@ -2571,6 +2569,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="271033894570825754">Koleksi baharu</translation>
 <translation id="2710507903599773521">Kini <ph name="DEVICE_TYPE" /> anda tidak berkunci</translation>
 <translation id="2710676967944965821">Tetapkan semula semua kebenaran pembaca kad pintar?</translation>
+<translation id="2710883118091822664">Log masuk untuk meneruskan penggunaan dengan mudah pada semua peranti anda</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2714180132046334502">Latar belakang gelap</translation>
@@ -7417,6 +7416,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6021293122504240352">Apl <ph name="APPS" /> tidak disokong lagi</translation>
 <translation id="6021969570711251331">Antara lembar</translation>
 <translation id="6022526133015258832">Buka Skrin Penuh</translation>
+<translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6023643151125006053">Peranti ini (SN: <ph name="SERIAL_NUMBER" />) telah dikunci oleh pentadbir <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">&amp;Cari Bingkai Video dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Pengesanan Susunan</translation>
@@ -12211,7 +12211,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Semak 1 laman yang menghantar banyak pemberitahuan baru-baru ini}other{Semak {NUM_SITES} laman yang menghantar banyak pemberitahuan baru-baru ini}}</translation>
 <translation id="966588271015727539">Pilih paparan braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Tutup Profil Ini}other{&amp;Tutup Profil Ini (# Tetingkap)}}</translation>
-<translation id="967398046773905967">Jangan benarkan mana-mana tapak mengakses peranti HID</translation>
 <translation id="96756691973639907">Lagi tindakan untuk <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="96774243435178359">Pencetak terurus</translation>

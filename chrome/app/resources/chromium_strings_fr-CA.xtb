@@ -241,6 +241,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="3522404737534491619">Pour partager votre fenêtre, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système</translation>
 <translation id="3530103706039034513">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté.  Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Pour partager votre écran, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système.</translation>
+<translation id="3588112919289558122">La protection renforcée désactive l'optimisation JavaScript pour les sites que Chromium ne reconnaît pas</translation>
 <translation id="3597003331831379823">Échec de l'exécution de la configuration avec des privilèges élevés. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Connectez-vous à Chromium</translation>
 <translation id="3639635944603682591">Les données de navigation de cette personne seront supprimées de cet appareil. Pour récupérer ces données, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>

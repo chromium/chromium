@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">রিভিউ সম্পূর্ণ হয়েছে!</translation>
 <translation id="1094555143448724771">আপনার অন্যান্য ডিভাইস থেকে ট্যাব দেখতে, আপনার ট্যাব ও ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1095761715416917775">আপনি সিঙ্ক করা ডেটা সবসময় ব্যবহার করছেন কিনা দেখে নিন</translation>
+<translation id="1096091316906284742">Chrome Finds অপ্ট-ইন করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="1100066534610197918">গ্রুপে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="1103142993930332957">Chrome উন্নত করতে সাহায্য করবেন?</translation>
 <translation id="1105960400813249514">স্ক্রিন ক্যাপচার</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">নতুন: এই টেক্সট পর্যন্ত স্ক্রোল করতে পারে এমন লিঙ্ক শেয়ার করুন</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> ব্রাউজারে খুলুন</translation>
 <translation id="271033894570825754">নতুন সংগ্রহ</translation>
+<translation id="2710883118091822664">আপনার সব ডিভাইসে সহজেই চালিয়ে যেতে সাইন-ইন করুন</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
 <translation id="2718846868787000099">আপনার পছন্দের ভাষায় কন্টেন্ট দেখাতে, আপনি যেসব সাইট ভিজিট করেন সেগুলি আপনার ভাষার পছন্দ দেখতে পাবে</translation>
 <translation id="2723001399770238859">অডিও</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">সার্চ ফলাফল দেখতে, উপরের দিকে টানুন</translation>
 <translation id="3269093882174072735">ছবি লোড করুন</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
+<translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />টি ট্যাব}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{১টি পাসওয়ার্ড শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেটি সেভ করুন।}one{#টি পাসওয়ার্ড শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলি সেভ করুন।}other{#টি পাসওয়ার্ড শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলি সেভ করুন।}}</translation>
 <translation id="3293181007446299124">আপনার ডিভাইসে আপনার ব্রাউজিং ইতিহাস সুরক্ষিত রাখা হয় এবং আপনার পরিচয় সুরক্ষিত রাখতে দেরি করে রিপোর্ট পাঠানো হয়</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3636940436873918441">পছন্দের ভাষা</translation>
 <translation id="3637744895182738742">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
+<translation id="3641581193271938629">Chrome Finds অপ্ট-ইন বন্ধ করা হয়েছে</translation>
 <translation id="3647019414263135904">কন্টেক্সট পপ-আপ খুলুন বা বন্ধ করুন</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google অ্যাপের হোম ট্যাবে যান</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">সার্চের জন্য Sogou কে ব্যবহার করছে</translation>
 <translation id="4387647248986092471">গাড়ির জন্য প্রোফাইল লক তৈরি করুন</translation>
 <translation id="4387817230000841154">ডাউনলোড পৃষ্ঠা খুলুন</translation>
+<translation id="4395046795145457714">Chrome Finds অপ্ট-ইন সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা রেকর্ডিং ছদ্মবেশী ট্যাব</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনলোড করা হচ্ছে…</translation>
 <translation id="4404568932422911380">কোনও বুকমার্ক নেই</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে পারবেন। ক্যারেট ব্রাউজিং বন্ধ করার জন্য F7 শর্টকাট প্রেস করুন।</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ট্যাব সরানো যাবে না</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
+<translation id="5489222148748465285">Chrome-কে খোঁজা চালিয়ে যেতে দেবেন?</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> হিসেবে যোগ দিন</translation>
 <translation id="5517326820028369152">সাম্প্রতিক কার্যকলাপের স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}one{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}other{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ছবির প্রিভিউ দেখুন</translation>
+<translation id="6661521899577697780">Chrome Finds অপ্ট-ইন অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> এ খুলুন</translation>
 <translation id="6669390930482049506">আমাকে জানান</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">দাম ট্র্যাক করা বন্ধ করুন</translation>
 <translation id="6830728435402077660">সুরক্ষিত নয়</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
+<translation id="6835182496791325827">আপনি ইনঅ্যাক্টিভ থাকাকালীন, Chrome আপনার সার্চের জন্য সেরা ফলাফল খুঁজে পেলে বিজ্ঞপ্তি দিয়ে জানাবে।</translation>
 <translation id="6846298663435243399">লোড হচ্ছে...</translation>
 <translation id="6850409657436465440">ডাউনলোডটি এখনও চলছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টি ট্যাব বন্ধ হয়েছে</translation>

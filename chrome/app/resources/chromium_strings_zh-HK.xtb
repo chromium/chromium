@@ -241,6 +241,7 @@
 <translation id="3522404737534491619">如要分享視窗，請前往「系統設定」允許 Chromium 螢幕錄影</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 中登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。</translation>
 <translation id="3561853857681580870">如要分享螢幕內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
+<translation id="3588112919289558122">「強化保護」會為 Chromium 無法識別的網站關閉 JavaScript 優化功能</translation>
 <translation id="3597003331831379823">無法按更高權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登入 Chromium</translation>
 <translation id="3639635944603682591">此使用者的瀏覽資料將從裝置上刪除。如要復原資料，請以「<ph name="USER_EMAIL" />」身分登入 Chromium。</translation>

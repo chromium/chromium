@@ -1786,6 +1786,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Az inkognitó lapok bezárásához állítsa be a következőket: Touch ID, Face ID vagy jelkód.</translation>
 <translation id="750886945254958667">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle, ha a továbbiakban nem kíván hozzáférni.</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Legfeljebb 1 lapot adhat hozzá}other{Legfeljebb {COUNT} lapot adhat hozzá}}</translation>
 <translation id="7512909159512473473">Összetett jelszó megadása…</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7514530647142300459">A Google-fiókjában (<ph name="EMAIL" />) lévő jelszavak használatának folytatása</translation>

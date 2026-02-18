@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">आफ्ना इन्कोग्निटो ट्याबहरू लक गर्न Touch ID, Face ID वा पासकोड सेटअप गर्नुहोस्।</translation>
 <translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{बढीमा एउटा ट्याब हाल्नुहोस्}other{बढीमा {COUNT} वटा ट्याब हाल्नुहोस्}}</translation>
 <translation id="7512909159512473473">पासफ्रेज हाल्नुहोस्…</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7514530647142300459">आफ्नो Google खाता <ph name="EMAIL" /> मा सेभ गरिएका पासवर्डहरू प्रयोग गरिराख्नुहोस्</translation>

@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">مکینیکل مسئلہ۔ پرنٹر چیک کریں</translation>
 <translation id="1363585519747660921">‏USB پرنٹر کو کنفیگریشن کی ضرورت ہے</translation>
 <translation id="136378536198524553">انرجی سیور آن ہے</translation>
-<translation id="136522805455656552">اپنے آلے کو محفوظ رکھنے کے لیے، آپ کو صرف قابل اعتماد ذرائع اور ڈویلپرز سے سافٹ ویئر چلانا اور انسٹال کرنا چاہیے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ابرو اٹھائیں</translation>
 <translation id="1367817137674340530">تخلیق کردہ <ph name="COUNT" /> تصاویر</translation>
 <translation id="1368603372088757436">‏Linux آپ کے <ph name="DEVICE_TYPE" /> پر تعاون یافتہ نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -1222,7 +1221,6 @@
 <translation id="18139523105317219">‏EDI پارٹی نام</translation>
 <translation id="1815083418640426271">سادہ متن کے بطور پیسٹ کریں</translation>
 <translation id="1815097521077272760">آپ کو اس گیم کے لیے کی بورڈ کنٹرول آزمانے کے لیے مدعو کیا گیا ہے۔</translation>
-<translation id="1815181278146012280">‏جب کوئی سائٹ HID آلات تک رسائی حاصل کرنا چاہے تو پوچھیں</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> مزید…</translation>
 <translation id="1816036116994822943">کی بورڈ اسکیننگ کی رفتار</translation>
 <translation id="1817871734039893258">‏Microsoft فائل کی بازیابی</translation>
@@ -2560,6 +2558,7 @@
 <translation id="271033894570825754">نیا</translation>
 <translation id="2710507903599773521">آپ کا <ph name="DEVICE_TYPE" /> اب غیر مقفل ہے</translation>
 <translation id="2710676967944965821">اسمارٹ کارڈ ریڈر کی تمام اجازتیں ری سیٹ کریں؟</translation>
+<translation id="2710883118091822664">اپنے تمام آلات پر آسانی سے جاری رکھنے کے لیے سائن ان کریں</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">گہرا پس منظر</translation>
@@ -6852,6 +6851,7 @@
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> کا استعمال کرنے کیلئے آپ کو سب سے پہلے <ph name="LINK_START" />نیٹ ورک کا سائن ان صفحہ ملاحظہ کرنے<ph name="LINK_END" /> کی ضرورت ہوگی، جو چند سیکنڈ میں خود بخود کھل جائے گا۔ اگر یہ نہیں کھلتا ہے تو نیٹ ورک استعمال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="5637476008227280525">موبائل ڈیٹا فعال</translation>
 <translation id="5638170200695981015">محدود منظر اور ترمیم کے اختیارات استعمال کرنے کے لیے "بنیادی ایڈیٹر میں کھولیں" کو منتخب کریں۔</translation>
+<translation id="5638202526629811571">اپنے والدین یا سرپرست کو یہ اسکرین دکھائیں تاکہ وہ کہہ سکیں کہ آیا آپ کے لیے اس ایکسٹینشن کو شامل کرنا ٹھیک ہے</translation>
 <translation id="563821631542362636">سائٹ کو ڈیٹا محفوظ کرنے کی اجازت دیں</translation>
 <translation id="5638309510554459422">‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> میں ایکسٹینشنز اور تھیمز تلاش کریں</translation>
 <translation id="5639549361331209298">اس صفحہ کو دوبارہ لوڈ کریں، مزید اختیارات دیکھنے کیلئے روکیں</translation>
@@ -7400,6 +7400,7 @@
 <translation id="6021293122504240352"><ph name="APPS" /> ایپس اب مزید تعاون یافتہ نہیں ہیں</translation>
 <translation id="6021969570711251331">انٹر لیو</translation>
 <translation id="6022526133015258832">پوری اسکرین کھولیں</translation>
+<translation id="6022659036123304283">‏Chrome کو اپنا ڈیفالٹ براؤزر بنائيں</translation>
 <translation id="6023643151125006053">‏اس آلہ (SN: <ph name="SERIAL_NUMBER" />‎) کو <ph name="SAML_DOMAIN" /> منتظم نے مقفل کیا تھا۔</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ ویڈیو فریم تلاش کریں</translation>
 <translation id="6025215716629925253">انبار کا ٹریس</translation>
@@ -10457,6 +10458,7 @@
 <translation id="8110393529211831722">سبسکرپشن صرف اس آلے پر انسٹال ہے اور آپ کے اکاؤنٹ کے تحت دیگر آلات کے ساتھ مطابقت پذیر نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">رابطے کی فہرست ڈاؤن لوڈ ہو رہی ہے...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> کے لیے مائکروفون کی اجازت</translation>
+<translation id="8116497846156149">والدین سے منظوری طلب کریں</translation>
 <translation id="8116972784401310538">&amp;بک مارک مینیجر</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> آپ کے سائن ان کرنے کے طریقے کو یاد رکھتا ہے اور ممکن ہونے پر آپ کو خودکار طور پر سائن ان کرتا ہے۔ آف ہونے پر، آپ سے ہر بار توثیق کرنے کیلئے کہا جائے گا۔</translation>
 <translation id="8118362518458010043">‏Chrome کی جانب سے غیر فعال ہے۔ یہ ایکسٹینشن غیر محفوظ ہو سکتی ہے۔</translation>
@@ -12085,6 +12087,7 @@
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{آپ کا منتظم <ph name="APP0_NAME" /> سے آپ کی اسکرین کو ریکارڈ کر سکتا ہے۔ ریکارڈنگ شروع ہونے پر، آپ کو مطلع نہیں کیا جائے گا۔}=2{آپ کا منتظم <ph name="APP0_NAME" /> اور <ph name="APP1_NAME" /> سے آپ کی اسکرین کو ریکارڈ کر سکتا ہے۔ ریکارڈنگ شروع ہونے پر، آپ کو مطلع نہیں کیا جائے گا۔}=3{آپ کا منتظم <ph name="APP0_NAME" />، <ph name="APP1_NAME" /> اور 1 دوسری ایپ سے آپ کی اسکرین کو ریکارڈ کر سکتا ہے۔ ریکارڈنگ شروع ہونے پر، آپ کو مطلع نہیں کیا جائے گا۔}other{آپ کا منتظم <ph name="APP0_NAME" />، <ph name="APP1_NAME" /> اور # دیگر ایپس سے آپ کی اسکرین کو ریکارڈ کر سکتا ہے۔ ریکارڈنگ شروع ہونے پر، آپ کو مطلع نہیں کیا جائے گا۔}}</translation>
 <translation id="9186963452600581158">‏بچے کے Google اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="9187967020623675250">کلیدیں مماثل نہیں ہیں۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
+<translation id="9189618485998894982">اس ایپلیکیشن کو مسدود کر دیا گیا ہے۔ براہ کرم ڈویلپر سے رابطہ کریں</translation>
 <translation id="9192019773545828776">‏صوتی تاثرات سنیں تاکہ آپ اسکرین پر دیکھے بغیر اپنا آلہ استعمال کر سکیں۔ بریل تاثرات منسلک آلہ کے ساتھ دستیاب ہے۔ ChromeVox کو آن اور آف کرنے کے لیے Ctrl + Alt + Z استعمال کریں۔ نیویگیٹ کرنے کے لیے Search + بائیں تیر کے نشان یا دائیں تیر کے نشان کا استعمال کریں۔ منتخب کرنے کے لیے Search + Space استعمال کریں (فعال کریں)۔</translation>
 <translation id="9195969368671142407">‏جب آپ کی تنظیم آپ کے Google اکاؤنٹ میں محفوظ کرنے کے عمل کو محدود کرتی ہے تو آپ ٹیب گروپس کا اشتراک نہیں کر سکتے یا اس میں شامل نہیں ہو سکتے</translation>
 <translation id="919686179725692564">اپنی ایپس کا بیک اپ لینے کے بارے میں مزید جانیں</translation>
@@ -12189,7 +12192,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{1 سائٹ کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{{NUM_SITES} سائٹس کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="966588271015727539">بلوٹوتھ بریل ڈسپلے منتخب کریں</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{اس پروفائل کو بند کریں}other{اس پروفائل کو بند کریں (# ونڈوز)}}</translation>
-<translation id="967398046773905967">‏کسی بھی سائٹ کو HID آلات تک رسائی کی اجازت نہ دیں</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> کے لیے مزید کارروائیاں</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 <translation id="96774243435178359">نظم کردہ پرنٹز</translation>

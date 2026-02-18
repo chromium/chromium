@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chromium-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> аль хэдийн нэвтэрсэн байна.  Хөтчийн үзэлтээ тусдаа байлгахын тулд Chromium-д <ph name="USER_EMAIL_ADDRESS" />-р өөрийн профайлаар нэвтэрнэ үү.</translation>
 <translation id="3561853857681580870">Дэлгэцээ хуваалцахын тулд Системийн тохиргоонд Chromium-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү.</translation>
+<translation id="3588112919289558122">Сайжруулсан хамгаалалт нь Chromium-н танихгүй сайтуудын JavaScript-н оновчлолыг унтраадаг</translation>
 <translation id="3597003331831379823">Нэмэлт эрхтэйгээр тохируулгыг ажиллуулж чадсангүй. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium-д нэвтрэх</translation>
 <translation id="3639635944603682591">Энэ хэрэглэгчийн хөтчийн өгөгдлийг энэ төхөөрөмжөөс устгана. Өгөгдлийг сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>

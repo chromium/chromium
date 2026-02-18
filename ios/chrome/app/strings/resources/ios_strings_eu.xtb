@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Ezkutuko moduko fitxak blokeatzeko, konfiguratu Touch ID, Face ID edo pasakode bat.</translation>
 <translation id="750886945254958667">Mantendu talde hau geroago fitxak gehitzeko. Aurrerantzean hura atzitu nahi ez baduzu, irten bertatik.</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Gehitu fitxa bateraino}other{Gehitu {COUNT} fitxaraino}}</translation>
 <translation id="7512909159512473473">Idatzi pasaesaldia…</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7514530647142300459">Jarraitu Google-ko <ph name="EMAIL" /> kontuko pasahitzak erabiltzen</translation>

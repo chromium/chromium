@@ -101,6 +101,7 @@
 <translation id="2099452623287920103">Os teus contrasinais e outros datos de Chromium que gardases na túa Conta de Google quitaranse deste dispositivo. Para usalos de novo en Chromium, volve iniciar sesión.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
 <translation id="2126108037660393668">Produciuse un erro ao verificar o ficheiro descargado.</translation>
+<translation id="2135919691573380097">Informar deste sitio</translation>
 <translation id="2137162749895930932">Pechar a pantalla de tradución</translation>
 <translation id="215352261310130060">Chromium bloqueou esta descarga porque a conexión que usa o sitio non é segura, polo que é posible que o ficheiro se manipulase</translation>
 <translation id="2170098639895543546">Selecciona calquera cousa da páxina</translation>
@@ -313,6 +314,7 @@
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4334241893986177674">Buscar esta captura de pantalla</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
+<translation id="4384331407722351213">Abrir Chromium cando se inicie Windows</translation>
 <translation id="4384993550046411228">Define Chromium como navegador predeterminado para acceder con facilidade ás funcións que xa coñeces, que tanto che gustan e nas que confías. Chromium fixarase na barra de tarefas para que poidas acceder a el ben axiña.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Chromium OS.</translation>
 <translation id="4407044323746248786">Queres saír de Chromium de todas formas?</translation>
@@ -333,6 +335,7 @@
 <translation id="4531137820806573936">Chromium necesita permiso para analizar o que te rodea e facer un seguimento das mans</translation>
 <translation id="4536805923587466102">Xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil de Chromium</translation>
 <translation id="4548534452171747496">Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido. <ph name="BEGIN_LINK" />Máis información sobre como precargar páxinas<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Informa dos sitios que consideres daniños para mellorar a seguranza en liña para todo o mundo.</translation>
 <translation id="4570813286784708942">Chromium bloqueou esta descarga porque, como desactivaches Navegación segura, non se puido verificar o ficheiro</translation>
 <translation id="4583692638088316420">Proba Google Lens con Chromium no teléfono</translation>
 <translation id="4594305310729380060">No xestor de contrasinais neste dispositivo</translation>
@@ -507,6 +510,7 @@
 <translation id="6598877126913850652">Ir á configuración de notificacións de Chromium</translation>
 <translation id="6600016381025017075">Busca calquera cousa nesta páxina</translation>
 <translation id="6613594504749178791">Os cambios aplicaranse a próxima vez que reinicies Chromium.</translation>
+<translation id="6637908313088374648">Agora Chromium ábrese ao iniciar Windows de modo que poidas comezar a navegar ao instante. Podes desactivar esta función en Configuración.</translation>
 <translation id="6648212540664651655">Retoma a actividade onde a deixaches: Chromium restaurou as pestanas da última sesión. Podes desactivar esta opción en</translation>
 <translation id="665732753414869868">Chromium necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6669284030132180248">Se tamén gardas os marcadores na túa Conta de Google, poderás facer un seguimento dos prezos dos produtos en Chromium e recibir notificacións cando baixen</translation>
@@ -565,6 +569,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="7213407614656404070">Usa Chromium cada vez que fagas clic nas ligazóns de mensaxes, documentos e outras aplicacións</translation>
 <translation id="7223968959479464213">Xestor de tarefas: Chromium</translation>
 <translation id="7246575524853130370">Os teus intereses estimados por Chromium</translation>
+<translation id="7252276985725323153">Comeza a navegar ao instante: Chromium xa pode abrirse cando se inicie Windows.</translation>
 <translation id="7274695763216404502">Fixouse o elemento! Usa a busca de imaxes de novo desde a barra de ferramentas</translation>
 <translation id="7288567540154601580">Pestanas e extensións</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recomenda que a quites}other{Chromium recomenda que as quites}}</translation>
@@ -594,6 +599,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="751935028865900641">É probable que os sitios funcionen segundo o previsto. Pecharase a túa sesión na maioría dos sitios cando peches todas as ventás de Chromium, excepto a túa Conta de Google se tes a sesión iniciada en Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium reiniciarase en 1 minuto}other{Chromium reiniciarase en # minutos}}</translation>
 <translation id="7565444033145385702">Para protexer os teus datos, Chromium quita permisos dos sitios que leves tempo sen visitar.</translation>
+<translation id="7583104404158659071">Abre Chromium de maneira automática para comezar a navegar ao instante.</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium está utilizando a túa cámara e micrófono.</translation>
 <translation id="7617377681829253106">Chromium introduciu melloras</translation>

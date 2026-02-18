@@ -1786,6 +1786,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Če želite zakleniti anonimne zavihke, nastavite funkcijo Touch ID ali Face ID oziroma geslo.</translation>
 <translation id="750886945254958667">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo zapustite, če ne želite več dostopati do nje</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Dodajte največ 1 zavihek}one{Dodajte do {COUNT} zavihek}two{Dodajte do {COUNT} zavihka}few{Dodajte do {COUNT} zavihke}other{Dodajte do {COUNT} zavihkov}}</translation>
 <translation id="7512909159512473473">Vnesite geslo …</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7514530647142300459">Še naprej uporabljajte gesla v računu Google <ph name="EMAIL" /></translation>

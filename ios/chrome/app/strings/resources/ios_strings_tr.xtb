@@ -1786,6 +1786,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Gizli sekmelerinizi kilitlemek için Touch ID, Face ID veya Şife Kodu kurun.</translation>
 <translation id="750886945254958667">Daha sonra sekme eklemek için bu grubu tutun veya artık erişmek istemiyorsanız gruptan ayrılın</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{En fazla 1 sekme ekleyin}other{En fazla {COUNT} sekme ekleyin}}</translation>
 <translation id="7512909159512473473">Parolayı girin…</translation>
 <translation id="7514365320538308">İndir</translation>
 <translation id="7514530647142300459">Google Hesabınızdaki (<ph name="EMAIL" />) şifreleri kullanmaya devam edin</translation>

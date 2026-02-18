@@ -1786,6 +1786,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Stel Raak-ID, Gesig-ID of 'n wagkode op om jou Incognito-oortjies te sluit.</translation>
 <translation id="750886945254958667">Hou hierdie groep om later oortjies by te voeg, of verlaat dit as jy nie meer toegang daartoe wil hê nie</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Voeg tot 1 oortjie by}other{Voeg tot {COUNT} oortjies by}}</translation>
 <translation id="7512909159512473473">Voer wagfrase in …</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7514530647142300459">Hou aan om die wagwoorde in jou Google-rekening <ph name="EMAIL" /> te gebruik</translation>

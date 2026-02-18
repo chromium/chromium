@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">சரிபார்ப்பு முடிந்தது!</translation>
 <translation id="1094555143448724771">பிற சாதனங்களில் உள்ள உலாவிப் பக்கங்களைப் பார்க்க, உலாவிப் பக்கங்களையும் பதிவையும் ஒத்திசையுங்கள்</translation>
 <translation id="1095761715416917775">உங்கள் ஒத்திசைவுத் தரவை எப்போதும் அணுகக்கூடியதாக அமைத்துக் கொள்ளுங்கள்</translation>
+<translation id="1096091316906284742">Chrome Finds ஒப்புதலுக்கான கீழ்ப்புறச் சீட்டு</translation>
 <translation id="1100066534610197918">குழுவில் புதிய தாவலில் திற</translation>
 <translation id="1103142993930332957">Chromeமை மேம்படுத்த உதவ வேண்டுமா?</translation>
 <translation id="1105960400813249514">திரைப் படப்பிடிப்பு</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">புதிது: இந்த உரைக்குச் செல்லும் இணைப்பைப் பகிரலாம்</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> உலாவியில் திற</translation>
 <translation id="271033894570825754">புதிய தொகுப்பு</translation>
+<translation id="2710883118091822664">எல்லாச் சாதனங்களிலும் எளிதாகத் தொடர உள்நுழையலாம்</translation>
 <translation id="2718352093833049315">வைஃபையில் மட்டும்</translation>
 <translation id="2718846868787000099">உங்களுக்கு விருப்பமான மொழியில் உள்ளடக்கத்தைக் காட்டுவதற்காக நீங்கள் பார்க்கும் தளங்கள் உங்கள் விருப்பத்தேர்வுகளை அணுகலாம்</translation>
 <translation id="2723001399770238859">ஆடியோ</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">தேடல் முடிவுகளைப் பார்க்க மேலே இழுக்கவும்</translation>
 <translation id="3269093882174072735">படத்தை ஏற்று</translation>
 <translation id="3280562213547448728">குரல் தேடல்</translation>
+<translation id="3282568296779691940">Chrome இல் உள்நுழைக</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> பக்கம்}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> பக்கங்கள்}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 கடவுச்சொல் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. உங்களின் பிற சாதனங்களில் அதைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}other{# கடவுச்சொற்கள் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன. உங்களின் பிற சாதனங்களில் அவற்றைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}}</translation>
 <translation id="3293181007446299124">'இதுவரை இணையத்தில் பார்த்தவை' உங்கள் சாதனத்தில் தனிப்பட்ட முறையில் சேமிக்கப்படும். மேலும் உங்கள் அடையாளத்தைப் பாதுகாக்கும் வகையில் அறிக்கைகள் சிறிது தாமதத்திற்குப் பிறகு அனுப்பப்படும்</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">உங்கள் கடவுச்சொற்களை நீங்கள் சேமிக்கும்போது Chrome உலாவியால் அவற்றைச் சரிபார்க்க முடியும்</translation>
 <translation id="3636940436873918441">விருப்பமான மொழிகள்</translation>
 <translation id="3637744895182738742">கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ, <ph name="BEGIN_LINK" />உங்கள் கணக்கில் உள்ள Chrome தரவை நீக்கவும்<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Chrome Finds ஒப்புதல் அளித்தல் மூடப்பட்டது</translation>
 <translation id="3647019414263135904">சூழல் பாப்-அப்பைத் திறக்கும் அல்லது மூடும்</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ஆப்ஸின் முகப்புப் பக்கத்திற்குச் செல்லும்</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">தேடலுக்கு Sogouஐப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="4387647248986092471">கார் சுயவிவரப் பூட்டை உருவாக்கு</translation>
 <translation id="4387817230000841154">பதிவிறக்கங்களைத் திற</translation>
+<translation id="4395046795145457714">Chrome Findsஸுக்கான ஒப்புதல் திரை முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட பின் செய்யப்பட்ட ரெக்கார்டு செய்யப்படுகின்ற மறைநிலைப் பக்கம்</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - மொழியைப் பதிவிறக்குகிறது…</translation>
 <translation id="4404568932422911380">புக்மார்க்குகள் இல்லை</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">உரை-கர்சரைப் பயன்படுத்திப் பக்கங்களுக்குச் செல்லலாம். இதை முடக்க ‘F7’ விசையை அழுத்தவும்.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> பக்கத்தை நகர்த்த முடியாது</translation>
 <translation id="548278423535722844">வரைபடப் பயன்பாட்டில் திற</translation>
+<translation id="5489222148748465285">Chrome தொடர்ந்து பார்க்கட்டுமா?</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> என்ற பெயரில் சேர்கிறீர்கள்</translation>
 <translation id="5517326820028369152">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">நீங்கள் அடுத்து பார்வையிடக்கூடிய தளங்களைக் கணிப்பதற்காக, நீங்கள் பார்வையிடும் URLகள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்பு}other{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்புகள்}}</translation>
 <translation id="6649642165559792194">மாதிரிக்காட்சி <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Chrome Findsஸிற்கு ஒப்புதல் அளிப்பதற்கான திரை பாதி உயரத்திற்குத் திறக்கப்பட்டுள்ளது</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="6669390930482049506">எனக்குத் தெரிவி</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="6830728435402077660">பாதுகாப்பற்றது</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6835182496791325827">நீங்கள் இல்லாதபோது உங்கள் தேடல்களுக்கான சிறந்த முடிவுகளை Chrome கண்டறிந்தால் அதுகுறித்து அறிவிப்பைப் பெறுங்கள்.</translation>
 <translation id="6846298663435243399">ஏற்றுகிறது...</translation>
 <translation id="6850409657436465440">பதிவிறக்கம் செயலில் உள்ளது</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> தாவல்கள் மூடப்பட்டன</translation>

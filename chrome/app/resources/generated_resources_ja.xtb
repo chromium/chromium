@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">機械的な問題が発生しました。プリンタを確認してください</translation>
 <translation id="1363585519747660921">USB プリンタの設定が必要です</translation>
 <translation id="136378536198524553">省エネモードはオンです</translation>
-<translation id="136522805455656552">デバイスを安全に保つには、信頼できる提供元とデベロッパーのソフトウェアのみを実行し、インストールするようにしてください。<ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">両眉を上げる</translation>
 <translation id="1367817137674340530">画像を <ph name="COUNT" /> 枚生成しました</translation>
 <translation id="1368603372088757436">Linux はお使いの <ph name="DEVICE_TYPE" /> ではサポートされていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -1221,7 +1220,6 @@
 <translation id="18139523105317219">EDI パーティ名</translation>
 <translation id="1815083418640426271">プレーン テキストとして貼り付ける</translation>
 <translation id="1815097521077272760">このゲームのキーボード コントロールをお試しください。</translation>
-<translation id="1815181278146012280">サイトから HID デバイスへのアクセス許可を求められたときに確認する</translation>
 <translation id="181577467034453336">他 <ph name="NUMBER_OF_VIEWS" /> 件...</translation>
 <translation id="1816036116994822943">キーボードのスキャン速度</translation>
 <translation id="1817871734039893258">Microsoft ファイル回復</translation>
@@ -2552,6 +2550,7 @@
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> のロックが解除されました</translation>
 <translation id="2710676967944965821">スマートカード リーダーの権限をすべてリセットしますか？</translation>
+<translation id="2710883118091822664">ログインすると、すべてのデバイスで使用環境を簡単に同期できます</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2714180132046334502">暗い背景</translation>
@@ -7388,6 +7387,7 @@
 <translation id="6021293122504240352"><ph name="APPS" /> 件のアプリが現在サポートされていません</translation>
 <translation id="6021969570711251331">インターリーブ</translation>
 <translation id="6022526133015258832">全画面表示</translation>
+<translation id="6022659036123304283">Chrome を自分用にカスタマイズ</translation>
 <translation id="6023643151125006053">このデバイス（SN: <ph name="SERIAL_NUMBER" />）は <ph name="SAML_DOMAIN" /> の管理者によってロックされています。</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> で動画フレームを検索(&amp;S)</translation>
 <translation id="6025215716629925253">スタック トレース</translation>
@@ -12178,7 +12178,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{最近、通知を多数受け取った 1 件のサイトを確認する}other{最近、通知を多数受け取った {NUM_SITES} 件のサイトを確認する}}</translation>
 <translation id="966588271015727539">Bluetooth 点字ディスプレイを選択してください</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{このプロファイルを閉じる(&amp;C)}other{このプロファイルを閉じる（# 個のウィンドウ）(&amp;C)}}</translation>
-<translation id="967398046773905967">HID デバイスへのアクセスをどのサイトにも許可しない</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> に対するその他の操作</translation>
 <translation id="967624055006145463">保存データ</translation>
 <translation id="96774243435178359">管理対象プリンタ</translation>

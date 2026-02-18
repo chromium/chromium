@@ -242,6 +242,7 @@
 <translation id="3522404737534491619">Да бисте делили прозор, дозволите снимање екрана за Chromium у подешавањима система</translation>
 <translation id="3530103706039034513">Корисник <ph name="EXISTING_USER" /> је већ пријављен.  Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Да бисте делили екран, дозволите снимање екрана за Chromium у подешавањима система.</translation>
+<translation id="3588112919289558122">Побољшана заштита искључује оптимизацију JavaScript-а за сајтове које Chromium не препознаје</translation>
 <translation id="3597003331831379823">Покретање подешавања са пуним привилегијама није успело. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Пријавите се у Chromium</translation>
 <translation id="3639635944603682591">Подаци прегледања ове особе ће бити избрисани са овог уређаја. Да бисте вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>

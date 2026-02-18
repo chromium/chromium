@@ -396,6 +396,7 @@
 <translation id="2702516483241149200">Ново: Делите линк који скролује до овог текста</translation>
 <translation id="2708226184420201102">Отвори у прегледачу <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Нова колекција</translation>
+<translation id="2710883118091822664">Пријавите се да бисте лако наставили на свим уређајима</translation>
 <translation id="2718352093833049315">Само на WiFi-ју</translation>
 <translation id="2718846868787000099">Да би вам приказивали садржај на жељеним језицима, сајтови које посећујете могу да виде подешавања</translation>
 <translation id="2723001399770238859">аудио</translation>
@@ -531,6 +532,7 @@
 <translation id="3268048651973962414">Превуците нагоре да бисте видели резултате претраге</translation>
 <translation id="3269093882174072735">Учитај слику</translation>
 <translation id="3280562213547448728">Гласовна претрага</translation>
+<translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> картица}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> картица}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> картице}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> картица}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу.}one{# лозинка је сачувана само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу.}few{# лозинке су сачуване само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу.}other{# лозинки је сачувано само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу.}}</translation>
 <translation id="3293181007446299124">Историја прегледања остаје приватна на уређају, а извештаји се шаљу са кашњењем ради заштите идентитета</translation>

@@ -1786,6 +1786,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Konfigurera Touch ID, Face ID eller ett lösenord om du vill låsa flikar i inkognitoläget.</translation>
 <translation id="750886945254958667">Behåll gruppen om du vill lägga till flikar senare eller lämna den om du inte längre vill ha åtkomst till den</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Lägg till upp till en flik}other{Lägg till upp till {COUNT} flikar}}</translation>
 <translation id="7512909159512473473">Ange lösenfras …</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7514530647142300459">Fortsätt använda lösenorden i Google-kontot <ph name="EMAIL" /></translation>

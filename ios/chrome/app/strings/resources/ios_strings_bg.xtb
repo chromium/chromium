@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">За да заключите разделите си в режим „инкогнито“, настройте Touch ID, Face ID или код за достъп.</translation>
 <translation id="750886945254958667">Запазете тази група, за да добавяте раздели по-късно, или я напуснете, ако вече не искате достъп до нея</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Добавете до 1 раздел}other{Добавете до {COUNT} раздела}}</translation>
 <translation id="7512909159512473473">Въвеждане на пропуск…</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7514530647142300459">Продължете да използвате паролите в профила си в Google <ph name="EMAIL" /></translation>
@@ -2059,6 +2060,7 @@
 <translation id="8439758443371991593">Скриване на „Добавяне към списъка за четене“</translation>
 <translation id="8443986842926457191">URL адресът е повече от 2048 знака</translation>
 <translation id="8449869326050867919">Паролата е споделена</translation>
+<translation id="8473815223723723001">Редактиране на изображението с Gemini</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
 <translation id="8474378002946546633">Разрешаване на известията</translation>
 <translation id="8477178913400731244">Изтриване на данните</translation>

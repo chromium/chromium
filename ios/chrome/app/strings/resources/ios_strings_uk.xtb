@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
 <translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Можна додати щонайбільше 1 вкладку}one{Можна додати щонайбільше {COUNT} вкладку}few{Можна додати щонайбільше {COUNT} вкладки}many{Можна додати щонайбільше {COUNT} вкладок}other{Можна додати щонайбільше {COUNT} вкладки}}</translation>
 <translation id="7512909159512473473">Ввести парольну фразу…</translation>
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7514530647142300459">Продовжуйте використовувати паролі в обліковому записі Google <ph name="EMAIL" /></translation>
@@ -2059,6 +2060,7 @@
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>
 <translation id="8443986842926457191">URL-адреса містить більше ніж 2048 символів</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
+<translation id="8473815223723723001">Редагувати зображення за допомогою Gemini</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8474378002946546633">Дозволити сповіщення</translation>
 <translation id="8477178913400731244">Видалити дані</translation>

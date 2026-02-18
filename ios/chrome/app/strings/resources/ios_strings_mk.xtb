@@ -1786,6 +1786,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">За да ги заклучите картичките „Инкогнито“, поставете „ID на допир“, „ID на лик“ или лозинка.</translation>
 <translation id="750886945254958667">Задржете ја групава за да додавате картички подоцна или напуштете ја ако веќе не сакате да пристапувате до неа</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Додајте најмногу 1 картичка}one{Додајте најмногу {COUNT} картичка}other{Додајте најмногу {COUNT} картички}}</translation>
 <translation id="7512909159512473473">Внесете лозинка…</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7514530647142300459">Продолжете да ги користите лозинките во вашата сметка на Google <ph name="EMAIL" /></translation>

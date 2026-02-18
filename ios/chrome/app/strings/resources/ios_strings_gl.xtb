@@ -1786,6 +1786,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear as pestanas do modo de incógnito, configura Touch ID, Face ID ou un código de desbloqueo.</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Engade 1 pestana como máximo}other{Engade ata {COUNT} pestanas}}</translation>
 <translation id="7512909159512473473">Poñer frase de acceso…</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514530647142300459">Sigue usando os contrasinais na túa Conta de Google <ph name="EMAIL" /></translation>
@@ -2236,6 +2237,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="9055291197094969722">Crea grupos de pestanas para organizar as que estean abertas e seguir mantendo a produtividade</translation>
 <translation id="9055580485132823283">Vas eliminar {password_count} contrasinais, {passkey_count} claves de acceso e a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="9057030985451135243">Máis información acerca dos grupos de pestanas compartidos</translation>
+<translation id="9064106978262828592">Produciuse un problema ao exportar os teus datos</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9066097352053395362">Ocultar Editar marcador</translation>
 <translation id="9070824521421603770">Pecharanse a túa sesión e as pestanas</translation>

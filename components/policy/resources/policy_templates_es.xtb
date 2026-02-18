@@ -4559,6 +4559,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4154221011709068799">No permitir dispositivos de almacenamiento externo</translation>
 <translation id="415445772247959702">Web Store (compatible a partir de la versión 89)</translation>
+<translation id="415631927748520887">Si se le asigna el valor True a esta política, las aplicaciones de Chrome podrán seguir ejecutándose en una sesión de kiosco, independientemente de la habilitación predeterminada de las aplicaciones de Chrome.
+
+Si no se establece esta política o se le asigna el valor False, se usará el comportamiento predeterminado definido en el dispositivo.
+
+Si el usuario intenta iniciar una aplicación de Chrome inhabilitada, se le mostrará un mensaje en el que se explica por qué no se ha iniciado la aplicación y se le sugiere que se ponga en contacto con su departamento de TI.
+
+El valor de esta política se respetará hasta la discontinuación de las aplicaciones de Chrome en las sesiones de kiosco, lo que se espera que ocurra en la versión M151.</translation>
 <translation id="4157003184375321727">Informar de la versión del firmware y del sistema operativo</translation>
 <translation id="4157594634940419685">Permitir el acceso a impresoras CUPS nativas</translation>
 <translation id="4158531549614162499">Habilitar la sincronización de Google Drive mediante conexiones de datos móviles</translation>

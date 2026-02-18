@@ -557,7 +557,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1362865166188278099">Meganiese kwessie. Gaan drukker na</translation>
 <translation id="1363585519747660921">USB-drukker moet opgestel word</translation>
 <translation id="136378536198524553">Energiebespaarder is aan</translation>
-<translation id="136522805455656552">Jy moet net sagteware van betroubare bronne en ontwikkelaars laat loop en installeer om jou toestel veilig te hou. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Lig wenkbroue</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> prente genereer</translation>
 <translation id="1368603372088757436">Linux word nie op jou <ph name="DEVICE_TYPE" /> gesteun nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -1231,7 +1230,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="18139523105317219">EDI-partynaam</translation>
 <translation id="1815083418640426271">Plak as gewone teks</translation>
 <translation id="1815097521077272760">Jy is genooi om sleutelbordkontrole vir hierdie speletjie te toets.</translation>
-<translation id="1815181278146012280">Vra wanneer 'n werf toegang tot HID-toestelle wil kry</translation>
 <translation id="181577467034453336">Nog <ph name="NUMBER_OF_VIEWS" /> …</translation>
 <translation id="1816036116994822943">Sleutelbordskandeerspoed</translation>
 <translation id="1817871734039893258">Microsoft-lêerherwinning</translation>
@@ -2571,6 +2569,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2710507903599773521">Jou <ph name="DEVICE_TYPE" /> is nou ontsluit</translation>
 <translation id="2710676967944965821">Stel alle slimkaartlesertoestemmings terug?</translation>
+<translation id="2710883118091822664">Meld aan om maklik op al jou toestelle voort te gaan</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donker agtergrond</translation>
@@ -6869,6 +6868,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5636996382092289526">Om <ph name="NETWORK_ID" /> te gebruik, moet jy dalk eers <ph name="LINK_START" />die netwerk se aanmeldbladsy besoek <ph name="LINK_END" />, wat binne 'n paar sekondes outomaties sal oopmaak. As dit nie gebeur nie, kan die netwerk nie gebruik word nie.</translation>
 <translation id="5637476008227280525">Aktiveer mobiele data</translation>
 <translation id="5638170200695981015">Kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeeropsies te gebruik.</translation>
+<translation id="5638202526629811571">Wys hierdie skerm vir jou ouer of voog sodat hulle kan sê of dit aanvaarbaar is vir jou om hierdie uitbreiding by te voeg</translation>
 <translation id="563821631542362636">Laat werf toe om data te stoor</translation>
 <translation id="5638309510554459422">Kry uitbreidings en temas in die <ph name="BEGIN_LINK" />Chrome Webwinkel<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Herlaai hierdie bladsy, hou om meer opsies te sien</translation>
@@ -7417,6 +7417,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6021293122504240352"><ph name="APPS" />-programme word nie meer gesteun nie</translation>
 <translation id="6021969570711251331">Tussenlaag</translation>
 <translation id="6022526133015258832">Maak volskerm oop</translation>
+<translation id="6022659036123304283">Maak Chrome jou eie</translation>
 <translation id="6023643151125006053">Hierdie toestel (SN: <ph name="SERIAL_NUMBER" />) is deur die <ph name="SAML_DOMAIN" />-administrateur gesluit.</translation>
 <translation id="6024317249717725918">Deursoek videoraam met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stapelnasporing</translation>
@@ -10474,6 +10475,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8110393529211831722">Intekening is net op hierdie toestel geïnstalleer en is nie met ander toestelle in jou rekening gesinkroniseer nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Laai tans kontaklys af …</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" />-mikrofoontoestemming</translation>
+<translation id="8116497846156149">Vra ouer vir goedkeuring</translation>
 <translation id="8116972784401310538">Boekmerkbestuurder</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthou hoe jy aangemeld het en meld jou outomaties aan indien dit moontlik is. Indien dit afgeskakel is, sal jy elke keer vir bevestiging gevra word.</translation>
 <translation id="8118362518458010043">Deur Chrome gedeaktiveer. Hierdie uitbreiding kan onveilig wees.</translation>
@@ -12102,6 +12104,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=2{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=3{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en 1 ander app opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}other{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # ander apps opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}}</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Hierdie app is geblokkeer. Kontak die ontwikkelaar</translation>
 <translation id="9192019773545828776">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel. Gebruik Ctrl + Alt + Z om ChromeVox aan en af te skakel. Gebruik Soek + linkspyl of regspyl om te navigeer. Gebruik Soek + spasiebalk om te kies (aktiveer).</translation>
 <translation id="9195969368671142407">As jou organisasie jou Google-rekening se storing beperk, kan jy nie oortjiegroepe deel of by hulle aansluit nie</translation>
 <translation id="919686179725692564">Kom meer te wete oor die rugsteun van jou programme</translation>
@@ -12206,7 +12209,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Gaan 1 werf na wat onlangs baie kennisgewings gestuur het}other{Gaan {NUM_SITES} werwe na wat onlangs baie kennisgewings gestuur het}}</translation>
 <translation id="966588271015727539">Kies 'n Bluetooth Braille-skerm</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Maak hierdie profiel toe}other{&amp;Maak hierdie profiel (# vensters) toe}}</translation>
-<translation id="967398046773905967">Moenie enige werwe toegang tot HID-toestelle gee nie</translation>
 <translation id="96756691973639907">Meer handelinge vir <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data geberg</translation>
 <translation id="96774243435178359">Bestuurde drukkers</translation>

@@ -557,7 +557,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1362865166188278099">Vấn đề về máy móc. Hãy kiểm tra máy in</translation>
 <translation id="1363585519747660921">Máy in USB cần định cấu hình</translation>
 <translation id="136378536198524553">Trình tiết kiệm pin đã bật</translation>
-<translation id="136522805455656552">Để đảm bảo an toàn cho thiết bị, bạn chỉ nên chạy và cài đặt phần mềm từ những nguồn và nhà phát triển đáng tin cậy. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Nhướn lông mày</translation>
 <translation id="1367817137674340530">Đã tạo <ph name="COUNT" /> hình ảnh</translation>
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> của bạn không hỗ trợ Linux. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -1231,7 +1230,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="18139523105317219">Tên của Bên EDI</translation>
 <translation id="1815083418640426271">Dán dưới dạng văn bản thuần túy</translation>
 <translation id="1815097521077272760">Bạn được mời dùng thử tính năng kiểm soát bàn phím cho trò chơi này.</translation>
-<translation id="1815181278146012280">Hỏi khi một trang web muốn truy cập vào các thiết bị HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> lượt xem khác...</translation>
 <translation id="1816036116994822943">Tốc độ quét khi dùng bàn phím</translation>
 <translation id="1817871734039893258">Khôi phục Tệp của Microsoft</translation>
@@ -2571,6 +2569,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="271033894570825754">Bộ sưu tập mới</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> của bạn hiện đã được mở khoá</translation>
 <translation id="2710676967944965821">Đặt lại tất cả các quyền của máy đọc thẻ thông minh?</translation>
+<translation id="2710883118091822664">Đăng nhập để dễ dàng tiếp tục trên tất cả thiết bị của bạn</translation>
 <translation id="2713106313042589954">Tắt máy ảnh</translation>
 <translation id="2713444072780614174">Trắng</translation>
 <translation id="2714180132046334502">Nền tối</translation>
@@ -7417,6 +7416,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> ứng dụng không còn được hỗ trợ nữa</translation>
 <translation id="6021969570711251331">Đan xen</translation>
 <translation id="6022526133015258832">Mở chế độ toàn màn hình</translation>
+<translation id="6022659036123304283">Tuỳ chỉnh Chrome theo cách của bạn</translation>
 <translation id="6023643151125006053">Thiết bị này (Số sê-ri: <ph name="SERIAL_NUMBER" />) đã bị quản trị viên <ph name="SAML_DOMAIN" /> khóa.</translation>
 <translation id="6024317249717725918">&amp;Tìm kiếm khung video bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Dấu vết ngăn xếp</translation>
@@ -12212,7 +12212,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Xem lại 1 trang web đã gửi nhiều thông báo gần đây}other{Xem lại {NUM_SITES} trang web đã gửi nhiều thông báo gần đây}}</translation>
 <translation id="966588271015727539">Chọn màn hình chữ nổi Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Đóng hồ sơ này}other{&amp;Đóng hồ sơ này (# cửa sổ)}}</translation>
-<translation id="967398046773905967">Không cho phép bất kỳ trang web nào truy cập vào thiết bị HID</translation>
 <translation id="96756691973639907">Thao tác khác cho <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Dữ liệu đã lưu trữ</translation>
 <translation id="96774243435178359">Máy in được quản lý</translation>

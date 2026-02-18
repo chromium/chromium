@@ -1786,6 +1786,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un mot de passe.</translation>
 <translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Ajoutez jusqu'à 1 onglet}one{Ajoutez jusqu'à {COUNT} onglet}other{Ajoutez jusqu'à {COUNT} onglets}}</translation>
 <translation id="7512909159512473473">Entrer la phrase de passe…</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514530647142300459">Continuez à utiliser les mots de passe de votre compte Google <ph name="EMAIL" /></translation>
@@ -2059,6 +2060,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8439758443371991593">Masquer Ajouter à la Liste de lecture</translation>
 <translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
+<translation id="8473815223723723001">Modifiez l'image avec Gemini</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

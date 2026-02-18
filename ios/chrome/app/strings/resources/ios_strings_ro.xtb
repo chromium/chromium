@@ -1786,6 +1786,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pentru a bloca filele incognito, configurează Touch ID, Face ID sau un cod de acces.</translation>
 <translation id="750886945254958667">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Adaugă până la o filă}few{Adaugă până la {COUNT} file}other{Adaugă până la {COUNT} de file}}</translation>
 <translation id="7512909159512473473">Introdu expresia de acces…</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7514530647142300459">Folosește în continuare parolele din Contul Google <ph name="EMAIL" /></translation>

@@ -560,7 +560,6 @@
 <translation id="1362865166188278099">Техническая проблема. Проверьте принтер.</translation>
 <translation id="1363585519747660921">Необходимо настроить USB-принтер</translation>
 <translation id="136378536198524553">Режим энергосбережения включен</translation>
-<translation id="136522805455656552">Чтобы устройство оставалось защищенным, устанавливайте и запускайте только программное обеспечение, предоставленное надежными разработчиками и источниками. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Поднять брови</translation>
 <translation id="1367817137674340530">Сгенерировано изображений: <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Linux не поддерживается на вашем устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -1224,7 +1223,6 @@
 <translation id="18139523105317219">Имя стороны EDI</translation>
 <translation id="1815083418640426271">Вставить как обычный текст</translation>
 <translation id="1815097521077272760">Позволяет управлять действиями в этой игре с помощью клавиатуры.</translation>
-<translation id="1815181278146012280">Запрашивать разрешение на доступ сайтов к HID-устройствам</translation>
 <translation id="181577467034453336">Ещё <ph name="NUMBER_OF_VIEWS" /></translation>
 <translation id="1816036116994822943">Скорость сканирования клавиатуры</translation>
 <translation id="1817871734039893258">Восстановление файлов Microsoft</translation>
@@ -2010,6 +2008,7 @@
 <translation id="2332742915001411729">Сбросить</translation>
 <translation id="2333166365943957309">Иерархия интерфейса</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
+<translation id="2334384018887664164">В настройках контента можно добавить сайты, которым вы доверяете, в белый список.</translation>
 <translation id="233471714539944337">Конфиденциальные данные</translation>
 <translation id="2335758110242123814">Открыть группу</translation>
 <translation id="2336228925368920074">Добавить все вкладки в закладки…</translation>
@@ -2105,6 +2104,7 @@
 <translation id="240789602312469910">Передача данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Мы не будем пытаться установить личность вашего ребенка на основе этих данных. Они позволят повысить стабильность приложений и системы, а также внедрить другие улучшения. Некоторые агрегированные данные используются для улучшения приложений Google или передаются нашим партнерам, например разработчикам Android. Этот <ph name="BEGIN_LINK1" />параметр<ph name="END_LINK1" /> принудительно применяется владельцем. Он вправе разрешить автоматически отправлять в Google данные об использовании и диагностике устройства. Если у ребенка включена дополнительная история приложений и веб-поиска, эта информация может сохраняться в аккаунте Google ребенка. <ph name="BEGIN_LINK2" />Узнать больше о сборе данных<ph name="BEGIN_LINK2_END" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Сохранение карты</translation>
 <translation id="2408742686124047357">Закрепите Google Объектив на панели инструментов для удобства.</translation>
+<translation id="2408762424059547338">Отключение оптимизации JavaScript для улучшенной защиты от атак</translation>
 <translation id="2408955596600435184">Введите PIN-код</translation>
 <translation id="2409268599591722235">Начать</translation>
 <translation id="2409378541210421746">Изменить язык</translation>
@@ -2381,6 +2381,7 @@
 <translation id="2581992808349413349">Использовать защищенное соединение для проверки IP-адресов сайтов в DNS (системе доменных имен). Используется управляемый поставщик услуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Любое устройство чтения смарт-карт</translation>
+<translation id="2583949330716828639">Настроить исключения для сайтов</translation>
 <translation id="2584109212074498965">Не удалось загрузить билет Kerberos. Повторите попытку или обратитесь к администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2584974473573720127">Управление доступом к микрофону для сайтов в Chrome</translation>
 <translation id="2586561813241011046">Не удалось установить <ph name="APP_NAME" />. Повторите попытку или обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -2560,6 +2561,7 @@
 <translation id="271033894570825754">Новое</translation>
 <translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
 <translation id="2710676967944965821">Сбросить все разрешения для устройств чтения смарт-карт?</translation>
+<translation id="2710883118091822664">Войдите в аккаунт, чтобы продолжить с того места, где вы остановились на другом устройстве.</translation>
 <translation id="2713106313042589954">Отключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2714180132046334502">Темный фон</translation>
@@ -5757,6 +5759,7 @@
 <translation id="4871322859485617074">PIN-код содержит недопустимые символы.</translation>
 <translation id="4871370605780490696">Добавить закладку</translation>
 <translation id="4871568871368204250">Отключение синхронизации</translation>
+<translation id="4871630917300912613">Ограничения JavaScript</translation>
 <translation id="4871719318659334896">Закрыть группу</translation>
 <translation id="4872192066608821120">Чтобы импортировать пароли, выберите CSV-файл.</translation>
 <translation id="4872212987539553601">Настройка шифрования на устройстве</translation>
@@ -7130,6 +7133,7 @@
 <translation id="583673505367439042">Разрешить сайтам отправлять запрос на редактирование файлов или папок на устройстве</translation>
 <translation id="5836999627049108525">Исходный язык</translation>
 <translation id="583756221537636748">Чехол</translation>
+<translation id="5840656138956959276">Улучшенная защита: строгая</translation>
 <translation id="5840680448799937675">Всегда передавать файлы в офлайн-режиме</translation>
 <translation id="5841270259333717135">Настроить Ethernet</translation>
 <translation id="5841338463993781099">Сохранить в аккаунте?</translation>
@@ -7405,6 +7409,7 @@
 <translation id="6021293122504240352">Приложений, поддержка которых прекратилась: <ph name="APPS" /></translation>
 <translation id="6021969570711251331">Чередующийся</translation>
 <translation id="6022526133015258832">Открыть в полноэкранном режиме</translation>
+<translation id="6022659036123304283">Настройте Chrome для себя</translation>
 <translation id="6023643151125006053">Устройство (серийный номер <ph name="SERIAL_NUMBER" />) заблокировано администратором домена <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">&amp;Найти кадр видео (<ph name="VISUAL_SEARCH_PROVIDER" />)</translation>
 <translation id="6025215716629925253">Трассировка стека</translation>
@@ -7955,6 +7960,7 @@
 <translation id="6411135999030237579">Удерживание клавиши для автоматического повтора символа или действия</translation>
 <translation id="6414618057231176439">Укажите, какую версию <ph name="VM_NAME" /> вы хотите установить.</translation>
 <translation id="641469293210305670">Установка обновлений и приложений</translation>
+<translation id="6415434255504060856">Все сайты</translation>
 <translation id="6415757856498750027">Ввод "ư" с помощью "w"</translation>
 <translation id="6415816101512323589">Включить восстановление локальных данных?</translation>
 <translation id="6415900369006735853">Подключение к интернету через телефон</translation>
@@ -8356,6 +8362,7 @@
 <translation id="6686665106869989887">Вкладка перемещена вправо</translation>
 <translation id="6686676261102452995">Вы открывали сегодня</translation>
 <translation id="6686817083349815241">Сохранить пароль</translation>
+<translation id="6686878118106035853">Улучшенная защита отключает оптимизацию JavaScript для всех сайтов</translation>
 <translation id="6687008241368170505">Изменить PIN-код Google Менеджера паролей</translation>
 <translation id="6687079240787935001">Скрыть <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Клавиши управления указателем</translation>
@@ -10836,6 +10843,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> (<ph name="COUNT" />)</translation>
 <translation id="8356409598322585307">Вы уже регистрировали это устройство.</translation>
 <translation id="8357388086258943206">Ошибка при установке Linux</translation>
+<translation id="8357883857705092796">Нераспознанные сайты</translation>
 <translation id="8358685469073206162">Восстановить страницы?</translation>
 <translation id="835927394551949760">Google</translation>
 <translation id="835951711479681002">Сохранить в аккаунте Google</translation>
@@ -12206,7 +12214,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Проверьте 1 сайт, который недавно отправлял много уведомлений}one{Проверьте {NUM_SITES} сайт, который недавно отправлял много уведомлений}few{Проверьте {NUM_SITES} сайта, которые недавно отправляли много уведомлений}many{Проверьте {NUM_SITES} сайтов, которые недавно отправляли много уведомлений}other{Проверьте {NUM_SITES} сайта, которые недавно отправляли много уведомлений}}</translation>
 <translation id="966588271015727539">Выберите дисплей Брайля с технологией Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Закрыть профиль}one{&amp;Закрыть профиль (# окно)}few{&amp;Закрыть профиль (# окна)}many{&amp;Закрыть профиль (# окон)}other{&amp;Закрыть профиль (# окна)}}</translation>
-<translation id="967398046773905967">Запретить сайтам доступ к HID-устройствам</translation>
 <translation id="96756691973639907">Другие действия для модуля "<ph name="MODULE_NAME" />"</translation>
 <translation id="967624055006145463">Сохраненные данные</translation>
 <translation id="96774243435178359">Управляемые принтеры</translation>

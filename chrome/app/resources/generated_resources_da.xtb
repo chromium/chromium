@@ -558,7 +558,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1362865166188278099">Der er et teknisk problem med printeren. Tjek printeren</translation>
 <translation id="1363585519747660921">USB-printeren skal konfigureres</translation>
 <translation id="136378536198524553">Energisparefunktion er aktiveret</translation>
-<translation id="136522805455656552">For at beskytte din enhed skal du kun køre og installere software fra pålidelige kilder og udviklere. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Løft øjenbrynene</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> billeder blev genereret</translation>
 <translation id="1368603372088757436">Linux understøttes ikke på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -1232,7 +1231,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="18139523105317219">EDI-partsnavn</translation>
 <translation id="1815083418640426271">Indsæt som almindelig tekst</translation>
 <translation id="1815097521077272760">Du er blevet inviteret til at prøve tastaturstyring for dette spil.</translation>
-<translation id="1815181278146012280">Spørg, når et website vil have adgang til HID-enheder</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> mere...</translation>
 <translation id="1816036116994822943">Hastighed for tastaturscanning</translation>
 <translation id="1817871734039893258">Microsoft-filgendannelse</translation>
@@ -2573,6 +2571,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="271033894570825754">Ny samling</translation>
 <translation id="2710507903599773521">Din <ph name="DEVICE_TYPE" /> er nu låst op</translation>
 <translation id="2710676967944965821">Vil du nulstille alle tilladelser for smartkortlæsere?</translation>
+<translation id="2710883118091822664">Log ind for nemt at fortsætte på alle dine enheder</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2714180132046334502">Mørk baggrund</translation>
@@ -6870,6 +6869,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5636996382092289526">Hvis du vil bruge <ph name="NETWORK_ID" />, skal du først <ph name="LINK_START" />gå til netværkets loginside<ph name="LINK_END" />, som åbner automatisk om et par sekunder. Hvis ikke, kan netværket ikke bruges.</translation>
 <translation id="5637476008227280525">Aktivér mobildata</translation>
 <translation id="5638170200695981015">Vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering.</translation>
+<translation id="5638202526629811571">Vis denne skærm til din forælder eller værge, så vedkommende kan give dig lov til at tilføje denne udvidelse</translation>
 <translation id="563821631542362636">Tillad, at websitet gemmer data</translation>
 <translation id="5638309510554459422">Find udvidelser og temaer i <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Opdater denne side, og hold markøren for at se flere valgmuligheder</translation>
@@ -7418,6 +7418,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps understøttes ikke længere</translation>
 <translation id="6021969570711251331">Sammenflet</translation>
 <translation id="6022526133015258832">Åbn i fuld skærm</translation>
+<translation id="6022659036123304283">Gør Chrome til din egen</translation>
 <translation id="6023643151125006053">Denne enhed (serienummer: <ph name="SERIAL_NUMBER" />) blev låst af administratoren på <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">Søg i videorammen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stakspor</translation>
@@ -10479,6 +10480,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8110393529211831722">Abonnementet er kun installeret på denne enhed og synkroniseres ikke med andre enheder på din konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Downloader liste over kontakter...</translation>
 <translation id="8114925369073821854">Mikrofontilladelse for <ph name="APP_NAME" /></translation>
+<translation id="8116497846156149">Bed din forælder om godkendelse</translation>
 <translation id="8116972784401310538">&amp;Bogmærkeadministrator</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> husker, hvordan du loggede ind, og logger dig automatisk ind, når det er muligt. Når funktionen er slået fra, bliver du bedt om en bekræftelse hver gang.</translation>
 <translation id="8118362518458010043">Deaktiveret af Chrome. Denne udvidelse er muligvis ikke sikker.</translation>
@@ -12109,6 +12111,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />. Du får ikke besked, når optagelsen starter.}=2{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Du får ikke besked, når optagelsen starter.}=3{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og 1 anden app. Du får ikke besked, når optagelsen starter.}one{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # anden app. Du får ikke besked, når optagelsen starter.}other{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # andre apps. Du får ikke besked, når optagelsen starter.}}</translation>
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9187967020623675250">Tasterne stemmer ikke overens. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Denne app er blevet blokeret. Kontakt udvikleren</translation>
 <translation id="9192019773545828776">Hør talefeedback, så du kan bruge din enhed uden at kigge på skærmen. Braillefeedback er tilgængelig med en forbundet enhed. Brug Ctrl+Alt+Z til at aktivere eller deaktivere ChromeVox. Brug søgetasten+venstre- eller højrepil til at navigere. Brug søgetasten+mellemrumstasten til at vælge (aktivere).</translation>
 <translation id="9195969368671142407">Når din organisation begrænser muligheden for at gemme på din Google-konto, kan du ikke dele eller deltage i fanegrupper</translation>
 <translation id="919686179725692564">Få flere oplysninger om, hvordan du sikkerhedskopierer dine apps</translation>
@@ -12213,7 +12216,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Gennemgå 1 website, der har sendt mange notifikationer for nylig}one{Gennemgå {NUM_SITES} website, der har sendt mange notifikationer for nylig}other{Gennemgå {NUM_SITES} websites, der har sendt mange notifikationer for nylig}}</translation>
 <translation id="966588271015727539">Vælg en brailleskærm via Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Luk denne profil}one{&amp;Luk denne profil (# vindue)}other{&amp;Luk denne profil (# vinduer)}}</translation>
-<translation id="967398046773905967">Tillad ikke, at websites kan få adgang til HID-enheder</translation>
 <translation id="96756691973639907">Flere handlinger for <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Lagrede data</translation>
 <translation id="96774243435178359">Administrerede printere</translation>

@@ -4229,6 +4229,7 @@ Détails supplémentaires :
 <translation id="7714404809393719981">Photo (semi-brillant)</translation>
 <translation id="7714424966701020172">L'option Remplir le nom complet a été sélectionnée</translation>
 <translation id="7714464543167945231">Certificat</translation>
+<translation id="7714943438925794410">Le contenu de la page de paiement est partagé avec Google pour proposer ces options. Pour masquer les options de paiement différé dans le remplissage automatique, accédez aux <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Bloqué par votre administrateur</translation>
 <translation id="7716375162095500223">Pas encore téléversé, ou ignoré</translation>
 <translation id="7716424297397655342">Ce site ne peut pas être chargé à partir du cache</translation>
@@ -4311,6 +4312,7 @@ Détails supplémentaires :
 <translation id="7862306158978555061">affichez les infos sensibles</translation>
 <translation id="7865448901209910068">Meilleure vitesse</translation>
 <translation id="7865482168955081228">L'écran d'erreur Acheter maintenant, payer plus tard est fermé.</translation>
+<translation id="7870207318911766769">Le contenu de la page de paiement est partagé avec Google pour proposer ces options.</translation>
 <translation id="7870281855125116701">Rabais trouvé</translation>
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
 <translation id="787226752901403048">Connectez-vous à Chrome pour partager et rejoindre des groupes d'onglets et travailler ensemble sur des idées</translation>

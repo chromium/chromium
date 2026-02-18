@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
 <translation id="136378536198524553">節能模式已開啟</translation>
-<translation id="136522805455656552">為了維護裝置安全，建議你只執行及安裝來自可信任來源和開發人員的軟體。<ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">挑眉</translation>
 <translation id="1367817137674340530">已生成 <ph name="COUNT" /> 張圖片</translation>
 <translation id="1368603372088757436">「<ph name="DEVICE_TYPE" />」不支援 Linux。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -1222,7 +1221,6 @@
 <translation id="18139523105317219">EDI 合作對象名稱</translation>
 <translation id="1815083418640426271">以純文字貼上</translation>
 <translation id="1815097521077272760">你已受邀試用這個遊戲的鍵盤操控功能。</translation>
-<translation id="1815181278146012280">網站必須先詢問你，才能存取 HID 裝置</translation>
 <translation id="181577467034453336">還有 <ph name="NUMBER_OF_VIEWS" /> 個畫面...</translation>
 <translation id="1816036116994822943">鍵盤掃描速度</translation>
 <translation id="1817871734039893258">Microsoft 檔案復原</translation>
@@ -2558,6 +2556,7 @@
 <translation id="271033894570825754">全新</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> 目前未綁定電信業者</translation>
 <translation id="2710676967944965821">要重設所有智慧卡讀卡機權限嗎？</translation>
+<translation id="2710883118091822664">登入帳戶，即可在所有裝置上輕鬆接續工作</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -6041,7 +6040,7 @@
 <translation id="5084686326967545037">按照裝置顯示的步驟操作</translation>
 <translation id="5085162214018721575">正在檢查有無更新</translation>
 <translation id="5086082738160935172">HID</translation>
-<translation id="508645147179720015">記事超過 1000 個半形字元</translation>
+<translation id="508645147179720015">附註內容超過 1000 個半形字元</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
 <translation id="5087864757604726239">返回</translation>
@@ -6844,6 +6843,7 @@
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，你必須先<ph name="LINK_START" />造訪網路的登入頁面<ph name="LINK_END" />，系統隨即會自動開啟登入頁面；如果沒有，你就無法使用這個網路。</translation>
 <translation id="5637476008227280525">啟用行動數據</translation>
 <translation id="5638170200695981015">請選擇「在基本編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
+<translation id="5638202526629811571">請向家長或監護人顯示這個畫面，讓他們決定是否允許你新增這個擴充功能</translation>
 <translation id="563821631542362636">允許網站儲存資料</translation>
 <translation id="5638309510554459422">歡迎前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找擴充功能和主題</translation>
 <translation id="5639549361331209298">重新載入這個網頁 (按住即可查看更多選項)</translation>
@@ -7391,6 +7391,7 @@
 <translation id="6021293122504240352">系統已不再支援 <ph name="APPS" /> 個應用程式</translation>
 <translation id="6021969570711251331">交錯顯示</translation>
 <translation id="6022526133015258832">開啟全螢幕</translation>
+<translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6023643151125006053">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被 <ph name="SAML_DOMAIN" /> 管理員鎖定。</translation>
 <translation id="6024317249717725918">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋影片影格(&amp;S)</translation>
 <translation id="6025215716629925253">堆疊追蹤</translation>
@@ -10448,6 +10449,7 @@
 <translation id="8110393529211831722">訂閱項目只會安裝在這部裝置上，不會同步到帳戶中的其他裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下載聯絡人清單...</translation>
 <translation id="8114925369073821854">「<ph name="APP_NAME" />」的麥克風權限</translation>
+<translation id="8116497846156149">請家長核准</translation>
 <translation id="8116972784401310538">書籤管理員(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
 <translation id="8118362518458010043">這個擴充功能可能不安全，因此遭到 Chrome 停用。</translation>
@@ -12076,6 +12078,7 @@
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理員可以使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面，開始錄製時，你不會收到通知。}=2{管理員可以使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面，開始錄製時，你不會收到通知。}=3{管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你不會收到通知。}other{管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面，開始錄製時，你不會收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
+<translation id="9189618485998894982">這個應用程式已遭到封鎖。請與開發人員聯絡。</translation>
 <translation id="9192019773545828776">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字回饋功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左鍵或向右鍵即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="9195969368671142407">如果貴機構限制你儲存內容到 Google 帳戶，你就無法分享或加入分頁群組</translation>
 <translation id="919686179725692564">進一步瞭解如何備份應用程式</translation>
@@ -12180,7 +12183,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近傳送大量通知的網站 (1 個)}other{查看最近傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="966588271015727539">選取藍牙點字顯示器</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{關閉這個設定檔(&amp;C)}other{關閉這個含 # 個視窗的設定檔(&amp;C)}}</translation>
-<translation id="967398046773905967">不允許任何網站存取 HID 裝置</translation>
 <translation id="96756691973639907">其他<ph name="MODULE_NAME" />動作</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的印表機</translation>

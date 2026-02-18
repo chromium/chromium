@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
 <translation id="136378536198524553">节能模式已开启</translation>
-<translation id="136522805455656552">为了确保设备的安全，您应该仅运行和安装来自可信来源和开发者的软件。<ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">挑眉</translation>
 <translation id="1367817137674340530">生成了 <ph name="COUNT" /> 张图片</translation>
 <translation id="1368603372088757436">您的 <ph name="DEVICE_TYPE" /> 不支持 Linux。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -1217,7 +1216,6 @@
 <translation id="18139523105317219">EDI 参与方名称</translation>
 <translation id="1815083418640426271">粘贴为纯文本</translation>
 <translation id="1815097521077272760">您已受邀试用此游戏的键盘控件。</translation>
-<translation id="1815181278146012280">当网站想访问 HID 设备时询问您</translation>
 <translation id="181577467034453336">另外还有 <ph name="NUMBER_OF_VIEWS" /> 个…</translation>
 <translation id="1816036116994822943">键盘扫描速度</translation>
 <translation id="1817871734039893258">Microsoft 文件恢复</translation>
@@ -2550,6 +2548,7 @@
 <translation id="271033894570825754">新</translation>
 <translation id="2710507903599773521">您的 <ph name="DEVICE_TYPE" /> 现已解锁</translation>
 <translation id="2710676967944965821">要重置所有智能卡读卡器权限吗？</translation>
+<translation id="2710883118091822664">登录后，即可在所有设备上无缝衔接，轻松继续</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -7388,6 +7387,7 @@
 <translation id="6021293122504240352"><ph name="APPS" /> 款应用不再受支持</translation>
 <translation id="6021969570711251331">交错</translation>
 <translation id="6022526133015258832">以全屏模式打开</translation>
+<translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6023643151125006053">此设备（序列号：<ph name="SERIAL_NUMBER" />）已被 <ph name="SAML_DOMAIN" /> 管理员锁定。</translation>
 <translation id="6024317249717725918">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索视频帧(&amp;S)</translation>
 <translation id="6025215716629925253">堆叠追踪</translation>
@@ -8394,7 +8394,7 @@
 <translation id="6729280095610283088">森林上空闪耀着明亮的北极光。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6730744976532805323">与 Gemini 分享当前标签页，即使切换标签页也无妨</translation>
-<translation id="6731320427842222405">这可能需要几分钟时间</translation>
+<translation id="6731320427842222405">可能需要几分钟时间</translation>
 <translation id="6732956960067639542">请改为打开新的 Chrome 浏览器会话。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
 <translation id="6736243959894955139">地址</translation>
@@ -12181,7 +12181,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了大量通知的 1 个网站}other{查看最近发送了大量通知的 {NUM_SITES} 个网站}}</translation>
 <translation id="966588271015727539">选择蓝牙盲文显示屏</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{关闭这份个人资料(&amp;C)}other{关闭这份已打开 # 个窗口的个人资料(&amp;C)}}</translation>
-<translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>
 <translation id="96756691973639907">可对“<ph name="MODULE_NAME" />”执行的更多操作</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 <translation id="96774243435178359">受管理的打印机</translation>

@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">അവലോകനം പൂർത്തിയായി!</translation>
 <translation id="1094555143448724771">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ കാണാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക</translation>
 <translation id="1095761715416917775">സമന്വയിപ്പിക്കുന്ന ഡാറ്റ നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
+<translation id="1096091316906284742">Chrome Finds ഓപ്റ്റ് ഇൻ ബോട്ടം ഷീറ്റ്</translation>
 <translation id="1100066534610197918">ഗ്രൂപ്പിലെ പുതിയ ടാബിൽ തുറക്കൂ</translation>
 <translation id="1103142993930332957">Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കണോ?</translation>
 <translation id="1105960400813249514">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">പുതിയത്: ഈ ടെക്സ്റ്റിലേക്ക് സ്ക്രോൾ ചെയ്യുന്ന ഒരു ലിങ്ക് പങ്കിടുക</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> ബ്രൗസറിൽ തുറക്കുക</translation>
 <translation id="271033894570825754">പുതിയ ശേഖരം</translation>
+<translation id="2710883118091822664">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും എളുപ്പത്തിൽ തുടരാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
 <translation id="2718846868787000099">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷകളിൽ ഉള്ളടക്കം കാണിക്കുന്നതിന്, സന്ദർശിക്കുന്ന സൈറ്റുകൾക്ക് നിങ്ങളുടെ മുൻഗണനകൾ കാണാൻ കഴിയും</translation>
 <translation id="2723001399770238859">ഓഡിയോ</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">തിരയൽ ഫലങ്ങൾ കാണാൻ മുകളിലേക്ക് വലിച്ചിടുക</translation>
 <translation id="3269093882174072735">ചിത്രം ലോഡ് ചെയ്യുക</translation>
 <translation id="3280562213547448728">ശബ്ദ തിരയൽ</translation>
+<translation id="3282568296779691940">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{ഒരു പാസ്‌വേഡ് ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അത് നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}other{# പാസ്‌വേഡുകൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}}</translation>
 <translation id="3293181007446299124">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം നിങ്ങളുടെ ഉപകരണത്തിൽ സ്വകാര്യമായി സൂക്ഷിക്കുകയും നിങ്ങളുടെ ഐഡന്റിറ്റി സംരക്ഷിക്കാനായി റിപ്പോർട്ടുകൾ വൈകി അയയ്ക്കുകയും ചെയ്യുന്നു.</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയാണങ്കിൽ, Chrome-ന് അവ പരിശോധിക്കാനാകും</translation>
 <translation id="3636940436873918441">മുൻഗണന നൽകുന്ന ഭാഷകൾ</translation>
 <translation id="3637744895182738742">നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നാലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കുക<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Chrome Finds ഓപ്റ്റ് ഇൻ അടച്ചു</translation>
 <translation id="3647019414263135904">സന്ദർഭോചിത പോപ്പ് അപ്പ് തുറക്കുക അല്ലെങ്കിൽ അടയ്ക്കുക</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ആപ്പ് ഹോമിലേക്ക് പോകുക</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">തിരയാൻ Sogou ഉപയോഗിക്കുന്നു</translation>
 <translation id="4387647248986092471">കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="4387817230000841154">ഡൗൺലോഡുകൾ തുറക്കുക</translation>
+<translation id="4395046795145457714">Chrome Finds ഓപ്റ്റ് ഇൻ പൂർണ്ണ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, പിൻ ചെയ്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="4404568932422911380">ബുക്ക്‌മാർക്കുകളൊന്നുമില്ല</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് നിങ്ങൾക്ക് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാനാകും. ഓഫാക്കാൻ F7 അമർത്തുക.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ടാബ് നീക്കാനാകില്ല</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
+<translation id="5489222148748465285">Chrome തുടർന്നും തിരയണോ?</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> എന്നയാളായി ചേരുക</translation>
 <translation id="5517326820028369152">'സമീപകാല ആക്റ്റിവിറ്റി' ബോട്ടം ഷീറ്റ്</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">നിങ്ങൾ അടുത്തതായി ഏതൊക്കെ സൈറ്റുകളായിരിക്കും സന്ദർശിക്കുകയെന്ന് പ്രവചിക്കാൻ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
+<translation id="6661521899577697780">Chrome Finds ഓപ്റ്റ് ഇൻ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">നിരക്ക് ട്രാക്ക് ചെയ്യൽ നിർത്തുക</translation>
 <translation id="6830728435402077660">സുരക്ഷിതമല്ല</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
+<translation id="6835182496791325827">ഉപകരണം ഉപയോഗിക്കാത്തപ്പോൾ നിങ്ങളുടെ തിരയലുകൾക്കുള്ള മികച്ച ഫലങ്ങൾ Chrome കണ്ടെത്തുമ്പോൾ അറിയിപ്പ് നേടുക.</translation>
 <translation id="6846298663435243399">ലോഡുചെയ്യുന്നു...</translation>
 <translation id="6850409657436465440">നിങ്ങളുടെ ഡൗൺലോഡ് ഇപ്പോഴും പുരോഗതിയിലാണ്</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ടാബുകൾ അടച്ചു</translation>

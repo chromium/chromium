@@ -1786,6 +1786,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Ak chcete karty inkognito uzamknúť, nastavte Touch ID, Face ID alebo vstupný kód.</translation>
 <translation id="750886945254958667">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju opustite, keď už k nej nechcete mať prístup</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Môžete pridať maximálne 1 kartu}few{Môžete pridať maximálne {COUNT} karty}many{Add up to {COUNT} tabs}other{Môžete pridať maximálne {COUNT} kariet}}</translation>
 <translation id="7512909159512473473">Zadať prístupovú frázu…</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7514530647142300459">Ďalej používajte heslá vo svojom účte Google <ph name="EMAIL" /></translation>
@@ -2059,6 +2060,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8439758443371991593">Skryť položku Pridať do čitateľského zoznamu</translation>
 <translation id="8443986842926457191">Webová adresa obsahuje viac ako 2 048 znakov.</translation>
 <translation id="8449869326050867919">Heslo bolo zdieľané</translation>
+<translation id="8473815223723723001">Upraviť obrázok pomocou Gemini</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="8474378002946546633">Povoliť upozornenia</translation>
 <translation id="8477178913400731244">Odstrániť dáta</translation>

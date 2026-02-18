@@ -558,7 +558,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1362865166188278099">Problema mecânico. Verificar impressora</translation>
 <translation id="1363585519747660921">A impressora USB precisa ser configurada</translation>
 <translation id="136378536198524553">A Economia de energia está ativada</translation>
-<translation id="136522805455656552">Para proteger seu dispositivo, só execute e instale softwares de fontes e desenvolvedores confiáveis. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Levantar as sobrancelhas</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> imagens geradas</translation>
 <translation id="1368603372088757436">Seu <ph name="DEVICE_TYPE" /> não tem suporte para Linux. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -1232,7 +1231,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="18139523105317219">Nome da Parte EDI</translation>
 <translation id="1815083418640426271">Colar como texto sem formatação</translation>
 <translation id="1815097521077272760">Você foi convidado para testar os controles de teclado para este jogo.</translation>
-<translation id="1815181278146012280">Perguntar quando um site quiser acessar dispositivos HID</translation>
 <translation id="181577467034453336">Mais <ph name="NUMBER_OF_VIEWS" />…</translation>
 <translation id="1816036116994822943">Velocidade da leitura do teclado</translation>
 <translation id="1817871734039893258">Recuperação de arquivos da Microsoft</translation>
@@ -2572,6 +2570,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="271033894570825754">Nova</translation>
 <translation id="2710507903599773521">Seu <ph name="DEVICE_TYPE" /> está desbloqueado</translation>
 <translation id="2710676967944965821">Redefinir todas as permissões do leitor de cartão inteligente?</translation>
+<translation id="2710883118091822664">Faça login para continuar de onde parou em todos os seus dispositivos</translation>
 <translation id="2713106313042589954">Desativar câmera</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Plano de fundo escuro</translation>
@@ -7419,6 +7418,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6021293122504240352">Não há mais suporte para <ph name="APPS" /> apps</translation>
 <translation id="6021969570711251331">Intercalado</translation>
 <translation id="6022526133015258832">Abrir em tela cheia</translation>
+<translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
 <translation id="6023643151125006053">Este dispositivo (SN: <ph name="SERIAL_NUMBER" />) foi bloqueado pelo administrador de <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">Pesquisar frame do vídeo com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Rastreamento de pilha</translation>
@@ -12215,7 +12215,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Revise 1 site que enviou muitas notificações recentemente}one{Revise {NUM_SITES} site que enviou muitas notificações recentemente}other{Revise {NUM_SITES} sites que enviaram muitas notificações recentemente}}</translation>
 <translation id="966588271015727539">Selecione uma linha braille com Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Fechar perfil}one{&amp;Fechar perfil (# janela)}other{&amp;Fechar perfil (# janelas)}}</translation>
-<translation id="967398046773905967">Não permitir que nenhum site acesse dispositivos HID</translation>
 <translation id="96756691973639907">Mais ações para <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 <translation id="96774243435178359">Impressoras gerenciadas</translation>

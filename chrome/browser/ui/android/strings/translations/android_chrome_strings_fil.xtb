@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
 <translation id="1094555143448724771">Para makita ang mga tab mula sa iba mong device, i-sync ang iyong mga tab at history</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
+<translation id="1096091316906284742">Bottom sheet ng pag-opt in sa Chrome Finds</translation>
 <translation id="1100066534610197918">Buksan sa bagong tab sa grupo</translation>
 <translation id="1103142993930332957">Tumulong na pahusayin ang Chrome?</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
@@ -395,6 +396,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
 <translation id="2708226184420201102">Buksan sa <ph name="PRODUCT_NAME" /> browser</translation>
 <translation id="271033894570825754">Bagong koleksyon</translation>
+<translation id="2710883118091822664">Mag-sign in para madaling makapagpatuloy sa lahat ng iyong device</translation>
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
 <translation id="2718846868787000099">Para ipakita ang content sa iyong mga gustong wika, makikita ng mga site na binibisita mo ang iyong mga kagustuhan</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -530,6 +532,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3268048651973962414">Mag-drag pataas para makita ang mga resulta ng paghahanap</translation>
 <translation id="3269093882174072735">I-load ang larawan</translation>
 <translation id="3280562213547448728">Paghahanap gamit ang boses</translation>
+<translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> na tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Mase-save ang 1 password sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang # password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang # na password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="3293181007446299124">Pinapanatiling pribado ang iyong history ng pag-browse sa device mo at inaantala ang pagpapadala ng mga ulat para maprotektahan ang iyong pagkakakilanlan</translation>
@@ -608,6 +611,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3635073343384702370">Masusuri ng Chrome ang iyong mga password kapag na-save mo ang mga ito</translation>
 <translation id="3636940436873918441">Mga gustong wika</translation>
 <translation id="3637744895182738742">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Nakasara ang pag-opt in sa Chrome Finds</translation>
 <translation id="3647019414263135904">Buksan o Isara ang popup ng konteksto</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Pumunta sa Home sa Google App</translation>
@@ -781,6 +785,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
 <translation id="4387647248986092471">Gumawa ng lock ng profile ng kotse</translation>
 <translation id="4387817230000841154">Buksan ang Mga Download</translation>
+<translation id="4395046795145457714">Binuksan nang buo ang pag-opt in sa Chrome Finds</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, Piniling Naka-pin at Nagre-record na Tab na Incognito</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Dina-download…</translation>
 <translation id="4404568932422911380">Walang bookmark</translation>
@@ -1049,6 +1054,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5469852975082458401">Puwede kang mag-navigate sa mga page gamit ang text cursor. Pindutin ang F7 para i-off.</translation>
 <translation id="5471273988133666918">Hindi maililipat ang tab na <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Buksan sa app na mga mapa</translation>
+<translation id="5489222148748465285">Hayaang maghanap pa ang Chrome?</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="549660026907543296">Sumali bilang si <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Bottom sheet ng kamakailang aktibidad</translation>
@@ -1344,6 +1350,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6647441008198474441">Ipinapadala sa Google ang mga URL na binibisita mo para mahulaan kung anong mga site ang posibleng susunod mong bibisitahin</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}one{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}other{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> na iba pa}}</translation>
 <translation id="6649642165559792194">I-preview ang larawang <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Binuksan nang kalahati ang pag-opt in sa Chrome Finds</translation>
 <translation id="666731172850799929">Buksan sa <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Abisuhan ako</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
@@ -1395,6 +1402,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6828070228333235514">Ihinto ang pagsubaybay ng presyo</translation>
 <translation id="6830728435402077660">Hindi secure</translation>
 <translation id="6831043979455480757">Isalin</translation>
+<translation id="6835182496791325827">Maabisuhan kapag nahanap ng Chrome ang pinakamagagandang resulta para sa iyong mga paghahanap habang wala ka.</translation>
 <translation id="6846298663435243399">Naglo-load…</translation>
 <translation id="6850409657436465440">Isinasagawa pa rin ang iyong pag-download</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> (na) tab ang isinara</translation>

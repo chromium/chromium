@@ -557,7 +557,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1362865166188278099">Mechanischer Fehler. Drucker prüfen.</translation>
 <translation id="1363585519747660921">USB-Drucker muss konfiguriert werden</translation>
 <translation id="136378536198524553">Energiesparmodus aktiviert</translation>
-<translation id="136522805455656552">Zum umfassenden Schutz deines Geräts solltest du nur Software von vertrauenswürdigen Quellen und Entwicklern ausführen und installieren. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Augenbrauen heben</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> Bilder generiert</translation>
 <translation id="1368603372088757436">Linux wird auf deinem Gerät (<ph name="DEVICE_TYPE" />) nicht unterstützt. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -1219,7 +1218,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="18139523105317219">Name der EDI-Partei</translation>
 <translation id="1815083418640426271">Als unformatierten Text einfügen</translation>
 <translation id="1815097521077272760">Du wurdest eingeladen, die Tastatursteuerung für dieses Spiel auszuprobieren.</translation>
-<translation id="1815181278146012280">Nachfragen, wenn eine Website auf HID-Geräte zugreifen möchte</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> weitere...</translation>
 <translation id="1816036116994822943">Scangeschwindigkeit (Tastatur)</translation>
 <translation id="1817871734039893258">Microsoft-Dateiwiederherstellung</translation>
@@ -2555,6 +2553,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="271033894570825754">Neue Sammlung</translation>
 <translation id="2710507903599773521">Dein <ph name="DEVICE_TYPE" /> ist jetzt entsperrt</translation>
 <translation id="2710676967944965821">Alle Berechtigungen für Smart-Kartenlesegeräte zurücksetzen?</translation>
+<translation id="2710883118091822664">Melde dich an, um auf allen deinen Geräten da weitermachen zu können, wo du aufgehört hast</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2714180132046334502">Dunkler Hintergrund</translation>
@@ -6846,6 +6845,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5636996382092289526">Zur Verwendung von <ph name="NETWORK_ID" /> musst du eventuell zuerst die <ph name="LINK_START" />Anmeldeseite des Netzwerks besuchen<ph name="LINK_END" />. Diese wird in einigen Sekunden automatisch geöffnet. Anderenfalls kann das Netzwerk nicht verwendet werden.</translation>
 <translation id="5637476008227280525">Aktivierung der mobilen Daten</translation>
 <translation id="5638170200695981015">Wähle „Im Basiseditor öffnen“ aus, um eingeschränkte Optionen zum Ansehen und Bearbeiten zu verwenden.</translation>
+<translation id="5638202526629811571">Zeige deinen Eltern oder Erziehungsberechtigten diesen Bildschirm, damit sie entscheiden können, ob diese Erweiterung hinzugefügt werden soll</translation>
 <translation id="563821631542362636">Speichern von Daten für Website zulassen</translation>
 <translation id="5638309510554459422">Im <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> nach Erweiterungen und Designs suchen</translation>
 <translation id="5639549361331209298">Seite aktualisieren, für weitere Optionen gedrückt halten</translation>
@@ -7393,6 +7393,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> Apps werden nicht mehr unterstützt</translation>
 <translation id="6021969570711251331">Überlappend</translation>
 <translation id="6022526133015258832">Im Vollbildmodus öffnen</translation>
+<translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6023643151125006053">Dieses Gerät (SN: <ph name="SERIAL_NUMBER" />) wurde durch den Administrator von <ph name="SAML_DOMAIN" /> gesperrt.</translation>
 <translation id="6024317249717725918">Videoframe mit <ph name="VISUAL_SEARCH_PROVIDER" /> &amp;suchen</translation>
 <translation id="6025215716629925253">Stacktrace</translation>
@@ -10452,6 +10453,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8110393529211831722">Das Abo ist nur auf diesem Gerät installiert und wird nicht mit anderen Geräten in deinem Konto synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Kontaktliste wird heruntergeladen...</translation>
 <translation id="8114925369073821854">Mikrofonberechtigung für <ph name="APP_NAME" /></translation>
+<translation id="8116497846156149">Eltern um Genehmigung bitten</translation>
 <translation id="8116972784401310538">&amp;Lesezeichenmanager</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> merkt sich, wie du dich angemeldet hast, und meldet dich wenn möglich automatisch an. Wenn diese Funktion deaktiviert ist, wirst du jedes Mal um eine Bestätigung gebeten.</translation>
 <translation id="8118362518458010043">Von Chrome deaktiviert. Diese Erweiterung könnte unsicher sein.</translation>
@@ -12080,6 +12082,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=2{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> und <ph name="APP1_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=3{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und einer weiteren App aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}other{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und # weiteren Apps aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}}</translation>
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
+<translation id="9189618485998894982">Diese Anwendung wurde blockiert. Bitte wende dich an den Entwickler.</translation>
 <translation id="9192019773545828776">Du erhältst gesprochenes Feedback, sodass du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Braille-Feedback ist auf einem verbundenen Gerät verfügbar. Verwende Strg + Alt + Z, um ChromeVox zu aktivieren oder zu deaktivieren. Mit der Suchtaste + Links- oder Rechtspfeil kannst du den Cursor bewegen. Drücke die Suchtaste + Leertaste, um ein Element auszuwählen (zu aktivieren).</translation>
 <translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
 <translation id="919686179725692564">Weitere Informationen zum Sichern von Apps</translation>
@@ -12184,7 +12187,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="965470117154635268">{NUM_SITES,plural, =1{1 Website ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{{NUM_SITES} Websites ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
 <translation id="966588271015727539">Wähle eine Bluetooth-Braillezeile aus</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Dieses Profil &amp;schließen}other{Dieses Profil &amp;schließen (# Fenster)}}</translation>
-<translation id="967398046773905967">Websites nicht erlauben, auf HID-Geräte zuzugreifen</translation>
 <translation id="96756691973639907">Weitere Aktionen für „<ph name="MODULE_NAME" />“</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>
 <translation id="96774243435178359">Verwaltete Drucker</translation>

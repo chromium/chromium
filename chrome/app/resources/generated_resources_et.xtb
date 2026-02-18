@@ -557,7 +557,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1362865166188278099">Mehaaniline probleem. Kontrollige printerit.</translation>
 <translation id="1363585519747660921">USB-printer vajab seadistamist</translation>
 <translation id="136378536198524553">Energiasäästja on sisse lülitatud</translation>
-<translation id="136522805455656552">Selleks et hoida oma seade turvalisena, käitage ja installige ainult usaldusväärsetest allikatest ja usaldusväärsetelt arendajatelt pärit tarkvara. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Kulmude kergitamine</translation>
 <translation id="1367817137674340530">Genereeritud on <ph name="COUNT" /> pilti</translation>
 <translation id="1368603372088757436">Linuxit teie seadmes <ph name="DEVICE_TYPE" /> ei toetata. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -1223,7 +1222,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="18139523105317219">EDI-osapoole nimi</translation>
 <translation id="1815083418640426271">Kleebi lihttekstina</translation>
 <translation id="1815097521077272760">Saite kutse proovida selles mängus klaviatuuriga juhtimist.</translation>
-<translation id="1815181278146012280">Küsi, kui sait soovib juurdepääsu HID-seadmetele</translation>
 <translation id="181577467034453336">Veel <ph name="NUMBER_OF_VIEWS" /> …</translation>
 <translation id="1816036116994822943">Klaviatuuri skannimiskiirus</translation>
 <translation id="1817871734039893258">Microsofti failitaaste</translation>
@@ -2562,6 +2560,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="271033894570825754">Uus kogu</translation>
 <translation id="2710507903599773521">Teie <ph name="DEVICE_TYPE" /> on nüüd lukust lahti</translation>
 <translation id="2710676967944965821">Kas lähtestada kõik kiipkaardilugeja load?</translation>
+<translation id="2710883118091822664">Logige sisse, et tegevust hõlpsasti kõigis oma seadmetes jätkata</translation>
 <translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2713444072780614174">Valge</translation>
 <translation id="2714180132046334502">Tume taust</translation>
@@ -7408,6 +7407,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> rakendust enam ei toetata</translation>
 <translation id="6021969570711251331">Vaheldumisi tekst</translation>
 <translation id="6022526133015258832">Ava täisekraanil</translation>
+<translation id="6022659036123304283">Isikupärastage Chrome'i</translation>
 <translation id="6023643151125006053">Selle seadme (seerianumber: <ph name="SERIAL_NUMBER" />) lukustas domeeni <ph name="SAML_DOMAIN" /> administraator.</translation>
 <translation id="6024317249717725918">&amp;Otsi videokaadrit teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Virna jälg</translation>
@@ -12201,7 +12201,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Vaadake üle 1 sait, mis saatis hiljuti palju märguandeid}other{Vaadake üle {NUM_SITES} saiti, mis saatsid hiljuti palju märguandeid}}</translation>
 <translation id="966588271015727539">Valige Bluetoothiga Braille' ekraan</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Sule see profiil}other{&amp;Sule see profiil (# akent)}}</translation>
-<translation id="967398046773905967">Ära luba ühelgi saidil HID-seadmetele juurde pääseda</translation>
 <translation id="96756691973639907">Rohkem toiminguid: <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Salvestatud andmete maht</translation>
 <translation id="96774243435178359">Hallatud printerid</translation>

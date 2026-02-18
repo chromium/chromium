@@ -237,6 +237,7 @@
 <translation id="3522404737534491619">Aby udostępnić okno, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu</translation>
 <translation id="3530103706039034513">Jesteś już zalogowany(a) na konto <ph name="EXISTING_USER" />.  Aby przeglądać osobno, zaloguj się w Chromium w swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Aby udostępnić ekran, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
+<translation id="3588112919289558122">Silniejsza ochrona wyłącza optymalizację JavaScriptu w witrynach, których Chromium nie rozpoznaje</translation>
 <translation id="3597003331831379823">Nie udało się uruchomić konfiguracji z podwyższonymi uprawnieniami. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Zaloguj się w Chromium</translation>
 <translation id="3639635944603682591">Dane przeglądania tej osoby zostaną usunięte z tego urządzenia. Aby je odzyskać, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>

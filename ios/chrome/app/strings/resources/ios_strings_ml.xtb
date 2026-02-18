@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യാൻ, ടച്ച് ഐഡിയോ മുഖ ഐഡിയോ പാസ്‌കോഡോ സജ്ജീകരിക്കുക.</translation>
 <translation id="750886945254958667">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക, അല്ലെങ്കിൽ നിങ്ങൾക്ക് അതിലേക്ക് ആക്‌സസ് വേണ്ടെങ്കിൽ അതിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{ഒരു ടാബ് വരെ ചേർക്കുക}other{{COUNT} ടാബുകൾ വരെ ചേർക്കുക}}</translation>
 <translation id="7512909159512473473">പാസ്‌ഫ്രെയ്‌സ് നൽകുക…</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7514530647142300459">നിങ്ങളുടെ <ph name="EMAIL" /> Google Account-ലെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നത് തുടരുക</translation>

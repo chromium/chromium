@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Pārskatīšana ir pabeigta!</translation>
 <translation id="1094555143448724771">Lai skatītu cilnes no citām savām ierīcēm, sinhronizējiet cilnes un vēsturi.</translation>
 <translation id="1095761715416917775">Parūpējieties, lai vienmēr varētu piekļūt sinhronizētajiem datiem</translation>
+<translation id="1096091316906284742">Funkcijas “Chrome Finds” izvēles ekrāna apakšdaļas lapa</translation>
 <translation id="1100066534610197918">Atvērt jaunu cilni grupā</translation>
 <translation id="1103142993930332957">Palīdziet uzlabot Chrome</translation>
 <translation id="1105960400813249514">Ekrāna tveršana</translation>
@@ -395,6 +396,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2702516483241149200">Jaunums: varat kopīgot saiti uz šo tekstu</translation>
 <translation id="2708226184420201102">Atvērt pārlūkā <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Jauna kolekcija</translation>
+<translation id="2710883118091822664">Pierakstieties, lai varētu ērti turpināt darbu visās savās ierīcēs.</translation>
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
 <translation id="2718846868787000099">Apmeklētajām vietnēm ir atļauta piekļuve jūsu preferencēm, lai nodrošinātu satura rādīšanu jūsu izvēlētajā valodā.</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -530,6 +532,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3268048651973962414">Velciet augšup, lai skatītu meklēšanas rezultātus.</translation>
 <translation id="3269093882174072735">Ielādēt attēlu</translation>
 <translation id="3280562213547448728">Meklēšana ar balsi</translation>
+<translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilnes}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 parole ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šo paroli citās ierīcēs, saglabājiet to savā Google kontā.}zero{# paroles ir saglabātas tikai šajā ierīcē. Lai varētu izmantot šīs paroles citās ierīcēs, saglabājiet tās savā Google kontā.}one{# parole ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šīs paroles citās ierīcēs, saglabājiet tās savā Google kontā.}other{# paroles ir saglabātas tikai šajā ierīcē. Lai varētu izmantot šīs paroles citās ierīcēs, saglabājiet tās savā Google kontā.}}</translation>
 <translation id="3293181007446299124">Pārlūkošanas vēsture tiek privāti glabāta jūsu ierīcē, un pārskati tiek nosūtīti ar kavēšanos, lai aizsargātu jūsu identitāti</translation>
@@ -608,6 +611,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3635073343384702370">Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="3636940436873918441">Vēlamās valodas</translation>
 <translation id="3637744895182738742">Ja aizmirstat ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus savā kontā<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Funkcijas “Chrome Finds” izvēles ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="3647019414263135904">Atvērt vai aizvērt konteksta uznirstošo elementu</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Pāriet uz Google lietotnes sākumlapu</translation>
@@ -781,6 +785,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4384468725000734951">Tiek izmantota meklētājprogramma Sogou</translation>
 <translation id="4387647248986092471">Iestatīt automašīnas profila bloķēšanu</translation>
 <translation id="4387817230000841154">Atvērt lejupielādes</translation>
+<translation id="4395046795145457714">Funkcijas “Chrome Finds” izvēles ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="4398561997852463382">Atlasīta piesprausta inkognito cilne <ph name="TAB_TITLE" />, kurā notiek ierakstīšana</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> — notiek lejupielāde…</translation>
 <translation id="4404568932422911380">Nav grāmatzīmju</translation>
@@ -1049,6 +1054,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5469852975082458401">Lapās varat pārvietoties, izmantojot teksta kursoru. Lai izslēgtu šo funkciju, nospiediet taustiņu F7.</translation>
 <translation id="5471273988133666918">Cilni <ph name="TAB_TITLE" /> nevar pārvietot</translation>
 <translation id="548278423535722844">Atvērt karšu lietotnē</translation>
+<translation id="5489222148748465285">Vai ļaut Chrome turpināt meklēt?</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="549660026907543296">Pievienoties ar profilu <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Ekrāna apakšdaļas lapa “Pēdējās darbības”</translation>
@@ -1344,6 +1350,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6647441008198474441">Uzņēmumam Google tiek sūtīti jūsu apmeklētie vietrāži URL, lai prognozētu, kuras vietnes jūs varētu apmeklēt turpmāk.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}zero{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Priekšskatīt attēlu <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Funkcijas “Chrome Finds” izvēles ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
 <translation id="666731172850799929">Atvērt lietotnē <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Paziņot man</translation>
 <translation id="6671495933530132209">Kopēt attēlu</translation>
@@ -1395,6 +1402,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6828070228333235514">Apturēt cenas izsekošanu</translation>
 <translation id="6830728435402077660">Nav droši</translation>
 <translation id="6831043979455480757">Tulkot</translation>
+<translation id="6835182496791325827">Saņemiet paziņojumus, kad Chrome atrod labākos rezultātus jūsu meklēšanas vaicājumiem, kamēr esat prombūtnē.</translation>
 <translation id="6846298663435243399">Notiek ielāde…</translation>
 <translation id="6850409657436465440">Joprojām notiek lejupielāde</translation>
 <translation id="6850830437481525139">Aizvērtas <ph name="TAB_COUNT" /> cilnes</translation>

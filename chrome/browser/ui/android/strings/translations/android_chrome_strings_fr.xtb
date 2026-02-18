@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Examen terminé</translation>
 <translation id="1094555143448724771">Synchronisez vos onglets et l'historique pour voir les onglets de vos autres appareils</translation>
 <translation id="1095761715416917775">Veillez à toujours avoir accès à vos données synchronisées</translation>
+<translation id="1096091316906284742">Bottom sheet d'activation de Chrome Finds</translation>
 <translation id="1100066534610197918">Nouvel onglet dans un groupe</translation>
 <translation id="1103142993930332957">Aider à améliorer Chrome ?</translation>
 <translation id="1105960400813249514">Capture d'écran</translation>
@@ -395,6 +396,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2708226184420201102">Ouvrir dans le navigateur <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Nouvelle collection</translation>
+<translation id="2710883118091822664">Connectez-vous pour continuer facilement sur tous vos appareils</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2718846868787000099">Permet d'afficher le contenu dans vos langues favorites. Les sites que vous visitez peuvent voir vos préférences</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -530,6 +532,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3268048651973962414">Faites glisser vers le haut pour voir les résultats de recherche</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
+<translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{# mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{# mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
@@ -608,6 +611,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3635073343384702370">Chrome ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="3636940436873918441">Langues préférées</translation>
 <translation id="3637744895182738742">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Activation de Chrome Finds fermée</translation>
 <translation id="3647019414263135904">Ouvrir ou fermer le pop-up contextuel</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Accéder à la page d'accueil de l'appli Google</translation>
@@ -781,6 +785,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4384468725000734951">Utilisation de Sogou pour les recherches</translation>
 <translation id="4387647248986092471">Créer un verrouillage du profil de voiture</translation>
 <translation id="4387817230000841154">Ouvrir Téléchargements</translation>
+<translation id="4395046795145457714">Activation de Chrome Finds ouverte à pleine hauteur</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé sélectionné avec enregistrement en cours</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Téléchargement…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
@@ -1049,6 +1054,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5469852975082458401">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Pour désactiver la navigation au clavier, appuyez sur F7.</translation>
 <translation id="5471273988133666918">Impossible de déplacer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Ouvrir dans une application de plans</translation>
+<translation id="5489222148748465285">Laisser Chrome continuer à chercher ?</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="549660026907543296">Rejoindre en tant que <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Bottom sheet d'activité récente</translation>
@@ -1344,6 +1350,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}one{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}other{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}}</translation>
 <translation id="6649642165559792194">Prévisualiser l'image <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Activation de Chrome Finds ouverte à mi-hauteur</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">M'avertir</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
@@ -1395,6 +1402,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6828070228333235514">Arrêter le suivi du prix</translation>
 <translation id="6830728435402077660">Non sécurisé</translation>
 <translation id="6831043979455480757">Traduire</translation>
+<translation id="6835182496791325827">Recevez une notification lorsque Chrome trouve les meilleurs résultats pour vos recherches pendant votre absence.</translation>
 <translation id="6846298663435243399">Chargement…</translation>
 <translation id="6850409657436465440">Téléchargement toujours en cours</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> onglets ont été fermés.</translation>

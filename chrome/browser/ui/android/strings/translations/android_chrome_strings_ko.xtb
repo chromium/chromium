@@ -396,6 +396,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> 브라우저에서 열기</translation>
 <translation id="271033894570825754">New</translation>
+<translation id="2710883118091822664">모든 기기에서 간편하게 이어 가려면 로그인하세요.</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
 <translation id="2723001399770238859">오디오</translation>
@@ -531,6 +532,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3268048651973962414">검색 결과를 보려면 위로 드래그하세요.</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="3280562213547448728">음성 검색</translation>
+<translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" />개 탭}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />개 탭}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}other{비밀번호 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}}</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>

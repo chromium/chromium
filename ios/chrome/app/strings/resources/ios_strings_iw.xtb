@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> ‏(<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏כדי לנעול את כרטיסיות המצב האנונימי, יש להגדיר Touch ID,‏ Face ID או קוד גישה.</translation>
 <translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{אפשר להוסיף רק כרטיסייה אחת}one{אפשר להוסיף עד {COUNT} כרטיסיות}two{אפשר להוסיף עד {COUNT} כרטיסיות}other{אפשר להוסיף עד {COUNT} כרטיסיות}}</translation>
 <translation id="7512909159512473473">הזנת ביטוי סיסמה…</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7514530647142300459">‏המשך השימוש בסיסמאות בחשבון שלך ב-Google <ph name="EMAIL" /></translation>
@@ -2236,6 +2237,7 @@
 <translation id="9055291197094969722">אפשר ליצור קבוצות של כרטיסיות כדי לארגן את הכרטיסיות הפתוחות ולשמור על הפרודוקטיביות</translation>
 <translation id="9055580485132823283">‏בחרת למחוק {password_count} סיסמאות, {passkey_count} מפתחות גישה ואת רשימת האתרים והאפליקציות שבחרת לא לשמור בהם אף פעם פרטי כניסה. חשבונות שיצרת לאתרים ולאפליקציות לא יימחקו.</translation>
 <translation id="9057030985451135243">מידע על קבוצות משותפות של כרטיסיות</translation>
+<translation id="9064106978262828592">לא הצלחנו לייצא את הנתונים שלך</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9066097352053395362">הסתרת האפשרות 'עריכת סימנייה'</translation>
 <translation id="9070824521421603770">המערכת תוציא אותך מהחשבון והכרטיסיות ייסגרו</translation>

@@ -1787,6 +1787,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">আপনার 'ছদ্মবেশী' ট্যাব লক করতে 'টাচ আইডি', 'ফেস আইডি' বা 'পাসকোড' সেট করুন।</translation>
 <translation id="750886945254958667">পরে ট্যাব যোগ করার জন্য এই গ্রুপটি রেখে দিন অথবা আর অ্যাক্সেস করতে না চাইলে ছেড়ে বেরিয়ে আসুন</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{সর্বাধিক ১টি ট্যাব যোগ করুন}one{সর্বাধিক {COUNT}টি ট্যাব যোগ করুন}other{সর্বাধিক {COUNT}টি ট্যাব যোগ করুন}}</translation>
 <translation id="7512909159512473473">পাসফ্রেজ লিখুন…</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7514530647142300459">আপনার Google অ্যাকাউন্ট <ph name="EMAIL" />-এ পাসওয়ার্ড ব্যবহার করা চালিয়ে যান</translation>

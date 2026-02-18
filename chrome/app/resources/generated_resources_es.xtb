@@ -557,7 +557,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1362865166188278099">Problema mecánico. Comprueba la impresora.</translation>
 <translation id="1363585519747660921">Es necesario configurar la impresora USB</translation>
 <translation id="136378536198524553">Ahorro de energía activado</translation>
-<translation id="136522805455656552">Para proteger tu dispositivo, ejecuta e instala únicamente software de fuentes y desarrolladores de confianza. <ph name="LEARN_MORE" />.</translation>
 <translation id="1365650529628379165">Levantar las cejas</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> imágenes generadas</translation>
 <translation id="1368603372088757436">Linux no es compatible con tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -1222,7 +1221,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="18139523105317219">Nombre de parte EDI</translation>
 <translation id="1815083418640426271">Pegar como texto sin formato</translation>
 <translation id="1815097521077272760">Te han invitado a probar los controles de teclado en este juego.</translation>
-<translation id="1815181278146012280">Preguntar cuando un sitio web quiera acceder a los dispositivos HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> más...</translation>
 <translation id="1816036116994822943">Velocidad de búsqueda del teclado</translation>
 <translation id="1817871734039893258">Recuperación de archivos de Microsoft</translation>
@@ -2559,6 +2557,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="271033894570825754">Nueva</translation>
 <translation id="2710507903599773521">Tu <ph name="DEVICE_TYPE" /> ahora está desbloqueado</translation>
 <translation id="2710676967944965821">¿Borrar todos los permisos del lector de tarjetas inteligentes?</translation>
+<translation id="2710883118091822664">Inicia sesión para continuar fácilmente en todos tus dispositivos</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -6853,6 +6852,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5636996382092289526">Para utilizar la red <ph name="NETWORK_ID" />, es posible que primero tengas que <ph name="LINK_START" />acceder a la página de inicio de sesión de la red<ph name="LINK_END" />, que se abrirá de forma automática en unos segundos. Si no se abre, no podrás utilizar esa red.</translation>
 <translation id="5637476008227280525">Permitir datos móviles</translation>
 <translation id="5638170200695981015">Para usar opciones limitadas de edición y visualización, selecciona Abrir en el editor básico.</translation>
+<translation id="5638202526629811571">Muestra esta pantalla a tu padre, madre o tutor/a para que decida si puedes añadir esta extensión</translation>
 <translation id="563821631542362636">Permitir que el sitio guarde datos</translation>
 <translation id="5638309510554459422">Busca extensiones y temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Vuelve a cargar esta página y espera para ver más opciones</translation>
@@ -7401,6 +7401,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6021293122504240352"><ph name="APPS" /> aplicaciones ya no se admiten</translation>
 <translation id="6021969570711251331">Intercalado</translation>
 <translation id="6022526133015258832">Abrir en pantalla completa</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> ha bloqueado este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6024317249717725918">Bu&amp;scar fotograma con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Seguimiento de la pila</translation>
@@ -10460,6 +10461,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8110393529211831722">La suscripción solo está instalada en este dispositivo y no se sincroniza con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Descargando lista de contactos...</translation>
 <translation id="8114925369073821854">Permiso de micrófono de <ph name="APP_NAME" /></translation>
+<translation id="8116497846156149">Pide aprobación a tu padre o madre</translation>
 <translation id="8116972784401310538">Administrador de &amp;marcadores</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo has iniciado sesión y la inicia automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
 <translation id="8118362518458010043">Chrome ha inhabilitado esta extensión porque es posible que no sea segura.</translation>
@@ -12088,6 +12090,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás ninguna notificación cuando empiece la grabación.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás ninguna notificación cuando se inicie la grabación.}}</translation>
 <translation id="9186963452600581158">Iniciar sesión con la cuenta de Google de un niño/a</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Esta aplicación se ha bloqueado. Contacta con el desarrollador.</translation>
 <translation id="9192019773545828776">Escucha mensajes de voz para poder usar el dispositivo sin mirar la pantalla. Se pueden recibir mensajes en braille con un dispositivo conectado. Pulsa Ctrl + Alt + Z para activar o desactivar ChromeVox. Usa la tecla de búsqueda + flecha hacia la izquierda o hacia la derecha para desplazarte. Pulsa la tecla de búsqueda y la barra espaciadora para seleccionar (activar).</translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
 <translation id="919686179725692564">Más información sobre cómo crear una copia de seguridad de tus aplicaciones</translation>
@@ -12192,7 +12195,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 sitio que ha enviado muchas notificaciones recientemente}other{Revisa {NUM_SITES} sitios que han enviado muchas notificaciones recientemente}}</translation>
 <translation id="966588271015727539">Selecciona una pantalla de braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Cerrar este perfil}other{&amp;Cerrar este perfil (# ventanas)}}</translation>
-<translation id="967398046773905967">No permitir que ningún sitio web acceda a los dispositivos HID</translation>
 <translation id="96756691973639907">Más acciones de <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras gestionadas</translation>

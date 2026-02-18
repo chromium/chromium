@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">စက်ပြဿနာ။ ပရင်တာကိုစစ်ပါ</translation>
 <translation id="1363585519747660921">USB ပရင်တာအတွက် စီစဉ်သတ်မှတ်မှု လိုအပ်သည်</translation>
 <translation id="136378536198524553">‘စွမ်းအင်ချွေတာစနစ်’ ဖွင့်ထားသည်</translation>
-<translation id="136522805455656552">သင့်စက်လုံခြုံမှုရှိစေရန် ယုံကြည်ရသည့်ရင်းမြစ်နှင့် ဆော့ဖ်ဝဲရေးသူများ၏ ဆော့ဖ်ဝဲကိုသာ ထည့်သွင်းပြီး ဖွင့်သင့်သည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">မျက်ခုံးပင့်ပါ</translation>
 <translation id="1367817137674340530">ပုံ <ph name="COUNT" /> ပုံ ထုတ်လုပ်ထားသည်</translation>
 <translation id="1368603372088757436">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Linux ကို မပံ့ပိုးပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -1230,7 +1229,6 @@
 <translation id="18139523105317219">EDI ပါတီ အမည်</translation>
 <translation id="1815083418640426271">စာသားရိုးရိုး အဖြစ် ကူးထည့်မည်</translation>
 <translation id="1815097521077272760">ဤဂိမ်းအတွက် ကီးဘုတ်သတ်မှတ်ချက်များကို စမ်းကြည့်ရန် သင့်ကိုဖိတ်ကြားထားသည်။</translation>
-<translation id="1815181278146012280">ဝဘ်ဆိုက်က HID စက်များကို အသုံးပြုလိုသည့်အခါ ခွင့်တောင်းရန်</translation>
 <translation id="181577467034453336">နောက်ထပ် <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">လက်ကွက်ရှာဖွေမှု မြန်နှုန်း</translation>
 <translation id="1817871734039893258">Microsoft ဖိုင်ပြန်လည်ရှာဖွေမှု</translation>
@@ -2569,6 +2567,7 @@
 <translation id="271033894570825754">အသစသ်</translation>
 <translation id="2710507903599773521">သင့် <ph name="DEVICE_TYPE" /> ကို ယခု လော့ခ်ဖြေထားသည်</translation>
 <translation id="2710676967944965821">စမတ်ကတ်ဖတ်စက်အားလုံး ပြင်ဆင်သတ်မှတ်မလား။</translation>
+<translation id="2710883118091822664">သင့်စက်အားလုံးတွင် အလွယ်တကူ ဆက်လုပ်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2713106313042589954">ကင်မရာပိတ်ရန်</translation>
 <translation id="2713444072780614174">အဖြူ</translation>
 <translation id="2714180132046334502">မှောင်သည့်နောက်ခံ</translation>
@@ -7414,6 +7413,7 @@
 <translation id="6021293122504240352"><ph name="APPS" /> ခုကို ခွင့်မပြုတော့ပါ။</translation>
 <translation id="6021969570711251331">အပေါ်အောက်ပုံစံ</translation>
 <translation id="6022526133015258832">မျက်နှာပြင် အပြည့် ဖွင့်ရန်</translation>
+<translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="6023643151125006053">ဤစက်ပစ္စည်း (SN- <ph name="SERIAL_NUMBER" />) ကို <ph name="SAML_DOMAIN" /> စီမံခန့်ခွဲသူက လော့ခ်ချထားသည်။</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် ‘ဗီဒီယိုဖရိမ်’ ရှာရန်</translation>
 <translation id="6025215716629925253">ထပ်စီမှု လမ်းကြောင်းလိုက်ရန်</translation>
@@ -12204,7 +12204,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{မကြာသေးမီက အကြောင်းကြားချက်များစွာပို့ထားသည့် ဝဘ်ဆိုက် ၁ ခု ကို ပြန်ကြည့်ရန်}other{မကြာသေးမီက အကြောင်းကြားချက်များစွာပို့ထားသည့် ဝဘ်ဆိုက် {NUM_SITES} ခု ကို ပြန်ကြည့်ရန်}}</translation>
 <translation id="966588271015727539">ဘလူးတုသ်မျက်မမြင်စာဖတ်ကိရိယာ ရွေးပါ</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{ဤပရိုဖိုင်ကို &amp;ပိတ်ရန်}other{ဤပရိုဖိုင်ကို &amp;ပိတ်ရန် (ဝင်းဒိုး # ခု)}}</translation>
-<translation id="967398046773905967">HID စက်များ အသုံးပြုရန် မည်သည့်ဝဘ်ဆိုက်ကိုမျှ ခွင့်မပြုပါနှင့်</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="967624055006145463">သိမ်းဆည်းထားသည့် ဒေတာ</translation>
 <translation id="96774243435178359">စီမံခန့်ခွဲသော ပုံနှိပ်ထုတ်များ</translation>

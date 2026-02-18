@@ -558,7 +558,6 @@
 <translation id="1362865166188278099">مشکل مکانیکی. چاپگر را بررسی کنید</translation>
 <translation id="1363585519747660921">‏چاپگر USB باید پیکربندی شود</translation>
 <translation id="136378536198524553">«بهینه‌سازی انرژی» روشن است</translation>
-<translation id="136522805455656552">برای حفظ ایمنی دستگاهتان، نرم‌افزارها را باید فقط از منابع و توسعه‌دهندگان قابل‌اعتماد اجرا و نصب کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">بالا بردن ابروها</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> تصویر تولید شد</translation>
 <translation id="1368603372088757436">‏Linux در <ph name="DEVICE_TYPE" /> شما پشتیبانی نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -1229,7 +1228,6 @@
 <translation id="18139523105317219">‏نام طرف EDI</translation>
 <translation id="1815083418640426271">جای‌گذاری به‌عنوان نوشتار ساده</translation>
 <translation id="1815097521077272760">از شما دعوت شده است تا کنترل صفحه‌کلید این بازی را امتحان کنید.</translation>
-<translation id="1815181278146012280">‏وقتی سایتی می‌خواهد به دستگاه‌های HID دسترسی پیدا کند سؤال شود</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> مورد دیگر…</translation>
 <translation id="1816036116994822943">سرعت اسکن کردن صفحه‌کلید</translation>
 <translation id="1817871734039893258">‏بازیابی فایل Microsoft</translation>
@@ -2018,6 +2016,7 @@
 <translation id="2332742915001411729">بازنشانی روی موارد پیش‌فرض</translation>
 <translation id="2333166365943957309">سلسله‌مراتب واسط کاربر</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
+<translation id="2334384018887664164">می‌توانید سایت‌های مورداعتمادتان را در تنظیمات محتوا در فهرست مجازها قرار دهید</translation>
 <translation id="233471714539944337">محتوای حساس</translation>
 <translation id="2335758110242123814">باز کردن گروه</translation>
 <translation id="2336228925368920074">نشانک‌گذاری همه زبانه‌ها...</translation>
@@ -2113,6 +2112,7 @@
 <translation id="240789602312469910">‏داده‌های استفاده و تشخیص خرابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص خرابی و داده‌های استفاده از دستگاه و برنامه به Google به بهبود تجربه Android فرزندتان کمک کنید. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی‌از داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند توسعه‌دهندگان Android) کمک می‌کند. این <ph name="BEGIN_LINK1" />تنظیم<ph name="END_LINK1" /> توسط مالک اعمال می‌شود. ممکن است مالک انتخاب کند داده‌های استفاده و تشخیص خرابی این دستگاه به Google ارسال شود. اگر تنظیم «دیگر فعالیت‌ها در وب و برنامه» برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود. <ph name="BEGIN_LINK2" />درباره سنجه‌ها بیشتر بدانید<ph name="BEGIN_LINK2_END" />بیشتر بدانید<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">درحال ذخیره کارت</translation>
 <translation id="2408742686124047357">‏«لنز Google» را به نوارابزار خود سنجاق کنید تا دفعه بعد به‌راحتی به آن دسترسی داشته باشید</translation>
+<translation id="2408762424059547338">با خاموش کردن بهینه‌سازی جاوا اسکریپت، از شما دربرابر حملات، بهتر محافظت می‌کند</translation>
 <translation id="2408955596600435184">پین را وارد کنید</translation>
 <translation id="2409268599591722235">بیایید شروع کنیم</translation>
 <translation id="2409378541210421746">ویرایش انتخاب زبان</translation>
@@ -2389,6 +2389,7 @@
 <translation id="2581992808349413349">‏استفاده از اتصال امن برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) این ویژگی از فراهم‌ساز خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (پلتفورم <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">همه انواع کارت‌خوان هوشمند</translation>
+<translation id="2583949330716828639">مدیریت کردن استثناهای سایت</translation>
 <translation id="2584109212074498965">‏بلیت Kerberos اضافه نشد. دوباره امتحان کنید یا با سرپرست دستگاه سازمانتان تماس بگیرید. (کد خطا: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">‏مدیریت اجازه‌های میکروفون وب‌سایت در Chrome</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> نصب نشد. لطفاً دوباره امتحان کنید، یا با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -2568,6 +2569,7 @@
 <translation id="271033894570825754">مجموعه جدید</translation>
 <translation id="2710507903599773521">اکنون <ph name="DEVICE_TYPE" /> شما قفل شده است</translation>
 <translation id="2710676967944965821">همه اجازه‌های کارت‌خوان هوشمند بازنشانی شود؟</translation>
+<translation id="2710883118091822664">برای ادامه آسان در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">پس‌زمینه تاریک</translation>
@@ -2917,7 +2919,7 @@
 <translation id="2935654492420446828">افزودن حساب محل تحصیل در فرصتی دیگر</translation>
 <translation id="2936851848721175671">پشتیبان‌گیری و بازیابی</translation>
 <translation id="2938981087412273365">اجازه ندارد این سایت را بخواند و تغییر دهد</translation>
-<translation id="2939005221756255562">اعلان‌ها را در «مرکز اعلان» فعال کنید. <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> را باز کنید.</translation>
+<translation id="2939005221756255562">اعلان‌ها را در «مرکز اعلان‌ها» فعال کنید. <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> را باز کنید.</translation>
 <translation id="2939908794993783865">سایت‌های غیرفعال بیشتر</translation>
 <translation id="2939938020978911855">نمایش دستگاه‌های بلوتوث دردسترس</translation>
 <translation id="2941112035454246133">کم</translation>
@@ -5766,6 +5768,7 @@
 <translation id="4871322859485617074">پین حاوی نویسه‌های نامعتبر است</translation>
 <translation id="4871370605780490696">افزودن نشانک</translation>
 <translation id="4871568871368204250">خاموش کردن همگام‌سازی</translation>
+<translation id="4871630917300912613">محدودیت‌های حفاظتی جاوا اسکریپت</translation>
 <translation id="4871719318659334896">بستن گروه</translation>
 <translation id="4872192066608821120">‏برای وارد کردن گذرواژه‌ها، فایل CSV را انتخاب کنید</translation>
 <translation id="4872212987539553601">راه‌اندازی رمزگذاری درون‌دستگاهی</translation>
@@ -7139,6 +7142,7 @@
 <translation id="583673505367439042">سایت‌ها می‌توانند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهند</translation>
 <translation id="5836999627049108525">زبانی که می‌خواهید از آن ترجمه کنید</translation>
 <translation id="583756221537636748">قاب</translation>
+<translation id="5840656138956959276">بهبودیافته: سخت‌گیرانه</translation>
 <translation id="5840680448799937675">فایل‌ها همیشه درحالت آفلاین هم‌رسانی می‌شود</translation>
 <translation id="5841270259333717135">پیکربندی اترنت</translation>
 <translation id="5841338463993781099">در حساب ذخیره شود؟</translation>
@@ -7414,6 +7418,7 @@
 <translation id="6021293122504240352"><ph name="APPS" /> برنامه دیگر پشتیبانی نمی‌شود</translation>
 <translation id="6021969570711251331">درهم‌چینی</translation>
 <translation id="6022526133015258832">بازکردن تمام صفحه</translation>
+<translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6023643151125006053">سرپرست دامنه <ph name="SAML_DOMAIN" /> این دستگاه (شماره سریال: <ph name="SERIAL_NUMBER" />) را قفل کرده است.</translation>
 <translation id="6024317249717725918">جستجوی فریم ویدیو با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">ردیابی پشته‌ای</translation>
@@ -7964,6 +7969,7 @@
 <translation id="6411135999030237579">برای تکرار خودکار کلید، آن کلید فشرده و نگه داشته شود</translation>
 <translation id="6414618057231176439">انتخاب کنید کدام نسخه <ph name="VM_NAME" /> نصب شود.</translation>
 <translation id="641469293210305670">نصب به‌روزرسانی‌ها و برنامه‌ها</translation>
+<translation id="6415434255504060856">سخت‌گیرانه برای همه سایت‌ها</translation>
 <translation id="6415757856498750027">‏برای دریافت «ư»، ‏«w» را تایپ کنید</translation>
 <translation id="6415816101512323589">بازیابی داده‌های محلی برای محافظت از داده‌هایتان روشن شود؟</translation>
 <translation id="6415900369006735853">اتصال به اینترنت ازطریق تلفن</translation>
@@ -8361,6 +8367,7 @@
 <translation id="6686665106869989887">زبانه به راست منتقل شد</translation>
 <translation id="6686676261102452995">امروز آن را باز کردید</translation>
 <translation id="6686817083349815241">ذخیره گذرواژه‌تان</translation>
+<translation id="6686878118106035853">محافظت بهبودیافته سفارشی، بهینه‌سازی جاوا اسکریپت را برای همه سایت‌ها خاموش می‌کند</translation>
 <translation id="6687008241368170505">‏تغییر پین «مدیر گذرواژه Google»</translation>
 <translation id="6687079240787935001">پنهان کردن <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">کلیدهای موشواره</translation>
@@ -10842,6 +10849,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">قبلاً این دستگاه را ثبت کرده‌اید. لازم نیست آن را دوباره ثبت کنید.</translation>
 <translation id="8357388086258943206">‏خطا در نصب Linux</translation>
+<translation id="8357883857705092796">سایت‌های ناشناس</translation>
 <translation id="8358685469073206162">صفحه‌ها بازیابی شوند؟</translation>
 <translation id="835927394551949760">‏از Google بپرسید</translation>
 <translation id="835951711479681002">‏ذخیره در «حساب Google»</translation>
@@ -12210,7 +12218,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{مرور سایتی که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور {NUM_SITES} سایت که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور {NUM_SITES} سایت که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="966588271015727539">نمایشگر بریل انتخاب کنید</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{بستن این نمایه}one{بستن این نمایه (# پنجره)}other{بستن این نمایه (# پنجره)}}</translation>
-<translation id="967398046773905967">‏به هیچ سایتی اجازه دسترسی به دستگاه‌های HID داده نشود</translation>
 <translation id="96756691973639907">کنش‌های بیشتر برای <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 <translation id="96774243435178359">چاپگرهای مدیریت‌شده</translation>

@@ -240,6 +240,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3522404737534491619">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана</translation>
 <translation id="3530103706039034513">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />.  Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chromium як <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Щоб показувати свій екран, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
+<translation id="3588112919289558122">Покращений захист вимикає оптимізацію JavaScript для сайтів, які Chromium не розпізнає</translation>
 <translation id="3597003331831379823">Не вдалося виконати налаштування з розширеними повноваженнями. <ph name="METAINSTALLER_ERROR" />.</translation>
 <translation id="3600428265489994557">Увійдіть у Chromium</translation>
 <translation id="3639635944603682591">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>

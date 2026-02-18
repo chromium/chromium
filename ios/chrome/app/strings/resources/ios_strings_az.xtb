@@ -1786,6 +1786,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Anonim tablarınızı kilidləmək üçün Touch ID, Face ID və ya Parol ayarlayın.</translation>
 <translation id="750886945254958667">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya artıq ona daxil olmaq istəmirsinizsə, çıxın</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Maksimum 1 tab əlavə edin}other{Maksimum {COUNT} tab əlavə edin}}</translation>
 <translation id="7512909159512473473">Parol ifadəsi daxil edin…</translation>
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7514530647142300459"><ph name="EMAIL" /> Google Hesabındakı parollardan istifadəyə davam edin</translation>

@@ -1787,6 +1787,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Για να κλειδώσετε τις καρτέλες ανώνυμης περιήγησης, ρυθμίστε το Touch ID, το Face ID ή έναν κωδικό πρόσβασης.</translation>
 <translation id="750886945254958667">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή αποχωρήστε, αν δεν θέλετε πλέον να έχετε πρόσβαση σε αυτή</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Προσθέστε έως και 1 καρτέλα}other{Προσθέστε έως και {COUNT} καρτέλες}}</translation>
 <translation id="7512909159512473473">Εισαγωγή φράσης πρόσβασης…</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7514530647142300459">Συνεχίστε να χρησιμοποιείτε τους κωδικούς πρόσβασης στον Λογαριασμό σας Google <ph name="EMAIL" /></translation>

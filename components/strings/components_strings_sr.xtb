@@ -4229,6 +4229,7 @@
 <translation id="7714404809393719981">Слика (полусјајна)</translation>
 <translation id="7714424966701020172">Изабрана је опција за попуњавање пуног имена</translation>
 <translation id="7714464543167945231">Сертификат</translation>
+<translation id="7714943438925794410">Садржај са странице за плаћање се дели са Google-ом да би Google пружао ове опције. Да бисте сакрили опције за касније плаћање у аутоматском попуњавању, идите на <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Блокира администратор</translation>
 <translation id="7716375162095500223">Још није отпремљено или је игнорисано</translation>
 <translation id="7716424297397655342">Није могуће учитати овај сајт из кеша</translation>
@@ -4311,6 +4312,7 @@
 <translation id="7862306158978555061">да прикаже осетљиве информације</translation>
 <translation id="7865448901209910068">Најбоља брзина</translation>
 <translation id="7865482168955081228">Екран са грешком за опцију Купите одмах, платите касније је затворен.</translation>
+<translation id="7870207318911766769">Садржај са странице за плаћање се дели са Google-ом да би Google пружао ове опције.</translation>
 <translation id="7870281855125116701">Пронађен је попуст</translation>
 <translation id="7871445724586827387">Промените лозинку за Google налог</translation>
 <translation id="787226752901403048">Пријавите се у Chrome да бисте делили групе картица, придруживали им се и сарађивали на идејама</translation>

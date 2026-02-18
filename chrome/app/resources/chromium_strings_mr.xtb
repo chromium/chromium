@@ -241,6 +241,7 @@
 <translation id="3522404737534491619">तुमची विंडो शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chromium साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे.  तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा.</translation>
 <translation id="3561853857681580870">तुमची स्क्रीन शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chromium साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
+<translation id="3588112919289558122">Chromium ओळखत नसलेल्या साइटसाठी वर्धित संरक्षण JavaScript ऑप्टिमायझेशन बंद करते</translation>
 <translation id="3597003331831379823">वाढीव विशेषाधिकारांसह सेटअप रन करता आला नाही. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium मध्ये साइन इन करा</translation>
 <translation id="3639635944603682591">या व्यक्तीचा ब्राउझिंग डेटा या डिव्हाइसवरून हटवला जाईल. डेटा रीकव्हर करण्यासाठी, Chromium वर <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>

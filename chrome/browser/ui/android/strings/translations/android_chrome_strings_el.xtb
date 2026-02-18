@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Ο έλεγχος ολοκληρώθηκε!</translation>
 <translation id="1094555143448724771">Για να δείτε καρτέλες από τις άλλες συσκευές σας, συγχρονίστε τις καρτέλες και το ιστορικό σας</translation>
 <translation id="1095761715416917775">Βεβαιωθείτε ότι έχετε πάντα πρόσβαση σε συγχρονισμένα δεδομένα</translation>
+<translation id="1096091316906284742">Φύλλο κάτω μέρους για δήλωση συμμετοχής στο Chrome Finds</translation>
 <translation id="1100066534610197918">Άνοιγμα σε νέα καρτ. σε ομάδα</translation>
 <translation id="1103142993930332957">Θέλετε να συμβάλλετε στη βελτίωση του Chrome;</translation>
 <translation id="1105960400813249514">Λήψη οθόνης</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
 <translation id="2708226184420201102">Άνοιγμα στο πρόγραμμα περιήγησης <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Νέα συλλογή</translation>
+<translation id="2710883118091822664">Συνδεθείτε για να μπορείτε να συνεχίσετε εύκολα σε όλες τις συσκευές σας</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
 <translation id="2718846868787000099">Για να είναι δυνατή η εμφάνιση του περιεχομένου στις προτιμώμενες γλώσσες σας, οι ιστότοποι που επισκέπτεστε μπορούν να δουν τις προτιμήσεις σας.</translation>
 <translation id="2723001399770238859">ήχος</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">Σύρετε προς τα επάνω για να δείτε τα αποτελέσματα αναζήτησης</translation>
 <translation id="3269093882174072735">Φόρτωση εικόνας</translation>
 <translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
+<translation id="3282568296779691940">Σύνδεση στο Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 κωδικός πρόσβασης έχει αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τον χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τον στον Λογαριασμό σας Google.}other{# κωδικοί πρόσβασης έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τους χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τους στον Λογαριασμό σας Google.}}</translation>
 <translation id="3293181007446299124">Το ιστορικό περιήγησής σας διατηρείται ιδιωτικό στη συσκευή σας και οι αναφορές αποστέλλονται με καθυστέρηση για την προστασία της ταυτότητάς σας.</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">Το Chrome μπορεί να ελέγξει τους κωδικούς πρόσβασής σας όταν τους αποθηκεύετε</translation>
 <translation id="3636940436873918441">Προτιμώμενες γλώσσες</translation>
 <translation id="3637744895182738742">Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, <ph name="BEGIN_LINK" />διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Το φύλλο δήλωσης συμμετοχής στο Chrome Finds έκλεισε</translation>
 <translation id="3647019414263135904">Άνοιγμα ή κλείσιμο του αναδυόμενου παραθύρου περιβάλλοντος</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Μετάβαση στην αρχική σελίδα της εφαρμογής Google</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">Χρήση του Sogou για αναζήτηση</translation>
 <translation id="4387647248986092471">Δημιουργία κλειδώματος προφίλ αυτοκινήτου</translation>
 <translation id="4387817230000841154">Άνοιγμα Λήψεων</translation>
+<translation id="4395046795145457714">Το φύλλο δήλωσης συμμετοχής στο Chrome Finds άνοιξε σε πλήρες ύψος</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα ανώνυμης περιήγησης που κάνει εγγραφή</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Λήψη…</translation>
 <translation id="4404568932422911380">Δεν υπάρχουν σελιδοδείκτες</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">Μπορείτε να πλοηγηθείτε σε σελίδες με δείκτη κειμένου. Πατήστε F7 για απενεργοποίηση.</translation>
 <translation id="5471273988133666918">Δεν είναι δυνατή η μετακίνηση της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
+<translation id="5489222148748465285">Συνέχεια αναζήτησης Chrome;</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="549660026907543296">Συμμετοχή ως <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Φύλλο κάτω μέρους πρόσφατης δραστηριότητας</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">Τα URL που επισκέπτεστε αποστέλλονται στο Google για την πρόβλεψη των ιστοτόπων που ενδέχεται να επισκεφτείτε στη συνέχεια.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
 <translation id="6649642165559792194">Προεπισκόπηση εικόνας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Το φύλλο δήλωσης συμμετοχής στο Chrome Finds άνοιξε στο μισό ύψος</translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Να λαμβάνω ειδοποιήσεις</translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">Διακοπή παρακολούθησης τιμής</translation>
 <translation id="6830728435402077660">Μη ασφαλές</translation>
 <translation id="6831043979455480757">Μετάφραση</translation>
+<translation id="6835182496791325827">Λάβετε ειδοποίηση όταν το Chrome βρίσκει τα καλύτερα αποτελέσματα για τις αναζητήσεις σας όσο δεν το χρησιμοποιείτε.</translation>
 <translation id="6846298663435243399">Φόρτωση…</translation>
 <translation id="6850409657436465440">Η λήψη σας βρίσκεται ακόμα σε εξέλιξη</translation>
 <translation id="6850830437481525139">Έκλεισαν <ph name="TAB_COUNT" /> καρτέλες</translation>

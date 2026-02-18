@@ -557,7 +557,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1362865166188278099">Mekanisk feil. Sjekk skriveren</translation>
 <translation id="1363585519747660921">USB-skriveren må konfigureres</translation>
 <translation id="136378536198524553">Strømsparing er på</translation>
-<translation id="136522805455656552">For å holde enheten din sikker bør du bare kjøre og installere programvare fra pålitelige kilder og utviklere. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Hev øyenbrynene</translation>
 <translation id="1367817137674340530">Genererte <ph name="COUNT" /> bilder</translation>
 <translation id="1368603372088757436">Linux støttes ikke på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -1226,7 +1225,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="18139523105317219">Navn på EDI-enhet</translation>
 <translation id="1815083418640426271">Lim inn som ren tekst</translation>
 <translation id="1815097521077272760">Du er invitert til å prøve tastaturkontroll for dette spillet.</translation>
-<translation id="1815181278146012280">Spør når nettsteder vil ha tilgang til HID-enheter</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> til …</translation>
 <translation id="1816036116994822943">Skannehastighet for tastaturet</translation>
 <translation id="1817871734039893258">Microsoft-filgjenoppretting</translation>
@@ -2565,6 +2563,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="271033894570825754">Ny samling</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> er nå låst opp</translation>
 <translation id="2710676967944965821">Vil du tilbakestille alle tillatelser for smartkortlesere?</translation>
+<translation id="2710883118091822664">Logg på for å enkelt fortsette på alle enhetene dine</translation>
 <translation id="2713106313042589954">Slå av kameraet</translation>
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2714180132046334502">Mørk bakgrunn</translation>
@@ -7406,6 +7405,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apper støttes ikke lenger</translation>
 <translation id="6021969570711251331">Innfelt</translation>
 <translation id="6022526133015258832">Åpne i fullskjerm</translation>
+<translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
 <translation id="6023643151125006053">Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst av <ph name="SAML_DOMAIN" />-administratoren.</translation>
 <translation id="6024317249717725918">&amp;Søk i videorammen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stabelsporing</translation>
@@ -12199,7 +12199,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Gjennomgå 1 nettsted som nylig har sendt mange varsler}other{Gjennomgå {NUM_SITES} nettsteder som nylig har sendt mange varsler}}</translation>
 <translation id="966588271015727539">Velg en Bluetooth-leselist</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Lukk denne profilen}other{&amp;Lukk denne profilen (# vinduer)}}</translation>
-<translation id="967398046773905967">Ikke gi noen nettsteder tilgang til HID-enheter</translation>
 <translation id="96756691973639907">Flere handlinger for <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Lagrede data</translation>
 <translation id="96774243435178359">Administrerte skrivere</translation>

@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Review complete!</translation>
 <translation id="1094555143448724771">To see tabs from your other devices, sync your tabs and history</translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
+<translation id="1096091316906284742">Chrome Finds opt-in bottom sheet</translation>
 <translation id="1100066534610197918">Open in new tab in group</translation>
 <translation id="1103142993930332957">Help improve Chrome?</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
@@ -395,6 +396,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2708226184420201102">Open in <ph name="PRODUCT_NAME" /> browser</translation>
 <translation id="271033894570825754">New collection</translation>
+<translation id="2710883118091822664">Sign in to easily continue on all your devices</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2718846868787000099">To show content in your preferred languages, the sites that you visit can see your preferences</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -530,6 +532,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3268048651973962414">Drag up to see search results</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="3280562213547448728">Voice search</translation>
+<translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account.}other{# passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
@@ -608,6 +611,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="3636940436873918441">Preferred languages</translation>
 <translation id="3637744895182738742">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Chrome Finds opt-in closed</translation>
 <translation id="3647019414263135904">Open or close the context pop-up</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Go to Google app home</translation>
@@ -781,6 +785,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4384468725000734951">Using Sogou for search</translation>
 <translation id="4387647248986092471">Create a car profile lock</translation>
 <translation id="4387817230000841154">Open downloads</translation>
+<translation id="4395046795145457714">Chrome Finds opt-in opened at full height</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, selected pinned recording Incognito tab</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Downloading…</translation>
 <translation id="4404568932422911380">No bookmarks</translation>
@@ -1049,6 +1054,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5469852975082458401">You can navigate pages with a text cursor. Press F7 to turn off.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
 <translation id="548278423535722844">Open in maps app</translation>
+<translation id="5489222148748465285">Let Chrome keep looking?</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Recent activity bottom sheet</translation>
@@ -1344,6 +1350,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="6649642165559792194">Preview image <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Chrome Finds opt-in opened at half height</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notify me</translation>
 <translation id="6671495933530132209">Copy image</translation>
@@ -1395,6 +1402,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6828070228333235514">Stop tracking price</translation>
 <translation id="6830728435402077660">Not secure</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6835182496791325827">Get notified when Chrome finds the best results for your searches while you're away.</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabs closed</translation>

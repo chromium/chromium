@@ -557,7 +557,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1362865166188278099">Tatizo la kiufundi. Angalia printa</translation>
 <translation id="1363585519747660921">Printa ya USB inahitaji kuwekewa mipangilio</translation>
 <translation id="136378536198524553">Kiokoa Nishati kimewashwa</translation>
-<translation id="136522805455656552">Ili uimarishe usalama wa kifaa chako, unapaswa kutekeleza na kusakinisha programu kutoka kwa wasanidi programu na vyanzo vinavyoaminika pekee. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Inua nyusi</translation>
 <translation id="1367817137674340530">Imezalisha picha <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Programu ya Linux haitumiki kwenye <ph name="DEVICE_TYPE" /> yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -1228,7 +1227,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="18139523105317219">Jina la Sehemu ya EDI</translation>
 <translation id="1815083418640426271">Bandika Kama Matini Makavu</translation>
 <translation id="1815097521077272760">Umealikwa ujaribu kidhibiti kibodi cha mchezo huu.</translation>
-<translation id="1815181278146012280">Iulize wakati tovuti inataka kufikia vifaa vya HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> zaidi...</translation>
 <translation id="1816036116994822943">Kasi ya kuchanganua katika kibodi</translation>
 <translation id="1817871734039893258">Uopoaji wa Faili kutoka Microsoft</translation>
@@ -2568,6 +2566,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="271033894570825754">Mkusanyiko mpya</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> yako sasa imefunguliwa</translation>
 <translation id="2710676967944965821">Ungependa kubadilisha ruhusa zote za kisomaji mahiri cha kadi?</translation>
+<translation id="2710883118091822664">Ingia katika akaunti ili uendelee kwa urahisi kwenye vifaa vyako vyote</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2713444072780614174">Nyeupe</translation>
 <translation id="2714180132046334502">Mandhari-nyuma meusi</translation>
@@ -7412,6 +7411,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6021293122504240352">Programu <ph name="APPS" /> hazitumiki tena</translation>
 <translation id="6021969570711251331">Mchanganyiko</translation>
 <translation id="6022526133015258832">Fungua Skrini Nzima</translation>
+<translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
 <translation id="6023643151125006053">Kifaa hiki (SN: <ph name="SERIAL_NUMBER" />) kimefungwa na msimamizi wa <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">Tafuta Fremu ya Video ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Alama ya Bunda</translation>
@@ -12205,7 +12205,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Kagua tovuti 1 ambayo hivi karibuni ilituma arifa nyingi}other{Kagua tovuti {NUM_SITES} ambazo hivi karibuni zilituma arifa nyingi}}</translation>
 <translation id="966588271015727539">Chagua onyesho la braille ya bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Funga Wasifu Huu}other{Funga Wasifu Huu (Madirisha #)}}</translation>
-<translation id="967398046773905967">Usiruhusu tovuti zozote zifikie vifaa vya HID</translation>
 <translation id="96756691973639907">Vitendo zaidi vya <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data iliyohifadhiwa</translation>
 <translation id="96774243435178359">Printa zinazodhibitiwa</translation>

@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Прегледът завърши!</translation>
 <translation id="1094555143448724771">За да виждате разделите от другите си устройства, синхронизирайте разделите и историята си</translation>
 <translation id="1095761715416917775">Обезпечете си непрекъснат достъп до синхронизираните си данни</translation>
+<translation id="1096091316906284742">Долен лист за включване в Chrome Finds</translation>
 <translation id="1100066534610197918">Отваряне в нов раздел в група</translation>
 <translation id="1103142993930332957">Искате ли да помогнете за подобряването на Chrome?</translation>
 <translation id="1105960400813249514">Заснемане на екрана</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
 <translation id="2708226184420201102">Отваряне на <ph name="PRODUCT_NAME" /> в браузъра</translation>
 <translation id="271033894570825754">Нова колекция</translation>
+<translation id="2710883118091822664">Влезте в профила си, за да продължите лесно на всичките си устройства</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2718846868787000099">Сайтовете, които посещавате, могат да виждат предпочитанията ви, за да ви показват съдържание на предпочитаните от вас езици</translation>
 <translation id="2723001399770238859">звук</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">Плъзнете нагоре, за да видите резултатите от търсенето</translation>
 <translation id="3269093882174072735">Зареждане на изображението</translation>
 <translation id="3280562213547448728">Гласово търсене</translation>
+<translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 парола е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.}other{# пароли са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google.}}</translation>
 <translation id="3293181007446299124">Историята ви на сърфиране остава частна на устройството ви, а отчетите се изпращат със закъснение, за да защитим самоличността ви.</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">Chrome може да проверява паролите ви, когато ги запазите</translation>
 <translation id="3636940436873918441">Предпочитани езици</translation>
 <translation id="3637744895182738742">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Включването в Chrome Finds е затворено</translation>
 <translation id="3647019414263135904">Отваряне или затваряне на контекстния изскачащ прозорец</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Към началната страница на приложението Google</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">За търсене ще се използва Sogou</translation>
 <translation id="4387647248986092471">Задаване на опция за заключване на потребителския профил в автомобила</translation>
 <translation id="4387817230000841154">Отваряне на страницата „Изтегляния“</translation>
+<translation id="4395046795145457714">Включването в Chrome Finds е отворено на пълната височина</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" /> – избран фиксиран раздел в режим „инкогнито“, който записва</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – изтегля се…</translation>
 <translation id="4404568932422911380">Няма отметки</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">Можете да навигирате в страниците с помощта на текстов курсор. Натиснете F7 за изключване на функцията.</translation>
 <translation id="5471273988133666918">Разделът „<ph name="TAB_TITLE" />“ не може да бъде преместен</translation>
 <translation id="548278423535722844">Отваряне в приложение за карти</translation>
+<translation id="5489222148748465285">Да продължи ли Chrome да търси?</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="549660026907543296">Присъединяване като <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Долен лист със скорошна активност</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите страници, които е възможно да посетите</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Включването в Chrome Finds е отворено на половината височина</translation>
 <translation id="666731172850799929">Отваряне в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Искам да получавам известия</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">Проследяване на цената: Спиране</translation>
 <translation id="6830728435402077660">Няма защита</translation>
 <translation id="6831043979455480757">Превод</translation>
+<translation id="6835182496791325827">Получавайте известия, когато Chrome намери най-добрите резултати за търсенията ви, докато не сте на екрана.</translation>
 <translation id="6846298663435243399">Зарежда се…</translation>
 <translation id="6850409657436465440">Изтеглянето продължава</translation>
 <translation id="6850830437481525139">Затворихте <ph name="TAB_COUNT" /> раздела</translation>

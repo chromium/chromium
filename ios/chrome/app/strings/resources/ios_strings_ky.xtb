@@ -1786,6 +1786,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Жашыруун өтмөктөрдү кулпулоо үчүн Touch ID, Face ID же өткөрүүчү кодду жөндөңүз.</translation>
 <translation id="750886945254958667">Өтмөктөрдү кийинчерээк кошуу үчүн бул топту калтырып, же ага кирүүнү каалабасаңыз, андан чыгыңыз</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{1 өтмөккө чейин кошуңуз}other{{COUNT} өтмөккө чейин кошуңуз}}</translation>
 <translation id="7512909159512473473">Сыр сүйлөмдү киргизиңиз…</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7514530647142300459"><ph name="EMAIL" /> Google аккаунтуңуздагы сырсөздөрдү колдоно бериңиз</translation>

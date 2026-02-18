@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">यांत्रिकी समस्या. प्रिंटर तपासा</translation>
 <translation id="1363585519747660921">USB प्रिंटर कॉन्फिगर करणे आवश्यक आहे</translation>
 <translation id="136378536198524553">एनर्जी सेव्हर सुरू आहे</translation>
-<translation id="136522805455656552">तुमचे डिव्हाइस सुरक्षित ठेवण्यासाठी, तुम्ही फक्त विश्वासार्ह स्रोत आणि डेव्हलपर यांच्याकडील सॉफ्टवेअर रन व इंस्टॉल केले पाहिजे. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">भुवया उंचवा</translation>
 <translation id="1367817137674340530">जनरेट केलेल्या <ph name="COUNT" /> इमेज</translation>
 <translation id="1368603372088757436">Linux ला तुमच्या <ph name="DEVICE_TYPE" /> वर सपोर्ट नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -1231,7 +1230,6 @@
 <translation id="18139523105317219">EDI पार्टी नाव</translation>
 <translation id="1815083418640426271">साधा मजकूर म्हणून पेस्ट करा</translation>
 <translation id="1815097521077272760">तुम्हाला या गेमसाठी कीबोर्ड नियंत्रण वापरून पाहण्याकरिता आमंत्रित केले आहे.</translation>
-<translation id="1815181278146012280">साइटला केव्हा HID डिव्हाइस ॲक्सेस करायचे आहेत हे विचारा</translation>
 <translation id="181577467034453336">आणखी <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">कीबोर्ड स्कॅनिंगची गती</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
@@ -2021,6 +2019,7 @@
 <translation id="2332742915001411729">डीफॉल्टवर रीसेट करा</translation>
 <translation id="2333166365943957309">UI हायरार्की</translation>
 <translation id="233375395665273385">हटवा आणि साइन आउट करा</translation>
+<translation id="2334384018887664164">तुम्ही आशय सेटिंग्जमध्ये विश्वास असलेल्या साइटना अनुमती सूचीमध्ये जोडू शकता</translation>
 <translation id="233471714539944337">संवेदनशील आशय</translation>
 <translation id="2335758110242123814">गट उघडा</translation>
 <translation id="2336228925368920074">सर्व टॅब बुकमार्क करा...</translation>
@@ -2116,6 +2115,7 @@
 <translation id="240789602312469910">वापर आणि निदान डेटा पाठवा. Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवून तुमच्या लहान मुलाचा Android अनुभव सुधारण्यात मदत करा. हे तुमच्या लहान मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्टीम व अ‍ॅप स्थिरता आणि इतर सुधारणांसाठी मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यासारख्या भागीदारांनादेखील मदत करेल. या <ph name="BEGIN_LINK1" />सेटिंगची<ph name="END_LINK1" /> मालकाद्वारे अंमलबजावणी केली जाते. मालक या डिव्हाइससाठी निदान आणि वापर डेटा Google ला पाठवण्याचा पर्याय निवडू शकतो. तुमच्या लहान मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली असल्यास, ही माहिती त्याच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. <ph name="BEGIN_LINK2" />मेट्रिकबद्दल अधिक जाणून घ्या<ph name="BEGIN_LINK2_END" />अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">कार्ड सेव्ह करत आहे</translation>
 <translation id="2408742686124047357">पुढच्या वेळी सोप्या अ‍ॅक्सेससाठी Google Lens तुमच्या टूलबारवर पिन करा</translation>
+<translation id="2408762424059547338">JavaScript ऑप्टिमायझेशन बंद करून हल्ल्यांपासून तुमचे अधिक चांगले संरक्षण करते</translation>
 <translation id="2408955596600435184">तुमचा पिन प्रविष्‍ट करा</translation>
 <translation id="2409268599591722235">चला जाऊ या</translation>
 <translation id="2409378541210421746">भाषेची निवड संपादित करा</translation>
@@ -2392,6 +2392,7 @@
 <translation id="2581992808349413349">DNS (डोमेन नेम सिस्टीम) मध्ये साइटचा आयपी अ‍ॅड्रेस शोधण्यासाठी सुरक्षित कनेक्शन वापरा. हे <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> येथे व्यवस्थापित केलेला सेवा पुरवठादार वापरते</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (प्लॅटफॉर्म <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">कोणताही स्मार्ट कार्ड रीडर</translation>
+<translation id="2583949330716828639">साइट एक्सेप्शन व्यवस्थापित करा</translation>
 <translation id="2584109212074498965">Kerberos तिकीट मिळवू शकलो नाही. पुन्हा प्रयत्न करा किंवा तुमच्या संस्थेच्या डिव्हाइस ॲडमिनशी संपर्क साधा. (एरर कोड <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome मध्ये वेबसाइट मायक्रोफोन परवानग्या व्यवस्थापित करा</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> इंस्टॉल करता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -2571,6 +2572,7 @@
 <translation id="271033894570825754">नवीन संग्रह</translation>
 <translation id="2710507903599773521">तुमचे <ph name="DEVICE_TYPE" /> आता अनलॉक केले आहे</translation>
 <translation id="2710676967944965821">सर्व स्‍मार्ट कार्ड रीडर परवानग्या रीसेट करायच्या आहेत का?</translation>
+<translation id="2710883118091822664">तुमच्या सर्व डिव्हाइसवर सहजपणे पुढे सुरू ठेवण्यासाठी साइन इन करा</translation>
 <translation id="2713106313042589954">कॅमेरा बंद करा</translation>
 <translation id="2713444072780614174">पांढरा</translation>
 <translation id="2714180132046334502">गडद बॅकग्राउंड</translation>
@@ -3223,7 +3225,7 @@
 <translation id="3151539355209957474">सुरू वेळ</translation>
 <translation id="3151786313568798007">अभिमुखता</translation>
 <translation id="3152356229013609796">तुमच्या फोनमधील सूचना पहा, त्या डिसमिस करा आणि त्यांना उत्तर द्या</translation>
-<translation id="3152545926232662879">दुर्लक्ष केले</translation>
+<translation id="3152545926232662879">दुर्लक्ष केले:</translation>
 <translation id="3154754096046236400">वैयक्तिक संदर्भ</translation>
 <translation id="3155163173539279776">Chromium पुन्हा लाँच करा</translation>
 <translation id="3155394504825881014">टॅब गट याचे रूपांतर बुकमार्क फोल्डर यामध्ये करा</translation>
@@ -5767,6 +5769,7 @@
 <translation id="4871322859485617074">पिनमध्ये अवैध वर्ण आहेत</translation>
 <translation id="4871370605780490696">बुकमार्क जोडा</translation>
 <translation id="4871568871368204250">सिंक बंद करा</translation>
+<translation id="4871630917300912613">JavaScript गार्डरेल्स</translation>
 <translation id="4871719318659334896">गट बंद करा</translation>
 <translation id="4872192066608821120">पासवर्ड इंपोर्ट करण्यासाठी, CSV फाइल निवडा</translation>
 <translation id="4872212987539553601">डिव्हाइसवरील एंक्रिप्शन सेट करा</translation>
@@ -7140,6 +7143,7 @@
 <translation id="583673505367439042">साइट तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्यासाठी विचारू शकतात</translation>
 <translation id="5836999627049108525">ज्यामधून भाषांतर करायचे आहे ती भाषा</translation>
 <translation id="583756221537636748">केस</translation>
+<translation id="5840656138956959276">वर्धित: सक्तीचे</translation>
 <translation id="5840680448799937675">फाइल नेहमी ऑफलाइन शेअर केल्या जातील</translation>
 <translation id="5841270259333717135">इथरनेट कॉन्फिगर करा</translation>
 <translation id="5841338463993781099">खात्यामध्ये सेव्ह करायचा आहे काt?</translation>
@@ -7418,6 +7422,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> अ‍ॅप्सना यापुढे सपोर्ट नाही</translation>
 <translation id="6021969570711251331">एकावर एक</translation>
 <translation id="6022526133015258832">फुल स्क्रीन उघडा</translation>
+<translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6023643151125006053">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> ॲडमिनिस्ट्रेटरने लॉक केले होते.</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून व्हिडिओ फ्रेम शोधा</translation>
 <translation id="6025215716629925253">स्टॅक ट्रेस</translation>
@@ -7968,6 +7973,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6411135999030237579">की आपोआप रिपीट करण्यासाठी प्रेस करून धरून ठेवा</translation>
 <translation id="6414618057231176439"><ph name="VM_NAME" /> ची कोणती आवृत्ती इंस्टॉल करायची हे निवडा.</translation>
 <translation id="641469293210305670">अपडेट आणि अ‍ॅप्स इंस्टॉल करा</translation>
+<translation id="6415434255504060856">सर्व साइटसाठी सक्तीचे</translation>
 <translation id="6415757856498750027">"ư" मिळवण्यासाठी "w" टाइप करा</translation>
 <translation id="6415816101512323589">तुमच्या डेटाचे संरक्षण करण्यासाठी स्थानिक डेटा रिकव्‍हरी सुरू करायची आहे का?</translation>
 <translation id="6415900369006735853">तुमच्या फोनमधून इंटरनेटशी कनेक्ट करा</translation>
@@ -8363,6 +8369,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6686665106869989887">टॅब उजवीकडे हलवला आहे</translation>
 <translation id="6686676261102452995">तुम्ही आज उघडल्या होत्या</translation>
 <translation id="6686817083349815241">तुमचा पासवर्ड सेव्ह करा</translation>
+<translation id="6686878118106035853">कस्टम वर्धित संरक्षण सर्व साइटसाठी JavaScript ऑप्टिमायझेशन बंद करते</translation>
 <translation id="6687008241368170505">Google Password Manager चा पिन बदला</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> लपवा</translation>
 <translation id="6689948774466767379">माउस की</translation>
@@ -10844,6 +10851,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">तुम्ही आधीच या डिव्हाइसची नोंदणी केली आहे. तुम्हाला याची पुन्हा नोंदणी करण्याची आवश्यकता नाही.</translation>
 <translation id="8357388086258943206">Linux इंस्टॉल करताना एरर आली</translation>
+<translation id="8357883857705092796">ओळखल्या न गेलेल्या साइट</translation>
 <translation id="8358685469073206162">पेज पुनर्संचयित करायची?</translation>
 <translation id="835927394551949760">Google ला विचारा</translation>
 <translation id="835951711479681002">तुमच्या Google खाते मध्ये सेव्ह करा</translation>
@@ -12212,7 +12220,6 @@ I feel - विटांची इमारत</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{अलीकडे खूप सूचना पाठवलेल्या एका साइटचे पुनरावलोकन करा}other{अलीकडे खूप सूचना पाठवलेल्या {NUM_SITES} साइटचे पुनरावलोकन करा}}</translation>
 <translation id="966588271015727539">ब्लूटूथ ब्रेल डिस्प्ले निवडा</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{ही प्रोफाइल बंद करा}other{ही प्रोफाइल बंद करा (# Windows)}}</translation>
-<translation id="967398046773905967">कोणत्याही साइटना HID डिव्हाइस ॲक्सेस करू देऊ नका</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> साठी आणखी कृती</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 <translation id="96774243435178359">व्यवस्थापित केलेले प्रिंटर</translation>

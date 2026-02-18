@@ -557,7 +557,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1362865166188278099">Hubo un problema mecánico. Verifica la impresora.</translation>
 <translation id="1363585519747660921">La impresora USB debe configurarse</translation>
 <translation id="136378536198524553">El Ahorro de energía está activado</translation>
-<translation id="136522805455656552">Para proteger tu dispositivo, solo ejecuta o instala software de fuentes o desarrolladores que sean de confianza. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Levantar las cejas</translation>
 <translation id="1367817137674340530">Se generaron <ph name="COUNT" /> imágenes</translation>
 <translation id="1368603372088757436">Linux no es compatible en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -1219,7 +1218,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="18139523105317219">Nombre de parte EDI</translation>
 <translation id="1815083418640426271">Pegar como texto sin formato</translation>
 <translation id="1815097521077272760">Te invitamos a probar el control de teclado en este juego.</translation>
-<translation id="1815181278146012280">Preguntarme cuando un sitio intente acceder a dispositivos HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> más…</translation>
 <translation id="1816036116994822943">Velocidad de análisis del teclado</translation>
 <translation id="1817871734039893258">Recuperación de archivos de Microsoft</translation>
@@ -2555,6 +2553,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="271033894570825754">Nueva colección</translation>
 <translation id="2710507903599773521">Tu <ph name="DEVICE_TYPE" /> se desbloqueó</translation>
 <translation id="2710676967944965821">¿Quieres restablecer todos los permisos del lector de tarjetas inteligente?</translation>
+<translation id="2710883118091822664">Accede para continuar fácilmente en todos tus dispositivos</translation>
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -7401,6 +7400,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6021293122504240352">Ya no se admiten <ph name="APPS" /> apps</translation>
 <translation id="6021969570711251331">Intercalar</translation>
 <translation id="6022526133015258832">Abrir en pantalla completa</translation>
+<translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6024317249717725918">&amp;Buscar fotograma con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Seguimiento de la pila</translation>
@@ -7560,7 +7560,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6135826623269483856">No pueden administrar las ventanas de todas tus pantallas</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6136287496450963112">Tu llave de seguridad no está protegida con un PIN. Para administrar las huellas dactilares, crea uno.</translation>
-<translation id="6136637346277431354">Agrega pestañas y mucho más</translation>
+<translation id="6136637346277431354">Agregar pestañas y otras cosas</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6141988275892716286">Confirmar la descarga</translation>
@@ -12194,7 +12194,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 sitio que envió muchas notificaciones recientemente}other{Revisa {NUM_SITES} sitios que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="966588271015727539">Seleccionar una pantalla de braille mediante Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Cerrar este perfil}other{&amp;Cerrar este perfil (# ventanas)}}</translation>
-<translation id="967398046773905967">No permitir que ningún sitio acceda a dispositivos HID</translation>
 <translation id="96756691973639907">Más acciones para <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras administradas</translation>

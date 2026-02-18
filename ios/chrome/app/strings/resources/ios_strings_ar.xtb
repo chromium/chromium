@@ -1784,6 +1784,7 @@
 <translation id="7506817096924591340">‎<ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="750886945254958667">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{لا يمكن إضافة أكثر من علامة تبويب واحدة}zero{لا يمكن إضافة أكثر من {COUNT} علامة تبويب}two{لا يمكن إضافة أكثر من علامتَي تبويب ({COUNT})}few{لا يمكن إضافة أكثر من {COUNT} علامات تبويب}many{لا يمكن إضافة أكثر من {COUNT} علامة تبويب}other{لا يمكن إضافة أكثر من {COUNT} علامة تبويب}}</translation>
 <translation id="7512909159512473473">إدخال عبارة المرور…</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7514530647142300459">‏يُرجى مواصلة استخدام كلمات المرور في حسابك على Google: <ph name="EMAIL" /></translation>

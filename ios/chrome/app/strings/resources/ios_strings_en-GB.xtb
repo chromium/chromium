@@ -1786,6 +1786,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Add up to 1 tab}other{Add up to {COUNT} tabs}}</translation>
 <translation id="7512909159512473473">Enter passphrase…</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514530647142300459">Keep using the passwords in your Google Account <ph name="EMAIL" /></translation>

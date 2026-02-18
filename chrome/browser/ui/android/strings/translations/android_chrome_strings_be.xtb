@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Праверка завершана!</translation>
 <translation id="1094555143448724771">Каб бачыць укладкі з іншых прылад, сінхранізуйце ўкладкі і гісторыю</translation>
 <translation id="1095761715416917775">Падбайце аб тым, каб не страціць доступ да сінхранізаваных даных</translation>
+<translation id="1096091316906284742">Ніжні аркуш з прапановай уключыць Chrome Finds</translation>
 <translation id="1100066534610197918">У новай укладцы ў групе</translation>
 <translation id="1103142993930332957">Ці не маглі б вы дапамагчы палепшыць Chrome?</translation>
 <translation id="1105960400813249514">Здымак экрана</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">Навінка: абагульце спасылку, пры выкарыстанні якой старонка прагартаецца гэтага фрагмента тэксту</translation>
 <translation id="2708226184420201102">Адкрыць у браўзеры <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Новае</translation>
+<translation id="2710883118091822664">Увайдзіце, каб з лёгкасцю працягваць працу на ўсіх сваіх прыладах</translation>
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
 <translation id="2718846868787000099">Каб паказваць змесціва на выбраных вамі мовах, сайты, якія вы наведваеце, могуць праглядаць зададзеныя вамі параметры</translation>
 <translation id="2723001399770238859">аўдыя</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">Перацягніце ўверх, каб убачыць вынікі пошуку</translation>
 <translation id="3269093882174072735">Загрузіць відарыс</translation>
 <translation id="3280562213547448728">Галасавы пошук</translation>
+<translation id="3282568296779691940">Увайсці ў Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> укладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 пароль захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць яго на іншых прыладах, захавайце гэты пароль ва Уліковым запісе Google.}one{# пароль захаваны толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}few{# паролі захаваны толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}many{# пароляў захавана толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}other{# пароля захавана толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}}</translation>
 <translation id="3293181007446299124">Ваша гісторыя прагляду сайтаў пры гэтым захоўваецца прыватна на вашай прыладзе, а справаздачы адпраўляюцца з затрымкай, каб прадухіліць раскрыццё вашай асобы.</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">Chrome можа правяраць толькі захаваныя паролі</translation>
 <translation id="3636940436873918441">Прыярытэтныя мовы</translation>
 <translation id="3637744895182738742">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Прапанова ўключыць Chrome Finds закрыта</translation>
 <translation id="3647019414263135904">Адкрыць або закрыць кантэкстнае ўсплывальнае акно</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Перайсці на галоўны экран праграмы Google</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">Выкарыстоўваецца пошукавая сістэма Sogou</translation>
 <translation id="4387647248986092471">Стварыць блакіроўку профілю для аўтамабіля</translation>
 <translation id="4387817230000841154">Адкрыць спампоўкі</translation>
+<translation id="4395046795145457714">Прапанова ўключыць Chrome Finds адкрыта на ўсю вышыню</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, выбраная і замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – ідзе спампоўванне…</translation>
 <translation id="4404568932422911380">Няма закладак</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">Вы можаце перамяшчацца па старонках з дапамогай тэкставага курсора. Каб выключыць гэту функцыю, націсніце клавішу F7.</translation>
 <translation id="5471273988133666918">Не ўдаецца перамясціць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
+<translation id="5489222148748465285">Дазволіць Chrome працягнуць пошук?</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="549660026907543296">Далучыцца як <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Ніжні аркуш з нядаўнімі дзеяннямі</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб прадказваць, якія сайты вы можаце наведаць далей</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Перадпрагляд відарыса <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Прапанова ўключыць Chrome Finds адкрыта на палову экрана</translation>
 <translation id="666731172850799929">Адкрыць у праграме <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Апавяшчаць мяне</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">Спыніць адсочванне цаны</translation>
 <translation id="6830728435402077660">Не абаронена</translation>
 <translation id="6831043979455480757">Перакласці</translation>
+<translation id="6835182496791325827">Атрымлівайце апавяшчэнні, калі Chrome знаходзіць найлепшыя вынікі па вашых пошукавых запытах, пакуль вы не выкарыстоўваеце браўзер.</translation>
 <translation id="6846298663435243399">Ідзе загрузка…</translation>
 <translation id="6850409657436465440">Спампоўка ўсё яшчэ працягваецца</translation>
 <translation id="6850830437481525139">Закрытыя ўкладкі (<ph name="TAB_COUNT" />)</translation>

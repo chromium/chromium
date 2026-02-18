@@ -1786,6 +1786,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Da biste zaključali anonimne kartice, postavite Touch ID, Face ID ili šifru.</translation>
 <translation id="750886945254958667">Zadržite ovu grupu da biste kasnije dodali kartice ili je napustite ako joj više ne želite pristupati</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Dodajte najviše jednu karticu}one{Dodajte najviše {COUNT} karticu}few{Dodajte najviše {COUNT} kartice}other{Dodajte najviše {COUNT} kartica}}</translation>
 <translation id="7512909159512473473">Unesite šifru…</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7514530647142300459">Nastavite upotrebljavati zaporke na svom Google računu <ph name="EMAIL" /></translation>

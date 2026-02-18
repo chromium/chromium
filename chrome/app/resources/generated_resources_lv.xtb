@@ -559,7 +559,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1362865166188278099">Mehāniska problēma. Pārbaudiet printeri.</translation>
 <translation id="1363585519747660921">USB printerim ir nepieciešama konfigurācija</translation>
 <translation id="136378536198524553">Enerģijas taupīšana ir ieslēgta</translation>
-<translation id="136522805455656552">Lai aizsargātu ierīci, ieteicams izpildīt un instalēt tikai programmatūru, kas iegūta no uzticamiem avotiem un izstrādātājiem. <ph name="LEARN_MORE" />.</translation>
 <translation id="1365650529628379165">Paceliet uzacis</translation>
 <translation id="1367817137674340530">Ģenerēto attēlu skaits: <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Jūsu <ph name="DEVICE_TYPE" /> neatbalsta operētājsistēmu Linux. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
@@ -1224,7 +1223,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="18139523105317219">EDI puses nosaukums</translation>
 <translation id="1815083418640426271">Ielīmēt kā vienkāršu tekstu</translation>
 <translation id="1815097521077272760">Jūs esat uzaicināts izmēģināt šīs spēles vadību ar tastatūru.</translation>
-<translation id="1815181278146012280">Vaicāt, ja vietne vēlas piekļūt HID ierīcēm</translation>
 <translation id="181577467034453336">Vēl <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Tastatūras skenēšanas ātrums</translation>
 <translation id="1817871734039893258">Microsoft failu atkopšana</translation>
@@ -2560,6 +2558,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="271033894570825754">Jauna kolekcija</translation>
 <translation id="2710507903599773521">Ierīce (<ph name="DEVICE_TYPE" />) vairs nav piesaistīta konkrētam operatoram</translation>
 <translation id="2710676967944965821">Vai atiestatīt visas viedkaršu lasītāju atļaujas?</translation>
+<translation id="2710883118091822664">Pierakstieties, lai varētu ērti turpināt darbu visās savās ierīcēs.</translation>
 <translation id="2713106313042589954">Izslēgt kameru</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2714180132046334502">Tumšs fons</translation>
@@ -6852,6 +6851,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5636996382092289526">Lai izmantotu <ph name="NETWORK_ID" />, iespējams, jums vispirms būs <ph name="LINK_START" />jāapmeklē tīkla pierakstīšanās lapa<ph name="LINK_END" />, kas tiks automātiski atvērta pēc dažām sekundēm. Ja tā nenotiek, tīklu nevar izmantot.</translation>
 <translation id="5637476008227280525">Iespējot mobilos datus</translation>
 <translation id="5638170200695981015">Izvēlieties “Atvērt pamata redaktorā”, lai izmantotu ierobežotas skatīšanas un rediģēšanas iespējas.</translation>
+<translation id="5638202526629811571">Parādiet šo ekrānu kādam no vecākiem vai aizbildnim, lai viņš varētu apstiprināt, ka jūs drīkstat pievienot šo paplašinājumu.</translation>
 <translation id="563821631542362636">Atļaut vietnei saglabāt datus</translation>
 <translation id="5638309510554459422">Atrodiet paplašinājumus un motīvus <ph name="BEGIN_LINK" />Chrome interneta veikalā<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Atkārtoti ielādējiet šo lapu; turiet, lai redzētu citas opcijas</translation>
@@ -7399,6 +7399,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6021293122504240352">Vairākas lietotnes vairs netiek atbalstītas (kopā <ph name="APPS" />)</translation>
 <translation id="6021969570711251331">Slāņains</translation>
 <translation id="6022526133015258832">Atvērt pilnekrāna režīmu</translation>
+<translation id="6022659036123304283">Pielāgojiet Chrome savām prasībām</translation>
 <translation id="6023643151125006053">Šo ierīci (sērijas numurs: <ph name="SERIAL_NUMBER" />) bloķēja vietnes <ph name="SAML_DOMAIN" /> administrators.</translation>
 <translation id="6024317249717725918">&amp;Meklēt video kadru, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Steka izsekošana</translation>
@@ -10462,6 +10463,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8110393529211831722">Abonements ir instalēts tikai šajā ierīcē un netiek sinhronizēts ar citām ierīcēm jūsu kontā. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8110489095782891123">Notiek kontaktpersonu saraksta ielāde...</translation>
 <translation id="8114925369073821854">Lietotnes <ph name="APP_NAME" /> mikrofona atļauja</translation>
+<translation id="8116497846156149">Apstiprinājuma lūgšana vecākiem</translation>
 <translation id="8116972784401310538">&amp;Grāmatzīmju pārvaldnieks</translation>
 <translation id="8118276691321086429">Pakalpojumā <ph name="PASSWORD_MANAGER_BRAND" /> tiek saglabāti pierakstīšanās akreditācijas dati un, kad iespējams, jūsu vārdā automātiski veikta pierakstīšanās. Ja šī funkcija ir izslēgta, jums katru reizi tiek prasīts apstiprinājums.</translation>
 <translation id="8118362518458010043">Atspējoja pārlūks Chrome. Šis paplašinājums, iespējams, nav drošs.</translation>
@@ -12092,6 +12094,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Jūsu administrators var ierakstīt jūsu ekrānu lietotnē <ph name="APP0_NAME" />. Kad sāksies ierakstīšana, jūs nesaņemsiet paziņojumu.}=2{Jūsu administrators var ierakstīt jūsu ekrānu lietotnē <ph name="APP0_NAME" /> un <ph name="APP1_NAME" />. Kad sāksies ierakstīšana, jūs nesaņemsiet paziņojumu.}=3{Jūsu administrators var ierakstīt jūsu ekrānu lietotnē <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> un vēl vienā lietotnē. Jūs nesaņemsiet paziņojumu, kad sāksies ierakstīšana.}zero{Jūsu administrators var ierakstīt jūsu ekrānu lietotnē <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> un vēl # lietotnēs. Kad sāksies ierakstīšana, jūs nesaņemsiet paziņojumu.}one{Jūsu administrators var ierakstīt jūsu ekrānu lietotnē <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> un vēl # lietotnē. Kad sāksies ierakstīšana, jūs nesaņemsiet paziņojumu.}other{Jūsu administrators var ierakstīt jūsu ekrānu lietotnē <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> un vēl # lietotnēs. Kad sāksies ierakstīšana, jūs nesaņemsiet paziņojumu.}}</translation>
 <translation id="9186963452600581158">Pierakstīties bērna Google kontā</translation>
 <translation id="9187967020623675250">Taustiņi neatbilst. Nospiediet jebkuru taustiņu, lai veiktu darbību <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Šī lietojumprogramma ir bloķēta. Lūdzu, sazinieties ar izstrādātāju.</translation>
 <translation id="9192019773545828776">Klausieties balss komentārus, lai varētu izmantot ierīci, neskatoties ekrānā. Braila raksts ir pieejams, izmantojot pievienotu ierīci. Lai ieslēgtu vai izslēgtu ChromeVox, nospiediet Ctrl + Alt + Z. Lai pārvietotos, nospiediet meklēšanas taustiņu + kreiso vai labo bultiņu. Lai atlasītu (aktivizētu), nospiediet meklēšanas taustiņu + atstarpes taustiņu.</translation>
 <translation id="9195969368671142407">Ja jūsu organizācija ierobežo saglabāšanas iespējas jūsu Google kontā, jūs nevarat kopīgot vai pievienoties ciļņu grupām.</translation>
 <translation id="919686179725692564">Uzzināt vairāk par datu dublēšanu</translation>
@@ -12196,7 +12199,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Pārskatiet vienu vietni, no kuras nesen tika nosūtīts daudz paziņojumu}zero{Pārskatiet {NUM_SITES} vietņu, no kurām nesen tika nosūtīts daudz paziņojumu}one{Pārskatiet {NUM_SITES} vietni, no kurām nesen tika nosūtīts daudz paziņojumu}other{Pārskatiet {NUM_SITES} vietnes, no kurām nesen tika nosūtīts daudz paziņojumu}}</translation>
 <translation id="966588271015727539">Atlasīt Bluetooth Braila displeju</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Aizvērt šo profilu}zero{&amp;Aizvērt šo profilu (# logi)}one{&amp;Aizvērt šo profilu (# logi)}other{&amp;Aizvērt šo profilu (# logi)}}</translation>
-<translation id="967398046773905967">Neatļaut nevienai vietnei piekļūt HID ierīcēm</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" />: citas darbības</translation>
 <translation id="967624055006145463">Saglabātie dati</translation>
 <translation id="96774243435178359">Pārvaldītie printeri</translation>

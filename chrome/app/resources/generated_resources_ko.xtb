@@ -557,7 +557,6 @@
 <translation id="1362865166188278099">기술 문제입니다. 프린터를 확인하세요.</translation>
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
 <translation id="136378536198524553">에너지 절약 모드 사용 중</translation>
-<translation id="136522805455656552">기기를 안전하게 보호하려면 신뢰할 수 있는 출처 및 개발자의 소프트웨어만 실행하고 설치해야 합니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">눈썹 올리기</translation>
 <translation id="1367817137674340530">이미지 <ph name="COUNT" />개가 생성되었습니다</translation>
 <translation id="1368603372088757436">사용 중인 <ph name="DEVICE_TYPE" />에서 Linux가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -689,7 +688,7 @@
 <translation id="1461041542809785877">성능</translation>
 <translation id="1461177659295855031">북마크바 폴더로 이동</translation>
 <translation id="1461288887896722288">관리 계정에 방금 로그인했습니다. 새 관리 프로필을 만들면 계정에 연결된 일부 리소스에 액세스할 수 있습니다.</translation>
-<translation id="1461718860884899524">안전하지 않은 사이트 신고(&amp;U)…</translation>
+<translation id="1461718860884899524">안전하지 않은 사이트 신고…</translation>
 <translation id="146219525117638703">ONC 상태</translation>
 <translation id="146220085323579959">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.</translation>
 <translation id="1462480037563370607">수동으로 사이트 추가</translation>
@@ -1231,7 +1230,6 @@
 <translation id="18139523105317219">EDI측 이름</translation>
 <translation id="1815083418640426271">일반 텍스트로 붙여넣기</translation>
 <translation id="1815097521077272760">이 게임의 키보드 컨트롤을 사용해 보세요.</translation>
-<translation id="1815181278146012280">사이트에서 HID 기기에 액세스하려고 할 때 확인</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" />개 더보기...</translation>
 <translation id="1816036116994822943">키보드 검색 속도</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
@@ -2573,6 +2571,7 @@
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> 기기가 잠금 해제됨</translation>
 <translation id="2710676967944965821">모든 스마트 카드 리더 권한을 재설정하시겠습니까?</translation>
+<translation id="2710883118091822664">모든 기기에서 간편하게 이어 가려면 로그인하세요.</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2714180132046334502">어두운 배경</translation>
@@ -7418,6 +7417,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6021293122504240352">앱 <ph name="APPS" />개가 더 이상 지원되지 않음</translation>
 <translation id="6021969570711251331">인터리브</translation>
 <translation id="6022526133015258832">전체화면 열기</translation>
+<translation id="6022659036123304283">나만의 Chrome 만들기</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> 관리자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" />(으)로 동영상 프레임 검색(&amp;S)</translation>
 <translation id="6025215716629925253">스택 추적</translation>
@@ -7988,7 +7988,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="642469772702851743">소유자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>
 <translation id="6425556984042222041">텍스트 음성 변환 속도</translation>
 <translation id="642729974267661262">소리 재생이 허용되지 않음</translation>
-<translation id="6427752304227226701">안전하지 않은 사이트 신고(&amp;U)…</translation>
+<translation id="6427752304227226701">안전하지 않은 사이트 신고...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{저장된 비밀번호 없음}=1{비밀번호 {COUNT}개 확인 중...}other{비밀번호 {COUNT}개 확인 중…}}</translation>
 <translation id="6429384232893414837">업데이트 오류</translation>
 <translation id="6430814529589430811">Base64-인코딩 ASCII, 단일 인증서</translation>
@@ -12211,7 +12211,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 사이트 1개를 검토합니다.}other{최근에 알림을 많이 보낸 사이트 {NUM_SITES}개를 검토합니다.}}</translation>
 <translation id="966588271015727539">블루투스 점자 디스플레이 선택</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{이 프로필 닫기(&amp;C)}other{이 프로필 닫기(창 #개)(&amp;C)}}</translation>
-<translation id="967398046773905967">모든 사이트의 HID 기기 액세스를 허용하지 않음</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 <translation id="96774243435178359">관리되는 프린터</translation>

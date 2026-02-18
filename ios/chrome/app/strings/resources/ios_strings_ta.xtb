@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">மறைநிலைத் தாவல்களைப் பூட்ட Touch ID, Face ID, கடவுக்குறியீடு போன்றவற்றை அமைக்கவும்.</translation>
 <translation id="750886945254958667">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், வேண்டாமென்றால் வெளியேறிவிடலாம்</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{1 பக்கம் வரை சேர்க்கலாம்}other{{COUNT} பக்கங்கள் வரை சேர்க்கலாம்}}</translation>
 <translation id="7512909159512473473">கடவுச்சொற்றொடரை வழங்குங்கள்…</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7514530647142300459">உங்கள் Google கணக்கில் (<ph name="EMAIL" />) உள்ள கடவுச்சொற்களைத் தொடர்ந்து பயன்படுத்தவும்</translation>

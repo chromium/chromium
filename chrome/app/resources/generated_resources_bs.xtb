@@ -559,7 +559,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1362865166188278099">Mehanički problem. Provjerite štampač</translation>
 <translation id="1363585519747660921">Potrebno je konfigurirati USB štampač</translation>
 <translation id="136378536198524553">Ušteda energije je uključena</translation>
-<translation id="136522805455656552">Da uređaj ostane siguran, trebate pokretati i instalirati softver iz pouzdanih izvora i od pouzdanih programera. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Podizanje obrva</translation>
 <translation id="1367817137674340530">Generirano je više slika (ukupno <ph name="COUNT" />)</translation>
 <translation id="1368603372088757436">Linux nije podržan na uređaju <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -1230,7 +1229,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="18139523105317219">Naziv strane u EDI komunikaciji</translation>
 <translation id="1815083418640426271">Zalijepi kao neformatirani tekst</translation>
 <translation id="1815097521077272760">Pozvani ste da isprobate kontrolu ove igre tastaturom.</translation>
-<translation id="1815181278146012280">Pitaj kada web lokacija želi pristupiti HID uređajima</translation>
 <translation id="181577467034453336">Još <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Brzina skeniranja tastature</translation>
 <translation id="1817871734039893258">Microsoft oporavak fajlova</translation>
@@ -2570,6 +2568,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">Uređaj <ph name="DEVICE_TYPE" /> je sada otključan</translation>
 <translation id="2710676967944965821">Poništiti sva odobrenja za čitač pametnih kartica?</translation>
+<translation id="2710883118091822664">Prijavite se da lako nastavite na svim uređajima</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2713444072780614174">Bijela</translation>
 <translation id="2714180132046334502">Tamna pozadina</translation>
@@ -6867,6 +6866,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5636996382092289526">Za korištenje mreže <ph name="NETWORK_ID" /> morate prvo <ph name="LINK_START" />posjetiti stranicu za prijavu na mrežu<ph name="LINK_END" />, koja će se otvoriti automatski za nekoliko sekundi. Ako se ne otvori, ne možete koristiti mrežu.</translation>
 <translation id="5637476008227280525">Omogućavanje prenosa podataka na mobilnoj mreži</translation>
 <translation id="5638170200695981015">Odaberite "Otvori u osnovnom uređivaču" da koristite ograničene opcije prikaza i uređivanja.</translation>
+<translation id="5638202526629811571">Pokaži roditelju ili staratelju ovaj ekran da ti kaže možeš li dodati ovu ekstenziju</translation>
 <translation id="563821631542362636">Dozvoli web lokaciji da pohranjuje podatke</translation>
 <translation id="5638309510554459422">Pronađite ekstenzije i teme u <ph name="BEGIN_LINK" />Chrome Web trgovini<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovno učitajte ovu stranicu. Držite da vidite više opcija</translation>
@@ -7415,6 +7415,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6021293122504240352">Aplikacije <ph name="APPS" /> više nisu podržane</translation>
 <translation id="6021969570711251331">Kombinirani prikaz</translation>
 <translation id="6022526133015258832">Otvori preko cijelog ekrana</translation>
+<translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6023643151125006053">Ovaj uređaj (SN: <ph name="SERIAL_NUMBER" />) je zaključao administrator domene <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">&amp;Pretraži kadar videozapisa putem usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stanje stoga</translation>
@@ -10478,6 +10479,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8110393529211831722">Pretplata je instalirana samo na ovom uređaju, a ne sinhronizira se s drugim uređajima pod vašim računom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Preuzimanje liste kontakata...</translation>
 <translation id="8114925369073821854">Odobrenje za mikrofon za aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="8116497846156149">Zatraži odobrenje od roditelja</translation>
 <translation id="8116972784401310538">&amp;Upravitelj oznaka</translation>
 <translation id="8118276691321086429">Usluga <ph name="PASSWORD_MANAGER_BRAND" /> pamti kako ste se prijavili i automatski vas prijavljuje kada je moguće. Kada je isključena, svaki put će se tražiti potvrda.</translation>
 <translation id="8118362518458010043">Onemogućio Chrome. Ova ekstenzija može biti nesigurna.</translation>
@@ -12108,6 +12110,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator može snimati vaš ekran putem aplikacije <ph name="APP0_NAME" />. Nećete dobiti obavještenje kada snimanje počne.}=2{Administrator može snimati vaš ekran putem aplikacija <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Nećete dobiti obavještenje kada snimanje počne.}=3{Administrator može snimati vaš ekran putem aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još 1 aplikacije. Nećete dobiti obavještenje kada snimanje počne.}one{Administrator može snimati vaš ekran putem aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Nećete dobiti obavještenje kada snimanje počne.}few{Administrator može snimati vaš ekran putem aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Nećete dobiti obavještenje kada snimanje počne.}other{Administrator može snimati vaš ekran putem aplikacija <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacija. Nećete dobiti obavještenje kada snimanje počne.}}</translation>
 <translation id="9186963452600581158">Prijavite se putem Google računa djeteta</translation>
 <translation id="9187967020623675250">Tipke se ne podudaraju. Pritisnite bilo koju tipku da: <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Aplikacija je blokirana. Kontaktirajte programera</translation>
 <translation id="9192019773545828776">Slušajte govorne povratne informacije da možete koristiti uređaj bez gledanja u ekran. Povratne informacije na Braillevom pismu su dostupne s povezanim uređajem. Koristite Ctrl + Alt + Z da uključite i isključite ChromeVox. Koristite tipku za pretraživanje + strelica ulijevo ili strelica udesno da navigirate. Koristite tipku za pretraživanje + tipku za razmak da odaberete (aktivirate).</translation>
 <translation id="9195969368671142407">Kada vaša organizacija ograniči pohranjivanje na Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
 <translation id="919686179725692564">Saznajte više o izradi sigurnosnih kopija za aplikacije</translation>
@@ -12212,7 +12215,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Pregledajte 1 web lokaciju koja je nedavno poslala mnogo obavještenja}one{Pregledajte {NUM_SITES} web lokaciju koja je nedavno poslala mnogo obavještenja}few{Pregledajte {NUM_SITES} web lokacije koje su nedavno poslale mnogo obavještenja}other{Pregledajte {NUM_SITES} web lokacija koje su nedavno poslale mnogo obavještenja}}</translation>
 <translation id="966588271015727539">Odaberite bluetooth Brailleov ekran</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Zatvori profil}one{&amp;Zatvori profil (# prozor)}few{&amp;Zatvori profil (# prozora)}other{&amp;Zatvori profil (# prozora)}}</translation>
-<translation id="967398046773905967">Onemogući svim web lokacijama pristup HID uređajima</translation>
 <translation id="96756691973639907">Više radnji za oznaku <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 <translation id="96774243435178359">Upravljani štampači</translation>

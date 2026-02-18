@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Per compartir la finestra, permet que Chromium gravi la pantalla a Configuració del sistema</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> ja ha iniciat la sessió.  Per mantenir la navegació per separat, inicia la sessió a Chromium amb el teu perfil (<ph name="USER_EMAIL_ADDRESS" />).</translation>
 <translation id="3561853857681580870">Per compartir la pantalla, permet que Chromium gravi la pantalla a Configuració del sistema.</translation>
+<translation id="3588112919289558122">La protecció millorada desactiva l'optimització de JavaScript per als llocs web que Chromium no reconeix</translation>
 <translation id="3597003331831379823">No s'ha pogut executar la configuració amb privilegis elevats. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inicia la sessió a Chromium</translation>
 <translation id="3639635944603682591">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>

@@ -242,6 +242,7 @@
 <translation id="3522404737534491619">თქვენი ფანჯრის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chromium-ისთვის სისტემის პარამეტრებში</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> მზად არის შესასვლელად.  ცალკე დათვალიერების გასაგრძელებლად შედით Chromium-ში თქვენს პირად პროფილში <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">თქვენი ეკრანის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chromium-ისთვის სისტემის პარამეტრებში.</translation>
+<translation id="3588112919289558122">გაძლიერებული დაცვა თიშავს JavaScript-ის ოპტიმიზაციას იმ საიტებისთვის, რომლებსაც Chromium ვერ ამოიცნობს</translation>
 <translation id="3597003331831379823">მაღალი პრივილეგიებით დაყენების გაშვება ვერ მოხერხდა. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium-ში შესვლა</translation>
 <translation id="3639635944603682591">ამ პიროვნების დათვალიერების მონაცემები წაიშლება ამ მოწყობილობიდან. მონაცემების აღსადგენად შედით Chromium-ში, როგორც <ph name="USER_EMAIL" />.</translation>

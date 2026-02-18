@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">審查完成！</translation>
 <translation id="1094555143448724771">如要查看其他裝置上的分頁，請同步分頁和歷史記錄</translation>
 <translation id="1095761715416917775">確保你可以隨時存取同步處理的資料</translation>
+<translation id="1096091316906284742">Chrome Finds 啟用底部功能表</translation>
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
 <translation id="1105960400813249514">螢幕擷取</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2708226184420201102">使用 <ph name="PRODUCT_NAME" /> 瀏覽器開啟</translation>
 <translation id="271033894570825754">全新</translation>
+<translation id="2710883118091822664">登入帳戶，即可在所有裝置上輕鬆接續工作</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2718846868787000099">如要以偏好的語言顯示內容，你所造訪的網站將可查看你的偏好設定</translation>
 <translation id="2723001399770238859">音訊</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">向上拖曳即可查看搜尋結果</translation>
 <translation id="3269093882174072735">載入圖片</translation>
 <translation id="3280562213547448728">語音搜尋</translation>
+<translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />，<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_GROUPS_PART" />，<ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{這 1 組密碼只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 # 組密碼只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
 <translation id="3293181007446299124">在裝置端保留瀏覽記錄，僅供你本人存取。系統會延遲一段時間才傳送報告，保護你的身分</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">若有已存密碼，Chrome 可執行安全檢查</translation>
 <translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637744895182738742">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="3641581193271938629">已關閉 Chrome Finds 啟用底部功能表</translation>
 <translation id="3647019414263135904">開啟或關閉內容彈出式視窗</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">開啟 Google 應用程式主畫面</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">現已使用 Sogou 搜尋</translation>
 <translation id="4387647248986092471">建立汽車設定檔鎖定方式</translation>
 <translation id="4387817230000841154">開啟下載內容頁面</translation>
+<translation id="4395046795145457714">Chrome Finds 啟用底部功能表顯示於整個畫面</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />，選取的固定無痕分頁，正在錄製媒體</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - 下載中…</translation>
 <translation id="4404568932422911380">沒有書籤</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">你可以透過文字游標瀏覽頁面。按下 F7 鍵即可關閉這項功能。</translation>
 <translation id="5471273988133666918">無法移動分頁「<ph name="TAB_TITLE" />」</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
+<translation id="5489222148748465285">要讓 Chrome 繼續搜尋嗎？</translation>
 <translation id="5494920125229734069">全選</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
 <translation id="5517326820028369152">近期活動底部功能表</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
 <translation id="6649642165559792194">預覽圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Chrome Finds 啟用底部功能表顯示在畫面下半部</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6669390930482049506">通知我</translation>
 <translation id="6671495933530132209">複製圖片</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">停止追蹤價格</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
+<translation id="6835182496791325827">離開期間，在 Chrome 找到最佳搜尋結果時收到通知。</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">下載作業仍在進行中</translation>
 <translation id="6850830437481525139">關閉了 <ph name="TAB_COUNT" /> 個分頁</translation>

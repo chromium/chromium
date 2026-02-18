@@ -4229,6 +4229,7 @@ Dodatni detalji:
 <translation id="7714404809393719981">Slika (polusjajna)</translation>
 <translation id="7714424966701020172">Izabrana je opcija za popunjavanje punog imena</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
+<translation id="7714943438925794410">Sadržaj sa stranice za plaćanje se deli sa Google-om da bi Google pružao ove opcije. Da biste sakrili opcije za kasnije plaćanje u automatskom popunjavanju, idite na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Blokira administrator</translation>
 <translation id="7716375162095500223">Još nije otpremljeno ili je ignorisano</translation>
 <translation id="7716424297397655342">Nije moguće učitati ovaj sajt iz keša</translation>
@@ -4311,6 +4312,7 @@ Dodatni detalji:
 <translation id="7862306158978555061">da prikaže osetljive informacije</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7865482168955081228">Ekran sa greškom za opciju Kupite odmah, platite kasnije je zatvoren.</translation>
+<translation id="7870207318911766769">Sadržaj sa stranice za plaćanje se deli sa Google-om da bi Google pružao ove opcije.</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promenite lozinku za Google nalog</translation>
 <translation id="787226752901403048">Prijavite se u Chrome da biste delili grupe kartica, pridruživali im se i sarađivali na idejama</translation>

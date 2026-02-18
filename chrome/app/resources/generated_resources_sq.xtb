@@ -557,7 +557,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1362865166188278099">Problem mekanik. Kontrollo printerin</translation>
 <translation id="1363585519747660921">Printeri USB ka nevojë për printim</translation>
 <translation id="136378536198524553">"Kursyesi i energjisë" është aktiv</translation>
-<translation id="136522805455656552">Për ta mbajtur të sigurt pajisjen tënde, duhet të ekzekutosh dhe të instalosh vetëm softuerë nga burime dhe zhvillues të besuar. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Ngri vetullat</translation>
 <translation id="1367817137674340530">U gjeneruan <ph name="COUNT" /> imazhe</translation>
 <translation id="1368603372088757436">Linux nuk mbështetet në pajisjen tënde <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -1219,7 +1218,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="18139523105317219">Emri i palës EDI</translation>
 <translation id="1815083418640426271">Ngjite si tekst të thjeshtë</translation>
 <translation id="1815097521077272760">Je ftuar të provosh kontrollin e tastierës për këtë lojë.</translation>
-<translation id="1815181278146012280">Pyet kur një sajt dëshiron të ketë qasje te pajisjet HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> të tjera...</translation>
 <translation id="1816036116994822943">Shpejtësia e skanimit të tastierës</translation>
 <translation id="1817871734039893258">Rikuperimi i skedarëve i Microsoft</translation>
@@ -2558,6 +2556,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="271033894570825754">E re</translation>
 <translation id="2710507903599773521">Pajisja jote <ph name="DEVICE_TYPE" /> është shkyçur tani</translation>
 <translation id="2710676967944965821">Të rivendosen të gjitha lejet e lexuesve inteligjentë të kartave?</translation>
+<translation id="2710883118091822664">Identifikohu për të vazhduar me lehtësi në të gjitha pajisjet e tua</translation>
 <translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2714180132046334502">Sfondi i errët</translation>
@@ -7404,6 +7403,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplikacione nuk mbështeten më</translation>
 <translation id="6021969570711251331">Alternimi i sinjaleve</translation>
 <translation id="6022526133015258832">Hap ekranin e plotë</translation>
+<translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
 <translation id="6023643151125006053">Kjo pajisje (NS: <ph name="SERIAL_NUMBER" />) u kyç nga administratori i <ph name="SAML_DOMAIN" /></translation>
 <translation id="6024317249717725918">&amp;Kërko për kuadrin e videos me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Gjurmë stive</translation>
@@ -12198,7 +12198,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Rishiko 1 sajt që ka dërguar së fundi shumë njoftime}other{Rishiko {NUM_SITES} sajte që kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="966588271015727539">Zgjidh një ekran breil me Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Mbylle këtë profil}other{&amp;Mbylle këtë profil (# dritare)}}</translation>
-<translation id="967398046773905967">Mos lejo asnjë sajt të ketë qasje në pajisjet HID</translation>
 <translation id="96756691973639907">Më shumë veprime për "<ph name="MODULE_NAME" />"</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>
 <translation id="96774243435178359">Printerët e menaxhuar</translation>

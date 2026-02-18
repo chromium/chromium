@@ -557,7 +557,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1362865166188278099">Masalah mekanis. Periksa printer</translation>
 <translation id="1363585519747660921">Printer USB membutuhkan konfigurasi</translation>
 <translation id="136378536198524553">Penghemat Energi aktif</translation>
-<translation id="136522805455656552">Untuk menjaga keamanan perangkat Anda, sebaiknya hanya jalankan dan instal software dari sumber dan developer tepercaya. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Mengangkat alis</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> gambar dibuat</translation>
 <translation id="1368603372088757436">Linux tidak didukung di <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -1231,7 +1230,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Tempel Sebagai Teks Biasa</translation>
 <translation id="1815097521077272760">Anda telah diundang untuk mencoba kontrol keyboard untuk game ini.</translation>
-<translation id="1815181278146012280">Tanyakan saat situs ingin mengakses perangkat HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> lainnya...</translation>
 <translation id="1816036116994822943">Kecepatan pemindaian keyboard</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
@@ -2573,6 +2571,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="271033894570825754">Koleksi baru</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> dibuka kuncinya</translation>
 <translation id="2710676967944965821">Reset semua izin pembaca kartu smart?</translation>
+<translation id="2710883118091822664">Login agar dapat melanjutkan dengan mudah di semua perangkat Anda</translation>
 <translation id="2713106313042589954">Nonaktifkan kamera</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2714180132046334502">Latar belakang gelap</translation>
@@ -6871,6 +6870,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" />, pertama Anda harus <ph name="LINK_START" />mengunjungi halaman proses masuk jaringan<ph name="LINK_END" />, yang akan otomatis terbuka dalam beberapa detik. Jika hal itu tidak terjadi, jaringan tidak akan dapat digunakan.</translation>
 <translation id="5637476008227280525">Data seluler aktif</translation>
 <translation id="5638170200695981015">Pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
+<translation id="5638202526629811571">Tunjukkan layar ini kepada orang tua atau walimu agar mereka dapat menyetujui atau menolak penambahan ekstensi ini</translation>
 <translation id="563821631542362636">Izinkan situs menyimpan data</translation>
 <translation id="5638309510554459422">Temukan ekstensi dan tema di <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Muat ulang halaman ini, tahan untuk melihat opsi lainnya</translation>
@@ -7420,6 +7420,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplikasi tidak lagi didukung</translation>
 <translation id="6021969570711251331">Dipisahkan</translation>
 <translation id="6022526133015258832">Buka Layar Penuh</translation>
+<translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
 <translation id="6023643151125006053">Perangkat ini (NS: <ph name="SERIAL_NUMBER" />) dikunci oleh administrator <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">Telusuri Frame Video di <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Pelacakan Tumpukan</translation>
@@ -10480,6 +10481,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8110393529211831722">Langganan hanya diinstal di perangkat ini dan tidak disinkronkan dengan perangkat lain pada akun Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Mendownload daftar kontak ...</translation>
 <translation id="8114925369073821854">Izin mikrofon <ph name="APP_NAME" /></translation>
+<translation id="8116497846156149">Minta persetujuan orang tua</translation>
 <translation id="8116972784401310538">&amp;Pengelola bookmark</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> mengingat cara Anda login dan otomatis membuat Anda login jika memungkinkan. Saat nonaktif, Anda akan selalu dimintai konfirmasi.</translation>
 <translation id="8118362518458010043">Dinonaktifkan oleh Chrome. Ekstensi ini mungkin tidak aman.</translation>
@@ -12109,6 +12111,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator Anda dapat merekam layar Anda dengan <ph name="APP0_NAME" />. Anda tidak akan diberi tahu saat perekaman dimulai.}=2{Administrator Anda dapat merekam layar Anda dengan <ph name="APP0_NAME" /> dan <ph name="APP1_NAME" />. Anda tidak akan diberi tahu saat perekaman dimulai.}=3{Administrator Anda dapat merekam layar Anda dengan <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, dan 1 aplikasi lainnya. Anda tidak akan diberi tahu saat perekaman dimulai.}other{Administrator Anda dapat merekam layar Anda dengan <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, dan # aplikasi lainnya. Anda tidak akan diberi tahu saat perekaman dimulai.}}</translation>
 <translation id="9186963452600581158">Login dengan Akun Google anak</translation>
 <translation id="9187967020623675250">Kunci tidak cocok. Tekan sembarang kunci untuk <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Aplikasi ini telah diblokir. Hubungi developer.</translation>
 <translation id="9192019773545828776">Dengarkan respons lisan agar Anda dapat menggunakan perangkat tanpa melihat layar. Masukan braille tersedia dengan perangkat terhubung. Gunakan Ctrl + Alt + Z untuk mengaktifkan dan menonaktifkan ChromeVox. Gunakan Penelusuran + Panah kiri atau Panah kanan untuk menavigasi. Gunakan Penelusuran + Spasi untuk memilih (mengaktifkan).</translation>
 <translation id="9195969368671142407">Jika organisasi membatasi penyimpanan ke Akun Google, Anda tidak dapat berbagi atau bergabung ke grup tab</translation>
 <translation id="919686179725692564">Pelajari lebih lanjut cara mencadangkan aplikasi</translation>
@@ -12213,7 +12216,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Tinjau 1 situs yang baru-baru ini mengirim banyak notifikasi}other{Tinjau {NUM_SITES} situs yang baru-baru ini mengirim banyak notifikasi}}</translation>
 <translation id="966588271015727539">Pilih penampil braille bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Tutup Profil Ini}other{&amp;Tutup Profil Ini (# Windows)}}</translation>
-<translation id="967398046773905967">Jangan izinkan situs apa pun mengakses perangkat HID</translation>
 <translation id="96756691973639907">Tindakan lainnya untuk <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="96774243435178359">Printer terkelola</translation>

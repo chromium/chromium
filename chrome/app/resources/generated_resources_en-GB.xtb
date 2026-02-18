@@ -557,7 +557,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1362865166188278099">Mechanical issue. Check printer</translation>
 <translation id="1363585519747660921">USB printer needs configuration</translation>
 <translation id="136378536198524553">Energy saver is on</translation>
-<translation id="136522805455656552">To keep your device secure, you should only run and install software from trusted sources and developers. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Raise eyebrows</translation>
 <translation id="1367817137674340530">Generated <ph name="COUNT" /> images</translation>
 <translation id="1368603372088757436">Linux is not supported on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -1231,7 +1230,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Paste as Plain Text</translation>
 <translation id="1815097521077272760">You’ve been invited to try out keyboard control for this game.</translation>
-<translation id="1815181278146012280">Ask when a site wants to access HID devices</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> more...</translation>
 <translation id="1816036116994822943">Keyboard scanning speed</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
@@ -2571,6 +2569,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="271033894570825754">New collection</translation>
 <translation id="2710507903599773521">Your <ph name="DEVICE_TYPE" /> is now unlocked</translation>
 <translation id="2710676967944965821">Reset all smart card reader permissions?</translation>
+<translation id="2710883118091822664">Sign in to easily continue on all your devices</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2714180132046334502">Dark background</translation>
@@ -6868,6 +6867,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5636996382092289526">To use <ph name="NETWORK_ID" /> you may first need to <ph name="LINK_START" />visit the network's sign-in page<ph name="LINK_END" />, which will open automatically in a few seconds. If it doesn't happen, the network can't be used.</translation>
 <translation id="5637476008227280525">Mobile data enable</translation>
 <translation id="5638170200695981015">Choose 'Open in basic editor' to use limited view and editing options.</translation>
+<translation id="5638202526629811571">Show your parent or guardian this screen so that they can say whether it's OK for you to add this extension</translation>
 <translation id="563821631542362636">Allow site to save data</translation>
 <translation id="5638309510554459422">Find extensions and themes in the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Reload this page, hold to see more options</translation>
@@ -7416,6 +7416,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps are no longer supported</translation>
 <translation id="6021969570711251331">Interleave</translation>
 <translation id="6022526133015258832">Open Full Screen</translation>
+<translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6023643151125006053">This device (SN: <ph name="SERIAL_NUMBER" />) was locked by the <ph name="SAML_DOMAIN" /> administrator.</translation>
 <translation id="6024317249717725918">Search video frame with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
@@ -10475,6 +10476,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8110393529211831722">Subscription is installed on this device only and not synced with other devices under your account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Downloading contact list…</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> microphone permission</translation>
+<translation id="8116497846156149">Ask parent for approval</translation>
 <translation id="8116972784401310538">&amp;Bookmark manager</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.</translation>
 <translation id="8118362518458010043">Disabled by Chrome. This extension may be unsafe.</translation>
@@ -12103,6 +12105,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Your administrator can record your screen with <ph name="APP0_NAME" />. You will not be notified when the recording starts.}=2{Your administrator can record your screen with <ph name="APP0_NAME" /> and <ph name="APP1_NAME" />. You will not be notified when the recording starts.}=3{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and 1 other app. You will not be notified when the recording starts.}other{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and # other apps. You will not be notified when the recording starts.}}</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">This application has been blocked. Please contact the developer</translation>
 <translation id="9192019773545828776">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device. Use Ctrl + Alt + Z to turn ChromeVox on and off. Use Search + Left arrow or Right arrow to navigate. Use Search + Space to select (activate).</translation>
 <translation id="9195969368671142407">When your organisation limits saving to your Google Account, you can’t share or join tab groups</translation>
 <translation id="919686179725692564">Learn more about backing up your apps</translation>
@@ -12207,7 +12210,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Review 1 site that recently sent a lot of notifications}other{Review {NUM_SITES} sites that recently sent a lot of notifications}}</translation>
 <translation id="966588271015727539">Select a Bluetooth braille display</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Close this profile}other{&amp;Close this profile (# Windows)}}</translation>
-<translation id="967398046773905967">Do not allow any sites to access HID devices</translation>
 <translation id="96756691973639907">More actions for <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data stored</translation>
 <translation id="96774243435178359">Managed printers</translation>

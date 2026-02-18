@@ -557,7 +557,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1362865166188278099">Problema meccanico. Controlla la stampante.</translation>
 <translation id="1363585519747660921">La stampante USB deve essere configurata</translation>
 <translation id="136378536198524553">Risparmio energetico attivo</translation>
-<translation id="136522805455656552">Per proteggere il tuo dispositivo, dovresti eseguire e installare solo software provenienti da fonti e sviluppatori attendibili. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Alza le sopracciglia</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> immagini generate</translation>
 <translation id="1368603372088757436">Linux non è supportato su <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -1222,7 +1221,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Incolla come solo testo</translation>
 <translation id="1815097521077272760">Hai ricevuto un invito a provare il controllo tramite tastiera per questo gioco.</translation>
-<translation id="1815181278146012280">Chiedi conferma quando un sito vuole accedere ai dispositivi HID</translation>
 <translation id="181577467034453336">Altre <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Velocità della scansione della tastiera</translation>
 <translation id="1817871734039893258">Ripristino file Microsoft</translation>
@@ -2557,6 +2555,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="271033894570825754">Nuova raccolta</translation>
 <translation id="2710507903599773521">Il tuo <ph name="DEVICE_TYPE" /> è ora sbloccato</translation>
 <translation id="2710676967944965821">Reimpostare tutte le autorizzazioni del lettore di smart card?</translation>
+<translation id="2710883118091822664">Accedi per continuare facilmente su tutti i tuoi dispositivi</translation>
 <translation id="2713106313042589954">Disattiva videocamera</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2714180132046334502">Sfondo scuro</translation>
@@ -6851,6 +6850,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5636996382092289526">Per poter utilizzare la rete <ph name="NETWORK_ID" />, potrebbe essere necessario <ph name="LINK_START" />visitare la pagina di accesso della rete<ph name="LINK_END" />, che si aprirà automaticamente tra alcuni secondi. In caso contrario, non è possibile utilizzare la rete.</translation>
 <translation id="5637476008227280525">Attivazione dati mobili</translation>
 <translation id="5638170200695981015">Scegli "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
+<translation id="5638202526629811571">Mostra questa schermata a un tuo genitore o tutore affinché possa autorizzarti ad aggiungere questa estensione</translation>
 <translation id="563821631542362636">Consenti al sito di salvare dati</translation>
 <translation id="5638309510554459422">Trova estensioni e temi nel <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ricarica questa pagina, tieni premuto per visualizzare altre opzioni</translation>
@@ -7398,6 +7398,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> app non sono più supportate</translation>
 <translation id="6021969570711251331">Interfoliazione</translation>
 <translation id="6022526133015258832">Apri a schermo intero</translation>
+<translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6023643151125006053">Questo dispositivo (numero di serie <ph name="SERIAL_NUMBER" />) è stato bloccato dall'amministratore di <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">Cerca frame con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Analisi dello stack</translation>
@@ -10457,6 +10458,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8110393529211831722">L'abbonamento è installato solo su questo dispositivo e non è sincronizzato con altri dispositivi collegati al tuo account. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Download dell'elenco contatti…</translation>
 <translation id="8114925369073821854">Autorizzazione di accesso al microfono di <ph name="APP_NAME" /></translation>
+<translation id="8116497846156149">Chiedi l'approvazione a un genitore</translation>
 <translation id="8116972784401310538">Gestione &amp;Preferiti</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> memorizza il metodo di accesso e, se possibile, ti consente di accedere automaticamente. Se questa opzione è disattivata, ti verrà chiesta una conferma ogni volta.</translation>
 <translation id="8118362518458010043">Estensione disattivata da Chrome perché potrebbe non essere sicura.</translation>
@@ -12085,6 +12087,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app. Non riceverai una notifica all'inizio della registrazione.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app. Non riceverai una notifica all'inizio della registrazione.}}</translation>
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
+<translation id="9189618485998894982">Questa applicazione è stata bloccata. Contatta lo sviluppatore</translation>
 <translation id="9192019773545828776">Attiva la funzione di lettura vocale per usare il dispositivo senza dover guardare lo schermo. Il feedback braille è disponibile con un dispositivo connesso. Premi Ctrl + Alt + Z per attivare e disattivare ChromeVox. Utilizza il tasto per la ricerca + Freccia sinistra o Freccia destra per spostarti. Utilizza il tasto per la ricerca + Barra spaziatrice per selezionare (attivare).</translation>
 <translation id="9195969368671142407">Quando la tua organizzazione limita il salvataggio nel tuo Account Google, non puoi partecipare a gruppi di schede o condividerli</translation>
 <translation id="919686179725692564">Scopri di più sul backup delle tue app</translation>
@@ -12189,7 +12192,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Controlla 1 sito che di recente ha inviato molte notifiche}other{Controlla {NUM_SITES} siti che di recente hanno inviato molte notifiche}}</translation>
 <translation id="966588271015727539">Seleziona un display braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Chiudi questo profilo}other{&amp;Chiudi questo profilo (# finestre)}}</translation>
-<translation id="967398046773905967">Non consentire ai siti di accedere ai dispositivi HID</translation>
 <translation id="96756691973639907">Altre azioni per <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 <translation id="96774243435178359">Stampanti gestite</translation>

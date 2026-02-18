@@ -1786,6 +1786,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Per bloquejar les pestanyes d'incògnit, configura Touch ID, Face ID o una contrasenya.</translation>
 <translation id="750886945254958667">Conserva aquest grup per afegir-hi pestanyes més endavant o surt-ne si ja no vols accedir-hi més</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Afegeix fins a 1 pestanya}other{Afegeix fins a {COUNT} pestanyes}}</translation>
 <translation id="7512909159512473473">Introdueix la frase de contrasenya…</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7514530647142300459">Continua utilitzant les contrasenyes al teu Compte de Google <ph name="EMAIL" /></translation>
@@ -2059,6 +2060,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8439758443371991593">Amaga l'opció Afegeix a la llista de lectura</translation>
 <translation id="8443986842926457191">L'URL conté més de 2.048 caràcters</translation>
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
+<translation id="8473815223723723001">Edita la imatge amb Gemini</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="8474378002946546633">Permet les notificacions</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>

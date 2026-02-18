@@ -1786,6 +1786,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Samaran, siapkan Touch ID, Face ID, atau Kode Sandi.</translation>
 <translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Tambahkan maksimal 1 tab}other{Tambahkan maksimal {COUNT} tab}}</translation>
 <translation id="7512909159512473473">Masukkan frasa sandi…</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514530647142300459">Tetap gunakan sandi yang tersimpan di Akun Google Anda <ph name="EMAIL" /></translation>

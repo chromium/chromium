@@ -558,7 +558,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1362865166188278099">Vélrænt vandamál. Athugaðu prentara</translation>
 <translation id="1363585519747660921">Stilla þarf USB-prentarann</translation>
 <translation id="136378536198524553">Kveikt er á orkusparnaði</translation>
-<translation id="136522805455656552">Til að halda tækinu þínu öruggu ættirðu eingöngu að keyra og setja upp hugbúnað frá traustum uppruna og þróunaraðilum. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Lyftu augabrúnunum</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> myndir voru búnar til</translation>
 <translation id="1368603372088757436">Linux er ekki stutt í <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -1232,7 +1231,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="18139523105317219">Heiti EDI-aðila</translation>
 <translation id="1815083418640426271">Líma sem ósniðinn texta</translation>
 <translation id="1815097521077272760">Þér hefur verið boðið að prófa lyklaborðsstýringu fyrir þennan leik.</translation>
-<translation id="1815181278146012280">Spyrja þegar vefsvæði vill fá aðgang að HID-tækjum</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> í viðbót...</translation>
 <translation id="1816036116994822943">Skönnunarhraði lyklaborðs</translation>
 <translation id="1817871734039893258">Skráaendurheimt Microsoft</translation>
@@ -2575,6 +2573,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" />-tækið var tekið úr lás</translation>
 <translation id="2710676967944965821">Endurstilla allar heimildir snjallkortalesara?</translation>
+<translation id="2710883118091822664">Skráðu þig inn til að halda áfram á einfaldan hátt í öllum tækjunum þínum</translation>
 <translation id="2713106313042589954">Slökkva á myndavél</translation>
 <translation id="2713444072780614174">Hvítur</translation>
 <translation id="2714180132046334502">Dökkur bakgrunnur</translation>
@@ -7423,6 +7422,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6021293122504240352">Ekki er lengur stuðningur við <ph name="APPS" /> forrit</translation>
 <translation id="6021969570711251331">Sameina</translation>
 <translation id="6022526133015258832">Opna á öllum skjánum</translation>
+<translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
 <translation id="6023643151125006053">Kerfisstjóri <ph name="SAML_DOMAIN" /> læsti þessu tæki (raðnúmer: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6024317249717725918">Leita í vídeóramma með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Staflarakning</translation>
@@ -12220,7 +12220,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Yfirfara 1 vefsvæði sem sendi margar tilkynningar undanfarið}one{Yfirfara {NUM_SITES} vefsvæði sem sendi margar tilkynningar undanfarið}other{Yfirfara {NUM_SITES} vefsvæði sem sendu margar tilkynningar undanfarið}}</translation>
 <translation id="966588271015727539">Velja blindraletursskjá með Bluetooth-tengingu</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Loka þessum prófíl}one{&amp;Loka þessum prófíl (# gluggi)}other{&amp;Loka þessum prófíl (# gluggar)}}</translation>
-<translation id="967398046773905967">Ekki veita neinum vefsvæðum aðgang að HID-tækjum</translation>
 <translation id="96756691973639907">Fleiri aðgerðir fyrir <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 <translation id="96774243435178359">Prentarar sem er stjórnað</translation>

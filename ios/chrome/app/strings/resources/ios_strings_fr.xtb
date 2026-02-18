@@ -1786,6 +1786,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un code secret.</translation>
 <translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard, ou quittez-le si ne souhaitez plus y avoir accès</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Ajoutez 1 onglet au maximum}one{Ajoutez {COUNT} onglet au maximum}other{Ajoutez jusqu'à {COUNT} onglets}}</translation>
 <translation id="7512909159512473473">Saisir la phrase secrète…</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514530647142300459">Continuez d'utiliser les mots de passe de votre compte Google <ph name="EMAIL" /></translation>

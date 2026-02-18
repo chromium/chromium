@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">جائزہ مکمل ہو گیا!</translation>
 <translation id="1094555143448724771">اپنے دیگر آلات سے ٹیبز کو دیکھنے کے لیے، اپنے ٹیبز اور سرگزشت کو مطابقت پذیر بنائیں</translation>
 <translation id="1095761715416917775">یقینی بنائیں کہ آپ ہمیشہ اپنے مطابقت پذیر ڈیٹا تک رسائی حاصل کر سکتے ہیں</translation>
+<translation id="1096091316906284742">‏‫Chrome Finds آپٹ ان نیچے کی شیٹ</translation>
 <translation id="1100066534610197918">گروپ میں نئے ٹیب میں کھولیں</translation>
 <translation id="1103142993930332957">‏Chrome کو بہتر بنانے میں مدد کریں؟</translation>
 <translation id="1105960400813249514">اسکرین کیپچر</translation>
@@ -395,6 +396,7 @@
 <translation id="2702516483241149200">نیا: اس ٹیکسٹ کو اسکرول کرنے والے لنک کا اشتراک کریں</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> براؤزر میں کھولیں</translation>
 <translation id="271033894570825754">نیا</translation>
+<translation id="2710883118091822664">اپنے تمام آلات پر آسانی سے جاری رکھنے کے لیے سائن ان کریں</translation>
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
 <translation id="2718846868787000099">اپنی ترجیحی زبانوں میں مواد دکھانے کے لیے، آپ جو سائٹس ملاحظہ کرتے ہیں وہ آپ کی ترجیحات دیکھ سکتی ہیں</translation>
 <translation id="2723001399770238859">آڈیو</translation>
@@ -530,6 +532,7 @@
 <translation id="3268048651973962414">تلاش کے نتائج دیکھنے کے لیے اوپر گھسیٹیں</translation>
 <translation id="3269093882174072735">تصویر لوڈ کریں</translation>
 <translation id="3280562213547448728">صوتی تلاش</translation>
+<translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{‏‫1 پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫# پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="3293181007446299124">آپ کی براؤزنگ کی سرگزشت کو آپ کے آلے پر نجی رکھا جاتا ہے اور رپورٹس کو تاخیر سے بھیجا جاتا ہے تاکہ آپ کی شناخت کی حفاظ کی جائے</translation>
@@ -608,6 +611,7 @@
 <translation id="3635073343384702370">‏جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chrome انہیں چیک کر سکتا ہے</translation>
 <translation id="3636940436873918441">ترجیحی زبانیں</translation>
 <translation id="3637744895182738742">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
+<translation id="3641581193271938629">‏‫Chrome Finds آپٹ ان بند ہو گیا</translation>
 <translation id="3647019414263135904">سیاق و سباق کا پاپ اپ کھولیں یا بند کریں</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏‫Google ایپ ہوم پر جائیں</translation>
@@ -781,6 +785,7 @@
 <translation id="4384468725000734951">‏تلاش کیلئے Sogou کا استعمال کیا جا رہا ہے</translation>
 <translation id="4387647248986092471">کار پروفائل لاک بنائیں</translation>
 <translation id="4387817230000841154">ڈاؤن لوڈز کھولیں</translation>
+<translation id="4395046795145457714">‏‫Chrome Finds آپٹ ان مکمل اونچائی پر کھلی ہیں</translation>
 <translation id="4398561997852463382">‫<ph name="TAB_TITLE" />، منتخب کردہ پن کردہ ریکارڈنگ پوشیدگی ٹیب</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ڈاؤن لوڈ ہو رہی ہے…</translation>
 <translation id="4404568932422911380">کوئی بُک مارک نہیں</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5469852975082458401">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے F7 دبائیں۔</translation>
 <translation id="5471273988133666918">ٹیب <ph name="TAB_TITLE" /> کو منتقل نہیں کیا جا سکتا</translation>
 <translation id="548278423535722844">نقشہ کی ایپ میں کھولیں</translation>
+<translation id="5489222148748465285">‏‫Chrome کو تلاش جاری رکھنے دیں؟</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="549660026907543296">بطور <ph name="MEMBER_FULL_NAME" /> شامل ہوں</translation>
 <translation id="5517326820028369152">حالیہ سرگرمی کی نیچے کی شیٹ</translation>
@@ -1344,6 +1350,7 @@
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
 <translation id="6649642165559792194">تصویر کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">‏‫Chrome Finds آپٹ ان آدھی اونچائی پر کھلا ہے</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> میں کھولیں</translation>
 <translation id="6669390930482049506">مجھے مطلع کریں</translation>
 <translation id="6671495933530132209">تصویر کاپی کریں</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6828070228333235514">قیمت کو ٹریک کرنا بند کریں</translation>
 <translation id="6830728435402077660">محفوظ نہیں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
+<translation id="6835182496791325827">‏جب آپ دور ہوں تو Chrome کو آپ کی تلاشوں کے بہترین نتائج ملنے پر اطلاع حاصل کریں۔</translation>
 <translation id="6846298663435243399">لوڈ ہو رہا ہے…</translation>
 <translation id="6850409657436465440">آپ کا ڈاؤن لوڈ ابھی بھی پیشرفت میں ہے</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ٹیبز بند کر دیے گئے</translation>

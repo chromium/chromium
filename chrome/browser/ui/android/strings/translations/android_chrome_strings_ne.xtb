@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">समीक्षा गर्ने कार्य पूरा भयो!</translation>
 <translation id="1094555143448724771">आफूले अन्य डिभाइसमा खोलेका ट्याबहरू हेर्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="1095761715416917775">तपाईं आफूले सिंक गरेको डेटा जुनसुकै बेला प्रयोग गर्न तथा हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="1096091316906284742">Chrome Finds अन गर्ने विकल्पको पुछारको पाना</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="1103142993930332957">Chrome को गुणस्तर सुधार्न सघाउने हो?</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
@@ -395,6 +396,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2702516483241149200">नयाँ: स्क्रोल गरी यो पाठसम्म लैजाने लिंक सेयर गर्नुहोस्</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> ब्राउजरमा खोल्नुहोस्</translation>
 <translation id="271033894570825754">नयाँ</translation>
+<translation id="2710883118091822664">आफ्ना सबै डिभाइसमा सजिलै जारी राख्न साइन इन गर्नुहोस्</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
 <translation id="2718846868787000099">तपाईंले चाहेको भाषामा सामग्री देखाउन तपाईंले प्रयोग गर्ने साइटहरूले तपाईंका प्राथमिकताहरू देख्न सक्छन्</translation>
 <translation id="2723001399770238859">अडियो</translation>
@@ -530,6 +532,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3268048651973962414">खोज परिणामहरू हेर्न माथितिर ड्र्याग गर्नुहोस्</translation>
 <translation id="3269093882174072735">फोटो लोड गर्नुहोस्</translation>
 <translation id="3280562213547448728">भ्वाइस सर्च</translation>
+<translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> वटा ट्याब}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{एउटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ। यो बुकमार्क आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो Google खातामा सेभ गर्नुहोस्।}other{# वटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएका छन्। यी बुकमार्क आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्।}}</translation>
 <translation id="3293181007446299124">तपाईंको ब्राउजिङ हिस्ट्री तपाईंको डिभाइसमा गोप्य राखिन्छ र तपाईंको पहिचान सुरक्षित राख्न रिपोर्टहरू तत्कालै पठाइँदैनन्</translation>
@@ -608,6 +611,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3635073343384702370">तपाईंले आफ्ना पासवर्डहरू सेभ गरेपछि मात्र Chrome ले तिनको जाँच गर्न सक्छ</translation>
 <translation id="3636940436873918441">रुचाइएका भाषाहरू</translation>
 <translation id="3637744895182738742">तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
+<translation id="3641581193271938629">Chrome Finds अन गर्ने विकल्प बन्द गरिएको छ</translation>
 <translation id="3647019414263135904">सन्दर्भ पपअप खोल्नुहोस् वा बन्द गर्नुहोस्</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google एपको होममा जानुहोस्</translation>
@@ -781,6 +785,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
 <translation id="4387647248986092471">कार प्रोफाइल लक बनाउनुहोस्</translation>
 <translation id="4387817230000841154">"डाउनलोड" पेज खोल्नुहोस्</translation>
+<translation id="4395046795145457714">Chrome Finds अन गर्ने विकल्प पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको रेकर्डिङ इन्कोग्निटो ट्याब</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड गरिँदै छ…</translation>
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
@@ -1048,6 +1053,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5469852975082458401">तपाईं टेक्स्ट कर्सर प्रयोग गरी पृष्ठहरूमा नेभिगेट गर्न सक्नुहुन्छ। अफ गर्न F7 थिच्नुहोस्।</translation>
 <translation id="5471273988133666918">ट्याब <ph name="TAB_TITLE" /> सार्न मिल्दैन</translation>
 <translation id="548278423535722844">नक्सा एपमा खोल्नुहोस्</translation>
+<translation id="5489222148748465285">Chrome लाई खोजिरहन दिने हो?</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> का रूपमा सामेल हुनुहोस्</translation>
 <translation id="5517326820028369152">हालसालैको क्रियाकलापसम्बन्धी जानकारी दिने पुछारको पाना</translation>
@@ -1343,6 +1349,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
+<translation id="6661521899577697780">Chrome Finds अन गर्ने विकल्प आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
 <translation id="6669390930482049506">मलाई नोटिफिकेसन पठाउनुहोस्</translation>
 <translation id="6671495933530132209">छविको कपी गर्नुहोस्</translation>
@@ -1394,6 +1401,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6828070228333235514">मूल्य ट्रयाक गर्ने सुविधा अफ गर्नुहोस्</translation>
 <translation id="6830728435402077660">सुरक्षित छैन</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
+<translation id="6835182496791325827">तपाईं अनुपस्थित भएका बेला Chrome ले तपाईंले खोजेका कुराका उत्कृष्ट परिणामहरू भेट्टाउँदा नोटिफिकेसन प्राप्त गर्नुहोस्।</translation>
 <translation id="6846298663435243399">लोड हुँदै...</translation>
 <translation id="6850409657436465440">तपाईंको डाउनलोड हुने क्रम अझै जारी छ</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ट्याबहरू बन्द भए</translation>

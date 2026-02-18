@@ -558,7 +558,6 @@
 <translation id="1362865166188278099">ಯಾಂತ್ರಿಕ ಸಮಸ್ಯೆ. ಪ್ರಿಂಟರ್ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1363585519747660921">USB ಪ್ರಿಂಟರ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬೇಕಾಗಿದೆ</translation>
 <translation id="136378536198524553">ಎನರ್ಜಿ ಸೇವರ್ ಆನ್ ಆಗಿದೆ</translation>
-<translation id="136522805455656552">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನೀವು ವಿಶ್ವಾಸಾರ್ಹ ಮೂಲಗಳು ಮತ್ತು ಡೆವಲಪರ್‌ಗಳಿಂದ ಮಾತ್ರ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ರನ್ ಮಾಡಬೇಕು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕು. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ಹುಬ್ಬುಗಳನ್ನು ಎತ್ತುವುದು</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1368603372088757436">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Linux ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -1225,7 +1224,6 @@
 <translation id="18139523105317219">EDI ಪಾರ್ಟಿ ಹೆಸರು</translation>
 <translation id="1815083418640426271">ಸಾದಾ ಪಠ್ಯದಂತೆ ಅಂಟಿಸಿ</translation>
 <translation id="1815097521077272760">ಈ ಗೇಮ್‌ಗಾಗಿ ಕೀಬೋರ್ಡ್ ನಿಯಂತ್ರಣವನ್ನು ಪ್ರಯತ್ನಿಸಲು ನಿಮ್ಮನ್ನು ಆಹ್ವಾನಿಸಲಾಗಿದೆ.</translation>
-<translation id="1815181278146012280">ಸೈಟ್ HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಬಯಸಿದಾಗ ಕೇಳಿ</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ಇನ್ನಷ್ಟು...</translation>
 <translation id="1816036116994822943">ಕೀಬೋರ್ಡ್ ಸ್ಕ್ಯಾನಿಂಗ್ ವೇಗ</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
@@ -2564,6 +2562,7 @@
 <translation id="271033894570825754">ಹೊಸ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2710507903599773521">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಈಗ ಅನ್‌ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2710676967944965821">ಎಲ್ಲಾ ಸ್ಮಾರ್ಟ್‌ ಕಾರ್ಡ್‌ ರೀಡರ್‌ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್‌ ಮಾಡಬೇಕೇ?</translation>
+<translation id="2710883118091822664">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2713106313042589954">ಕ್ಯಾಮರಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2713444072780614174">ಬಿಳಿ</translation>
 <translation id="2714180132046334502">ದಟ್ಟ ಬೆಳಕಿನ ಹಿನ್ನೆಲೆ</translation>
@@ -7409,6 +7408,7 @@
 <translation id="6021293122504240352"><ph name="APPS" /> ಆ್ಯಪ್‌ಗಳು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6021969570711251331">ಒಂದರ ಮೇಲೆ ಮತ್ತೊಂದು</translation>
 <translation id="6022526133015258832">ಪೂರ್ಣ ಪರದೆಯನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6023643151125006053">ಈ ಸಾಧನವು (SN: <ph name="SERIAL_NUMBER" />), <ph name="SAML_DOMAIN" /> ನ ನಿರ್ವಾಹಕರಿಂದ ಲಾಕ್ ಮಾಡಲ್ಪಟ್ಟಿದೆ.</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6025215716629925253">ಸ್ಟ್ಯಾಕ್ ಪತ್ತೆ</translation>
@@ -12203,7 +12203,6 @@
 <translation id="965470117154635268">{NUM_SITES,plural, =1{ಇತ್ತೀಚೆಗೆ ಬಹಳಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ 1 ಸೈಟ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ}one{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ {NUM_SITES} ಸೈಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ}other{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ {NUM_SITES} ಸೈಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ}}</translation>
 <translation id="966588271015727539">ಒಂದು ಬ್ಲೂಟೂತ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಚ್ಚಿ}one{&amp;ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಚ್ಚಿ (# Windows)}other{&amp;ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಚ್ಚಿ (# Windows)}}</translation>
-<translation id="967398046773905967">HID ಸಾಧನಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಲು ಯಾವುದೇ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> ನ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="967624055006145463">ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಡೇಟಾ</translation>
 <translation id="96774243435178359">ನಿರ್ವಹಿಸಲಾದ ಪ್ರಿಂಟರ್‌ಗಳು</translation>

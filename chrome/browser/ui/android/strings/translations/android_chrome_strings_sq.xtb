@@ -396,6 +396,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
 <translation id="2708226184420201102">Hape në shfletuesin <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">E re</translation>
+<translation id="2710883118091822664">Identifikohu për të vazhduar me lehtësi në të gjitha pajisjet e tua</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
 <translation id="2718846868787000099">Për të shfaqur përmbajtje në gjuhët e tua të preferuara, sajtet që viziton mund të shikojnë preferencat e tua</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -531,6 +532,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3268048651973962414">Zvarrit lart për të shikuar rezultatet e kërkimit</translation>
 <translation id="3269093882174072735">Ngarko imazhin</translation>
 <translation id="3280562213547448728">Kërkimi me zë</translation>
+<translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skeda}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 fjalëkalim është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google".}other{# fjalëkalime janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}}</translation>
 <translation id="3293181007446299124">Historiku yt i shfletimit ruhet privat në pajisjen tënde dhe raportet dërgohen me një vonesë për të mbrojtur identitetin tënd</translation>

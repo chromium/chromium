@@ -557,7 +557,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1362865166188278099">Ocorreu um problema mecânico. Verifique a impressora.</translation>
 <translation id="1363585519747660921">É necessário configurar a impressora USB</translation>
 <translation id="136378536198524553">A Poupança de energia está ativada</translation>
-<translation id="136522805455656552">Para manter o seu dispositivo seguro, só deve executar e instalar software de origens e programadores fidedignos. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Levantar as sobrancelhas</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> imagens geradas</translation>
 <translation id="1368603372088757436">O Linux não é suportado no seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -1222,7 +1221,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="18139523105317219">Nome da parte EDI</translation>
 <translation id="1815083418640426271">Colar como Texto Simples</translation>
 <translation id="1815097521077272760">Recebeu um convite para experimentar a funcionalidade de controlo do teclado para este jogo.</translation>
-<translation id="1815181278146012280">Perguntar quando um site pretender aceder a dispositivos HID</translation>
 <translation id="181577467034453336">Mais <ph name="NUMBER_OF_VIEWS" />…</translation>
 <translation id="1816036116994822943">Velocidade de análise do teclado</translation>
 <translation id="1817871734039893258">Recuperação de ficheiros da Microsoft</translation>
@@ -2008,6 +2006,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2332742915001411729">Repor predefinição</translation>
 <translation id="2333166365943957309">Hierarquia da IU</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
+<translation id="2334384018887664164">Pode adicionar sites fidedignos à lista de autorizações nas definições de conteúdo</translation>
 <translation id="233471714539944337">Conteúdo sensível</translation>
 <translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2336228925368920074">Adicionar todos os separadores aos marcadores...</translation>
@@ -2103,6 +2102,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="240789602312469910">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android da criança enviando automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnósticos e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">A guardar o cartão…</translation>
 <translation id="2408742686124047357">Fixe o Google Lens à barra de ferramentas para aceder facilmente da próxima vez</translation>
+<translation id="2408762424059547338">Protege melhor contra ataques desativando a otimização do JavaScript</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2409268599591722235">Vamos lá</translation>
 <translation id="2409378541210421746">Editar seleção do idioma</translation>
@@ -2379,6 +2379,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2581992808349413349">Use uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio). Esta opção usa um fornecedor de serviços geridos em <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Qualquer leitor de cartões inteligentes</translation>
+<translation id="2583949330716828639">Gerir exceções de sites</translation>
 <translation id="2584109212074498965">Não foi possível obter a permissão Kerberos. Tente novamente ou contacte o administrador do dispositivo da entidade. (Código de erro <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Gerir as autorizações de acesso ao microfone dos Websites no Chrome</translation>
 <translation id="2586561813241011046">Não foi possível instalar a app <ph name="APP_NAME" />. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -2558,6 +2559,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="271033894570825754">Nova coleção</translation>
 <translation id="2710507903599773521">O <ph name="DEVICE_TYPE" /> já está desbloqueado</translation>
 <translation id="2710676967944965821">Repor todas as autorizações do leitor de cartões inteligentes?</translation>
+<translation id="2710883118091822664">Inicie sessão para continuar facilmente em todos os seus dispositivos</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fundo escuro</translation>
@@ -5757,6 +5759,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4871322859485617074">O PIN contém carateres inválidos.</translation>
 <translation id="4871370605780490696">Adicionar marcador</translation>
 <translation id="4871568871368204250">Desativar a sincronização</translation>
+<translation id="4871630917300912613">Proteções de JavaScript</translation>
 <translation id="4871719318659334896">Fechar grupo</translation>
 <translation id="4872192066608821120">Para importar palavras-passe, selecione um ficheiro CSV</translation>
 <translation id="4872212987539553601">Configure a encriptação no dispositivo</translation>
@@ -7131,6 +7134,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="583673505367439042">Os sites podem solicitar a edição de ficheiros ou de pastas no seu dispositivo</translation>
 <translation id="5836999627049108525">Idioma de Traduzir de</translation>
 <translation id="583756221537636748">Caixa</translation>
+<translation id="5840656138956959276">Melhorada: rigorosa</translation>
 <translation id="5840680448799937675">Os ficheiros serão sempre partilhados offline</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5841338463993781099">Guardar na conta?</translation>
@@ -7406,6 +7410,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps já não são suportadas</translation>
 <translation id="6021969570711251331">Intercalar</translation>
 <translation id="6022526133015258832">Abrir em Ecrã Inteiro</translation>
+<translation id="6022659036123304283">Personalize o Google Chrome</translation>
 <translation id="6023643151125006053">Este dispositivo (SN: <ph name="SERIAL_NUMBER" />) foi bloqueado pelo administrador de <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">Pe&amp;squisar frame do vídeo com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Rastreio de pilha</translation>
@@ -7956,6 +7961,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6411135999030237579">Premir sem soltar para repetir automaticamente a tecla</translation>
 <translation id="6414618057231176439">Selecione a versão de <ph name="VM_NAME" /> a instalar.</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
+<translation id="6415434255504060856">Rigorosas para todos os sites</translation>
 <translation id="6415757856498750027">Escrever "w" para obter "ư"</translation>
 <translation id="6415816101512323589">Ativar a recuperação dos dados locais para proteger os seus dados?</translation>
 <translation id="6415900369006735853">Ligue-se à Internet através do seu telemóvel</translation>
@@ -8351,6 +8357,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6686665106869989887">Separador movido para a direita</translation>
 <translation id="6686676261102452995">Abriu este documento hoje</translation>
 <translation id="6686817083349815241">Guardar a sua palavra-passe</translation>
+<translation id="6686878118106035853">A Proteção melhorada personalizada desativa a otimização do JavaScript para todos os sites</translation>
 <translation id="6687008241368170505">Altere o PIN do Gestor de Palavras-passe da Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Teclas do rato</translation>
@@ -10832,6 +10839,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Já registou este dispositivo. Não tem de o registar novamente.</translation>
 <translation id="8357388086258943206">Erro ao instalar o Linux</translation>
+<translation id="8357883857705092796">Sites não reconhecidos</translation>
 <translation id="8358685469073206162">Restaurar páginas?</translation>
 <translation id="835927394551949760">Perguntar ao Google</translation>
 <translation id="835951711479681002">Guardar na sua Conta Google</translation>
@@ -12199,7 +12207,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Reveja 1 site que enviou recentemente muitas notificações}other{Reveja {NUM_SITES} sites que enviaram recentemente muitas notificações}}</translation>
 <translation id="966588271015727539">Selecionar um ecrã em braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Fe&amp;char este perfil}other{Fe&amp;char este perfil (# janelas)}}</translation>
-<translation id="967398046773905967">Não permitir o acesso de sites a dispositivos HID</translation>
 <translation id="96756691973639907">Mais ações para <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 <translation id="96774243435178359">Impressoras geridas</translation>

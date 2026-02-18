@@ -1786,6 +1786,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Jos haluat lukita incognito-välilehdet, ota käyttöön Touch ID, Face ID tai tunnuskoodi.</translation>
 <translation id="750886945254958667">Säilytä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poistu ryhmästä, jos et enää halua käyttää sitä</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Lisää enintään 1 välilehti}other{Lisää enintään {COUNT} välilehteä}}</translation>
 <translation id="7512909159512473473">Lisää tunnuslause…</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7514530647142300459">Jatka Google-tilisi (<ph name="EMAIL" />) salasanojen käyttöä</translation>

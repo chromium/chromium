@@ -557,7 +557,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1362865166188278099">Mexaniki problem. Printeri yoxlayın</translation>
 <translation id="1363585519747660921">USB printer konfiqurasiya edilməlidir</translation>
 <translation id="136378536198524553">Enerjiyə Qənaət aktivdir</translation>
-<translation id="136522805455656552">Cihazınızı təhlükəsiz saxlamaq üçün yalnız etibarlı mənbə və tərtibatçılardan proqram təminatlarını işə salmalı və quraşdırmalısınız. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Qaşlarınızı qaldırın</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> şəkil yaradıldı</translation>
 <translation id="1368603372088757436">Linux <ph name="DEVICE_TYPE" /> cihazınızda dəstəklənmir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -1222,7 +1221,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="18139523105317219">EDI Partiya Adı</translation>
 <translation id="1815083418640426271">Sadə Mətn Kimi Yerləşdirin</translation>
 <translation id="1815097521077272760">Bu oyun üçün klaviatura nəzarətini sınamağa dəvət olunmusunuz.</translation>
-<translation id="1815181278146012280">Sayt HID cihazlarına daxil olmaq istədikdə icazə tələb edin</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> daha...</translation>
 <translation id="1816036116994822943">Klaviaturanın skan edilmə sürəti</translation>
 <translation id="1817871734039893258">Microsoft Fayl Bərpası</translation>
@@ -2561,6 +2559,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> kilidi açılıb</translation>
 <translation id="2710676967944965821">Smart kart oxuyanın bütün icazələri sıfırlansın?</translation>
+<translation id="2710883118091822664">Bütün cihazlarda asanlıqla davam etmək üçün daxil olun</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2714180132046334502">Tünd arxa fon</translation>
@@ -6856,6 +6855,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> istifadə etmək üçün ilk öncə <ph name="LINK_START" />şəbəkənin hesaba giriş səhifəsinə daxil olun<ph name="LINK_END" />.</translation>
 <translation id="5637476008227280525">Mobil datanı aktiv edin</translation>
 <translation id="5638170200695981015">Məhdud baxış və redaktə seçimlərindən istifadə üçün "Sadə redaktorda açın" seçin.</translation>
+<translation id="5638202526629811571">Valideyn və ya qəyyumun bu artırmanı əlavə etməyinizə icazə verib-vermədiyini bildirməsi üçün bu ekranı ona göstərin</translation>
 <translation id="563821631542362636">Sayta datanı yadda saxlamaq icazəsi verin</translation>
 <translation id="5638309510554459422">Artırma və temalara <ph name="BEGIN_LINK" />Chrome Veb Mağazada<ph name="END_LINK" /> baxın</translation>
 <translation id="5639549361331209298">Bu səhifəni yenidən yükləyin, daha çox seçim üçün basıb saxlayın</translation>
@@ -7402,6 +7402,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> tətbiqləri artıq dəstəklənmir</translation>
 <translation id="6021969570711251331">Aralıq</translation>
 <translation id="6022526133015258832">Tam ekran açın</translation>
+<translation id="6022659036123304283">Chrome'u özünüzküləşdirin</translation>
 <translation id="6023643151125006053">Bu cihaz (SN <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> administratoru tərəfindən kilidlənib.</translation>
 <translation id="6024317249717725918">&amp;Videoçərçivəni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="6025215716629925253">İz Toplusu</translation>
@@ -10459,6 +10460,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8110393529211831722">Abunə bu cihazda quraşdırılır və hesaba aid digər cihazlar ilə sinxronlaşdırılmır. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Kontakt siyahısı endirilir...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> mikrofon icazəsi</translation>
+<translation id="8116497846156149">Valideyninizdən təsdiq etməsini istəyin</translation>
 <translation id="8116972784401310538">&amp;Əlfəcin meneceri</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> giriş qaydanızı yadda saxlayır və mümkün olduqda sizi avtomatik daxil edir. Deaktiv olduqda hər dəfə təsdiq tələb ediləcək.</translation>
 <translation id="8118362518458010043">Chrome tərəfindən deaktiv edilib. Artırma təhlükəli ola bilər.</translation>
@@ -12085,6 +12087,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratorunuz <ph name="APP0_NAME" /> ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}=2{Administratorunuz <ph name="APP0_NAME" /> və <ph name="APP1_NAME" /> ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}=3{Administratorunuz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> və 1 digər tətbiq ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}other{Administratorunuz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> və # digər tətbiq ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}}</translation>
 <translation id="9186963452600581158">Uşağın Google Hesabı ilə daxil olun</translation>
 <translation id="9187967020623675250">Düymələr uyğun gəlmir. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
+<translation id="9189618485998894982">Bu tətbiq bloklanıb. Tərtibatçı ilə əlaqə saxlayın</translation>
 <translation id="9192019773545828776">Səsli rəyi dinləyərək ekrana baxmadan cihazınızdan istifadə edə bilərsiniz. Brayl əlifbası qoşulmuş cihaz ilə əlçatandır. ChromeVox'u aktiv və deaktiv etmək üçün Ctrl + Alt + Z istifadə edin. Naviqasiya etmək üçün Axtarış + Sol ox və ya Sağ oxu istifadə edin. Seçmək (aktiv etmək) üçün Axtarış + Boşluq istifadə edin.</translation>
 <translation id="9195969368671142407">Təşkilatınız Google Hesabınızda yadda saxlaya biləcəklərinizi məhdudlaşdırdıqda tab qruplarını paylaşa və ya onlara qoşula bilməzsiniz</translation>
 <translation id="919686179725692564">Tətbiqlərin yedəklənməsi barədə ətraflı məlumat əldə edin</translation>
@@ -12189,7 +12192,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Bu yaxınlarda çox sayda bildiriş göndərən 1 saytı nəzərdən keçirin}other{Bu yaxınlarda çox sayda bildiriş göndərən {NUM_SITES} saytı nəzərdən keçirin}}</translation>
 <translation id="966588271015727539">Bluetooth brayl displeyi seçin</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Bu profili bağlayın}other{&amp;Bu profili bağlayın (# pəncərə)}}</translation>
-<translation id="967398046773905967">Saytların HID cihazlarına girişinə icazə verməyin</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> üçün digər əməliyyatlar</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>
 <translation id="96774243435178359">İdarə edilən printerlər</translation>

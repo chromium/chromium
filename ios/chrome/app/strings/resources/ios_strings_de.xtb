@@ -1786,6 +1786,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Wenn du deine Inkognitotabs sperren möchtest, richte zuerst Touch ID, Face ID oder einen Sicherheitscode ein.</translation>
 <translation id="750886945254958667">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Bis zu 1 Tab hinzufügen}other{Bis zu {COUNT} Tabs hinzufügen}}</translation>
 <translation id="7512909159512473473">Passphrase eingeben…</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7514530647142300459">Verwende weiterhin die Passwörter in deinem Google-Konto <ph name="EMAIL" /></translation>
