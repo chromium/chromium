@@ -27,6 +27,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -1014,6 +1015,23 @@ BrowserDestroyedObserver::BrowserDestroyedObserver(
     BrowserWindowInterface* browser)
     : session_id_(browser ? std::make_optional(browser->GetSessionID())
                           : std::nullopt) {
+  if (browser) {
+    // Handle the case where the browser has already been closed and is awaiting
+    // destruction. ForEach will not iterate over closed browsers.
+    browser_was_closed_ = true;
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [&](BrowserWindowInterface* collection_browser) {
+          if (collection_browser == browser) {
+            browser_was_closed_ = false;
+            return false;
+          }
+          return true;
+        });
+    if (browser_was_closed_) {
+      browser_ = browser->GetWeakPtr();
+      return;
+    }
+  }
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
 }
@@ -1021,16 +1039,19 @@ BrowserDestroyedObserver::BrowserDestroyedObserver(
 BrowserDestroyedObserver::~BrowserDestroyedObserver() = default;
 
 void BrowserDestroyedObserver::Wait() {
-  if (!was_removed_) {
+  if (!browser_was_closed_) {
     run_loop_.Run();
   }
+  // Wait for `browser_` to be destroyed.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !browser_; }));
 }
 
 void BrowserDestroyedObserver::OnBrowserClosed(
     BrowserWindowInterface* browser) {
   if (!session_id_.has_value() ||
       browser->GetSessionID() == session_id_.value()) {
-    was_removed_ = true;
+    browser_ = browser->GetWeakPtr();
+    browser_was_closed_ = true;
     run_loop_.Quit();
   }
 }
