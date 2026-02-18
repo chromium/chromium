@@ -205,6 +205,17 @@ export class ContextualTasksAppElement extends CrLitElement {
   override firstUpdated() {
     this.postMessageHandler_ =
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
+
+    this.eventTracker_.add(
+        this.$.composebox, 'composebox-height-update', (e: CustomEvent) => {
+          // TODO(crbug.com/483737358): Sending an object instead of a proto is
+          // a temporary solution to unblock the prototype. Remove this method
+          // once the proto is implemented on the webview side.
+          this.postMessageHandler_.sendObjectMessage({
+            type: 'composebox-height-update',
+            height: e.detail.height,
+          });
+        });
   }
 
   protected async onNewThreadClick_() {
@@ -335,8 +346,8 @@ export class ContextualTasksAppElement extends CrLitElement {
           return;
         }
         this.isFrameLoading = true;
-        const { isAiPage } =
-          await this.browserProxy_.handler.isAiPage(ev.url as string);
+        const {isAiPage} =
+            await this.browserProxy_.handler.isAiPage(ev.url as string);
         if (this.isFrameLoading && !isAiPage) {
           this.setIsGhostLoaderVisible(true);
         }
@@ -589,6 +600,11 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   setPopStateFinishedCallbackForTesting(callback: () => void) {
     this.popStateFinishedCallbackForTesting_ = callback;
+  }
+
+  setMockPostMessageHandlerForTesting(mockPostMessageHandler:
+                                          PostMessageHandler) {
+    this.postMessageHandler_ = mockPostMessageHandler;
   }
 }
 

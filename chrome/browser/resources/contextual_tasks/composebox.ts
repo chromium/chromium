@@ -221,6 +221,11 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
       this.resizeObserver_ = new ResizeObserver(() => {
         this.composeboxHeight_ = composebox.offsetHeight;
+        this.dispatchEvent(new CustomEvent('composebox-height-update', {
+          bubbles: true,
+          composed: true,
+          detail: {height: this.composeboxHeight_},
+        }));
       });
       this.resizeObserver_.observe(composebox);
     }
