@@ -1018,6 +1018,16 @@
       status: "stable",
     },
     {
+      // Fixes a bug where ancestor elements retain a stale :focus-within
+      // state if the focused element's subtree is removed during blur
+      // or focusout events.
+      // This was added in M147 and can be removed after M149.
+      // https://issues.chromium.org/issues/454668198
+      // https://issues.chromium.org/issues/457465869
+      name: "ClearFocusWithinOnSubtreeRemoval",
+      status: "stable",
+    },
+    {
       // Determine clearing of target and relatedTarget by checking
       // if the top node is in shadow tree.
       // This was added in M142 and can be removed after M144.
