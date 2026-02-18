@@ -45,6 +45,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLinuxExportImportHelpURL[];
 // The URL for the "Learn more" link in the connected devices.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMultiDeviceLearnMoreURL[];
 
+inline constexpr char kSafetyPixelbookURL[] = "https://g.co/Pixelbook/legal";
+inline constexpr char kSafetyPixelSlateURL[] = "https://g.co/PixelSlate/legal";
+
 }  // namespace chrome
 
 #endif  // ASH_CONSTANTS_URL_CONSTANTS_H_

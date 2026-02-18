@@ -249,10 +249,6 @@ inline constexpr char kChromeUIResetPasswordHost[] = "reset-password";
 inline constexpr char kChromeUIResetPasswordURL[] = "chrome://reset-password/";
 inline constexpr char kChromeUIRestartHost[] = "restart";
 inline constexpr char kChromeUIRestartURL[] = "chrome://restart/";
-inline constexpr char kChromeUISafetyPixelbookURL[] =
-    "https://g.co/Pixelbook/legal";
-inline constexpr char kChromeUISafetyPixelSlateURL[] =
-    "https://g.co/PixelSlate/legal";
 inline constexpr char kChromeUISavedTabGroupsUnsupportedHost[] =
     "saved-tab-groups-unsupported";
 inline constexpr char kChromeUISegmentationInternalsHost[] =

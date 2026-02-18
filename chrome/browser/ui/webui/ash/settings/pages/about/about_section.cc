@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -177,10 +177,10 @@ std::string GetSafetyInfoLink() {
   const std::vector<std::string_view> board = base::SplitStringPiece(
       release_board, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (board[0] == "nocturne") {
-    return chrome::kChromeUISafetyPixelSlateURL;
+    return chrome::kSafetyPixelSlateURL;
   }
   if (board[0] == "eve" || board[0] == "atlas") {
-    return chrome::kChromeUISafetyPixelbookURL;
+    return chrome::kSafetyPixelbookURL;
   }
 
   return std::string();
