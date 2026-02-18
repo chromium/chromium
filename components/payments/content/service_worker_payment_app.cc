@@ -124,9 +124,10 @@ void ServiceWorkerPaymentApp::ValidateCanMakePayment(
     return;
   }
 
-  // Returns true if the `kCanMakePaymentEnabled` pref is disabled.
-  if (!prefs_can_make_payment_ && PaymentsExperimentalFeatures::IsEnabled(
-                                      features::kRestrictIsReadyToPayQuery)) {
+  // Skip sending the CanMakePayment event to the payment app if the
+  // `kCanMakePaymentEnabled` pref is disabled, to avoid leaking information to
+  // the payment app.
+  if (!prefs_can_make_payment_) {
     OnCanMakePaymentEventSkipped(std::move(callback));
     return;
   }

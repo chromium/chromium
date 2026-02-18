@@ -289,7 +289,6 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
 // Test that CanMakePaymentEvent is skipped if the `kCanMakePaymentEnabled` pref
 // is disabled.
 TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefDisabled) {
-  base::test::ScopedFeatureList features(features::kRestrictIsReadyToPayQuery);
   CreateInstalledServiceWorkerPaymentApp(
       /*with_url_method=*/true, /*prefs_can_make_payment_enabled=*/false,
       /*has_explicitly_verified_methods=*/true);
@@ -308,7 +307,6 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefDisabled) {
 // Test that CanMakePaymentEvent is fired if the `kCanMakePaymentEnabled` pref
 // is enabled.
 TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefEnabled) {
-  base::test::ScopedFeatureList features(features::kRestrictIsReadyToPayQuery);
   CreateInstalledServiceWorkerPaymentApp(
       /*with_url_method=*/true, /*prefs_can_make_payment_enabled=*/true,
       /*has_explicitly_verified_methods=*/true);

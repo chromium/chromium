@@ -427,7 +427,6 @@ public class AndroidPaymentAppFinderUnitTest {
     @SmallTest
     @Test
     @UiThreadTest
-    @Features.EnableFeatures({PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY})
     public void testQueryBobPay_CanMakePaymentPrefIsTrue() {
         Mockito.when(mParams.prefsCanMakePayment()).thenReturn(true);
 
@@ -446,7 +445,6 @@ public class AndroidPaymentAppFinderUnitTest {
     @Test
     @UiThreadTest
     @Features.EnableFeatures({
-        PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY,
         PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY
     })
     public void testQueryBobPay_CanMakePaymentPrefIsFalse() {
@@ -456,40 +454,6 @@ public class AndroidPaymentAppFinderUnitTest {
 
         // Verify that IS_READY_TO_PAY service was not queried.
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
-                .getServicesThatCanRespondToIntent(
-                        ArgumentMatchers.argThat(
-                                new IntentArgumentMatcher(
-                                        new Intent(
-                                                WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY))));
-    }
-
-    @SmallTest
-    @Test
-    @UiThreadTest
-    @Features.DisableFeatures({PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY})
-    public void testQueryBobPay_FeatureDisabledCanMakePaymentPrefIsTrue() {
-        Mockito.when(mParams.prefsCanMakePayment()).thenReturn(true);
-        runTestForQueryBobPayWithOneAppThatHasIsReadyToPayService();
-
-        // Verify that IS_READY_TO_PAY service was queried.
-        Mockito.verify(mPackageManagerDelegate, Mockito.times(1))
-                .getServicesThatCanRespondToIntent(
-                        ArgumentMatchers.argThat(
-                                new IntentArgumentMatcher(
-                                        new Intent(
-                                                WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY))));
-    }
-
-    @SmallTest
-    @Test
-    @UiThreadTest
-    @Features.DisableFeatures({PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY})
-    public void testQueryBobPay_FeatureDisabledCanMakePaymentPrefIsFalse() {
-        Mockito.when(mParams.prefsCanMakePayment()).thenReturn(false);
-        runTestForQueryBobPayWithOneAppThatHasIsReadyToPayService();
-
-        // Verify that IS_READY_TO_PAY service was queried.
-        Mockito.verify(mPackageManagerDelegate, Mockito.times(1))
                 .getServicesThatCanRespondToIntent(
                         ArgumentMatchers.argThat(
                                 new IntentArgumentMatcher(
