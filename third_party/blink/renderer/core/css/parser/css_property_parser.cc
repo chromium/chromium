@@ -109,7 +109,8 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
   const CSSValue* value =
       css_parsing_utils::ConsumeCSSWideKeyword(stream, *context);
   if (!value) {
-    auto local_context = CSSParserLocalContext(CSSPropertyName(property));
+    auto local_context = CSSParserLocalContext(CSSPropertyName(property),
+                                               CSSPropertyID::kInvalid);
     value = ParseLonghand(property, *context, local_context, stream);
   }
   if (!value || !stream.AtEnd()) {
@@ -150,15 +151,15 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
 
   bool is_shorthand = property.IsShorthand();
   DCHECK(context_);
-  auto local_context =
-      CSSParserLocalContext(CSSPropertyName(unresolved_property));
+  CSSParserLocalContext local_context(CSSPropertyName(unresolved_property),
+                                      CSSPropertyID::kInvalid);
 
   // NOTE: The first branch of the if here uses the tokenized form,
   // and the second uses the streaming parser. This is only allowed
   // since they start from the same place and we reset both below,
   // so they cannot go out of sync.
   if (is_shorthand) {
-    local_context = local_context.WithCurrentShorthand(property_id);
+    local_context.SetCurrentShorthand(property_id);
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.
     //

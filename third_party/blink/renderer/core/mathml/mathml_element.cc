@@ -152,8 +152,9 @@ const CSSPrimitiveValue* MathMLElement::ParseMathLength(
   // TODO(crbug.com/476061189) We are using attribute name as property name for
   // caching property-dependent random() values. This behaviour is not
   // specified.
-  CSSParserLocalContext local_context = CSSParserLocalContext(
-      CSSPropertyName(AtomicString(attr_name.ToString())));
+  CSSParserLocalContext local_context(
+      CSSPropertyName(AtomicString(attr_name.ToString())),
+      CSSPropertyID::kInvalid);
   const CSSPrimitiveValue* parsed_value = CSSParser::ParseLengthPercentage(
       value,
       StrictCSSParserContext(GetExecutionContext()->GetSecureContextMode()),

@@ -1908,8 +1908,8 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
   // values inside initial value of registered custom properties. Use
   // CSSParserLocalContext with custom property name just to keep it consistent
   // in case we need it in the future.
-  CSSParserLocalContext local_context =
-      CSSParserLocalContext(CSSPropertyName(AtomicString(name)));
+  CSSParserLocalContext local_context(CSSPropertyName(AtomicString(name)),
+                                      CSSPropertyID::kInvalid);
   std::optional<const CSSValue*> initial =
       syntax.has_value()
           ? PropertyRegistration::ConvertInitial(

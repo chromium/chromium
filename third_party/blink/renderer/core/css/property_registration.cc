@@ -181,8 +181,8 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
   // values inside initial value of registered custom properties. Use
   // CSSParserLocalContext with custom property name just to keep it consistent
   // in case we need it in the future.
-  CSSParserLocalContext local_context =
-      CSSParserLocalContext(CSSPropertyName(name));
+  CSSParserLocalContext local_context(CSSPropertyName(name),
+                                      CSSPropertyID::kInvalid);
   std::optional<const CSSValue*> initial = ConvertInitial(
       rule.GetInitialValue(), *syntax, *parser_context, local_context);
   if (!initial.has_value()) {
@@ -236,8 +236,8 @@ void PropertyRegistration::registerProperty(
     bool is_animation_tainted = false;
     // This is called in JS `resolveValues` and we don't have a property context
     // at that time.
-    CSSParserLocalContext local_context =
-        CSSParserLocalContext(CSSPropertyName(atomic_name));
+    CSSParserLocalContext local_context(CSSPropertyName(atomic_name),
+                                        CSSPropertyID::kInvalid);
     initial = syntax_definition->Parse(property_definition->initialValue(),
                                        *parser_context, local_context,
                                        is_animation_tainted);

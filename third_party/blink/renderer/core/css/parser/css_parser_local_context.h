@@ -91,14 +91,13 @@ class CORE_EXPORT CSSParserLocalContext {
 
   // For standard CSS properties, need to pass CSSPropertyName with unresolved
   // property id.
-  explicit CSSParserLocalContext(CSSPropertyName property_name)
-      : unresolved_property_name_(property_name) {}
+  explicit CSSParserLocalContext(CSSPropertyName property_name,
+                                 CSSPropertyID current_shorthand)
+      : current_shorthand_(current_shorthand),
+        unresolved_property_name_(property_name) {}
 
-  CSSParserLocalContext WithCurrentShorthand(
-      CSSPropertyID current_shorthand) const {
-    CSSParserLocalContext context = *this;
-    context.current_shorthand_ = current_shorthand;
-    return context;
+  void SetCurrentShorthand(CSSPropertyID current_shorthand) {
+    current_shorthand_ = current_shorthand;
   }
 
   void SetUnresolvedProperty(CSSPropertyName property_name) {
