@@ -26,7 +26,10 @@ static_library("slim_web_view") {
     "//base",
     "//components/guest_view/browser",
     "//content/public/browser",
+    "//content/public/common",
     "//net",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public:blink_headers",
   ]
 }
 

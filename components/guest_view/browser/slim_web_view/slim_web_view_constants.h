@@ -7,9 +7,18 @@
 
 namespace guest_view::slim_web_view {
 
+// Events.
 extern const char kEventContentLoad[];
 extern const char kEventLoadAbort[];
 extern const char kEventLoadCommit[];
+extern const char kEventNewWindow[];
+
+// Parameters on events.
+extern const char kInitialHeight[];
+extern const char kInitialWidth[];
+extern const char kRequestInfo[];
+extern const char kTargetURL[];
+extern const char kWindowOpenDisposition[];
 
 }  // namespace guest_view::slim_web_view
 

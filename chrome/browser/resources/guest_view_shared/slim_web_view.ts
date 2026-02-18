@@ -21,7 +21,7 @@ export interface SlimWebViewElement {
 
 const GUEST_INSTANCE_ID_PENDING: number = 0;
 
-class LoadCommitEvent extends Event {
+export class LoadCommitEvent extends Event {
   readonly url: string;
   readonly isTopLevel: boolean;
 
@@ -39,7 +39,7 @@ class LoadCommitEvent extends Event {
   }
 }
 
-class LoadAbortEvent extends Event {
+export class LoadAbortEvent extends Event {
   readonly url: string;
   readonly isTopLevel: boolean;
   readonly code: number;
@@ -61,6 +61,29 @@ class LoadAbortEvent extends Event {
   }
 }
 
+export class NewWindowEvent extends Event {
+  readonly targetUrl: string;
+  readonly windowOpenDisposition: string;
+  readonly initialWidth: number;
+  readonly initialHeight: number;
+
+  static factory(args: EventDict): NewWindowEvent {
+    return new NewWindowEvent(args);
+  }
+
+  private constructor(args: EventDict) {
+    super('newwindow', {
+      bubbles: true,
+      cancelable: true,
+    });
+    const requestInfo = args.getDict('requestInfo');
+    this.initialWidth = requestInfo.getInt('initialWidth');
+    this.initialHeight = requestInfo.getInt('initialHeight');
+    this.targetUrl = requestInfo.getString('targetUrl');
+    this.windowOpenDisposition = requestInfo.getString('windowOpenDisposition');
+  }
+}
+
 const eventDescriptors: EventMap = new Map([
   ['contentload', {}],
   [
@@ -73,6 +96,12 @@ const eventDescriptors: EventMap = new Map([
     'loadcommit',
     {
       factory: LoadCommitEvent.factory,
+    },
+  ],
+  [
+    'newwindow',
+    {
+      factory: NewWindowEvent.factory,
     },
   ],
 ]);

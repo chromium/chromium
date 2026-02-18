@@ -5302,7 +5302,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         static_cast<WebContentsImpl*>(delegate_->CreateCustomWebContents(
             opener, source_site_instance, is_new_browsing_instance,
             opener->GetLastCommittedURL(), params.frame_name, params.target_url,
-            partition_config, session_storage_namespace));
+            params.disposition, *params.features, partition_config,
+            session_storage_namespace));
     if (!web_contents_impl) {
       return nullptr;
     }
