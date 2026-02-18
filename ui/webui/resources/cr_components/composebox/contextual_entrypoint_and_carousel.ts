@@ -673,7 +673,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
     }
 
-    if (context.attachments) {
+    if (context.attachments.length > 0) {
       recordContextAdditionMethod(
           ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
     }
