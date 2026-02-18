@@ -12343,6 +12343,22 @@
             ]
         }
     ],
+    "GlicStatusTrayIcon_ChromeOS_Dogfood": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "GlicShowStatusTrayIcon",
+                        "SupportCustomIconsInStatusArea"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicTeamfoodAllowlistedChromeOS": [
         {
             "platforms": [
