@@ -665,8 +665,19 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
+  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
+  CanvasNon2DResourceProviderSharedImage* si_provider = nullptr;
+  if (snapshot_provider_->IsExternalBitmapProvider()) {
+    sw_draw_info = static_cast<CanvasNon2DSnapshotProviderBitmap*>(
+                       snapshot_provider_.get())
+                       ->Info();
+  } else {
+    si_provider = static_cast<CanvasNon2DResourceProviderSharedImage*>(
+        snapshot_provider_.get());
+  }
   auto image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), snapshot_provider_.get(), video_renderer,
+      std::move(media_video_frame), si_provider, std::move(sw_draw_info),
+      video_renderer,
       /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
