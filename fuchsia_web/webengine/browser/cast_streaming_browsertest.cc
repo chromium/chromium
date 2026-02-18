@@ -30,9 +30,8 @@ const char kCastStreamingReceiverPath[] = "/cast_streaming_receiver.html";
 media::AudioDecoderConfig GetDefaultAudioConfig() {
   return media::AudioDecoderConfig(
       media::AudioCodec::kOpus, media::SampleFormat::kSampleFormatF32,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-      48000 /* samples_per_second */, media::EmptyExtraData(),
-      media::EncryptionScheme::kUnencrypted);
+      media::ChannelLayoutConfig::Stereo(), /*samples_per_second=*/48000,
+      media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 }
 
 media::VideoDecoderConfig GetDefaultVideoConfig() {
