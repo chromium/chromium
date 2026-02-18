@@ -85,6 +85,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.AnimatedEffect.ShaderEmpty" enum="Boolean"
+    expires_after="2027-02-17">
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Recorded when the AnimatedEffectView fails to load a shader resource or the
+    resource is empty. This indicates a failure to initialize the SkSL shader
+    effect, leading to a fallback to a simpler non-shader effect.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.FetchZeroStateSuggestionsLatency" units="ms"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

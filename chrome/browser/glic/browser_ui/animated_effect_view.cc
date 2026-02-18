@@ -6,6 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -82,7 +83,9 @@ AnimatedEffectView::AnimatedEffectView(Profile* profile,
   gpu_data_manager_observer_.Observe(gpu_data_manager);
 
   UpdateShader();
-  CHECK(!shader_.empty()) << "Shader not initialized.";
+  if (shader_.empty()) {
+    base::UmaHistogramBoolean("Glic.AnimatedEffect.ShaderEmpty", true);
+  }
 }
 
 AnimatedEffectView::~AnimatedEffectView() = default;
@@ -92,7 +95,8 @@ void AnimatedEffectView::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicForceNonSkSLBorder)) {
+  if (shader_.empty() ||
+      base::FeatureList::IsEnabled(features::kGlicForceNonSkSLBorder)) {
     views::View::OnPaint(canvas);
     DrawEffect(canvas, cc::PaintFlags());
     return;
