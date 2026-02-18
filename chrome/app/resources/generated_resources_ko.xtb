@@ -688,7 +688,7 @@
 <translation id="1461041542809785877">성능</translation>
 <translation id="1461177659295855031">북마크바 폴더로 이동</translation>
 <translation id="1461288887896722288">관리 계정에 방금 로그인했습니다. 새 관리 프로필을 만들면 계정에 연결된 일부 리소스에 액세스할 수 있습니다.</translation>
-<translation id="1461718860884899524">안전하지 않은 사이트 신고(&amp;U)…</translation>
+<translation id="1461718860884899524">안전하지 않은 사이트 신고…</translation>
 <translation id="146219525117638703">ONC 상태</translation>
 <translation id="146220085323579959">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.</translation>
 <translation id="1462480037563370607">수동으로 사이트 추가</translation>
@@ -7994,7 +7994,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="642469772702851743">소유자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>
 <translation id="6425556984042222041">텍스트 음성 변환 속도</translation>
 <translation id="642729974267661262">소리 재생이 허용되지 않음</translation>
-<translation id="6427752304227226701">안전하지 않은 사이트 신고(&amp;U)…</translation>
+<translation id="6427752304227226701">안전하지 않은 사이트 신고...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{저장된 비밀번호 없음}=1{비밀번호 {COUNT}개 확인 중...}other{비밀번호 {COUNT}개 확인 중…}}</translation>
 <translation id="6429384232893414837">업데이트 오류</translation>
 <translation id="6430814529589430811">Base64-인코딩 ASCII, 단일 인증서</translation>

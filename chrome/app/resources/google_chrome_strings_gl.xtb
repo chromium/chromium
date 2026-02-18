@@ -264,6 +264,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}other{Chrome recomenda que as quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Para afondar na busca, agrega varias pestanas, ficheiros e ferramentas co botón Engadir unha pestana e moito máis.</translation>
 <translation id="3756724684201900923">Máis información sobre a instalación de Chrome</translation>
+<translation id="3772152698251011058">Informar deste sitio a Google</translation>
 <translation id="3780814664026482060">Chrome: <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex non puido sincronizar os teus datos por mor dun erro durante o inicio de sesión.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -416,6 +417,8 @@
 Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5465210843490471889">Escolle un perfil de Chrome para usar con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para axudar a mellorar estas funcións, Chrome envíalle a Google as interaccións que mantiveches con elas. Os membros do equipo de revisión poden ler, procesar e anotar estes datos.</translation>
+<translation id="547202872422499512">Agora Chrome ábrese ao iniciar Windows para que poidas comezar a navegar ao instante. Podes desactivar esta función en Configuración.</translation>
+<translation id="5486346529181556467">Informa dos sitios que consideres daniños para mellorar a seguranza en liña para todo o mundo. Obtén máis información sobre a <ph name="BEGIN_LINK" />política de Google relativa aos sitios non seguros<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">esquina superior esquerda da área de busca: <ph name="LEFT" /> % á esquerda, <ph name="TOP" /> % arriba</translation>
 <translation id="5550137307985173298">Fai clic no botón Personalizar Chrome, na páxina Nova pestana, para darlle outro aire a Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -575,6 +578,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6979589607440534284">Descubre por que Chrome bloquea algúns ficheiros (abrirase nunha nova pestana)</translation>
+<translation id="6985817499499247940">Abre Chrome de maneira automática para comezar a navegar ao instante.</translation>
 <translation id="6991926986715044139">Mostrar sempre atallo de Google Lens</translation>
 <translation id="6999131147875565462">Chrome execútase máis rápido e as funcións que usen JavaScript deberían funcionar tal como se deseñaron</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
@@ -603,6 +607,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7288567540154601580">Pestanas e extensións</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
 <translation id="7302361266603927550">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
+<translation id="7306401458628386911">Comeza a navegar ao instante: Chrome xa pode abrirse cando se inicie Windows.</translation>
 <translation id="7308322188646931570">Chrome necesita acceder ao almacenamento para descargar ficheiros</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
@@ -666,6 +671,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7827099906024714326">Chrome necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión agora, estes datos eliminaranse.</translation>
 <translation id="7832314606810669113">Para poder acceder aos teus marcadores e outros datos en todos os teus dispositivos, inicia sesión en Chrome Despois de facelo, este marcador gardarase na túa Conta de Google.</translation>
 <translation id="7845233973568007926">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o ordenador.</translation>
+<translation id="7847170235260850604">Abrir Chrome cando se inicie Windows</translation>
 <translation id="7849037457735762883">Retoma a actividade onde a deixaches: Chrome pode restaurar as pestanas cada vez que o reinicies. Para activar esta opción, vai a</translation>
 <translation id="7869620795354551924">Para poder usar os contrasinais gardados, escanea o código QR, descarga Chrome para iOS e inicia sesión na túa Conta de Google</translation>
 <translation id="7872446069773932638">Descargando… Tempo restante: <ph name="SECONDS" /> s</translation>
