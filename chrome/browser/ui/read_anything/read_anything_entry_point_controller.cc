@@ -172,7 +172,7 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
     base::OnceCallback<void(user_education::FeaturePromoResult promo_result)>
         show_promo_callback) {
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration) ||
-      !features::IsReadAnythingOmniboxChipEnabled()) {
+      !features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
     return;
   }
 
