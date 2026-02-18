@@ -58,7 +58,7 @@ class RemoteDebuggingServer {
 
   virtual ~RemoteDebuggingServer();
 
-  void StartHttpServerInApprovalMode(PrefService* local_state);
+  void StartHttpServerInApprovalModeIfEnabled(PrefService* local_state);
 
  protected:
   RemoteDebuggingServer();
