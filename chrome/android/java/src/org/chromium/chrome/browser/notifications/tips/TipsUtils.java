@@ -164,6 +164,19 @@ public class TipsUtils {
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_third_step_password_autofill));
                 break;
+            case TipsNotificationsFeatureType.SIGNIN:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_noop;
+                mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_signin;
+                mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_signin;
+                mainPageLogoViewRes = R.drawable.tips_promo_signin_logo;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_signin;
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_first_step_signin));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_second_step_signin));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_third_step_signin));
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
 
@@ -340,6 +353,7 @@ public class TipsUtils {
         UserPrefs.get(profile).setBoolean(GOOGLE_LENS_SHOWN, false);
         UserPrefs.get(profile).setBoolean(BOTTOM_OMNIBOX_SHOWN, false);
         UserPrefs.get(profile).setBoolean(PASSWORD_AUTOFILL_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(SIGNIN_SHOWN, false);
     }
 
     /**

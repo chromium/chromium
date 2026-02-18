@@ -7466,6 +7466,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_PASSWORD_AUTOFILL" desc="Description of the Password Autofill feature tip main page promo.">
         Create, save, and manage your passwords so you can easily sign in to sites and apps using Chrome
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN" desc="Title of the Sign in feature tip main page promo. [CHAR_LIMIT=32]">
+        Sign in to Chrome
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_SIGNIN" desc="Description of the Sign in feature tip main page promo.">
+        Sign in to easily continue on all your devices
+      </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_ESB" desc="Description of the Enhanced Safe Browsing feature tip first step detail page promo.">
         Open Chrome menu > Settings
       </message>
@@ -7510,6 +7516,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_PASSWORD_AUTOFILL" desc="Description of the Password Autofill feature tip third step detail page promo.">
         Tap Save to easily access this password the next time you sign in
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_SIGNIN" desc="Description of the Sign in feature tip first step detail page promo.">
+        Tap profile in top right
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_SIGNIN" desc="Description of the Sign in feature tip second step detail page promo.">
+        Select account
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_SIGNIN" desc="Description of the Sign in feature tip third step detail page promo.">
+        Press continue
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_QUICK_DELETE_SHORT" desc="Title of the Quick Delete feature tip detail page promo. [CHAR_LIMIT=32]">
         Quickly delete browsing data

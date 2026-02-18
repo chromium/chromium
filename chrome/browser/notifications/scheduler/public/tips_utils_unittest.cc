@@ -22,7 +22,8 @@ TEST(NotificationTipsUtilsTest, GetTipsNotificationData) {
       TipsNotificationsFeatureType::kQuickDelete,
       TipsNotificationsFeatureType::kGoogleLens,
       TipsNotificationsFeatureType::kBottomOmnibox,
-      TipsNotificationsFeatureType::kPasswordAutofill};
+      TipsNotificationsFeatureType::kPasswordAutofill,
+      TipsNotificationsFeatureType::kSignin};
 
   for (const auto type : tips_list) {
     NotificationData data = GetTipsNotificationData(type);
@@ -59,6 +60,12 @@ TEST(NotificationTipsUtilsTest, GetTipsNotificationData) {
             IDS_TIPS_NOTIFICATIONS_PASSWORD_AUTOFILL_TITLE);
         expected_message = l10n_util::GetStringUTF16(
             IDS_TIPS_NOTIFICATIONS_PASSWORD_AUTOFILL_SUBTITLE);
+        break;
+      case TipsNotificationsFeatureType::kSignin:
+        expected_title =
+            l10n_util::GetStringUTF16(IDS_TIPS_NOTIFICATIONS_SIGNIN_TITLE);
+        expected_message =
+            l10n_util::GetStringUTF16(IDS_TIPS_NOTIFICATIONS_SIGNIN_SUBTITLE);
         break;
       default:
         NOTREACHED();

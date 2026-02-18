@@ -56,6 +56,8 @@ std::string ToHistogramTipsFeatureSuffix(
       return ".BottomOmnibox";
     case TipsNotificationsFeatureType::kPasswordAutofill:
       return ".PasswordAutofill";
+    case TipsNotificationsFeatureType::kSignin:
+      return ".Signin";
     default:
       NOTREACHED();
   }

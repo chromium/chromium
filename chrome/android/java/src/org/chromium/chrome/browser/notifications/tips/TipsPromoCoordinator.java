@@ -270,6 +270,9 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
                 // No-op since there is no page to travel to.
                 break;
+            case TipsNotificationsFeatureType.SIGNIN:
+                // TODO(crbug.com/481396353): Explore adding the sign in flow.
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -298,6 +301,9 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
                 logoView.setImageResource(logoViewRes);
                 break;
+            case TipsNotificationsFeatureType.SIGNIN:
+                logoView.setImageResource(logoViewRes);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -315,6 +321,8 @@ public class TipsPromoCoordinator {
                 return ".BottomOmnibox";
             case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
                 return ".PasswordAutofill";
+            case TipsNotificationsFeatureType.SIGNIN:
+                return ".Signin";
             default:
                 assert false : "Invalid feature type: " + featureType;
                 return "";

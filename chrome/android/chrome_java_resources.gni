@@ -419,6 +419,7 @@ chrome_java_resources = [
   "java/res/drawable/tips_promo_esb_logo.xml",
   "java/res/drawable/tips_promo_lens_logo.xml",
   "java/res/drawable/tips_promo_password_autofill_logo.xml",
+  "java/res/drawable/tips_promo_signin_logo.xml",
   "java/res/drawable/unfold_less.xml",
   "java/res/drawable/unfold_more.xml",
   "java/res/drawable/view_list_bottom_item_background.xml",

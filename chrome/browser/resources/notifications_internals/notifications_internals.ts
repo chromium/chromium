@@ -42,6 +42,11 @@ function setupEventListeners() {
         assert(pageHandler);
         pageHandler.scheduleNotification('password_autofill');
       });
+  getRequiredElement('signin-notification')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.scheduleNotification('signin');
+      });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
