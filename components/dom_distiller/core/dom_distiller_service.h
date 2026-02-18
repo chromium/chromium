@@ -42,6 +42,14 @@ class DomDistillerServiceInterface {
       std::unique_ptr<DistillerPage> distiller_page,
       const GURL& url) = 0;
 
+  // Same as ViewUrl, but the results come from a fresh distillation of the
+  // current page content rather than the content store. Resulting distillation
+  // is not saved in the content store.
+  virtual std::unique_ptr<ViewerHandle> ViewUrlIgnoreCache(
+      ViewRequestDelegate* delegate,
+      std::unique_ptr<DistillerPage> distiller_page,
+      const GURL& url) = 0;
+
   // Creates a default DistillerPage.
   virtual std::unique_ptr<DistillerPage> CreateDefaultDistillerPage(
       const gfx::Size& render_view_size) = 0;
@@ -79,6 +87,10 @@ class DomDistillerService : public DomDistillerServiceInterface {
       ViewRequestDelegate* delegate,
       std::unique_ptr<DistillerPage> distiller_page,
       const GURL& url) override;
+  std::unique_ptr<ViewerHandle> ViewUrlIgnoreCache(
+      ViewRequestDelegate* delegate,
+      std::unique_ptr<DistillerPage> distiller_page,
+      const GURL& url) override;
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPage(
       const gfx::Size& render_view_size) override;
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPageWithHandle(
@@ -88,8 +100,20 @@ class DomDistillerService : public DomDistillerServiceInterface {
   base::WeakPtr<DomDistillerService> GetWeakPtr();
 
   bool HasTaskTrackerForTesting(const GURL& url) const;
+  DistilledContentStore* GetContentStoreForTesting() const {
+    return content_store_.get();
+  }
 
  private:
+  // Common implementation for ViewUrl and ViewUrlIgnoreCache. Only if
+  // |use_cache| is true, it will attempt to retrieve the article from the
+  // content store and it will save the result to content store.
+  std::unique_ptr<ViewerHandle> ViewUrlImpl(
+      ViewRequestDelegate* delegate,
+      std::unique_ptr<DistillerPage> distiller_page,
+      const GURL& url,
+      bool use_cache);
+
   void CancelTask(TaskTracker* task);
 
   TaskTracker* CreateTaskTracker(const ArticleEntry& entry);

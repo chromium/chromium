@@ -86,8 +86,12 @@ class TaskTracker {
   ~TaskTracker();
 
   // |factory| will not be stored after this call.
+  // |distiller_page| the page environment used to load and distill the content.
+  // |use_cache| whether the distilled article should be saved to the
+  // DistilledContentStore upon completion.
   void StartDistiller(DistillerFactory* factory,
-                      std::unique_ptr<DistillerPage> distiller_page);
+                      std::unique_ptr<DistillerPage> distiller_page,
+                      bool use_cache);
   void StartBlobFetcher();
 
   void AddSaveCallback(SaveCallback callback);
@@ -109,6 +113,7 @@ class TaskTracker {
       const ArticleDistillationUpdate& article_update);
 
   void OnDistillerFinished(
+      bool use_cache,
       std::unique_ptr<DistilledArticleProto> distilled_article);
   void OnBlobFetched(bool success,
                      std::unique_ptr<DistilledArticleProto> distilled_article);

@@ -35,6 +35,10 @@ class LazyDomDistillerService : public DomDistillerServiceInterface,
       ViewRequestDelegate* delegate,
       std::unique_ptr<DistillerPage> distiller_page,
       const GURL& url) override;
+  std::unique_ptr<ViewerHandle> ViewUrlIgnoreCache(
+      ViewRequestDelegate* delegate,
+      std::unique_ptr<DistillerPage> distiller_page,
+      const GURL& url) override;
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPage(
       const gfx::Size& render_view_size) override;
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPageWithHandle(

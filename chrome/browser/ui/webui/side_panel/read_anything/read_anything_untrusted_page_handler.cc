@@ -112,7 +112,7 @@ class ReadAnythingUntrustedPageHandler::DistillerDelegate
     // observer of previous request and allow it to observe new request.
     viewer_handle_.reset();
     const GURL& url = contents->GetLastCommittedURL();
-    viewer_handle_ = service->ViewUrl(
+    viewer_handle_ = service->ViewUrlIgnoreCache(
         this,
         service->CreateDefaultDistillerPageWithHandle(
             std::make_unique<dom_distiller::SourcePageHandleWebContents>(
