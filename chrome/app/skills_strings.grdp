@@ -11,6 +11,14 @@
     Deleted skill
   </message>
 
+  <!-- a11y strings -->
+  <message name="IDS_SKILL_CARD_ACTION_MENU_LABEL" desc="Accessibility label for button that opens a dropdown on a skill card with options for deleting or copying the text of a skill." translateable="false">
+    Manage your skill
+  </message>
+  <message name="IDS_ADD_NEW_SKILL_LABEL" desc="Accessibility label for the add button that opens a dialog allowing users to create a new skill." translateable="false">
+    Add a new skill
+  </message>
+
   <!-- chrome://skills page -->
   <message name="IDS_SKILL_PAGE_TITLE" desc="Text for the title of the chrome://skills page." translateable="false">
     Skills

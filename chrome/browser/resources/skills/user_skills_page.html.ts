@@ -18,6 +18,7 @@ export function getHtml(this: UserSkillsPageElement) {
   </div>
   <cr-button id="addSkillButton" class="action-button"
       ?disabled="${this.addSkillButtonDisabled_}"
+      aria-label="$i18n{skillAddNewSkillLabel}"
       @click="${this.onAddSkillButtonClick_}">
     <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
     $i18n{add}

@@ -94,3 +94,14 @@
   --iron-icon-height: 16px;
   color: var(--color-sys-on-surface);
 }
+
+/* HCM */
+@media (forced-colors: active) {
+  .dropdown-item:hover {
+    outline: 1px solid Highlight;
+  }
+
+  .dropdown-item {
+    color: ButtonText;
+  }
+}
