@@ -59,8 +59,4 @@ public class HomePageButtonsContainerView extends LinearLayout {
     HomePageButtonView getButtonByIndex(int buttonIndex) {
         return mHomePageButtonsList.get(buttonIndex);
     }
-
-    void setHomePageButtonsListForTesting(List<HomePageButtonView> homePageButtonsList) {
-        mHomePageButtonsList = homePageButtonsList;
-    }
 }

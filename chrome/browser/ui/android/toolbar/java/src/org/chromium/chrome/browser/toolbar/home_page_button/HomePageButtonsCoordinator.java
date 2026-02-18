@@ -56,9 +56,9 @@ public class HomePageButtonsCoordinator implements HomeButtonDisplay {
 
     private final HomePageButtonsContainerView mHomePageButtonsContainerView;
 
-    private HomePageButtonsMediator mMediator;
+    private final HomePageButtonsMediator mMediator;
     private @HomePageButtonsState int mHomePageButtonsState = HomePageButtonsState.NUM_ENTRIES;
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
     /**
      * Creates a new instance of HomePageButtonsCoordinator
@@ -188,17 +188,5 @@ public class HomePageButtonsCoordinator implements HomeButtonDisplay {
     @Override
     public void setOnKeyListener(View.OnKeyListener listener) {
         mModel.set(ON_KEY_LISTENER, listener);
-    }
-
-    void setMediatorForTesting(HomePageButtonsMediator mediator) {
-        mMediator = mediator;
-    }
-
-    void setHomePageButtonsStateForTesting(int homePageButtonsState) {
-        mHomePageButtonsState = homePageButtonsState;
-    }
-
-    void setModelForTesting(PropertyModel model) {
-        mModel = model;
     }
 }

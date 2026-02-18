@@ -48,11 +48,8 @@ public class HomePageButtonsMediator {
     private final Supplier<Boolean> mIsHomeButtonMenuDisabled;
     private final Callback<Context> mOnHomeButtonMenuClickCallback;
     private final WindowAndroid mWindowAndroid;
-    private MVCListAdapter.@Nullable ModelList mHomeButtonMenuList;
     private @Nullable ListMenuDelegate mHomeButtonListMenuDelegate;
     private final PropertyModel mModel;
-    private @Nullable HomePageButtonData mHomeButtonData;
-    private @Nullable HomePageButtonData mNtpCustomizationButtonData;
     private final View.OnClickListener mOnHomeButtonClickListener;
     private final BottomSheetController mBottomSheetController;
 
@@ -90,13 +87,13 @@ public class HomePageButtonsMediator {
     }
 
     void prepareHomePageButtonsData() {
-        mHomeButtonData =
+        HomePageButtonData homeButtonData =
                 new HomePageButtonData(
                         /* onClickListener= */ mOnHomeButtonClickListener,
                         /* onLongClickListener= */ view -> onLongClickHomeButton(view));
-        mModel.set(BUTTON_DATA, new Pair<>(0, mHomeButtonData));
+        mModel.set(BUTTON_DATA, new Pair<>(0, homeButtonData));
 
-        mNtpCustomizationButtonData =
+        HomePageButtonData ntpCustomizationButtonData =
                 new HomePageButtonData(
                         /* onClickListener= */ view -> {
                             NtpCustomizationCoordinatorFactory.getInstance()
@@ -112,7 +109,7 @@ public class HomePageButtonsMediator {
                                     EntryPointType.TOOL_BAR);
                         },
                         /* onLongClickListener= */ null);
-        mModel.set(BUTTON_DATA, new Pair<>(1, mNtpCustomizationButtonData));
+        mModel.set(BUTTON_DATA, new Pair<>(1, ntpCustomizationButtonData));
     }
 
     void updateButtonsState(@HomePageButtonsState int homePageButtonsState) {
@@ -146,8 +143,8 @@ public class HomePageButtonsMediator {
 
         if (mHomeButtonListMenuDelegate == null) {
             RectProvider rectProvider = MenuBuilderHelper.getRectProvider(view);
-            mHomeButtonMenuList = new MVCListAdapter.ModelList();
-            mHomeButtonMenuList.add(
+            MVCListAdapter.@Nullable ModelList homeButtonMenuList = new MVCListAdapter.ModelList();
+            homeButtonMenuList.add(
                     new ListItemBuilder()
                             .withTitleRes(R.string.options_homepage_edit_title)
                             .withMenuId(ID_SETTINGS)
@@ -156,7 +153,7 @@ public class HomePageButtonsMediator {
             BasicListMenu listMenu =
                     BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,
-                            mHomeButtonMenuList,
+                            homeButtonMenuList,
                             (model, unusedView) ->
                                     mOnHomeButtonMenuClickCallback.onResult(mContext));
             mHomeButtonListMenuDelegate =
@@ -175,17 +172,5 @@ public class HomePageButtonsMediator {
         }
         ((ListMenuButton) view).showMenu();
         return true;
-    }
-
-    @Nullable HomePageButtonData getHomeButtonDataForTesting() {
-        return mHomeButtonData;
-    }
-
-    @Nullable HomePageButtonData getNtpCustomizationButtonDataForTesting() {
-        return mNtpCustomizationButtonData;
-    }
-
-    MVCListAdapter.@Nullable ModelList getMenuForTesting() {
-        return mHomeButtonMenuList;
     }
 }
