@@ -2011,6 +2011,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           clip_path_state.direct_compositing_reasons =
               mask_direct_compositing_reasons;
         }
+
+        if (const auto* old_mask = properties_->ClipPathMask()) {
+          // See comment above for ordinary MaskClip.
+          if (old_mask->OutputClip() != clip_path_state.output_clip) {
+            OnUpdateClip(PaintPropertyChangeType::kNodeAddedOrRemoved);
+          }
+        }
+
         OnUpdateEffect(properties_->UpdateClipPathMask(
             properties_->Mask() ? *properties_->Mask() : *properties_->Effect(),
             std::move(clip_path_state)));
