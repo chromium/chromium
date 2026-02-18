@@ -6,8 +6,8 @@
 
 #include <deque>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -279,7 +279,7 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   const GURL kUrlD = GURL("http://d.com");
 
   const std::u16string kTitleE = u"E";
-  const GURL kUrlE = GURL(chrome::kChromeUINewTabURL);
+  const GURL kUrlE = GURL(ash::chrome_urls::kChromeUINewTabURL);
 
   const std::u16string kTitleF = u"F";
   const GURL kUrlF = GURL("content://image.png");

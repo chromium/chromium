@@ -39,4 +39,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_list.h",
     "+gmock/gmock.h",
   ],
+  "birch_coral_provider_browsertest\\.cc": [
+    "+chrome/common/webui_url_constants.h",
+  ]
 }

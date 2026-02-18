@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ui/views/tabs/tab_strip_model.h",
   "+chrome/browser/ui/views/tabs/tab_strip_model_observer.h",
   "+chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h",
-  "+chrome/common/webui_url_constants.h",
 ]
 
 specific_include_rules = {
@@ -34,4 +33,7 @@ specific_include_rules = {
     "+chrome/test",
     "+gmock/gmock.h",
   ],
+  "snap_group_browsertest\\.cc": [
+    "+chrome/common/webui_url_constants.h",
+  ]
 }

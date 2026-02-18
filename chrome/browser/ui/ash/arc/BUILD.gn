@@ -36,7 +36,6 @@ static_library("arc") {
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/web_applications",
     "//chrome/browser/webshare:storage",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:prefs",

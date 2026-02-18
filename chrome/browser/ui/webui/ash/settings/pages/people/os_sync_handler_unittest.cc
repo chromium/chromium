@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -317,12 +317,11 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
 }
 
 TEST_F(OsSyncHandlerTest, OpenBrowserSyncSettings) {
-  EXPECT_CALL(
-      new_window_delegate(),
-      OpenUrl(
-          GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage),
-          ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(ash::chrome_urls::kChromeUISettingsURL)
+                          .Resolve(ash::chrome_urls::kSyncSetupSubPage),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::ListValue empty_args;
   web_ui_->HandleReceivedMessage("OpenBrowserSyncSettings", empty_args);
 }

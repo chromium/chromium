@@ -25,13 +25,15 @@ include_rules = [
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/web_applications",
   "+chrome/browser/webshare",
-  "+chrome/common",
   "+chrome/test",
 ]
 
 specific_include_rules = {
   # Allow access for tests.
-  "arc_vm_data_migration_confirmation_dialog_unittest\.cc": [
+  "arc_vm_data_migration_confirmation_dialog_unittest\\.cc": [
     "+chrome/browser/ui/views/chrome_layout_provider.h",
-  ]
+  ],
+  "arc_open_url_delegate_impl_browsertest\\.cc": [
+    "+chrome/common/webui_url_constants.h",
+  ],
 }

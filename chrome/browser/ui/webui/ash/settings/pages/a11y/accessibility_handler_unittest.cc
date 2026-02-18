@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -64,8 +64,8 @@ class AccessibilityHandlerTest : public testing::Test {
 
 TEST_F(AccessibilityHandlerTest, ShowBrowserAppearanceSettings) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kChromeUISettingsURL)
-                          .Resolve(chrome::kAppearanceSubPage),
+              OpenUrl(GURL(ash::chrome_urls::kChromeUISettingsURL)
+                          .Resolve(ash::chrome_urls::kAppearanceSubPage),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::ListValue empty_args;

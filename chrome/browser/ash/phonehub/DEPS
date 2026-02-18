@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:

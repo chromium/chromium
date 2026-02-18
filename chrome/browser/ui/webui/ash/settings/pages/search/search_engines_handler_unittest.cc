@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,12 +70,11 @@ class SearchEnginesHandlerAshTest : public testing::Test {
 };
 
 TEST_F(SearchEnginesHandlerAshTest, OpenBrowserSearchSettings) {
-  EXPECT_CALL(
-      new_window_delegate(),
-      OpenUrl(
-          GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSearchSubPage),
-          ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(ash::chrome_urls::kChromeUISettingsURL)
+                          .Resolve(ash::chrome_urls::kSearchSubPage),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::ListValue empty_args;
   web_ui_->HandleReceivedMessage("openBrowserSearchSettings", empty_args);
 }

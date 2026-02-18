@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -90,8 +89,6 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
   content::WebContents* contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
-
-  GURL settings_webui_url() { return GURL(chrome::kChromeUISettingsURL); }
 
   GURL add_supervision_webui_url() {
     return GURL(ash::kChromeUIAddSupervisionURL);
