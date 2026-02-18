@@ -46,6 +46,18 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
                    viz::SinglePlaneFormat::kBGRA_8888 &&
                format == viz::SinglePlaneFormat::kRGBA_8888));
     }
+
+    bool Matches(const CanvasSnapshotProvider::Info& info) const {
+      return info.size == size && info.alpha_type == alpha_type &&
+             info.color_space == color_space &&
+             // TODO(crbug.com/40767377): Restore strict format checks once the
+             // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
+             (info.format == format ||
+              (info.format == viz::SinglePlaneFormat::kRGBA_8888 &&
+               format == viz::SinglePlaneFormat::kBGRA_8888) ||
+              (info.format == viz::SinglePlaneFormat::kBGRA_8888 &&
+               format == viz::SinglePlaneFormat::kRGBA_8888));
+    }
   };
 };
 

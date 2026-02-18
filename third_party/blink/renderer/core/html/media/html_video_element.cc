@@ -413,6 +413,7 @@ void HTMLVideoElement::OnVisibilityRatioReport(double ratio) {
 
 void HTMLVideoElement::ResetCache(TimerBase*) {
   snapshot_provider_.reset();
+  sw_draw_info_.reset();
 }
 
 bool HTMLVideoElement::IsPersistent() const {
@@ -633,7 +634,9 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       *media_video_frame, size, reinterpret_as_srgb);
 
   bool cached_info_matches_required_info =
-      snapshot_provider_ && required_provider_info.Matches(*snapshot_provider_);
+      (snapshot_provider_ &&
+       required_provider_info.Matches(*snapshot_provider_)) ||
+      (sw_draw_info_ && required_provider_info.Matches(sw_draw_info_.value()));
   if (!cached_info_matches_required_info ||
       allow_accelerated_images != allow_accelerated_images_) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
@@ -644,12 +647,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       }
     }
     snapshot_provider_.reset();
+    sw_draw_info_.reset();
 
-    // Providing a null |raster_context_provider| creates a software provider.
+    // Providing a null |raster_context_provider| results in a software draw.
     if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-      snapshot_provider_ =
-          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
-      CHECK(snapshot_provider_);
+      sw_draw_info_ = required_provider_info;
     } else {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
           required_provider_info.size, required_provider_info.format,
@@ -667,18 +669,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
-  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
-  CanvasNon2DResourceProviderSharedImage* si_provider = nullptr;
-  if (snapshot_provider_->IsExternalBitmapProvider()) {
-    sw_draw_info = static_cast<CanvasNon2DSnapshotProviderBitmap*>(
-                       snapshot_provider_.get())
-                       ->Info();
-  } else {
-    si_provider = static_cast<CanvasNon2DResourceProviderSharedImage*>(
-        snapshot_provider_.get());
-  }
   auto image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), si_provider, std::move(sw_draw_info),
+      std::move(media_video_frame), snapshot_provider_.get(), sw_draw_info_,
       video_renderer,
       /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
   if (image)
