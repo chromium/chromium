@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/field_trial.h"
 
 namespace variations {
 
@@ -30,23 +29,9 @@ class COMPONENT_EXPORT(VARIATIONS) FeatureOverrides {
   // Disables a feature with WebView-specific override.
   void DisableFeature(const base::Feature& feature);
 
-  // Enables or disable a feature with a field trial. This can be used for
-  // setting feature parameters.
-  void OverrideFeatureWithFieldTrial(
-      const base::Feature& feature,
-      base::FeatureList::OverrideState override_state,
-      base::FieldTrial* field_trial);
-
  private:
-  struct FieldTrialOverride {
-    raw_ref<const base::Feature> feature;
-    base::FeatureList::OverrideState override_state;
-    raw_ptr<base::FieldTrial> field_trial;
-  };
-
   raw_ref<base::FeatureList> feature_list_;
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides_;
-  std::vector<FieldTrialOverride> field_trial_overrides_;
 };
 
 }  // namespace variations
