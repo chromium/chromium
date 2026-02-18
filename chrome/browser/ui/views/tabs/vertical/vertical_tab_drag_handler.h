@@ -133,6 +133,14 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
       base::OnceCallback<void(TabDragController*)> callback) override;
   TabDragPositioningDelegate* GetPositioningDelegate() override;
 
+  // The following overrides are necessary to support SystemDnD.
+  bool CanDrop(const OSExchangeData& data) override;
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+
  private:
   // Encapsulates data needed to initialize a drag session.
   struct DragInitData {

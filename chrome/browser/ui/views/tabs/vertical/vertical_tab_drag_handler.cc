@@ -28,6 +28,9 @@
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/compositor/layer.h"
@@ -526,6 +529,47 @@ bool VerticalTabDragHandlerImpl::OnMouseDragged(const ui::MouseEvent& event) {
 
 void VerticalTabDragHandlerImpl::OnMouseReleased(const ui::MouseEvent& event) {
   EndDrag(EndDragReason::kComplete);
+}
+
+bool VerticalTabDragHandlerImpl::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  if (!TabDragController::IsSystemDnDSessionRunning()) {
+    return false;
+  }
+  format_types->insert(
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag));
+  return true;
+}
+
+bool VerticalTabDragHandlerImpl::CanDrop(const OSExchangeData& data) {
+  return TabDragController::IsSystemDnDSessionRunning() &&
+         data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
+             ui::kMimeTypeWindowDrag));
+}
+
+void VerticalTabDragHandlerImpl::OnDragEntered(
+    const ui::DropTargetEvent& event) {
+  CHECK(TabDragController::IsSystemDnDSessionRunning());
+  TabDragController::OnSystemDnDUpdated(event);
+}
+int VerticalTabDragHandlerImpl::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
+  // This can be false because we can still receive drag events after
+  // TabDragController is destroyed due to the asynchronous nature of the
+  // platform DnD.
+  if (TabDragController::IsSystemDnDSessionRunning()) {
+    TabDragController::OnSystemDnDUpdated(event);
+    return ui::DragDropTypes::DRAG_MOVE;
+  }
+  return ui::DragDropTypes::DRAG_NONE;
+}
+
+void VerticalTabDragHandlerImpl::OnDragExited() {
+  // See comment in OnDragUpdated().
+  if (TabDragController::IsSystemDnDSessionRunning()) {
+    TabDragController::OnSystemDnDExited();
+  }
 }
 
 void VerticalTabDragHandlerImpl::OnMouseCaptureLost() {

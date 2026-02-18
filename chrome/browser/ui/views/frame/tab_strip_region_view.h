@@ -56,6 +56,16 @@ class TabStripRegionView : public views::AccessiblePaneView,
   BrowserRootView::DropTarget* GetDropTarget(
       gfx::Point loc_in_local_coords) override = 0;
   views::View* GetViewForDrop() override = 0;
+  // These system drag & drop methods should forward the events to
+  // TabDragController to support its fallback tab dragging mode in the case
+  // where the platform can't support the usual run loop based mode.
+  bool CanDrop(const OSExchangeData& data) override = 0;
+  bool GetDropFormats(
+      int* formats,
+      std::set<ui::ClipboardFormatType>* format_types) override = 0;
+  void OnDragEntered(const ui::DropTargetEvent& event) override = 0;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override = 0;
+  void OnDragExited() override = 0;
 
   // -- Observers --
   virtual void SetTabStripObserver(TabStripObserver* observer) = 0;
