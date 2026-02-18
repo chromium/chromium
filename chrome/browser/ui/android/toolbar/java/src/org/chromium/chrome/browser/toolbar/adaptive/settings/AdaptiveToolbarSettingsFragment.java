@@ -70,27 +70,28 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                     return true;
                 });
 
-        mRadioButtonGroup =
-                (RadioButtonGroupAdaptiveToolbarPreference)
-                        findPreference(PREF_ADAPTIVE_RADIO_GROUP);
-        mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
-        mRadioButtonGroup.setCanUseReadAloud(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
-        mRadioButtonGroup.setCanUsePageSummary(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled());
-        maybeSetUiStateFromBundleArgs();
-        mRadioButtonGroup.setStatePredictor(
-                new AdaptiveToolbarStatePredictor(
-                        getContext(),
-                        getProfile(),
-                        new ActivityAndroidPermissionDelegate(new WeakReference(getActivity())),
-                        /* behavior= */ null));
-        mRadioButtonGroup.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);
-                    return true;
-                });
-        mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+        mRadioButtonGroup = findPreference(PREF_ADAPTIVE_RADIO_GROUP);
+        if (mRadioButtonGroup != null) {
+            mRadioButtonGroup.setOnComponentUpdatedListener(this::notifyPreferencesUpdated);
+            mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
+            mRadioButtonGroup.setCanUseReadAloud(
+                    AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
+            mRadioButtonGroup.setCanUsePageSummary(
+                    AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled());
+            maybeSetUiStateFromBundleArgs();
+            mRadioButtonGroup.setStatePredictor(
+                    new AdaptiveToolbarStatePredictor(
+                            getContext(),
+                            getProfile(),
+                            new ActivityAndroidPermissionDelegate(new WeakReference(getActivity())),
+                            /* behavior= */ null));
+            mRadioButtonGroup.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);
+                        return true;
+                    });
+            mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+        }
         AdaptiveToolbarStats.recordToolbarShortcutToggleState(/* onStartup= */ true);
     }
 
