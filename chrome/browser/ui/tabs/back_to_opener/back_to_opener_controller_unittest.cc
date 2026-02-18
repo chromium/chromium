@@ -70,6 +70,8 @@ class BackToOpenerControllerTest : public ChromeRenderViewHostTestHarness {
     return BackToOpenerController::From(tab_model);
   }
 
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+
  private:
   std::unique_ptr<TabStripModel> tab_strip_model_;
   base::test::ScopedFeatureList feature_list_;
@@ -181,6 +183,39 @@ TEST_F(BackToOpenerControllerTest, PinnedTabDisablesBackToOpener) {
   controller->OnPinnedStateChanged(tab_model.get(), false);
 
   EXPECT_TRUE(controller->CanGoBackToOpener());
+  EXPECT_TRUE(controller->HasValidOpener());
+}
+
+// Regression test: Back-to-opener is notified from OnPinnedStateChanged when
+// tabs are reparented (e.g. during unsplit/close). At that moment the tab
+// strip selection can be invalid (active_index() == kNoTab).
+// NotifyUIStateChanged must skip NotifyNavigationStateChanged in that case.
+TEST_F(BackToOpenerControllerTest, OnPinnedStateChangedWithInvalidSelection) {
+  std::unique_ptr<content::WebContents> dest_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      dest_contents.get(), GURL("https://example.com/page"));
+
+  std::unique_ptr<content::WebContents> opener_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      opener_contents.get(), GURL("https://example.com"));
+
+  // Tab is created but never added to the strip.
+  std::unique_ptr<tabs::TabModel> tab_model =
+      CreateTabModel(dest_contents.release());
+  ASSERT_EQ(tab_strip_model()->active_index(), TabStripModel::kNoTab);
+
+  BackToOpenerController* controller = GetController(tab_model.get());
+  controller->SetOpenerWebContents(opener_contents.get());
+  EXPECT_TRUE(controller->HasValidOpener());
+
+  // Should not crash or DCHECK. NotifyUIStateChanged skips
+  // NotifyNavigationStateChanged when active_index() == kNoTab.
+  controller->OnPinnedStateChanged(tab_model.get(), true);
+
+  // Controller state should still be updated (pinned disables back-to-opener).
+  EXPECT_FALSE(controller->CanGoBackToOpener());
   EXPECT_TRUE(controller->HasValidOpener());
 }
 
