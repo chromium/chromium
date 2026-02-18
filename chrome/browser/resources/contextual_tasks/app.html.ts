@@ -40,7 +40,8 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .enableNativeZeroStateSuggestions=
-              "${this.enableNativeZeroStateSuggestions_}">
+              "${this.enableNativeZeroStateSuggestions_}"
+          .inputEnabled="${!this.isInputLocked_}">
     </contextual-tasks-composebox>
   </div>
   <error-page id="errorPage"></error-page>

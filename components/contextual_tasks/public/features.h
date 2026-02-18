@@ -208,6 +208,10 @@ extern bool ShouldEnableBasicModeZOrder();
 // Returns whether the cookie sync should be enabled.
 extern bool ShouldEnableCookieSync();
 
+// Returns whether the input plate can be locked and unlocked by a message
+// from AIM.
+extern bool ShouldEnableLockAndUnlockInputCapability();
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksName[];

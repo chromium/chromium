@@ -64,6 +64,11 @@ BASE_FEATURE(kContextualTasksTabListInterfaceObserver,
 
 BASE_FEATURE(kContextualTasksExpandButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(
+    &kContextualTasks,
+    "ContextualTasksLockAndUnlockInputCapability",
+    true);
+
 const base::FeatureParam<bool> kContextualTasksBasicModeZOrder(
     &kContextualTasks,
     "ContextualTasksBasicModeZOrder",
@@ -362,6 +367,11 @@ bool ShouldEnableBasicModeZOrder() {
 
 bool ShouldEnableCookieSync() {
   return kContextualTasksEnableCookieSync.Get();
+}
+
+bool ShouldEnableLockAndUnlockInputCapability() {
+  return base::FeatureList::IsEnabled(kContextualTasks) &&
+         kContextualTasksLockAndUnlockInputCapability.Get();
 }
 
 namespace flag_descriptions {

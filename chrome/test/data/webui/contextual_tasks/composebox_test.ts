@@ -2859,4 +2859,24 @@ suite('ContextualTasksComposeboxTest', () => {
         assertEquals(
             0, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
       });
+
+  test('inputEnabled attribute reflected on composebox', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+
+    // Default state should be enabled
+    assertTrue(contextualComposebox.inputEnabled);
+    assertTrue(contextualComposebox.hasAttribute('input-enabled'));
+
+    // Disable input
+    contextualComposebox.inputEnabled = false;
+    await contextualComposebox.updateComplete;
+
+    assertFalse(contextualComposebox.hasAttribute('input-enabled'));
+
+    // Enable input
+    contextualComposebox.inputEnabled = true;
+    await contextualComposebox.updateComplete;
+
+    assertTrue(contextualComposebox.hasAttribute('input-enabled'));
+  });
 });

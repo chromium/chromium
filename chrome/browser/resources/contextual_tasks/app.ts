@@ -158,6 +158,9 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      isInputLocked_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -177,12 +180,13 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor isZeroState_: boolean = false;
   protected accessor enableNativeZeroStateSuggestions_: boolean =
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
+  protected accessor isGhostLoaderVisible_: boolean = false;
+  protected accessor isInputLocked_: boolean = false;
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
   protected friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
-  protected accessor isGhostLoaderVisible_: boolean = false;
   // Tracks whether the frame is currently loading. Needed to avoid race
   // condition while awaiting isAiPage.
   private isFrameLoading: boolean = false;
@@ -299,6 +303,12 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.updateComposeboxPosition.addListener(
           this.onUpdateComposeboxPosition_.bind(this),
           ),
+      callbackRouter.lockInput.addListener(() => {
+        this.isInputLocked_ = true;
+      }),
+      callbackRouter.unlockInput.addListener(() => {
+        this.isInputLocked_ = false;
+      }),
     ];
 
     this.eventTracker_.add(window, 'popstate', async () => {

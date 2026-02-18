@@ -44,7 +44,7 @@ export function getHtml(this: ComposeboxElement) {
     .errorMessage="${this.errorMessage_}"
     @dismiss-error-scrim="${this.onErrorScrimDismissed_}">
   </ntp-error-scrim>
-  <div id="composebox" ?inert="${this.errorMessage_}"
+  <div id="composebox" part="composebox" ?inert="${this.errorMessage_}"
       @keydown="${this.onKeydown_}"
       @focusin="${this.handleComposeboxFocusIn_}"
       @focusout="${this.handleComposeboxFocusOut_}"

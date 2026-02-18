@@ -132,6 +132,10 @@ std::string GetEncodedHandshakeMessage() {
           contextual_tasks::kEnableNotifyZeroStateRenderedCapability)) {
     ping->add_capabilities(lens::FeatureCapability::NOTIFY_ZERO_STATE_RENDERED);
   }
+  if (contextual_tasks::ShouldEnableLockAndUnlockInputCapability()) {
+    ping->add_capabilities(lens::FeatureCapability::UNLOCK_INPUT);
+    ping->add_capabilities(lens::FeatureCapability::LOCK_INPUT);
+  }
 
   const size_t size = message.ByteSizeLong();
   std::vector<uint8_t> serialized_message(size);
@@ -347,6 +351,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::ShouldForceBasicModeIfOpeningThreadHistory());
   source->AddBoolean("enableBasicModeZOrder",
                      contextual_tasks::ShouldEnableBasicModeZOrder());
+  source->AddBoolean(
+      "enableLockAndUnlockInputCapability",
+      contextual_tasks::ShouldEnableLockAndUnlockInputCapability());
 
   source->AddString(
       "composeboxSource",
