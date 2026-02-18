@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -203,6 +204,13 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
 bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
     BrowserWindowInterface* bwi) {
   if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+    return false;
+  }
+
+  // Disable the omnibox on app windows, as these windows don't usually have
+  // omnibox support.
+  Browser* browser = bwi->GetBrowserForMigrationOnly();
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
     return false;
   }
 
