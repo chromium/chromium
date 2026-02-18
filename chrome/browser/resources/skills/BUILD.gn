@@ -11,8 +11,6 @@ build_webui("build") {
   grd_prefix = "skills"
 
   static_files = [
-    "images/skills_empty.svg",
-    "images/skills_empty_dark.svg",
     "images/skills_undo.svg",
     "images/skills_redo.svg",
     "images/skills_pen_spark.svg",
@@ -36,6 +34,8 @@ build_webui("build") {
     "skills_dialog_app.html.ts",
     "skills_dialog_app.ts",
     "skills_dialog_browser_proxy.ts",
+    "skills_empty.html.ts",
+    "skills_empty.ts",
     "skills_page_browser_proxy.ts",
     "user_skills_page.html.ts",
     "user_skills_page.ts",
