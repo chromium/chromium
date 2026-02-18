@@ -1715,6 +1715,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     On Android variants with attachments are recorded as of M144.
 
+    On Android M144-M146 the values &quot;Navigation w/o attachments&quot; and
+    &quot;No navigation with attachments&quot; were flipped.
+
     This metric is not recorded for the Realbox interactions.
 
     Recorded every time the Omnibox focus is cleared.

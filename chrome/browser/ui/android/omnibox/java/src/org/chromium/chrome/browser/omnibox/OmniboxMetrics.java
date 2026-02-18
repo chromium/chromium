@@ -122,8 +122,8 @@ public class OmniboxMetrics {
     @interface FocusResultedInNavigationTypes {
         // LINT.IfChange(FocusResultedInNavigationTypes)
         int NO_NAV_NO_ATTACHMENT = 0;
-        int NO_NAV_WITH_ATTACHMENT = 1;
-        int NAV_NO_ATTACHMENT = 2;
+        int NAV_NO_ATTACHMENT = 1;
+        int NO_NAV_WITH_ATTACHMENT = 2;
         int NAV_WITH_ATTACHMENT = 3;
         int COUNT = 4;
         // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FocusResultedInNavigationTypes)
