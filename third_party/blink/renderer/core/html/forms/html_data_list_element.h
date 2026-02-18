@@ -44,7 +44,12 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
   USING_PRE_FINALIZER(HTMLDataListElement, Prefinalize);
 
  public:
-  HTMLDataListElement(Document&);
+  enum class Direction {
+    kForwards,
+    kBackwards,
+  };
+
+  explicit HTMLDataListElement(Document&);
 
   HTMLDataListOptionsCollection* options();
 
@@ -58,6 +63,8 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
       HidePopoverFocusBehavior focus_behavior,
       HidePopoverTransitionBehavior event_firing,
       ExceptionState* exception_state) override;
+
+  void MoveActiveOption(Direction);
 
   void Trace(Visitor*) const override;
 

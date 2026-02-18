@@ -582,6 +582,9 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     nearest_ancestor_select_->OptionInserted(*this, Selected());
   }
 
+  // TODO(crbug.com/453705243): Call OptionInserted on the ancestor datalist if
+  // it changed.
+
   return return_value;
 }
 
@@ -715,6 +718,8 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         return;
       }
       if (key == keywords::kArrowUp) {
+        // TODO(crbug.com/485286877): Consider looking at other arrow keys for
+        // other writing modes.
         if (auto* previous_option = options.PreviousFocusableOption(*this)) {
           previous_option->Focus(focus_params);
         }

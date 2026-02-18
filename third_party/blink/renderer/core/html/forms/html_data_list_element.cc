@@ -46,6 +46,22 @@
 
 namespace blink {
 
+namespace {
+
+// Returns true if the provided option element can have the :active-option
+// pseudo-class. Different from IsFocusable because these option elements are
+// not supposed to be keyboard focusable.
+bool CanOptionBeActive(HTMLOptionElement& option) {
+  if (option.IsDisabledFormControl()) {
+    return false;
+  }
+  option.GetDocument().UpdateStyleAndLayoutForNode(
+      &option, DocumentUpdateReason::kPopover);
+  return option.GetLayoutObject();
+}
+
+}  // namespace
+
 HTMLDataListElement::HTMLDataListElement(Document& document)
     : HTMLElement(html_names::kDatalistTag, document) {
   UseCounter::Count(document, WebFeature::kDataListElement);
@@ -111,10 +127,11 @@ void HTMLDataListElement::ShowPopoverInternal(Element* invoker,
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kPopover);
     if (input->DataList() == this && input->IsAppearanceBase() &&
         IsAppearanceBase()) {
-      for (Element* option : *options()) {
-        if (option->GetLayoutObject() && !option->IsDisabledFormControl()) {
+      for (Element* element_option : *options()) {
+        HTMLOptionElement* option = To<HTMLOptionElement>(element_option);
+        if (CanOptionBeActive(*option)) {
           CHECK(!active_option_);
-          active_option_ = To<HTMLOptionElement>(option);
+          active_option_ = option;
           active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
           break;
         }
@@ -143,6 +160,49 @@ PopoverHideResult HTMLDataListElement::HidePopoverInternal(
 void HTMLDataListElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
   visitor->Trace(active_option_);
+}
+
+void HTMLDataListElement::MoveActiveOption(Direction direction) {
+  CHECK(RuntimeEnabledFeatures::CustomizableComboboxEnabled());
+  CHECK(IsAppearanceBase());
+  CHECK(active_option_);
+
+  auto* option_list = options();
+  unsigned active_option_index = 0;
+  while (option_list->Item(active_option_index) != active_option_) {
+    active_option_index++;
+    if (active_option_index >= option_list->length()) {
+      NOTREACHED() << " option is not in list: " << active_option_;
+    }
+  }
+
+  unsigned index = active_option_index;
+  while (true) {
+    if (direction == Direction::kForwards) {
+      index++;
+      if (index == option_list->length()) {
+        index = 0;
+      }
+    } else {
+      if (index == 0) {
+        index = option_list->length() - 1;
+      } else {
+        index--;
+      }
+    }
+    if (index == active_option_index) {
+      return;
+    }
+
+    HTMLOptionElement* next_option = option_list->Item(index);
+    CHECK(next_option);
+    if (CanOptionBeActive(*next_option)) {
+      active_option_ = next_option;
+      active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+      next_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+      return;
+    }
+  }
 }
 
 }  // namespace blink

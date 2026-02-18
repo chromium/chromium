@@ -226,11 +226,57 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
 void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
   if (!GetElement().IsFocused())
     return;
+  if (GetElement().IsBaseAppearanceCombobox()) {
+    if (HandleKeydownForCustomizableCombobox(event)) {
+      event.SetDefaultHandled();
+    }
+    return;
+  }
   if (ChromeClient* chrome_client = GetChromeClient()) {
     chrome_client->HandleKeyboardEventOnTextField(GetElement(), event);
     return;
   }
   event.SetDefaultHandled();
+}
+
+bool TextFieldInputType::HandleKeydownForCustomizableCombobox(
+    KeyboardEvent& event) {
+  CHECK(RuntimeEnabledFeatures::CustomizableComboboxEnabled());
+  auto* datalist = GetElement().DataList();
+  CHECK(datalist);
+  const AtomicString key(event.key());
+  // These modifiers are copied from HTMLOptionElement::DefaultEventHandler.
+  int tab_ignore_modifiers = WebInputEvent::kControlKey |
+                             WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
+  int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
+
+  if (datalist->popoverOpen() && !(event.GetModifiers() & ignore_modifiers)) {
+    CHECK(datalist->ActiveOption());
+    if (key == keywords::kCapitalEnter) {
+      GetElement().SetValue(
+          datalist->ActiveOption()->DisplayLabel(),
+          TextFieldEventBehavior::kDispatchInputAndChangeEvent,
+          TextControlSetValueSelection::kSetSelectionToEnd,
+          WebAutofillState::kNotFilled);
+      datalist->HidePopoverInternal(
+          /*invoker=*/&GetElement(), HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+          /*exception_state=*/nullptr);
+      GetElement().DispatchFormControlChangeEvent();
+      return true;
+    } else if (key == keywords::kArrowUp) {
+      // TODO(crbug.com/485286877): Consider looking at other arrow keys for
+      // other writing modes.
+      datalist->MoveActiveOption(HTMLDataListElement::Direction::kBackwards);
+      return true;
+    } else if (key == keywords::kArrowDown) {
+      datalist->MoveActiveOption(HTMLDataListElement::Direction::kForwards);
+      return true;
+    }
+    // TODO(crbug.com/453705243): Handle PageUp and PageDown like
+    // HTMLOptionElement::DefaultEventHandler does.
+  }
+  return false;
 }
 
 void TextFieldInputType::HandleKeydownEventForSpinButton(KeyboardEvent& event) {
