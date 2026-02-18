@@ -38,17 +38,12 @@ blink::CloneableMessage CloneCloneableMessage(
 Message::Message() = default;
 
 Message::Message(MessageData data,
-                 mojom::SerializationFormat format,
                  bool user_gesture,
                  bool from_privileged_context)
     : data_(std::move(data)),
-      format_(format),
       user_gesture_(user_gesture),
       from_privileged_context_(from_privileged_context) {
-  if (format_ == mojom::SerializationFormat::kJson) {
-    CHECK(std::holds_alternative<std::string>(data_));
-  } else if (format_ == mojom::SerializationFormat::kStructuredClone) {
-    CHECK(std::holds_alternative<StructuredCloneMessageData>(data_));
+  if (std::holds_alternative<StructuredCloneMessageData>(data_)) {
     CHECK(base::FeatureList::IsEnabled(
         extensions_features::kStructuredCloningForMessaging));
   }
@@ -61,11 +56,11 @@ Message::~Message() = default;
 Message& Message::operator=(Message&& other) = default;
 
 bool Message::EqualsForTesting(const Message& other) const {
-  if (format_ != other.format() || user_gesture_ != other.user_gesture_) {
+  if (format() != other.format() || user_gesture_ != other.user_gesture_) {
     return false;
   }
 
-  switch (format_) {
+  switch (format()) {
     case mojom::SerializationFormat::kJson:
       return std::get<std::string>(data_) == other.data();
     case mojom::SerializationFormat::kStructuredClone: {
@@ -110,8 +105,7 @@ Message Message::Clone() const {
     data = CloneCloneableMessage(std::get<StructuredCloneMessageData>(data_));
   }
 
-  return Message(std::move(data), format_, user_gesture_,
-                 from_privileged_context_);
+  return Message(std::move(data), user_gesture_, from_privileged_context_);
 }
 
 StructuredCloneMessageData Message::TakeStructuredMessage() {

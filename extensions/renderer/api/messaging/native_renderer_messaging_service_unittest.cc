@@ -248,8 +248,8 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
   const char kMessageString[] = R"({"data":"hello"})";
   messaging_service()->DeliverMessage(
       script_context_set(), port_id1,
-      Message(kMessageString, mojom::SerializationFormat::kJson, false),
-      nullptr);
+      Message(kMessageString, /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
 
   // Only port1 should have been notified of the message (ports only receive
   // messages directed to themselves).
@@ -444,8 +444,7 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
 
   // Send a message and expect a reply to a passed in callback. A new port
   // should be created, and should remain open until the response is sent.
-  Message message("\"hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"hi\"", /*user_gesture=*/false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   MockMessagePortHost mock_message_port_host;
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -491,7 +490,8 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
-      Message("\"reply\"", mojom::SerializationFormat::kJson, false), nullptr);
+      Message("\"reply\"", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
   run_loop->Run();
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
@@ -513,8 +513,7 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
 
   // Send a message and expect a reply fulfilling a promise. A new port should
   // be created, and should remain open until the response is sent.
-  Message message("\"hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"hi\"", /*user_gesture=*/false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   MockMessagePortHost mock_message_port_host;
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -558,7 +557,8 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
-      Message("\"reply\"", mojom::SerializationFormat::kJson, false), nullptr);
+      Message("\"reply\"", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
   run_loop->Run();
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
@@ -646,8 +646,8 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
-      Message("\"message\"", mojom::SerializationFormat::kJson, false),
-      nullptr);
+      Message("\"message\"", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
   run_loop.Run();
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
@@ -750,8 +750,8 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), on_message_port_id,
-      Message("\"onMessage\"", mojom::SerializationFormat::kJson, false),
-      nullptr);
+      Message("\"onMessage\"", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
   EXPECT_EQ("\"onMessage\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "onMessageReceived"));
@@ -763,9 +763,8 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
   messaging_service()->DeliverMessage(
       script_context_set(), on_message_external_port_id,
-      Message("\"onMessageExternal\"", mojom::SerializationFormat::kJson,
-              false),
-      nullptr);
+      Message("\"onMessageExternal\"", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
   EXPECT_EQ("\"onMessage\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "onMessageReceived"));

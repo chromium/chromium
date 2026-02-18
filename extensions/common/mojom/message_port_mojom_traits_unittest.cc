@@ -71,8 +71,8 @@ TEST(MessagePortMojomTraitsTest, MessageEmpty) {
 }
 
 TEST(MessagePortMojomTraitsTest, JSONMessageValues) {
-  Message input("some text", mojom::SerializationFormat::kJson,
-                /*user_gesture=*/true, /*from_privileged_context=*/true);
+  Message input("some text", /*user_gesture=*/true,
+                /*from_privileged_context=*/true);
   Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
@@ -115,9 +115,8 @@ TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
   message_data.blobs.push_back(blink::mojom::SerializedBlob::New(
       "uuid", "content_type", /*size=*/10, std::move(blob_remote)));
 
-  Message input(std::move(message_data),
-                mojom::SerializationFormat::kStructuredClone,
-                /*user_gesture=*/true, /*from_privileged_context=*/true);
+  Message input(std::move(message_data), /*user_gesture=*/true,
+                /*from_privileged_context=*/true);
   Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
@@ -147,12 +146,10 @@ TEST_F(StructuredMessagePortMojomTraitsTest, MessageDataStructured) {
 
   // We can't compare `MessageData` directly, so wrap them in `Message` objects
   // and use `Message::EqualsForTesting()` which handles blob comparison.
-  Message input(std::move(input_data),
-                mojom::SerializationFormat::kStructuredClone,
-                /*user_gesture=*/true, /*from_privileged_context=*/true);
-  Message output(std::move(output_data),
-                 mojom::SerializationFormat::kStructuredClone,
-                 /*user_gesture=*/true, /*from_privileged_context=*/true);
+  Message input(std::move(input_data), /*user_gesture=*/true,
+                /*from_privileged_context=*/true);
+  Message output(std::move(output_data), /*user_gesture=*/true,
+                 /*from_privileged_context=*/true);
 
   EXPECT_TRUE(input.EqualsForTesting(output));
 }

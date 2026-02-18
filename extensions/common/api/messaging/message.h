@@ -22,8 +22,7 @@ using MessageData = std::variant<std::string, StructuredCloneMessageData>;
 // data payload and associated metadata. This class is represented in mojom as
 // the `extensions::mojom::Message` struct in `message_port.mojom`.
 //
-// Data Payload: A `Message` can hold one of two types of data, distinguished by
-// the `format()` field:
+// Data Payload: A `Message` can hold one of two types of data:
 //
 // 1. JSON-serialized data: For backward compatibility and simple messages, the
 //    payload can be a JSON string stored in the `data_` member. The `format()`
@@ -49,7 +48,6 @@ class Message {
  public:
   Message();
   Message(MessageData data,
-          mojom::SerializationFormat format,
           bool user_gesture,
           bool from_privileged_context = false);
   // This class is move-only to:
@@ -110,15 +108,16 @@ class Message {
   const MessageData& message_data() const { return data_; }
   MessageData& message_data() { return data_; }
 
-  mojom::SerializationFormat format() const { return format_; }
+  mojom::SerializationFormat format() const {
+    return std::holds_alternative<std::string>(data_)
+               ? mojom::SerializationFormat::kJson
+               : mojom::SerializationFormat::kStructuredClone;
+  }
   bool user_gesture() const { return user_gesture_; }
   bool from_privileged_context() const { return from_privileged_context_; }
 
  private:
   MessageData data_;
-  // TODO(crbug.com/40321352): Convert `format_` to an unknown value since we
-  // shouldn't assume JSON by default anymore.
-  mojom::SerializationFormat format_ = mojom::SerializationFormat::kJson;
   bool user_gesture_ = false;
   // The equality check skips `from_privileged_context` because this field is
   // used only for histograms.

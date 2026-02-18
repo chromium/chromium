@@ -149,7 +149,7 @@ void SendMessageTester::TestSendMessageOrRequest(
                           mojom::SerializationFormat::kJson);
 
   base::RunLoop run_loop;
-  Message message(expected_message, mojom::SerializationFormat::kJson, false);
+  Message message(expected_message, /*user_gesture=*/false);
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_.get(), expected_port_id,
                                      expected_target, channel_type,

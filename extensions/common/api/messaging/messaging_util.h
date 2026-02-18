@@ -32,11 +32,6 @@ namespace messaging_util {
 // selecting an incompatible format (e.g. sending Structured Clone data to a
 // native host). It also makes it unnecessary to pass the serialization format
 // over mojom.
-//
-// TODO(crbug.com/40321352): If `GetSerializationFormat()` is ultimately all
-// that is necessary to determine the format, let's remove the `format` field
-// from the `mojom::Message` struct once we're no longer in a transition period
-// with the structured clone feature.
 mojom::SerializationFormat GetSerializationFormat(
     const Extension* extension,
     mojom::ChannelType channel_type);

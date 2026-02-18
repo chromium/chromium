@@ -106,8 +106,7 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
 TEST_F(OneTimeMessageHandlerTest, SendMessageAndDontExpectReply) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        mojom::SerializationFormat::kJson);
-  Message message("\"Hello\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hello\"", /*user_gesture=*/false);
 
   v8::HandleScope handle_scope(isolate());
 
@@ -164,8 +163,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndDontExpectReply) {
 TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectCallbackReply) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        mojom::SerializationFormat::kJson);
-  Message message("\"Hello\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hello\"", /*user_gesture=*/false);
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
@@ -232,8 +230,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectCallbackReply) {
                   /*close_channel=*/true,
                   /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
-  Message reply("\"Hi\"", mojom::SerializationFormat::kJson,
-                /*user_gesture=*/false);
+  Message reply("\"Hi\"", /*user_gesture=*/false);
   message_handler()->DeliverMessage(script_context(), std::move(reply),
                                     port_id);
   run_loop->Run();
@@ -252,8 +249,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectCallbackReply) {
 TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectPromiseReply) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        mojom::SerializationFormat::kJson);
-  Message message("\"Hello\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hello\"", /*user_gesture=*/false);
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
@@ -313,8 +309,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectPromiseReply) {
                   /*close_channel=*/true,
                   /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  Message reply("\"Hi\"", mojom::SerializationFormat::kJson,
-                /*user_gesture=*/false);
+  Message reply("\"Hi\"", /*user_gesture=*/false);
   message_handler()->DeliverMessage(script_context(), std::move(reply),
                                     port_id);
   run_loop.Run();
@@ -334,8 +329,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectPromiseReply) {
 TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerCallback) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        mojom::SerializationFormat::kJson);
-  Message message("\"Hello\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hello\"", /*user_gesture=*/false);
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
@@ -376,8 +370,7 @@ TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerCallback) {
 TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerPromise) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        mojom::SerializationFormat::kJson);
-  Message message("\"Hello\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hello\"", /*user_gesture=*/false);
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
@@ -464,8 +457,7 @@ TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverWithNoReply) {
   base::RunLoop run_loop;
   EXPECT_CALL(mock_message_port_host, ResponsePending())
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  Message message("\"Hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hi\"", /*user_gesture=*/false);
   message_handler()->DeliverMessage(script_context(), std::move(message),
                                     port_id);
 
@@ -519,8 +511,7 @@ TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverAndReply) {
   mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
   EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
 
-  Message message("\"Hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hi\"", /*user_gesture=*/false);
 
   base::RunLoop run_loop;
   // When the listener replies, we should post the reply to the message port and
@@ -574,8 +565,7 @@ TEST_F(OneTimeMessageHandlerTest, TryReplyingMultipleTimes) {
   message_port_remote.EnableUnassociatedUsage();
   message_port_host_receiver.EnableUnassociatedUsage();
   mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
-  Message message("\"Hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hi\"", /*user_gesture=*/false);
 
   EXPECT_CALL(mock_message_port_host, ResponsePending());
   message_handler()->DeliverMessage(script_context(), std::move(message),
@@ -648,8 +638,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInListener) {
   // closed.
   const PortId listener_created_port_id(script_context()->context_id(), 0, true,
                                         mojom::SerializationFormat::kJson);
-  Message listener_sent_message("\"foo\"", mojom::SerializationFormat::kJson,
-                                /*user_gesture=*/false);
+  Message listener_sent_message("\"foo\"", /*user_gesture=*/false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   MockMessagePortHost listener_mock_message_port_host;
   base::RunLoop run_loop;
@@ -679,8 +668,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInListener) {
                   /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  Message message("\"Hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hi\"", /*user_gesture=*/false);
   message_handler()->DeliverMessage(script_context(), std::move(message),
                                     original_port_id);
   run_loop.Run();
@@ -709,8 +697,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
   // a reply.
   const PortId original_port_id(script_context()->context_id(), 0, true,
                                 mojom::SerializationFormat::kJson);
-  Message original_message("\"foo\"", mojom::SerializationFormat::kJson,
-                           /*user_gesture=*/false);
+  Message original_message("\"foo\"", /*user_gesture=*/false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   MockMessagePortHost mock_message_port_host;
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -771,8 +758,7 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
                   /*close_channel=*/true,
                   /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
-  Message reply("\"reply\"", mojom::SerializationFormat::kJson,
-                /*user_gesture=*/false);
+  Message reply("\"reply\"", /*user_gesture=*/false);
   message_handler()->DeliverMessage(script_context(), std::move(reply),
                                     original_port_id);
   run_loop->Run();
@@ -838,8 +824,7 @@ TEST_P(PolyfillSupportOneTimeMessageHandlerTest,
 
   // Dispatch the message. Since none of these listeners return `true`, the port
   // should close.
-  Message message("\"Hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hi\"", /*user_gesture=*/false);
   EXPECT_CALL(mock_message_port_host,
               ClosePort(
                   /*close_channel=*/false,
@@ -933,8 +918,7 @@ void OneTimeMessageHandlerGarbageCollectionTest::RunTest(
   message_port_host_receiver.EnableUnassociatedUsage();
   mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
 
-  Message message("\"Hi\"", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message("\"Hi\"", /*user_gesture=*/false);
   base::RunLoop close_port_run_loop;
 
   EXPECT_CALL(mock_message_port_host, ResponsePending());
@@ -1034,9 +1018,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 // port (in `OneTimeMessageHandler::DeliverReplyToOpener`) during this brief
 // post-worker-destruction window
 TEST_F(OneTimeMessageHandlerTest, ReplyCallbackDestroysOneTimeMessageHandler) {
-  const PortId port_id(script_context()->context_id(), 0, true,
-                       mojom::SerializationFormat::kJson);
-  Message message("\"Hello\"", mojom::SerializationFormat::kJson, false);
+  const PortId port_id(script_context()->context_id(), /*port_number=*/0,
+                       /*is_opener=*/true, mojom::SerializationFormat::kJson);
+  Message message("\"Hello\"", /*user_gesture=*/false);
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
@@ -1102,7 +1086,7 @@ TEST_F(OneTimeMessageHandlerTest, ReplyCallbackDestroysOneTimeMessageHandler) {
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
 
-  Message reply("\"Hi\"", mojom::SerializationFormat::kJson, false);
+  Message reply("\"Hi\"", /*user_gesture=*/false);
 
   // DeliverMessage will trigger the crash if the fix is not present.
   // Note: handler might be destroyed during this call, so use a raw pointer

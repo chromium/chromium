@@ -233,8 +233,8 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   // channel should remain open.
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
-      Message("\"message\"", mojom::SerializationFormat::kJson, false),
-      nullptr);
+      Message("\"message\"", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));

@@ -11,8 +11,6 @@
 
 namespace extensions::messaging_util {
 
-// TODO(crbug.com/40321352): This isn't used outside of renderer so move into
-// renderer-specific directory.
 mojom::SerializationFormat GetSerializationFormat(
     const Extension* extension,
     mojom::ChannelType channel_type) {

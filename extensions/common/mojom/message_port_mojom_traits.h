@@ -50,11 +50,6 @@ struct StructTraits<extensions::mojom::MessageDataView, extensions::Message> {
     return message.message_data();
   }
 
-  static extensions::mojom::SerializationFormat format(
-      const extensions::Message& message) {
-    return message.format();
-  }
-
   static bool user_gesture(const extensions::Message& message) {
     return message.user_gesture();
   }

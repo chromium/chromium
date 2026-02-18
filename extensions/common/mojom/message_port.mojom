@@ -111,11 +111,6 @@ union MessageData {
 struct Message {
   // The data payload of the message.
   MessageData data;
-  // The serialization format used for the message. This dictates which field
-  // in `data` is populated.
-  // TODO(crbug.com/40321352): Remove this field once structured cloning is
-  // fully implemented and we can rely on the union tag.
-  SerializationFormat format;
   // Whether the message was sent with a user gesture. This is determined by
   // the sender's context.
   bool user_gesture;

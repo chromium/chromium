@@ -217,15 +217,14 @@ std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
   MessageMetadata metadata = GetMessageMetadata(context);
   switch (format) {
     case mojom::SerializationFormat::kJson: {
-      return std::make_optional<Message>(
-          std::move(json_message), mojom::SerializationFormat::kJson,
-          metadata.has_user_gesture, metadata.is_from_privileged_context);
+      return std::make_optional<Message>(std::move(json_message),
+                                         metadata.has_user_gesture,
+                                         metadata.is_from_privileged_context);
     }
     case mojom::SerializationFormat::kStructuredClone: {
-      return std::make_optional<Message>(
-          std::move(structured_message),
-          mojom::SerializationFormat::kStructuredClone,
-          metadata.has_user_gesture, metadata.is_from_privileged_context);
+      return std::make_optional<Message>(std::move(structured_message),
+                                         metadata.has_user_gesture,
+                                         metadata.is_from_privileged_context);
     }
   }
 

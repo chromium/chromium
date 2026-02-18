@@ -56,9 +56,8 @@ bool StructTraits<extensions::mojom::MessageDataView, extensions::Message>::
     return false;
   }
 
-  *out =
-      extensions::Message(std::move(message_data), data.format(),
-                          data.user_gesture(), data.from_privileged_context());
+  *out = extensions::Message(std::move(message_data), data.user_gesture(),
+                             data.from_privileged_context());
   return true;
 }
 

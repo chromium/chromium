@@ -156,8 +156,7 @@ TEST_F(GinPortTest, TestDispatchMessage) {
   v8::Local<v8::Value> args[] = {port_obj};
   RunFunctionOnGlobal(test_function, context, std::size(args), args);
 
-  Message message(R"({"foo":42})", mojom::SerializationFormat::kJson,
-                  /*user_gesture=*/false);
+  Message message(R"({"foo":42})", /*user_gesture=*/false);
   port->DispatchOnMessage(context, std::move(message));
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
@@ -210,9 +209,8 @@ TEST_F(GinPortTest, TestPostMessage) {
     // Simple message; should succeed.
     const char kFunction[] =
         "(function(port) { port.postMessage({data: [42]}); })";
-    test_post_message(
-        kFunction, port_id,
-        Message(R"({"data":[42]})", mojom::SerializationFormat::kJson, false));
+    test_post_message(kFunction, port_id,
+                      Message(R"({"data":[42]})", /*user_gesture=*/false));
 
     // TODO(mustaq): We need a test with Message.user_gesture == true.
   }
@@ -220,9 +218,8 @@ TEST_F(GinPortTest, TestPostMessage) {
   {
     // Simple non-object message; should succeed.
     const char kFunction[] = "(function(port) { port.postMessage('hello'); })";
-    test_post_message(
-        kFunction, port_id,
-        Message(R"("hello")", mojom::SerializationFormat::kJson, false));
+    test_post_message(kFunction, port_id,
+                      Message(R"("hello")", /*user_gesture=*/false));
   }
 
   {
@@ -230,18 +227,16 @@ TEST_F(GinPortTest, TestPostMessage) {
     // stringify result "undefined"); should succeed.
     const char kFunction[] =
         "(function(port) { port.postMessage('undefined'); })";
-    test_post_message(
-        kFunction, port_id,
-        Message(R"("undefined")", mojom::SerializationFormat::kJson, false));
+    test_post_message(kFunction, port_id,
+                      Message(R"("undefined")", /*user_gesture=*/false));
   }
 
   {
     // We change undefined to null; see comment in gin_port.cc.
     const char kFunction[] =
         "(function(port) { port.postMessage(undefined); })";
-    test_post_message(
-        kFunction, port_id,
-        Message("null", mojom::SerializationFormat::kJson, false));
+    test_post_message(kFunction, port_id,
+                      Message("null", /*user_gesture=*/false));
   }
 
   {
