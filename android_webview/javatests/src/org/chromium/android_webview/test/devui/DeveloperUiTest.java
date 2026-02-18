@@ -31,8 +31,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForView;
-
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.ActivityNotFoundException;
@@ -113,7 +111,9 @@ public class DeveloperUiTest {
         openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext());
         // Wait for the first menu item to be visible.
         // Using a text matcher since IDs are not available in the options_menu once rendered.
-        waitForView(withText("Change WebView Provider"));
+        onData(anything())
+                .atPosition(0)
+                .check(ViewUtils.isEventuallyVisible(withText("Change WebView Provider")));
     }
 
     @Before

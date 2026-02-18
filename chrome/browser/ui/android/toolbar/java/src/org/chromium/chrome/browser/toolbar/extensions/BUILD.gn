@@ -120,7 +120,6 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
-    "//base/test:public_transit_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
