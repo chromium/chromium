@@ -1487,11 +1487,22 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
   }
 
   READ_SE_OR_RETURN(&shdr->slice_qp_delta);
+  // SliceQPY = 26 + pic_init_qp_minus26 + slice_qp_delta
+  // -QpBdOffset_Y <= SliceQPY <= 51
+  int qp_bd_offset_y = 6 * sps->bit_depth_luma_minus8;
+  int base_qp = 26 + pps->pic_init_qp_minus26;
+  IN_RANGE_OR_RETURN(shdr->slice_qp_delta, -qp_bd_offset_y - base_qp,
+                     51 - base_qp);
 
   if (shdr->IsSPSlice() || shdr->IsSISlice()) {
-    if (shdr->IsSPSlice())
+    if (shdr->IsSPSlice()) {
       READ_BOOL_OR_RETURN(&shdr->sp_for_switch_flag);
+    }
     READ_SE_OR_RETURN(&shdr->slice_qs_delta);
+    // SliceQSY = 26 + pic_init_qs_minus26 + slice_qs_delta
+    // 0 <= SliceQSY <= 51
+    int base_qs = 26 + pps->pic_init_qs_minus26;
+    IN_RANGE_OR_RETURN(shdr->slice_qs_delta, -base_qs, 51 - base_qs);
   }
 
   if (pps->deblocking_filter_control_present_flag) {
