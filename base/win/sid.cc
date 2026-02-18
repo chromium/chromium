@@ -103,7 +103,7 @@ Sid Sid::FromKnownCapability(WellKnownCapability capability) {
                             {SECURITY_CAPABILITY_BASE_RID, capability_rid});
 }
 
-Sid Sid::FromNamedCapability(const std::wstring& capability_name) {
+Sid Sid::FromNamedCapability(std::wstring_view capability_name) {
   static const base::NoDestructor<std::map<std::wstring, WellKnownCapability>>
       known_capabilities(
           {{L"INTERNETCLIENT", WellKnownCapability::kInternetClient},
@@ -210,7 +210,7 @@ Sid Sid::FromKnownSid(WellKnownSid type) {
   }
 }
 
-std::optional<Sid> Sid::FromSddlString(const std::wstring& sddl_sid) {
+std::optional<Sid> Sid::FromSddlString(wcstring_view sddl_sid) {
   PSID psid = nullptr;
   if (!::ConvertStringSidToSid(sddl_sid.c_str(), &psid)) {
     return std::nullopt;
@@ -240,7 +240,7 @@ Sid Sid::FromIntegrityLevel(DWORD integrity_level) {
 }
 
 std::optional<std::vector<Sid>> Sid::FromSddlStringVector(
-    const std::vector<std::wstring>& sddl_sids) {
+    span<const std::wstring> sddl_sids) {
   std::vector<Sid> converted_sids;
   converted_sids.reserve(sddl_sids.size());
   for (const std::wstring& sddl_sid : sddl_sids) {
@@ -254,7 +254,7 @@ std::optional<std::vector<Sid>> Sid::FromSddlStringVector(
 }
 
 std::vector<Sid> Sid::FromNamedCapabilityVector(
-    const std::vector<std::wstring>& capability_names) {
+    span<const std::wstring> capability_names) {
   std::vector<Sid> sids;
   std::ranges::transform(capability_names, std::back_inserter(sids),
                          FromNamedCapability);
@@ -262,15 +262,14 @@ std::vector<Sid> Sid::FromNamedCapabilityVector(
 }
 
 std::vector<Sid> Sid::FromKnownCapabilityVector(
-    const std::vector<WellKnownCapability>& capabilities) {
+    span<const WellKnownCapability> capabilities) {
   std::vector<Sid> sids;
   std::ranges::transform(capabilities, std::back_inserter(sids),
                          FromKnownCapability);
   return sids;
 }
 
-std::vector<Sid> Sid::FromKnownSidVector(
-    const std::vector<WellKnownSid>& known_sids) {
+std::vector<Sid> Sid::FromKnownSidVector(span<const WellKnownSid> known_sids) {
   std::vector<Sid> sids;
   std::ranges::transform(known_sids, std::back_inserter(sids), FromKnownSid);
   return sids;

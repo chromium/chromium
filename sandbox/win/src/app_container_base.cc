@@ -220,7 +220,7 @@ std::unique_ptr<AppContainerBase> AppContainerBase::Open(
 // static
 std::unique_ptr<AppContainerBase> AppContainerBase::CreateLowbox(
     const wchar_t* sid) {
-  auto package_sid = base::win::Sid::FromSddlString(sid);
+  auto package_sid = base::win::Sid::FromSddlString(std::wstring(sid));
   if (!package_sid)
     return nullptr;
 
@@ -335,7 +335,8 @@ void AppContainerBase::AddCapability(
 }
 
 bool AppContainerBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
-  return AddCapability(base::win::Sid::FromSddlString(sddl_sid), false);
+  return AddCapability(base::win::Sid::FromSddlString(std::wstring(sddl_sid)),
+                       false);
 }
 
 bool AppContainerBase::AddCapability(
@@ -360,7 +361,8 @@ void AppContainerBase::AddImpersonationCapability(
 }
 
 bool AppContainerBase::AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) {
-  return AddCapability(base::win::Sid::FromSddlString(sddl_sid), true);
+  return AddCapability(base::win::Sid::FromSddlString(std::wstring(sddl_sid)),
+                       true);
 }
 
 const std::vector<base::win::Sid>& AppContainerBase::GetCapabilities() {

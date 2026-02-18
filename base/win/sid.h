@@ -7,9 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/windows_types.h"
 
 namespace base::win {
@@ -65,7 +68,7 @@ class BASE_EXPORT Sid {
  public:
   // Create a Sid from an AppContainer capability name. The name can be
   // completely arbitrary.
-  static Sid FromNamedCapability(const std::wstring& capability_name);
+  static Sid FromNamedCapability(std::wstring_view capability_name);
 
   // Create a Sid from a known capability enumeration value. The Sids
   // match with the list defined in Windows 8.
@@ -75,7 +78,7 @@ class BASE_EXPORT Sid {
   static Sid FromKnownSid(WellKnownSid type);
 
   // Create a Sid from a SDDL format string, such as S-1-1-0.
-  static std::optional<Sid> FromSddlString(const std::wstring& sddl_sid);
+  static std::optional<Sid> FromSddlString(wcstring_view sddl_sid);
 
   // Create a Sid from a PSID pointer.
   static std::optional<Sid> FromPSID(const PSID sid);
@@ -88,19 +91,19 @@ class BASE_EXPORT Sid {
 
   // Create a vector of SIDs from a vector of SDDL format strings.
   static std::optional<std::vector<Sid>> FromSddlStringVector(
-      const std::vector<std::wstring>& sddl_sids);
+      span<const std::wstring> sddl_sids);
 
   // Create a vector of SIDs from a vector of capability names.
   static std::vector<Sid> FromNamedCapabilityVector(
-      const std::vector<std::wstring>& capability_names);
+      span<const std::wstring> capability_names);
 
   // Create a vector of SIDs from a vector of well-known capability.
   static std::vector<Sid> FromKnownCapabilityVector(
-      const std::vector<WellKnownCapability>& capabilities);
+      span<const WellKnownCapability> capabilities);
 
   // Create a vector of SIDs from a vector of well-known sids.
   static std::vector<Sid> FromKnownSidVector(
-      const std::vector<WellKnownSid>& known_sids);
+      span<const WellKnownSid> known_sids);
 
   // Create a known SID.
   explicit Sid(WellKnownSid known_sid);

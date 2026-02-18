@@ -1240,8 +1240,8 @@ bool PreventExecuteMappingInternal(const FilePath& path, bool skip_path_check) {
     return false;
   }
 
-  static constexpr wchar_t kEveryoneSid[] = L"WD";
-  auto sids = win::Sid::FromSddlStringVector({kEveryoneSid});
+  const std::vector<std::wstring> sddl = {L"WD"};
+  auto sids = win::Sid::FromSddlStringVector(sddl);
 
   // Remove executable access from the file. The API does not add a duplicate
   // ACE if it already exists.

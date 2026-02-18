@@ -15,7 +15,7 @@ namespace sandbox {
 namespace {
 
 void CheckGetIntegrityLevelSid(IntegrityLevel integrity_level,
-                               const wchar_t* sddl) {
+                               base::wcstring_view sddl) {
   std::optional<base::win::Sid> sddl_sid = base::win::Sid::FromSddlString(sddl);
   ASSERT_TRUE(sddl_sid);
   std::optional<DWORD> integrity_value = GetIntegrityLevelRid(integrity_level);
