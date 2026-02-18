@@ -1019,10 +1019,13 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // The |diff| is the offset we need to move the toolbar scene layer upward to have the
         // Toolbar show at the correct spot. The current math here is to reduce the capture size
         // with toolbar height and hairline height.
-        int diff =
-                captureHeight
-                        - mControlContainer.getToolbarHeight()
-                        - mControlContainer.getToolbarHairlineHeight();
+        int diff = 0;
+        if (captureHeight > 0) {
+            diff =
+                    captureHeight
+                            - mControlContainer.getToolbarHeight()
+                            - mControlContainer.getToolbarHairlineHeight();
+        }
 
         // As toolbar hairline is part of the capture, there are times we need to hide the hairline
         // (e.g. When browser controls are forced hidden) to avoid the capture showing up.
