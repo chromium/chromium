@@ -330,16 +330,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   // History page surveys.
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopHistoryPageExperiment,
-      kHatsSurveyTriggerHistoryPageExperiment,
-      /*presupplied_trigger_id=*/
-      features::
-          kHappinessTrackingSurveysForDesktopHistoryPageExperimentTriggerId
-              .Get());
+      kHatsSurveyTriggerHistoryPageExperiment);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopHistoryPageControl,
-      kHatsSurveyTriggerHistoryPageControl, /*presupplied_trigger_id=*/
-      features::kHappinessTrackingSurveysForDesktopHistoryPageControlTriggerId
-          .Get());
+      kHatsSurveyTriggerHistoryPageControl);
 
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSEHijacking,

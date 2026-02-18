@@ -803,18 +803,12 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDesktopHistoryPageExperiment);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopHistoryPageExperimentTime;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kHappinessTrackingSurveysForDesktopHistoryPageExperimentTriggerId;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDesktopHistoryPageControl);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopHistoryPageControlTime;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kHappinessTrackingSurveysForDesktopHistoryPageControlTriggerId;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForHistoryEmbeddings);

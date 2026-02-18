@@ -1084,10 +1084,6 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopHistoryPageExperimentTime{
         &kHappinessTrackingSurveysForDesktopHistoryPageExperiment,
         "history-page-time", base::Seconds(5)};
-const base::FeatureParam<std::string>
-    kHappinessTrackingSurveysForDesktopHistoryPageExperimentTriggerId{
-        &kHappinessTrackingSurveysForDesktopHistoryPageExperiment,
-        "history-page-experiment-trigger-id", "eNwB9x81L0ugnJ3q1cK0SZPphQ3o"};
 
 // Enables or disables the Happiness Tracking System for Desktop History Page in
 // the Control group.
@@ -1097,10 +1093,6 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopHistoryPageControlTime{
         &kHappinessTrackingSurveysForDesktopHistoryPageControl,
         "history-page-time", base::Seconds(5)};
-const base::FeatureParam<std::string>
-    kHappinessTrackingSurveysForDesktopHistoryPageControlTriggerId{
-        &kHappinessTrackingSurveysForDesktopHistoryPageControl,
-        "history-page-control-trigger-id", "LkMGyZ9zz0ugnJ3q1cK0RXMjZsdD"};
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Settings.
