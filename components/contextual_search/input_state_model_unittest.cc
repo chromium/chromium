@@ -647,4 +647,31 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithSpecificInputs) {
                                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
+TEST_F(InputStateModelTest, ImageGenUploadActive) {
+  // 1. Set active tool to IMAGE_GEN without any image input.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  auto state = input_state_model_->get_state_for_testing();
+  EXPECT_EQ(state.active_tool, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  EXPECT_FALSE(state.image_gen_upload_active);
+
+  // 2. Simulate adding an image.
+  std::vector<FileInfo> file_infos;
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kImage;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // 3. Set active tool to IMAGE_GEN again, now with an image input.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  state = input_state_model_->get_state_for_testing();
+  EXPECT_EQ(state.active_tool, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  EXPECT_TRUE(state.image_gen_upload_active);
+
+  // 4. Set a different tool and verify image_gen_upload_active is reset.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  state = input_state_model_->get_state_for_testing();
+  EXPECT_EQ(state.active_tool, omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_FALSE(state.image_gen_upload_active);
+}
+
 }  // namespace contextual_search
