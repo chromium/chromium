@@ -21,7 +21,8 @@ import java.lang.annotation.RetentionPolicy;
     TabLoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION,
     TabLoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE,
     TabLoadIfNeededCaller.OTHER,
-    TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER
+    TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER,
+    TabLoadIfNeededCaller.FUSEBOX_ATTACHMENT,
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -35,4 +36,5 @@ public @interface TabLoadIfNeededCaller {
     int MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE = 6;
     int OTHER = 7;
     int MEDIA_CAPTURE_PICKER = 8;
+    int FUSEBOX_ATTACHMENT = 9;
 }

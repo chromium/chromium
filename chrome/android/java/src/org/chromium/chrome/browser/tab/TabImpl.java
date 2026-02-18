@@ -1070,10 +1070,12 @@ class TabImpl implements Tab {
             restoreIfNeeded();
         }
 
-        // If we are trying to share a tab, and it has never been loaded, then it will not have its
-        // physical backing size set, which means it will never produce any frames. In this case,
-        // set the physical backing size to an estimate of what it would be if it were shown.
-        if (caller == TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER && !hasBacking()) {
+        // If we are trying to capture a tab, and it has never been loaded, then it will not have
+        // its physical backing size set, which means it will never produce any frames. In this
+        // case, set the physical backing size to an estimate of what it would be if it were shown.
+        if ((caller == TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER
+                        || caller == TabLoadIfNeededCaller.FUSEBOX_ATTACHMENT)
+                && !hasBacking()) {
             assumeNonNull(mWindowAndroid);
             var display = mWindowAndroid.getDisplay();
             assumeNonNull(mWebContents);
@@ -3035,6 +3037,12 @@ class TabImpl implements Tab {
         ResettersForTesting.register(this::clearNativePtr);
     }
 
+    @VisibleForTesting
+    @ChildProcessImportance
+    int getImportance() {
+        return mImportance;
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -3096,11 +3104,5 @@ class TabImpl implements Tab {
         void sendDidInsertUpdate(long nativeTabAndroid);
 
         void sendWillDetachUpdate(long nativeTabAndroid, @DetachReason int detachReason);
-    }
-
-    @VisibleForTesting
-    @ChildProcessImportance
-    int getImportance() {
-        return mImportance;
     }
 }
