@@ -1,9 +1,13 @@
 This is a testharness.js-based test.
-Found 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Screen interface: existence and properties of interface object
   assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 [FAIL] Screen interface: existence and properties of interface prototype object
   assert_equals: prototype of Screen.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+[FAIL] HTMLElement interface: operation scrollParent()
+  assert_false: property should not have a getter expected false got true
+[FAIL] HTMLElement interface: document.createElement("div") must inherit property "scrollParent()" with the proper type
+  assert_equals: expected "function" but got "object"
 [FAIL] Element interface: document.createElement("div") must inherit property "getBoxQuads(optional BoxQuadOptions)" with the proper type
   assert_inherits: property "getBoxQuads" not found in prototype chain
 [FAIL] Element interface: calling getBoxQuads(optional BoxQuadOptions) on document.createElement("div") with too few arguments must throw TypeError
@@ -20,6 +24,8 @@ Found 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "convertPointFromNode" not found in prototype chain
 [FAIL] Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document.createElement("div") with too few arguments must throw TypeError
   assert_inherits: property "convertPointFromNode" not found in prototype chain
+[FAIL] HTMLElement interface: document.createElement("img") must inherit property "scrollParent()" with the proper type
+  assert_equals: expected "function" but got "object"
 [FAIL] Element interface: document.createElement("img") must inherit property "getBoxQuads(optional BoxQuadOptions)" with the proper type
   assert_inherits: property "getBoxQuads" not found in prototype chain
 [FAIL] Element interface: calling getBoxQuads(optional BoxQuadOptions) on document.createElement("img") with too few arguments must throw TypeError

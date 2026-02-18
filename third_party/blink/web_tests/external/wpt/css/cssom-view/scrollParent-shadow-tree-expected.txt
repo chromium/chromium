@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] scrollParent skips intermediate closed shadow tree nodes
+  closedInnerElement.scrollParent is not a function
+[FAIL] scrollParent skips intermediate open shadow tree nodes
+  openInnerElement.scrollParent is not a function
+[FAIL] scrollParent from inside closed shadow tree
+  closedShadowRoot.querySelector(...).scrollParent is not a function
+[FAIL] scrollParent from inside open shadow tree
+  openShadowComponent.shadowRoot.querySelector(...).scrollParent is not a function
+Harness: the test ran to completion.
+
