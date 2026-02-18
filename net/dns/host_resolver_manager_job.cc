@@ -1082,9 +1082,8 @@ void HostResolverManager::Job::CompleteRequests(
   Finish();
 
   if (results.error() == ERR_DNS_REQUEST_CANCELLED) {
-    net_log_.AddEvent(NetLogEventType::CANCELLED);
-    net_log_.EndEventWithNetErrorCode(
-        NetLogEventType::HOST_RESOLVER_MANAGER_JOB, OK);
+    CancelRequests();
+    // `this` may be deleted. Do not access `this` after this point.
     return;
   }
 
@@ -1164,6 +1163,35 @@ void HostResolverManager::Job::CompleteRequestsWithError(
   CompleteRequests(
       HostCache::Entry(net_error, HostCache::Entry::SOURCE_UNKNOWN),
       base::TimeDelta(), true /* allow_cache */, false /* secure */, task_type);
+}
+
+void HostResolverManager::Job::CancelRequests() {
+  net_log_.AddEvent(NetLogEventType::CANCELLED);
+  net_log_.EndEventWithNetErrorCode(NetLogEventType::HOST_RESOLVER_MANAGER_JOB,
+                                    OK);
+
+  // In the following while loops, we check if the resolver was destroyed as a
+  // result of running the callback. If it was, we could continue, but we choose
+  // to bail.
+
+  while (!requests_.empty()) {
+    RequestImpl* req = requests_.head()->value();
+    req->RemoveFromList();
+    req->OnJobCancelled(key_);
+    if (!resolver_.get()) {
+      return;
+    }
+  }
+
+  while (!service_endpoint_requests_.empty()) {
+    ServiceEndpointRequestImpl* request =
+        service_endpoint_requests_.head()->value();
+    request->RemoveFromList();
+    request->OnJobCancelled();
+    if (!resolver_.get()) {
+      return;
+    }
+  }
 }
 
 RequestPriority HostResolverManager::Job::priority() const {

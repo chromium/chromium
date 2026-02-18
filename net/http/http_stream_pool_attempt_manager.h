@@ -320,14 +320,6 @@ class HttpStreamPool::AttemptManager
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
 
-  // Helper methods to reset ServiceEndpointRequest later.
-  // TODO(crbug.com/421299722, crbug.com/397597592): Remove these helper
-  // methods and reset ServiceEndpointRequest without PostTask(). We need to
-  // update the HostResolver's object management first. See comment #8 of
-  // crbug.com/397597592.
-  void ResetServiceEndpointRequestLater();
-  void ResetServiceEndpointRequest();
-
   void RestrictAllowedProtocols(NextProtoSet allowed_alpns);
 
   void MaybeChangeServiceEndpointRequestPriority();

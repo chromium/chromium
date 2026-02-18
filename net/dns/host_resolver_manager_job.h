@@ -313,6 +313,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void CompleteRequestsWithError(int net_error,
                                  std::optional<TaskType> task_type);
 
+  // Notifies requests that the job was cancelled.
+  void CancelRequests();
+
   RequestPriority priority() const override;
 
   // Number of non-canceled requests in |requests_|.

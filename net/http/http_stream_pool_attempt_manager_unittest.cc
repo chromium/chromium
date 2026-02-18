@@ -1216,16 +1216,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestCanceledBeforeAttemptSuccess) {
   requester.ResetRequest();
   ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
 
-  // Ensure invoking service endpoint callbacks does nothing on the associated
-  // AttemptManager.
-  CHECK(endpoint_request);
-  endpoint_request->add_endpoint(
-      ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint());
-  endpoint_request->CallOnServiceEndpointsUpdated();
-  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
-
-  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
-  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+  // AttemptManager should have reset its ServiceEndpointRequest.
+  ASSERT_FALSE(endpoint_request);
 
   WaitForAttemptManagerComplete(requester.associated_attempt_manager().get());
   ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));

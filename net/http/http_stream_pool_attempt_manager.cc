@@ -1122,19 +1122,6 @@ void HttpStreamPool::AttemptManager::ResolveServiceEndpoint(
   }
 }
 
-void HttpStreamPool::AttemptManager::ResetServiceEndpointRequestLater() {
-  CHECK(is_shutting_down());
-  // Using IDLE since resetting ServiceEndpointRequest is not urgent.
-  TaskRunner(IDLE)->PostTask(
-      FROM_HERE, base::BindOnce(&AttemptManager::ResetServiceEndpointRequest,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void HttpStreamPool::AttemptManager::ResetServiceEndpointRequest() {
-  CHECK(is_shutting_down());
-  service_endpoint_request_.reset();
-}
-
 void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
     NextProtoSet allowed_alpns) {
   CHECK(!allowed_alpns.Has(NextProto::kProtoUnknown));
@@ -1654,7 +1641,7 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   CHECK(!final_error_to_notify_jobs_.has_value());
   final_error_to_notify_jobs_ = error;
   availability_state_ = AvailabilityState::kFailing;
-  ResetServiceEndpointRequestLater();
+  service_endpoint_request_.reset();
 
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
@@ -1839,7 +1826,7 @@ void HttpStreamPool::AttemptManager::MaybeStartDraining() {
   }
 
   availability_state_ = AvailabilityState::kDraining;
-  ResetServiceEndpointRequestLater();
+  service_endpoint_request_.reset();
 
   // Cancel in-flight TCP based attempts so that draining AttemptManager won't
   // have active connecting streams.

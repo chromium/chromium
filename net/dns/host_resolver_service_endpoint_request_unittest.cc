@@ -1690,4 +1690,40 @@ TEST_F(HostResolverServiceEndpointRequestTest, NoSchemeHttpsNotQueried) {
                   ConnectionEndpointMetadata())));
 }
 
+// Regression test for crbug.com/484967086.
+// Tests to ensure reentrant cancellation of a ServiceEndpointRequest
+// during an abort-all event (e.g., network change) doesn't cause a dangling
+// pointer in the job's request list due to an early return in CompleteRequests.
+TEST_F(HostResolverServiceEndpointRequestTest, ReentrantCancelDuringAbortAll) {
+  const std::string kHostA = "hosta";
+  const std::string kHostB = "hostb";
+
+  UseIpv4DelayedDnsRules(kHostA);
+  UseIpv4DelayedDnsRules(kHostB);
+
+  // Start two requests.
+  Requester requester_a = CreateRequester("https://hosta");
+  Requester requester_b = CreateRequester("https://hostb");
+
+  EXPECT_THAT(requester_a.Start(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(requester_b.Start(), IsError(ERR_IO_PENDING));
+
+  // When requester_a finishes (which will happen during Abort), it cancels
+  // requester_b.
+  requester_a.SetOnFinishedCallback(
+      base::BindLambdaForTesting([&]() { requester_b.CancelRequest(); }));
+
+  // Trigger a network change notification, which will trigger Job aborts.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+
+  requester_a.WaitForFinished();
+  EXPECT_THAT(*requester_a.finished_result(), IsError(ERR_NAME_NOT_RESOLVED));
+
+  // requester_b should be cancelled without result.
+  ASSERT_FALSE(requester_b.finished_result().has_value());
+  ASSERT_FALSE(requester_b.request());
+
+  proc_->SignalMultiple(2u);
+}
+
 }  // namespace net
