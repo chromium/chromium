@@ -41,12 +41,13 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     // The reason(s) why fallback time was used.
     FallbackReason fallback_reason = FallbackReason::kNone;
 
-    // Presentation promise index in which the entry in |event_timing_| was
-    // added.
-    uint64_t presentation_index = 0;
+    // |frane_index| in which the entry in |event_timing_| was first created.
+    // This value starts at 1, and increments with each new "frame group".  See
+    // the documentation for |current_frame_index_| in window_performance.cc.
+    uint64_t frame_index = 0;
 
     // The event creation timestamp. This and the times below are the
-    // exact (non-rounded) monotonic timestamps. They are used for repoerting.
+    // exact (non-rounded) monotonic timestamps. They are used for reporting.
     // They should not be exposed to performance observer API entries for
     // security and privacy reasons.
     base::TimeTicks creation_time;

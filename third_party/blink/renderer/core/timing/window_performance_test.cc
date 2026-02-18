@@ -113,13 +113,12 @@ class WindowPerformanceTest : public testing::Test,
                                   base::TimeTicks presentation_timestamp,
                                   uint64_t expected_frame_source_id,
                                   uint64_t actual_frame_source_id) {
-    uint64_t presentation_promise_index =
-        performance_->event_presentation_promise_count_;
+    uint64_t frame_index = GetCurrentFrameIndex();
     SimulateJustPaintFinished();
     SimulateJustCommitFinished(commit_timestamp);
-    SimulateJustPresentationTime(
-        presentation_promise_index, presentation_timestamp,
-        expected_frame_source_id, actual_frame_source_id);
+    SimulateJustPresentationTime(frame_index, presentation_timestamp,
+                                 expected_frame_source_id,
+                                 actual_frame_source_id);
   }
 
   void SimulateInteractionId(PerformanceEventTiming* entry) {
@@ -237,8 +236,8 @@ class WindowPerformanceTest : public testing::Test,
     performance_->PageVisibilityChangedWithTimestamp(timestamp);
   }
 
-  uint64_t GetPresentationPromiseIndex() const {
-    return performance_->event_presentation_promise_count_;
+  uint64_t GetCurrentFrameIndex() const {
+    return performance_->current_frame_index_;
   }
 
   test::TaskEnvironment task_environment_;
@@ -927,7 +926,7 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
   RegisterKeyboardEvent(event_type_names::kKeydown, keydown_timestamp,
                         processing_start_keydown, processing_end_keydown,
                         digit_1_key_code);
-  const uint64_t presentation_index_keydown = GetPresentationPromiseIndex();
+  const uint64_t presentation_index_keydown = GetCurrentFrameIndex();
 
   SimulateJustPaintFinished();
   SimulateJustCommitFinished(processing_end_keydown);
@@ -940,7 +939,7 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
   RegisterKeyboardEvent(event_type_names::kKeyup, keyup_timestamp,
                         processing_start_keyup, processing_end_keyup,
                         digit_1_key_code);
-  const uint64_t presentation_index_keyup = GetPresentationPromiseIndex();
+  const uint64_t presentation_index_keyup = GetCurrentFrameIndex();
 
   // keyup resolved without a paint, due to no damage.
   SimulateJustPresentationTime(presentation_index_keyup,

@@ -250,6 +250,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void ReportFirstInputTiming(PerformanceEventTiming* event_timing_entry);
 
+  template <typename Callback>
+  void IterateEventTimingsByAnimationFrame(uint64_t frame_index,
+                                           Callback callback);
+
   void SchedulePendingRenderCoarsenedEntries(base::TimeTicks target_time);
   void FlushPendingRenderCoarsenedEntries();
 
@@ -264,16 +268,22 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // frame source id from presentation feedback to identify GPU crashes.
   // crbug.com/324877581
   uint64_t begin_main_frame_source_id_ = 0;
-  // Controls if we register a new presentation promise upon events arrival.
-  bool need_new_promise_for_event_presentation_time_ = true;
-  // Counts the total number of presentation promises we've registered for
-  // events' presentation feedback since the beginning.
-  uint64_t event_presentation_promise_count_ = 0;
+  // Event Timing entries are grouped together by animation frame (or by task
+  // for cases where there is no next paint).
+  uint64_t current_frame_index_ = 1;
+  // This value tracks the last time we requested presentation time, in order to
+  // make sure we request at most once per animation frame, and only if at least
+  // one event in that group actually requires visual feedback
+  // (NeedsNextPaintMeasurement).
+  // TODO(crbug.com/40821329): Integration with PaintTimingMixin should remove
+  // the need to manually track this.
+  uint64_t last_presentation_requested_for_frame_index_ = 0;
 
   // Store all event timing and latency related data, including
-  // PerformanceEventTiming, presentation_index, keycode and pointerId.
+  // PerformanceEventTiming, frame_index, keycode and pointerId.
   // We use the data to calculate events latencies.
   HeapVector<Member<PerformanceEventTiming>> event_timing_entries_;
+
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;
