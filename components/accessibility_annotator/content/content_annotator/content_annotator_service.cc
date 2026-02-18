@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -16,6 +17,7 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "content/public/browser/page.h"
 
 namespace accessibility_annotator {
 

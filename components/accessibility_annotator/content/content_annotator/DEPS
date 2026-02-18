@@ -7,5 +7,7 @@ include_rules = [
   "+components/page_content_annotations/core",
   "+components/translate/core",
   "+components/url_matcher",
+  "+content/public/browser",
+  "+content/public/test",
   "+third_party/re2",
 ]
