@@ -21,6 +21,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class IncognitoNtpOmniboxAutofocusTracker {
+    public static final String HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_TAB_HEIGHT_CHANGE =
+            "NewTabPage.Incognito.OmniboxAutofocus.OnFocus.TabHeightChange";
+
     public static final String HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_KEYBOARD_HEIGHT_PERCENTAGE =
             "NewTabPage.Incognito.OmniboxAutofocus.OnFocus.KeyboardHeightPercentage";
     public static final String
@@ -73,6 +76,28 @@ public class IncognitoNtpOmniboxAutofocusTracker {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:OmniboxAutofocusOutcome)
+
+    // LINT.IfChange(OmniboxAutofocusTabHeightChange)
+    @IntDef({
+        OmniboxAutofocusTabHeightChange.INCREASED_FROM_ZERO,
+        OmniboxAutofocusTabHeightChange.UNCHANGED_AT_ZERO,
+        OmniboxAutofocusTabHeightChange.DECREASED_TO_ZERO,
+        OmniboxAutofocusTabHeightChange.INCREASED_FROM_NON_ZERO,
+        OmniboxAutofocusTabHeightChange.UNCHANGED_AT_NON_ZERO,
+        OmniboxAutofocusTabHeightChange.DECREASED_TO_NON_ZERO
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface OmniboxAutofocusTabHeightChange {
+        int INCREASED_FROM_ZERO = 0;
+        int UNCHANGED_AT_ZERO = 1;
+        int DECREASED_TO_ZERO = 2;
+        int INCREASED_FROM_NON_ZERO = 3;
+        int UNCHANGED_AT_NON_ZERO = 4;
+        int DECREASED_TO_NON_ZERO = 5;
+        int COUNT = 6;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:OmniboxAutofocusTabHeightChange)
 
     /**
      * Records the conditions that led to the omnibox autofocus feature being triggered.
@@ -138,16 +163,12 @@ public class IncognitoNtpOmniboxAutofocusTracker {
      */
     public static void collectLayoutMetricsOnKeyboardVisible(
             Tab tab,
-            double tabHeightBeforeFocus,
+            int tabHeightBeforeFocus,
             IncognitoNtpUtils.IncognitoNtpContentMetrics ntpContentMetrics,
             boolean omniboxAutofocused) {
-        if (tab.getView() == null || tabHeightBeforeFocus <= 0) {
-            return;
-        }
-
         WindowAndroid windowAndroid = tab.getWindowAndroid();
 
-        if (windowAndroid == null) {
+        if (tab.getView() == null || windowAndroid == null) {
             return;
         }
 
@@ -190,21 +211,48 @@ public class IncognitoNtpOmniboxAutofocusTracker {
      */
     private static void recordLayoutMetrics(
             Tab tab,
-            double tabHeightBeforeFocus,
+            int tabHeightBeforeFocus,
             IncognitoNtpUtils.IncognitoNtpContentMetrics ntpContentMetrics,
             boolean omniboxAutofocused) {
         if (tab.getView() == null) {
             return;
         }
 
-        final double tabViewHeightAfterFocus = tab.getView().getHeight();
+        final int tabHeightAfterFocus = tab.getView().getHeight();
+
+        @OmniboxAutofocusTabHeightChange int tabHeightChange;
+        if (tabHeightBeforeFocus == 0 && tabHeightAfterFocus == 0) {
+            tabHeightChange = OmniboxAutofocusTabHeightChange.UNCHANGED_AT_ZERO;
+        } else if (tabHeightAfterFocus == 0) {
+            tabHeightChange = OmniboxAutofocusTabHeightChange.DECREASED_TO_ZERO;
+        } else if (tabHeightBeforeFocus == 0) {
+            tabHeightChange = OmniboxAutofocusTabHeightChange.INCREASED_FROM_ZERO;
+        } else if (tabHeightBeforeFocus == tabHeightAfterFocus) {
+            tabHeightChange = OmniboxAutofocusTabHeightChange.UNCHANGED_AT_NON_ZERO;
+        } else if (tabHeightBeforeFocus < tabHeightAfterFocus) {
+            tabHeightChange = OmniboxAutofocusTabHeightChange.INCREASED_FROM_NON_ZERO;
+        } else {
+            tabHeightChange = OmniboxAutofocusTabHeightChange.DECREASED_TO_NON_ZERO;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_TAB_HEIGHT_CHANGE,
+                tabHeightChange,
+                OmniboxAutofocusTabHeightChange.COUNT);
+
+        // The measurements are considered valid only if the tab's height has decreased to a
+        // non-zero value.
+        if (tabHeightChange != OmniboxAutofocusTabHeightChange.DECREASED_TO_NON_ZERO) {
+            return;
+        }
+
         final double ntpTextContentHeightWithTopPadding =
                 ntpContentMetrics.ntpViewHeightPx - ntpContentMetrics.textContentBottomPaddingPx;
         final double ntpTextContentHeightBehindKeyboardPx =
-                Math.max((ntpTextContentHeightWithTopPadding - tabViewHeightAfterFocus), 0);
+                Math.max((ntpTextContentHeightWithTopPadding - tabHeightAfterFocus), 0);
 
         final double keyboardHeightRatio =
-                (tabHeightBeforeFocus - tabViewHeightAfterFocus) / tabHeightBeforeFocus;
+                (double) (tabHeightBeforeFocus - tabHeightAfterFocus) / tabHeightBeforeFocus;
 
         final double ntpTextContentWithTopPaddingHeightRatio =
                 ntpTextContentHeightWithTopPadding / tabHeightBeforeFocus;

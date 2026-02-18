@@ -88,7 +88,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
     private int mNtpOpenedCount;
     private final @NonNull GestureDetector mNtpSingleTapDetector;
     private boolean mIsAutofocusing;
-    private double mTabHeightBeforeFocus;
+    private int mTabHeightBeforeFocus;
 
     /**
      * Overrides the result of {@link #checkAutofocusAllowedWithPrediction(Tab)} for testing
