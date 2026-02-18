@@ -111,7 +111,11 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   } else if (file_data->mime_type.find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
   } else {
-    NOTREACHED();
+    UpdateSearchboxContextData(lens::MimeType::kUnknown, "", file_data->name,
+                               file_data->mime_type,
+                               base::UnguessableToken::Create());
+    edit_model_->OpenAiMode(false, /*via_context_menu=*/true);
+    return;
   }
 
   base::span<const uint8_t> file_data_span =
