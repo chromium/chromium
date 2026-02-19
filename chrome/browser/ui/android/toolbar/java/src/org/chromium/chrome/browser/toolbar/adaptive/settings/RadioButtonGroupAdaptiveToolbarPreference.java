@@ -49,6 +49,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseReadAloud;
     private boolean mCanUsePageSummary;
+    private @Nullable Runnable mOnComponentUpdated;
     private Runnable mInitRadioButtonRunnable = this::initializeRadioButtonSelection;
     private boolean mIsBound;
 
@@ -56,6 +57,15 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         super(context, attrs);
         // Inflating from XML.
         setLayoutResource(R.layout.radio_button_group_adaptive_toolbar_preference);
+    }
+
+    /**
+     * Set a listener to be called when the component is updated.
+     *
+     * @param onComponentUpdated The listener to be called.
+     */
+    public void setOnComponentUpdatedListener(Runnable onComponentUpdated) {
+        mOnComponentUpdated = onComponentUpdated;
     }
 
     @Override
@@ -168,6 +178,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updateVoiceButtonVisibility();
         updateReadAloudButtonVisibility();
         updatePageSummaryButtonVisibility();
+
+        if (mOnComponentUpdated != null) mOnComponentUpdated.run();
     }
 
     @Override
