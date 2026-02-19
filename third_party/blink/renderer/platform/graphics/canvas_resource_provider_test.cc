@@ -335,7 +335,7 @@ TEST_F(CanvasResourceProviderTest,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      CanvasResourceProvider::ShouldInitialize::kNo,
       SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
@@ -374,7 +374,7 @@ TEST_F(CanvasResourceProviderTest,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
-      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kNo,
       context_provider_wrapper_, shared_image_usage_flags);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -520,8 +520,8 @@ TEST_F(CanvasResourceProviderTest,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, shared_image_usage_flags);
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      shared_image_usage_flags);
 
   ASSERT_TRUE(provider->IsValid());
 
@@ -620,7 +620,7 @@ TEST_F(CanvasResourceProviderTest,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
-      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kNo,
       context_provider_wrapper_, shared_image_usage_flags);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -662,18 +662,18 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, gpu::SharedImageUsageSet());
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      gpu::SharedImageUsageSet());
   EXPECT_TRUE(provider && provider->IsValid());
   provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, gpu::SharedImageUsageSet());
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      gpu::SharedImageUsageSet());
   EXPECT_TRUE(provider && provider->IsValid());
   provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, gpu::SharedImageUsageSet());
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      gpu::SharedImageUsageSet());
   // The CanvasResourceProvider for SharedImage should not be created
   // if the texture size is greater than the maximum value.
   EXPECT_FALSE(provider);
@@ -685,13 +685,13 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
                                    /*has_alpha=*/true);
   auto src_provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, gpu::SharedImageUsageSet());
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      gpu::SharedImageUsageSet());
 
   auto dst_provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, gpu::SharedImageUsageSet());
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      gpu::SharedImageUsageSet());
 
   MemoryManagedPaintCanvas& dst_canvas = dst_provider->Canvas();
 
