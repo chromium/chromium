@@ -3192,16 +3192,8 @@ def CheckNoBannedPatterns(input_api, output_api):
             for ban_rule in _BANNED_CPP_FUNCTIONS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
-    # As of 05/2024, iOS fully migrated ConsentLevel::kSync to kSignin, and
-    # Android is in the process of preventing new users from entering kSync.
-    # So the warning is restricted to those platforms.
-    ios_pattern = input_api.re.compile(r'(^|[\W_])ios[\W_]')
     file_filter = lambda f: (
-        f.LocalPath().endswith(('.cc', '.mm', '.h')) and
-        ('android' in f.LocalPath() or
-         # Simply checking for an 'ios' substring would
-         # catch unrelated cases, use a regex.
-         ios_pattern.search(f.LocalPath())))
+        f.LocalPath().endswith(('.cc', '.mm', '.h')))
     for f in input_api.AffectedFiles(file_filter=file_filter):
         for line_num, line in f.ChangedContents():
             for ban_rule in _DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS:

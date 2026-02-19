@@ -5888,7 +5888,7 @@ class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
 class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
     """Test the presubmit for deprecated ConsentLevel::kSync functions."""
 
-    def testCppMobilePlatformPath(self):
+    def testCppPath(self):
         input_api = MockInputApi()
         input_api.files = [
             MockFile('chrome/browser/android/file.cc', ['OtherFunction']),
@@ -5903,11 +5903,14 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
                      ['IsSyncFeatureActive']),
             MockFile('components/foo/ios_delegate.cc',
                      ['IsSyncFeatureActive']),
+            MockFile('chrome/browser/file.cc', ['HasSyncConsent']),
+            MockFile('bios/file.cc', ['HasSyncConsent']),
+            MockFile('components/kiosk/file.cc', ['HasSyncConsent']),
         ]
 
         results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
 
-        self.assertEqual(7, len(results))
+        self.assertEqual(10, len(results))
         self.assertTrue(
             all('chrome/browser/android/file.cc' not in r.message
                 for r in results))
@@ -5918,18 +5921,9 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
         self.assertIn('components/foo/delegate_ios.cc', results[4].message)
         self.assertIn('components/foo/android_delegate.cc', results[5].message)
         self.assertIn('components/foo/ios_delegate.cc', results[6].message)
-
-    def testCppNonMobilePlatformPath(self):
-        input_api = MockInputApi()
-        input_api.files = [
-            MockFile('chrome/browser/file.cc', ['HasSyncConsent']),
-            MockFile('bios/file.cc', ['HasSyncConsent']),
-            MockFile('components/kiosk/file.cc', ['HasSyncConsent']),
-        ]
-
-        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
-
-        self.assertEqual(0, len(results))
+        self.assertIn('chrome/browser/file.cc', results[7].message)
+        self.assertIn('bios/file.cc', results[8].message)
+        self.assertIn('components/kiosk/file.cc', results[9].message)
 
     def testJavaPath(self):
         input_api = MockInputApi()
