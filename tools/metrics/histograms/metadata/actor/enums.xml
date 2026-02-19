@@ -205,6 +205,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kNodeNotFoundInApc"/>
   <int value="3" label="kNoGeometry"/>
   <int value="4" label="kOffScreen"/>
+  <int value="5" label="kEmptyBoundingBox"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/dom_node_geometry_types.h:GetDomNodeResult) -->

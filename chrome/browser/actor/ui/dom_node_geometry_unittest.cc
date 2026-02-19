@@ -185,5 +185,59 @@ TEST_F(ActorUiDomNodeGeometryTest, MismatchedIframe) {
                                        GetDomNodeResult::kNodeNotFoundInApc, 1);
 }
 
+TEST_F(ActorUiDomNodeGeometryTest, EmptyBoundingBox_ZeroBoth) {
+  DomNode node{
+      .node_id = 1509,
+      .document_identifier = kArbiraryDocId,
+  };
+  AnnotatedPageContent apc = BuildApcProto(node.document_identifier);
+  ContentNode* content_node = apc.mutable_root_node();
+  content_node->mutable_content_attributes()->set_common_ancestor_dom_node_id(
+      node.node_id);
+  SetGeometry(content_node, gfx::Rect(10, 20, 0, 0));
+
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node),
+              ErrorIs(GetDomNodeResult::kEmptyBoundingBox));
+  histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
+                                       GetDomNodeResult::kEmptyBoundingBox, 1);
+}
+
+TEST_F(ActorUiDomNodeGeometryTest, EmptyBoundingBox_ZeroWidth) {
+  DomNode node{
+      .node_id = 1509,
+      .document_identifier = kArbiraryDocId,
+  };
+  AnnotatedPageContent apc = BuildApcProto(node.document_identifier);
+  ContentNode* content_node = apc.mutable_root_node();
+  content_node->mutable_content_attributes()->set_common_ancestor_dom_node_id(
+      node.node_id);
+  SetGeometry(content_node, gfx::Rect(10, 20, 0, 40));
+
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node),
+              ErrorIs(GetDomNodeResult::kEmptyBoundingBox));
+  histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
+                                       GetDomNodeResult::kEmptyBoundingBox, 1);
+}
+
+TEST_F(ActorUiDomNodeGeometryTest, EmptyBoundingBox_ZeroHeight) {
+  DomNode node{
+      .node_id = 1509,
+      .document_identifier = kArbiraryDocId,
+  };
+  AnnotatedPageContent apc = BuildApcProto(node.document_identifier);
+  ContentNode* content_node = apc.mutable_root_node();
+  content_node->mutable_content_attributes()->set_common_ancestor_dom_node_id(
+      node.node_id);
+  SetGeometry(content_node, gfx::Rect(10, 20, 30, 0));
+
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node),
+              ErrorIs(GetDomNodeResult::kEmptyBoundingBox));
+  histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
+                                       GetDomNodeResult::kEmptyBoundingBox, 1);
+}
+
 }  // namespace
 }  // namespace actor::ui

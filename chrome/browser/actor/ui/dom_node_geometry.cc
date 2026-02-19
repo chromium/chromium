@@ -8,7 +8,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-
+#include "ui/gfx/geometry/rect.h"
 namespace actor::ui {
 namespace {
 using optimization_guide::proto::AnnotatedPageContent;
@@ -87,10 +87,13 @@ DomNodeGeometry::InternalGetDomNode(const DomNode& node) const {
   if (!geom.has_visible_bounding_box()) {
     return base::unexpected(GetDomNodeResult::kOffScreen);
   }
-  const auto& rect = geom.visible_bounding_box();
-  const int x = rect.x() + rect.width() / 2;
-  const int y = rect.y() + rect.height() / 2;
-  return gfx::Point(x, y);
+  const auto& bounding_box = geom.visible_bounding_box();
+  gfx::Rect rect(bounding_box.x(), bounding_box.y(), bounding_box.width(),
+                 bounding_box.height());
+  if (rect.IsEmpty()) {
+    return base::unexpected(GetDomNodeResult::kEmptyBoundingBox);
+  }
+  return rect.CenterPoint();
 }
 
 DomNodeGeometry::DomNodeGeometry(base::PassKey<DomNodeGeometry>,
