@@ -347,13 +347,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
       ui::mojom::MenuSourceType::kMouse);
 
   // Verify reload button is now highlighted.
-  EXPECT_NE(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, control_rect) != SK_ColorTRANSPARENT;
+  }));
 
   // Close reload button context menu.
   reload_control->menu_runner_->Cancel();
 
   // Verify reload button background returns to transparent.
-  EXPECT_EQ(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, control_rect) == SK_ColorTRANSPARENT;
+  }));
 }
 
 // TODO(crbug.com/479341115): Failing on mac-bots.
@@ -394,15 +398,19 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
       ui::mojom::MenuSourceType::kMouse);
 
   // Verify background is highlighted (NOT transparent).
-  EXPECT_NE(GetCenterPixelColor(web_view, background_probe_rect),
-            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) !=
+           SK_ColorTRANSPARENT;
+  }));
 
   // Close context menu.
   split_tabs_control->menu_runner_->Cancel();
 
   // Verify split tabs button background returns to transparent.
-  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
-            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
