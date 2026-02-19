@@ -1062,8 +1062,8 @@ class LocationBarMediator
         // correctly determine the page classification, rendering the AutocompleteInput
         // instance not sufficiently valid to facilitate Autocomplete.
         if (mNativeInitialized) {
-            mAutocompleteCoordinator.beginInput(mCurrentInput);
-            mFuseboxCoordinator.beginInput(mCurrentInput);
+            mAutocompleteCoordinator.beginInput(session);
+            mFuseboxCoordinator.beginInput(session);
         } else {
             mDeferredNativeRunnables.add(
                     () -> {
@@ -1075,8 +1075,8 @@ class LocationBarMediator
                                 mLocationBarDataProvider.getPageClassification(
                                         /* prefetch= */ false));
                         if (mAutocompleteCoordinator != null) {
-                            mAutocompleteCoordinator.beginInput(mCurrentInput);
-                            mFuseboxCoordinator.beginInput(mCurrentInput);
+                            mAutocompleteCoordinator.beginInput(session);
+                            mFuseboxCoordinator.beginInput(session);
                         }
                     });
         }

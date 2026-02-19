@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -272,13 +273,16 @@ public class AutocompleteMediatorUnitTest {
      * @param title The Page Title to report.
      * @param pageClassification The Page classification to report.
      */
-    private AutocompleteInput createAutocompleteInput(
-            GURL url, String title, int pageClassification) {
-        var input = new AutocompleteInput();
-        input.setPageUrl(url);
-        input.setPageTitle(title);
-        input.setPageClassification(pageClassification);
-        return input;
+    private FuseboxSessionState createSession(GURL url, String title, int pageClassification) {
+        var autocompleteInput = new AutocompleteInput();
+        autocompleteInput.setPageUrl(url);
+        autocompleteInput.setPageTitle(title);
+        autocompleteInput.setPageClassification(pageClassification);
+        return new FuseboxSessionState(autocompleteInput);
+    }
+
+    private FuseboxSessionState createEmptySession() {
+        return createSession(PAGE_URL, PAGE_TITLE, PageClassification.BLANK_VALUE);
     }
 
     /**
@@ -338,7 +342,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void updateSuggestionsList_scrolEventsWithConcealedItemsTogglesKeyboardVisibility() {
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
 
         final int heightWithOneConcealedItem =
                 (mSuggestionsList.size() - 2) * SUGGESTION_MIN_HEIGHT;
@@ -433,13 +437,12 @@ public class AutocompleteMediatorUnitTest {
         GURL url = new GURL("https://www.google.com");
         String title = "title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
 
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(input);
+        mMediator.beginInput(createSession(url, title, pageClassification));
         ShadowLooper.runUiThreadTasks();
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
@@ -453,14 +456,14 @@ public class AutocompleteMediatorUnitTest {
         GURL url = new GURL("https://www.google.com");
         String title = "title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
-        input.setUserText("test");
+        var session = createSession(url, title, pageClassification);
+        session.getAutocompleteInput().setUserText("test");
 
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyAutocompleteStart(url, pageClassification, "test", 0, true);
     }
@@ -504,14 +507,14 @@ public class AutocompleteMediatorUnitTest {
         GURL url = new GURL("https://www.google.com");
         String title = "title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
-        input.setUserText("Text");
+        var session = createSession(url, title, pageClassification);
+        session.getAutocompleteInput().setUserText("Text");
 
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         ShadowLooper.runUiThreadTasks();
         // Strictly expect the call to `startZeroSuggest()` here, as Desktop mode retains the
         // Omnibox content on focus.
@@ -528,8 +531,7 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
-        mMediator.beginInput(input);
+        mMediator.beginInput(createSession(url, title, pageClassification));
 
         mMediator.onNativeInitialized();
         ShadowLooper.runUiThreadTasks();
@@ -543,8 +545,7 @@ public class AutocompleteMediatorUnitTest {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, url.getSpec(), pageClassification);
-        mMediator.beginInput(input);
+        mMediator.beginInput(createSession(url, url.getSpec(), pageClassification));
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -563,8 +564,7 @@ public class AutocompleteMediatorUnitTest {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, url.getSpec(), pageClassification);
-        mMediator.beginInput(input);
+        mMediator.beginInput(createSession(url, url.getSpec(), pageClassification));
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -587,12 +587,12 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
 
         // Simulate URL focus changes.
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         mMediator.endInput();
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any());
 
@@ -609,10 +609,10 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
 
         // Simulate URL being focus changes.
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         mMediator.endInput();
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any());
@@ -633,12 +633,12 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
 
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("A");
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         mMediator.onTextChanged("A", /* isOnFocusContext= */ false);
         mMediator.onTextChanged("", /* isOnFocusContext= */ false);
         mMediator.onTextChanged("A", /* isOnFocusContext= */ false);
@@ -663,8 +663,8 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
-        mMediator.beginInput(input);
+        var session = createSession(url, title, pageClassification);
+        mMediator.beginInput(session);
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
         // - Typing should cancel initial ZPS request, and request regular suggestions
@@ -683,7 +683,7 @@ public class AutocompleteMediatorUnitTest {
     public void onSuggestionsReceived_triggersPrewarm() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
 
         when(mPreloadingFeatureMap.shouldPrewarmOnAutocomplete()).thenReturn(true);
         Tab tab = mock(Tab.class);
@@ -700,7 +700,7 @@ public class AutocompleteMediatorUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged(any());
 
@@ -723,7 +723,7 @@ public class AutocompleteMediatorUnitTest {
     public void onSuggestionClicked_doesNotOpenInNewTab() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         GURL url = JUnitTestGURLs.BLUE_1;
 
         mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
@@ -747,7 +747,7 @@ public class AutocompleteMediatorUnitTest {
     public void onSuggestionClicked_ClipboardImageSuggestion() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         var url = new GURL("http://test");
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE)
@@ -770,7 +770,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onSuggestionClicked_deferLoadingUntilNativeLibrariesLoaded() {
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         clearInvocations(mAutocompleteDelegate);
         var url = new GURL("http://test");
         var match =
@@ -816,7 +816,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void setLayoutDirection_beforeInitialization() {
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
@@ -837,7 +837,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void setLayoutDirection_afterInitialization() {
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
@@ -908,11 +908,11 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
-        input.setUserText(url.getSpec());
+        var session = createSession(url, title, pageClassification);
+        session.getAutocompleteInput().setUserText(url.getSpec());
 
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
 
         mMediator.onNativeInitialized();
         ShadowLooper.runUiThreadTasks();
@@ -927,10 +927,10 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
 
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
 
         // Signal focus prior to initializing native; confirm that zero suggest is not triggered.
         ShadowLooper.runUiThreadTasks();
@@ -950,7 +950,7 @@ public class AutocompleteMediatorUnitTest {
 
         assertFalse(mMediator.isOmniboxSessionActiveForTesting());
 
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         assertTrue(mMediator.isOmniboxSessionActiveForTesting());
 
         mMediator.endInput();
@@ -1010,9 +1010,9 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
 
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
@@ -1043,9 +1043,9 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
 
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
@@ -1072,10 +1072,10 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
 
         mMediator.onNativeInitialized();
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
 
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
@@ -1102,9 +1102,9 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
 
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
@@ -1126,11 +1126,11 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
+        var session = createSession(url, title, pageClassification);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -1172,7 +1172,7 @@ public class AutocompleteMediatorUnitTest {
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
         // Simulate omnibox session start, and offer suggestions.
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // Simulate a suggestion being touched down.
@@ -1213,7 +1213,7 @@ public class AutocompleteMediatorUnitTest {
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
         // Simulate omnibox session start, and offer suggestions.
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // Simulate a suggestion being touched down.
@@ -1252,7 +1252,7 @@ public class AutocompleteMediatorUnitTest {
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
         // Simulate omnibox session start, and offer suggestions.
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // This will simulate the touch down trigger not starting a prefetch.
@@ -1298,7 +1298,7 @@ public class AutocompleteMediatorUnitTest {
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
         // Simulate omnibox session start.
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
 
         // Triggeer one touch down event the maximum allowed. The extra event should not be sent to
         // native.
@@ -1319,7 +1319,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Since the state is reset, new prefetches are allowed.
         // Simulate a new omnibox session start.
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0);
         verify(
                         mAutocompleteController,
@@ -1336,8 +1336,8 @@ public class AutocompleteMediatorUnitTest {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, url.getSpec(), pageClassification);
-        mMediator.beginInput(input);
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -1352,7 +1352,7 @@ public class AutocompleteMediatorUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
 
-        input.setUserText("test");
+        session.getAutocompleteInput().setUserText("test");
 
         mMediator.onTopResumedActivityChanged(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -1368,8 +1368,8 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
-        var input = createAutocompleteInput(url, title, pageClassification);
-        mMediator.beginInput(input);
+        var session = createSession(url, title, pageClassification);
+        mMediator.beginInput(session);
 
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("", /* isOnFocusContext= */ false);
@@ -1393,11 +1393,11 @@ public class AutocompleteMediatorUnitTest {
                 .when(mMockCachedZeroSuggestionsManager)
                 .readFromCache(anyInt());
 
-        var input = createAutocompleteInput(PAGE_URL, PAGE_TITLE, 0);
-        mMediator.beginInput(input);
+        var session = createSession(PAGE_URL, PAGE_TITLE, 0);
+        mMediator.beginInput(session);
 
         for (var pageClass : PageClassification.values()) {
-            input.setPageClassification(pageClass.getNumber());
+            session.getAutocompleteInput().setPageClassification(pageClass.getNumber());
             mMediator.startCachedZeroSuggest();
 
             // Should only be invoked if page class is eligible.
@@ -1416,11 +1416,11 @@ public class AutocompleteMediatorUnitTest {
                 .when(mMockCachedZeroSuggestionsManager)
                 .readFromCache(anyInt());
 
-        var input = createAutocompleteInput(PAGE_URL, PAGE_TITLE, 0);
-        mMediator.beginInput(input);
+        var session = createSession(PAGE_URL, PAGE_TITLE, 0);
+        mMediator.beginInput(session);
 
         for (var pageClass : PageClassification.values()) {
-            input.setPageClassification(pageClass.getNumber());
+            session.getAutocompleteInput().setPageClassification(pageClass.getNumber());
 
             mMediator.onTextChanged("text", /* isOnFocusContext= */ false);
 
@@ -1439,11 +1439,11 @@ public class AutocompleteMediatorUnitTest {
                 .readFromCache(anyInt());
         mMediator.setAutocompleteProfile(mProfile);
 
-        var input = createAutocompleteInput(PAGE_URL, PAGE_TITLE, 0);
-        mMediator.beginInput(input);
+        var session = createSession(PAGE_URL, PAGE_TITLE, 0);
+        mMediator.beginInput(session);
 
         for (var pageClass : PageClassification.values()) {
-            input.setPageClassification(pageClass.getNumber());
+            session.getAutocompleteInput().setPageClassification(pageClass.getNumber());
 
             mMediator.onTextChanged("", /* isOnFocusContext= */ false);
 
@@ -1462,7 +1462,7 @@ public class AutocompleteMediatorUnitTest {
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
                         PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
 
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         doReturn(mAutocompleteResult)
                 .when(mMockCachedZeroSuggestionsManager)
                 .readFromCache(anyInt());
@@ -1541,7 +1541,7 @@ public class AutocompleteMediatorUnitTest {
     public void propagateOmniboxSessionStateChange_informsVisualStateObserver() {
         setUpLocationBarDataProvider(
                 new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB_VALUE);
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
 
         mMediator.propagateOmniboxSessionStateChange();
         verify(mVisualStateObserver, atLeastOnce()).onOmniboxSessionStateChange(true);
@@ -1554,29 +1554,28 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void propagateOmniboxSessionStateChange_hubSearchContainerVisible() {
-        var input =
-                createAutocompleteInput(
+        var session =
+                createSession(
                         new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB_VALUE);
 
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         assertTrue(mListModel.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
 
         mMediator.endInput();
 
-        input =
-                createAutocompleteInput(
-                        new GURL("https://abc.xyz"), "title", PageClassification.BLANK_VALUE);
-        mMediator.beginInput(input);
+        var session2 =
+                createSession(new GURL("https://abc.xyz"), "title", PageClassification.BLANK_VALUE);
+        mMediator.beginInput(session2);
         assertFalse(mListModel.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
     }
 
     @Test
     public void onTopResumedActivityChanged_hubSearchContainerVisible() {
-        var input =
-                createAutocompleteInput(
+        var session =
+                createSession(
                         new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB_VALUE);
 
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         mMediator.onTopResumedActivityChanged(true);
         assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
 
@@ -1590,7 +1589,7 @@ public class AutocompleteMediatorUnitTest {
     public void setSessionState_attachesImeCallback() {
         mMediator.onNativeInitialized();
 
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         verify(mDeferredImeCallback).attach(mWindowAndroid);
 
         mMediator.endInput();
@@ -1622,7 +1621,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void testDefaultBrowserPromo_clipboardUrl() {
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
 
         var url = new GURL("http://test");
         var match =
@@ -1637,7 +1636,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void testDefaultBrowserPromo_pastedUrl() {
         mMediator.setAutocompleteProfile(mProfile);
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         var url = new GURL("http://test");
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
@@ -1657,14 +1656,16 @@ public class AutocompleteMediatorUnitTest {
     public void loadTypedOmniboxText_aimUrl() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        var input = new AutocompleteInput();
-        input.setUserText("test")
+        var session = createEmptySession();
+        var autocompleteInput = session.getAutocompleteInput();
+        autocompleteInput
+                .setUserText("test")
                 .setPageClassification(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
                 .setRequestType(AutocompleteRequestType.AI_MODE);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         GURL url = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
@@ -1696,8 +1697,10 @@ public class AutocompleteMediatorUnitTest {
     public void loadTypedOmniboxText_imageGenerationUrl() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        var input = new AutocompleteInput();
-        input.setUserText("test")
+        var session = createEmptySession();
+        var autocompleteInput = session.getAutocompleteInput();
+        autocompleteInput
+                .setUserText("test")
                 .setPageClassification(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
                 .setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
@@ -1707,7 +1710,7 @@ public class AutocompleteMediatorUnitTest {
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         GURL url2 = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
@@ -1750,8 +1753,8 @@ public class AutocompleteMediatorUnitTest {
 
         NewTabPageDelegate ntpDelegate = mock(NewTabPageDelegate.class);
         doReturn(ntpDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        var input =
-                createAutocompleteInput(
+        var session =
+                createSession(
                         new GURL("https://abc.xyz"),
                         "title",
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
@@ -1764,7 +1767,7 @@ public class AutocompleteMediatorUnitTest {
         // and zero suggest disabled.
         doReturn(true).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
 
-        mMediator.beginInput(input);
+        mMediator.beginInput(session);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
 
@@ -1787,7 +1790,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(true).when(mEmbedder).isTablet();
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        mMediator.beginInput(createEmptySession());
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
         ShadowLooper.idleMainLooper();
 
@@ -1807,14 +1810,22 @@ public class AutocompleteMediatorUnitTest {
                                 OmniboxMetrics.HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP)
                         .build();
 
-        var input =
-                createAutocompleteInput(
+        doReturn(mAutocompleteResult)
+                .when(mMockCachedZeroSuggestionsManager)
+                .readFromCache(anyInt());
+
+        NewTabPageDelegate ntpDelegate = mock(NewTabPageDelegate.class);
+        doReturn(ntpDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
+
+        var session =
+                createSession(
                         new GURL("https://abc.xyz"),
                         "title",
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mLocationBarDataProvider, never()).getNewTabPageDelegate();
+        mMediator.beginInput(session);
+        verify(mMockCachedZeroSuggestionsManager).readFromCache(anyInt());
+
         histogramWatcher.assertExpected();
     }
 }

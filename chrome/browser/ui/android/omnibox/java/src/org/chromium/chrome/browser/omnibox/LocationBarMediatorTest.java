@@ -961,10 +961,13 @@ public class LocationBarMediatorTest {
                         .setRequestType(AutocompleteRequestType.AI_MODE));
         verify(mUrlCoordinator).requestFocus();
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        ArgumentCaptor<FuseboxSessionState> captor =
+                ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mFuseboxCoordinator).beginInput(captor.capture());
 
-        assertEquals(OmniboxFocusReason.NTP_AI_MODE, captor.getValue().getFocusReason());
+        assertEquals(
+                OmniboxFocusReason.NTP_AI_MODE,
+                captor.getValue().getAutocompleteInput().getFocusReason());
     }
 
     @Test
@@ -977,9 +980,10 @@ public class LocationBarMediatorTest {
 
         verify(mUrlCoordinator).requestFocus();
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        ArgumentCaptor<FuseboxSessionState> captor =
+                ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mAutocompleteCoordinator).beginInput(captor.capture());
-        assertEquals("pastedText", captor.getValue().getUserText());
+        assertEquals("pastedText", captor.getValue().getAutocompleteInput().getUserText());
     }
 
     @Test
@@ -1195,9 +1199,10 @@ public class LocationBarMediatorTest {
         // mUrlFocusedFromFakebox to true.
         verify(mUrlCoordinator, times(2)).requestFocus();
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        ArgumentCaptor<FuseboxSessionState> captor =
+                ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(captor.capture());
-        assertEquals("text", captor.getValue().getUserText());
+        assertEquals("text", captor.getValue().getAutocompleteInput().getUserText());
     }
 
     @Test
@@ -1596,18 +1601,19 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        ArgumentCaptor<FuseboxSessionState> captor =
+                ArgumentCaptor.forClass(FuseboxSessionState.class);
         AutocompleteInput input = new AutocompleteInput().setUserText("test query");
         mMediator.beginInput(input);
         mMediator.onUrlFocusChange(true);
 
         verify(mAutocompleteCoordinator, times(2)).beginInput(captor.capture());
-        assertEquals("test query", captor.getValue().getUserText());
+        assertEquals("test query", captor.getValue().getAutocompleteInput().getUserText());
         clearInvocations(mAutocompleteCoordinator);
 
         mMediator.deleteButtonClicked(null);
         verify(mAutocompleteCoordinator).beginInput(captor.capture());
-        assertEquals("", captor.getValue().getUserText());
+        assertEquals("", captor.getValue().getAutocompleteInput().getUserText());
         verify(mUrlCoordinator).requestAccessibilityFocus();
     }
 
@@ -1748,9 +1754,10 @@ public class LocationBarMediatorTest {
         mTabletMediator.onTabChanged(previousTab);
         mTabletMediator.onUrlChanged(true);
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        ArgumentCaptor<FuseboxSessionState> captor =
+                ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(captor.capture());
-        assertEquals(newText, captor.getValue().getUserText());
+        assertEquals(newText, captor.getValue().getAutocompleteInput().getUserText());
 
         assertTrue(previousState.isSessionActive());
         assertEquals(previousText, previousState.getAutocompleteInput().getUserText());
@@ -1805,9 +1812,10 @@ public class LocationBarMediatorTest {
         mTabletMediator.onTabChanged(previousTab);
         mTabletMediator.onUrlChanged(true);
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        ArgumentCaptor<FuseboxSessionState> captor =
+                ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(captor.capture());
-        assertEquals(newText, captor.getValue().getUserText());
+        assertEquals(newText, captor.getValue().getAutocompleteInput().getUserText());
 
         // The state for previousTab was saved.
         assertTrue(previousState.isSessionActive());

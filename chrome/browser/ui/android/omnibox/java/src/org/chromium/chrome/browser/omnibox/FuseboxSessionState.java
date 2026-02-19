@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
@@ -101,9 +103,22 @@ public class FuseboxSessionState implements UserData {
     }
 
     /**
-     * @return The current AutocompleteInput.
+     * @return The current {@link AutocompleteInput} for this session.
      */
     public AutocompleteInput getAutocompleteInput() {
         return mAutocompleteInput;
     }
+
+    /**
+     * Constructs a new FuseboxSessionState with a provided AutocompleteInput.
+     *
+     * @param input The initial AutocompleteInput for this session.
+     */
+    @VisibleForTesting
+    public FuseboxSessionState(AutocompleteInput input) {
+        mAutocompleteInput = input;
+    }
+
+    /** Constructs a new, empty FuseboxSessionState. */
+    FuseboxSessionState() {}
 }

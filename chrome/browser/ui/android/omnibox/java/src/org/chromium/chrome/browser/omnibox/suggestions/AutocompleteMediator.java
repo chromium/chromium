@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
@@ -426,13 +427,13 @@ class AutocompleteMediator
      * setting up the {@link AutocompleteInput}, attaching necessary observers, and triggering the
      * initial zero-prefix suggestion request.
      *
-     * @param input The input state for the new session. The input may be replaced without going
+     * @param session The session state for this session. A new session may be applied without going
      *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
-    void beginInput(AutocompleteInput input) {
+    void beginInput(FuseboxSessionState session) {
         boolean alreadyInInput = mAutocompleteInput != null;
         cancelAutocompleteRequests();
-        setAutocompleteInput(input);
+        setAutocompleteInput(session.getAutocompleteInput());
 
         if (!alreadyInInput) {
             // Propagate the information about omnibox session state change to all the processors
@@ -462,7 +463,8 @@ class AutocompleteMediator
             mOmniboxFocusResultedInNavigation = false;
         }
 
-        if (!input.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
+        if (!assumeNonNull(mAutocompleteInput)
+                .shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
             // Ask directly for zero-suggestions related to current input, unless the user is
             // currently visiting SearchActivity and the input is populated from the launch intent.
             // In all contexts, the input will most likely be empty, triggering the same response
