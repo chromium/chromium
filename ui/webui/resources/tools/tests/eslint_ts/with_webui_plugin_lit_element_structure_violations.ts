@@ -68,8 +68,10 @@ declare global {
 
 customElements.define(TestError5Element.is, TestError5Element);
 
-// Case1.6: Class with incorrect order method definition order and usage of
-// this.dispatchEvent(new CustomEvent(...))
+// Case1.6: Class with
+//  1) Incorrect order method definition order
+//  2) Usage of this.dispatchEvent(new CustomEvent(...))
+//  3) Usage of incorrect dollar sign notation.
 export class TestError6Element extends CrLitElement {
   override render() {
     return '';
@@ -114,6 +116,8 @@ export class TestError6Element extends CrLitElement {
     const FOO3_UPDATED = 'foo3-updated';
     this.dispatchEvent(new CustomEvent(
         FOO3_UPDATED, {bubbles: true, composed: true, detail: 'foo'}));
+
+    this.$['hello-button'].focus();
   }
 
   override firstUpdated() {}
@@ -252,6 +256,7 @@ export class TestNoError3Element extends CrLitElement {
         {bubbles: true, composed: true, cancelable: true, detail: 'bar'}));
 
     this.fire('bar-updated', 'bar');
+    this.$.helloOtherButton.focus();
   }
 }
 

@@ -242,6 +242,7 @@ class EslintTsTest(unittest.TestCase):
 
     _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR = "Inconsistent method definition order in class %(className)s. Expected %(expectedOrder)s, found %(actualOrder)s"
     _EXPECTED_INCORRECT_CLASS_NAME_ERROR = 'CrLitElement subclass %(className)s should end with the \'Element\' suffix'
+    _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR = 'Use camelCase instead of dash-case for DOM ids, change this.$[\'%(dashCaseName)s\'] to this.$.%(camelCaseName)s'
     _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR = "Missing customElements.define(%(className)s.is, %(className)s) call"
     _EXPECTED_MISSING_STATIC_GET_IS_ERROR = "Missing 'static get is() {...}' for web component class %(className)s"
     _EXPECTED_MISSING_SUPER_CALLS_ERROR = "Missing superclass calls for lifecycle method(s) %(lifecycleMethods)s in class %(className)s"
@@ -300,6 +301,10 @@ class EslintTsTest(unittest.TestCase):
             'eventName': 'foo2-updated',
         },
         _EXPECTED_USE_FIRE_HELPER_ERROR,
+        _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR % {
+            'dashCaseName': 'hello-button',
+            'camelCaseName': 'helloButton',
+        },
         # Case 1.7
         _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
             'className': 'TestError7ElementFoo',
@@ -387,6 +392,10 @@ class EslintTsTest(unittest.TestCase):
         },
         _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR % {
             'eventName': 'bar-updated',
+        },
+        _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR % {
+            'dashCaseName': 'hello-other-button',
+            'camelCaseName': 'helloOtherButton',
         },
         # Case 2.4
         _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {

@@ -60,6 +60,10 @@ function isCrLitElementSubclass(node, programNode) {
   return false;
 }
 
+function dashCaseToCamelCase(string) {
+  return string.replace(/-([a-z])/g, group => group[1].toUpperCase());
+}
+
 const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'lit-element-structure',
   meta: {
@@ -76,6 +80,8 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
           'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...)), for event \'{{eventName}}\'.',
       incorrectClassName:
           'CrLitElement subclass {{className}} should end with the \'Element\' suffix.',
+      incorrectDollarSignNotation:
+          'Use camelCase instead of dash-case for DOM ids, change this.$[\'{{dashCaseName}}\'] to this.$.{{camelCaseName}}.',
       incorrectMethodDefinitionOrder:
           'Inconsistent method definition order in class {{className}}. Expected [{{expectedOrder}}], found [{{actualOrder}}].',
       missingSuperCalls:
@@ -203,6 +209,21 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
             node.arguments[0].property.name === 'is';
         const arg1Correct = node.arguments[1].name === this.node.id.name;
         this.hasCustomElementRegistration = arg0Correct && arg1Correct;
+      }
+
+      runDollarSignNotationCheck(node) {
+        if (!this.isLitElement) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: 'incorrectDollarSignNotation',
+          data: {
+            dashCaseName: node.property.value,
+            camelCaseName: dashCaseToCamelCase(node.property.value),
+          },
+        });
       }
 
       runUseFireHelperCheck(node) {
@@ -420,6 +441,14 @@ interface HTMLElementTagNameMap {
         }
 
         currentClassInfo.superCallCalled.add(node.property.name);
+      },
+      ['MemberExpression[object.object.type="ThisExpression"][object.property.name="$"][property.type="Literal"]'](
+          node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.runDollarSignNotationCheck(node);
       },
       ['CallExpression[callee.object.type="ThisExpression"][callee.property.name="dispatchEvent"] > NewExpression[callee.name="CustomEvent"] > ObjectExpression'](
           node) {
