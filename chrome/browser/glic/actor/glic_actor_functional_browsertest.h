@@ -36,28 +36,6 @@ class ScopedMockTabObservationResult {
   ~ScopedMockTabObservationResult();
 };
 
-Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
-                          std::optional<tabs::TabHandle> observe_tab_handle,
-                          TaskId task_id);
-
-Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
-                              std::string_view target_url_spec,
-                              TaskId task_id);
-
-Actions MakeClickForTaskId(
-    content::RenderFrameHost& rfh,
-    int content_node_id,
-    ::optimization_guide::proto::ClickAction::ClickType click_type,
-    ::optimization_guide::proto::ClickAction::ClickCount click_count,
-    TaskId task_id);
-
-Actions MakeClickForTaskId(
-    tabs::TabHandle tab_handle,
-    const gfx::Point& click_point,
-    ::optimization_guide::proto::ClickAction::ClickType click_type,
-    ::optimization_guide::proto::ClickAction::ClickCount click_count,
-    TaskId task_id);
-
 // Helper class that utilizes content::DOMMessageQueue to capture the result of
 // an asynchronous PerformActions call. It listens for messages sent via
 // domAutomationController and filters by request ID to ensure the correct

@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   // Construct the Actions proto.
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+  Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                          target_url.spec(), task_id);
 
   EXPECT_THAT(PerformActions(action),
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   // Click link to navigate to target page.
   std::optional<int> link_node_id =
       content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
-  Actions action = MakeClickForTaskId(*web_contents()->GetPrimaryMainFrame(),
+  Actions action = ::actor::MakeClick(*web_contents()->GetPrimaryMainFrame(),
                                       link_node_id.value(), ClickAction::LEFT,
                                       ClickAction::SINGLE, task_id);
 
@@ -105,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                      base::ToString(browser()->session_id().id())));
 
   // Perform two WaitActions where the first resolves after the second
-  Actions action_1 = MakeWaitForTaskId(kShortWaitTime * 2, tab_1, task_id_1);
-  Actions action_2 = MakeWaitForTaskId(kShortWaitTime, tab_2, task_id_2);
+  Actions action_1 = ::actor::MakeWait(kShortWaitTime * 2, tab_1, task_id_1);
+  Actions action_2 = ::actor::MakeWait(kShortWaitTime, tab_2, task_id_2);
 
   std::unique_ptr<AsyncActionWaiter> waiter_1 = PerformActionsAsync(action_1);
   std::unique_ptr<AsyncActionWaiter> waiter_2 = PerformActionsAsync(action_2);
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
       CreateTaskCompletionSubscription(task_id, task_completion_state);
 
   Actions wait_action =
-      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+      ::actor::MakeWait(kLongWaitTime, active_tab()->GetHandle(), task_id);
   std::unique_ptr<AsyncActionWaiter> action_waiter =
       PerformActionsAsync(wait_action);
 
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 
   // Perform a click action on the crashed tab.
   Actions action =
-      MakeClickForTaskId(active_tab()->GetHandle(), gfx::Point(1, 1),
+      ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
                          ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
   content::TestNavigationManager reload_observer(web_contents(), initial_url);
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   const GURL target_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationManager navigation_manager(web_contents(), target_url);
 
-  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+  Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                          target_url.spec(), task_id);
   std::unique_ptr<AsyncActionWaiter> waiter = PerformActionsAsync(action);
 

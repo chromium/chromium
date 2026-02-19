@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+  Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                          target_url.spec(), task_id);
 
   // Performing an action on a paused task should fail.
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 
   // Use a long wait to ensure we can pause before it completes.
   Actions wait_action =
-      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+      ::actor::MakeWait(kLongWaitTime, active_tab()->GetHandle(), task_id);
 
   std::unique_ptr<AsyncActionWaiter> action_waiter =
       PerformActionsAsync(wait_action);
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   // Verify new Actions can be performed after the task is resumed.
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions nav_action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+  Actions nav_action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                              target_url.spec(), task_id);
 
   EXPECT_THAT(PerformActions(nav_action),
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
       CreateTaskCompletionSubscription(task_id, task_completion_state);
 
   Actions wait_action =
-      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+      ::actor::MakeWait(kLongWaitTime, active_tab()->GetHandle(), task_id);
   std::unique_ptr<AsyncActionWaiter> action_waiter =
       PerformActionsAsync(wait_action);
 
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+  Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                          target_url.spec(), task_id);
 
   EXPECT_THAT(PerformActions(action),
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 
   // Use a long wait to ensure we can interrupt before it completes.
   Actions wait_action =
-      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+      ::actor::MakeWait(kLongWaitTime, active_tab()->GetHandle(), task_id);
   std::unique_ptr<AsyncActionWaiter> action_waiter =
       PerformActionsAsync(wait_action);
 
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   // Ensure the task can still perform actions after being uninterrupted.
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions nav_action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+  Actions nav_action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                              target_url.spec(), task_id);
   EXPECT_THAT(PerformActions(nav_action),
               base::test::ValueIs(

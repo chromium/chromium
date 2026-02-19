@@ -263,8 +263,8 @@ MultiStep GlicActorUiTest::CreateTabAction(
   // provided ref.
   auto create_tab_provider =
       base::BindLambdaForTesting([&task_id, window_id, foreground]() {
-        Actions create_tab = actor::MakeCreateTab(window_id, foreground);
-        create_tab.set_task_id(task_id.value());
+        Actions create_tab =
+            actor::MakeCreateTab(window_id, foreground, task_id);
         return EncodeActionProto(create_tab);
       });
   return ExecuteAction(std::move(create_tab_provider),
@@ -300,8 +300,7 @@ MultiStep GlicActorUiTest::ClickAction(std::string_view label,
         RenderFrameHost* frame =
             tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
         Actions action =
-            actor::MakeClick(*frame, node_id, click_type, click_count);
-        action.set_task_id(task_id.value());
+            actor::MakeClick(*frame, node_id, click_type, click_count, task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(click_provider), std::move(expected_result));
@@ -323,9 +322,8 @@ MultiStep GlicActorUiTest::ClickAction(const gfx::Point& coordinate,
                                        ExpectedErrorResult expected_result) {
   auto click_provider = base::BindLambdaForTesting(
       [&task_id, &tab_handle, coordinate, click_type, click_count]() {
-        Actions action =
-            actor::MakeClick(tab_handle, coordinate, click_type, click_count);
-        action.set_task_id(task_id.value());
+        Actions action = actor::MakeClick(tab_handle, coordinate, click_type,
+                                          click_count, task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(click_provider), std::move(expected_result));
@@ -345,9 +343,8 @@ MultiStep GlicActorUiTest::ClickAction(const gfx::Point* coordinate,
                                        ExpectedErrorResult expected_result) {
   auto click_provider =
       base::BindLambdaForTesting([this, coordinate, click_type, click_count]() {
-        Actions action =
-            actor::MakeClick(tab_handle_, *coordinate, click_type, click_count);
-        action.set_task_id(task_id_.value());
+        Actions action = actor::MakeClick(tab_handle_, *coordinate, click_type,
+                                          click_count, task_id_);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(click_provider), std::move(expected_result));
@@ -360,8 +357,7 @@ MultiStep GlicActorUiTest::NavigateAction(GURL url,
   auto navigate_provider =
       base::BindLambdaForTesting([&task_id, &tab_handle, url]() {
         optimization_guide::proto::Actions action =
-            actor::MakeNavigate(tab_handle, url.spec());
-        action.set_task_id(task_id.value());
+            actor::MakeNavigate(tab_handle, url.spec(), task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(navigate_provider),

@@ -36,9 +36,8 @@ MultiStep GlicActorNavigationUiTest::HistoryAction(
       base::BindLambdaForTesting([&task_id, &tab_handle, direction]() {
         optimization_guide::proto::Actions action =
             direction == HistoryDirection::kBack
-                ? actor::MakeHistoryBack(tab_handle)
-                : actor::MakeHistoryForward(tab_handle);
-        action.set_task_id(task_id.value());
+                ? actor::MakeHistoryBack(tab_handle, task_id)
+                : actor::MakeHistoryForward(tab_handle, task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(navigate_provider),

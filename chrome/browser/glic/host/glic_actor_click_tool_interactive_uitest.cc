@@ -47,9 +47,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
         gfx::Point coordinate = clickable_button_bounds.CenterPoint();
         apc::Actions action =
             actor::MakeClick(tab_handle_, coordinate, apc::ClickAction::LEFT,
-                             apc::ClickAction::SINGLE);
-
-        action.set_task_id(task_id_.value());
+                             apc::ClickAction::SINGLE, task_id_);
         return EncodeActionProto(action);
       });
 

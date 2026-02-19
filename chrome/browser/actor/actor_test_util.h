@@ -74,26 +74,44 @@ optimization_guide::proto::Actions MakeClick(
     content::RenderFrameHost& rfh,
     int content_node_id,
     optimization_guide::proto::ClickAction::ClickType click_type,
-    optimization_guide::proto::ClickAction::ClickCount click_count);
+    optimization_guide::proto::ClickAction::ClickCount click_count,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeClick(
     tabs::TabHandle tab_handle,
     const gfx::Point& click_point,
     optimization_guide::proto::ClickAction::ClickType click_type,
-    optimization_guide::proto::ClickAction::ClickCount click_count);
-optimization_guide::proto::Actions MakeHistoryBack(tabs::TabHandle tab_handle);
+    optimization_guide::proto::ClickAction::ClickCount click_count,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeHistoryBack(
+    tabs::TabHandle tab_handle,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeHistoryForward(
-    tabs::TabHandle tab_handle);
-optimization_guide::proto::Actions MakeMouseMove(content::RenderFrameHost& rfh,
-                                                 int content_node_id);
-optimization_guide::proto::Actions MakeMouseMove(tabs::TabHandle tab_handle,
-                                                 const gfx::Point& move_point);
-optimization_guide::proto::Actions MakeNavigate(tabs::TabHandle tab_handle,
-                                                std::string_view target_url);
-optimization_guide::proto::Actions MakeCreateTab(SessionID window_id,
-                                                 bool foreground);
-optimization_guide::proto::Actions MakeActivateWindow(SessionID window_id);
-optimization_guide::proto::Actions MakeCreateWindow();
-optimization_guide::proto::Actions MakeCloseWindow(SessionID window_id);
+    tabs::TabHandle tab_handle,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeMouseMove(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeMouseMove(
+    tabs::TabHandle tab_handle,
+    const gfx::Point& move_point,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeNavigate(
+    tabs::TabHandle tab_handle,
+    std::string_view target_url,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeCreateTab(
+    SessionID window_id,
+    bool foreground,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeActivateWindow(
+    SessionID window_id,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeCreateWindow(
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeCloseWindow(
+    SessionID window_id,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 
 optimization_guide::proto::Actions MakeType(
     content::RenderFrameHost& rfh,
@@ -101,45 +119,60 @@ optimization_guide::proto::Actions MakeType(
     std::string_view text,
     bool follow_by_enter,
     optimization_guide::proto::TypeAction::TypeMode mode =
-        optimization_guide::proto::TypeAction_TypeMode_DELETE_EXISTING);
+        optimization_guide::proto::TypeAction_TypeMode_DELETE_EXISTING,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeType(
     tabs::TabHandle tab_handle,
     const gfx::Point& type_point,
     std::string_view text,
     bool follow_by_enter,
     optimization_guide::proto::TypeAction::TypeMode mode =
-        optimization_guide::proto::TypeAction_TypeMode_DELETE_EXISTING);
-optimization_guide::proto::Actions MakeSelect(content::RenderFrameHost& rfh,
-                                              int content_node_id,
-                                              std::string_view value);
+        optimization_guide::proto::TypeAction_TypeMode_DELETE_EXISTING,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeSelect(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    std::string_view value,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeScroll(
     content::RenderFrameHost& rfh,
     std::optional<int> content_node_id,
     float scroll_offset_x,
-    float scroll_offset_y);
-optimization_guide::proto::Actions MakeScroll(content::RenderFrameHost& rfh,
-                                              const gfx::Point& scroll_point,
-                                              float scroll_offset_x,
-                                              float scroll_offset_y);
-optimization_guide::proto::Actions MakeScrollTo(content::RenderFrameHost& rfh,
-                                                int content_node_id);
+    float scroll_offset_y,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeScroll(
+    content::RenderFrameHost& rfh,
+    const gfx::Point& scroll_point,
+    float scroll_offset_x,
+    float scroll_offset_y,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeScrollTo(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeDragAndRelease(
     tabs::TabHandle tab_handle,
     const gfx::Point& from_point,
-    const gfx::Point& to_point);
+    const gfx::Point& to_point,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeDragAndRelease(
     content::RenderFrameHost& rfh,
     int from_node_id,
-    int to_node_id);
+    int to_node_id,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeWait(
     std::optional<base::TimeDelta> duration = std::nullopt,
-    std::optional<tabs::TabHandle> observe_tab_handle = std::nullopt);
+    std::optional<tabs::TabHandle> observe_tab_handle = std::nullopt,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeScriptTool(
     content::RenderFrameHost& rfh,
     const std::string& name,
-    const std::string& input_arguments);
-optimization_guide::proto::Actions MakeMediaControl(tabs::TabHandle tab_handle,
-                                                    MediaControl media_control);
+    const std::string& input_arguments,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeMediaControl(
+    tabs::TabHandle tab_handle,
+    MediaControl media_control,
+    std::optional<actor::TaskId> task_id = std::nullopt);
 
 /////////////////////////
 // ToolRequest action makers

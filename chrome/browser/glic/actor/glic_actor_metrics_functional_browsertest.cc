@@ -79,8 +79,7 @@ class GlicActorPageContextMetricsFunctionalBrowserTest
     // Perform an arbitrary action.
     Actions action =
         ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
-                           ClickAction::LEFT, ClickAction::SINGLE);
-    action.set_task_id(task_id.value());
+                           ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
     // Each test case provides its own faked/mocked result for the
     // TabObservation.

@@ -54,9 +54,8 @@ GlicActorUiTest::MultiStep GlicActorTypeToolUiTest::TypeAction(
         int32_t node_id = SearchAnnotatedPageContent(label);
         content::RenderFrameHost* frame =
             tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-        Actions action =
-            actor::MakeType(*frame, node_id, text, follow_by_enter, mode);
-        action.set_task_id(task_id.value());
+        Actions action = actor::MakeType(*frame, node_id, text, follow_by_enter,
+                                         mode, task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(type_provider), std::move(expected_result));
@@ -78,9 +77,9 @@ GlicActorUiTest::MultiStep GlicActorTypeToolUiTest::TypeAction(
     ExpectedErrorResult expected_result) {
   auto type_provider =
       base::BindLambdaForTesting([this, &coordinate, text, mode]() {
-        Actions action = actor::MakeType(tab_handle_, coordinate, text,
-                                         /*follow_by_enter=*/false, mode);
-        action.set_task_id(task_id_.value());
+        Actions action =
+            actor::MakeType(tab_handle_, coordinate, text,
+                            /*follow_by_enter=*/false, mode, task_id_);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(type_provider), std::move(expected_result));
@@ -165,9 +164,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
     Actions action = actor::MakeType(
         *frame, kNonExistentContentNodeId, kText, /*follow_by_enter=*/false,
         optimization_guide::proto::TypeAction::TypeMode::
-            TypeAction_TypeMode_DELETE_EXISTING);
+            TypeAction_TypeMode_DELETE_EXISTING,
+        task_id_);
 
-    action.set_task_id(task_id_.value());
     return EncodeActionProto(action);
   });
 
@@ -242,9 +241,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest, TypeActionCoordinatesSucceeds) {
             actor::MakeType(tab_handle_, coordinate, kTypedString,
                             /*follow_by_enter=*/false,
                             optimization_guide::proto::TypeAction::TypeMode::
-                                TypeAction_TypeMode_DELETE_EXISTING);
-
-        action.set_task_id(task_id_.value());
+                                TypeAction_TypeMode_DELETE_EXISTING,
+                            task_id_);
         return EncodeActionProto(action);
       });
 
@@ -367,9 +365,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
             actor::MakeType(tab_handle_, coordinate, kExpectedText,
                             /*follow_by_enter=*/false,
                             optimization_guide::proto::TypeAction::TypeMode::
-                                TypeAction_TypeMode_DELETE_EXISTING);
+                                TypeAction_TypeMode_DELETE_EXISTING,
+                            task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 

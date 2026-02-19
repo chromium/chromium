@@ -25,46 +25,6 @@ ScopedMockTabObservationResult::~ScopedMockTabObservationResult() {
                                    const FetchPageContextResult&)>());
 }
 
-Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
-                          std::optional<tabs::TabHandle> observe_tab_handle,
-                          TaskId task_id) {
-  Actions action = ::actor::MakeWait(duration, observe_tab_handle);
-  action.set_task_id(task_id.value());
-  return action;
-}
-
-Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
-                              std::string_view target_url_spec,
-                              TaskId task_id) {
-  Actions action = ::actor::MakeNavigate(tab_handle, target_url_spec);
-  action.set_task_id(task_id.value());
-  return action;
-}
-
-Actions MakeClickForTaskId(
-    content::RenderFrameHost& rfh,
-    int content_node_id,
-    ::optimization_guide::proto::ClickAction::ClickType click_type,
-    ::optimization_guide::proto::ClickAction::ClickCount click_count,
-    TaskId task_id) {
-  Actions action =
-      ::actor::MakeClick(rfh, content_node_id, click_type, click_count);
-  action.set_task_id(task_id.value());
-  return action;
-}
-
-Actions MakeClickForTaskId(
-    tabs::TabHandle tab_handle,
-    const gfx::Point& click_point,
-    ::optimization_guide::proto::ClickAction::ClickType click_type,
-    ::optimization_guide::proto::ClickAction::ClickCount click_count,
-    TaskId task_id) {
-  Actions action =
-      ::actor::MakeClick(tab_handle, click_point, click_type, click_count);
-  action.set_task_id(task_id.value());
-  return action;
-}
-
 AsyncActionWaiter::AsyncActionWaiter(content::RenderFrameHost* rfh,
                                      std::string request_id)
     : queue_(rfh), request_id_(std::move(request_id)) {}

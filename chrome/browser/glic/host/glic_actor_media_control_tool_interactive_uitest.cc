@@ -25,8 +25,7 @@ MultiStep GlicActorMediaControlToolUiTest::MediaControlAction(
   auto media_control_provider =
       base::BindLambdaForTesting([this, media_control]() {
         optimization_guide::proto::Actions action =
-            actor::MakeMediaControl(tab_handle_, media_control);
-        action.set_task_id(task_id_.value());
+            actor::MakeMediaControl(tab_handle_, media_control, task_id_);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(media_control_provider),

@@ -28,8 +28,7 @@ class GlicActorWithScriptToolsTest : public GlicActorUiTest {
     auto script_provider = base::BindLambdaForTesting([&]() {
       Actions action = actor::MakeScriptTool(
           *tab_handle_.Get()->GetContents()->GetPrimaryMainFrame(), name,
-          input_arguments);
-      action.set_task_id(task_id_.value());
+          input_arguments, task_id_);
       return EncodeActionProto(action);
     });
     return ExecuteAction(std::move(script_provider), {});

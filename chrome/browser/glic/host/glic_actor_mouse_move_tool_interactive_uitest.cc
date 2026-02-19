@@ -37,8 +37,7 @@ MultiStep GlicActorMouseMoveToolUiTest::MouseMoveAction(
         int32_t node_id = SearchAnnotatedPageContent(label);
         content::RenderFrameHost* frame =
             tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-        Actions action = actor::MakeMouseMove(*frame, node_id);
-        action.set_task_id(task_id.value());
+        Actions action = actor::MakeMouseMove(*frame, node_id, task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(move_provider), std::move(expected_result));
@@ -64,9 +63,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, NonExistentNode) {
           base::BindLambdaForTesting([this]() {
             content::RenderFrameHost* frame =
                 tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-            Actions action =
-                actor::MakeMouseMove(*frame, kNonExistentContentNodeId);
-            action.set_task_id(task_id_.value());
+            Actions action = actor::MakeMouseMove(
+                *frame, kNonExistentContentNodeId, task_id_);
             return EncodeActionProto(action);
           }),
           actor::mojom::ActionResultCode::kInvalidDomNodeId));
@@ -113,8 +111,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, MoveToCoordinate) {
   gfx::Rect first_bounds;
   auto move_provider = base::BindLambdaForTesting([this, &first_bounds]() {
     Actions action =
-        actor::MakeMouseMove(tab_handle_, first_bounds.CenterPoint());
-    action.set_task_id(task_id_.value());
+        actor::MakeMouseMove(tab_handle_, first_bounds.CenterPoint(), task_id_);
     return EncodeActionProto(action);
   });
   RunTestSequence(
@@ -134,9 +131,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest,
   const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   gfx::Rect offscreen_bounds;
   auto move_provider = base::BindLambdaForTesting([this, &offscreen_bounds]() {
-    Actions action =
-        actor::MakeMouseMove(tab_handle_, offscreen_bounds.CenterPoint());
-    action.set_task_id(task_id_.value());
+    Actions action = actor::MakeMouseMove(
+        tab_handle_, offscreen_bounds.CenterPoint(), task_id_);
     return EncodeActionProto(action);
   });
   RunTestSequence(

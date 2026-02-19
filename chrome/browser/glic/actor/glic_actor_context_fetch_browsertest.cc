@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
 
   // Perform a click action.
   Actions action =
-      MakeClickForTaskId(active_tab()->GetHandle(), gfx::Point(1, 1),
+      ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
                          ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
   // Mock the context fetch so that the first time the TabObservationResult is a
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
 
   // Perform a click action.
   Actions action =
-      MakeClickForTaskId(active_tab()->GetHandle(), gfx::Point(1, 1),
+      ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
                          ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
   int num_calls = 0;

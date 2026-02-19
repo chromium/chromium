@@ -40,8 +40,7 @@ MultiStep GlicActorWindowManagementUiTest::CreateWindowAction(
     ExpectedErrorResult expected_result) {
   auto create_window_provider = base::BindLambdaForTesting([&task_id]() {
     optimization_guide::proto::Actions create_window =
-        actor::MakeCreateWindow();
-    create_window.set_task_id(task_id.value());
+        actor::MakeCreateWindow(task_id);
     return EncodeActionProto(create_window);
   });
   return ExecuteAction(std::move(create_window_provider),
@@ -55,8 +54,7 @@ MultiStep GlicActorWindowManagementUiTest::ActivateWindowAction(
   auto activate_window_provider =
       base::BindLambdaForTesting([&task_id, &window_id]() {
         optimization_guide::proto::Actions activate_window =
-            actor::MakeActivateWindow(window_id);
-        activate_window.set_task_id(task_id.value());
+            actor::MakeActivateWindow(window_id, task_id);
         return EncodeActionProto(activate_window);
       });
   return ExecuteAction(std::move(activate_window_provider),
@@ -70,8 +68,7 @@ MultiStep GlicActorWindowManagementUiTest::CloseWindowAction(
   auto close_window_provider =
       base::BindLambdaForTesting([&task_id, &window_id]() {
         optimization_guide::proto::Actions close_window =
-            actor::MakeCloseWindow(window_id);
-        close_window.set_task_id(task_id.value());
+            actor::MakeCloseWindow(window_id, task_id);
         return EncodeActionProto(close_window);
       });
   return ExecuteAction(std::move(close_window_provider),

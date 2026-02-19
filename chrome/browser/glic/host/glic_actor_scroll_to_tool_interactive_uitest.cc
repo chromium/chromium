@@ -28,8 +28,7 @@ class GlicActorScrollToToolUiTest : public GlicActorUiTest {
           const int32_t node_id = SearchAnnotatedPageContent(label);
           content::RenderFrameHost* frame =
               tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-          Actions action = actor::MakeScrollTo(*frame, node_id);
-          action.set_task_id(task_id.value());
+          Actions action = actor::MakeScrollTo(*frame, node_id, task_id);
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(scroll_provider),
@@ -61,8 +60,7 @@ class GlicActorScrollToToolUiTest : public GlicActorUiTest {
             node_id = content::GetDOMNodeId(*frame, query_selector).value();
           }
 
-          Actions action = actor::MakeScrollTo(*frame, node_id);
-          action.set_task_id(task_id_.value());
+          Actions action = actor::MakeScrollTo(*frame, node_id, task_id_);
           return EncodeActionProto(action);
         });
 

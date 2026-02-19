@@ -40,8 +40,7 @@ class GlicActorScrollToolUiTest : public GlicActorUiTest {
           content::RenderFrameHost* frame =
               tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
           Actions action =
-              actor::MakeScroll(*frame, node_id, offset_x, offset_y);
-          action.set_task_id(task_id.value());
+              actor::MakeScroll(*frame, node_id, offset_x, offset_y, task_id);
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(scroll_provider),
@@ -67,9 +66,8 @@ class GlicActorScrollToolUiTest : public GlicActorUiTest {
         [&task_id, &tab_handle, click_point, offset_x, offset_y]() {
           content::RenderFrameHost* frame =
               tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-          Actions action =
-              actor::MakeScroll(*frame, click_point, offset_x, offset_y);
-          action.set_task_id(task_id.value());
+          Actions action = actor::MakeScroll(*frame, click_point, offset_x,
+                                             offset_y, task_id);
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(scroll_provider),
@@ -129,10 +127,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, FailOnInvalidNodeId) {
           base::BindLambdaForTesting([this]() {
             content::RenderFrameHost* frame =
                 tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-            Actions action =
-                actor::MakeScroll(*frame, kNonExistentContentNodeId,
-                                  /*scroll_offset_x=*/0, kScrollOffsetY);
-            action.set_task_id(task_id_.value());
+            Actions action = actor::MakeScroll(
+                *frame, kNonExistentContentNodeId,
+                /*scroll_offset_x=*/0, kScrollOffsetY, task_id_);
             return EncodeActionProto(action);
           }),
           actor::mojom::ActionResultCode::kInvalidDomNodeId),
@@ -339,8 +336,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ZeroIdTargetsViewport) {
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
         Actions action =
             actor::MakeScroll(*frame, kTargetViewport,
-                              /*scroll_offset_x=*/0, kScrollOffsetY);
-        action.set_task_id(task_id_.value());
+                              /*scroll_offset_x=*/0, kScrollOffsetY, task_id_);
         return EncodeActionProto(action);
       })),
       CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
@@ -361,10 +357,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElementWithCoordinate) {
         gfx::Point coordinate = scroller_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, kScrollOffsetX, /*scroll_offset_y=*/0);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, kScrollOffsetX,
+                              /*scroll_offset_y=*/0, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 
@@ -373,10 +369,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElementWithCoordinate) {
         gfx::Point coordinate = scroller_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, /*scroll_offset_x=*/0,
+                              kScrollOffsetY, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 
@@ -411,10 +407,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
         gfx::Point coordinate = non_scroller_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, /*scroll_offset_x=*/0,
+                              kScrollOffsetY, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 
@@ -461,10 +457,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
         gfx::Point coordinate = off_screen_scrolle_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, /*scroll_offset_x=*/0,
+                              kScrollOffsetY, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 
@@ -493,10 +489,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
         gfx::Point coordinate = non_scroller_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, /*scroll_offset_x=*/0,
+                              kScrollOffsetY, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 
@@ -533,10 +529,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
         gfx::Point coordinate = button_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, kScrollOffsetX, /*scroll_offset_y=*/0);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, kScrollOffsetX,
+                              /*scroll_offset_y=*/0, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 
@@ -545,10 +541,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest,
         gfx::Point coordinate = button_bound.CenterPoint();
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-        apc::Actions action = actor::MakeScroll(
-            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+        apc::Actions action =
+            actor::MakeScroll(*frame, coordinate, /*scroll_offset_x=*/0,
+                              kScrollOffsetY, task_id_);
 
-        action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
 

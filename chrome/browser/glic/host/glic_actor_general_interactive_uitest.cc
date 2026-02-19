@@ -273,8 +273,8 @@ MultiStep GlicActorGeneralUiTest::WaitAction(
     ExpectedErrorResult expected_result) {
   auto wait_provider =
       base::BindLambdaForTesting([&task_id, &observe_tab_handle, duration]() {
-        apc::Actions action = actor::MakeWait(duration, observe_tab_handle);
-        action.set_task_id(task_id.value());
+        apc::Actions action =
+            actor::MakeWait(duration, observe_tab_handle, task_id);
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(wait_provider), std::move(expected_result));
@@ -334,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionTargetNotFound) {
         tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
     apc::Actions action =
         actor::MakeClick(*frame, kNonExistentContentNodeId, ClickAction::LEFT,
-                         ClickAction::SINGLE);
-    action.set_task_id(task_id_.value());
+                         ClickAction::SINGLE, task_id_);
     return EncodeActionProto(action);
   });
 
@@ -902,10 +901,9 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
             })),
         ExecuteInGlic(base::BindLambdaForTesting(
             [&](content::WebContents* glic_contents) {
-              apc::Actions action =
-                  actor::MakeClick(acting_tab_, gfx::Point(15, 15),
-                                   ClickAction::LEFT, ClickAction::SINGLE);
-              action.set_task_id(task_id_.value());
+              apc::Actions action = actor::MakeClick(
+                  acting_tab_, gfx::Point(15, 15), ClickAction::LEFT,
+                  ClickAction::SINGLE, task_id_);
               std::string encoded_action = EncodeActionProto(action);
               std::string script = content::JsReplace(
                   R"JS(
@@ -1153,9 +1151,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
     gfx::Point coordinate = button_bounds.CenterPoint();
     apc::Actions action =
         actor::MakeClick(tab_handle_, coordinate, apc::ClickAction::LEFT,
-                         apc::ClickAction::SINGLE);
+                         apc::ClickAction::SINGLE, task_id_);
 
-    action.set_task_id(task_id_.value());
     return EncodeActionProto(action);
   });
 
@@ -1203,9 +1200,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
     const gfx::Point coordinate = button_bounds.origin();
     apc::Actions action =
         actor::MakeClick(tab_handle_, coordinate, apc::ClickAction::LEFT,
-                         apc::ClickAction::SINGLE);
+                         apc::ClickAction::SINGLE, task_id_);
 
-    action.set_task_id(task_id_.value());
     return EncodeActionProto(action);
   });
 
