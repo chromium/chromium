@@ -203,8 +203,9 @@ BASE_FEATURE(kWebAuthnNewRefreshFlow,
 BASE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled by default in M143. Remove in or after M146.
-BASE_FEATURE(kWebAuthnOpportunisticRetrieval, base::FEATURE_ENABLED_BY_DEFAULT);
+// Disabled by default.
+BASE_FEATURE(kWebAuthnOpportunisticRetrieval,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds,

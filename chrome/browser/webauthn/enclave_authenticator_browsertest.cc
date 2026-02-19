@@ -1401,10 +1401,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
+class OpportunisticKeyRetrievalEnclaveAuthenticatorBrowserTest
+    : public EnclaveAuthenticatorBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnOpportunisticRetrieval};
+};
+
 // Regression test for https://crbug.com/465139934 ("Chrome crashes after
 // unlocking passkeys in a different browser tab").
 IN_PROC_BROWSER_TEST_F(
-    EnclaveAuthenticatorBrowserTest,
+    OpportunisticKeyRetrievalEnclaveAuthenticatorBrowserTest,
     MakeCredential_WhenPasskeysUnlockedViaOpportunisticFlowInOtherTab) {
   // Starting from the passkey locked state.
   SetTrustedVaultRecoverable();
@@ -1448,7 +1455,7 @@ IN_PROC_BROWSER_TEST_F(
 // unlocking passkeys and creating a GPM PIN, with concurrent unlocking of
 // passkeys during the PIN creation.
 IN_PROC_BROWSER_TEST_F(
-    EnclaveAuthenticatorBrowserTest,
+    OpportunisticKeyRetrievalEnclaveAuthenticatorBrowserTest,
     MakeCredential_AndCreateGpmPin_WhenPasskeysUnlockedViaOpportunisticFlowInOtherTab) {
   // Starting from the passkey locked state and empty security domain (for
   // ensuring that we will be prompted to create a PIN).
@@ -1502,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered \
   MakeCredential_WhenPasskeysBecomingUnregistered
 #endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(OpportunisticKeyRetrievalEnclaveAuthenticatorBrowserTest,
                        MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered) {
   // Starting from the passkeys unlocked state.
   EnableUVKeySupport();
