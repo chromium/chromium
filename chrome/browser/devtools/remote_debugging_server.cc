@@ -215,7 +215,7 @@ int RemoteDebuggingServer::GetPortFromUserDataDir(
   return kDefaultDevToolsPort;
 }
 
-void RemoteDebuggingServer::StartHttpServerInApprovalMode(
+void RemoteDebuggingServer::StartHttpServerInApprovalModeIfEnabled(
     PrefService* local_state) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(local_state);
@@ -401,20 +401,20 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!debugging_server_started &&
       base::FeatureList::IsEnabled(
-          ::features::kDevToolsAcceptDebuggingConnections) &&
-      isRemoteDebuggingEnabledViaPrefs(local_state)) {
+          ::features::kDevToolsAcceptDebuggingConnections)) {
+    // In approval mode, each incoming connection needs to be approved by
+    // the user (allow/disallow actions are tracked via the
+    // DevToolsRemoteDebuggingConnectionPermission histogram).
     if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
       return base::unexpected(
           RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy);
     }
-    server->StartHttpServerInApprovalMode(local_state);
-    // In approval mode, each incoming connection needs to be approved by
-    // the user (allow/disallow actions are tracked via the
-    // DevToolsRemoteDebuggingConnectionPermission histogram).
-    // The server start is asynchronous so we rely on the
-    // is_http_server_being_started_ field to indicate that
-    // debugging was initiated.
-    debugging_server_started = server->is_http_server_being_started_;
+    // Listening for pref changes in case the server is started later.
+    server->StartHttpServerInApprovalModeIfEnabled(local_state);
+    // We indicate that the server was started to prevent the instance
+    // from being destructed. The actual websocket server is only started
+    // if the preference is also enabled.
+    debugging_server_started = true;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
