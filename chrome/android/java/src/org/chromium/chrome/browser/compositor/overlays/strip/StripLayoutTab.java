@@ -227,14 +227,15 @@ public class StripLayoutTab extends StripLayoutView {
                 new TintedCompositorButton(
                         context,
                         ButtonType.TAB_CLOSE,
-                        this,
+                        /* parentView= */ this,
                         /* width= */ 0,
                         /* height= */ 0,
                         /* tooltipHandler= */ null,
                         clickHandler,
                         keyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,
-                        0f);
+                        /* clickSlopDp= */ 0f,
+                        /* hasLongClickAction= */ true);
         mCloseButton.setTintResources(
                 R.color.default_icon_color_tint_list,
                 R.color.default_icon_color_tint_list,

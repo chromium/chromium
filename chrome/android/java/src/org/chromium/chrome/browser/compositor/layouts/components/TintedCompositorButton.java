@@ -21,6 +21,10 @@ public class TintedCompositorButton extends CompositorButton {
     @SuppressWarnings("HidingField")
     private final Context mContext;
 
+    // TODO(crbug.com/485925830): When we refactor to include some "LongPressHandler," infer this
+    //  through the presence/absence of the handler.
+    private final boolean mHasLongClickAction;
+
     private @ColorInt int mBackgroundDefaultTint;
     private @ColorInt int mBackgroundPressedTint;
     private @ColorInt int mBackgroundIncognitoTint;
@@ -47,6 +51,32 @@ public class TintedCompositorButton extends CompositorButton {
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             @DrawableRes int resource,
             float clickSlopDp) {
+        this(
+                context,
+                type,
+                parentView,
+                width,
+                height,
+                tooltipHandler,
+                clickHandler,
+                keyboardFocusHandler,
+                resource,
+                clickSlopDp,
+                /* hasLongClickAction= */ false);
+    }
+
+    public TintedCompositorButton(
+            Context context,
+            @ButtonType int type,
+            @Nullable StripLayoutView parentView,
+            float width,
+            float height,
+            @Nullable TooltipHandler tooltipHandler,
+            StripLayoutViewOnClickHandler clickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
+            @DrawableRes int resource,
+            float clickSlopDp,
+            boolean hasLongClickAction) {
         super(
                 context,
                 type,
@@ -59,6 +89,12 @@ public class TintedCompositorButton extends CompositorButton {
                 clickSlopDp);
         mContext = context;
         mResource = resource;
+        mHasLongClickAction = hasLongClickAction;
+    }
+
+    @Override
+    public boolean hasLongClickAction() {
+        return mHasLongClickAction;
     }
 
     /*

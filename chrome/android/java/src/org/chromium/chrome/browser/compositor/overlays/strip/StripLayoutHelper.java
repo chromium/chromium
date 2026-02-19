@@ -2374,6 +2374,8 @@ public class StripLayoutHelper
      * @param y The y coordinate of the position of the press event.
      */
     public void onLongPress(float x, float y) {
+        // TODO(crbug.com/485925830): Refactor to a long-press handler, similar to the existing
+        //  click handler.
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
 
         if (stripView == null) {
@@ -5426,6 +5428,8 @@ public class StripLayoutHelper
      */
     @VisibleForTesting
     void showCloseButtonMenu(StripLayoutTab anchorTab) {
+        // TODO(crbug.com/482242527): When this is removed, also update the virtual view to no
+        //  no longer be marked as having a long-press action.
         if (mModel == null) return;
 
         // 1. Bring the anchor tab to the foreground.
