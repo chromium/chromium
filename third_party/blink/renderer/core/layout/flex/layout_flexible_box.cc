@@ -66,29 +66,6 @@ bool LayoutFlexibleBox::HasLeftOverflow() const {
   return GetOverflowConverter(StyleRef()).Left();
 }
 
-namespace {
-
-void MergeAnonymousFlexItems(LayoutObject* remove_child) {
-  DCHECK(!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled());
-
-  // When we remove a flex item, and the previous and next siblings of the item
-  // are text nodes wrapped in anonymous flex items, the adjacent text nodes
-  // need to be merged into the same flex item.
-  LayoutObject* prev = remove_child->PreviousSibling();
-  if (!prev || !prev->IsAnonymousBlockFlow()) {
-    return;
-  }
-  LayoutObject* next = remove_child->NextSibling();
-  if (!next || !next->IsAnonymousBlockFlow()) {
-    return;
-  }
-  To<LayoutBoxModelObject>(next)->MoveAllChildrenTo(
-      To<LayoutBoxModelObject>(prev));
-  next->Destroy();
-}
-
-}  // namespace
-
 // TODO(crbug.com/364348901): We should be able to remove this method entirely
 // when the CustomizableSelect flag is removed or disabled, but it causes a
 // crash in the switch-picker-appearance WPT.
@@ -120,14 +97,6 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
   DCHECK_GE(fragment_count, 1u);
   // Currently, devtools data is on the first fragment of a fragmented flexbox.
   return GetLayoutResult(0)->FlexLayoutData();
-}
-
-void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
-  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled()) {
-    MergeAnonymousFlexItems(child);
-  }
-
-  LayoutBlock::RemoveChild(child);
 }
 
 void LayoutFlexibleBox::UpdateAfterLayout() {

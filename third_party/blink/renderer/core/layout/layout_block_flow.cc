@@ -261,20 +261,6 @@ static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   NOT_DESTROYED();
 
-  // If this child is a block, and if our previous and next siblings are both
-  // anonymous blocks with inline content, then we can go ahead and fold the
-  // inline content back together.
-  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled() &&
-      !old_child->IsInline()) {
-    auto* prev_block_flow =
-        DynamicTo<LayoutBlockFlow>(old_child->PreviousSibling());
-    auto* next_block_flow =
-        DynamicTo<LayoutBlockFlow>(old_child->NextSibling());
-    if (prev_block_flow && next_block_flow) {
-      prev_block_flow->MergeSiblingContiguousAnonymousBlock(next_block_flow);
-    }
-  }
-
   // If the old_child is block-level we need to check if any adjacent siblings
   // are floating or out-of-flow positioned, and if so reparent them into the
   // inline-level anonymous block.

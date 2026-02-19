@@ -3313,12 +3313,7 @@
       status: "stable",
     },
     {
-      name: "LayoutMergeAnonymousFix",
-      status: "stable",
-    },
-    {
       name: "LayoutReinsertOnInFlowStateChange",
-      depends_on: ["LayoutMergeAnonymousFix"],
       status: "stable",
     },
     {
