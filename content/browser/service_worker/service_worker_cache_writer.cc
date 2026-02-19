@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -22,7 +23,7 @@
 
 namespace {
 
-const size_t kCopyBufferSize = 16 * 1024;
+constexpr base::ByteSize kCopyBufferSize = base::KiBU(16);
 
 // Shim class used to turn always-async functions into async-or-result
 // functions. See the comments below near ReadResponseHead.
@@ -375,28 +376,31 @@ net::Error ServiceWorkerCacheWriter::MaybeWriteData(
   DCHECK(!io_pending_);
   DCHECK(!IsCopying());
 
-  if (!writer_.is_connected())
+  if (!writer_.is_connected()) {
     return net::ERR_FAILED;
+  }
 
   data_to_write_ = buf;
-  len_to_write_ = buf_size;
+  len_to_write_ = base::ByteSize(buf_size);
   pending_callback_ = std::move(callback);
 
   if (checksum_update_timing_ == ChecksumUpdateTiming::kAlways &&
-      len_to_write_ > 0) {
-    checksum_.Update(data_to_write_->first(len_to_write_));
+      len_to_write_.is_positive()) {
+    checksum_.Update(data_to_write_->first(len_to_write_.InBytes()));
   }
 
-  if (comparing_)
+  if (comparing_) {
     state_ = STATE_READ_DATA_FOR_COMPARE;
-  else
+  } else {
     state_ = STATE_WRITE_DATA_FOR_PASSTHROUGH;
+  }
 
   int result = DoLoop(net::OK);
 
   // Synchronous completions are always STATE_DONE.
-  if (result != net::ERR_IO_PENDING)
+  if (result != net::ERR_IO_PENDING) {
     DCHECK_EQ(STATE_DONE, state_);
+  }
 
   // Asynchronous completion means the state machine must be waiting in one of
   // the Done states for an IO operation to complete:
@@ -500,7 +504,7 @@ int64_t ServiceWorkerCacheWriter::writer_resource_id() const {
 }
 
 int ServiceWorkerCacheWriter::DoStart(int result) {
-  bytes_written_ = 0;
+  bytes_written_ = base::ByteSize(0);
   if (compare_reader_) {
     state_ = STATE_READ_HEADERS_FOR_COMPARE;
     comparing_ = true;
@@ -535,8 +539,9 @@ int ServiceWorkerCacheWriter::DoReadHeadersForCompareDone(int result) {
     return result;
   }
   DCHECK(response_head_to_read_);
-  cached_length_ = response_head_to_read_->content_length;
-  bytes_compared_ = 0;
+  cached_length_ = base::ByteSize(
+      base::checked_cast<uint64_t>(response_head_to_read_->content_length));
+  bytes_compared_ = base::ByteSize(0);
   state_ = STATE_DONE;
   return net::OK;
 }
@@ -545,19 +550,20 @@ int ServiceWorkerCacheWriter::DoReadDataForCompare(int result) {
   DCHECK_GE(result, 0);
   DCHECK(data_to_write_);
 
-  data_to_read_ = base::MakeRefCounted<net::IOBufferWithSize>(len_to_write_);
+  data_to_read_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(len_to_write_.InBytes());
   len_to_read_ = len_to_write_;
   state_ = STATE_READ_DATA_FOR_COMPARE_DONE;
-  compare_offset_ = 0;
+  compare_offset_ = base::ByteSize(0);
   // If this was an EOF, don't issue a read.
-  if (len_to_write_ > 0) {
+  if (len_to_write_.is_positive()) {
     DCHECK(compare_reader_);
     if (!compare_reader_.is_connected()) {
       state_ = STATE_DONE;
       return net::ERR_FAILED;
     }
     result = ReadDataHelper(compare_reader_.get(), compare_data_pipe_reader_,
-                            data_to_read_, len_to_read_);
+                            data_to_read_, len_to_read_.InBytes());
   }
   return result;
 }
@@ -569,12 +575,14 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
     state_ = STATE_DONE;
     return result;
   }
+  base::ByteSize result_bytes =
+      base::ByteSize(base::checked_cast<uint64_t>(result));
 
-  DCHECK_LE(result + compare_offset_, static_cast<size_t>(len_to_write_));
+  DCHECK_LE(result_bytes + compare_offset_, len_to_write_);
 
   // Premature EOF while reading the service worker script cache data to
   // compare. Fail the comparison.
-  if (result == 0 && len_to_write_ != 0) {
+  if (result_bytes.is_zero() && len_to_write_.is_positive()) {
     comparing_ = false;
     state_ =
         pause_when_not_identical_ ? STATE_PAUSING : STATE_READ_HEADERS_FOR_COPY;
@@ -584,13 +592,17 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
   DCHECK(data_to_read_);
   DCHECK(data_to_write_);
 
+  // checked_casts because on some platforms, size_t (as used in the span calls)
+  // is smaller than uint64_t as is used in base::ByteSize.
   const size_t result_as_size = base::checked_cast<size_t>(result);
+  const size_t compare_offset_as_size =
+      base::checked_cast<size_t>(compare_offset_.InBytes());
 
   // Compare the data from the ServiceWorker script cache to the data from the
   // network.
-  if (!std::ranges::equal(
-          data_to_read_->span().first(result_as_size),
-          data_to_write_->span().subspan(compare_offset_, result_as_size))) {
+  if (!std::ranges::equal(data_to_read_->span().first(result_as_size),
+                          data_to_write_->span().subspan(compare_offset_as_size,
+                                                         result_as_size))) {
     // Data mismatched. This method already validated that all the bytes through
     // |bytes_compared_| were identical, so copy the first |bytes_compared_|
     // over, then start writing network data back after the changed point.
@@ -600,7 +612,7 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
     return pause_when_not_identical_ ? net::ERR_IO_PENDING : net::OK;
   }
 
-  compare_offset_ += result;
+  compare_offset_ += result_bytes;
 
   // This is a little bit tricky. It is possible that not enough data was read
   // to finish comparing the entire block of data from the network (which is
@@ -609,7 +621,7 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
   //
   // Compare isn't complete yet. Issue another read for the remaining data. Note
   // that this reuses the same IOBuffer.
-  if (compare_offset_ < static_cast<size_t>(len_to_read_)) {
+  if (compare_offset_ < len_to_read_) {
     DCHECK(compare_reader_);
     if (!compare_reader_.is_connected()) {
       state_ = STATE_DONE;
@@ -617,12 +629,14 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
     }
     state_ = STATE_READ_DATA_FOR_COMPARE_DONE;
     return ReadDataHelper(compare_reader_.get(), compare_data_pipe_reader_,
-                          data_to_read_.get(), len_to_read_ - compare_offset_);
+                          data_to_read_.get(),
+                          (len_to_read_ - compare_offset_).InBytes());
   }
 
   // Cached entry is longer than the network entry but the prefix matches. Copy
   // just the prefix.
-  if (len_to_read_ == 0 && bytes_compared_ + compare_offset_ < cached_length_) {
+  if (len_to_read_.is_zero() &&
+      bytes_compared_ + compare_offset_ < cached_length_) {
     comparing_ = false;
     state_ =
         pause_when_not_identical_ ? STATE_PAUSING : STATE_READ_HEADERS_FOR_COPY;
@@ -643,8 +657,9 @@ int ServiceWorkerCacheWriter::DoReadHeadersForCopy(int result) {
     return net::ERR_FAILED;
   }
 
-  bytes_copied_ = 0;
-  data_to_copy_ = base::MakeRefCounted<net::IOBufferWithSize>(kCopyBufferSize);
+  bytes_copied_ = base::ByteSize(0);
+  data_to_copy_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(kCopyBufferSize.InBytes());
   state_ = STATE_READ_HEADERS_FOR_COPY_DONE;
   return ReadResponseHead(copy_reader_.get());
 }
@@ -668,7 +683,21 @@ int ServiceWorkerCacheWriter::DoWriteHeadersForCopy(int result) {
   state_ = STATE_WRITE_HEADERS_FOR_COPY_DONE;
   if (IsCopying()) {
     DCHECK(response_head_to_read_);
-    bytes_to_copy_ = response_head_to_read_->content_length;
+    // In past versions of this code, `response_head_to_read_->content_length`
+    // was blindly copied to `bytes_to_copy_` without checking for the possible
+    // error value of -1.
+    //
+    // Now that `bytes_to_copy_` can no longer hold such a value, in case of an
+    // error, assign an unlimited value which will make the code behave in the
+    // same way in the past.
+    if (response_head_to_read_->content_length < 0) {
+      // TODO(https://crbug.com/474382520): Add in proper error handling and
+      // remove this workaround.
+      bytes_to_copy_ = base::ByteSize::Max();
+    } else {
+      bytes_to_copy_ = base::ByteSize(
+          base::checked_cast<uint64_t>(response_head_to_read_->content_length));
+    }
     return WriteResponseHead(std::move(response_head_to_read_));
   } else {
     DCHECK(response_head_to_write_);
@@ -696,9 +725,10 @@ int ServiceWorkerCacheWriter::DoReadDataForCopy(int result) {
 
   // If the cache writer is only for copy, get the total size to read from
   // header data instead of |bytes_compared_| as no comparison is done.
-  size_t total_size_to_read = IsCopying() ? bytes_to_copy_ : bytes_compared_;
-  size_t to_read =
-      std::min(kCopyBufferSize, total_size_to_read - bytes_copied_);
+  base::ByteSize total_size_to_read =
+      IsCopying() ? bytes_to_copy_ : bytes_compared_;
+  base::ByteSize to_read = std::min(
+      kCopyBufferSize, (total_size_to_read - bytes_copied_).AsByteSize());
 
   // At this point, all compared bytes have been read. Currently
   // If the cache write is not just for copy, |data_to_write_| and
@@ -706,13 +736,13 @@ int ServiceWorkerCacheWriter::DoReadDataForCopy(int result) {
   // failure, so those need to be written back and this object needs to go into
   // passthrough mode. If the cache writer is just for copy, change state to
   // STATE_DONE as there is no more data to copy.
-  if (to_read == 0) {
+  if (to_read.is_zero()) {
     state_ = IsCopying() ? STATE_DONE : STATE_WRITE_DATA_FOR_PASSTHROUGH;
     return net::OK;
   }
   state_ = STATE_READ_DATA_FOR_COPY_DONE;
   return ReadDataHelper(copy_reader_.get(), copy_data_pipe_reader_,
-                        data_to_copy_.get(), to_read);
+                        data_to_copy_.get(), to_read.InBytes());
 }
 
 int ServiceWorkerCacheWriter::DoReadDataForCopyDone(int result) {
@@ -735,8 +765,8 @@ int ServiceWorkerCacheWriter::DoWriteDataForCopyDone(int result) {
     state_ = STATE_DONE;
     return result;
   }
-  bytes_written_ += result;
-  bytes_copied_ += result;
+  bytes_written_ += base::ByteSize(base::checked_cast<uint64_t>(result));
+  bytes_copied_ += base::ByteSize(base::checked_cast<uint64_t>(result));
   state_ = STATE_READ_DATA_FOR_COPY;
   return result;
 }
@@ -757,8 +787,9 @@ int ServiceWorkerCacheWriter::DoWriteHeadersForPassthroughDone(int result) {
 int ServiceWorkerCacheWriter::DoWriteDataForPassthrough(int result) {
   DCHECK_GE(result, 0);
   state_ = STATE_WRITE_DATA_FOR_PASSTHROUGH_DONE;
-  if (len_to_write_ > 0)
-    result = WriteData(data_to_write_, len_to_write_);
+  if (len_to_write_.is_positive()) {
+    result = WriteData(data_to_write_, len_to_write_.InBytes());
+  }
   return result;
 }
 
@@ -767,7 +798,7 @@ int ServiceWorkerCacheWriter::DoWriteDataForPassthroughDone(int result) {
     state_ = STATE_DONE;
     return result;
   }
-  bytes_written_ += result;
+  bytes_written_ += base::ByteSize(base::checked_cast<uint64_t>(result));
   state_ = STATE_DONE;
   return net::OK;
 }

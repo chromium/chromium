@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -316,7 +317,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteData(
 
 void ServiceWorkerUpdatedScriptLoader::OnCacheWriterResumed(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
-    uint32_t consumed_bytes,
+    base::ByteSize consumed_bytes,
     net::Error error) {
   CHECK_NE(error, net::ERR_IO_PENDING);
   // Stop observing write operations in cache writer as further data are
@@ -339,7 +340,7 @@ void ServiceWorkerUpdatedScriptLoader::OnCacheWriterResumed(
   // point, this completes the pending read and releases the Mojo handle to
   // continue with reading the rest of the body.
   CHECK(pending_network_buffer);
-  pending_network_buffer->CompleteRead(consumed_bytes);
+  pending_network_buffer->CompleteRead(consumed_bytes.InBytes());
   network_consumer_ = pending_network_buffer->ReleaseHandle();
 
   // Continue to load the rest of the body from the network.
@@ -475,7 +476,7 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
     const network::URLLoaderCompletionStatus& status,
     const std::string& status_message) {
   net::Error error_code = static_cast<net::Error>(status.error_code);
-  int bytes_written = -1;
+  std::optional<base::ByteSize> bytes_written;
   std::string sha256_checksum;
   if (error_code == net::OK) {
     CHECK(cache_writer_);
@@ -489,7 +490,7 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
           blink::ServiceWorkerStatusCode::kErrorExists);
       error_code = net::ERR_FILE_EXISTS;
     }
-    bytes_written = cache_writer_->bytes_written();
+    bytes_written = base::ByteSize(cache_writer_->bytes_written());
     sha256_checksum = cache_writer_->GetSha256Checksum();
   } else {
     // AddMessageConsole must be called before notifying that an error occurred

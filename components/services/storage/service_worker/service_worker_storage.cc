@@ -436,10 +436,10 @@ void ServiceWorkerStorage::GetUsageForStorageKey(
       break;
   }
 
-  int64_t usage = 0;
+  base::ByteSize usage;
   ServiceWorkerDatabase::Status status =
       database_->GetUsageForStorageKey(key, usage);
-  std::move(callback).Run(status, usage);
+  std::move(callback).Run(status, usage.InBytes());
 }
 
 void ServiceWorkerStorage::GetAllRegistrations(
@@ -1441,7 +1441,7 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
     ServiceWorkerDatabase::Status status) {
   if (status != ServiceWorkerDatabase::Status::kOk) {
     std::move(callback).Run(status, deleted_version.version_id,
-                            deleted_version.resources_total_size_bytes,
+                            deleted_version.resources_total_size.InBytes(),
                             deleted_version.newly_purgeable_resources);
     return;
   }
@@ -1449,7 +1449,7 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
 
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk,
                           deleted_version.version_id,
-                          deleted_version.resources_total_size_bytes,
+                          deleted_version.resources_total_size.InBytes(),
                           deleted_version.newly_purgeable_resources);
 }
 
@@ -1461,7 +1461,7 @@ void ServiceWorkerStorage::DidDeleteRegistration(
   if (status != ServiceWorkerDatabase::Status::kOk) {
     std::move(params->callback)
         .Run(status, storage_key_state, deleted_version.version_id,
-             deleted_version.resources_total_size_bytes,
+             deleted_version.resources_total_size.InBytes(),
              deleted_version.newly_purgeable_resources);
     return;
   }
@@ -1472,7 +1472,7 @@ void ServiceWorkerStorage::DidDeleteRegistration(
   std::move(params->callback)
       .Run(ServiceWorkerDatabase::Status::kOk, storage_key_state,
            deleted_version.version_id,
-           deleted_version.resources_total_size_bytes,
+           deleted_version.resources_total_size.InBytes(),
            deleted_version.newly_purgeable_resources);
 }
 

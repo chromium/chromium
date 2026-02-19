@@ -6,10 +6,12 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_REGISTRATION_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -121,12 +123,10 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   void SetStored();
   void UnsetStored();
 
-  int64_t resources_total_size_bytes() const {
-    return resources_total_size_bytes_;
-  }
+  base::ByteSize resources_total_size() const { return resources_total_size_; }
 
-  void set_resources_total_size_bytes(int64_t resources_total_size_bytes) {
-    resources_total_size_bytes_ = resources_total_size_bytes;
+  void set_resources_total_size(base::ByteSize resources_total_size) {
+    resources_total_size_ = resources_total_size;
   }
 
   // Returns the active version. This version may be in ACTIVATING or ACTIVATED
@@ -327,7 +327,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   blink::mojom::NavigationPreloadState navigation_preload_state_;
   base::Time last_update_check_;
   base::TimeDelta self_update_delay_;
-  int64_t resources_total_size_bytes_;
+  base::ByteSize resources_total_size_;
 
   // This registration is the primary owner of these versions.
   scoped_refptr<ServiceWorkerVersion> active_version_;

@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_registry.h"
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -49,11 +50,13 @@ struct GetStorageUsageForStorageKeyResult {
   int64_t usage;
 };
 
-storage::mojom::ServiceWorkerResourceRecordPtr
-CreateResourceRecord(int64_t resource_id, const GURL& url, int64_t size_bytes) {
+storage::mojom::ServiceWorkerResourceRecordPtr CreateResourceRecord(
+    int64_t resource_id,
+    const GURL& url,
+    base::ByteSize size) {
   EXPECT_TRUE(url.is_valid());
   return storage::mojom::ServiceWorkerResourceRecord::New(
-      resource_id, url, size_bytes, /*sha256_checksum=*/"");
+      resource_id, url, size, /*sha256_checksum=*/"");
 }
 
 storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
@@ -73,11 +76,11 @@ storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
   data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
   data->is_active = true;
 
-  int64_t resources_total_size_bytes = 0;
+  base::ByteSize resources_total_size;
   for (auto& resource : resources) {
-    resources_total_size_bytes += resource->size_bytes;
+    resources_total_size += resource->size.value();
   }
-  data->resources_total_size_bytes = resources_total_size_bytes;
+  data->resources_total_size = resources_total_size;
 
   return data;
 }
@@ -748,9 +751,9 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   const GURL kDocumentUrl("http://www.test.not/scope/document.html");
   const GURL kResource1("http://www.test.not/scope/resource1.js");
-  const int64_t kResource1Size = 1591234;
+  const base::ByteSize kResource1Size = base::ByteSize(1591234);
   const GURL kResource2("http://www.test.not/scope/resource2.js");
-  const int64_t kResource2Size = 51;
+  const base::ByteSize kResource2Size = base::ByteSize(51);
   const int64_t kRegistrationId = 0;
   const int64_t kVersionId = 0;
   const base::Time kToday = base::Time::Now();
@@ -826,9 +829,9 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(1, helper()->quota_manager_proxy()->notify_bucket_accessed_count());
   EXPECT_EQ(live_registration, found_registration);
   EXPECT_EQ(kResource1Size + kResource2Size,
-            live_registration->resources_total_size_bytes());
+            live_registration->resources_total_size());
   EXPECT_EQ(kResource1Size + kResource2Size,
-            found_registration->resources_total_size_bytes());
+            found_registration->resources_total_size());
   EXPECT_EQ(used_features,
             found_registration->waiting_version()->used_features());
   EXPECT_THAT(
@@ -876,13 +879,13 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   // Check that sizes are populated correctly
   EXPECT_EQ(live_version.get(), found_registration->waiting_version());
   EXPECT_EQ(kResource1Size + kResource2Size,
-            found_registration->resources_total_size_bytes());
+            found_registration->resources_total_size());
   std::vector<ServiceWorkerRegistrationInfo> all_registrations;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             GetAllRegistrationsInfos(&all_registrations));
   EXPECT_EQ(1u, all_registrations.size());
   ServiceWorkerRegistrationInfo info = all_registrations[0];
-  EXPECT_EQ(kResource1Size + kResource2Size, info.stored_version_size_bytes);
+  EXPECT_EQ(kResource1Size + kResource2Size, info.stored_version_size);
   all_registrations.clear();
 
   // Finding by StorageKey should provide the same result if the StorageKey's
@@ -1787,7 +1790,7 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   const GURL scope1("http://www1.example.com/foo/");
   const GURL script1(origin1.spec() + "/script.js");
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources1;
-  resources1.push_back(CreateResourceRecord(1, script1, 100));
+  resources1.push_back(CreateResourceRecord(1, script1, base::ByteSize(100)));
   storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
       CreateRegistrationData(
           /*registration_id=*/100,
@@ -1804,7 +1807,7 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   const GURL scope2("http://www2.example.com/foo/");
   const GURL script2(origin2.spec() + "/script.js");
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources2;
-  resources2.push_back(CreateResourceRecord(2, script2, 200));
+  resources2.push_back(CreateResourceRecord(2, script2, base::ByteSize(200)));
   storage::mojom::ServiceWorkerRegistrationDataPtr data2 =
       CreateRegistrationData(
           /*registration_id=*/200,
@@ -1841,7 +1844,7 @@ TEST_F(ServiceWorkerRegistryTest, AbsentNavigationPreloadState) {
   const GURL scope1("http://www1.example.com/foo/");
   const GURL script1(origin1.spec() + "/script.js");
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources1;
-  resources1.push_back(CreateResourceRecord(1, script1, 100));
+  resources1.push_back(CreateResourceRecord(1, script1, base::ByteSize(100)));
   storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
       CreateRegistrationData(
           /*registration_id=*/100,
@@ -2262,7 +2265,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
   const GURL script1(origin1.spec() + "/script.js");
   const int64_t registration_id1 = 1;
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources1;
-  resources1.push_back(CreateResourceRecord(1, script1, 100));
+  resources1.push_back(CreateResourceRecord(1, script1, base::ByteSize(100)));
   storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
       CreateRegistrationData(registration_id1,
                              /*version_id=*/1000,
@@ -2278,7 +2281,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
   const GURL script2(origin2.spec() + "/script.js");
   const int64_t registration_id2 = 2;
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources2;
-  resources2.push_back(CreateResourceRecord(2, script2, 200));
+  resources2.push_back(CreateResourceRecord(2, script2, base::ByteSize(200)));
   storage::mojom::ServiceWorkerRegistrationDataPtr data2 =
       CreateRegistrationData(registration_id2,
                              /*version_id=*/2000,
@@ -2914,7 +2917,7 @@ TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
 
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
   records.push_back(storage::mojom::ServiceWorkerResourceRecord::New(
-      1, kScript, 100, /*sha256_checksum=*/""));
+      1, kScript, base::ByteSize(100), /*sha256_checksum=*/""));
   version->script_cache_map()->SetResources(records);
   version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
@@ -2954,8 +2957,8 @@ class ServiceWorkerRegistryResourceTest : public ServiceWorkerRegistryTest {
     document_url_ = GURL("http://www.test.not/scope/document.html");
     resource_id1_ = GetNewResourceIdSync(storage_control());
     resource_id2_ = GetNewResourceIdSync(storage_control());
-    resource_id1_size_ = 239193;
-    resource_id2_size_ = 59923;
+    resource_id1_size_ = base::ByteSize(239193);
+    resource_id2_size_ = base::ByteSize(59923);
 
     // Cons up a new registration+version with two script resources.
     blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -3030,9 +3033,9 @@ class ServiceWorkerRegistryResourceTest : public ServiceWorkerRegistryTest {
   int64_t registration_id_;
   int64_t version_id_;
   int64_t resource_id1_;
-  uint64_t resource_id1_size_;
+  base::ByteSize resource_id1_size_;
   int64_t resource_id2_;
-  uint64_t resource_id2_size_;
+  base::ByteSize resource_id2_size_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
 };
 
@@ -3195,7 +3198,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration) {
   live_version->SetStatus(ServiceWorkerVersion::NEW);
   registration_->SetWaitingVersion(live_version);
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
-  records.push_back(CreateResourceRecord(10, live_version->script_url(), 100));
+  records.push_back(CreateResourceRecord(10, live_version->script_url(),
+                                         base::ByteSize(100)));
   live_version->script_cache_map()->SetResources(records);
   live_version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
@@ -3241,7 +3245,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration_NoLiveVersion) {
   live_version->SetStatus(ServiceWorkerVersion::NEW);
   registration_->SetWaitingVersion(live_version);
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
-  records.push_back(CreateResourceRecord(10, live_version->script_url(), 100));
+  records.push_back(CreateResourceRecord(10, live_version->script_url(),
+                                         base::ByteSize(100)));
   live_version->script_cache_map()->SetResources(records);
   live_version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);

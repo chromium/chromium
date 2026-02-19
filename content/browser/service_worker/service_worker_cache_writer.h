@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -126,7 +127,7 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
                             OnWriteCompleteCallback callback);
 
   // Returns a count of bytes written back to the cache.
-  size_t bytes_written() const { return bytes_written_; }
+  base::ByteSize bytes_written() const { return bytes_written_; }
   bool did_replace() const { return did_replace_; }
   bool is_pausing() const { return state_ == STATE_PAUSING; }
 
@@ -313,34 +314,34 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   network::mojom::URLResponseHeadPtr response_head_to_read_;
   network::mojom::URLResponseHeadPtr response_head_to_write_;
   scoped_refptr<net::IOBuffer> data_to_read_;
-  int len_to_read_;
+  base::ByteSize len_to_read_;
   scoped_refptr<net::IOBuffer> data_to_copy_;
   scoped_refptr<net::IOBuffer> data_to_write_;
-  int len_to_write_;
+  base::ByteSize len_to_write_;
   OnWriteCompleteCallback pending_callback_;
 
-  size_t cached_length_;
+  base::ByteSize cached_length_;
 
   // The amount of data from the network (|data_to_write_|) which has already
   // been compared with data from storage (|data_to_read_|). This is
   // initialized to 0 for every new arrival of network data.
-  size_t compare_offset_;
+  base::ByteSize compare_offset_;
 
   // Count of bytes which has been read from the network for comparison, and
   // known as identical with the stored scripts. It is incremented only when a
   // full block of network data is compared, to avoid having to use only
   // fragments of the buffered network data.
-  size_t bytes_compared_;
+  base::ByteSize bytes_compared_;
 
   // The total size of the body for copying. Used only when IsCopying() returns
   // true.
-  size_t bytes_to_copy_ = 0;
+  base::ByteSize bytes_to_copy_;
 
   // Count of bytes copied from |copy_reader_| to |writer_|.
-  size_t bytes_copied_;
+  base::ByteSize bytes_copied_;
 
   // Count of bytes written back to |writer_|.
-  size_t bytes_written_;
+  base::ByteSize bytes_written_;
 
   bool did_replace_ = false;
 

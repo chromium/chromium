@@ -206,7 +206,7 @@ TEST_F(ServiceWorkerCacheWriterTest, PassthroughHeadersAsync) {
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(net::OK, last_error_);
   EXPECT_TRUE(writer->AllExpectedWritesDone());
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 }
 
 TEST_F(ServiceWorkerCacheWriterTest, PassthroughDataAsync) {
@@ -257,7 +257,7 @@ TEST_F(ServiceWorkerCacheWriterTest, PassthroughHeadersFailAsync) {
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(net::ERR_FAILED, last_error_);
   EXPECT_TRUE(writer->AllExpectedWritesDone());
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 }
 
 TEST_F(ServiceWorkerCacheWriterTest, PassthroughDataFailAsync) {
@@ -308,7 +308,7 @@ TEST_F(ServiceWorkerCacheWriterTest, CompareDataOkAsync) {
   reader->CompletePendingRead();
 
   EXPECT_TRUE(reader->AllExpectedReadsDone());
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 }
 
 TEST_F(ServiceWorkerCacheWriterTest, CompareDataManyOkAsync) {
@@ -348,7 +348,7 @@ TEST_F(ServiceWorkerCacheWriterTest, CompareDataManyOkAsync) {
   }
 
   EXPECT_TRUE(reader->AllExpectedReadsDone());
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 }
 
 // This test writes headers and three data blocks data1, data2, data3; data2
@@ -706,7 +706,7 @@ TEST_F(ServiceWorkerCacheWriterTest, PauseWhenNotIdentical_AsyncWriteData) {
   compare_reader->CompletePendingRead();
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(net::ERR_IO_PENDING, last_error_);
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 
   // Resume |cache_writer_| with a callback which updates |write_complete_| and
   // |last_error_| when it's called.
@@ -732,7 +732,7 @@ TEST_F(ServiceWorkerCacheWriterTest, PauseWhenNotIdentical_AsyncWriteData) {
   writer->CompletePendingWrite();
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(net::OK, last_error_);
-  EXPECT_EQ(bytes_expected, cache_writer_->bytes_written());
+  EXPECT_EQ(bytes_expected, cache_writer_->bytes_written().InBytes());
 
   EXPECT_TRUE(writer->AllExpectedWritesDone());
   EXPECT_TRUE(compare_reader->AllExpectedReadsDone());
@@ -796,7 +796,7 @@ TEST_F(ServiceWorkerCacheWriterTest, CopyScript_Async) {
   writer->CompletePendingWrite();
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(net::OK, last_error_);
-  EXPECT_EQ(bytes_expected, cache_writer_->bytes_written());
+  EXPECT_EQ(bytes_expected, cache_writer_->bytes_written().InBytes());
   EXPECT_TRUE(writer->AllExpectedWritesDone());
 }
 
@@ -878,7 +878,7 @@ TEST_F(ServiceWorkerCacheWriterTest, CopyScript_AsyncMultipleRead) {
   writer->CompletePendingWrite();
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(net::OK, last_error_);
-  EXPECT_EQ(bytes_expected, cache_writer_->bytes_written());
+  EXPECT_EQ(bytes_expected, cache_writer_->bytes_written().InBytes());
   EXPECT_TRUE(writer->AllExpectedWritesDone());
 }
 
@@ -915,7 +915,7 @@ TEST_F(ServiceWorkerCacheWriterTest, ObserverSyncResponseWriterAsync) {
   cache_writer_->set_write_observer(nullptr);
 
   EXPECT_TRUE(writer->AllExpectedWritesDone());
-  EXPECT_EQ(response_size, cache_writer_->bytes_written());
+  EXPECT_EQ(response_size, cache_writer_->bytes_written().InBytes());
 }
 
 // The observer and response writer all run asynchronously.
@@ -953,7 +953,7 @@ TEST_F(ServiceWorkerCacheWriterTest, ObserverAsyncResponseWriterAsync) {
   cache_writer_->set_write_observer(nullptr);
 
   EXPECT_TRUE(writer->AllExpectedWritesDone());
-  EXPECT_EQ(response_size, cache_writer_->bytes_written());
+  EXPECT_EQ(response_size, cache_writer_->bytes_written().InBytes());
 }
 
 // Observer's OnWillWriteData() runs synchronously but fails.
@@ -978,7 +978,7 @@ TEST_F(ServiceWorkerCacheWriterTest, ObserverSyncFail) {
   observer.set_result(net::ERR_FAILED);
   error = WriteData(data);
   EXPECT_EQ(net::ERR_FAILED, error);
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 
   cache_writer_->set_write_observer(nullptr);
 }
@@ -1008,7 +1008,7 @@ TEST_F(ServiceWorkerCacheWriterTest, ObserverAsyncFail) {
   observer.Complete(net::ERR_FAILED);
   EXPECT_TRUE(write_complete_);
   EXPECT_EQ(last_error_, net::ERR_FAILED);
-  EXPECT_EQ(0U, cache_writer_->bytes_written());
+  EXPECT_TRUE(cache_writer_->bytes_written().is_zero());
 
   cache_writer_->set_write_observer(nullptr);
 }

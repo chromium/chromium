@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -514,7 +515,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void NotifyRegistrationStored(const int64_t registration_id,
                                 const GURL& scope,
                                 const blink::StorageKey& key,
-                                uint64_t stored_resources_total_size_bytes);
+                                base::ByteSize stored_resources_total_size);
   // Notifies observers that all registrations have been deleted for a
   // particular `key`.
   void NotifyAllRegistrationsDeletedForStorageKey(const blink::StorageKey& key);

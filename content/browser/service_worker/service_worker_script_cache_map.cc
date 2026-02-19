@@ -4,8 +4,10 @@
 
 #include "content/browser/service_worker/service_worker_script_cache_map.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -51,13 +53,13 @@ void ServiceWorkerScriptCacheMap::NotifyStartedCaching(const GURL& url,
     return;  // Our storage has been wiped via DeleteAndStartOver.
   }
   resource_map_[url] = storage::mojom::ServiceWorkerResourceRecord::New(
-      resource_id, url, -1, /*sha256_checksum=*/"");
+      resource_id, url, std::nullopt, /*sha256_checksum=*/"");
   context_->registry().StoreUncommittedResourceId(resource_id, owner_->key());
 }
 
 void ServiceWorkerScriptCacheMap::NotifyFinishedCaching(
     const GURL& url,
-    int64_t size_bytes,
+    std::optional<base::ByteSize> size,
     const std::string& sha256_checksum,
     net::Error net_error,
     const std::string& status_message) {
@@ -78,9 +80,7 @@ void ServiceWorkerScriptCacheMap::NotifyFinishedCaching(
       main_script_status_message_ = status_message;
     }
   } else {
-    // |size_bytes| should not be negative when caching finished successfully.
-    CHECK_GE(size_bytes, 0);
-    resource_map_[url]->size_bytes = size_bytes;
+    resource_map_[url]->size = size;
     resource_map_[url]->sha256_checksum = sha256_checksum;
   }
 }

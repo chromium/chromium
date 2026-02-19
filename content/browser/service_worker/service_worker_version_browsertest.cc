@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -859,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, ReadResourceFailure) {
   auto records = std::make_unique<
       std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>();
   records->push_back(storage::mojom::ServiceWorkerResourceRecord::New(
-      30, version_->script_url(), 100, /*sha256_checksum=*/""));
+      30, version_->script_url(), base::ByteSize(100), /*sha256_checksum=*/""));
   SetResources(version_.get(), std::move(records));
 
   // Store the registration.
@@ -892,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   auto records1 = std::make_unique<
       std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>();
   records1->push_back(storage::mojom::ServiceWorkerResourceRecord::New(
-      30, version_->script_url(), 100, /*sha256_checksum=*/""));
+      30, version_->script_url(), base::ByteSize(100), /*sha256_checksum=*/""));
   SetResources(version_.get(), std::move(records1));
 
   // Make a waiting version and store it.
@@ -900,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   auto records2 = std::make_unique<
       std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>();
   records2->push_back(storage::mojom::ServiceWorkerResourceRecord::New(
-      31, version_->script_url(), 100, /*sha256_checksum=*/""));
+      31, version_->script_url(), base::ByteSize(100), /*sha256_checksum=*/""));
   SetResources(registration_->waiting_version(), std::move(records2));
   StoreRegistration(registration_->waiting_version()->version_id(),
                     blink::ServiceWorkerStatusCode::kOk);

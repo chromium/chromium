@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_script_loader_factory.h"
 
+#include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -146,7 +147,7 @@ TEST_F(ServiceWorkerScriptLoaderFactoryTest, ChecksumVerification) {
   // Set resources on version with checksum
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
   resources.push_back(storage::mojom::ServiceWorkerResourceRecord::New(
-      kResourceId, script_url_, kData.length(), kChecksum));
+      kResourceId, script_url_, base::ByteSize(kData.length()), kChecksum));
   version_->script_cache_map()->SetResources(resources);
   version_->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
@@ -231,8 +232,9 @@ TEST_F(ServiceWorkerScriptLoaderFactoryCopyResumeTest,
   const std::string kNewData;
 
   ServiceWorkerUpdateCheckTestUtils::CreateAndSetComparedScriptInfoForVersion(
-      script_url_, 0, kNewHeaders, kNewData, kOldResourceId, kNewResourceId,
-      helper_.get(), ServiceWorkerUpdatedScriptLoader::LoaderState::kCompleted,
+      script_url_, base::ByteSize(0), kNewHeaders, kNewData, kOldResourceId,
+      kNewResourceId, helper_.get(),
+      ServiceWorkerUpdatedScriptLoader::LoaderState::kCompleted,
       ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted,
       ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent,
       version_.get(), nullptr);

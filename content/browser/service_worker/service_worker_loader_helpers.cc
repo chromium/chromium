@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -35,9 +36,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
-namespace content {
-
-namespace service_worker_loader_helpers {
+namespace content::service_worker_loader_helpers {
 
 namespace {
 
@@ -482,7 +481,8 @@ CreateSyntheticRegistration(const GURL& client_url,
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
   {
     auto resource = storage::mojom::ServiceWorkerResourceRecord::New(
-        blink::mojom::kSyntheticResponseServiceWorkerResourceId, kScript, 0,
+        blink::mojom::kSyntheticResponseServiceWorkerResourceId, kScript,
+        base::ByteSize(0),
         /*sha256_checksum=*/"");
     resources.push_back(std::move(resource));
   }
@@ -503,11 +503,13 @@ CreateSyntheticRegistration(const GURL& client_url,
   data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
 
   {
-    int64_t resources_total_size_bytes = 0;
+    base::ByteSize resources_total_size;
     for (auto& resource : resources) {
-      resources_total_size_bytes += resource->size_bytes;
+      // `resource->size` can be unknown; sub in 0 here if so.
+      // TODO(https://crbug.com/474382520): Add in error handling.
+      resources_total_size += resource->size.value_or(base::ByteSize(0));
     }
-    data->resources_total_size_bytes = resources_total_size_bytes;
+    data->resources_total_size = resources_total_size;
   }
 
   data->script_response_time = base::Time::Now();
@@ -565,6 +567,4 @@ CreateSyntheticRegistration(const GURL& client_url,
       std::move(remote_reference), std::move(data), std::move(resources));
 }
 
-}  // namespace service_worker_loader_helpers
-
-}  // namespace content
+}  // namespace content::service_worker_loader_helpers

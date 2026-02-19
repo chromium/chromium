@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_UPDATED_SCRIPT_LOADER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_UPDATED_SCRIPT_LOADER_H_
 
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/url_loader_client_checker.h"
@@ -157,7 +158,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   // If not all data are received, it continues to download from network.
   void OnCacheWriterResumed(
       scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
-      uint32_t consumed_bytes,
+      base::ByteSize consumed_bytes,
       net::Error error);
 
   const GURL request_url_;

@@ -1659,11 +1659,11 @@ void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllStorageKeys(
     auto it = storage_keys.find(storage_key);
     if (it == storage_keys.end()) {
       storage_keys[storage_key] = StorageUsageInfo(
-          storage_key, registration_info.stored_version_size_bytes,
+          storage_key, registration_info.stored_version_size.InBytes(),
           base::Time());
     } else {
       it->second.total_size_bytes +=
-          registration_info.stored_version_size_bytes;
+          registration_info.stored_version_size.InBytes();
     }
   }
 

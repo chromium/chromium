@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -43,7 +44,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
   // of resources ids.
   void NotifyStartedCaching(const GURL& url, int64_t resource_id);
   void NotifyFinishedCaching(const GURL& url,
-                             int64_t size_bytes,
+                             std::optional<base::ByteSize> size,
                              const std::string& sha256_checksum,
                              net::Error net_error,
                              const std::string& status_message);

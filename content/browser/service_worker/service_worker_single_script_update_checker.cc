@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -358,7 +359,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
         DCHECK(!network_consumer_.is_valid());
         // Compare the cached data with an empty data to notify |cache_writer_|
         // of the end of the comparison.
-        CompareData(nullptr /* pending_buffer */, 0 /* bytes_available */);
+        CompareData(/*pending_buffer=*/nullptr,
+                    /*bytes_available=*/base::ByteSize(0));
         break;
     }
   }
@@ -382,7 +384,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
                   ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted);
         // Pass empty data to notify |cache_writer_| that comparison is
         // finished.
-        CompareData(/*pending_buffer=*/nullptr, /*bytes_available=*/0);
+        CompareData(/*pending_buffer=*/nullptr,
+                    /*bytes_available=*/base::ByteSize(0));
         return;
     }
   }
@@ -511,11 +514,12 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
   MojoResult result = network::MojoToNetPendingBuffer::BeginRead(
       &network_consumer_, &pending_buffer);
 
-  const uint32_t bytes_available = pending_buffer ? pending_buffer->size() : 0;
+  const base::ByteSize bytes_available(pending_buffer ? pending_buffer->size()
+                                                      : 0);
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable",
               perfetto::Flow::FromPointer(this), "result", result,
-              "bytes_available", bytes_available);
+              "bytes_available", bytes_available.InBytes());
 
   switch (result) {
     case MOJO_RESULT_OK:
@@ -531,7 +535,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
           ServiceWorkerUpdatedScriptLoader::LoaderState::kCompleted) {
         // Compare the cached data with an empty data to notify |cache_writer_|
         // the end of the comparison.
-        CompareData(nullptr /* pending_buffer */, 0 /* bytes_available */);
+        CompareData(/*pending_buffer=*/nullptr,
+                    /*bytes_available=*/base::ByteSize(0));
       }
       return;
     case MOJO_RESULT_SHOULD_WAIT:
@@ -547,19 +552,19 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
 // network reaches the end. In that case, |bytes_to_compare| is zero.
 void ServiceWorkerSingleScriptUpdateChecker::CompareData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
-    uint32_t bytes_to_compare) {
+    base::ByteSize bytes_to_compare) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSingleScriptUpdateChecker::CompareData",
               perfetto::Flow::FromPointer(this));
 
-  DCHECK(pending_buffer || bytes_to_compare == 0);
+  DCHECK(pending_buffer || bytes_to_compare.is_zero());
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_BUFFERS(
       base::span(pending_buffer ? pending_buffer->buffer() : nullptr,
                  pending_buffer ? pending_buffer->size() : 0)));
 
   // Compare the network data and the stored data.
   net::Error error = cache_writer_->MaybeWriteData(
-      buffer.get(), bytes_to_compare,
+      buffer.get(), bytes_to_compare.InBytes(),
       base::BindOnce(
           &ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete,
           weak_factory_.GetWeakPtr(), pending_buffer, bytes_to_compare));
@@ -582,14 +587,14 @@ void ServiceWorkerSingleScriptUpdateChecker::CompareData(
 // reading from the disk cache.
 void ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
-    uint32_t bytes_written,
+    base::ByteSize bytes_written,
     net::Error error) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete",
               perfetto::Flow::FromPointer(this), "error", error,
-              "bytes_written", bytes_written);
+              "bytes_written", bytes_written.InBytes());
 
-  DCHECK(pending_buffer || bytes_written == 0);
+  DCHECK(pending_buffer || bytes_written.is_zero());
 
   if (cache_writer_->is_pausing()) {
     // |cache_writer_| can be pausing only when it finds difference between
@@ -607,7 +612,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete(
   if (pending_buffer) {
     // We consumed |bytes_written| bytes of data from the network so call
     // CompleteRead(), regardless of what |error| is.
-    pending_buffer->CompleteRead(bytes_written);
+    pending_buffer->CompleteRead(bytes_written.InBytes());
     network_consumer_ = pending_buffer->ReleaseHandle();
   }
 
@@ -619,7 +624,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete(
     return;
   }
 
-  if (bytes_written == 0) {
+  if (bytes_written.is_zero()) {
     // All data has been read. If we reach here without any error, the script
     // from the network was identical to the one in the disk cache.
     Succeed(Result::kIdentical, /*paused_state=*/nullptr);
@@ -706,7 +711,7 @@ ServiceWorkerSingleScriptUpdateChecker::PausedState::PausedState(
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         network_client_receiver,
     scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
-    uint32_t consumed_bytes,
+    base::ByteSize consumed_bytes,
     ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state,
     ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state)
     : cache_writer(std::move(cache_writer)),

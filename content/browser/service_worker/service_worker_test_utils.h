@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -396,15 +397,15 @@ class ServiceWorkerUpdateCheckTestUtils {
   // the old and new script data). |bytes_compared| is the length compared
   // until the difference was found. |new_headers| is the new script's headers.
   // |pending_network_buffer| is a buffer that has the first block of new script
-  // data that differs from the old data. |concumsed_size| is the number of
+  // data that differs from the old data. |consumed_size| is the number of
   // bytes of the data consumed from the Mojo data pipe kept in
   // |pending_network_buffer|.
   static std::unique_ptr<ServiceWorkerCacheWriter> CreatePausedCacheWriter(
       EmbeddedWorkerTestHelper* worker_test_helper,
-      size_t bytes_compared,
+      base::ByteSize bytes_compared,
       const std::string& new_headers,
       scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
-      uint32_t consumed_size,
+      base::ByteSize consumed_size,
       int64_t old_resource_id,
       int64_t new_resource_id);
 
@@ -414,7 +415,7 @@ class ServiceWorkerUpdateCheckTestUtils {
       ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state,
       ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state,
       scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
-      uint32_t consumed_size);
+      base::ByteSize consumed_size);
 
   static void SetComparedScriptInfoForVersion(
       const GURL& script_url,
@@ -428,7 +429,7 @@ class ServiceWorkerUpdateCheckTestUtils {
   // state and compared script info. Then set it to the service worker version.
   static void CreateAndSetComparedScriptInfoForVersion(
       const GURL& script_url,
-      size_t bytes_compared,
+      base::ByteSize bytes_compared,
       const std::string& new_headers,
       const std::string& diff_data_block,
       int64_t old_resource_id,

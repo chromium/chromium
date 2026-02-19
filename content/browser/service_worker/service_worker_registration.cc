@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -87,7 +88,6 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
       status_(Status::kIntact),
       store_state_(StoreState::kNotStored),
       should_activate_when_ready_(false),
-      resources_total_size_bytes_(0),
       context_(context),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       ancestor_frame_type_(ancestor_frame_type) {
@@ -188,7 +188,7 @@ ServiceWorkerRegistrationInfo ServiceWorkerRegistration::GetInfo() {
                    : ServiceWorkerRegistrationInfo::IS_NOT_DELETED,
       GetVersionInfo(active_version_.get()),
       GetVersionInfo(waiting_version_.get()),
-      GetVersionInfo(installing_version_.get()), resources_total_size_bytes_,
+      GetVersionInfo(installing_version_.get()), resources_total_size_,
       navigation_preload_state_.enabled,
       navigation_preload_state_.header.length());
 }

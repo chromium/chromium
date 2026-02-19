@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -645,12 +646,13 @@ void ServiceWorkerRegistry::StoreRegistration(
     return;
   }
 
-  uint64_t resources_total_size_bytes = 0;
+  base::ByteSize resources_total_size;
   for (const auto& resource : resources) {
-    DCHECK_GE(resource->size_bytes, 0);
-    resources_total_size_bytes += resource->size_bytes;
+    // `content_length` can be -1 if error; sub in 0 here if failed.
+    // TODO(https://crbug.com/474382520): Add in error handling.
+    resources_total_size += resource->size.value();
   }
-  data->resources_total_size_bytes = resources_total_size_bytes;
+  data->resources_total_size = resources_total_size;
 
   ClearInternalCacheForStorageKey(registration->key());
 
@@ -658,7 +660,7 @@ void ServiceWorkerRegistry::StoreRegistration(
       &storage::mojom::ServiceWorkerStorageControl::StoreRegistration,
       base::BindOnce(&ServiceWorkerRegistry::DidStoreRegistration,
                      weak_factory_.GetWeakPtr(), registration->id(),
-                     resources_total_size_bytes, registration->scope(),
+                     resources_total_size.InBytes(), registration->scope(),
                      registration->key(), std::move(callback)),
       std::move(data), std::move(resources));
 }
@@ -1209,7 +1211,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
       options, data.key, data.registration_id, context_->AsWeakPtr(),
       data.ancestor_frame_type);
   registration->SetStored();
-  registration->set_resources_total_size_bytes(data.resources_total_size_bytes);
+  registration->set_resources_total_size(data.resources_total_size);
   registration->set_last_update_check(data.last_update_check);
   DCHECK(!uninstalling_registrations_.contains(data.registration_id));
 
@@ -1570,8 +1572,7 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
     info.key = registration_data->key;
     info.update_via_cache = registration_data->update_via_cache;
     info.registration_id = registration_data->registration_id;
-    info.stored_version_size_bytes =
-        registration_data->resources_total_size_bytes;
+    info.stored_version_size = registration_data->resources_total_size;
     info.navigation_preload_enabled =
         registration_data->navigation_preload_state->enabled;
     info.navigation_preload_header_length =
@@ -1690,8 +1691,9 @@ void ServiceWorkerRegistry::NotifyRegistrationStored(
     StatusCallback callback) {
   registered_storage_keys_.insert(key);
 
-  context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key,
-                                     stored_resources_total_size_bytes);
+  context_->NotifyRegistrationStored(
+      stored_registration_id, stored_scope, key,
+      base::ByteSize(stored_resources_total_size_bytes));
 
   if (storage_policy_observer_) {
     storage_policy_observer_->StartTrackingOrigin(key.origin());

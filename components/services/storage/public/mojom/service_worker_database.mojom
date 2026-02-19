@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/script/script_type.mojom";
@@ -67,7 +68,7 @@ struct ServiceWorkerRegistrationData {
   array<blink.mojom.WebFeature> used_features;
 
   // Not populated until the registration is stored into database.
-  int64 resources_total_size_bytes = 0;
+  mojo_base.mojom.ByteSize resources_total_size;
 
   blink.mojom.PolicyContainerPolicies? policy_container_policies;
 
@@ -94,9 +95,10 @@ struct ServiceWorkerRegistrationData {
 struct ServiceWorkerResourceRecord {
   int64 resource_id = blink.mojom.kInvalidServiceWorkerResourceId;
   url.mojom.Url url;
-  // |size_bytes| could be -1 when there was an error while loading the worker
+
+  // |size| is nullopt when there was an error while loading the worker
   // script data, but when stored to the database this value is always >= 0.
-  int64 size_bytes = 0;
+  mojo_base.mojom.ByteSize? size;
 
   // |sha256_checksum| is a hash string calculated from each service worker
   // script resource data with the SHA256 algorithm. This could be empty when

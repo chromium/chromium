@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -257,7 +258,7 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
     return;
   }
 
-  int64_t resource_size = cache_writer_->bytes_written();
+  base::ByteSize resource_size = cache_writer_->bytes_written();
   DCHECK_EQ(cache_writer_->checksum_update_timing(),
             ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
   std::string sha256_checksum = cache_writer_->GetSha256Checksum();

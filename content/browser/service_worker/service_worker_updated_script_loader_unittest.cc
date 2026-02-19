@@ -147,7 +147,7 @@ class ServiceWorkerUpdatedScriptLoaderTest
   }
 
   void SetUpComparedScriptInfo(
-      size_t bytes_compared,
+      base::ByteSize bytes_compared,
       const std::string& new_headers,
       const std::string& diff_data_block,
       ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state,
@@ -210,7 +210,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, FirstBlockDifferent) {
   const std::string kNewData = kDiffBlock + kNetworkBlock;
 
   SetUpComparedScriptInfo(
-      0, kNewHeaders, kDiffBlock,
+      base::ByteSize(0), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 
@@ -240,7 +240,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, MiddleBlockDifferent) {
   const std::string kNewData = kSameBlock + kDiffBlock + kNetworkBlock;
 
   SetUpComparedScriptInfo(
-      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 
@@ -269,7 +269,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, LastBlockDifferent) {
   const std::string kNewData = kSameBlock + kDiffBlock;
 
   SetUpComparedScriptInfo(
-      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 
@@ -296,7 +296,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, LastBlockDifferentCompleted) {
   const std::string kNewData = kSameBlock + kDiffBlock;
 
   SetUpComparedScriptInfo(
-      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kCompleted,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 
@@ -320,7 +320,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, NewScriptLargerThanOld) {
   const std::string kNewData = kSameBlock + kDiffBlock + kNetworkBlock;
 
   SetUpComparedScriptInfo(
-      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 
@@ -347,7 +347,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, NewScriptEmptyBody) {
   const std::string kNewData;
 
   SetUpComparedScriptInfo(
-      0, kNewHeaders, kNewData,
+      base::ByteSize(0), kNewHeaders, kNewData,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kCompleted,
       ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted);
 
@@ -372,7 +372,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, CompleteFailed) {
   const std::string kNewData = kSameBlock + kDiffBlock + kNetworkBlock;
 
   SetUpComparedScriptInfo(
-      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 
@@ -399,7 +399,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, ClientConsumeNetworkLater) {
   std::string new_data = kSameBlock + kDiffBlock;
 
   SetUpComparedScriptInfo(
-      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
       ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
 

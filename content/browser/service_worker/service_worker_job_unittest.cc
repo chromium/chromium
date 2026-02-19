@@ -1675,15 +1675,15 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
       // Spoof caching the script for the initial version.
       WriteStringResponse(writer, kBody);
       version->script_cache_map()->NotifyFinishedCaching(
-          script, std::size(kBody), /*sha256_checksum=*/"", net::OK,
-          std::string());
+          script, base::ByteSize(std::size(kBody)), /*sha256_checksum=*/"",
+          net::OK, std::string());
     } else {
       EXPECT_NE(GURL(kNoChangeOrigin), script.DeprecatedGetOriginAsURL());
       // The script must be changed.
       WriteStringResponse(writer, kNewBody);
       version->script_cache_map()->NotifyFinishedCaching(
-          script, std::size(kNewBody), /*sha256_checksum=*/"", net::OK,
-          std::string());
+          script, base::ByteSize(std::size(kNewBody)), /*sha256_checksum=*/"",
+          net::OK, std::string());
     }
 
     version->SetMainScriptResponse(CreateMainScriptResponse());
@@ -2137,8 +2137,8 @@ TEST_P(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
   version->script_cache_map()->NotifyStartedCaching(new_script, resource_id);
   WriteStringResponse(writer, kBody);
   version->script_cache_map()->NotifyFinishedCaching(
-      new_script, std::size(kBody), /*sha256_checksum=*/"", net::OK,
-      std::string());
+      new_script, base::ByteSize(std::size(kBody)), /*sha256_checksum=*/"",
+      net::OK, std::string());
 
   // Run the update job.
   base::RunLoop().RunUntilIdle();

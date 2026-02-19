@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -663,14 +664,14 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
               perfetto::Flow::ProcessScoped(
                   request_id_, kServiceWorkerNewScriptLoaderScope));
   net::Error error_code = static_cast<net::Error>(status.error_code);
-  int bytes_written = -1;
+  std::optional<base::ByteSize> bytes_written;
   std::string sha256_checksum;
   if (error_code == net::OK) {
     CHECK_EQ(LoaderState::kCompleted, network_loader_state_);
     CHECK_EQ(WriterState::kCompleted, header_writer_state_);
     CHECK_EQ(WriterState::kCompleted, body_writer_state_);
     CHECK(cache_writer_->did_replace());
-    bytes_written = cache_writer_->bytes_written();
+    bytes_written = base::ByteSize(cache_writer_->bytes_written());
     DCHECK_EQ(cache_writer_->checksum_update_timing(),
               ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
     sha256_checksum = cache_writer_->GetSha256Checksum();

@@ -10,6 +10,7 @@
 #include <map>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
@@ -80,7 +81,7 @@ struct CONTENT_EXPORT ServiceWorkerRegistrationInfo {
       const ServiceWorkerVersionInfo& active_version,
       const ServiceWorkerVersionInfo& waiting_version,
       const ServiceWorkerVersionInfo& installing_version,
-      int64_t stored_version_size_bytes,
+      base::ByteSize stored_version_size,
       bool navigation_preload_enabled,
       size_t navigation_preload_header_length);
   ServiceWorkerRegistrationInfo(const ServiceWorkerRegistrationInfo& other);
@@ -89,15 +90,15 @@ struct CONTENT_EXPORT ServiceWorkerRegistrationInfo {
   GURL scope;
   blink::StorageKey key;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache;
-  int64_t registration_id;
-  DeleteFlag delete_flag;
+  int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
+  DeleteFlag delete_flag = IS_NOT_DELETED;
   ServiceWorkerVersionInfo active_version;
   ServiceWorkerVersionInfo waiting_version;
   ServiceWorkerVersionInfo installing_version;
 
-  int64_t stored_version_size_bytes;
-  bool navigation_preload_enabled;
-  size_t navigation_preload_header_length;
+  base::ByteSize stored_version_size;
+  bool navigation_preload_enabled = false;
+  size_t navigation_preload_header_length = 0;
 };
 
 }  // namespace content

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -69,7 +70,7 @@ class ServiceWorkerDatabase {
   struct DeletedVersion {
     int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
     int64_t version_id = blink::mojom::kInvalidServiceWorkerVersionId;
-    uint64_t resources_total_size_bytes = 0;
+    base::ByteSize resources_total_size;
     std::vector<int64_t /*=resource_id*/> newly_purgeable_resources;
 
     DeletedVersion();
@@ -99,7 +100,7 @@ class ServiceWorkerDatabase {
 
   // Reads the total resource size stored in the database for |key|.
   Status GetUsageForStorageKey(const blink::StorageKey& key,
-                               int64_t& out_usage);
+                               base::ByteSize& out_usage);
 
   // Reads all registrations from the database. Returns OK if successfully read
   // or not found. Otherwise, returns an error.
