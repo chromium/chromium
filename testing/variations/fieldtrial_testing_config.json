@@ -25442,7 +25442,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FullscreenSmoothScrollingDefault",
-                        "kSmoothScrollingUseDelegate"
+                        "SmoothScrollingUseDelegate"
                     ]
                 }
             ]
