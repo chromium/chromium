@@ -128,6 +128,9 @@ textarea {
   background-color: transparent;
   padding: 10px 10px 0 10px;
   flex-grow: 1;
+}
+
+textarea.has-overflow {
   -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }

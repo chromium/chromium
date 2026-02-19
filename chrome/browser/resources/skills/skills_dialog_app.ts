@@ -15,8 +15,10 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
 import {SkillSource} from './skill.mojom-webui.js';
@@ -120,6 +122,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
 
+  private resizeObserver_: ResizeObserver|null = null;
+
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
         this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
@@ -150,6 +154,63 @@ export class SkillsDialogAppElement extends CrLitElement {
         ({email}) => {
           this.signedInEmail_ = email;
         });
+    if (window.ResizeObserver) {
+      this.resizeObserver_ = new ResizeObserver(() => {
+        this.checkTextareaOverflow_();
+      });
+    }
+  }
+
+  private disconnectResizeObserver_() {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.disconnectResizeObserver_();
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties as PropertyValues<this>);
+
+    // If the loading state changed, the textarea might have been removed from
+    // the DOM.
+    if (changedProperties.has('isRefineLoading_') && this.isRefineLoading_) {
+      // Wait for the DOM to be fully updated.
+      this.updateComplete.then(() => {
+        this.disconnectResizeObserver_();
+      });
+    }
+  }
+
+  private attachResizeObserver_() {
+    const textarea = this.instructionsTextarea_;
+    this.disconnectResizeObserver_();
+    this.resizeObserver_ = new ResizeObserver(() => {
+      this.checkTextareaOverflow_();
+    });
+    // Observe the current textarea
+    this.resizeObserver_.observe(textarea);
+    textarea.onscroll = () => this.checkTextareaOverflow_();
+  }
+
+  private checkTextareaOverflow_() {
+    const textarea = this.instructionsTextarea_;
+    const hasScrollbar = textarea.scrollHeight > textarea.clientHeight;
+    const isScrolledToBottom =
+        textarea.scrollTop + textarea.clientHeight >= textarea.scrollHeight;
+    textarea.classList.toggle(
+        'has-overflow', hasScrollbar && !isScrolledToBottom);
+  }
+
+  private get instructionsTextarea_(): HTMLTextAreaElement {
+    const el =
+        this.shadowRoot.querySelector<HTMLTextAreaElement>('#instructionsText');
+    assert(el);
+    return el;
   }
 
   protected onEmojiBtnClick_(e: Event) {
@@ -223,6 +284,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.hasRefineError_ = false;
 
     this.skill_ = {...this.skill_, prompt: newValue};
+
+    this.checkTextareaOverflow_();
   }
 
   protected onUndoClick_() {
@@ -234,7 +297,10 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.canRedoRefine_ = true;
     this.hasRefineError_ = false;
 
-    this.$.instructionsText.focus();
+    this.updateComplete.then(() => {
+      this.checkTextareaOverflow_();
+      this.instructionsTextarea_.focus();
+    });
   }
 
   protected onRedoClick_() {
@@ -244,11 +310,13 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.canRedoRefine_ = false;
     this.hasRefineError_ = false;
 
-    this.$.instructionsText.focus();
+    this.updateComplete.then(() => {
+      this.checkTextareaOverflow_();
+      this.instructionsTextarea_.focus();
+    });
   }
 
   protected onRefineClick_() {
-    this.$.instructionsText.focus();
     if (this.isRefineLoading_) {
       return;
     }
@@ -285,6 +353,11 @@ export class SkillsDialogAppElement extends CrLitElement {
         })
         .finally(() => {
           this.isRefineLoading_ = false;
+          this.updateComplete.then(() => {
+            this.attachResizeObserver_();
+            this.checkTextareaOverflow_();
+            this.instructionsTextarea_.focus();
+          });
         });
   }
 
