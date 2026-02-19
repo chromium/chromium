@@ -22,4 +22,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-Unchanged from the output of the export script.
+* Enable cpp_features in variations_seed.proto.

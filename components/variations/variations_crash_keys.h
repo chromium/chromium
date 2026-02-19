@@ -46,7 +46,7 @@ void UpdateCrashKeysWithSyntheticTrials(
 
 // Sets the crash key for the variations seed version.
 COMPONENT_EXPORT(VARIATIONS)
-void SetVariationsSeedVersionCrashKey(const std::string& seed_version);
+void SetVariationsSeedVersionCrashKey(std::string_view seed_version);
 
 // Clears the internal instance, for testing.
 COMPONENT_EXPORT(VARIATIONS) void ClearCrashKeysInstanceForTesting();
