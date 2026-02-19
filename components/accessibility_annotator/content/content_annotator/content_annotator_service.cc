@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -16,6 +17,7 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "content/public/browser/page.h"
 
 namespace accessibility_annotator {
 
@@ -68,8 +70,17 @@ void ContentAnnotatorService::OnPageContentExtracted(
     scoped_refptr<
         const page_content_annotations::RefCountedAnnotatedPageContent>
         page_content) {
-  // TODO(crbug.com/463735432): Implement logic to locally
-  // store page title and transformed APC.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(page_content);
+
+  CacheIterator it =
+      GetOrCreateJoinEntry(page.GetMainDocument().GetLastCommittedURL());
+  if (page_content->data.has_main_frame_data()) {
+    it->second.page_title = page_content->data.main_frame_data().title();
+  }
+
+  it->second.annotated_page_content = std::move(page_content);
+  MaybeAnnotate(it);
 }
 
 ContentAnnotatorService::CacheIterator

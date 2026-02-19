@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
@@ -21,6 +24,9 @@ struct ContentClassificationInput {
   std::optional<base::Time> navigation_timestamp;
   std::optional<std::string> adopted_language;
   std::optional<std::string> page_title;
+  scoped_refptr<const base::RefCountedData<
+      optimization_guide::proto::AnnotatedPageContent>>
+      annotated_page_content;
 
   // Returns true if all fields are populated.
   bool IsComplete() const;
