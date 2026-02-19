@@ -66,9 +66,9 @@ void LogDanglingMarkupHistogram(LocalDOMWindow* origin_window,
 }
 
 bool ContainsNewLineAndLessThan(const AtomicString& target) {
-  return (target.Contains('\n') || target.Contains('\r') ||
-          target.Contains('\t')) &&
-         target.Contains('<');
+  return (target.contains('\n') || target.contains('\r') ||
+          target.contains('\t')) &&
+         target.contains('<');
 }
 
 }  // namespace

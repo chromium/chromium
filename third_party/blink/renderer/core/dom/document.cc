@@ -5166,10 +5166,12 @@ void Document::ProcessBaseElement() {
 
   AtomicString old_base_target = base_target_;
   if (target) {
-    if (target->Contains('\n') || target->Contains('\r'))
+    if (target->contains('\n') || target->contains('\r')) {
       UseCounter::Count(*this, WebFeature::kBaseWithNewlinesInTarget);
-    if (target->Contains('<'))
+    }
+    if (target->contains('<')) {
       UseCounter::Count(*this, WebFeature::kBaseWithOpenBracketInTarget);
+    }
     base_target_ = *target;
   } else {
     base_target_ = g_null_atom;

@@ -189,13 +189,13 @@ void HTMLIFrameElement::ParseAttribute(
       FrameOwnerPropertiesChanged();
       should_call_did_change_attributes = true;
     }
-    if (name_.Contains('\n')) {
+    if (name_.contains('\n')) {
       UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsNewline);
     }
-    if (name_.Contains('<')) {
+    if (name_.contains('<')) {
       UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsBrace);
     }
-    if (name_.Contains('\n') && name_.Contains('<')) {
+    if (name_.contains('\n') && name_.contains('<')) {
       UseCounter::Count(GetDocument(), WebFeature::kDanglingMarkupInWindowName);
       if (!name_.EndsWith('>')) {
         UseCounter::Count(GetDocument(),
@@ -259,7 +259,7 @@ void HTMLIFrameElement::ParseAttribute(
     }
   } else if (name == html_names::kCspAttr) {
     static const size_t kMaxLengthCSPAttribute = 4096;
-    if (value && (value.Contains('\n') || value.Contains('\r') ||
+    if (value && (value.contains('\n') || value.contains('\r') ||
                   !MatchesTheSerializedCSPGrammar(value.GetString()))) {
       // TODO(antoniosartori): It would be safer to block loading iframes with
       // invalid 'csp' attribute.

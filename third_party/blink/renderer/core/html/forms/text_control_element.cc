@@ -225,8 +225,8 @@ String TextControlElement::StrippedPlaceholder() const {
   // the attribute value.
   const AtomicString& attribute_value =
       FastGetAttribute(html_names::kPlaceholderAttr);
-  if (!attribute_value.Contains(uchar::kLineFeed) &&
-      !attribute_value.Contains(uchar::kCarriageReturn)) {
+  if (!attribute_value.contains(uchar::kLineFeed) &&
+      !attribute_value.contains(uchar::kCarriageReturn)) {
     return attribute_value;
   }
 

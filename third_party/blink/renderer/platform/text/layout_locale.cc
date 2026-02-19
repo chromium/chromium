@@ -371,8 +371,9 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
 
   // uloc_setKeywordValue_58 has a problem to handle "@" in the original
   // string. crbug.com/697859
-  if (string_.Contains('@'))
+  if (string_.contains('@')) {
     return string_;
+  }
 
   constexpr wtf_size_t kMaxLbValueLen = 6;
   constexpr wtf_size_t kMaxKeywordsLen =

@@ -76,13 +76,13 @@ class PLATFORM_EXPORT HTTPHeaderMap final {
     return it->value;
   }
   AddResult Set(const AtomicString& k, const AtomicString& v) {
-    SECURITY_DCHECK(!k.Contains('\n') && !k.Contains('\r'));
-    SECURITY_DCHECK(!v.Contains('\n') && !v.Contains('\r'));
+    SECURITY_DCHECK(!k.contains('\n') && !k.contains('\r'));
+    SECURITY_DCHECK(!v.contains('\n') && !v.contains('\r'));
     return headers_.Set(k, v);
   }
   AddResult Add(const AtomicString& k, const AtomicString& v) {
-    SECURITY_DCHECK(!k.Contains('\n') && !k.Contains('\r'));
-    SECURITY_DCHECK(!v.Contains('\n') && !v.Contains('\r'));
+    SECURITY_DCHECK(!k.contains('\n') && !k.contains('\r'));
+    SECURITY_DCHECK(!v.contains('\n') && !v.contains('\r'));
     return headers_.insert(k, v);
   }
   void Remove(const AtomicString& k) { headers_.erase(k); }

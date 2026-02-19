@@ -208,9 +208,9 @@ void AnchorElementUtils::SendPings(const KURL& destination_url,
     return;
   }
 
-  if ((ping_value.Contains('\n') || ping_value.Contains('\r') ||
-       ping_value.Contains('\t')) &&
-      ping_value.Contains('<')) {
+  if ((ping_value.contains('\n') || ping_value.contains('\r') ||
+       ping_value.contains('\t')) &&
+      ping_value.contains('<')) {
     Deprecation::CountDeprecation(
         document.GetExecutionContext(),
         WebFeature::kCanRequestURLHTTPContainingNewline);
