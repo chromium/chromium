@@ -203,12 +203,6 @@ BASE_FEATURE_PARAM(std::string,
                    "autofill_ai_geo_ip_blocklist",
                    "");
 
-// If enabled, Autofill AI ignores the GeoIp restrictions for uploading private
-// passes to Wallet. Even with the feature enabled, we continue to check whether
-// Wallet is supported in the country at all.
-BASE_FEATURE(kAutofillAiIgnorePrivatePassGeoIpRestrictions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, Autofill AI does not depend on Autofill for addresses being
 // enabled.
 BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,

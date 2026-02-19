@@ -795,27 +795,6 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
   }
 }
 
-// Tests that the Wallet import is not allowed for private passes if the country
-// is explicitly excluded (currently just France).
-TEST_F(AutofillAiMayPerformImportToWalletTest,
-       ImportToWallet_FalseForPrivatePassIfCountryIsExcluded) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWalletPrivatePasses};
-  client().SetWalletStorageEnabled(true);
-
-  for (const auto& country : {GeoIpCountryCode("FR")}) {
-    SCOPED_TRACE(testing::Message() << "country: " << country.value());
-    client().SetVariationConfigCountryCode(country);
-    for (const EntityType entity_type : GetPrivatePasses()) {
-      SCOPED_TRACE(testing::Message() << "entity_type: " << entity_type);
-      EXPECT_FALSE(MayPerformAutofillAiAction(
-          client(), AutofillAiAction::kImportToWallet, entity_type));
-    }
-    EXPECT_TRUE(MayPerformAutofillAiAction(
-        client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
-  }
-}
-
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseForVehicleWhenFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
