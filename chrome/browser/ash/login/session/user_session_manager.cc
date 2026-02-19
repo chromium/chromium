@@ -2434,7 +2434,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
       // instead override `ServiceIsCreatedWithBrowserContext` in the
       // factory to conditionally construct the service after profile creation.
       FloatingWorkspaceServiceFactory::GetForProfile(profile);
-    } else if (!floating_workspace_handles_restore) {
+    } else {
       if (!IsFullRestoreEnabled(profile)) {
         LaunchBrowser(profile);
         PerformPostBrowserLaunchOOBEActions(profile);
