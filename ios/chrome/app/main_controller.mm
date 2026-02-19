@@ -343,22 +343,15 @@ enum class ProfileChoice {
   kNewProfile,
 };
 
-// Returns the available ProfileChoices depending on the enabled features.
+// Returns the available ProfileChoices.
 base::span<const ProfileChoice> GetProfileChoices() {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    static constexpr ProfileChoice kProfileChoicesWithSeparateAccounts[] = {
-        ProfileChoice::kProfileForScene, ProfileChoice::kProfileFromActivity,
-        ProfileChoice::kLastUsedProfile, ProfileChoice::kPersonalProfile,
-        ProfileChoice::kNewProfile,
-    };
-    return kProfileChoicesWithSeparateAccounts;
-  }
-
-  static constexpr ProfileChoice kProfileChoices[] = {
+  static constexpr auto kProfileChoices = std::to_array<ProfileChoice>({
+      ProfileChoice::kProfileForScene,
       ProfileChoice::kProfileFromActivity,
+      ProfileChoice::kLastUsedProfile,
       ProfileChoice::kPersonalProfile,
       ProfileChoice::kNewProfile,
-  };
+  });
   return kProfileChoices;
 }
 

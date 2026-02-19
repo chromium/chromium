@@ -161,10 +161,6 @@ void MigrationCompleteForProfile(
 
 // Returns whether multiple profiles have at least one scene connected.
 - (BOOL)isMultiProfile {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    return NO;
-  }
-
   // Check if we have more than 1 connected profile.
   NSUInteger profileWithScenes = 0;
   for (ProfileState* profileState in self.appState.profileStates) {

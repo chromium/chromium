@@ -32,17 +32,12 @@ enum class ChangeProfileReason {
 // App-level commands related to switching profiles.
 @protocol ChangeProfileCommands
 
-// Changes the profile used by the scene with `sceneIdentifier` and invoke
-// `completion` when the profile is fully initialised (or as soon as the
-// operation fails in case of failure).
+// Changes the profile used by the scene identified by `sceneState` and invokes
+// `continuation` when the profile is fully loaded.
 //
-// This can be called even if the profile named `profileName` has not yet
-// been created, the method will take care of creating it, loading it and
-// then connecting the scene with the profile.
-//
-// The method may fail if the feature kSeparateProfilesForManagedAccounts
-// is disabled or not available (on iOS < 17), if creating the profile is
-// impossible or fails, or if no scene named `sceneIdentifier` exists.
+// The profile named `profileName` must be registered already, but it does not
+// need to be initialized or loaded. This method will take care of initializing
+// it, loading it, and then connecting the scene with the profile.
 //
 // The continuation will be called asynchronously, when the profile has
 // been switched for the SceneState.
