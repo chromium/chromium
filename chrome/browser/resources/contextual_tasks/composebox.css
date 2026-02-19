@@ -128,7 +128,7 @@
   --text-input-top-spacing: 16px;
   --composebox-context-menu-entrypoint-button-color:
       var(--color-composebox-voice-lens-button);
-  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline: 0;
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start: 0;
 
   box-shadow: none;
   box-sizing: border-box;

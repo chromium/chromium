@@ -49,7 +49,8 @@
 
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
-  padding-inline: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline, 8px);
+  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px);
+  padding-inline-end: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end, 8px);
 }
 
 #toolChipsContainer {
