@@ -171,6 +171,12 @@ bool IsSettingReadOnly(const std::string& pref_name) {
       pref_name == ::prefs::kPinUnlockAutosubmitEnabled) {
     return true;
   }
+
+  // `kAllowedLocalAuthfactors` is never directly changeable by the user.
+  if (pref_name == ash::prefs::kAllowedLocalAuthFactors) {
+    return true;
+  }
+
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Can be changed only from C++ after successful re-auth.
@@ -638,6 +644,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kMessageCenterLockScreenMode] =
       settings_api::PrefType::kString;
+  (*s_allowlist)[ash::prefs::kAllowedLocalAuthFactors] =
+      settings_api::PrefType::kList;
 
   // Accessibility.
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickDelayMs] =

@@ -28,6 +28,7 @@ import '../multidevice_page/multidevice_smartlock_item.js';
 import './password_settings.js';
 import './pin_settings.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -38,8 +39,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isManagedLocalPinAndPasswordEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import type {PrefsState} from '../common/types.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -49,9 +50,11 @@ import {Router, routes} from '../router.js';
 import type {FingerprintBrowserProxy} from './fingerprint_browser_proxy.js';
 import {FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './lock_screen_subpage.html.js';
+import {AllowedLocalAuthFactors, AllowedLocalAuthFactorsPref} from './lock_screen_subpage_constants.js';
 
-const SettingsLockScreenElementBase =
-    RouteObserverMixin(LockStateMixin(DeepLinkingMixin(PolymerElement)));
+
+const SettingsLockScreenElementBase = RouteObserverMixin(
+    LockStateMixin(DeepLinkingMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get is() {
@@ -64,10 +67,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
 
       /**
        * Authentication token provided by lock-screen-password-prompt-dialog.
@@ -168,7 +167,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     };
   }
 
-  prefs: PrefsState;
   authToken: string|undefined;
 
   // DeepLinkingMixin override
@@ -456,12 +454,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         this.authToken, AuthFactor.kLocalPassword),
       PinFactorEditor.getRemote().getConfiguredPinFactor(this.authToken),
     ]);
-
+    const localPasswordAllowed =
+        isManagedLocalPinAndPasswordEnabled() && this.isLocalPasswordAllowed();
     if (hasLocalPassword) {
       // Local Password is the overriding factor here. We need to show change
       // option here.
       this.showPasswordSettings_ = true;
-    } else if (!this.deviceAccountManaged_) {
+    } else if (!this.deviceAccountManaged_ || localPasswordAllowed) {
       // Onto scenarios for non managed accounts now.
       if (hasGaiaPassword) {
         // If the gaia password is setup, for non managed users, we will allow
@@ -521,6 +520,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     } finally {
       this.recoveryChangeInProcess_ = false;
     }
+  }
+
+  private isLocalPasswordAllowed(): boolean {
+    const allowedLocalAuthFactors = this.getPref(AllowedLocalAuthFactorsPref);
+    const authFactorsSet = new Set(allowedLocalAuthFactors.value);
+    return authFactorsSet.has(AllowedLocalAuthFactors.ALL) ||
+        authFactorsSet.has(AllowedLocalAuthFactors.LOCAL_PASSWORD);
   }
 }
 

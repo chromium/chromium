@@ -328,6 +328,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddString("fingerprintLearnMoreLink",
                          chrome::kFingerprintLearnMoreURL);
   html_source->AddString("recoveryLearnMoreUrl", chrome::kRecoveryLearnMoreURL);
+  html_source->AddBoolean("managedLocalPinAndPasswordEnabled",
+                          ash::features::IsManagedLocalPinAndPasswordEnabled());
 }
 
 void AddFingerprintListStrings(content::WebUIDataSource* html_source) {

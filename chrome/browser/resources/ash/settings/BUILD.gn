@@ -448,6 +448,7 @@ build_webui("build") {
     "os_people_page/account_manager_browser_proxy.ts",
     "os_people_page/fingerprint_browser_proxy.ts",
     "os_people_page/graduation/mojo_interface_provider.ts",
+    "os_people_page/lock_screen_subpage_constants.ts",
     "os_people_page/os_sync_browser_proxy.ts",
     "os_printing_page/cups_printer_dialog_util.ts",
     "os_printing_page/cups_printer_types.ts",
