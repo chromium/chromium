@@ -71,6 +71,8 @@ struct ShowOptions {
   bool reinitialize_if_already_active = false;
   std::optional<std::string> prompt_suggestion = std::nullopt;
   bool auto_send = false;
+  mojom::InvocationSource invocation_source =
+      mojom::InvocationSource::kTopChromeButton;
 
   // Container for options that are different between side panel and floaty.
   EmbedderOptions embedder_options;

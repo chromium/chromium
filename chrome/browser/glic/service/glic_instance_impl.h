@@ -318,6 +318,7 @@ class GlicInstanceImpl : public GlicInstance,
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
   void MaybeShowHostUi(GlicUiEmbedder* embedder,
+                       mojom::InvocationSource source,
                        std::optional<std::string> prompt_suggestion,
                        bool auto_send);
   void OnBoundTabDestroyed(tabs::TabInterface* tab);

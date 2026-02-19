@@ -332,8 +332,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
     SetActiveEmbedderAndNotifyStateChange(new_key);
   }
 
-  MaybeShowHostUi(embedder_to_show, options.prompt_suggestion,
-                  options.auto_send);
+  MaybeShowHostUi(embedder_to_show, options.invocation_source,
+                  options.prompt_suggestion, options.auto_send);
   embedder_to_show->Show(options);
   if (options.focus_on_show) {
     embedder_to_show->Focus();
@@ -411,6 +411,7 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
   options.focus_on_show = true;
   options.prompt_suggestion = prompt_suggestion;
   options.auto_send = auto_send;
+  options.invocation_source = source;
   Show(options);
   return true;
 }
@@ -932,6 +933,7 @@ void GlicInstanceImpl::UpdateFloatingPanelCanAttach() {
 
 void GlicInstanceImpl::MaybeShowHostUi(
     GlicUiEmbedder* embedder,
+    mojom::InvocationSource invocation_source,
     std::optional<std::string> prompt_suggestion,
     bool auto_send) {
   Host::EmbedderDelegate* delegate = embedder->GetHostEmbedderDelegate();
@@ -944,9 +946,7 @@ void GlicInstanceImpl::MaybeShowHostUi(
       content::Visibility::VISIBLE);
   host_.NotifyWindowIntentToShow();
 
-  // TODO: pass in the correct invocation source
-  NotifyPanelWillOpen(mojom::InvocationSource::kTopChromeButton,
-                      prompt_suggestion, auto_send);
+  NotifyPanelWillOpen(invocation_source, prompt_suggestion, auto_send);
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
