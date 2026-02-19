@@ -214,8 +214,9 @@ ServiceWorkerSyntheticResponseManager::ServiceWorkerSyntheticResponseManager(
               "ServiceWorkerSyntheticResponseManager",
               perfetto::Flow::FromPointer(this));
   write_buffer_manager_.emplace();
-  status_ = write_buffer_manager_->is_data_pipe_created() &&
-                    version_->GetResponseHeadForSyntheticResponse()
+  const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
+  status_ = write_buffer_manager_->is_data_pipe_created() && response_head &&
+                    response_head->headers
                 ? SyntheticResponseStatus::kReady
                 : SyntheticResponseStatus::kNotReady;
 }

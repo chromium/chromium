@@ -2945,6 +2945,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_script_loader_factory_unittest.cc",
     "../browser/service_worker/service_worker_single_script_update_checker_unittest.cc",
     "../browser/service_worker/service_worker_synthetic_response_data_pipe_connector_unittest.cc",
+    "../browser/service_worker/service_worker_synthetic_response_manager_unittest.cc",
     "../browser/service_worker/service_worker_updated_script_loader_unittest.cc",
     "../browser/service_worker/service_worker_version_unittest.cc",
     "../browser/shareable_file_reference_unittest.cc",
