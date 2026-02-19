@@ -39,7 +39,8 @@ assert(!is_cronet_build)
 if (android_64bit_target_cpu) {
   # We are assuming that all webview targets have the same Java - if this
   # is no longer true, we should add more targets to this array.
-  webview_java_for_jni_targets = [ ":system_webview_64_bundle($default_toolchain)" ]
+  webview_java_for_jni_targets =
+      [ ":system_webview_64_bundle($default_toolchain)" ]
 } else {
   webview_java_for_jni_targets = [ ":system_webview_bundle" ]
 }
@@ -504,6 +505,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/AwNetworkChangeNotifierRegistrationPolicy.java",
       "java/src/org/chromium/android_webview/AwNoVarySearchData.java",
       "java/src/org/chromium/android_webview/AwOriginMatchedHeader.java",
+      "java/src/org/chromium/android_webview/AwOverScrollHelper.java",
       "java/src/org/chromium/android_webview/AwPacProcessor.java",
       "java/src/org/chromium/android_webview/AwPage.java",
       "java/src/org/chromium/android_webview/AwPasswordEchoSettingController.java",
@@ -1373,7 +1375,9 @@ if (!(_is_default_toolchain && use_webview_pgo_profile)) {
   }
 } else {
   copy("copy_webview_lib_unstripped") {
-    _webview_toolchain_out_dir = get_label_info(":libwebviewchromium($webview_toolchain)", "root_out_dir")
+    _webview_toolchain_out_dir =
+        get_label_info(":libwebviewchromium($webview_toolchain)",
+                       "root_out_dir")
     _sofile = "$_webview_toolchain_out_dir/lib.unstripped/libwebviewchromium$shlib_extension"
     sources = [ _sofile ]
     outputs = [ "$root_out_dir/lib.unstripped/{{source_file_part}}" ]
