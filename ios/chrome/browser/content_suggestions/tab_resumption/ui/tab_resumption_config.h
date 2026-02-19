@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_ITEM_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_CONFIG_H_
 
 #import <UIKit/UIKit.h>
 
@@ -30,7 +30,7 @@ enum TabResumptionItemType {
 };
 
 // Item used to display the tab resumption tile.
-@interface TabResumptionItem : MagicStackModule
+@interface TabResumptionConfig : MagicStackModule
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
@@ -74,7 +74,7 @@ enum TabResumptionItemType {
 // ShopCard related information to render the ShopCard variants of
 // tab-resumption.
 @property(nonatomic, strong) ShopCardData* shopCardData;
-// LINT.ThenChange(tab_resumption_item.mm:Copy)
+// LINT.ThenChange(tab_resumption_config.mm:Copy)
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType
@@ -82,9 +82,9 @@ enum TabResumptionItemType {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Replaces all `self` properties by `item` ones.
-- (void)reconfigureWithItem:(TabResumptionItem*)item;
+// Replaces all `self` properties by `config` ones.
+- (void)reconfigureWithConfig:(TabResumptionConfig*)config;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_CONFIG_H_

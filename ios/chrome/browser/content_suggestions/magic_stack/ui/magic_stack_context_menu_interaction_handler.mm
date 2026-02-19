@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -54,8 +54,8 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
                                      MagicStackModule* config) {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption: {
-      TabResumptionItem* tabResumptionItemConfig =
-          static_cast<TabResumptionItem*>(config);
+      TabResumptionConfig* tabResumptionItemConfig =
+          static_cast<TabResumptionConfig*>(config);
       if ((commerce::kShopCardVariation.Get().contains(
                commerce::kShopCardArm3) ||
            commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) &&
@@ -105,8 +105,8 @@ NSString* GetContextMenuHideDescriptionForType(
     MagicStackModule* config) {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption: {
-      TabResumptionItem* tabResumptionItemConfig =
-          static_cast<TabResumptionItem*>(config);
+      TabResumptionConfig* tabResumptionItemConfig =
+          static_cast<TabResumptionConfig*>(config);
       if (tabResumptionItemConfig.shopCardData &&
           tabResumptionItemConfig.shopCardData.shopCardItemType ==
               ShopCardItemType::kPriceTrackableProductOnTab) {

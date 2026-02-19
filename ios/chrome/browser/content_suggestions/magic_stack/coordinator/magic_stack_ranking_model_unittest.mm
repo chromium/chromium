@@ -56,7 +56,7 @@
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
@@ -139,15 +139,15 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 @end
 
 @implementation FakeTabResumptionMediator {
-  TabResumptionItem* _item;
+  TabResumptionConfig* _config;
 }
 
-- (TabResumptionItem*)itemConfig {
-  if (!_item) {
-    _item = [[TabResumptionItem alloc] initWithItemType:kMostRecentTab];
-    _item.tabURL = GURL("http://test.com");
+- (TabResumptionConfig*)itemConfig {
+  if (!_config) {
+    _config = [[TabResumptionConfig alloc] initWithItemType:kMostRecentTab];
+    _config.tabURL = GURL("http://test.com");
   }
-  return _item;
+  return _config;
 }
 
 - (void)fetchLastTabResumptionItem {

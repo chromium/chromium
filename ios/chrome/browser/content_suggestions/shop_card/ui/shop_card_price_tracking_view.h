@@ -8,17 +8,17 @@
 #import <UIKit/UIKit.h>
 
 @protocol TabResumptionCommands;
-@class TabResumptionItem;
+@class TabResumptionConfig;
 
 // Tab resumption variation which enables a price trackable URL to be
 // price tracked.
 @interface ShopCardPriceTrackingView : UIView
 
-// Initialize a ShopCardPriceTrackingView with the given `item`.
-- (instancetype)initWithItem:(TabResumptionItem*)item;
-
 // The handler that receives ShopCardPriceTrackingView's events.
-@property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
+@property(nonatomic, weak) id<TabResumptionCommands> tabResumptionHandler;
+
+// Initialize a ShopCardPriceTrackingView with the given `config`.
+- (instancetype)initWithConfig:(TabResumptionConfig*)config;
 
 @end
 

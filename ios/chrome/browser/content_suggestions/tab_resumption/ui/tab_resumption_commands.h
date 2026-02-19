@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_COMMANDS_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TAB_RESUMPTION_UI_TAB_RESUMPTION_COMMANDS_H_
 
-@class TabResumptionItem;
+@class TabResumptionConfig;
 
 // Command protocol for events for the Tab Resumption module.
 @protocol TabResumptionCommands
 
 // Opens the displayed tab resumption item.
-- (void)openTabResumptionItem:(TabResumptionItem*)item;
+- (void)openTabResumptionItem:(TabResumptionConfig*)config;
 
-// Track the URL correspodning to the ShopCard.
-- (void)trackShopCardItem:(TabResumptionItem*)item;
+// Track the URL corresponding to the ShopCard.
+- (void)trackShopCardItem:(TabResumptionConfig*)config;
 
 @end
 

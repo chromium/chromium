@@ -10,7 +10,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_commands.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_track_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -35,7 +35,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
 
 @implementation ShopCardPriceTrackingView {
   // Item used to configure the view.
-  TabResumptionItem* _item;
+  TabResumptionConfig* _config;
 
   UIStackView* _textStack;
   UILabel* _titleLabel;
@@ -55,14 +55,14 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   UIButton* _trackPriceButton;
 }
 
-- (instancetype)initWithItem:(TabResumptionItem*)item {
+- (instancetype)initWithConfig:(TabResumptionConfig*)config {
   self = [super init];
   if (self) {
-    _item = item;
+    _config = config;
   }
   [self addTapGestureRecognizer];
 
-  if (_item.contentImage) {
+  if (_config.contentImage) {
     // Case 1: Product image present.
     // Initialize + Styling
     [self addProductImage];
@@ -74,11 +74,11 @@ const CGFloat kVerticalStackSpacing = 6.0f;
     [self addWidthConstraintsForProductImage:kShopCardProductImageWidthHeight];
     AddSameConstraints(_productImage, _productAndFaviconContainer);
 
-  } else if (_item.faviconImage) {
+  } else if (_config.faviconImage) {
     // Case 2: Only favicon image present.
     // Init and style the container and favicon
     [self addProductImageEmptyGray];
-    [self addFaviconImageAndContainer:_item.faviconImage];
+    [self addFaviconImageAndContainer:_config.faviconImage];
     _faviconImageContainer.backgroundColor = UIColor.whiteColor;
 
     // Hierarchy
@@ -154,7 +154,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   // Accessibility
   _contentStack.accessibilityElements = @[ _textStack, _trackPriceButton ];
   self.isAccessibilityElement = NO;
-  _textStack.accessibilityLabel = _item.shopCardData.accessibilityString;
+  _textStack.accessibilityLabel = _config.shopCardData.accessibilityString;
   _textStack.isAccessibilityElement = YES;
   _textStack.accessibilityTraits = UIAccessibilityTraitButton;
   _priceNotificationsChip.isAccessibilityElement = YES;
@@ -165,7 +165,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
           @"%@ %@",
           l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_BUTTON),
-          _item.tabTitle];
+          _config.tabTitle];
   _trackPriceButton.accessibilityLabel = trackPriceButtonAccessibilityLabel;
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   // For larger font size, domain
@@ -227,7 +227,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   _productAndFaviconContainer = [[UIView alloc] init];
   _productImage = [[UIImageView alloc] init];
 
-  _productImage.image = _item.contentImage;
+  _productImage.image = _config.contentImage;
   _productImage.backgroundColor = UIColor.whiteColor;
 
   _productImage.contentMode = UIViewContentModeScaleAspectFill;
@@ -251,7 +251,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightMedium);
   // When there is no price drop, the previous price is the current price
   [_priceNotificationsChip setPriceDrop:nil
-                          previousPrice:_item.shopCardData.currentPrice];
+                          previousPrice:_config.shopCardData.currentPrice];
 }
 
 - (void)populateTitleLabel {
@@ -262,8 +262,8 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   _titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
-  NSString* text = [_item.tabTitle length]
-                       ? _item.tabTitle
+  NSString* text = [_config.tabTitle length]
+                       ? _config.tabTitle
                        : l10n_util::GetNSString(
                              IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER);
   _titleLabel.text = text;
@@ -282,13 +282,13 @@ const CGFloat kVerticalStackSpacing = 6.0f;
 
 // Configures and returns the UILabel that contains the session name.
 - (NSString*)configuredHostNameAndSessionLabel {
-  if (_item.itemType == kLastSyncedTab && _item.sessionName) {
+  if (_config.itemType == kLastSyncedTab && _config.sessionName) {
     return [NSString stringWithFormat:@"%@ • %@",
-                                      [self hostnameFromGURL:_item.tabURL],
-                                      _item.sessionName];
+                                      [self hostnameFromGURL:_config.tabURL],
+                                      _config.sessionName];
   } else {
-    return
-        [NSString stringWithFormat:@"%@", [self hostnameFromGURL:_item.tabURL]];
+    return [NSString
+        stringWithFormat:@"%@", [self hostnameFromGURL:_config.tabURL]];
   }
 }
 
@@ -296,7 +296,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
 - (void)trackItem {
   base::RecordAction(
       base::UserMetricsAction("IOS.MagicStack.ShopCard.PriceTracking.Track"));
-  [self.commandHandler trackShopCardItem:_item];
+  [self.tabResumptionHandler trackShopCardItem:_config];
 }
 
 // Returns the tab hostname from the given `URL`.
@@ -315,7 +315,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
 }
 
 - (void)shopCardItemTapped:(UIGestureRecognizer*)sender {
-  [self.commandHandler openTabResumptionItem:_item];
+  [self.tabResumptionHandler openTabResumptionItem:_config];
 }
 
 @end

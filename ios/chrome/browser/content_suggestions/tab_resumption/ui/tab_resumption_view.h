@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol TabResumptionCommands;
-@class TabResumptionItem;
+@class TabResumptionConfig;
 
 /// TODO(crbug.com/482377120): Consider refactoring to use an `IconDetailView`
 /// as the main content view for this Magic Stack card.
@@ -16,11 +16,11 @@
 // A view that displays a tab resumption item in the Magic Stack.
 @interface TabResumptionView : UIView
 
-// Initialize a TabResumptionView with the given `item`.
-- (instancetype)initWithItem:(TabResumptionItem*)item;
+// Initialize a TabResumptionView with the given `config`.
+- (instancetype)initWithConfig:(TabResumptionConfig*)config;
 
 // The handler that receives TabResumptionView's events.
-@property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
+@property(nonatomic, weak) id<TabResumptionCommands> tabResumptionHandler;
 
 @end
 

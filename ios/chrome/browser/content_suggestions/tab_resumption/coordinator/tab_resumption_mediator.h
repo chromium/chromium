@@ -18,7 +18,7 @@ class PrefService;
 class PushNotificationService;
 @protocol SceneCommands;
 @protocol SnackbarCommands;
-@class TabResumptionItem;
+@class TabResumptionConfig;
 @protocol TabResumptionMediatorDelegate;
 
 namespace bookmarks {
@@ -37,7 +37,7 @@ class IdentityManager;
 @interface TabResumptionMediator : NSObject
 
 // The latest state of the item config for the Tab Resumption module.
-@property(nonatomic, strong, readonly) TabResumptionItem* itemConfig;
+@property(nonatomic, strong, readonly) TabResumptionConfig* itemConfig;
 
 // The delegate for this mediator.
 @property(nonatomic, weak) id<TabResumptionMediatorDelegate> delegate;

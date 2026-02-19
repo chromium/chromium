@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
@@ -389,13 +389,13 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kMostVisited:
       return @"";
     case ContentSuggestionsModuleType::kTabResumption: {
-      TabResumptionItem* tabResumptionItem =
-          static_cast<TabResumptionItem*>(config);
+      TabResumptionConfig* tabResumptionConfig =
+          static_cast<TabResumptionConfig*>(config);
       // Arm 4 of ShopCard is an alternative to Tab Resumption,
       // triggered by Tab Resumption where the user is given the
       // option to price track a URL for a price trackable URL.
-      if (tabResumptionItem.shopCardData &&
-          tabResumptionItem.shopCardData.shopCardItemType ==
+      if (tabResumptionConfig.shopCardData &&
+          tabResumptionConfig.shopCardData.shopCardItemType ==
               ShopCardItemType::kPriceTrackableProductOnTab) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_2);

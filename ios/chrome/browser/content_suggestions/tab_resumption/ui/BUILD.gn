@@ -5,8 +5,8 @@
 source_set("ui") {
   sources = [
     "tab_resumption_commands.h",
-    "tab_resumption_item.h",
-    "tab_resumption_item.mm",
+    "tab_resumption_config.h",
+    "tab_resumption_config.mm",
     "tab_resumption_view.h",
     "tab_resumption_view.mm",
   ]
@@ -37,7 +37,7 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tab_resumption_item_unittest.mm" ]
+  sources = [ "tab_resumption_config_unittest.mm" ]
   deps = [
     ":ui",
     "//base",

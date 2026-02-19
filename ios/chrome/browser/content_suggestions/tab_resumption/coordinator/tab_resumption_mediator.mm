@@ -48,7 +48,7 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/public/tab_resumption_constants.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_commands.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -207,10 +207,10 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 void AddProductImageIfApplicable(
     const commerce::PriceTrackingData& price_tracking_data,
-    TabResumptionItem* item) {
+    TabResumptionConfig* config) {
   if (price_tracking_data.has_buyable_product() &&
       price_tracking_data.buyable_product().has_image_url()) {
-    item.shopCardData.productImageURL =
+    config.shopCardData.productImageURL =
         price_tracking_data.buyable_product().image_url();
   }
 }
@@ -219,7 +219,7 @@ void ConfigureTabResumptionItemForShopCard(
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
         optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions,
-    TabResumptionItem* item,
+    TabResumptionConfig* config,
     const GURL& url) {
   auto iter = decisions.find(optimization_guide::proto::PRICE_TRACKING);
   if (iter == decisions.end()) {
@@ -239,22 +239,22 @@ void ConfigureTabResumptionItemForShopCard(
   if ((commerce::kShopCardVariation.Get().contains(commerce::kShopCardArm3) ||
        commerce::kShopCardVariation.Get() == commerce::kShopCardArm6) &&
       HasPriceDropDataForTabResumption(price_tracking_data)) {
-    item.shopCardData = [[ShopCardData alloc] init];
-    item.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
+    config.shopCardData = [[ShopCardData alloc] init];
+    config.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
 
     std::unique_ptr<payments::CurrencyFormatter> formatter =
         std::make_unique<payments::CurrencyFormatter>(
             price_tracking_data->product_update().new_price().currency_code(),
             GetApplicationContext()->GetApplicationLocaleStorage()->Get());
-    item.shopCardData.priceDrop = GetPriceDrop(
+    config.shopCardData.priceDrop = GetPriceDrop(
         formatter.get(),
         price_tracking_data->product_update().new_price().amount_micros(),
         price_tracking_data->product_update().old_price().amount_micros());
-    AddProductImageIfApplicable(price_tracking_data.value(), item);
-    item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+    AddProductImageIfApplicable(price_tracking_data.value(), config);
+    config.shopCardData.accessibilityString = l10n_util::GetNSStringF(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(item.shopCardData.priceDrop->previous_price),
-        base::SysNSStringToUTF16(item.shopCardData.priceDrop->current_price),
+        base::SysNSStringToUTF16(config.shopCardData.priceDrop->previous_price),
+        base::SysNSStringToUTF16(config.shopCardData.priceDrop->current_price),
         base::UTF8ToUTF16(price_tracking_data->buyable_product().title()),
         GetHostnameFromGURL(url));
   }
@@ -262,14 +262,14 @@ void ConfigureTabResumptionItemForShopCard(
   // A URL is price trackable if it has a cluster ID.
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 &&
       IsPriceTrackable(price_tracking_data)) {
-    item.shopCardData = [[ShopCardData alloc] init];
-    item.shopCardData.shopCardItemType =
+    config.shopCardData = [[ShopCardData alloc] init];
+    config.shopCardData.shopCardItemType =
         ShopCardItemType::kPriceTrackableProductOnTab;
 
     std::unique_ptr<commerce::ProductInfo> info =
         commerce::OptGuideResultToProductInfo(decisionWithMetadata.metadata);
     if (info) {
-      item.shopCardData.productInfo = std::move(*info);
+      config.shopCardData.productInfo = std::move(*info);
     }
 
     if (HasCurrentPriceDataForTabResumption(price_tracking_data)) {
@@ -279,17 +279,17 @@ void ConfigureTabResumptionItemForShopCard(
                   .current_price()
                   .currency_code(),
               GetApplicationContext()->GetApplicationLocaleStorage()->Get());
-      item.shopCardData.currentPrice = GetFormattedPrice(
+      config.shopCardData.currentPrice = GetFormattedPrice(
           formatter.get(), price_tracking_data->buyable_product()
                                .current_price()
                                .amount_micros());
     }
-    item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+    config.shopCardData.accessibilityString = l10n_util::GetNSStringF(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(item.tabTitle),
-        base::SysNSStringToUTF16(item.shopCardData.currentPrice),
+        base::SysNSStringToUTF16(config.tabTitle),
+        base::SysNSStringToUTF16(config.shopCardData.currentPrice),
         GetHostnameFromGURL(url));
-    AddProductImageIfApplicable(price_tracking_data.value(), item);
+    AddProductImageIfApplicable(price_tracking_data.value(), config);
   }
 }
 
@@ -355,7 +355,7 @@ class TabResumptionMediatorProxy {
                                      SyncObserverModelBridge,
                                      TabResumptionCommands>
 // readwrite override.
-@property(nonatomic, strong, readwrite) TabResumptionItem* itemConfig;
+@property(nonatomic, strong, readwrite) TabResumptionConfig* itemConfig;
 
 @end
 
@@ -371,7 +371,7 @@ class TabResumptionMediatorProxy {
   // The last item that is returned by the model.
   // The URL/title will be used to not fetch again images if the same item is
   // returned twice, or to ignore update on obsolete items.
-  TabResumptionItem* _pendingItem;
+  TabResumptionConfig* _pendingItem;
 
   // Weak pointer to the SceneState.
   __weak SceneState* _sceneState;
@@ -514,10 +514,10 @@ class TabResumptionMediatorProxy {
 
 #pragma mark - Public methods
 
-- (void)openTabResumptionItem:(TabResumptionItem*)item {
+- (void)openTabResumptionItem:(TabResumptionConfig*)config {
   [self.contentSuggestionsMetricsRecorder
-      recordTabResumptionTabOpened:item.shopCardData];
-  tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(item.tabURL,
+      recordTabResumptionTabOpened:config.shopCardData];
+  tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(config.tabURL,
                                                          _profilePrefs);
   [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                     kTabResumption];
@@ -525,10 +525,10 @@ class TabResumptionMediatorProxy {
   NSUInteger index = [self.delegate
       indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
 
-  switch (item.itemType) {
+  switch (config.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
       [self.NTPActionsDelegate distantTabResumptionOpenedAtIndex:index];
-      [self openDistantTab:item];
+      [self openDistantTab:config];
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPActionsDelegate recentTabTileOpenedAtIndex:index];
@@ -536,7 +536,7 @@ class TabResumptionMediatorProxy {
       // Check if the item is in current browser.
       // In that case, switch to the tab.
       // Otherwise, open the URL.
-      web::WebState* webState = item.localWebState.get();
+      web::WebState* webState = config.localWebState.get();
       WebStateList* webStateList = _browser->GetWebStateList();
       int webStateIndex = WebStateList::kInvalidIndex;
       if (webState) {
@@ -546,7 +546,7 @@ class TabResumptionMediatorProxy {
         webStateList->ActivateWebStateAt(webStateIndex);
       } else {
         web::NavigationManager::WebLoadParams webLoadParams =
-            web::NavigationManager::WebLoadParams(item.tabURL);
+            web::NavigationManager::WebLoadParams(config.tabURL);
         UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
         params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
         _URLLoadingBrowserAgent->Load(params);
@@ -556,7 +556,8 @@ class TabResumptionMediatorProxy {
   }
   [self.delegate removeTabResumptionModule];
 }
-- (void)trackShopCardItem:(TabResumptionItem*)item {
+
+- (void)trackShopCardItem:(TabResumptionConfig*)config {
   __weak TabResumptionMediator* weakSelf = self;
 
   [PushNotificationUtil requestPushNotificationPermission:^(
@@ -564,22 +565,24 @@ class TabResumptionMediatorProxy {
     web::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](__typeof(self) strongSelf, TabResumptionItem* item, BOOL granted,
+            [](__typeof(self) strongSelf,
+               TabResumptionConfig* tabResumptionConfig, BOOL granted,
                BOOL promptShown, NSError* error) {
               if (error) {
                 [strongSelf onTracked:ShopCardTrackItemResult::kTrackError
-                                 item:item];
+                                 item:tabResumptionConfig];
                 return;
               }
-              [strongSelf onNotificationPermissionVerifiedOrGranted:item
-                                                            granted:granted];
+              [strongSelf
+                  onNotificationPermissionVerifiedOrGranted:tabResumptionConfig
+                                                    granted:granted];
             },
-            weakSelf, item, granted, promptShown, error));
+            weakSelf, config, granted, promptShown, error));
   }];
   [self.delegate removeTabResumptionModule];
 }
 
-- (void)onNotificationPermissionVerifiedOrGranted:(TabResumptionItem*)item
+- (void)onNotificationPermissionVerifiedOrGranted:(TabResumptionConfig*)config
                                           granted:(BOOL)granted {
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
@@ -587,21 +590,21 @@ class TabResumptionMediatorProxy {
       identity.gaiaId, PushNotificationClientId::kCommerce, true);
 
   const bookmarks::BookmarkNode* bookmark =
-      _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.tabURL);
+      _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(config.tabURL);
   bool isNewBookmark = bookmark == nullptr;
   __weak TabResumptionMediator* weakSelf = self;
 
-  auto completionHandler = ^(TabResumptionItem* tabResumptionItem,
+  auto completionHandler = ^(TabResumptionConfig* tabResumptionConfig,
                              bool success) {
     if (success) {
       [weakSelf
           onTracked:granted
                         ? ShopCardTrackItemResult::kTrackSuccess
                         : ShopCardTrackItemResult::kTrackSuccesNoNotification
-               item:tabResumptionItem];
+               item:tabResumptionConfig];
     } else {
       [weakSelf onTracked:ShopCardTrackItemResult::kTrackError
-                     item:tabResumptionItem];
+                     item:tabResumptionConfig];
     }
   };
 
@@ -609,27 +612,28 @@ class TabResumptionMediatorProxy {
     const bookmarks::BookmarkNode* defaultFolder =
         _bookmarkModel->account_mobile_node();
     if (!defaultFolder) {
-      [self onTracked:ShopCardTrackItemResult::kTrackError item:item];
+      [self onTracked:ShopCardTrackItemResult::kTrackError item:config];
       return;
     }
     bookmark = _bookmarkModel->AddURL(
         defaultFolder, defaultFolder->children().size(),
-        base::SysNSStringToUTF16(item.tabTitle), item.tabURL);
+        base::SysNSStringToUTF16(config.tabTitle), config.tabURL);
   }
 
   commerce::SetPriceTrackingStateForBookmark(
       _shoppingService, _bookmarkModel, bookmark, true,
-      base::BindOnce(completionHandler, item), isNewBookmark,
-      item.shopCardData.productInfo);
+      base::BindOnce(completionHandler, config), isNewBookmark,
+      config.shopCardData.productInfo);
 }
 
 - (void)onTracked:(ShopCardTrackItemResult)result
-             item:(TabResumptionItem*)item {
-  [self.dispatcher showSnackbarMessage:[self snackbarMessage:result item:item]];
+             item:(TabResumptionConfig*)config {
+  [self.dispatcher showSnackbarMessage:[self snackbarMessage:result
+                                                        item:config]];
 }
 
 - (SnackbarMessage*)snackbarMessage:(ShopCardTrackItemResult)result
-                               item:(TabResumptionItem*)item {
+                               item:(TabResumptionConfig*)config {
   SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
 
   if (result != ShopCardTrackItemResult::kTrackError) {
@@ -640,7 +644,7 @@ class TabResumptionMediatorProxy {
   } else {
     // Failed to track - try again.
     action.handler = ^{
-      [self trackShopCardItem:item];
+      [self trackShopCardItem:config];
     };
   }
 
@@ -678,7 +682,7 @@ class TabResumptionMediatorProxy {
   return message;
 }
 
-- (void)openDistantTab:(TabResumptionItem*)item {
+- (void)openDistantTab:(TabResumptionConfig*)config {
   ProfileIOS* profile = _browser->GetProfile();
   sync_sessions::OpenTabsUIDelegate* openTabsDelegate =
       SessionSyncServiceFactory::GetForProfile(profile)
@@ -700,7 +704,7 @@ class TabResumptionMediatorProxy {
                                      std::move(webState));
   } else {
     web::NavigationManager::WebLoadParams webLoadParams =
-        web::NavigationManager::WebLoadParams(item.tabURL);
+        web::NavigationManager::WebLoadParams(config.tabURL);
     UrlLoadParams params = UrlLoadParams::InCurrentTab(webLoadParams);
     params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
     _URLLoadingBrowserAgent->Load(params);
@@ -734,7 +738,7 @@ class TabResumptionMediatorProxy {
   }
   [self.contentSuggestionsMetricsRecorder
       recordTabResumptionImpressionWithCustomization:
-          static_cast<TabResumptionItem*>(magicStackModule).shopCardData
+          static_cast<TabResumptionConfig*>(magicStackModule).shopCardData
                                              atIndex:index];
 
   if (IsShopCardImpressionLimitsEnabled() && index == 0 &&
@@ -806,9 +810,10 @@ class TabResumptionMediatorProxy {
 
 #pragma mark - Private
 
-// Updates the Tab Resumption card view for the configuration of a given `item`.
-- (void)updateCardWithItem:(TabResumptionItem*)item {
-  [self.itemConfig reconfigureWithItem:item];
+// Updates the Tab Resumption card view for the configuration of a given
+// `config`.
+- (void)updateCardWithConfig:(TabResumptionConfig*)config {
+  [self.itemConfig reconfigureWithConfig:config];
   [self.delegate tabResumptionMediatorDidReconfigureItem];
 }
 
@@ -866,7 +871,7 @@ class TabResumptionMediatorProxy {
   }
 }
 
-- (void)fetchShopCardDataForItemIfApplicable:(TabResumptionItem*)item
+- (void)fetchShopCardDataForItemIfApplicable:(TabResumptionConfig*)item
                                          url:(const GURL&)resumptionURL {
   if (IsShopCardImpressionLimitsEnabled() && _impressionLimitService) {
     // TODO(crbug.com/408252386) Add unit tests for impression count
@@ -905,7 +910,7 @@ class TabResumptionMediatorProxy {
 - (void)onPriceTrackedBookmarksReceived:
             (std::vector<const bookmarks::BookmarkNode*>)subscriptions
                                     url:(const GURL&)resumptionUrl
-                                   item:(TabResumptionItem*)item {
+                                   item:(TabResumptionConfig*)config {
   if (!resumptionUrl.is_valid()) {
     return;
   }
@@ -928,55 +933,56 @@ class TabResumptionMediatorProxy {
                 optimization_guide::proto::OptimizationType,
                 optimization_guide::OptimizationGuideDecisionWithMetadata>&
                 decisions) {
-            ConfigureTabResumptionItemForShopCard(decisions, item, url);
+            ConfigureTabResumptionItemForShopCard(decisions, config, url);
             // Fetch the favicon.
             web::GetUIThreadTaskRunner({})->PostTask(
                 FROM_HERE, base::BindOnce(^{
-                  [weakSelf fetchImageForItem:item];
+                  [weakSelf fetchImageForItem:config];
                 }));
           }));
 }
 
-// Fetches a relevant image for the `item` to display.
-- (void)fetchImageForItem:(TabResumptionItem*)item {
-  if ([self isPendingItem:item]) {
+// Fetches a relevant image for the `config` to display.
+- (void)fetchImageForItem:(TabResumptionConfig*)config {
+  if ([self isPendingItem:config]) {
     // The item was already fetched or is being fetched, ignore it.
     return;
   }
-  _pendingItem = item;
+  _pendingItem = config;
   if (ShouldShowItemImmediately()) {
-    [self showItem:item];
+    [self showItem:config];
   }
-  if (item.shopCardData.productImageURL.has_value()) {
+  if (config.shopCardData.productImageURL.has_value()) {
     [self
-        salientImageURLReceived:GURL(item.shopCardData.productImageURL.value())
-                        forItem:item
+        salientImageURLReceived:GURL(
+                                    config.shopCardData.productImageURL.value())
+                        forItem:config
                     updateImage:NO];
   } else {
-    if (item.itemType == kMostRecentTab) {
-      [self fetchSnapshotForItem:item];
+    if (config.itemType == kMostRecentTab) {
+      [self fetchSnapshotForItem:config];
     }
   }
-  [self fetchFaviconForItem:item];
+  [self fetchFaviconForItem:config];
 }
 
 // Arm 6 delays acquiring the price drop (if it exists) and the
 // product image and updates the card when this data is availalbe.
 // This reduces the overall latency of the card.
-- (void)fetchPriceDropIfApplicable:(TabResumptionItem*)item {
+- (void)fetchPriceDropIfApplicable:(TabResumptionConfig*)config {
   if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm6) {
     return;
   }
   __weak TabResumptionMediator* weakSelf = self;
   web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
-                                             [weakSelf fetchPriceDrop:item];
+                                             [weakSelf fetchPriceDrop:config];
                                            }));
 }
 
-- (void)fetchPriceDrop:(TabResumptionItem*)item {
+- (void)fetchPriceDrop:(TabResumptionConfig*)config {
   __weak __typeof(self) weakSelf = self;
   TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
-      _optimizationGuideService, item.tabURL,
+      _optimizationGuideService, config.tabURL,
       optimization_guide::proto::PRICE_TRACKING,
       optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
       base::BindRepeating(^(
@@ -990,34 +996,34 @@ class TabResumptionMediatorProxy {
           return;
         }
 
-        ConfigureTabResumptionItemForShopCard(decisions, item, url);
-        if (![strongSelf isPendingItem:item]) {
+        ConfigureTabResumptionItemForShopCard(decisions, config, url);
+        if (![strongSelf isPendingItem:config]) {
           // The item was already fetched or is being fetched, ignore it.
           return;
         }
 
         web::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(^{
-              if (item.shopCardData.productImageURL.has_value()) {
+              if (config.shopCardData.productImageURL.has_value()) {
                 [strongSelf
-                    salientImageURLReceived:GURL(item.shopCardData
+                    salientImageURLReceived:GURL(config.shopCardData
                                                      .productImageURL.value())
-                                    forItem:item
+                                    forItem:config
                                 updateImage:YES];
               } else {
-                [self updateCardWithItem:item];
+                [self updateCardWithConfig:config];
               }
             }));
       }));
 }
 
-// Fetches the snapshot of the tab showing `item`.
-- (void)fetchSnapshotForItem:(TabResumptionItem*)item {
-  if (!item.localWebState) {
+// Fetches the snapshot of the tab showing `config`.
+- (void)fetchSnapshotForItem:(TabResumptionConfig*)config {
+  if (!config.localWebState) {
     return;
   }
 
-  web::WebState* webState = item.localWebState.get();
+  web::WebState* webState = config.localWebState.get();
   BrowserList* browserList =
       BrowserListFactory::GetForProfile(_browser->GetProfile());
   Browser* webStateBrowser = GetBrowserForTabWithCriteria(
@@ -1031,24 +1037,24 @@ class TabResumptionMediatorProxy {
         ->RetrieveSnapshotWithID(SnapshotID(webState->GetUniqueIdentifier()),
                                  SnapshotKindColor, ^(UIImage* image) {
                                    [weakSelf snapshotFetched:image
-                                                     forItem:item];
+                                                     forItem:config];
                                  });
   }
 }
 
-// The snapshot of the tab showing `item` was fetched.
-- (void)snapshotFetched:(UIImage*)image forItem:(TabResumptionItem*)item {
+// The snapshot of the tab showing `config` was fetched.
+- (void)snapshotFetched:(UIImage*)image forItem:(TabResumptionConfig*)config {
   if (!image) {
     return;
   }
-  item.contentImage = image;
-  [self showItem:item];
+  config.contentImage = image;
+  [self showItem:config];
 }
 
 // The URL for the salient image has been received. Download the image if it
 // is valid or fallbacks to favicon.
 - (void)salientImageURLReceived:(const GURL&)URL
-                        forItem:(TabResumptionItem*)item
+                        forItem:(TabResumptionConfig*)config
                     updateImage:(BOOL)updateImage {
   __weak TabResumptionMediator* weakSelf = self;
   if (!URL.is_valid() || !URL.SchemeIsCryptographic() ||
@@ -1060,7 +1066,7 @@ class TabResumptionMediatorProxy {
       base::BindOnce(^(const std::string& imageData,
                        const image_fetcher::RequestMetadata& metadata) {
         [weakSelf salientImageReceived:imageData
-                               forItem:item
+                               forItem:config
                            updateImage:updateImage];
       }),
       NO_TRAFFIC_ANNOTATION_YET);
@@ -1068,7 +1074,7 @@ class TabResumptionMediatorProxy {
 
 // Salient image has been received. Display it.
 - (void)salientImageReceived:(const std::string&)imageData
-                     forItem:(TabResumptionItem*)item
+                     forItem:(TabResumptionConfig*)config
                  updateImage:(BOOL)updateImage {
   UIImage* image =
       [UIImage imageWithData:[NSData dataWithBytes:imageData.c_str()
@@ -1076,108 +1082,108 @@ class TabResumptionMediatorProxy {
   if (!image) {
     return;
   }
-  item.contentImage = image;
+  config.contentImage = image;
   if (updateImage) {
-    [self updateCardWithItem:item];
+    [self updateCardWithConfig:config];
   } else {
-    [self showItem:item];
+    [self showItem:config];
   }
 }
 
-// Fetches the favicon for `item`.
-- (void)fetchFaviconForItem:(TabResumptionItem*)item {
+// Fetches the favicon for `config`.
+- (void)fetchFaviconForItem:(TabResumptionConfig*)config {
   __weak TabResumptionMediator* weakSelf = self;
   if (!_faviconLoader) {
     return;
   }
   _faviconLoader->FaviconForPageUrl(
-      item.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
+      config.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true,
       ^(FaviconAttributes* attributes, bool cached) {
-        [weakSelf faviconReceived:attributes cached:cached forItem:item];
+        [weakSelf faviconReceived:attributes cached:cached forItem:config];
       });
 }
 
 // The favicon has been received. Display it.
 - (void)faviconReceived:(FaviconAttributes*)attributes
                  cached:(BOOL)cached
-                forItem:(TabResumptionItem*)item {
-  if (item.faviconImage || !cached) {
-    if ([UIImagePNGRepresentation(item.faviconImage)
+                forItem:(TabResumptionConfig*)config {
+  if (config.faviconImage || !cached) {
+    if ([UIImagePNGRepresentation(config.faviconImage)
             isEqual:UIImagePNGRepresentation(attributes.faviconImage)]) {
       return;
     }
-    item.faviconImage = attributes.faviconImage;
-    [self showItem:item];
+    config.faviconImage = attributes.faviconImage;
+    [self showItem:config];
   }
 }
 
-// Sends `item` to  TabResumption to be displayed.
-- (void)showItem:(TabResumptionItem*)item {
-  if (![self isPendingItem:item]) {
+// Sends `config` to  TabResumption to be displayed.
+- (void)showItem:(TabResumptionConfig*)config {
+  if (![self isPendingItem:config]) {
     // A new item has been fetched, ignore.
     return;
   }
   if (!self.itemConfig) {
-    self.itemConfig = item;
+    self.itemConfig = config;
     [self.delegate tabResumptionMediatorDidReceiveItem];
-    [self fetchPriceDropIfApplicable:item];
+    [self fetchPriceDropIfApplicable:config];
     return;
   }
 
   // The item is already used by some view, so it cannot be replaced.
   // Instead the existing config must be updated.
-  [self updateCardWithItem:item];
-  [self fetchPriceDropIfApplicable:item];
+  [self updateCardWithConfig:config];
+  [self fetchPriceDropIfApplicable:config];
 }
 
-// Creates a TabResumptionItem corresponding to the last synced tab.
+// Creates a TabResumptionConfig corresponding to the last synced tab.
 - (void)fetchLastSyncedTabItemFromLastActiveDistantTab:
             (const synced_sessions::DistantTab*)tab
                                                session:(const synced_sessions::
                                                             DistantSession*)
                                                            session {
-  TabResumptionItem* item = [[TabResumptionItem alloc]
+  TabResumptionConfig* config = [[TabResumptionConfig alloc]
       initWithItemType:TabResumptionItemType::kLastSyncedTab];
-  item.sessionName = base::SysUTF8ToNSString(session->name);
-  item.tabTitle = base::SysUTF16ToNSString(tab->title);
-  item.syncedTime = tab->last_active_time;
-  item.tabURL = tab->virtual_url;
-  item.commandHandler = self;
-  item.delegate = self;
-  item.shouldShowSeeMore = true;
+  config.sessionName = base::SysUTF8ToNSString(session->name);
+  config.tabTitle = base::SysUTF16ToNSString(tab->title);
+  config.syncedTime = tab->last_active_time;
+  config.tabURL = tab->virtual_url;
+  config.commandHandler = self;
+  config.delegate = self;
+  config.shouldShowSeeMore = YES;
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    item.shouldShowSeeMore = false;
+    config.shouldShowSeeMore = NO;
   }
-  [self fetchShopCardDataForItemIfApplicable:item url:tab->virtual_url];
+  [self fetchShopCardDataForItemIfApplicable:config url:tab->virtual_url];
 }
 
-// Creates a TabResumptionItem corresponding to the `webState`.
+// Creates a TabResumptionConfig corresponding to the `webState`.
 - (void)fetchMostRecentTabItemFromWebState:(web::WebState*)webState
                                 openedTime:(base::Time)openedTime {
-  TabResumptionItem* item = [[TabResumptionItem alloc]
+  TabResumptionConfig* config = [[TabResumptionConfig alloc]
       initWithItemType:TabResumptionItemType::kMostRecentTab];
-  item.tabTitle = base::SysUTF16ToNSString(webState->GetTitle());
-  item.syncedTime = openedTime;
-  item.tabURL = webState->GetLastCommittedURL();
-  item.localWebState = webState->GetWeakPtr();
-  item.commandHandler = self;
-  item.delegate = self;
-  item.shouldShowSeeMore = true;
+  config.tabTitle = base::SysUTF16ToNSString(webState->GetTitle());
+  config.syncedTime = openedTime;
+  config.tabURL = webState->GetLastCommittedURL();
+  config.localWebState = webState->GetWeakPtr();
+  config.commandHandler = self;
+  config.delegate = self;
+  config.shouldShowSeeMore = YES;
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    item.shouldShowSeeMore = false;
+    config.shouldShowSeeMore = NO;
   }
-  [self fetchShopCardDataForItemIfApplicable:item
+  [self fetchShopCardDataForItemIfApplicable:config
                                          url:webState->GetLastCommittedURL()];
 }
 
-// Compares `item` and `_pendingItem` on tabURL and tabTitle field.
-- (BOOL)isPendingItem:(TabResumptionItem*)item {
+// Compares `config` and `_pendingItem` on tabURL and tabTitle field.
+- (BOOL)isPendingItem:(TabResumptionConfig*)config {
   if (_pendingItem == nil) {
     return NO;
   }
-  return item.tabURL == _pendingItem.tabURL &&
-         [item.tabTitle isEqualToString:_pendingItem.tabTitle];
+  return config.tabURL == _pendingItem.tabURL &&
+         [config.tabTitle isEqualToString:_pendingItem.tabTitle];
 }
 
 @end

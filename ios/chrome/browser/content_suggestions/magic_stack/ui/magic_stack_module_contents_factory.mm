@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_commands.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_config.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_view.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
@@ -68,9 +68,9 @@
                                           traitCollection)];
     }
     case ContentSuggestionsModuleType::kTabResumption: {
-      TabResumptionItem* tabResumptionItem =
-          static_cast<TabResumptionItem*>(config);
-      return [self tabResumptionViewForConfig:tabResumptionItem];
+      TabResumptionConfig* tabResumptionConfig =
+          static_cast<TabResumptionConfig*>(config);
+      return [self tabResumptionViewForConfig:tabResumptionConfig];
     }
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckConfig* safetyCheckConfig =
@@ -153,17 +153,17 @@
   return shortcutsStackView;
 }
 
-- (UIView*)tabResumptionViewForConfig:(TabResumptionItem*)tabResumptionItem {
-  if (tabResumptionItem.shopCardData.shopCardItemType ==
+- (UIView*)tabResumptionViewForConfig:(TabResumptionConfig*)config {
+  if (config.shopCardData.shopCardItemType ==
       ShopCardItemType::kPriceTrackableProductOnTab) {
     ShopCardPriceTrackingView* shopCardPriceTrackingView =
-        [[ShopCardPriceTrackingView alloc] initWithItem:tabResumptionItem];
-    shopCardPriceTrackingView.commandHandler = tabResumptionItem.commandHandler;
+        [[ShopCardPriceTrackingView alloc] initWithConfig:config];
+    shopCardPriceTrackingView.tabResumptionHandler = config.commandHandler;
     return shopCardPriceTrackingView;
   } else {
     TabResumptionView* tabResumptionView =
-        [[TabResumptionView alloc] initWithItem:tabResumptionItem];
-    tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
+        [[TabResumptionView alloc] initWithConfig:config];
+    tabResumptionView.tabResumptionHandler = config.commandHandler;
     return tabResumptionView;
   }
 }

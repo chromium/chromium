@@ -77,7 +77,7 @@
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_config.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
@@ -453,8 +453,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
     return;
   }
-  TabResumptionItem* item = _tabResumptionMediator.itemConfig;
-  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
+  TabResumptionConfig* config = _tabResumptionMediator.itemConfig;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:config];
 }
 
 - (void)removeTabResumptionModule {
@@ -1071,8 +1071,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 }
 
 // Shows the tab resumption tile with the given `item` configuration.
-- (void)showTabResumptionWithItem:(TabResumptionItem*)item {
-  if (tab_resumption_prefs::IsLastOpenedURL(item.tabURL, _prefService)) {
+- (void)showTabResumptionWithItem:(TabResumptionConfig*)config {
+  if (tab_resumption_prefs::IsLastOpenedURL(config.tabURL, _prefService)) {
     return;
   }
 
@@ -1080,8 +1080,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     return;
   }
   NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index = [rank indexOfObject:item];
-  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+  NSUInteger index = [rank indexOfObject:config];
+  [self.delegate magicStackRankingModel:self
+                          didInsertItem:config
+                                atIndex:index];
 }
 
 // Returns YES if the tab resumption module should added into the Magic Stack.
