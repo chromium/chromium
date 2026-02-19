@@ -23,7 +23,7 @@
 
 namespace {
 /// The padding for the close button.
-const CGFloat kCloseButtonTopMargin = 6.0f;
+const CGFloat kCloseButtonTopMargin = 7.0f;
 const CGFloat kCloseButtonDefaultPadding = 10.0f;
 /// The trailing and top padding for the input plate container.
 const CGFloat kInputPlateTrailingPadding = 8.0f;
