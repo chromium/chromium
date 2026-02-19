@@ -7,6 +7,8 @@ import("//testing/test.gni")
 
 source_set("common") {
   sources = [
+    "features.cc",
+    "features.h",
     "page_end_reason.h",
     "page_load_metrics_debug_string.cc",
     "page_load_metrics_debug_string.h",
