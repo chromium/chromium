@@ -97,21 +97,13 @@ void AudioDeviceThread::ThreadMain() {
     // std::numeric_limits<uint32_t>::max() - 1 is a special signal that
     // tells us that the writer is done and will be closing the connection.
     // Nothing that happens after that is considered an error.
-    if (pending_data == std::numeric_limits<uint32_t>::max() - 1) {
+    constexpr uint32_t kExitSignal = std::numeric_limits<uint32_t>::max() - 1;
+    if (pending_data == kExitSignal) {
       in_shutdown_ = true;
       break;
     }
 
-    // std::numeric_limits<uint32_t>::max() is a special signal which is
-    // returned after the browser stops the output device in response to a
-    // renderer side request.
-    //
-    // Avoid running Process() for the paused signal, we still need to update
-    // the buffer index for synchronized buffers though.
-    //
-    // See comments in AudioOutputController::DoPause() for details on why.
-    if (pending_data != std::numeric_limits<uint32_t>::max())
-      callback_->Process(pending_data);
+    callback_->Process(pending_data);
 
     // If `send_socket_messages_` is false, the socket messages are replaced by
     // a flag in shared memory which is handled in `callback_->Process()`.

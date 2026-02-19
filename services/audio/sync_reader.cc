@@ -142,16 +142,9 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   // in the anomalous case if the renderer is unable to keep up with real-time.
   output_bus_->Zero();
 
-  uint32_t control_signal = 0;
-  if (delay.is_max()) {
-    // std::numeric_limits<uint32_t>::max() is a special signal which is
-    // returned after the browser stops the output device in response to a
-    // renderer side request.
-    control_signal = std::numeric_limits<uint32_t>::max();
-  }
-
-  size_t sent_bytes = socket_.Send(base::byte_span_from_ref(control_signal));
-  if (sent_bytes != sizeof(control_signal)) {
+  constexpr uint32_t kControlSignal = 0;
+  size_t sent_bytes = socket_.Send(base::byte_span_from_ref(kControlSignal));
+  if (sent_bytes != sizeof(kControlSignal)) {
     // Ensure we don't log consecutive errors as this can lead to a large
     // amount of logs.
     if (!had_socket_error_) {
@@ -222,8 +215,8 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
 }
 
 void SyncReader::Close() {
-  uint32_t exit_signal = std::numeric_limits<uint32_t>::max() - 1;
-  socket_.Send(base::byte_span_from_ref(exit_signal));
+  constexpr uint32_t kExitSignal = std::numeric_limits<uint32_t>::max() - 1;
+  socket_.Send(base::byte_span_from_ref(kExitSignal));
 
   socket_.Close();
   output_bus_.reset();

@@ -383,13 +383,9 @@ void OutputController::Pause() {
 
   StopStream();
 
-  if (state_ != kPaused)
+  if (state_ != kPaused) {
     return;
-
-  // Let the renderer know we've stopped.  Necessary to let PPAPI clients know
-  // audio has been shutdown.  TODO(dalecurtis): This stinks.  PPAPI should have
-  // a better way to know when it should exit PPB_Audio_Shared::Run().
-  sync_reader_->RequestMoreData(base::TimeDelta::Max(), base::TimeTicks(), {});
+  }
 
   handler_->OnControllerPaused();
   UNSAFE_TODO(
