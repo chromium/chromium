@@ -26,6 +26,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
@@ -39,6 +42,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -51,6 +55,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -253,6 +258,7 @@ void VerticalTabView::UpdateHovered(bool hovered) {
   }
 
   UpdateColors();
+  UpdateThemeColors();
   InvalidateLayout();
 }
 
@@ -439,17 +445,115 @@ void VerticalTabView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
-  std::optional<SkColor> background_color = GetBackgroundColor();
+  if (!collection_node_) {
+    return;
+  }
+
   // Split pinned tabs have a merged background that is rendered in
   // `VerticalSplitTabView`.
-  if (background_color.has_value() && !(pinned_ && split_)) {
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(background_color.value());
-    canvas->DrawRect(GetContentsBounds(), flags);
+  if (pinned_ && split_) {
+    return;
+  }
+
+  if (active_tab_fill_id_.has_value() || inactive_tab_fill_id_.has_value()) {
+    PaintTabBackgroundWithImages(canvas, active_tab_fill_id_,
+                                 inactive_tab_fill_id_);
+  } else {
+    PaintTabBackgroundFill(canvas, GetSelectionState(),
+                           IsHoverAnimationActive(), std::nullopt);
   }
 
   views::View::OnPaint(canvas);
+}
+
+void VerticalTabView::PaintTabBackgroundWithImages(
+    gfx::Canvas* canvas,
+    std::optional<int> active_tab_fill_id,
+    std::optional<int> inactive_tab_fill_id) const {
+  const TabStyle::TabSelectionState current_state = GetSelectionState();
+
+  if (current_state == TabStyle::TabSelectionState::kActive) {
+    PaintTabBackgroundFill(canvas, TabStyle::TabSelectionState::kActive,
+                           /*hovered=*/false, active_tab_fill_id);
+  } else {
+    PaintTabBackgroundFill(canvas, TabStyle::TabSelectionState::kInactive,
+                           /*hovered=*/false, inactive_tab_fill_id);
+
+    const float opacity = GetCurrentActiveOpacity();
+    if (opacity > 0) {
+      canvas->SaveLayerAlpha(base::ClampRound<uint8_t>(opacity * 0xff),
+                             GetLocalBounds());
+      PaintTabBackgroundFill(canvas, TabStyle::TabSelectionState::kActive,
+                             /*hovered=*/false, active_tab_fill_id);
+      canvas->Restore();
+    }
+  }
+}
+
+float VerticalTabView::GetCurrentActiveOpacity() const {
+  const TabStyle::TabSelectionState selection_state = GetSelectionState();
+  if (selection_state == TabStyle::TabSelectionState::kActive) {
+    return 1.0f;
+  }
+  const float base_opacity =
+      selection_state == TabStyle::TabSelectionState::kSelected
+          ? tab_style()->GetSelectedTabOpacity()
+          : 0.0f;
+  if (!IsHoverAnimationActive()) {
+    return base_opacity;
+  }
+  return std::lerp(base_opacity, GetHoverOpacity(), GetHoverAnimationValue());
+}
+
+void VerticalTabView::PaintTabBackgroundFill(
+    gfx::Canvas* canvas,
+    TabStyle::TabSelectionState selection_state,
+    bool hovered,
+    std::optional<int> fill_id) const {
+  if (ShouldPaintTabBackgroundColor(selection_state, fill_id.has_value())) {
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
+        GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
+        IsFrameActive(), GetColorProvider()));
+    canvas->DrawRect(GetContentsBounds(), flags);
+  }
+
+  if (fill_id.has_value()) {
+    gfx::ImageSkia* image =
+        GetThemeProvider()->GetImageSkiaNamed(fill_id.value());
+    canvas->TileImageInt(*image, 0, 0, 0, 0, width(), height());
+  }
+
+  if (hovered) {
+    PaintBackgroundHover(canvas);
+  }
+}
+
+bool VerticalTabView::ShouldPaintTabBackgroundColor(
+    TabStyle::TabSelectionState selection_state,
+    bool has_custom_background) const {
+  if (selection_state == TabStyle::TabSelectionState::kActive) {
+    return true;
+  }
+
+  if (has_custom_background) {
+    return false;
+  }
+
+  return GetThemeProvider()->GetDisplayProperty(
+      ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
+}
+
+void VerticalTabView::PaintBackgroundHover(gfx::Canvas* canvas) const {
+  const SkColor hover_color = tab_style_->GetCurrentTabBackgroundColor(
+      GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
+      IsFrameActive(), GetColorProvider());
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(hover_color);
+  canvas->DrawRect(GetContentsBounds(), flags);
 }
 
 void VerticalTabView::AddedToWidget() {
@@ -497,6 +601,7 @@ void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void VerticalTabView::OnThemeChanged() {
   views::View::OnThemeChanged();
+  UpdateThemeColors();
   UpdateColors();
 }
 
@@ -805,6 +910,35 @@ void VerticalTabView::UpdateBorder() {
   } else if (GetBorder()) {
     SetBorder(nullptr);
   }
+}
+
+void VerticalTabView::UpdateThemeColors() {
+  if (!collection_node_) {
+    return;
+  }
+
+  std::optional<int> active_tab_fill_id;
+  if (GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
+    active_tab_fill_id = IDR_THEME_TOOLBAR;
+  }
+
+  const tabs::TabInterface* tab_interface = GetTabInterface();
+  if (!tab_interface) {
+    return;
+  }
+
+  BrowserFrameView* const browser_frame_view =
+      BrowserView::GetBrowserViewForBrowser(
+          tab_interface->GetBrowserWindowInterface())
+          ->browser_widget()
+          ->GetFrameView();
+  const std::optional<int> inactive_tab_fill_id =
+      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
+                               BrowserFrameActiveState::kUseCurrent)
+                         : std::nullopt;
+
+  active_tab_fill_id_ = active_tab_fill_id;
+  inactive_tab_fill_id_ = inactive_tab_fill_id;
 }
 
 void VerticalTabView::UpdateColors() {
