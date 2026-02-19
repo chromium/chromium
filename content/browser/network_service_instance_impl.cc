@@ -126,6 +126,11 @@ mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
 network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
 
+// When enabled, sets the in-process network service thread to
+// base::ThreadType::kPresentation
+BASE_FEATURE(kNetworkServiceIncreasedPriorityAlways,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
   static base::SequenceLocalStorageSlot<
       std::unique_ptr<network::NetworkService>>
@@ -324,6 +329,9 @@ void CreateInProcessNetworkService(
       options.thread_type = base::ThreadType::kPresentation;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways)) {
+      options.thread_type = base::ThreadType::kPresentation;
+    }
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
     task_runner->PostTask(
