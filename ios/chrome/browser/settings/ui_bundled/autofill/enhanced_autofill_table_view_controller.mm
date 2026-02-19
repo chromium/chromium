@@ -12,18 +12,39 @@
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSwitches = kSectionIdentifierEnumZero
+  SectionIdentifierSwitches = kSectionIdentifierEnumZero,
+  SectionIdentifierWhenOn,
+  SectionIdentifierThingsToConsider
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeEnhancedAutofillSwitch = kItemTypeEnumZero
+  ItemTypeEnhancedAutofillSwitch = kItemTypeEnumZero,
+  ItemTypeFooter,
+  ItemTypeHeader,
+  ItemTypeLabel
 };
+
+// Returns the branded version of the Google Services symbol.
+UIImage* GetBrandedGoogleServicesSymbol() {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  return CustomSettingsRootMulticolorSymbol(kGoogleIconSymbol);
+#else
+  return DefaultSettingsRootSymbol(kGearshape2Symbol);
+#endif
+}
+
 }  // namespace
 
 @interface EnhancedAutofillTableViewController () {
@@ -63,6 +84,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSwitches];
   [model addItem:[self enhancedAutofillSwitchItem]
       toSectionWithIdentifier:SectionIdentifierSwitches];
+  [model setFooter:[self enhancedAutofillSwitchFooter]
+      forSectionWithIdentifier:SectionIdentifierSwitches];
+
+  [model addSectionWithIdentifier:SectionIdentifierWhenOn];
+  [model setHeader:[self whenOnSectionHeader]
+      forSectionWithIdentifier:SectionIdentifierWhenOn];
+  [model addItem:[self canFillDifficultFieldsItem]
+      toSectionWithIdentifier:SectionIdentifierWhenOn];
+
+  [model addSectionWithIdentifier:SectionIdentifierThingsToConsider];
+  [model setHeader:[self thingsToConsiderSectionHeader]
+      forSectionWithIdentifier:SectionIdentifierThingsToConsider];
+  [model addItem:[self dataUsageItem]
+      toSectionWithIdentifier:SectionIdentifierThingsToConsider];
+  [model addItem:[self storedOnDeviceItem]
+      toSectionWithIdentifier:SectionIdentifierThingsToConsider];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -86,6 +123,67 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.on = [self isEnhancedAutofillEnabled];
   switchItem.accessibilityIdentifier = kEnhancedAutofillSwitchViewId;
   return switchItem;
+}
+
+- (TableViewHeaderFooterItem*)enhancedAutofillSwitchFooter {
+  TableViewLinkHeaderFooterItem* footer =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  footer.text =
+      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL);
+  return footer;
+}
+
+- (TableViewHeaderFooterItem*)whenOnSectionHeader {
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  header.text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_WHEN_ON);
+  return header;
+}
+
+- (TableViewDetailIconItem*)canFillDifficultFieldsItem {
+  return [self detailItemWithTitleId:
+                   IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS
+                           iconImage:CustomSymbolWithPointSize(
+                                         kTextAnalysisSymbol,
+                                         kSettingsRootSymbolImagePointSize)];
+}
+
+- (TableViewHeaderFooterItem*)thingsToConsiderSectionHeader {
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  header.text =
+      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER);
+  return header;
+}
+
+- (TableViewDetailIconItem*)dataUsageItem {
+  return [self
+      detailItemWithTitleId:IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE
+                  iconImage:MakeSymbolMonochrome(
+                                GetBrandedGoogleServicesSymbol())];
+}
+
+- (TableViewDetailIconItem*)storedOnDeviceItem {
+  return [self
+      detailItemWithTitleId:IDS_IOS_SETTINGS_ENHANCED_AUTOFILL_SAVED_INFORMATION
+                  iconImage:CustomSymbolWithPointSize(
+                                kRecentTabsSymbol,
+                                kSettingsRootSymbolImagePointSize)];
+}
+
+- (TableViewDetailIconItem*)detailItemWithTitleId:(NSInteger)titleId
+                                        iconImage:(UIImage*)iconImage {
+  TableViewDetailIconItem* detailItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeLabel];
+  detailItem.text = l10n_util::GetNSString(titleId);
+  detailItem.textNumberOfLines = 0;
+  detailItem.textFont =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  detailItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  detailItem.selectionStyle = UITableViewCellSelectionStyleNone;
+  detailItem.iconImage = iconImage;
+  detailItem.iconTintColor = [UIColor colorNamed:kTextPrimaryColor];
+  return detailItem;
 }
 
 #pragma mark - Getters and Setter

@@ -31,6 +31,12 @@ enum class BadgeType {
 // The main text string.
 @property(nonatomic, copy) NSString* text;
 
+// The main text font.
+@property(nonatomic, copy) UIFont* textFont;
+
+// The main text color.
+@property(nonatomic, copy) UIColor* textColor;
+
 // The detail text string.
 @property(nonatomic, copy) NSString* detailText;
 

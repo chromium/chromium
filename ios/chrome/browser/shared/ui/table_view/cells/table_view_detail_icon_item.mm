@@ -60,7 +60,11 @@ const NSInteger kDefaultNumberOfLines = 1;
       [[TableViewCellContentConfiguration alloc] init];
   switch (self.badgeType) {
     case BadgeType::kNone:
-      contentConfiguration.title = self.text;
+      if (self.textFont || self.textColor) {
+        contentConfiguration.attributedTitle = [self createAttributedTitle];
+      } else {
+        contentConfiguration.title = self.text;
+      }
       break;
     case BadgeType::kNew: {
       NewFeatureBadgeView* newIPHBadgeView =
@@ -144,12 +148,29 @@ const NSInteger kDefaultNumberOfLines = 1;
 
 #pragma mark - Private
 
+// Returns an attributed string for the title.
+- (NSMutableAttributedString*)createAttributedTitle {
+  if (!self.textFont && !self.textColor) {
+    return [[NSMutableAttributedString alloc] initWithString:self.text];
+  }
+
+  NSMutableDictionary* attributes = [NSMutableDictionary dictionary];
+  if (self.textFont) {
+    attributes[NSFontAttributeName] = self.textFont;
+  }
+  if (self.textColor) {
+    attributes[NSForegroundColorAttributeName] = self.textColor;
+  }
+  return [[NSMutableAttributedString alloc] initWithString:self.text
+                                                attributes:attributes];
+}
+
 // Returns an attributed string with `image` at the end.
 - (NSAttributedString*)createAttributedTitleWithImage:(UIImage*)image {
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:self.text];
+  NSMutableAttributedString* attributedString = [self createAttributedTitle];
 
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  UIFont* font =
+      self.textFont ?: [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   CGFloat yOffset = (font.capHeight - image.size.height) / 2.0;
 
   NSTextAttachment* imageAttachment = [[NSTextAttachment alloc] init];
