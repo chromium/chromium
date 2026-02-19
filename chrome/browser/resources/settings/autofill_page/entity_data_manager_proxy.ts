@@ -19,7 +19,7 @@ export interface EntityDataManagerProxy {
    * Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
    * the entity instance.
    */
-  addOrUpdateEntityInstance(entityInstance: EntityInstance): void;
+  addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void>;
 
   /**
    * Remove the entity instance by its id.
@@ -105,7 +105,7 @@ export interface EntityDataManagerProxy {
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
-  addOrUpdateEntityInstance(entityInstance: EntityInstance) {
+  addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void> {
     return chrome.autofillPrivate.addOrUpdateEntityInstance(entityInstance);
   }
 

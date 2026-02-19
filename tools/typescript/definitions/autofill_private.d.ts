@@ -330,7 +330,7 @@ declare global {
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
       export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
-          void;
+          Promise<void>;
       export function removeEntityInstance(guid: string): void;
       export function loadEntityInstances():
           Promise<EntityInstanceWithLabels[]>;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {EntityDataManagerProxy, EntityInstancesChangedListener} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -25,6 +26,8 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   private walletOptInStatus_: boolean = false;
   private setWalletablePassDetectionOptInStatusResponse_: boolean = true;
   private authenticateUserBeforeViewingEntityDataResponse_: boolean = true;
+  private saveResolver_: PromiseResolver<void>|null = null;
+  private autoResolveSave_: boolean = true;
 
   constructor() {
     super([
@@ -91,9 +94,32 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.entityInstancesChangedListener_(entityInstancesWithLabels);
   }
 
-  addOrUpdateEntityInstance(entityInstance: EntityInstance): void {
+  /**
+   * Helper resolve the pending save operation.
+   */
+  resolveSave(): void {
+    if (this.saveResolver_) {
+      this.saveResolver_.resolve();
+      this.saveResolver_ = null;
+    }
+  }
+
+  /**
+   * Configures whether the save operation should resolve immediately.
+   */
+  setAutoResolveSave(autoResolve: boolean) {
+    this.autoResolveSave_ = autoResolve;
+  }
+
+  addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void> {
     this.methodCalled(
         'addOrUpdateEntityInstance', structuredClone(entityInstance));
+    if (this.autoResolveSave_) {
+      return Promise.resolve();
+    }
+
+    this.saveResolver_ = new PromiseResolver();
+    return this.saveResolver_.promise;
   }
 
   removeEntityInstance(guid: string): void {

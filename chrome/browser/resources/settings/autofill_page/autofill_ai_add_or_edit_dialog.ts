@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 import './passwords_shared.css.js';
@@ -194,6 +195,19 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
               .map(String);
         },
       },
+
+      enableSavePrivatePassesToWallet_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('autofillAiWalletPrivatePasses'),
+      },
+
+      /**
+       * True while waiting for the backend to respond from Wallet API call.
+       */
+      saveInProgress_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -212,6 +226,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   declare private userEmail_: string;
   declare private footerText_: string;
   declare private saveToWalletFromSettingsEnabled_: boolean;
+  declare private enableSavePrivatePassesToWallet_: boolean;
+  declare private saveInProgress_: boolean;
 
   private requiredAttributeTypes_: AttributeType[] = [];
   private entityDataManager_: EntityDataManagerProxy =
@@ -591,33 +607,70 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         !this.allFieldsAreEmpty_ && !invalidDateExists && requiredFieldsMet;
   }
 
+  /**
+   * Helper to determine if the spinner should be visible.
+   */
+  private shouldShowSpinner_(saving: boolean): boolean {
+    return this.enableSavePrivatePassesToWallet_ && saving;
+  }
+
   private onCancelClick_(): void {
+    if (this.saveInProgress_) {
+      // Prevent canceling while a save is in progress to avoid state
+      // inconsistencies.
+      return;
+    }
     this.$.dialog.cancel();
   }
 
-  private onConfirmClick_(): void {
+  private onDialogCancel_(e: Event): void {
+    if (this.saveInProgress_) {
+      e.preventDefault();
+    }
+  }
+
+  private async onConfirmClick_(): Promise<void> {
+    if (this.saveInProgress_) {
+      return;
+    }
     this.userClickedSaveButton_ = true;
     this.validateForm_();
-    if (this.canSave_) {
-      const entityToSave = {...this.entityInstance!};
-
-      // If the type supports Wallet storage, we default to saving to Wallet but
-      // only for new entities.
-      if (!entityToSave.guid && entityToSave.type.supportsWalletStorage) {
-        entityToSave.storedInWallet = true;
-      }
-      this.dispatchEvent(new CustomEvent('autofill-ai-add-or-edit-done', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          ...entityToSave,
-          attributeInstances: this.completeAttributeInstanceList_.filter(
-              attributeInstance =>
-                  this.isAttributeInstanceNotEmpty(attributeInstance)),
-        },
-      }));
-      this.$.dialog.close();
+    if (!this.canSave_) {
+      return;
     }
+
+    const entityToSave = {...this.entityInstance!};
+
+    entityToSave.attributeInstances =
+        this.completeAttributeInstanceList_.filter(
+            attributeInstance =>
+                this.isAttributeInstanceNotEmpty(attributeInstance));
+
+    // If the type supports Wallet storage, we default to saving to Wallet but
+    // only for new entities.
+    if (!entityToSave.guid && entityToSave.type.supportsWalletStorage) {
+      entityToSave.storedInWallet = true;
+    }
+
+    if (this.enableSavePrivatePassesToWallet_) {
+      this.saveInProgress_ = true;
+
+      try {
+        await this.entityDataManager_.addOrUpdateEntityInstance(entityToSave);
+        this.saveInProgress_ = false;
+      } catch (e) {
+        this.saveInProgress_ = false;
+        return;
+      }
+    }
+
+    this.dispatchEvent(new CustomEvent('autofill-ai-add-or-edit-done', {
+      bubbles: true,
+      composed: true,
+      detail: entityToSave,
+    }));
+
+    this.$.dialog.close();
   }
 }
 

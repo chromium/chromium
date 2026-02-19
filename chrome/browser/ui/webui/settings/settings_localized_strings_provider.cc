@@ -1739,6 +1739,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillEnableWalletBranding));
 
   html_source->AddBoolean(
+      "autofillAiWalletPrivatePasses",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWalletPrivatePasses));
+
+  html_source->AddBoolean(
       "enableSaveToWalletFromSettings",
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveToWalletFromSettings));

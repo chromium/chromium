@@ -395,7 +395,11 @@ export class SettingsAutofillAiEntriesListElement extends
 
   private onAutofillAiAddOrEditDone_(e: CustomEvent<EntityInstance>) {
     e.stopPropagation();
-    this.entityDataManager_.addOrUpdateEntityInstance(e.detail);
+    // TODO(crbug.com/477845712): Remove this method once
+    // `kAutofillAiWalletPrivatePasses` gets launched.
+    if (!loadTimeData.getBoolean('autofillAiWalletPrivatePasses')) {
+      void this.entityDataManager_.addOrUpdateEntityInstance(e.detail);
+    }
   }
 
   private onAddOrEditEntityInstanceDialogClose_(e: Event) {

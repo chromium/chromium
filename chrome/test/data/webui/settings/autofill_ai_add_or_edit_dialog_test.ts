@@ -414,6 +414,54 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertTrue(!!footer);
     assertTrue(footer.hidden, 'Footer should be hidden for ineligible entity');
   });
+
+  test('AsyncSave_ShowsSpinnerAndDisablesButton', async function() {
+    loadTimeData.overrideValues({autofillAiWalletPrivatePasses: true});
+
+    // Disable auto-resolve to test the pending state
+    entityDataManager.setAutoResolveSave(false);
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+
+    // Initialize empty dialog to ensure that none of the fields are filled.
+    dialog.entityInstance = {
+      type: testEntityInstance.type,
+      attributeInstances: [{type: testAttributeTypes[0]!, value: 'Test Value'}],
+      guid: '',
+      nickname: '',
+    };
+    dialog.entityInstance.type.supportsWalletStorage = true;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+    ]);
+    await flushTasks();
+
+    const saveButton =
+        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    const spinner = dialog.shadowRoot!.querySelector<HTMLElement>('.spinner');
+
+    assertTrue(!!saveButton);
+    assertTrue(!!spinner);
+
+    assertFalse(isVisible(spinner));
+    assertTrue(saveButton.innerText.includes('Save'));
+
+    saveButton.click();
+    await flushTasks();
+
+    // The proxy should hold the promise in pending state.
+    assertTrue(isVisible(spinner));
+
+    entityDataManager.resolveSave();
+
+    // Verify Dialog closes.
+    await flushTasks();
+    assertFalse(dialog.$.dialog.getNative().open);
+  });
 });
 
 suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
