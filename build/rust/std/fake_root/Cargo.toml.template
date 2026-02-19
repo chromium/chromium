@@ -10,7 +10,6 @@ path = "../../../../RUST_SRC_ROOT/library/sysroot"
 default-features = false
 features = [
     "backtrace",
-    "panic-unwind",
     "profiler",
 ]
 

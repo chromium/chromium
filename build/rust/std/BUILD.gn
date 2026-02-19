@@ -38,7 +38,6 @@ if (toolchain_has_rust) {
     "getopts",
     "hashbrown",
     "panic_abort",
-    "panic_unwind",
     "rustc_demangle",
     "std_detect",
     "test",
