@@ -623,6 +623,10 @@ void RenderThreadImpl::Shutdown() {
 
   blink::LogStatsDuringShutdown();
 
+  // Flush any buffered content.
+  fflush(stdout);
+  fflush(stderr);
+
   // In a single-process mode, we cannot call _exit(0) in Shutdown() because
   // it will exit the process before the browser side is ready to exit.
   if (!IsSingleProcess())
