@@ -126,7 +126,6 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
   print_settings->printer_type = printer_type;
   print_settings->margin_type = margin_type;
   print_settings->scaling_type = scaling_type;
-  print_settings->margin_type = margin_type;
   print_settings->collate = collate;
   print_settings->copies = copies;
   print_settings->color = color;
@@ -281,7 +280,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
 
   const base::ListValue actual_page_range =
       (*serialized_settings.FindList(::printing::kSettingPageRange)).Clone();
-  // Only two entries in the list.
+  // Only one entry in the list.
   EXPECT_EQ(static_cast<int>(page_range[0]),
             actual_page_range[0].GetDict().FindInt(
                 ::printing::kSettingPageRangeFrom));
