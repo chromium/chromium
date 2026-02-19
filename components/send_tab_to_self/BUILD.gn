@@ -20,6 +20,8 @@ static_library("send_tab_to_self") {
     "page_context.h",
     "pref_names.cc",
     "pref_names.h",
+    "received_tab_forms_filler.cc",
+    "received_tab_forms_filler.h",
     "send_tab_to_self_bridge.cc",
     "send_tab_to_self_bridge.h",
     "send_tab_to_self_data_type_controller.cc",
@@ -98,6 +100,7 @@ source_set("unit_tests") {
   sources = [
     "entry_point_display_reason_unittest.cc",
     "outgoing_tab_form_field_extractor_unittest.cc",
+    "received_tab_forms_filler_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
     "target_device_info_unittest.cc",
