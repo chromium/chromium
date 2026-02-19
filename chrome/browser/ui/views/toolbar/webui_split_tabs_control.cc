@@ -102,8 +102,7 @@ void WebUISplitTabsControl::HandleContextMenu(
 
 void WebUISplitTabsControl::RunMenuAt(int x, int y) {
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      split_tab_menu_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+      split_tab_menu_.get(), views::MenuRunner::HAS_MNEMONICS,
       base::BindRepeating(&WebUISplitTabsControl::OnMenuClosed,
                           base::Unretained(this)));
 
