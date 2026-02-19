@@ -6,25 +6,74 @@
 
 <div overscrollcontainer>
   <div id="target">Target</div>
+  <div id="target2">Target 2</div>
+  <div id="dup" class="one">Dup 1</div>
+  <div id="dup" class="two">Dup 2</div>
 </div>
 <button id="invoker" command="toggle-overscroll"></button>
 
 <script>
-test(() => {
-  const target = document.getElementById('target');
-  const invoker = document.getElementById('invoker');
-
-  // Initial state: not an overscroll target.
-  assert_not_equals(getComputedStyle(target).position, "absolute", "Initial state");
-
-  // Set commandFor via JS.
+function isOverscrollArea(element) {
+  return getComputedStyle(element).position === "absolute";
+}
+test((t) => {
+  t.add_cleanup(() => invoker.removeAttribute('commandfor'));
+  assert_false(isOverscrollArea(target), "Initial state");
   invoker.commandForElement = target;
+  assert_true(isOverscrollArea(target), "After setting commandForElement");
+  assert_equals(invoker.getAttribute('commandfor'), "", "Setting property should set attribute to empty string");
 
-  // The target should now be an overscroll target and thus position: absolute.
-  assert_equals(getComputedStyle(target).position, "absolute", "After setting commandForElement");
-
-  // Clear commandFor.
   invoker.commandForElement = null;
-  assert_not_equals(getComputedStyle(target).position, "absolute", "After clearing commandForElement");
+  assert_false(isOverscrollArea(target), "After clearing commandForElement");
+  assert_false(invoker.hasAttribute('commandfor'), "Setting property to null should remove attribute");
 }, "overscroll-target should work when set via commandForElement JS property");
+
+test((t) => {
+  t.add_cleanup(() => invoker.removeAttribute('commandfor'));
+  assert_false(isOverscrollArea(target), "Initial state");
+  invoker.setAttribute('commandfor', 'target');
+  assert_true(isOverscrollArea(target), "After setting commandfor attribute");
+  invoker.removeAttribute('commandfor');
+  assert_false(isOverscrollArea(target), "After removing commandfor attribute");
+}, "overscroll-target should work when set via commandfor attribute");
+
+test((t) => {
+  t.add_cleanup(() => invoker.removeAttribute('commandfor'));
+  invoker.setAttribute('commandfor', 'target');
+  assert_true(isOverscrollArea(target), "Set via attribute");
+
+  invoker.commandForElement = null;
+  assert_false(isOverscrollArea(target), "Clearing property should also remove attribute");
+  assert_false(invoker.hasAttribute('commandfor'), "Attribute should be removed");
+}, "Setting via setAttribute and then property to null (no fallback)");
+
+test((t) => {
+  t.add_cleanup(() => invoker.removeAttribute('commandfor'));
+  invoker.commandForElement = target;
+  assert_true(isOverscrollArea(target), "Set via property");
+
+  invoker.setAttribute('commandfor', 'target2');
+  assert_equals(invoker.commandForElement, target2, "Setting attribute should reflect new element");
+  assert_true(isOverscrollArea(target2), "Attribute now takes effect");
+  assert_false(isOverscrollArea(target), "Old property target no longer target");
+
+  invoker.removeAttribute('commandfor');
+  assert_false(isOverscrollArea(target2), "Attribute cleared");
+}, "Attribute change clears explicitly set element");
+
+test((t) => {
+  const dup1 = document.querySelector('.one');
+  const dup2 = document.querySelector('.two');
+  const container = target.parentElement;
+  t.add_cleanup(() => invoker.removeAttribute('commandfor'));
+  t.add_cleanup(() => container.append(dup1, dup2));
+
+  invoker.setAttribute('commandfor', 'dup');
+  assert_true(isOverscrollArea(dup1), "First element in DOM order wins");
+  assert_false(isOverscrollArea(dup2), "Second element loses");
+
+  container.insertBefore(dup2, dup1);
+  assert_true(isOverscrollArea(dup2), "New first element wins after DOM move");
+  assert_false(isOverscrollArea(dup1), "Old first element loses after DOM move");
+}, "Multiple elements matching idref, first one in DOM order wins");
 </script>
