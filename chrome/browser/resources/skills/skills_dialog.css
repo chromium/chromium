@@ -141,7 +141,7 @@ textarea::placeholder {
 
 .textarea-actions {
   display: flex;
-  gap: 0;
+  gap: 2px;
   padding: 8px;
   background-color: transparent;
 }
@@ -153,25 +153,13 @@ textarea::placeholder {
   box-sizing: border-box;
 }
 
-cr-icon-button {
+.refine-icon {
   margin: 0;
   --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
   --cr-icon-button-hover-background-color:
     var(--color-sys-state-hover-on-subtle);
-}
-
-#iconUndo {
-  --cr-icon-image: url('images/skills_undo.svg');
-}
-
-#iconRedo {
-  --cr-icon-image: url('images/skills_redo.svg');
-}
-
-#iconRefine {
-  --cr-icon-image: url('images/skills_pen_spark.svg');
 }
 
 .buttons-group {
@@ -252,18 +240,21 @@ cr-icon-button {
   line-height: 16px;
 }
 
-#errorMessage {
+.error-message {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--color-sys-error);
+  font-weight: 400;
+}
+
+#refineErrorMessage {
   display: flex;
   align-items: center;
   gap: 4px;
   margin-top: 8px;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--color-sys-error);
-  font-weight: 500;
 }
 
-#errorMessage a {
+#refineErrorMessage a {
   color: inherit;
   text-decoration: underline;
   cursor: pointer;
@@ -281,4 +272,17 @@ cr-icon-button {
   display: block;
   margin-bottom: 19px;
   padding-right: 10px;
+}
+
+#saveErrorContainer {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  height: 16px;
+}
+
+.icon-error {
+  --iron-icon-fill-color: var(--color-sys-error);
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
 }

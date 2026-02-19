@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,7 +24,10 @@ namespace {
 
 constexpr float kCornerRadius = 12.0f;
 constexpr int kWebViewWidth = 448;
-constexpr int kWebViewHeight = 474;
+constexpr int kWebViewMinHeight = 471;
+constexpr int kWebViewMaxHeight = 503;  // Extra space needed for save error.
+gfx::Size kWebViewMinSize = gfx::Size(kWebViewWidth, kWebViewMinHeight);
+gfx::Size kWebViewMaxSize = gfx::Size(kWebViewWidth, kWebViewMaxHeight);
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsDialogView, kSkillsDialogElementId);
@@ -36,7 +40,7 @@ SkillsDialogView::SkillsDialogView(Profile* profile) {
   web_view->SetProperty(views::kElementIdentifierKey, kSkillsDialogElementId);
   web_view_ = web_view.get();
 
-  web_view->SetPreferredSize(gfx::Size(kWebViewWidth, kWebViewHeight));
+  web_view->SetPreferredSize(kWebViewMinSize);
   web_view_->SetPaintToLayer();
   web_view_->layer()->SetFillsBoundsOpaquely(false);
   web_view_->layer()->SetRoundedCornerRadius(
@@ -46,12 +50,20 @@ SkillsDialogView::SkillsDialogView(Profile* profile) {
   web_view_->LoadInitialURL(GURL(std::string(chrome::kChromeUISkillsURL) +
                                  chrome::kChromeUISkillsDialogPath));
   web_view_->GetWebContents()->SetDelegate(this);
+  web_view_->EnableSizingFromWebContents(kWebViewMinSize, kWebViewMaxSize);
   AddChildView(std::move(web_view));
 }
 
 SkillsDialogView::~SkillsDialogView() {
   if (web_view_ && web_view_->GetWebContents()) {
     web_view_->GetWebContents()->SetDelegate(nullptr);
+  }
+}
+
+void SkillsDialogView::ChildPreferredSizeChanged(views::View* child) {
+  views::View::ChildPreferredSizeChanged(child);
+  if (GetWidget()) {
+    GetWidget()->SetSize(GetPreferredSize());
   }
 }
 
@@ -69,6 +81,13 @@ bool SkillsDialogView::HandleKeyboardEvent(
 
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, web_view_->GetFocusManager());
+}
+
+void SkillsDialogView::ResizeDueToAutoResize(content::WebContents* web_contents,
+                                             const gfx::Size& new_size) {
+  if (web_view_) {
+    web_view_->SetPreferredSize(new_size);
+  }
 }
 
 BEGIN_METADATA(SkillsDialogView)

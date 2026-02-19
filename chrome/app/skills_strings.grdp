@@ -124,4 +124,7 @@
   <message name="IDS_SKILLS_DIALOG_ACCOUNT_INFO" desc="Text for account info in the skills dialog" translateable="false">
     This skill will save to your Google Account
   </message>
+  <message name="IDS_SKILLS_DIALOG_SAVE_ERROR" desc="Error message for saving a skill" translateable="false">
+    Unable to save. Try again
+  </message>
 </grit-part>

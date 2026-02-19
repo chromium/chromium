@@ -39,7 +39,9 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   ~SkillsDialogHandler() override;
 
   // skills::mojom::DialogHandler:
-  void SubmitSkill(const skills::Skill& skill) override;
+  void SubmitSkill(
+      const skills::Skill& skill,
+      skills::mojom::DialogHandler::SubmitSkillCallback callback) override;
   void CloseDialog() override;
   void ShowEmojiPicker() override;
   void GetInitialSkill(GetInitialSkillCallback callback) override;

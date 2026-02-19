@@ -47,6 +47,7 @@ suite('SkillsDialogAppPage', function() {
     dialogHandler = TestMock.fromClass(DialogHandlerRemote);
     SkillsDialogBrowserProxy.setInstance(
         {handler: dialogHandler} as SkillsDialogBrowserProxy);
+    dialogHandler.setResultFor('submitSkill', Promise.resolve({success: true}));
     dialogHandler.setResultFor(
         'refineSkill', Promise.resolve({refinedSkill: {}}));
     dialogHandler.setResultFor(
@@ -178,11 +179,15 @@ suite('SkillsDialogAppPage', function() {
 
     // Click the save button and verify the proxy call.
     skillsDialogApp.$.saveButton.click();
+    await microtasksFinished();
     const submittedSkill = await dialogHandler.whenCalled('submitSkill');
     assertEquals('', submittedSkill.id);
     assertEquals(testName, submittedSkill.name);
     assertEquals(testPrompt, submittedSkill.prompt);
     assertEquals(SkillSource.kUserCreated, submittedSkill.source);
+
+    // Verify save error message is not shown.
+    assertTrue(skillsDialogApp.$.saveErrorContainer.hidden);
   });
 
   test('SubmitsRemixedSkill', async function() {
@@ -210,9 +215,9 @@ suite('SkillsDialogAppPage', function() {
     const submittedSkill = await dialogHandler.whenCalled('submitSkill');
     assertEquals('', submittedSkill.id);
     assertEquals(firstPartySkill.id, submittedSkill.sourceSkillId);
+    assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
     assertEquals(remixedName, submittedSkill.name);
     assertEquals(remixedPrompt, submittedSkill.prompt);
-    assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
   });
 
   test('EditUserCreatedSkill', async function() {
@@ -271,6 +276,30 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(editedName, submittedSkill.name);
     assertEquals(editedPrompt, submittedSkill.prompt);
     assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
+  });
+
+  test('SaveButtonFails', async function() {
+    dialogHandler.setResultFor(
+        'submitSkill', Promise.resolve({success: false}));
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    skillsDialogApp = document.createElement('skills-dialog-app');
+    document.body.appendChild(skillsDialogApp);
+    await microtasksFinished();
+
+    // Verify save error message is not shown initially.
+    assertTrue(skillsDialogApp.$.saveErrorContainer.hidden);
+
+    // Populate the fields to enable the save button.
+    const testName = 'test skill';
+    const testPrompt = 'test prompt';
+    await updateName(testName);
+    await updateInstructions(testPrompt);
+
+    // Verify save error message is shown.
+    skillsDialogApp.$.saveButton.click();
+    await microtasksFinished();
+    await dialogHandler.whenCalled('submitSkill');
+    assertFalse(skillsDialogApp.$.saveErrorContainer.hidden);
   });
 
   test('EmojiTriggerOpensPicker', async function() {
@@ -471,7 +500,7 @@ suite('SkillsDialogAppPage', function() {
     const refineBtn = skillsDialogApp.$.iconRefine;
     // Query these elements dynamically in assertion to ensure freshness
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.errorMessage;
+    const errorMessage = skillsDialogApp.$.refineErrorMessage;
 
     // 1. Setup Input
     await updateInstructions('Start text');
@@ -493,7 +522,7 @@ suite('SkillsDialogAppPage', function() {
 
     // Helper functions to get fresh DOM elements
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.errorMessage;
+    const errorMessage = skillsDialogApp.$.refineErrorMessage;
 
     // 1. Setup Input and Trigger Error
     await updateInstructions('Start');
@@ -571,7 +600,7 @@ suite('SkillsDialogAppPage', function() {
   test('LateResponseDoesNotOverwriteError', async function() {
     const refineBtn = skillsDialogApp.$.iconRefine;
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.errorMessage;
+    const errorMessage = skillsDialogApp.$.refineErrorMessage;
 
     // 1. Setup Initial State
     await updateInstructions('Original Text');

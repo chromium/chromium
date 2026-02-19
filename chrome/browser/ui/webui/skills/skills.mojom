@@ -82,7 +82,7 @@ interface SkillsPage {
 // Handler for the add/edit skill dialog.
 interface DialogHandler {
   // Called when the user clicks the "Save" button in the dialog.
-  SubmitSkill(skills.mojom.Skill skill);
+  SubmitSkill(skills.mojom.Skill skill) => (bool success);
 
   // Called when the user clicks the "Refine" button in the dialog.
   RefineSkill(skills.mojom.Skill skill) => (skills.mojom.Skill? refined_skill);

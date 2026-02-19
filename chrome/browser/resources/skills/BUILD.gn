@@ -11,9 +11,6 @@ build_webui("build") {
   grd_prefix = "skills"
 
   static_files = [
-    "images/skills_undo.svg",
-    "images/skills_redo.svg",
-    "images/skills_pen_spark.svg",
     "skills.html",
     "skills_dialog.html",
   ]

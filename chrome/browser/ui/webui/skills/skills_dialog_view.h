@@ -29,12 +29,15 @@ class SkillsDialogView : public views::View,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSkillsDialogElementId);
 
   // views::View:
+  void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
   // contents::WebContentsDelegate:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  void ResizeDueToAutoResize(content::WebContents* web_contents,
+                             const gfx::Size& new_size) override;
 
   content::WebContents* web_contents() { return web_view_->GetWebContents(); }
   views::WebView* web_view() { return web_view_; }

@@ -68,28 +68,33 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
         </textarea>
       `}
       <div class="textarea-actions">
-        <cr-icon-button id="iconUndo" title="$i18n{undo}"
-            aria-label="$i18n{undo}"
-            ?disabled="${this.isUndoDisabled_()}"
-            @click="${this.onUndoClick_}">
+        <cr-icon-button id="iconUndo" iron-icon="skills:undo"
+            class="refine-icon" title="$i18n{undo}" aria-label="$i18n{undo}"
+            ?disabled="${this.isUndoDisabled_()}" @click="${this.onUndoClick_}">
         </cr-icon-button>
-        <cr-icon-button id="iconRedo" title="$i18n{redo}"
-            aria-label="$i18n{redo}"
-            ?disabled="${this.isRedoDisabled_()}"
-            @click="${this.onRedoClick_}">
+        <cr-icon-button id="iconRedo" iron-icon="skills:redo"
+            class="refine-icon" title="$i18n{redo}" aria-label="$i18n{redo}"
+            ?disabled="${this.isRedoDisabled_()}" @click="${this.onRedoClick_}">
         </cr-icon-button>
-        <cr-icon-button id="iconRefine" title="$i18n{refine}"
-            aria-label="$i18n{refine}" ?disabled="${this.isRefineDisabled_()}"
+        <cr-icon-button id="iconRefine" iron-icon="skills:refine"
+            class="refine-icon" title="$i18n{refine}" aria-label="$i18n{refine}"
+            ?disabled="${this.isRefineDisabled_()}"
             @click="${this.onRefineClick_}">
         </cr-icon-button>
       </div>
     </div>
-    <div id="errorMessage" ?hidden="${!this.hasRefineError_}">$i18n{refineError}
+    <div id="refineErrorMessage" class="error-message"
+        ?hidden="${!this.hasRefineError_}">
+          $i18n{refineError}
     </div>
   </div>
   <div id="accountInfo">
     <div id="accountLabel">$i18n{accountInfo}</div>
     <div id="accountEmail">${this.signedInEmail_}</div>
+  </div>
+  <div id="saveErrorContainer" ?hidden="${!this.hasSaveError_}">
+    <cr-icon icon="cr:error-outline" class="icon-error"></cr-icon>
+    <div id="saveErrorMessage" class="error-message">$i18n{saveError}</div>
   </div>
   <div class="buttons-group">
     <cr-button id="cancelButton" class="cancel-button" @click="${this.cancel_}">

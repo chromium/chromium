@@ -4,12 +4,14 @@
 
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './error_page.js';
+import './icons.html.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -55,7 +57,7 @@ export interface SkillsDialogAppElement {
     accountEmail: HTMLElement,
     cancelButton: HTMLElement,
     emojiTrigger: HTMLInputElement,
-    errorMessage: HTMLElement,
+    refineErrorMessage: HTMLElement,
     header: HTMLElement,
     iconRedo: CrIconButtonElement,
     iconRefine: CrIconButtonElement,
@@ -65,6 +67,7 @@ export interface SkillsDialogAppElement {
     saveButton: CrButtonElement,
     textareaWrapper: HTMLElement,
     nameLoaderContainer: HTMLElement,
+    saveErrorContainer: HTMLElement,
   };
 }
 
@@ -92,6 +95,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       hasRefineError_: {type: Boolean},
       isRefineLoading_: {type: Boolean},
       isAutoGenerationLoading_: {type: Boolean},
+      hasSaveError_: {type: Boolean},
     };
   }
 
@@ -118,6 +122,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor hasRefineError_: boolean = false;
   protected accessor isRefineLoading_: boolean = false;
   protected accessor isAutoGenerationLoading_: boolean = false;
+  protected accessor hasSaveError_: boolean = false;
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
@@ -138,6 +143,7 @@ export class SkillsDialogAppElement extends CrLitElement {
           if (skill) {
             this.skill_ = skill;
             this.skill_.icon = skill.icon || DEFAULT_EMOJI;
+            this.skill_.source = skill.source || SkillSource.kUserCreated;
             // TODO(marissashen): Update to passing in dialogType from dialog
             // creation
             if (!skill.id || skill.source === SkillSource.kFirstParty) {
@@ -362,21 +368,26 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   /** Submits skill and closes the dialog. */
-  protected submitSkill_(): void {
-    let skillSource: SkillSource =
-        this.skill_.source || SkillSource.kUserCreated;
-    // Remixing a first party skill, set the parent and clear the ID.
-    if (this.skill_.source === SkillSource.kFirstParty) {
-      const sourceSkillId = this.skill_.id;
-      this.skill_ = {...this.skill_, id: '', sourceSkillId: sourceSkillId};
-      skillSource = SkillSource.kDerivedFromFirstParty;
-    }
-
-    SkillsDialogBrowserProxy.getInstance().handler.submitSkill({
+  protected submitSkill_(): Promise<void> {
+    this.hasSaveError_ = false;
+    const isFirstParty = this.skill_.source === SkillSource.kFirstParty;
+    const skill = {
       ...this.skill_,
       prompt: this.skill_.prompt.substring(0, MAX_PROMPT_CHAR_COUNT),
-      source: skillSource,
-    });
+
+      // If remixing first party skill, set parent and clear ID.
+      ...(isFirstParty && {
+        id: '',
+        sourceSkillId: this.skill_.id,
+        source: SkillSource.kDerivedFromFirstParty,
+      }),
+    };
+
+    return SkillsDialogBrowserProxy.getInstance()
+        .handler.submitSkill(skill)
+        .then(({success}) => {
+          this.hasSaveError_ = !success;
+        });
   }
 
   /** Click listener for the cancel button. */

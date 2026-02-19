@@ -145,10 +145,11 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSaved) {
   skills::Skill skill;
   skill.name = "Test Skill";
   skill.prompt = "Test Prompt";
+  base::MockCallback<mojom::DialogHandler::SubmitSkillCallback> callback;
   EXPECT_CALL(mock_delegate_, OnSkillSaved("generated_fake_id")).Times(1);
   EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
 
-  handler_->SubmitSkill(skill);
+  handler_->SubmitSkill(skill, callback.Get());
 
   // Metric Check
   histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",

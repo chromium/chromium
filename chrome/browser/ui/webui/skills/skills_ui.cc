@@ -77,6 +77,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"skillAddNewSkillLabel", IDS_ADD_NEW_SKILL_LABEL},
       {"noSearchResultsTitle", IDS_SKILLS_NO_SEARCH_RESULT_TITLE},
       {"noSearchResultsDescription", IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION},
+      {"saveError", IDS_SKILLS_DIALOG_SAVE_ERROR},
   };
 
   source->AddLocalizedStrings(kStrings);
