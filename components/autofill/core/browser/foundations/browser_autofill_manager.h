@@ -575,6 +575,12 @@ class BrowserAutofillManager : public AutofillManager {
       bool show_suggestions,
       std::vector<Suggestion> suggestions);
 
+  // Combines identity credential suggestions and existing suggestions into a
+  // single list, prioritizing identity credential suggestions first.
+  void MergeIdentityCredentialsAndAddressSuggestions(
+      std::vector<Suggestion>& suggestion,
+      std::vector<Suggestion> identity_credential_suggestions);
+
   // Combines plus address and address profile suggestions into a single list,
   // prioritizing plus address suggestions first. Runs `callback` with the
   // resulting list of suggestions.

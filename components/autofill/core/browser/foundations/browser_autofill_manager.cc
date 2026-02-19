@@ -3249,6 +3249,17 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
   return false;
 }
 
+void BrowserAutofillManager::MergeIdentityCredentialsAndAddressSuggestions(
+    std::vector<Suggestion>& suggestion,
+    std::vector<Suggestion> identity_credential_suggestions) {
+  // TODO(crbug.com/380367784): figure out what to do when both verified
+  // and unverified suggestions point to the same email address.
+  suggestion.insert(
+      suggestion.begin(),
+      std::make_move_iterator(identity_credential_suggestions.begin()),
+      std::make_move_iterator(identity_credential_suggestions.end()));
+}
+
 std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     const FormData& form,
     const FormStructure* form_structure,
@@ -3350,10 +3361,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
           identity_credential_delegate->GetVerifiedAutofillSuggestions(
               form, form_structure, field, autofill_field, client());
       // Insert verified suggestions above unverified ones.
-      // TODO(crbug.com/380367784): figure out what to do when both verified
-      // and unverified suggestions point to the same email address.
-      suggestions.insert(suggestions.begin(), verified_suggestions.begin(),
-                         verified_suggestions.end());
+      MergeIdentityCredentialsAndAddressSuggestions(
+          suggestions, std::move(verified_suggestions));
     }
   }
 
