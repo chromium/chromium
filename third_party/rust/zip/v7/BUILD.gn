@@ -51,7 +51,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Library to support the reading and writing of zip files."
   cargo_pkg_repository = "https://github.com/zip-rs/zip2.git"
-  cargo_pkg_version = "7.4.0"
+  cargo_pkg_version = "7.2.0"
 
   allow_unsafe = true
 

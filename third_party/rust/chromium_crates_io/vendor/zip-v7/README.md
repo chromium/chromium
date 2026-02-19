@@ -3,7 +3,6 @@ zip
 
 [![Build Status](https://github.com/zip-rs/zip2/actions/workflows/ci.yaml/badge.svg)](https://github.com/zip-rs/zip2/actions?query=branch%3Amaster+workflow%3ACI)
 [![Crates.io version](https://img.shields.io/crates/v/zip.svg)](https://crates.io/crates/zip)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11847/badge)](https://www.bestpractices.dev/projects/11847)
 
 [Documentation](https://docs.rs/zip/latest/zip/)
 
@@ -54,7 +53,7 @@ By default `aes-crypto`, `bzip2`, `deflate`, `deflate64`, `lzma`, `ppmd`, `time`
 
 # MSRV
 
-Our current Minimum Supported Rust Version is **1.88**. When adding features,
+Our current Minimum Supported Rust Version is **1.83**. When adding features,
 we will follow these guidelines:
 
 - We will always support a minor Rust version that has been stable for at least 6 months.

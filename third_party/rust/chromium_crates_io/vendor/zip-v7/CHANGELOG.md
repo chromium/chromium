@@ -7,43 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [7.4.0](https://github.com/zip-rs/zip2/compare/v7.3.0...v7.4.0) - 2026-02-05
-
-### <!-- 0 -->🚀 Features
-
-- Increase MSRV to 1.88 and update dependencies ([#626](https://github.com/zip-rs/zip2/pull/626))
-
-## [7.3.0](https://github.com/zip-rs/zip2/compare/v7.3.0-pre1...v7.3.0) - 2026-02-04
-
-### <!-- 0 -->🚀 Features
-
-- cleanup the benchmarks and Cargo.toml ([#606](https://github.com/zip-rs/zip2/pull/606))
-- Add support for per-file comments ([#543](https://github.com/zip-rs/zip2/pull/543))
-
-### <!-- 1 -->🐛 Bug Fixes
-
-- Document feature `unreserved` and make the mapping of extra fields public ([#616](https://github.com/zip-rs/zip2/pull/616))
-- Return an error if abort_file() fails when exceeding non-large-file limit ([#598](https://github.com/zip-rs/zip2/pull/598))
-
-### <!-- 7 -->⚙️ Miscellaneous Tasks
-
-- Bump version to 7.3.0 (semver checks fail if it's still 7.3.0-pre1)
-
-## [7.3.0-pre1](https://github.com/zip-rs/zip2/compare/v7.2.0...v7.3.0-pre1) - 2026-01-27
-
-### <!-- 1 -->🐛 Bug Fixes
-
-- Reject empty ZipCrypto password when encrypting files (can still be used when decrypting)
-- make zip crate safer and more readable ([#536](https://github.com/zip-rs/zip2/pull/536))
-
-### <!-- 4 -->⚡ Performance
-
-- Optimizations for CP437 conversion ([#559](https://github.com/zip-rs/zip2/pull/559))
-
-### <!-- 7 -->⚙️ Miscellaneous Tasks
-
-- Trigger release 7.3.0-pre1 to reset cargo-semver-checks baseline
-
 ## [7.2.0](https://github.com/zip-rs/zip2/compare/v7.1.0...v7.2.0) - 2026-01-20
 
 ### <!-- 0 -->🚀 Features
@@ -67,11 +30,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change an assert to debug_assert when encrypting/decrypting AES, and eliminate a fallible operation ([#521](https://github.com/zip-rs/zip2/pull/521))
 - eliminate a String clone per new file added to archive, and other related refactors ([#522](https://github.com/zip-rs/zip2/pull/522))
 
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- Fix another merge error, this one affecting only builds with flate2 and not zopfli
+- Fix more merge issues
+- Fix merge
+- Fix write_dir build errors on specific feature configs
+- Fix clippy warning
+- Fix --all-features build error
+- Fix merge
+
 ## [7.1.0](https://github.com/zip-rs/zip2/compare/v7.0.0...v7.1.0) - 2026-01-14
 
 ### <!-- 0 -->🚀 Features
 
-- display the underlying error in Display impl for `ZipError` ([#483](https://github.com/zip-rs/zip2/pull/483))
+- display the underlying error in Display impl for ZipError::Display ([#483](https://github.com/zip-rs/zip2/pull/483))
 - Enable creation of `ZipArchive` without reparsing ([#485](https://github.com/zip-rs/zip2/pull/485))
 
 ### <!-- 1 -->🐛 Bug Fixes
@@ -232,6 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 
 - drop unused crossbeam-utils dependency ([#339](https://github.com/zip-rs/zip2/pull/339))
+- fix typo
 - remove `deflate-flate2` dependency on specific backend
 - [**breaking**] Drop deprecated `deflate-miniz` feature flag ([#351](https://github.com/zip-rs/zip2/pull/351))
 
@@ -240,10 +214,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### <!-- 1 -->🐛 Bug Fixes
 
 - avoid scanning through all local file headers while opening an archive ([#281](https://github.com/zip-rs/zip2/pull/281))
-
-## [2.6.0](https://github.com/zip-rs/zip2/compare/v2.5.0...v2.6.0) - 2025-03-30
-
-- No documented changes.
 
 ## [2.5.0](https://github.com/zip-rs/zip2/compare/v2.4.2...v2.5.0) - 2025-03-23
 
@@ -260,7 +230,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### <!-- 1 -->🐛 Bug Fixes
 
-- `deep_copy_file` produced a mangled file header on big-endian platforms ([#309](https://github.com/zip-rs/zip2/pull/309))
+- `deep_copy_file` produced a mangled file header on big-endian platforms (#309)
 
 ## [2.4.1](https://github.com/zip-rs/zip2/compare/v2.4.0...v2.4.1) - 2025-03-17
 
@@ -293,7 +263,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix failing tests, remove symlink loop check
 - Canonicalize output path to avoid false negatives
 - Symlink handling in stream extraction
-- Canonicalize output paths and symlink targets, and ensure they descend from the destination ([CVE-2025-29787](https://github.com/zip-rs/zip2/security/advisories/GHSA-94vh-gphv-8pm8))
+- Canonicalize output paths and symlink targets, and ensure they descend from the destination
 
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 
@@ -303,7 +273,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### <!-- 2 -->🚜 Refactor
 
-- Change the inner structure of `DateTime` ([#267](https://github.com/zip-rs/zip2/pull/267))
+- Change the inner structure of `DateTime` (#267)
 
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 
@@ -313,7 +283,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### <!-- 1 -->🐛 Bug Fixes
 
-- rewrite the EOCD/EOCD64 detection to fix extreme performance regression ([#247](https://github.com/zip-rs/zip2/pull/247))
+- rewrite the EOCD/EOCD64 detection to fix extreme performance regression (#247)
 
 ## [2.2.1](https://github.com/zip-rs/zip2/compare/v2.2.0...v2.2.1) - 2024-11-20
 

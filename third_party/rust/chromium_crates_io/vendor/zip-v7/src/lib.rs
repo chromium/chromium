@@ -30,16 +30,7 @@
 //!
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![warn(clippy::all, rust_2018_idioms)]
-#![deny(
-    missing_docs,
-    clippy::all,
-    clippy::missing_panics_doc,
-    clippy::cargo,
-    clippy::panic,
-    clippy::cast_lossless
-)]
-#![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
+#![warn(missing_docs)]
 #![allow(unexpected_cfgs)] // Needed for cfg(fuzzing)
 pub use crate::compression::{CompressionMethod, SUPPORTED_COMPRESSION_METHODS};
 pub use crate::read::HasZipMetadata;
@@ -81,6 +72,5 @@ zip = \"="]
 ```"]
 pub mod unstable;
 
-pub(crate) mod macros;
-pub(crate) use macros::cfg_if;
-pub(crate) use macros::cfg_if_expr;
+#[doc(hidden)]
+pub mod macros;

@@ -2,7 +2,14 @@
 
 ## Supported Versions
 
-Only the latest released version is supported.
+Use this section to tell people about which versions of your project are
+currently being supported with security updates.
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 2.4.x   | :white_check_mark: |
+| 2.3.x   | :white_check_mark: |
+| < 2.0   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -10,14 +17,14 @@ To report a vulnerability, please go to https://github.com/zip-rs/zip2/security/
 
 * Close the report within 7 days if it's invalid, or if a fix has already been released but some old versions needed to be yanked.
 * Provide progress reports at least every 7 days to the original reporter.
-* Aim to provide a fix within 30 days of the initial report. If a complete fix is not feasible in that timeframe (for example, due to complexity or external dependencies), we will communicate this to the reporter, share any available mitigations or workarounds, and adjust the expected timeline accordingly.
+* Fix vulnerabilities within 30 days of the initial report.
 
 ## Disclosure
 
 A vulnerability will only be publicly disclosed once a fix is released. At that point, the delay before full public disclosure
 will be determined as follows:
 
-* If the proof-of-concept is very simple, or an exploit is already in the wild (whether or not it specifically targets `zip`),
+* If the proof-of-concept is very simple, or an exploit is already in the wild (whether or not it specifically targets `zip`,
   all details will be made public right away.
 * If the vulnerability is specific to `zip` and cannot easily be reverse-engineered from the code history, then the
   proof-of-concept and most of the details will be withheld until 14 days after the fix is released and all vulnerable

@@ -1,6 +1,5 @@
 #![macro_use]
 
-use crate::extra_fields::UsedExtraField;
 use crate::read::magic_finder::{Backwards, Forward, MagicFinder, OptimisticMagicFinder};
 use crate::read::ArchiveOffset;
 use crate::result::{invalid, ZipError, ZipResult};
@@ -87,7 +86,7 @@ impl ExtraFieldMagic {
         Self(u16::to_le(self.0))
     }
 
-    pub const ZIP64_EXTRA_FIELD_TAG: Self = Self::literal(UsedExtraField::Zip64ExtendedInfo as u16);
+    pub const ZIP64_EXTRA_FIELD_TAG: Self = Self::literal(0x0001);
 }
 
 /// The file size at which a ZIP64 record becomes necessary.
@@ -165,22 +164,12 @@ pub(crate) unsafe trait Pod: Copy + 'static {
 
     #[inline]
     fn as_bytes(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(
-                std::ptr::from_ref::<Self>(self).cast::<u8>(),
-                mem::size_of::<Self>(),
-            )
-        }
+        unsafe { slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>()) }
     }
 
     #[inline]
     fn as_bytes_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(
-                std::ptr::from_mut::<Self>(self).cast::<u8>(),
-                mem::size_of::<Self>(),
-            )
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>()) }
     }
 }
 
@@ -689,7 +678,7 @@ pub(crate) fn find_central_directory<R: Read + Seek + ?Sized>(
 
         let Some((locator64_offset, locator64)) = zip64_metadata else {
             // Branch out for zip32
-            let relative_cd_offset = u64::from(eocd.central_directory_offset);
+            let relative_cd_offset = eocd.central_directory_offset as u64;
 
             // If the archive is empty, there is nothing more to be checked, the archive is correct.
             if eocd.number_of_files == 0 {

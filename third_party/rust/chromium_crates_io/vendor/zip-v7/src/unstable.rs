@@ -11,28 +11,17 @@ pub mod stream {
 }
 /// Types for creating ZIP archives.
 pub mod write {
-    use crate::result::{ZipError, ZipResult};
     use crate::write::{FileOptionExtension, FileOptions};
     /// Unstable methods for [`FileOptions`].
     pub trait FileOptionsExt {
-        /// Write the file with the given password using the deprecated `ZipCrypto` algorithm.
+        /// Write the file with the given password using the deprecated ZipCrypto algorithm.
         ///
-        /// This is not recommended for new archives, as `ZipCrypto` is not secure.
-        fn with_deprecated_encryption(self, password: &[u8]) -> ZipResult<Self>
-        where
-            Self: Sized;
+        /// This is not recommended for new archives, as ZipCrypto is not secure.
+        fn with_deprecated_encryption(self, password: &[u8]) -> Self;
     }
     impl<T: FileOptionExtension> FileOptionsExt for FileOptions<'_, T> {
-        fn with_deprecated_encryption(self, password: &[u8]) -> ZipResult<FileOptions<'static, T>> {
-            if password.is_empty() {
-                // Forbid empty passwords to avoid deriving a predictable key from a
-                // fixed, public value. Callers must ensure passwords are non-empty.
-                // This check isn't in with_deprecated_encryption itself because that would also
-                // affect reading.
-                Err(ZipError::InvalidPassword)
-            } else {
-                Ok(self.with_deprecated_encryption(password))
-            }
+        fn with_deprecated_encryption(self, password: &[u8]) -> FileOptions<'static, T> {
+            self.with_deprecated_encryption(password)
         }
     }
 }
@@ -82,15 +71,15 @@ pub trait LittleEndianReadExt: Read {
 impl<R: Read> LittleEndianReadExt for R {}
 
 /// Converts a path to the ZIP format (forward-slash-delimited and normalized).
-pub fn path_to_string<T: AsRef<Path>>(path: T) -> Result<Box<str>, std::io::Error> {
+pub fn path_to_string<T: AsRef<Path>>(path: T) -> Box<str> {
     let mut maybe_original = None;
     if let Some(original) = path.as_ref().to_str() {
         if original.is_empty() || original == "." || original == ".." {
-            return Ok(String::new().into_boxed_str());
+            return String::new().into_boxed_str();
         }
         if original.starts_with(MAIN_SEPARATOR) {
             if original.len() == 1 {
-                return Ok(MAIN_SEPARATOR.to_string().into_boxed_str());
+                return MAIN_SEPARATOR.to_string().into_boxed_str();
             } else if (MAIN_SEPARATOR == '/' || !original[1..].contains(MAIN_SEPARATOR))
                 && !original.ends_with('.')
                 && !original.contains([MAIN_SEPARATOR, MAIN_SEPARATOR])
@@ -100,7 +89,7 @@ pub fn path_to_string<T: AsRef<Path>>(path: T) -> Result<Box<str>, std::io::Erro
                 maybe_original = Some(&original[1..]);
             }
         } else if !original.contains(MAIN_SEPARATOR) {
-            return Ok(original.into());
+            return original.into();
         }
     }
     let mut recreate = maybe_original.is_none();
@@ -108,14 +97,13 @@ pub fn path_to_string<T: AsRef<Path>>(path: T) -> Result<Box<str>, std::io::Erro
 
     for component in path.as_ref().components() {
         match component {
-            Component::Normal(os_str) => {
-                if let Some(valid_str) = os_str.to_str() {
-                    normalized_components.push(Cow::Borrowed(valid_str))
-                } else {
+            Component::Normal(os_str) => match os_str.to_str() {
+                Some(valid_str) => normalized_components.push(Cow::Borrowed(valid_str)),
+                None => {
                     recreate = true;
                     normalized_components.push(os_str.to_string_lossy());
                 }
-            }
+            },
             Component::ParentDir => {
                 recreate = true;
                 normalized_components.pop();
@@ -126,10 +114,8 @@ pub fn path_to_string<T: AsRef<Path>>(path: T) -> Result<Box<str>, std::io::Erro
         }
     }
     if recreate {
-        Ok(normalized_components.join("/").into())
+        normalized_components.join("/").into()
     } else {
-        Ok(maybe_original
-            .ok_or_else(|| std::io::Error::other("Original path is empty"))?
-            .into())
+        maybe_original.unwrap().into()
     }
 }
