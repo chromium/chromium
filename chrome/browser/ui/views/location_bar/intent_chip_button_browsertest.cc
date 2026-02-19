@@ -71,11 +71,10 @@ class IntentChipButtonBrowserTest
         apps::test::GetFeaturesToEnableLinkCapturingUX(
             std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
 
-    if (IsMigrationEnabled()) {
-      features_to_enable.push_back(
-          {::features::kPageActionsMigration,
-           {{::features::kPageActionsMigrationIntentPicker.name, "true"}}});
-    }
+    features_to_enable.push_back(
+        {::features::kPageActionsMigration,
+         {{::features::kPageActionsMigrationIntentPicker.name,
+           IsMigrationEnabled() ? "true" : "false"}}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
@@ -304,11 +303,10 @@ class IntentChipButtonBrowserUiTest
         apps::test::GetFeaturesToEnableLinkCapturingUX(
             std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
 
-    if (IsMigrationEnabled()) {
-      features_to_enable.push_back(
-          {::features::kPageActionsMigration,
-           {{::features::kPageActionsMigrationIntentPicker.name, "true"}}});
-    }
+    features_to_enable.push_back(
+        {::features::kPageActionsMigration,
+         {{::features::kPageActionsMigrationIntentPicker.name,
+           IsMigrationEnabled() ? "true" : "false"}}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }

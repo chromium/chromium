@@ -747,13 +747,10 @@ class IntentPickerBubbleViewBrowserTestChromeOSParameterized
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
         apps::test::GetFeaturesToEnableLinkCapturingUX(std::get<0>(GetParam()));
     std::vector<base::test::FeatureRef> features_to_disable;
-    if (std::get<1>(GetParam())) {
-      features_to_enable.push_back(
-          {features::kPageActionsMigration,
-           {{features::kPageActionsMigrationIntentPicker.name, "true"}}});
-    } else {
-      features_to_disable.push_back(features::kPageActionsMigration);
-    }
+    features_to_enable.push_back(
+        {features::kPageActionsMigration,
+         {{features::kPageActionsMigrationIntentPicker.name,
+           std::get<1>(GetParam()) ? "true" : "false"}}});
     feature_list_.InitWithFeaturesAndParameters(features_to_enable,
                                                 features_to_disable);
   }

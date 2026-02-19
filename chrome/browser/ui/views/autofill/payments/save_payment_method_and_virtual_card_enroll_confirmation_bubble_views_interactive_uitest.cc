@@ -40,15 +40,12 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
-    if (is_page_action_migration_enabled) {
-      enabled_features.push_back(
-          {::features::kPageActionsMigration,
-           {
-               {::features::kPageActionsMigrationSavePayments.name, "true"},
-           }});
-    } else {
-      disabled_features.emplace_back(::features::kPageActionsMigration);
-    }
+    enabled_features.push_back(
+        {::features::kPageActionsMigration,
+         {
+             {::features::kPageActionsMigrationSavePayments.name,
+              is_page_action_migration_enabled ? "true" : "false"},
+         }});
     if (is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
     } else {
@@ -330,15 +327,12 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
-    if (is_page_action_migration_enabled) {
-      enabled_features.push_back(
-          {::features::kPageActionsMigration,
-           {
-               {::features::kPageActionsMigrationVirtualCard.name, "true"},
-           }});
-    } else {
-      disabled_features.emplace_back(::features::kPageActionsMigration);
-    }
+    enabled_features.push_back(
+        {::features::kPageActionsMigration,
+         {
+             {::features::kPageActionsMigrationVirtualCard.name,
+              is_page_action_migration_enabled ? "true" : "false"},
+         }});
     if (is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
     } else {

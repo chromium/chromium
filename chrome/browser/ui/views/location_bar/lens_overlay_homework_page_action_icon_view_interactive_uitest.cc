@@ -306,11 +306,11 @@ class LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter
         base::test::FeatureRefAndParams(
             lens::features::kLensOverlayEduActionChip,
             {{"max-shown-count", "3"}})};
-    if (is_migrated) {
-      enabled_features.push_back(base::test::FeatureRefAndParams(
-          features::kPageActionsMigration,
-          {{features::kPageActionsMigrationLensOverlayHomework.name, "true"}}));
-    }
+    enabled_features.push_back(base::test::FeatureRefAndParams(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationLensOverlayHomework.name,
+          is_migrated ? "true" : "false"}}));
+
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features, {lens::features::kLensOverlayKeyboardSelection});
   }

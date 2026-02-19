@@ -92,17 +92,13 @@ class IbanBubbleViewFullFormBrowserTest
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     const bool is_page_action_migration_enabled = std::get<0>(GetParam());
-    if (is_page_action_migration_enabled) {
-      enabled_features.push_back({
-          ::features::kPageActionsMigration,
-          {{
-              ::features::kPageActionsMigrationSavePayments.name,
-              "true",
-          }},
-      });
-    } else {
-      disabled_features.emplace_back(::features::kPageActionsMigration);
-    }
+    enabled_features.push_back({
+        ::features::kPageActionsMigration,
+        {{
+            ::features::kPageActionsMigrationSavePayments.name,
+            is_page_action_migration_enabled ? "true" : "false",
+        }},
+    });
 
     const bool is_wallet_branding_enabled = IsWalletBrandingEnabled();
     if (is_wallet_branding_enabled) {

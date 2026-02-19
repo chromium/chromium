@@ -31,8 +31,22 @@ class SystemWebAppFrameViewBrowserBase
   }
 };
 
-using SystemWebAppFrameViewBrowserNoMigrationTest =
-    SystemWebAppFrameViewBrowserBase;
+class SystemWebAppFrameViewBrowserNoMigrationTest
+    : public SystemWebAppFrameViewBrowserBase {
+ public:
+  SystemWebAppFrameViewBrowserNoMigrationTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {::features::kPageActionsMigration,
+             {{::features::kPageActionsMigrationFileSystemAccess.name,
+               "false"}}},
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // The test that have parametrized testing do not support multiple level
 // inheritance. This is the case for

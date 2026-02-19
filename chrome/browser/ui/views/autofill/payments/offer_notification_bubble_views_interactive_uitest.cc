@@ -91,14 +91,10 @@ class OfferNotificationBubbleViewsInteractiveUiTest
           features::kAutofillShowBubblesBasedOnPriorities);
     }
 
-    if (params.is_page_actions_migration_enabled) {
-      enabled_features.push_back(
-          {::features::kPageActionsMigration,
-           {{::features::kPageActionsMigrationOfferNotification.name,
-             "true"}}});
-    } else {
-      disabled_features.push_back(::features::kPageActionsMigration);
-    }
+    enabled_features.push_back(
+        {::features::kPageActionsMigration,
+         {{::features::kPageActionsMigrationOfferNotification.name,
+           params.is_page_actions_migration_enabled ? "true" : "false"}}});
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);

@@ -112,17 +112,13 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
           features::kAutofillShowBubblesBasedOnPriorities);
     }
 
-    if (GetParam().is_page_action_migration_enabled) {
-      enabled_features.push_back({
-          ::features::kPageActionsMigration,
-          {{
-              ::features::kPageActionsMigrationFilledCardInformation.name,
-              "true",
-          }},
-      });
-    } else {
-      disabled_features.emplace_back(::features::kPageActionsMigration);
-    }
+    enabled_features.push_back({
+        ::features::kPageActionsMigration,
+        {{
+            ::features::kPageActionsMigrationFilledCardInformation.name,
+            GetParam().is_page_action_migration_enabled ? "true" : "false",
+        }},
+    });
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);

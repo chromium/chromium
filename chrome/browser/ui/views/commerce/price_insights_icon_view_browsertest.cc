@@ -136,26 +136,20 @@ class PriceInsightsIconViewBrowserTest
  public:
   PriceInsightsIconViewBrowserTest()
       : PriceInsightsIconViewBaseBrowserTest(GetParam()) {
-    if (GetParam()) {
-      test_features_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {
-              {commerce::kPriceInsights, {}},
-              {
-                  ::features::kPageActionsMigration,
-                  {
-                      {::features::kPageActionsMigrationPriceInsights.name,
-                       "true"},
-                  },
-              },
+    test_features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {commerce::kPriceInsights, {}},
+            {
+                ::features::kPageActionsMigration,
+                {
+                    {::features::kPageActionsMigrationPriceInsights.name,
+                     GetParam() ? "true" : "false"},
+                },
+            },
 
-          },
-          {});
-    } else {
-      test_features_.InitWithFeatures(
-          /*enabled_features=*/{commerce::kPriceInsights},
-          /*disabled_features*/ {::features::kPageActionsMigration});
-    }
+        },
+        {});
   }
 
  private:

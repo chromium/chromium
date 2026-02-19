@@ -33,16 +33,14 @@ class MandatoryReauthBubbleViewUiTest
       public ::testing::WithParamInterface<bool> {
  public:
   MandatoryReauthBubbleViewUiTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          ::features::kPageActionsMigration,
-          {
-              {
-                  ::features::kPageActionsMigrationAutofillMandatoryReauth.name,
-                  "true",
-              },
-          });
-    }
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kPageActionsMigration,
+        {
+            {
+                ::features::kPageActionsMigrationAutofillMandatoryReauth.name,
+                GetParam() ? "true" : "false",
+            },
+        });
   }
 
   ~MandatoryReauthBubbleViewUiTest() override = default;

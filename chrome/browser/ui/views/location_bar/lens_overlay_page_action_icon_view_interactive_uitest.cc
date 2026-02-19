@@ -103,29 +103,20 @@ class LensOverlayPageActionIconViewTest
       public ::testing::WithParamInterface<bool> {
  public:
   LensOverlayPageActionIconViewTest() {
-    if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {
-              {lens::features::kLensOverlay, {}},
-              {lens::features::kLensOverlayOmniboxEntryPoint, {}},
-              {
-                  ::features::kPageActionsMigration,
-                  {
-                      {::features::kPageActionsMigrationLensOverlay.name,
-                       "true"},
-                  },
-              },
-          },
-          {lens::features::kLensOverlayKeyboardSelection,
-           omnibox::kAiModeOmniboxEntryPoint});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {lens::features::kLensOverlay,
-           lens::features::kLensOverlayOmniboxEntryPoint},
-          {lens::features::kLensOverlayKeyboardSelection,
-           ::features::kPageActionsMigration,
-           omnibox::kAiModeOmniboxEntryPoint});
-    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {lens::features::kLensOverlay, {}},
+            {lens::features::kLensOverlayOmniboxEntryPoint, {}},
+            {
+                ::features::kPageActionsMigration,
+                {
+                    {::features::kPageActionsMigrationLensOverlay.name,
+                     IsMigrationEnabled() ? "true" : "false"},
+                },
+            },
+        },
+        {lens::features::kLensOverlayKeyboardSelection,
+         omnibox::kAiModeOmniboxEntryPoint});
   }
 
   // Returns the page action view that should be enabled for the current
@@ -169,20 +160,14 @@ class LensOverlayPageActionIconViewTestOmniboxEntryPointDisabled
  public:
   LensOverlayPageActionIconViewTestOmniboxEntryPointDisabled() {
     scoped_feature_list_.Reset();
-    if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {base::test::FeatureRefAndParams(lens::features::kLensOverlay,
-                                           {{"omnibox-entry-point", "false"}}),
-           base::test::FeatureRefAndParams(
-               ::features::kPageActionsMigration,
-               {{::features::kPageActionsMigrationLensOverlay.name, "true"}})},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {base::test::FeatureRefAndParams(lens::features::kLensOverlay,
-                                           {{"omnibox-entry-point", "false"}})},
-          {::features::kPageActionsMigration});
-    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(lens::features::kLensOverlay,
+                                         {{"omnibox-entry-point", "false"}}),
+         base::test::FeatureRefAndParams(
+             ::features::kPageActionsMigration,
+             {{::features::kPageActionsMigrationLensOverlay.name,
+               IsMigrationEnabled() ? "true" : "false"}})},
+        {});
   }
 };
 

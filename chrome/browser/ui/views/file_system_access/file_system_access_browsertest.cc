@@ -73,16 +73,11 @@ class FileSystemAccessBrowserTest : public InProcessBrowserTest,
                                     public ::testing::WithParamInterface<bool> {
  public:
   FileSystemAccessBrowserTest() {
-    if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{::features::kPageActionsMigration,
-            {{::features::kPageActionsMigrationFileSystemAccess.name,
-              "true"}}}},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {}, {::features::kPageActionsMigration});
-    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kPageActionsMigration,
+          {{::features::kPageActionsMigrationFileSystemAccess.name,
+            IsMigrationEnabled() ? "true" : "false"}}}},
+        {});
   }
 
   void SetUp() override {
@@ -1366,16 +1361,11 @@ class FileSystemAccessBrowserTestForWebUI
       public ::testing::WithParamInterface<bool> {
  public:
   FileSystemAccessBrowserTestForWebUI() {
-    if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{::features::kPageActionsMigration,
-            {{::features::kPageActionsMigrationFileSystemAccess.name,
-              "true"}}}},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {}, {::features::kPageActionsMigration});
-    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kPageActionsMigration,
+          {{::features::kPageActionsMigrationFileSystemAccess.name,
+            IsMigrationEnabled() ? "true" : "false"}}}},
+        {});
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     // Create a scoped directory under %TEMP% instead of using

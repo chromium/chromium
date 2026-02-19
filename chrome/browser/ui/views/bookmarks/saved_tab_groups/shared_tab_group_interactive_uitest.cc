@@ -75,19 +75,16 @@ class SharedTabGroupInteractiveUiTest
 
     std::vector<base::test::FeatureRef> disabled_features = {};
 
-    if (GetParam().page_actions_migration_enabled) {
-      enabled_features.push_back({
-          features::kPageActionsMigration,
-          {
-              {
-                  features::kPageActionsMigrationCollaborationMessaging.name,
-                  "true",
-              },
-          },
-      });
-    } else {
-      disabled_features.push_back(features::kPageActionsMigration);
-    }
+    enabled_features.push_back({
+        features::kPageActionsMigration,
+        {
+            {
+                features::kPageActionsMigrationCollaborationMessaging.name,
+                GetParam().page_actions_migration_enabled ? "true" : "false",
+            },
+        },
+    });
+
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
     CHECK_EQ(IsPageActionMigrated(PageActionIconType::kCollaborationMessaging),

@@ -287,14 +287,10 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
           features::kAutofillShowBubblesBasedOnPriorities);
     }
 
-    if (GetParam().is_page_action_migration_enabled) {
-      enabled_features.push_back({
-          ::features::kPageActionsMigration,
-          {{::features::kPageActionsMigrationVirtualCard.name, "true"}},
-      });
-    } else {
-      disabled_features.emplace_back(::features::kPageActionsMigration);
-    }
+    enabled_features.push_back(
+        {::features::kPageActionsMigration,
+         {{::features::kPageActionsMigrationVirtualCard.name,
+           GetParam().is_page_action_migration_enabled ? "true" : "false"}}});
 
     if (GetParam().is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});

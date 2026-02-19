@@ -1736,8 +1736,9 @@ class OmniboxViewViewsAIMButtonPreferenceTest
  public:
   OmniboxViewViewsAIMButtonPreferenceTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::kAiModeOmniboxEntryPoint, {}}},
-        {lens::features::kLensOverlay, features::kPageActionsMigration});
+        {{omnibox::kAiModeOmniboxEntryPoint, {}},
+         {features::kPageActionsMigration, {}}},
+        {lens::features::kLensOverlay});
   }
 
  protected:

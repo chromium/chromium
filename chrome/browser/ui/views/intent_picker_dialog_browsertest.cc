@@ -92,11 +92,10 @@ class IntentPickerDialogGridViewTest
         apps::test::GetFeaturesToEnableLinkCapturingUX(
             std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
 
-    if (IsMigrationEnabled()) {
-      features_to_enable.push_back(
-          {::features::kPageActionsMigration,
-           {{::features::kPageActionsMigrationIntentPicker.name, "true"}}});
-    }
+    features_to_enable.push_back(
+        {::features::kPageActionsMigration,
+         {{::features::kPageActionsMigrationIntentPicker.name,
+           IsMigrationEnabled() ? "true" : "false"}}});
 
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }

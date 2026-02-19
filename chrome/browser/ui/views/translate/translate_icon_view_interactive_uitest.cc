@@ -33,14 +33,10 @@ class TranslateIconViewTest : public InProcessBrowserTest,
                               public ::testing::WithParamInterface<bool> {
  public:
   TranslateIconViewTest() {
-    if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kPageActionsMigration,
-          {{features::kPageActionsMigrationTranslate.name, "true"}});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {::features::kPageActionsMigration});
-    }
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationTranslate.name,
+          IsMigrationEnabled() ? "true" : "false"}});
   }
 
   TranslateIconViewTest(const TranslateIconViewTest&) = delete;

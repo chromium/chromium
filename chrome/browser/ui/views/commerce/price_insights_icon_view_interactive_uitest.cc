@@ -62,27 +62,20 @@ class PriceInsightsIconViewBaseInteractiveTest
       std::vector<base::test::FeatureRef> iph_features = {})
       : PageActionInteractiveTestMixin(
             UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
-    if (is_migration_enabled) {
-      test_features_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {
-              {commerce::kPriceInsights, {{}}},
-              {
-                  ::features::kPageActionsMigration,
-                  {
-                      {::features::kPageActionsMigrationPriceInsights.name,
-                       "true"},
-                  },
-              },
+    test_features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {commerce::kPriceInsights, {{}}},
+            {
+                ::features::kPageActionsMigration,
+                {
+                    {::features::kPageActionsMigrationPriceInsights.name,
+                     is_migration_enabled ? "true" : "false"},
+                },
+            },
 
-          },
-          /*disabled_features*/ {commerce::kEnableDiscountInfoApi});
-    } else {
-      test_features_.InitWithFeatures(
-          /*enabled_features=*/{commerce::kPriceInsights},
-          /*disabled_features*/ {commerce::kEnableDiscountInfoApi,
-                                 ::features::kPageActionsMigration});
-    }
+        },
+        /*disabled_features*/ {commerce::kEnableDiscountInfoApi});
   }
 
   void SetUp() override {
