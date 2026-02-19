@@ -27,6 +27,7 @@ class CookieManager;
 }
 
 class AccountReconcilor;
+class PrefService;
 
 // Handles actions necessary for keeping the list of Google accounts available
 // on the web and those available on the iOS device from first-party Google apps
@@ -42,7 +43,8 @@ class AccountConsistencyService : public KeyedService,
 
   AccountConsistencyService(CookieManagerCallback cookie_manager_cb,
                             AccountReconcilor* account_reconcilor,
-                            signin::IdentityManager* identity_manager);
+                            signin::IdentityManager* identity_manager,
+                            PrefService* prefs);
 
   AccountConsistencyService(const AccountConsistencyService&) = delete;
   AccountConsistencyService& operator=(const AccountConsistencyService&) =
@@ -124,6 +126,9 @@ class AccountConsistencyService : public KeyedService,
   // Identity manager, observed to be notified of primary account signin and
   // signout events.
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+
+  // Pref service to check for incognito mode availability.
+  raw_ptr<PrefService> prefs_;
 
   // The number of cookie manager requests that are being processed.
   // Used for testing purposes only.

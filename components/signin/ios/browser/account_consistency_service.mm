@@ -16,6 +16,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/core/browser/chrome_connected_header_helper.h"
 #import "components/signin/core/browser/signin_header_helper.h"
@@ -364,10 +366,12 @@ void AccountConsistencyService::AccountConsistencyHandler::WebStateDestroyed() {
 AccountConsistencyService::AccountConsistencyService(
     CookieManagerCallback cookie_manager_cb,
     AccountReconcilor* account_reconcilor,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    PrefService* prefs)
     : cookie_manager_cb_(std::move(cookie_manager_cb)),
       account_reconcilor_(account_reconcilor),
       identity_manager_(identity_manager),
+      prefs_(prefs),
       active_cookie_manager_requests_for_testing_(0) {
   DCHECK(!cookie_manager_cb_.is_null());
   identity_manager_->AddObserver(this);
@@ -505,6 +509,13 @@ void AccountConsistencyService::Shutdown() {
 void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
     const GURL& url) {
   const std::string domain = GetDomainFromUrl(url);
+
+  int profile_mode_mask = signin::PROFILE_MODE_DEFAULT;
+  if (prefs_->GetInteger(policy::policy_prefs::kIncognitoModeAvailability) ==
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled)) {
+    profile_mode_mask |= signin::PROFILE_MODE_INCOGNITO_DISABLED;
+  }
+
   std::string cookie_value = signin::BuildMirrorRequestCookieIfPossible(
       url,
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -512,7 +523,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
       signin::AccountConsistencyMethod::kMirror,
       // We pass in `nullptr` for CookieSettings as iOS users cannot set any
       // prefs or content settings related to cookies.
-      /*cookie_settings=*/nullptr, signin::PROFILE_MODE_DEFAULT);
+      /*cookie_settings=*/nullptr, profile_mode_mask);
   if (cookie_value.empty()) {
     return;
   }

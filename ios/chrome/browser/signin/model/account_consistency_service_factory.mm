@@ -49,7 +49,7 @@ AccountConsistencyServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<AccountConsistencyService>(
       std::move(cookie_manager_callback),
       ios::AccountReconcilorFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
 
 }  // namespace ios

@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
@@ -180,6 +181,9 @@ class AccountConsistencyServiceTest : public PlatformTest {
     PlatformTest::SetUp();
 
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    prefs_.registry()->RegisterIntegerPref(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
 
     signin_client_.reset(
         new TestSigninClient(&prefs_, &test_url_loader_factory_));
@@ -227,7 +231,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
     account_consistency_service_ = std::make_unique<AccountConsistencyService>(
         std::move(cookie_manager_callback), account_reconcilor_.get(),
-        identity_test_env_->identity_manager());
+        identity_test_env_->identity_manager(), &prefs_);
   }
 
   // Identity APIs.

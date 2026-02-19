@@ -14,6 +14,7 @@ source_set("browser") {
   deps = [
     "//components/content_settings/core/browser",
     "//components/google/core/common",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/signin/core/browser",
     "//google_apis",
@@ -68,6 +69,7 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/signin/core/browser",
     "//components/signin/public/base:test_support",
