@@ -380,7 +380,10 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 }
 
 // Tests that the metric is recorded when adding a card with a CVC.
-TEST_F(AutofillAddCreditCardMediatorTest, TestAddCardWithCvcRecordsUserAction) {
+//
+// TODO(crbug.com/485860889): The test is failing across all simulators.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       DISABLED_TestAddCardWithCvcRecordsUserAction) {
   base::UserActionTester user_action_tester;
 
   // Verify that the action has not been logged yet.
