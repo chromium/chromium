@@ -14,6 +14,7 @@ source_set("ui") {
     ":height_delegate",
     "//base",
     "//ios/chrome/browser/composebox/coordinator",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",

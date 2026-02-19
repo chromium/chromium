@@ -4,13 +4,13 @@
 
 source_set("buttons") {
   sources = [
-    "buttons_utils.h",
-    "buttons_utils.mm",
     "toolbar_button.h",
     "toolbar_button.mm",
     "toolbar_button_factory.h",
     "toolbar_button_factory.mm",
     "toolbar_button_visibility.h",
+    "toolbar_buttons_utils.h",
+    "toolbar_buttons_utils.mm",
   ]
   deps = [
     "//base",

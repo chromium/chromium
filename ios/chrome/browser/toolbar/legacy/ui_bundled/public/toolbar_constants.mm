@@ -52,7 +52,7 @@ const CGFloat kToolbarOmniboxHeight = 50;
 const CGFloat kPrimaryToolbarWithOmniboxHeight = kToolbarOmniboxHeight;
 const CGFloat kSecondaryToolbarWithoutOmniboxHeight = 44;
 const CGFloat kNonDynamicToolbarHeight = 14;
-const CGFloat kToolbarHeightFullscreen = 20;
+const CGFloat kLegacyToolbarHeightFullscreen = 20;
 const CGFloat kNonDynamicToolbarHeightFullscreen = 3;
 
 NSString* const kLegacyToolbarToolsMenuButtonIdentifier =

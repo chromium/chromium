@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   # keep-sorted end
 ]

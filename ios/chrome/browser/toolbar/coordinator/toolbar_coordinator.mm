@@ -10,6 +10,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -53,6 +54,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_coordinatee.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_view_controller.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -111,12 +113,16 @@
   ToolbarMediator* _topToolbarMediator;
   /// Top toolbar view controller.
   ToolbarViewController* _topToolbarViewController;
+  /// Fullscreen UI Updater for the top toolbar.
+  std::unique_ptr<FullscreenUIUpdater> _topToolbarFullscreenUIUpdater;
   /// Top location bar coordinator.
   LocationBarCoordinator* _topLocationBarCoordinator;
   /// Bottom toolbar mediator.
   ToolbarMediator* _bottomToolbarMediator;
   /// Bottom toolbar view controller.
   ToolbarViewController* _bottomToolbarViewController;
+  /// Fullscreen UI Updater for the bottom toolbar.
+  std::unique_ptr<FullscreenUIUpdater> _bottomToolbarFullscreenUIUpdater;
   /// Bottom location bar coordinator.
   LocationBarCoordinator* _bottomLocationBarCoordinator;
 }
@@ -185,6 +191,8 @@
         createToolbarViewControllerForMediator:_topToolbarMediator
                                    locationBar:_topLocationBarCoordinator
                                                    .locationBarViewController];
+    _topToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        FullscreenController::FromBrowser(browser), _topToolbarViewController);
 
     _bottomLocationBarCoordinator = [self createLocationBarCoordinator];
     _bottomToolbarMediator = [self createToolbarMediatorTopPosition:NO];
@@ -192,6 +200,9 @@
         createToolbarViewControllerForMediator:_bottomToolbarMediator
                                    locationBar:_bottomLocationBarCoordinator
                                                    .locationBarViewController];
+    _bottomToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        FullscreenController::FromBrowser(browser),
+        _bottomToolbarViewController);
 
     LayoutGuideCenter* layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
     [layoutGuideCenter referenceView:_topToolbarViewController.view
@@ -461,8 +472,7 @@
       // zero. This is a temporary fix for the pdf bug.
       return 1;
     }
-    return ToolbarCollapsedHeight(
-        self.traitEnvironment.traitCollection.preferredContentSizeCategory);
+    return kToolbarHeightFullscreen;
   }
   if (_omniboxPosition == ToolbarType::kSecondary) {
     // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
@@ -476,7 +486,12 @@
 
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (IsChromeNextIaEnabled()) {
-    return _topToolbarViewController.toolbarHeight;
+    if ([self isOmniboxInBottomPosition]) {
+      // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
+      // zero. This is a temporary fix for the pdf bug.
+      return 1;
+    }
+    return kToolbarHeight;
   }
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
@@ -492,8 +507,7 @@
 - (CGFloat)collapsedSecondaryToolbarHeight {
   if (IsChromeNextIaEnabled()) {
     if ([self isOmniboxInBottomPosition]) {
-      return ToolbarCollapsedHeight(
-          self.traitEnvironment.traitCollection.preferredContentSizeCategory);
+      return kToolbarHeightFullscreen;
     }
     return 0;
   }
@@ -506,7 +520,10 @@
 
 - (CGFloat)expandedSecondaryToolbarHeight {
   if (IsChromeNextIaEnabled()) {
-    return _bottomToolbarViewController.toolbarHeight;
+    if ([self isOmniboxInBottomPosition]) {
+      return kToolbarHeight;
+    }
+    return 0;
   }
   if (!IsSplitToolbarMode(self.traitEnvironment)) {
     return 0.0;

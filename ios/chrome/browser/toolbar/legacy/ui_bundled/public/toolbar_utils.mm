@@ -42,7 +42,7 @@ CGFloat ToolbarClampedFontSizeMultiplier(UIContentSizeCategory category) {
 
 CGFloat ToolbarCollapsedHeight(UIContentSizeCategory category) {
   category = NormalizedCategory(category);
-  return Interpolate(category, kToolbarHeightFullscreen,
+  return Interpolate(category, kLegacyToolbarHeightFullscreen,
                      kNonDynamicToolbarHeightFullscreen);
 }
 

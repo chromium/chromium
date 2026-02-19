@@ -82,7 +82,7 @@ extern const CGFloat kSecondaryToolbarWithoutOmniboxHeight;
 // preferred font size.
 extern const CGFloat kNonDynamicToolbarHeight;
 // Height of the toolbar when in fullscreen.
-extern const CGFloat kToolbarHeightFullscreen;
+extern const CGFloat kLegacyToolbarHeightFullscreen;
 // Height of the part of the toolbar not scaling up when the user changes the
 // preferred font size.
 extern const CGFloat kNonDynamicToolbarHeightFullscreen;

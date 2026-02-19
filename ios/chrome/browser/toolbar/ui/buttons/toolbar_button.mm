@@ -4,16 +4,14 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 
-#import "ios/chrome/browser/toolbar/ui/buttons/buttons_utils.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 constexpr CGFloat kSize = 38;
 constexpr CGFloat kCornerRadius = 13;
-constexpr CGFloat kShadowOpacity = 0.12;
 constexpr CGFloat kDisabledOpacity = 0.4;
-constexpr CGFloat kShadowYOffset = 1;
 }  // namespace
 
 @interface ToolbarButton ()
@@ -43,10 +41,7 @@ constexpr CGFloat kShadowYOffset = 1;
 
     self.backgroundColor = ToolbarButtonColor();
 
-    self.layer.shadowColor = UIColor.whiteColor.CGColor;
-    self.layer.shadowOpacity = kShadowOpacity;
-    self.layer.shadowOffset = CGSizeMake(0, kShadowYOffset);
-    self.layer.shadowRadius = 0;
+    ConfigureShadowForToolbarButton(self);
 
     self.tintColor = [UIColor colorNamed:kSolidBlackColor];
 
