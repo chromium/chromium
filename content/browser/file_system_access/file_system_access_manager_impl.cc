@@ -21,6 +21,7 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -1104,9 +1105,8 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bits.empty());
 
-  std::string bits_as_string(bits.begin(), bits.end());
   FileSystemAccessHandleData data;
-  if (!data.ParseFromString(bits_as_string)) {
+  if (!data.ParseFromString(base::as_string_view(bits))) {
     // Drop `token`, and directly return.
     return;
   }
