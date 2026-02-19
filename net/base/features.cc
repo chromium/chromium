@@ -737,4 +737,7 @@ BASE_FEATURE(kUseLockFreeX509Verification, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseNSURLDataForGURLConversion, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
+BASE_FEATURE(kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

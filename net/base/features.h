@@ -771,6 +771,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeX509Verification);
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNSURLDataForGURLConversion);
 #endif  // BUILDFLAG(IS_APPLE)
 
+// If enabled, SPDY sessions will be synchronously drained when the underlying
+// transport socket is detected to be disconnected in GetRemoteEndpoint().
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

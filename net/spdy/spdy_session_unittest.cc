@@ -1989,6 +1989,97 @@ TEST_F(SpdySessionTest, Initialize) {
   EXPECT_NE(net_log_with_source_.source().id, socket_source.id);
 }
 
+namespace {
+
+class FailingGetPeerAddressSocket : public MockTCPClientSocket {
+ public:
+  FailingGetPeerAddressSocket(const AddressList& addresses,
+                              net::NetLog* net_log,
+                              SocketDataProvider* socket)
+      : MockTCPClientSocket(addresses, net_log, socket) {}
+
+  int GetPeerAddress(IPEndPoint* address) const override {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+};
+
+class FailingSocketFactory : public MockClientSocketFactory {
+ public:
+  FailingSocketFactory() = default;
+  ~FailingSocketFactory() override = default;
+
+  std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
+      const AddressList& addresses,
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
+      NetLog* net_log,
+      const NetLogSource& source) override {
+    SocketDataProvider* data_provider = mock_data().GetNext();
+    auto socket = std::make_unique<FailingGetPeerAddressSocket>(
+        addresses, net_log, data_provider);
+    return std::move(socket);
+  }
+};
+
+class SpdySessionParametrizedTest : public SpdySessionTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  SpdySessionParametrizedTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SpdySessionParametrizedTest,
+                         testing::Values(false, true));
+
+// Regression test for https://crbug.com/482074640.
+TEST_P(SpdySessionParametrizedTest,
+       GetRemoteEndpointDisconnectedDrainsSessionSynchronously) {
+  MockRead reads[] = {MockRead(ASYNC, ERR_IO_PENDING, 0)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+
+  auto failing_factory = std::make_unique<FailingSocketFactory>();
+  failing_factory->AddSocketDataProvider(&data);
+
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  failing_factory->AddSSLSocketDataProvider(&ssl_data);
+
+  // Replace the default socket factory with our failing one.
+  session_deps_.socket_factory = std::move(failing_factory);
+
+  http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
+  spdy_session_pool_ = http_session_->spdy_session_pool();
+
+  CreateSpdySession();
+  EXPECT_TRUE(HasSpdySession(spdy_session_pool_, key_));
+
+  // GetRemoteEndpoint() should detect the disconnected socket and drain the
+  // session only if the feature is enabled.
+  IPEndPoint endpoint;
+  EXPECT_THAT(session_->GetRemoteEndpoint(&endpoint),
+              IsError(ERR_SOCKET_NOT_CONNECTED));
+
+  if (GetParam()) {
+    // The session should be removed from the pool synchronously.
+    EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_));
+  } else {
+    // The session should remain in the pool.
+    EXPECT_TRUE(HasSpdySession(spdy_session_pool_, key_));
+  }
+}
+
 TEST_F(SpdySessionTest, NetLogOnSessionGoaway) {
   spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(
       42, spdy::ERROR_CODE_ENHANCE_YOUR_CALM, "foo"));
