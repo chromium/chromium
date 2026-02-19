@@ -808,32 +808,23 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 
   if (Style().HasLineClamp()) {
     if (!line_clamp_data_.data.IsLineClampContext()) {
-      LayoutUnit clamp_bfc_offset = ChildAvailableSize().block_size;
-      if (clamp_bfc_offset == kIndefiniteSize) {
-        const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
-            constraint_space, Node(), BorderPadding());
-        if (sizes.max_size != LayoutUnit::Max()) {
+      LayoutUnit clamp_bfc_offset = kIndefiniteSize;
+      if (!Style().LineClamp() ||
+          RuntimeEnabledFeatures::CSSLineClampLinesAndHeightEnabled()) {
+        clamp_bfc_offset = ChildAvailableSize().block_size;
+        if (clamp_bfc_offset == kIndefiniteSize) {
+          const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
+              constraint_space, Node(), BorderPadding());
+          if (sizes.max_size != LayoutUnit::Max()) {
+            clamp_bfc_offset =
+                (sizes.max_size - BorderScrollbarPadding().block_end)
+                    .ClampNegativeToZero();
+          }
+        } else {
           clamp_bfc_offset =
-              (sizes.max_size - BorderScrollbarPadding().block_end)
+              (BorderScrollbarPadding().block_start + clamp_bfc_offset)
                   .ClampNegativeToZero();
         }
-      } else {
-        clamp_bfc_offset =
-            (BorderScrollbarPadding().block_start + clamp_bfc_offset)
-                .ClampNegativeToZero();
-      }
-
-      if (clamp_bfc_offset != kIndefiniteSize) {
-        WebFeature use_counter_feature;
-        if (Style().WebkitLineClamp() != 0 ||
-            Style().Continue() == EContinue::kWebkitLegacy) {
-          use_counter_feature = WebFeature::kWebkitLineClampWithHeight;
-        } else if (Style().LineClamp() == 0) {
-          use_counter_feature = WebFeature::kLineClampAuto;
-        } else {
-          use_counter_feature = WebFeature::kLineClampByLinesAndHeight;
-        }
-        UseCounter::Count(Node().GetDocument(), use_counter_feature);
       }
 
       line_clamp_data_.UpdateFromStyle(Style().LineClamp(), clamp_bfc_offset);
@@ -4079,6 +4070,7 @@ void BlockLineClampData::UpdateFromStyle(int lines_until_clamp,
       data.state = LineClampData::kClampByLines;
       data.lines_until_clamp = lines_until_clamp;
     } else {
+      DCHECK(RuntimeEnabledFeatures::CSSLineClampLinesAndHeightEnabled());
       data.state = LineClampData::kClampByLinesWithBfcOffset;
       data.lines_until_clamp = lines_until_clamp;
       data.clamp_bfc_offset = clamp_bfc_offset;
@@ -4150,14 +4142,8 @@ bool BlockLineClampData::UpdateAfterLayout(
                             (collapsed_strut.Sum() - end_margin_strut.Sum());
 
     if (bfc_offset > data.clamp_bfc_offset) {
-      if (data.IsClampByLines()) {
-        UseCounter::Count(container_builder.Node().GetDocument(),
-                          WebFeature::kLineClampByLinesOverflows);
-      }
-      if (RuntimeEnabledFeatures::CSSLineClampEnabled()) {
-        data.lines_until_clamp = old_lines_until_clamp;
-        return false;
-      }
+      data.lines_until_clamp = old_lines_until_clamp;
+      return false;
     }
 
     if (old_lines_until_clamp == data.lines_until_clamp ||

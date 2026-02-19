@@ -6173,5 +6173,59 @@
     ],
     "args": ["--enable-features=DomStorageSqlite"],
     "expires": "Aug 13, 2026"
+  },
+  {
+    "prefix": "css-line-clamp-lines-and-height",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/css/css-overflow/line-clamp/",
+      "external/wpt/compat/webkit-box-clamp-bottom-border.html",
+      "external/wpt/compat/webkit-box-clamp-visibility-change.html",
+      "external/wpt/css/css-flexbox/alignment/flex-align-baseline-line-clamp-001.tentative.html",
+      "external/wpt/css/css-flexbox/alignment/flex-align-baseline-line-clamp-002.tentative.html",
+      "external/wpt/css/css-flexbox/alignment/flex-align-baseline-line-clamp-003.tentative.html",
+      "external/wpt/css/css-grid/alignment/grid-align-baseline-line-clamp-001.tentative.html",
+      "external/wpt/css/css-grid/alignment/grid-align-baseline-line-clamp-002.tentative.html",
+      "external/wpt/css/css-grid/alignment/grid-align-baseline-line-clamp-003.tentative.html",
+      "external/wpt/css/css-inline/baseline-source/baseline-source-first-001.html",
+      "external/wpt/css/css-inline/baseline-source/baseline-source-first-002.html",
+      "external/wpt/css/css-inline/baseline-source/baseline-source-first-003.html",
+      "external/wpt/css/css-inline/baseline-source/baseline-source-last-001.html",
+      "external/wpt/css/css-inline/baseline-source/baseline-source-last-002.html",
+      "external/wpt/css/css-inline/baseline-source/baseline-source-last-003.html",
+      "external/wpt/css/css-inline/text-box-trim/text-box-trim-line-clamp-001.html",
+      "external/wpt/css/css-inline/text-box-trim/text-box-trim-line-clamp-002.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-005.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-001.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-002.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-003.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-004.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-005.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-006.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-007.html",
+      "external/wpt/css/css-text/white-space/text-wrap-pretty-line-clamp-crash-001.html",
+      "external/wpt/css/css-ui/text-overflow-string-001.html",
+      "external/wpt/css/css-ui/text-overflow-string-002.html",
+      "external/wpt/css/css-ui/text-overflow-string-003.html",
+      "external/wpt/css/css-ui/text-overflow-string-004.html",
+      "external/wpt/css/css-ui/text-overflow-string-005.html",
+      "external/wpt/css/css-ui/text-overflow-string-006.html",
+      "fast/deprecated-flexbox/dynamically-change-line-clamp.html",
+      "fast/deprecated-flexbox/line-clamp-crash.html",
+      "fast/deprecated-flexbox/line-clamp-removed-dynamically.html",
+      "fast/overflow/line-clamp-and-columns.html",
+      "fast/overflow/line-clamp-ellipsis-in-free-space.html",
+      "fast/overflow/line-clamp-hides-trailing-anchor.html",
+      "fast/overflow/line-clamp.html",
+      "paint/invalidation/text-line-clamp-truncation.html"
+    ],
+    "args": [
+      "--enable-blink-features=CSSLineClamp,CSSLineClampLinesAndHeight"
+    ],
+    "owners": [
+      "abotella@igalia.com"
+    ]
   }
 ]

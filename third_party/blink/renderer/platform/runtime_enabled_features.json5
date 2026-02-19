@@ -1561,6 +1561,17 @@
       depends_on: ["CSSLineClamp"],
     },
     {
+      // This flag makes `(-webkit-)line-clamp: <integer>` clamp by both lines
+      // and height if there's also `(max-)height` set on the element.
+      //
+      // In https://github.com/w3c/csswg-drafts/issues/12041 the CSSWG resolved
+      // that the `line-clamp: <integer>` syntax couldn't have that behavior due
+      // to web compat, but we haven't decided on a new syntax for it yet.
+      // Therefore we keep the behavior under this flag for now.
+      name: "CSSLineClampLinesAndHeight",
+      depends_on: ["CSSLineClamp"],
+    },
+    {
       // Implements `counter-increment` and `counter-set` for the non-<li>
       // elements and the reversed ordered lists.
       //
