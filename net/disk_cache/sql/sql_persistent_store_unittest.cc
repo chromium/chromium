@@ -684,24 +684,18 @@ class SqlPersistentStoreTest : public testing::Test {
   // Starts eviction and waits until the eviction process hits the hook,
   // pausing execution at that point. This allows testing state during eviction.
   void StartAndPauseEviction() {
-    auto eviction_running_signal = std::make_unique<base::WaitableEvent>(
-        base::WaitableEvent::ResetPolicy::MANUAL,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    base::RunLoop run_loop;
     auto pause_eviction_signal = std::make_unique<base::WaitableEvent>(
         base::WaitableEvent::ResetPolicy::MANUAL,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-    store_->SetEvictionHookForTesting(base::BindLambdaForTesting(
-        [eviction_running = eviction_running_signal.get(),
-         pause_eviction = pause_eviction_signal.get()]() {
-          base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
-          if (!eviction_running->IsSignaled()) {
-            eviction_running->Signal();
-          }
-          if (!pause_eviction->IsSignaled()) {
-            pause_eviction->Wait();
-          }
-        }));
+    store_->SetEvictionHookForTesting(base::BindLambdaForTesting([&]() {
+      run_loop.Quit();
+      base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+      if (!pause_eviction_signal->IsSignaled()) {
+        pause_eviction_signal->Wait();
+      }
+    }));
 
     auto abort_flag =
         base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
@@ -709,7 +703,7 @@ class SqlPersistentStoreTest : public testing::Test {
     base::test::TestFuture<SqlPersistentStore::Error> eviction_future;
     store_->StartEviction({}, false, abort_flag, eviction_future.GetCallback());
 
-    eviction_running_signal->Wait();
+    run_loop.Run();
     abort_flag->data.store(true);
     pause_eviction_signal->Signal();
 
@@ -4850,7 +4844,7 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
             SqlPersistentStore::Error::kFailedForTesting);
 
   EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
-            SqlPersistentStore::Error::kOk);
+            SqlPersistentStore::Error::kFailedForTesting);
 
   EXPECT_FALSE(OpenNextEntry(SqlPersistentStore::EntryIterator()).has_value());
 
@@ -4937,7 +4931,7 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
   EXPECT_FALSE(OpenNextEntry(SqlPersistentStore::EntryIterator()).has_value());
 
   EXPECT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
-            SqlPersistentStore::Error::kOk);
+            SqlPersistentStore::Error::kDatabaseClosed);
 
   EXPECT_TRUE(LoadInMemoryIndex(SqlPersistentStore::Error::kDatabaseClosed));
 }

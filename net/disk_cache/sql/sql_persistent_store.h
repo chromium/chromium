@@ -620,6 +620,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                             std::vector<InitResultOrError> results);
 
   void OnLoadInMemoryIndexFinished(Error result);
+  void StartEvictionInternal(
+      std::vector<ResIdAndShardId> excluded_list,
+      bool is_idle_time_eviction,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
+      ErrorCallback callback,
+      Error index_load_result);
   void ResumePendingEviction(
       std::vector<base::flat_set<SqlPersistentStore::ResId>>
           excluded_res_id_sets,
@@ -659,6 +665,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   int64_t low_watermark_ = 0;
   int64_t max_file_size_ = 0;
 
+  // Whether a cache eviction operation is currently in progress.
+  bool eviction_in_progress_ = false;
   // A callback to be called when the eviction is finished.
   ErrorCallback eviction_result_callback_;
 

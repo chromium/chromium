@@ -306,7 +306,7 @@ void SqlPersistentStore::OpenNextEntry(
 }
 
 SqlPersistentStore::EvictionUrgency SqlPersistentStore::GetEvictionUrgency() {
-  if (eviction_result_callback_) {
+  if (eviction_in_progress_) {
     return EvictionUrgency::kNotNeeded;
   }
   if (HasPendingEviction()) {
@@ -329,6 +329,33 @@ void SqlPersistentStore::StartEviction(
     bool is_idle_time_eviction,
     scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
     ErrorCallback callback) {
+  CHECK(!eviction_in_progress_);
+  eviction_in_progress_ = true;
+  auto new_callback = base::BindOnce(
+      [](base::WeakPtr<SqlPersistentStore> weak_ptr, ErrorCallback callback,
+         Error result) {
+        if (weak_ptr) {
+          weak_ptr->eviction_in_progress_ = false;
+        }
+        std::move(callback).Run(result);
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback));
+  MaybeLoadInMemoryIndex(base::BindOnce(
+      &SqlPersistentStore::StartEvictionInternal, weak_factory_.GetWeakPtr(),
+      std::move(excluded_list), is_idle_time_eviction,
+      std::move(eviction_abort_flag), std::move(new_callback)));
+}
+
+void SqlPersistentStore::StartEvictionInternal(
+    std::vector<ResIdAndShardId> excluded_list,
+    bool is_idle_time_eviction,
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
+    ErrorCallback callback,
+    Error load_index_result) {
+  if (load_index_result != Error::kOk) {
+    std::move(callback).Run(load_index_result);
+    return;
+  }
   auto excluded_res_id_sets =
       GroupResIdPerShardId(std::move(excluded_list), GetSizeOfShards());
   if (HasPendingEviction()) {
