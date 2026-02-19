@@ -148,10 +148,10 @@ class ScriptContext {
                                         CheckAliasStatus check_alias);
 
   // Returns a string description of the type of context this is.
-  std::string GetContextTypeDescription() const;
+  std::string_view GetContextTypeDescription() const;
 
   // Returns a string description of the effective type of context this is.
-  std::string GetEffectiveContextTypeDescription() const;
+  std::string_view GetEffectiveContextTypeDescription() const;
 
   v8::Isolate* isolate() const { return isolate_; }
 

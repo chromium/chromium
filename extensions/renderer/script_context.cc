@@ -58,7 +58,8 @@ GURL GetEffectiveDocumentURL(
       allow_inaccessible_parents);
 }
 
-std::string GetContextTypeDescriptionString(mojom::ContextType context_type) {
+std::string_view GetContextTypeDescriptionString(
+    mojom::ContextType context_type) {
   switch (context_type) {
     case mojom::ContextType::kUnspecified:
       return "UNSPECIFIED";
@@ -334,12 +335,12 @@ Feature::Availability ScriptContext::GetAvailability(
       kRendererProfileId, RendererFrameContextData(web_frame()));
 }
 
-std::string ScriptContext::GetContextTypeDescription() const {
+std::string_view ScriptContext::GetContextTypeDescription() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   return GetContextTypeDescriptionString(context_type_);
 }
 
-std::string ScriptContext::GetEffectiveContextTypeDescription() const {
+std::string_view ScriptContext::GetEffectiveContextTypeDescription() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   return GetContextTypeDescriptionString(effective_context_type_);
 }
@@ -497,10 +498,10 @@ std::string ScriptContext::GetDebugString() const {
       "  effective extension id: %s\n"
       "  effective context type: %s",
       extension_.get() ? extension_->id().c_str() : "(none)", web_frame_.get(),
-      url_.spec().c_str(), GetContextTypeDescription().c_str(),
+      url_.spec().c_str(), GetContextTypeDescription(),
       effective_extension_.get() ? effective_extension_->id().c_str()
                                  : "(none)",
-      GetEffectiveContextTypeDescription().c_str());
+      GetEffectiveContextTypeDescription());
 }
 
 std::string ScriptContext::GetStackTraceAsString() const {

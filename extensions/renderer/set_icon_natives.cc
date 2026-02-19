@@ -185,8 +185,9 @@ bool SetIconNatives::ConvertImageDataSetToBitmapValueSet(
         property_names->Get(v8_context, i).ToLocalChecked();
     v8::String::Utf8Value utf8_key(isolate, key);
     int size;
-    if (!base::StringToInt(std::string(*utf8_key), &size))
+    if (!base::StringToInt(*utf8_key, &size)) {
       continue;
+    }
     v8::Local<v8::Value> v8_image_value;
     if (!image_data_set->Get(v8_context, key).ToLocal(&v8_image_value)) {
       return false;

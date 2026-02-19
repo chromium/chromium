@@ -63,7 +63,7 @@ class ContextInvalidationListener : public base::CheckedObserver {
 
 // Returns the string version of the current platform, one of "chromeos",
 // "linux", "win", or "mac".
-std::string GetPlatformString();
+std::string_view GetPlatformString();
 
 // Returns true if response validation is enabled, and the bindings system
 // should check the values returned by the browser against the expected results

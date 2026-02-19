@@ -238,7 +238,7 @@ v8::Local<v8::Object> CreateRootBinding(v8::Local<v8::Context> context,
   auto* bridge = cppgc::MakeGarbageCollected<APIBindingBridge>(
       isolate->GetCppHeap()->GetAllocationHandle(), hooks, context,
       binding_object, script_context->GetExtensionID(),
-      script_context->GetContextTypeDescription());
+      std::string(script_context->GetContextTypeDescription()));
   v8::Local<v8::Value> native_api_bridge =
       bridge->GetWrapper(isolate).ToLocalChecked();
   script_context->module_system()->OnNativeBindingCreated(name,

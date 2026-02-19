@@ -54,7 +54,7 @@ bool IsValidIdList(const std::string& extension_ids) {
     return false;
   }
   for (const auto& id : ids) {
-    if (!crx_file::id_util::IdIsValid(std::string(id))) {
+    if (!crx_file::id_util::IdIsValid(id)) {
       return false;
     }
   }

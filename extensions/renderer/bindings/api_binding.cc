@@ -476,7 +476,7 @@ void APIBinding::DecorateTemplateWithProperties(
     // TODO(devlin): Availability should be specified in the features files,
     // not the API schema files.
     if (platforms) {
-      std::string this_platform = binding::GetPlatformString();
+      std::string_view this_platform = binding::GetPlatformString();
       auto is_this_platform = [&this_platform](const base::Value& platform) {
         return platform.is_string() && platform.GetString() == this_platform;
       };

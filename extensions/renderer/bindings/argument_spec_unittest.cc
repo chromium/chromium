@@ -103,23 +103,23 @@ class ArgumentSpecUnitTest : public gin::V8Test {
   }
 
   void ExpectSuccessWithNoConversion(const ArgumentSpec& spec,
-                                     const std::string& script_source) {
+                                     std::string_view script_source) {
     RunTestParams params(spec, script_source, TestResult::PASS);
     params.should_convert_to_base = false;
     RunTest(params);
   }
 
   void ExpectFailure(const ArgumentSpec& spec,
-                     const std::string& script_source,
-                     const std::string& expected_error) {
+                     std::string_view script_source,
+                     std::string_view expected_error) {
     RunTestParams params(spec, script_source, TestResult::FAIL);
     params.expected_error = expected_error;
     RunTest(params);
   }
 
   void ExpectFailureWithNoConversion(const ArgumentSpec& spec,
-                                     const std::string& script_source,
-                                     const std::string& expected_error) {
+                                     std::string_view script_source,
+                                     std::string_view expected_error) {
     RunTestParams params(spec, script_source, TestResult::FAIL);
     params.should_convert_to_base = false;
     params.expected_error = expected_error;
@@ -127,8 +127,8 @@ class ArgumentSpecUnitTest : public gin::V8Test {
   }
 
   void ExpectThrow(const ArgumentSpec& spec,
-                   const std::string& script_source,
-                   const std::string& expected_thrown_message) {
+                   std::string_view script_source,
+                   std::string_view expected_thrown_message) {
     RunTestParams params(spec, script_source, TestResult::THROW);
     params.expected_thrown_message = expected_thrown_message;
     RunTest(params);

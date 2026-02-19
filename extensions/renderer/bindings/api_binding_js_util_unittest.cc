@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
@@ -403,7 +404,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateCustomSignature) {
 
   // Test a failing case (prop1 is supposed to be a string).
   std::string expected_error =
-      "Uncaught TypeError: " + api_errors::NoMatchingSignature();
+      base::StrCat({"Uncaught TypeError: ", api_errors::NoMatchingSignature()});
   call_validate_signature(
       R"((function(util) {
            util.validateCustomSignature('custom_signature', [1, 2]);

@@ -139,7 +139,7 @@ void InvalidateContext(v8::Local<v8::Context> context) {
   data->Invalidate();
 }
 
-std::string GetPlatformString() {
+std::string_view GetPlatformString() {
 #if BUILDFLAG(IS_CHROMEOS)
   return "chromeos";
 #elif BUILDFLAG(IS_LINUX)

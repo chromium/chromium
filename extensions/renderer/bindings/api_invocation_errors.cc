@@ -13,29 +13,29 @@
 namespace extensions {
 namespace api_errors {
 
-const char kTypeString[] = "string";
-const char kTypeDouble[] = "number";
-const char kTypeBoolean[] = "boolean";
-const char kTypeInteger[] = "integer";
-const char kTypeObject[] = "object";
-const char kTypeList[] = "array";
-const char kTypeBinary[] = "binary";
-const char kTypeFunction[] = "function";
-const char kTypeUndefined[] = "undefined";
-const char kTypeNull[] = "null";
-const char kTypeAny[] = "any";
+constexpr char kTypeString[] = "string";
+constexpr char kTypeDouble[] = "number";
+constexpr char kTypeBoolean[] = "boolean";
+constexpr char kTypeInteger[] = "integer";
+constexpr char kTypeObject[] = "object";
+constexpr char kTypeList[] = "array";
+constexpr char kTypeBinary[] = "binary";
+constexpr char kTypeFunction[] = "function";
+constexpr char kTypeUndefined[] = "undefined";
+constexpr char kTypeNull[] = "null";
+constexpr char kTypeAny[] = "any";
 
 std::string InvalidEnumValue(const std::set<std::string>& valid_enums) {
   std::vector<std::string_view> options(valid_enums.begin(), valid_enums.end());
   std::string options_str = base::JoinString(options, ", ");
-  return base::StringPrintf("Value must be one of %s.", options_str.c_str());
+  return base::StringPrintf("Value must be one of %s.", options_str);
 }
 
-std::string MissingRequiredProperty(const char* property_name) {
+std::string MissingRequiredProperty(std::string_view property_name) {
   return base::StringPrintf("Missing required property '%s'.", property_name);
 }
 
-std::string UnexpectedProperty(const char* property_name) {
+std::string UnexpectedProperty(std::string_view property_name) {
   return base::StringPrintf("Unexpected property: '%s'.", property_name);
 }
 
@@ -68,63 +68,63 @@ std::string NumberTooLarge(int maximum) {
 }
 
 std::string NumberIsNaNOrInfinity() {
-  return base::StringPrintf("Value must not be NaN or Infinity.");
+  return "Value must not be NaN or Infinity.";
 }
 
-std::string InvalidType(const char* expected_type, const char* actual_type) {
+std::string InvalidType(std::string_view expected_type,
+                        std::string_view actual_type) {
   return base::StringPrintf("Invalid type: expected %s, found %s.",
                             expected_type, actual_type);
 }
 
-std::string NotAnInstance(const char* instance_type) {
+std::string NotAnInstance(std::string_view instance_type) {
   return base::StringPrintf("Value must be an instance of %s.", instance_type);
 }
 
-std::string InvalidChoice() {
+std::string_view InvalidChoice() {
   return "Value did not match any choice.";
 }
 
-std::string UnserializableValue() {
+std::string_view UnserializableValue() {
   return "Value is unserializable.";
 }
 
-std::string ScriptThrewError() {
+std::string_view ScriptThrewError() {
   return "Script threw an error.";
 }
 
-std::string TooManyArguments() {
+std::string_view TooManyArguments() {
   return "Too many arguments.";
 }
 
-std::string NoMatchingSignature() {
+std::string_view NoMatchingSignature() {
   return "No matching signature.";
 }
 
-std::string MissingRequiredArgument(const char* argument_name) {
+std::string MissingRequiredArgument(std::string_view argument_name) {
   return base::StringPrintf("Missing required argument '%s'.", argument_name);
 }
 
-std::string IndexError(uint32_t index, const std::string& error) {
-  return base::StringPrintf("Error at index %u: %s", index, error.c_str());
+std::string IndexError(uint32_t index, std::string_view error) {
+  return base::StringPrintf("Error at index %u: %s", index, error);
 }
 
-std::string PropertyError(const char* property_name, const std::string& error) {
-  return base::StringPrintf("Error at property '%s': %s", property_name,
-                            error.c_str());
+std::string PropertyError(std::string_view property_name,
+                          std::string_view error) {
+  return base::StringPrintf("Error at property '%s': %s", property_name, error);
 }
 
-std::string ArgumentError(const std::string& parameter_name,
-                          const std::string& error) {
-  return base::StringPrintf("Error at parameter '%s': %s",
-                            parameter_name.c_str(), error.c_str());
+std::string ArgumentError(std::string_view parameter_name,
+                          std::string_view error) {
+  return base::StringPrintf("Error at parameter '%s': %s", parameter_name,
+                            error);
 }
 
-std::string InvocationError(const std::string& method_name,
-                            const std::string& expected_signature,
-                            const std::string& error) {
-  return base::StringPrintf("Error in invocation of %s(%s): %s",
-                            method_name.c_str(), expected_signature.c_str(),
-                            error.c_str());
+std::string InvocationError(std::string_view method_name,
+                            std::string_view expected_signature,
+                            std::string_view error) {
+  return base::StringPrintf("Error in invocation of %s(%s): %s", method_name,
+                            expected_signature, error);
 }
 
 }  // namespace api_errors

@@ -20,7 +20,7 @@ const char kNoPathsError[] = "Specific paths are not allowed.";
 const char kInvalidPatternError[] = "The pattern \"*\" is invalid.";
 
 // TODO(bauerb): Move this someplace where it can be reused.
-std::string GetDefaultPort(const std::string& scheme) {
+std::string_view GetDefaultPort(std::string_view scheme) {
   if (scheme == url::kHttpScheme)
     return "80";
   if (scheme == url::kHttpsScheme)
@@ -33,7 +33,7 @@ std::string GetDefaultPort(const std::string& scheme) {
 namespace extensions {
 namespace content_settings_helpers {
 
-ContentSettingsPattern ParseExtensionPattern(const std::string& pattern_str,
+ContentSettingsPattern ParseExtensionPattern(std::string_view pattern_str,
                                              std::string* error) {
   const int kAllowedSchemes =
       URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |

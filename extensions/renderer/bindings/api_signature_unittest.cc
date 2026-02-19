@@ -231,7 +231,7 @@ class APISignatureTest : public APIBindingTest {
 
   void ExpectFailure(const APISignature& signature,
                      std::string_view arg_values,
-                     const std::string& expected_error) {
+                     std::string_view expected_error) {
     RunTest(signature, arg_values, std::string_view(),
             binding::AsyncResponseType::kNone, false, expected_error);
   }
@@ -243,7 +243,7 @@ class APISignatureTest : public APIBindingTest {
 
   void ExpectResponseFailure(const APISignature& signature,
                              std::string_view arg_values,
-                             const std::string& expected_error) {
+                             std::string_view expected_error) {
     RunResponseTest(signature, arg_values, expected_error);
   }
 
@@ -255,7 +255,7 @@ class APISignatureTest : public APIBindingTest {
                std::string_view expected_parsed_args,
                binding::AsyncResponseType expected_response_type,
                bool should_succeed,
-               const std::string& expected_error) {
+               std::string_view expected_error) {
     SCOPED_TRACE(arg_values);
     v8::Local<v8::Context> context = MainContext();
     v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, arg_values);
@@ -281,7 +281,7 @@ class APISignatureTest : public APIBindingTest {
 
   void RunResponseTest(const APISignature& signature,
                        std::string_view arg_values,
-                       std::optional<std::string> expected_error) {
+                       std::optional<std::string_view> expected_error) {
     SCOPED_TRACE(arg_values);
     v8::Local<v8::Context> context = MainContext();
     v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, arg_values);
