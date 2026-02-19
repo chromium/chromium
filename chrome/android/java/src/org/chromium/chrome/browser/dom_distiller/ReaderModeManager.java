@@ -954,16 +954,21 @@ public class ReaderModeManager extends EmptyTabObserver
 
     /**
      * Returns whether reader mode should trigger through messages. This happens for CCTs and
-     * incognito tabs.
+     * incognito tabs (except when in-app distillation is enabled).
      *
      * @param tab The tab where Reader Mode is active.
      * @return Whether reader mode should trigger through messages.
      */
-    public static boolean shouldUseReaderModeMessages(Tab tab) {
-        // Messages are explicitly disabled for in-app distillation.
-        return !DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
-                && tab != null
-                && (tab.isCustomTab() || tab.isIncognito());
+    public static boolean shouldUseReaderModeMessages(@Nullable Tab tab) {
+        if (tab == null) {
+            return false;
+        }
+
+        // For in-app distillation, messages are only used for CCTs.
+        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) {
+            return tab.isCustomTab();
+        }
+        return tab.isCustomTab() || tab.isIncognito();
     }
 
     /**
