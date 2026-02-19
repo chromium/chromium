@@ -121,6 +121,7 @@ export class WebviewController {
   private hostSubscriber?: Subscriber;
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
+  private hasPendingCrossDocumentNavigation = false;
   private webClientState =
       ObservableValue.withValue(WebClientState.UNINITIALIZED);
   private oneMinuteTimer = new OneShotTimer(1000 * 60);
@@ -175,6 +176,10 @@ export class WebviewController {
     this.eventTracker.add(
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
+    this.eventTracker.add(
+        this.webview, 'loadstart', this.onLoadStart.bind(this));
+    this.eventTracker.add(
+        this.webview, 'loadabort', this.onLoadAbort.bind(this));
 
     this.webview.src = this.persistentState.useLoadUrl();
 
@@ -243,6 +248,20 @@ export class WebviewController {
     }
   }
 
+  private onLoadStart(e: chrome.webviewTag.LoadStartEvent): void {
+    // This event is only called for document navigations, not for fragment
+    // navigations.
+    if (e.isTopLevel) {
+      this.hasPendingCrossDocumentNavigation = true;
+    }
+  }
+
+  private onLoadAbort(e: chrome.webviewTag.LoadAbortEvent): void {
+    if (e.isTopLevel) {
+      this.hasPendingCrossDocumentNavigation = false;
+    }
+  }
+
   private onLoadCommit(e: chrome.webviewTag.LoadCommitEvent): void {
     this.loadCommit(e.url, e.isTopLevel);
   }
@@ -307,6 +326,14 @@ export class WebviewController {
     if (!isTopLevel) {
       return;
     }
+
+    const isCrossDocumentNavigation = this.hasPendingCrossDocumentNavigation;
+    this.hasPendingCrossDocumentNavigation = false;
+
+    if (!isCrossDocumentNavigation) {
+      return;
+    }
+
     if (this.host) {
       chrome.metricsPrivate.recordEnumerationValue(
           'Glic.Host.WebClientState.OnCommit',
@@ -331,6 +358,7 @@ export class WebviewController {
         this.webClientState.assignAndSignal(state);
       });
     }
+
     this.browserProxy.pageHandler.webviewCommitted(url);
 
     if (!this.host) {
@@ -338,25 +366,25 @@ export class WebviewController {
       return;
     }
 
-    // TODO(https://crbug.com/388328847): Remove when login issues are
-    // resolved.
     if (url.startsWith('https://login.corp.google.com/') ||
         url.startsWith('https://accounts.google.com/') ||
         url.startsWith('https://accounts.googlers.com/') ||
         url.startsWith('https://gaiastaging.corp.google.com/')) {
       this.delegate.webviewPageCommit('login');
-    } else if (new URL(url).pathname.startsWith('/sorry/')) {
-      this.delegate.webviewPageCommit('guestError');
-    } else {
-      if (wasResponsive) {
-        this.persistentState.onCommitAfterConnect(url);
-      }
+      return;
+    }
 
-      // This forces the page to reload after navigation.
-      // TODO(b/439718538): revisit overall logic, this may be buggy.
-      if (loadTimeData.getBoolean('reloadAfterNavigation')) {
-        this.delegate.webviewPageCommit('regular');
-      }
+    if (new URL(url).pathname.startsWith('/sorry/')) {
+      this.delegate.webviewPageCommit('guestError');
+      return;
+    }
+
+    if (wasResponsive) {
+      this.persistentState.onCommitAfterConnect(url);
+    }
+
+    if (loadTimeData.getBoolean('reloadAfterNavigation')) {
+      this.delegate.webviewPageCommit('regular');
     }
   }
 
