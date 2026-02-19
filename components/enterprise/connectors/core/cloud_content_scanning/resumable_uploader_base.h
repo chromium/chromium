@@ -148,7 +148,6 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   } scan_type_ = PENDING;
 
   ContentUploadedCallback content_uploaded_callback_;
-  std::string access_token_;
 
   // The result returned by BinaryUploadService::Request::GetRequestData() when
   // retrieving the data.
