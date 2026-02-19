@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
@@ -79,6 +80,9 @@ import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -1013,6 +1017,38 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_task_manager_24dp : 0));
     }
 
+    private boolean shouldShowDevToolsItem(@Nullable Tab currentTab) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)) {
+            return false;
+        }
+
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            return false;
+        }
+
+        if (currentTab == null || currentTab.isNativePage()) {
+            return false;
+        }
+
+        WebContents webContents = currentTab.getWebContents();
+        if (webContents == null) {
+            return false;
+        }
+
+        return DevToolsWindowAndroid.isDevToolsAllowedFor(currentTab.getProfile(), webContents);
+    }
+
+    private MVCListAdapter.ListItem buildDevToolsItem(@Nullable Tab currentTab) {
+        assert shouldShowDevToolsItem(currentTab);
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.dev_tools,
+                        R.string.menu_dev_tools,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_dev_tools_24dp : 0));
+    }
+
     private boolean shouldShowMoreToolsItem(@Nullable Tab currentTab) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
             return false;
@@ -1023,6 +1059,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         if (shouldShowTaskManagerItem()) {
+            return true;
+        }
+
+        if (shouldShowDevToolsItem(currentTab)) {
             return true;
         }
 
@@ -1039,6 +1079,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         if (shouldShowTaskManagerItem()) {
             submenuItems.add(buildTaskManagerItem());
+        }
+
+        if (shouldShowDevToolsItem(currentTab)) {
+            submenuItems.add(buildDevToolsItem(currentTab));
         }
 
         return new MVCListAdapter.ListItem(

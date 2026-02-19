@@ -2885,6 +2885,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 && DevToolsWindowAndroid.isDevToolsAllowedFor(
                         currentTab.getProfile(), currentTab.getWebContents())) {
             DevToolsWindowAndroid.openDevTools(currentTab.getWebContents());
+            if (fromMenu) {
+                RecordUserAction.record("MobileMenuDevTools");
+            }
             return true;
         }
 

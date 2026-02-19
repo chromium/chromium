@@ -28126,6 +28126,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuDevTools">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Developer tools' in the app menu.</description>
+</action>
+
 <action name="MobileMenuDirectShare">
   <owner>aurimas@chromium.org</owner>
   <description>
