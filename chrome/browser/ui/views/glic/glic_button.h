@@ -39,6 +39,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -63,7 +64,6 @@ namespace glic {
 inline constexpr int kHighlightMargin = 2;
 inline constexpr int kHighlightCornerRadius = 8;
 inline constexpr int kCloseButtonMargin = 6;
-inline constexpr int kIconSize = 16;
 inline constexpr int kLabelRightMargin = 8;
 inline constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
 inline constexpr ui::ColorId kTextDisabledOnHighlight = kTextOnHighlight;
@@ -388,6 +388,7 @@ class GlicButton : public GlicButtonShim<T>,
         this->GetLayoutManager()
             ->GetPreferredSize(this, available_size)
             .width();
+
     const int height =
         T::CalculatePreferredSize(
             views::SizeBounds(current_preferred_width, available_size.height()))
@@ -460,6 +461,31 @@ class GlicButton : public GlicButtonShim<T>,
     window_did_become_active_subscription_ = {};
     window_did_become_inactive_subscription_ = {};
     T::RemovedFromWidget();
+  }
+
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
+    if (!GetPrefService()->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
+      return;
+    }
+
+    menu_anchor_higlight_ = this->AddAnchorHighlight();
+
+    menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+        menu_model_.get(), base::BindRepeating(&GlicButton<T>::OnMenuClosed,
+                                               base::Unretained(this)));
+    menu_model_adapter_->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
+                                                     ui::EF_RIGHT_MOUSE_BUTTON);
+    std::unique_ptr<views::MenuItemView> root =
+        menu_model_adapter_->CreateMenu();
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        std::move(root),
+        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
+    menu_runner_->RunMenuAt(this->GetWidget(), nullptr,
+                            this->GetAnchorBoundsInScreen(),
+                            views::MenuAnchorPosition::kTopLeft, source_type);
   }
 
   // ui::SimpleMenuModel::Delegate:
@@ -571,7 +597,7 @@ class GlicButton : public GlicButtonShim<T>,
     OnLabelVisibilityChanged();
     auto* image_view =
         static_cast<views::ImageView*>(this->image_container_view());
-    image_view->SetImageSize({kIconSize, kIconSize});
+    image_view->SetImageSize({icon_size_, icon_size_});
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
 
@@ -694,6 +720,9 @@ class GlicButton : public GlicButtonShim<T>,
 
   // Profile corresponding to the browser that this button is on.
   raw_ptr<Profile> profile_;
+
+  // Icon size for Gemini Button.
+  const int icon_size_ = 20;
 
  private:
   // views::LabelButton:
@@ -1035,22 +1064,7 @@ class GlicButton : public GlicButtonShim<T>,
   WidthState width_state() { return width_state_; }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  static gfx::Insets GetIconMargins(bool label_shown) {
-    int left = 6 - kHighlightMargin;
-    int right = 4;
-
-    if (label_shown) {
-      // Extra left margin if the label is shown.
-      left += 2;
-    }
-    return gfx::Insets().set_left_right(left, right);
-  }
-
-  void OnLabelVisibilityChanged() {
-    this->image_container_view()->SetProperty(
-        views::kMarginsKey,
-        GetIconMargins(ShouldShowLabel() && !IsAnimatingTextVisibility()));
-  }
+  virtual void OnLabelVisibilityChanged() {}
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   static bool EntrypointVariationsEnabled() {
@@ -1071,7 +1085,7 @@ class GlicButton : public GlicButtonShim<T>,
     return GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
   }
 
-  static ui::ImageModel GetNormalIcon() {
+  ui::ImageModel GetNormalIcon() {
     if (ShouldUseAltIcon()) {
       return ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -1080,7 +1094,7 @@ class GlicButton : public GlicButtonShim<T>,
     return ui::ImageModel::FromVectorIcon(
         GlicVectorIcon(),
         ShouldUseAltIcon() ? kForegroundOnAltBackground : kForeground,
-        kIconSize);
+        icon_size_);
   }
 
   static bool HighlightNudgeEnabled() {
@@ -1088,12 +1102,10 @@ class GlicButton : public GlicButtonShim<T>,
            features::kGlicEntrypointVariationsHighlightNudge.Get();
   }
 
-  static ui::ImageModel GetIconForHighlight() {
-    if (!HighlightNudgeEnabled()) {
-      return {};
-    }
-    return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kTextOnHighlight,
-                                          kIconSize);
+  ui::ImageModel GetIconForHighlight() {
+    return ui::ImageModel::FromVectorIcon(
+        GlicVectorIcon(),
+        HighlightNudgeEnabled() ? kTextOnHighlight : kForeground, icon_size_);
   }
 
   // Helper for making animation durations instant if animations are disabled.
