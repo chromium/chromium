@@ -262,6 +262,7 @@ public class FullscreenSigninMediator
      *     also means that native has been initialized.
      */
     void onInitialLoadCompleted(boolean hasPolicies) {
+        if (mDestroyed) return;
         Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
         if (mProfileDataCache == null) {
             IdentityManager identityManager =
@@ -507,6 +508,7 @@ public class FullscreenSigninMediator
      * @param signinTimestampsLogger a logger for signin flow events.
      */
     private void finishSignIn(SigninFlowTimestampsLogger signinTimestampsLogger) {
+        if (mDestroyed) return;
         @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
         final SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(assumeNonNull(getProfile()));
@@ -546,20 +548,18 @@ public class FullscreenSigninMediator
         return new SignInCallback() {
             @Override
             public void onSignInComplete() {
+                if (mDestroyed) return;
                 signinTimestampsLogger.recordTimestamp(Event.SIGNIN_COMPLETED);
                 if (mConfig.signinSurveyType != null) {
                     SigninSurveyController.registerTrigger(
                             assertNonNull(getProfile()), mConfig.signinSurveyType);
-                }
-                if (mDestroyed) {
-                    // FirstRunActivity was destroyed while we were waiting for sign-in.
-                    return;
                 }
                 mDelegate.advanceToNextPage();
             }
 
             @Override
             public void onSignInAborted() {
+                if (mDestroyed) return;
                 signinTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
                 // TODO(crbug.com/40790332): For now we enable the buttons again to not
                 // block the users from continuing to the next page. Should show a dialog
@@ -590,17 +590,22 @@ public class FullscreenSigninMediator
             SigninFlowTimestampsLogger signinTimestampsLogger,
             @Nullable SignInCallback signInCallback) {
         SignOutCallback signOutCallback =
-                () ->
-                        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                                selectedAccount,
-                                signinManager,
-                                signinTimestampsLogger,
-                                accessPoint,
-                                signInCallback,
-                                mContext,
-                                mModalDialogManager);
-        signinManager.signOut(
-                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeUserData= */ false);
+                () -> {
+                    if (mDestroyed) return;
+                    FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                            selectedAccount,
+                            signinManager,
+                            signinTimestampsLogger,
+                            accessPoint,
+                            signInCallback,
+                            mContext,
+                            mModalDialogManager);
+                };
+        signinManager
+                .signOut(
+                        SignoutReason.ABORT_SIGNIN,
+                        signOutCallback,
+                        /* forceWipeUserData= */ false);
     }
 
     /**
