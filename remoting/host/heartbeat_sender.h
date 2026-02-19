@@ -121,8 +121,6 @@ class HeartbeatSender final : public SignalStrategy::Listener {
 
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(
-      const jingle_xmpp::XmlElement* stanza) override;
 
   // Handlers for host-offline-reason completion and timeout.
   void OnHostOfflineReasonTimeout();

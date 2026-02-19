@@ -230,12 +230,6 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   HOST_LOG << "Received incoming message from " << sender_address.id();
-  for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
-      // Corp messaging does not support non-signaling messages like FTL does.
-      NOTREACHED();
-    }
-  }
 
   const auto* peer_message = std::get_if<internal::PeerMessageStruct>(&message);
   if (!peer_message) {
@@ -250,12 +244,17 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
     return;
   }
 
+  // TODO: joedow - Update CorpSignalStrategy to use JingleMessage.
   auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
       jingle_xmpp::XmlElement::ForStr(iq_stanza_struct->xml));
   if (!stanza) {
     LOG(WARNING) << "Failed to parse XMPP: " << iq_stanza_struct->xml;
     return;
   }
+
+  HOST_LOG << "Received incoming stanza:\n"
+           << stanza->Str()
+           << "\n=========================================================";
 
   SignalingAddress sender_address_from_iq =
       SignalingAddress::Parse(stanza.get(), SignalingAddress::FROM);
@@ -277,7 +276,11 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
     messaging_authz_token_ = authz_token;
   }
 
-  OnStanza(sender_address_from_iq, std::move(stanza));
+  for (auto& listener : listeners_) {
+    if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
+      return;
+    }
+  }
 }
 
 void CorpSignalStrategy::Core::OnChannelReady() {
@@ -317,37 +320,6 @@ void CorpSignalStrategy::Core::SetState(State state) {
   state_ = state;
   for (auto& observer : listeners_) {
     observer.OnSignalStrategyStateChange(state_);
-  }
-}
-
-void CorpSignalStrategy::Core::OnStanza(
-    const SignalingAddress& sender_address,
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (stanza->Name() != kQNameIq) {
-    LOG(WARNING) << "Received unexpected non-IQ packet " << stanza->Str();
-    return;
-  }
-  if (SignalingAddress(stanza->Attr(kQNameFrom)) != sender_address) {
-    LOG(WARNING) << "Expected sender: " << sender_address.id()
-                 << ", but received: " << stanza->Attr(kQNameFrom);
-    return;
-  }
-  if (SignalingAddress(stanza->Attr(kQNameTo)) != local_address_) {
-    LOG(WARNING) << "Expected receiver: " << local_address_.id()
-                 << ", but received: " << stanza->Attr(kQNameTo);
-    return;
-  }
-
-  HOST_LOG << "Received incoming stanza:\n"
-           << stanza->Str()
-           << "\n=========================================================";
-
-  for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingStanza(stanza.get())) {
-      return;
-    }
   }
 }
 

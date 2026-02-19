@@ -110,11 +110,6 @@ void FtlSignalingConnector::OnSignalStrategyStateChange(
   }
 }
 
-bool FtlSignalingConnector::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 void FtlSignalingConnector::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

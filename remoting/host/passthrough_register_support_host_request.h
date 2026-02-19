@@ -48,8 +48,6 @@ class PassthroughRegisterSupportHostRequest final
  private:
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(
-      const jingle_xmpp::XmlElement* stanza) override;
 
   void RunCallback(const std::string& support_id,
                    base::TimeDelta lifetime,

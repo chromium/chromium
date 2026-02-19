@@ -34,8 +34,6 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
 
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(
-      const jingle_xmpp::XmlElement* stanza) override;
   bool OnSignalStrategyIncomingMessage(
       const SignalingAddress& sender_address,
       const SignalingMessage& message) override;

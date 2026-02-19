@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "remoting/base/logging.h"
-#include "remoting/signaling/signaling_address.h"
 
 namespace remoting {
 
@@ -91,11 +90,6 @@ void CorpSignalingConnector::OnSignalStrategyStateChange(
     backoff_.InformOfRequest(false);
     TryReconnect(backoff_.GetTimeUntilRelease());
   }
-}
-
-bool CorpSignalingConnector::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
 }
 
 void CorpSignalingConnector::OnNetworkChanged(

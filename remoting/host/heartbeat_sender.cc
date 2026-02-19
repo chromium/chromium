@@ -165,11 +165,6 @@ void HeartbeatSender::OnSignalStrategyStateChange(SignalStrategy::State state) {
   }
 }
 
-bool HeartbeatSender::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 void HeartbeatSender::OnHostOfflineReasonTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host_offline_reason_ack_callback_);

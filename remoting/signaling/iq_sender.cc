@@ -89,8 +89,15 @@ void IqSender::RemoveRequest(IqRequest* request) {
 
 void IqSender::OnSignalStrategyStateChange(SignalStrategy::State state) {}
 
-bool IqSender::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
+bool IqSender::OnSignalStrategyIncomingMessage(
+    const SignalingAddress& sender_address,
+    const SignalingMessage& message) {
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
+      SignalStrategy::GetXmlStanza(message);
+  if (!stanza) {
+    return false;
+  }
+
   if (stanza->Name() != kQNameIq) {
     LOG(WARNING) << "Received unexpected non-IQ packet " << stanza->Str();
     return false;
@@ -129,7 +136,7 @@ bool IqSender::OnSignalStrategyIncomingStanza(
   }
 
   requests_.erase(it);
-  request->OnResponse(stanza);
+  request->OnResponse(stanza.get());
 
   return true;
 }

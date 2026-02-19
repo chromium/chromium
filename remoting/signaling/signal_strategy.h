@@ -48,40 +48,33 @@ class SignalStrategy {
   // listeners.
   class Listener : public base::CheckedObserver {
    public:
-    ~Listener() override {}
+    ~Listener() override = default;
 
     // Called after state of the connection has changed. If the state
     // is DISCONNECTED, then GetError() can be used to get the reason
     // for the disconnection.
     virtual void OnSignalStrategyStateChange(State state) = 0;
 
-    // Must return true if the stanza was handled, false
-    // otherwise. The signal strategy must not be deleted from a
-    // handler of this message.
-    virtual bool OnSignalStrategyIncomingStanza(
-        const jingle_xmpp::XmlElement* stanza) = 0;
-
-    // This method is similar to OnSignalStrategyIncomingStanza(). It will be
-    // called by signal strategy that supports message-based signaling (i.e.
-    // FtlSignalStrategy) before OnSignalStrategyIncomingStanza() is called.
-    //
-    // Must return true if the message was handled, false
-    // otherwise. The signal strategy must not be deleted from a
-    // handler of this message.
-    //
-    // TODO(yuweih): Remove OnSignalStrategyIncomingStanza() and make this
-    // method pure virtual.
+    // Must return true if the message was handled, false otherwise. The signal
+    // strategy must not be deleted from a handler of this message.
+    // TODO: joedow - Update this method to accept a JingleMessage.
     virtual bool OnSignalStrategyIncomingMessage(
         const SignalingAddress& sender_address,
         const SignalingMessage& message);
   };
 
-  SignalStrategy() {}
+  SignalStrategy() = default;
 
   SignalStrategy(const SignalStrategy&) = delete;
   SignalStrategy& operator=(const SignalStrategy&) = delete;
 
-  virtual ~SignalStrategy() {}
+  virtual ~SignalStrategy() = default;
+
+  // Extracts an XMPP stanza from the |message|. Returns nullptr if the message
+  // does not contain an XMPP stanza.
+  // TODO: joedow - Remove this function when XML conversions are not needed.
+  static std::unique_ptr<jingle_xmpp::XmlElement> GetXmlStanza(
+      const SignalingMessage& message);
 
   // Starts connection attempt. If connection is currently active
   // disconnects it and opens a new connection (implicit disconnect

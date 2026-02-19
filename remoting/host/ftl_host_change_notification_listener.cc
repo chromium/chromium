@@ -30,11 +30,6 @@ FtlHostChangeNotificationListener::~FtlHostChangeNotificationListener() {
 void FtlHostChangeNotificationListener::OnSignalStrategyStateChange(
     SignalStrategy::State state) {}
 
-bool FtlHostChangeNotificationListener::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 bool FtlHostChangeNotificationListener::OnSignalStrategyIncomingMessage(
     const SignalingAddress& sender_address,
     const SignalingMessage& message) {

@@ -89,7 +89,10 @@ class IqSenderTest : public testing::Test {
         new XmlElement(QName("test:namespace", "response-body"));
     response->AddElement(response_body);
 
-    bool result = sender_->OnSignalStrategyIncomingStanza(response.get());
+    ftl::ChromotingMessage message;
+    message.mutable_xmpp()->set_stanza(response->Str());
+    bool result = sender_->OnSignalStrategyIncomingMessage(
+        SignalingAddress(from), SignalingMessage(message));
 
     if (response_out) {
       *response_out = std::move(response);

@@ -35,8 +35,6 @@ class CorpSignalingConnector
 
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(
-      const jingle_xmpp::XmlElement* stanza) override;
 
   // NetworkChangeNotifier::NetworkChangeObserver interface.
   void OnNetworkChanged(

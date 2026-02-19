@@ -34,11 +34,6 @@ FtlEchoMessageListener::~FtlEchoMessageListener() {
 void FtlEchoMessageListener::OnSignalStrategyStateChange(
     SignalStrategy::State state) {}
 
-bool FtlEchoMessageListener::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 bool FtlEchoMessageListener::OnSignalStrategyIncomingMessage(
     const SignalingAddress& sender_address,
     const SignalingMessage& message) {

@@ -334,11 +334,6 @@ void RemotingClient::OnSignalStrategyStateChange(SignalStrategy::State state) {
   }
 }
 
-bool RemotingClient::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 void RemotingClient::RunQuitClosure() {
   if (quit_closure_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

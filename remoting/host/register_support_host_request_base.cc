@@ -82,11 +82,6 @@ void RegisterSupportHostRequestBase::OnSignalStrategyStateChange(
   }
 }
 
-bool RegisterSupportHostRequestBase::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 void RegisterSupportHostRequestBase::RegisterHostInternal() {
   DCHECK_EQ(SignalStrategy::CONNECTED, signal_strategy_->GetState());
   if (state_ != State::NOT_STARTED) {

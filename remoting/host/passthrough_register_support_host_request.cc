@@ -48,11 +48,6 @@ void PassthroughRegisterSupportHostRequest::OnSignalStrategyStateChange(
   }
 }
 
-bool PassthroughRegisterSupportHostRequest::OnSignalStrategyIncomingStanza(
-    const jingle_xmpp::XmlElement* stanza) {
-  return false;
-}
-
 void PassthroughRegisterSupportHostRequest::RunCallback(
     const std::string& support_id,
     base::TimeDelta lifetime,

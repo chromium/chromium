@@ -63,8 +63,9 @@ class IqSender : public SignalStrategy::Listener {
 
   // SignalStrategy::Listener implementation.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(
-      const jingle_xmpp::XmlElement* stanza) override;
+  bool OnSignalStrategyIncomingMessage(
+      const SignalingAddress& sender_address,
+      const SignalingMessage& message) override;
 
  private:
   typedef std::map<std::string, raw_ptr<IqRequest, CtnExperimental>>
