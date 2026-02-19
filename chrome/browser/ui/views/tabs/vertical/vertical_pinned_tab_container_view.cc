@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 
+#include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -107,7 +108,11 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
 
     auto drag_data = GetVisualDataForDraggedView(*child);
     bounds.set_y(drag_data ? drag_data->offset.y() : y);
-    bounds.set_x(drag_data ? drag_data->offset.x() : x);
+    int child_x = drag_data ? drag_data->offset.x() : x;
+    if (drag_data && base::i18n::IsRTL()) {
+      child_x = size_bounds.width().value() - child_x - child_width;
+    }
+    bounds.set_x(child_x);
 
     const bool should_show_child =
         drag_data.has_value() ? !drag_data->should_hide : true;

@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
+#include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -362,6 +363,12 @@ VerticalDraggedTabsContainer::GetVisualDataForDraggedView(
 views::View* VerticalDraggedTabsContainer::GetViewForDragBounds(
     const views::ProposedLayout& layout,
     const gfx::Rect& dragged_tab_bounds) {
+  gfx::Rect logical_drag_bounds = dragged_tab_bounds;
+  if (base::i18n::IsRTL()) {
+    logical_drag_bounds.set_x(
+        host_view_->GetMirroredXForRect(logical_drag_bounds));
+  }
+
   for (const auto& child_layout : layout.child_layouts) {
     if (!child_layout.visible ||
         GetDragHandler().IsViewDragging(*child_layout.child_view)) {
@@ -372,7 +379,7 @@ views::View* VerticalDraggedTabsContainer::GetViewForDragBounds(
     // target position to be considered the view over current drag bounds.
     constexpr float kEntryThreshold = 0.6f;
 
-    if (HasMinimumOverlap(dragged_tab_bounds, child_layout.bounds,
+    if (HasMinimumOverlap(logical_drag_bounds, child_layout.bounds,
                           IsHorizontalDragSupported()
                               ? std::make_optional(child_layout.bounds.width() *
                                                    kEntryThreshold)
