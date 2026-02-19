@@ -65,6 +65,9 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
       kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      1);
   histogram_tester.ExpectUniqueSample(
       kActorObservationDelayDidTimeoutMetricName,
       /*sample=*/false, 1);
@@ -133,6 +136,9 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
     histogram_tester.ExpectTotalCount(
         kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName,
         1);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+        1);
     histogram_tester.ExpectUniqueSample(
         kActorObservationDelayDidTimeoutMetricName,
         /*sample=*/false, 1);
@@ -168,6 +174,9 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
       kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      0);
   histogram_tester.ExpectUniqueSample(
       kActorObservationDelayDidTimeoutMetricName,
       /*sample=*/true, 1);
@@ -225,6 +234,9 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
         kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
     histogram_tester.ExpectTotalCount(
         kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName,
+        0);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
         0);
     histogram_tester.ExpectUniqueSample(
         kActorObservationDelayDidTimeoutMetricName,

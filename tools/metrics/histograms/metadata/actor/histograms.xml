@@ -338,6 +338,7 @@ chromium-metrics-reviews@google.com.
     machine. Not recorded for timeouts.
   </summary>
   <token key="State">
+    <variant name="WaitForAutofillParsing"/>
     <variant name="WaitForLoadCompletion"/>
     <variant name="WaitForPageStability"/>
     <variant name="WaitForVisualStateUpdate"/>

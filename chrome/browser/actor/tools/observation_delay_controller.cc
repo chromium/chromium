@@ -164,7 +164,8 @@ void ObservationDelayController::OnAutofillPredictionsFinished() {
     return;
   }
 
-  // TODO(crbug.com/483281982): Measure how long the parsing takes.
+  CHECK(metrics_);
+  metrics_->OnAutofillPredictionsFinished();
   MoveToState(State::kDone);
 }
 

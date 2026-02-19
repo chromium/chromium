@@ -18,6 +18,8 @@ extern const char
     kActorObservationDelayStateDurationWaitForLoadCompletionMetricName[];
 extern const char
     kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName[];
+extern const char
+    kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName[];
 extern const char kActorObservationDelayTotalWaitDurationMetricName[];
 extern const char kActorObservationDelayDidTimeoutMetricName[];
 extern const char kActorObservationDelayLcpDelayNeededMetricName[];
@@ -37,6 +39,8 @@ class ObservationDelayMetrics {
   void OnLoadCompleted();
 
   void OnVisualStateUpdated();
+
+  void OnAutofillPredictionsFinished();
 
  private:
   struct StateDuration {
@@ -58,6 +62,9 @@ class ObservationDelayMetrics {
 
   // The duration waiting for page loading.
   StateDuration wait_for_load_completion_;
+
+  // The duration waiting for autofill predictions.
+  StateDuration wait_for_autofill_predictions_;
 
   // The duration waiting for visual state update.
   StateDuration wait_for_visual_state_update_;

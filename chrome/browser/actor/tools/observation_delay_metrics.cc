@@ -23,6 +23,10 @@ const char
     kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName[] =
         "Actor.ObservationDelay.StateDuration.WaitForVisualStateUpdate";
 
+const char
+    kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName[] =
+        "Actor.ObservationDelay.StateDuration.WaitForAutofillPredictions";
+
 const char kActorObservationDelayTotalWaitDurationMetricName[] =
     "Actor.ObservationDelay.TotalWaitDuration";
 
@@ -62,7 +66,7 @@ void ObservationDelayMetrics::WillMoveToState(
       wait_for_visual_state_update_.start_time = now;
       break;
     case ObservationDelayController::State::kWaitForAutofillPredictions:
-      // TODO(crbug.com/483281982): Measure how long the parsing takes.
+      wait_for_autofill_predictions_.start_time = now;
       break;
     case ObservationDelayController::State::kMaybeDelayForLcp:
       delay_for_lcp_ = false;
@@ -106,7 +110,12 @@ void ObservationDelayMetrics::WillMoveToState(
               wait_for_visual_state_update_.end_time -
                   wait_for_visual_state_update_.start_time);
         }
-
+        if (wait_for_autofill_predictions_.IsValid()) {
+          base::UmaHistogramTimes(
+              kActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+              wait_for_autofill_predictions_.end_time -
+                  wait_for_autofill_predictions_.start_time);
+        }
         if (delay_for_lcp_.has_value()) {
           base::UmaHistogramBoolean(
               kActorObservationDelayLcpDelayNeededMetricName, *delay_for_lcp_);
@@ -129,6 +138,11 @@ void ObservationDelayMetrics::OnLoadCompleted() {
 void ObservationDelayMetrics::OnVisualStateUpdated() {
   wait_for_visual_state_update_.end_time = base::TimeTicks::Now();
   CHECK(wait_for_visual_state_update_.IsValid());
+}
+
+void ObservationDelayMetrics::OnAutofillPredictionsFinished() {
+  wait_for_autofill_predictions_.end_time = base::TimeTicks::Now();
+  CHECK(wait_for_autofill_predictions_.IsValid());
 }
 
 }  // namespace actor
