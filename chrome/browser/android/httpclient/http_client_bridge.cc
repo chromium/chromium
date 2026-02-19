@@ -43,7 +43,7 @@ void HttpClientBridge::Destroy(JNIEnv* env) {
 
 void HttpClientBridge::SendNetworkRequest(
     JNIEnv* env,
-    GURL& gurl,
+    const GURL& gurl,
     const std::string& request_type,
     const std::vector<uint8_t>& request_body,
     const std::map<std::string, std::string>& headers,

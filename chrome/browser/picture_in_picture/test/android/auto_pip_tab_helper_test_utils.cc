@@ -59,7 +59,7 @@ static int32_t
 JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
     JNIEnv* env,
     content::WebContents* web_contents,
-    GURL& url) {
+    const GURL& url) {
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);

@@ -221,7 +221,7 @@ void OptimizationGuideBridge::RegisterOptimizationTypes(
 
 void OptimizationGuideBridge::CanApplyOptimization(
     JNIEnv* env,
-    GURL& url,
+    const GURL& url,
     int32_t optimization_type,
     const JavaRef<jobject>& java_callback) {
   optimization_guide_keyed_service_->CanApplyOptimization(
@@ -234,7 +234,7 @@ void OptimizationGuideBridge::CanApplyOptimization(
 
 base::android::ScopedJavaLocalRef<jobject>
 OptimizationGuideBridge::CanApplyOptimizationSync(JNIEnv* env,
-                                                  GURL& url,
+                                                  const GURL& url,
                                                   int32_t optimization_type) {
   optimization_guide::OptimizationMetadata metadata;
 

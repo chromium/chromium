@@ -77,7 +77,7 @@ static bool JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
     Profile* profile,
     const jni_zero::JavaRef<jobject>& j_group_id,
     int32_t j_tab_id,
-    GURL& url) {
+    const GURL& url) {
   CHECK(profile);
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);

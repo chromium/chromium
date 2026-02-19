@@ -75,18 +75,20 @@ ScopedJavaLocalRef<jobject> GURLAndroid::EmptyGURL(JNIEnv* env) {
 }
 
 static void JNI_GURL_GetOrigin(JNIEnv* env,
-                               GURL& gurl,
+                               const GURL& gurl,
                                const JavaRef<jobject>& target) {
   InitFromGURL(env, gurl.DeprecatedGetOriginAsURL(), target);
 }
 
 static bool JNI_GURL_DomainIs(JNIEnv* env,
-                              GURL& gurl,
+                              const GURL& gurl,
                               const std::string& domain) {
   return gurl.DomainIs(domain);
 }
 
-static bool JNI_GURL_EqualsIgnoringRef(JNIEnv* env, GURL& gurl, GURL& other) {
+static bool JNI_GURL_EqualsIgnoringRef(JNIEnv* env,
+                                       const GURL& gurl,
+                                       const GURL& other) {
   return gurl.EqualsIgnoringRef(other);
 }
 
@@ -109,7 +111,7 @@ static void JNI_GURL_InitNative(JNIEnv* env,
 
 static void JNI_GURL_ReplaceComponents(
     JNIEnv* env,
-    GURL& gurl,
+    const GURL& gurl,
     const JavaRef<jstring>& j_username_replacement,
     bool clear_username,
     const JavaRef<jstring>& j_password_replacement,

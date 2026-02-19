@@ -33,7 +33,7 @@ class HttpClientBridge {
   void Destroy(JNIEnv* env);
 
   void SendNetworkRequest(JNIEnv* env,
-                          GURL& gurl,
+                          const GURL& gurl,
                           const std::string& request_type,
                           const std::vector<uint8_t>& request_body,
                           const std::map<std::string, std::string>& headers,

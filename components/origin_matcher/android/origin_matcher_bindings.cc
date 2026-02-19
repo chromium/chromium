@@ -31,7 +31,7 @@ OriginMatcher ToNativeOriginMatcher(JNIEnv* env,
 
 static bool JNI_OriginMatcher_Matches(JNIEnv* env,
                                       int64_t ptr,
-                                      url::Origin& origin) {
+                                      const url::Origin& origin) {
   auto* matcher = FromPtr(ptr);
   return matcher->Matches(origin);
 }

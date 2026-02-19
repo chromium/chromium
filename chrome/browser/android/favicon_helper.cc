@@ -61,7 +61,7 @@ void FaviconHelper::Destroy(JNIEnv* env) {
 bool FaviconHelper::GetLocalFaviconImageForURL(
     JNIEnv* env,
     Profile* profile,
-    GURL& page_url,
+    const GURL& page_url,
     int32_t j_desired_size_in_pixel,
     const JavaRef<jobject>& j_favicon_image_callback) {
   DCHECK(profile);
@@ -119,7 +119,7 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
 bool FaviconHelper::GetForeignFaviconImageForURL(
     JNIEnv* env,
     Profile* profile,
-    GURL& page_url,
+    const GURL& page_url,
     int32_t j_desired_size_in_pixel,
     const base::android::JavaRef<jobject>& j_favicon_image_callback) {
   if (!profile) {
