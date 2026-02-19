@@ -120,6 +120,12 @@ std::vector<Credential> ConstructCredentialsList(
     bool immediately_available_to_login) {
   std::vector<Credential> result;
   for (const auto& form : best_matches) {
+    // Don't consider weakly affiliated (grouped) credentials because they are
+    // low confidence matches and would require additional user confirmation.
+    if (form.match_type.value() ==
+        password_manager::PasswordForm::MatchType::kGrouped) {
+      continue;
+    }
     if (form.actor_login_approved &&
         !password_manager_util::IsCredentialWeakMatch(form)) {
       return {PasswordFormToCredential(request_origin,
@@ -131,7 +137,6 @@ std::vector<Credential> ConstructCredentialsList(
 
   return result;
 }
-
 }  // namespace
 
 std::optional<ActorLoginError>

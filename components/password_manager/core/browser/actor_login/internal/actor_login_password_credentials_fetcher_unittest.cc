@@ -868,6 +868,33 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
   ASSERT_EQ(credentials.size(), 2u);
 }
 
+TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresGroupedMatches) {
+  PasswordForm grouped_match = CreatePasswordForm(
+      "https://sub.foo.com", u"grouped_username", u"grouped_password",
+      PasswordForm::MatchType::kGrouped);
+  grouped_match.actor_login_approved = true;
+  AddFormManager(CreateFormManager());
+  form_fetcher()->SetBestMatches({grouped_match});
+
+  base::test::TestFuture<std::vector<Credential>,
+                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+      future;
+  auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
+      kOrigin, client(), password_manager(), mqls_logger());
+  fetcher->Fetch(future.GetCallback());
+
+  // The fetcher only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Wait());
+  const auto& [credentials, status] = future.Get();
+  EXPECT_FALSE(status->GetGlobalError().has_value());
+  ASSERT_TRUE(credentials.empty());
+}
+
 TEST_F(ActorLoginPasswordCredentialsFetcherTest,
        ReturnsSingleApprovedCredential) {
   PasswordForm psl_match =

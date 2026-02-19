@@ -318,6 +318,13 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
   const PasswordForm* matching_stored_credential = nullptr;
   for (const password_manager::PasswordForm& stored_credential_form :
        signin_form_manager.GetBestMatches()) {
+    // Don't consider weakly affiliated credentials (grouped) because they are
+    // not provided in the "Get" step and thus don't actually match the
+    // credential that was selected for filling.
+    if (stored_credential_form.match_type.value() ==
+        password_manager::PasswordForm::MatchType::kGrouped) {
+      continue;
+    }
     if (stored_credential_form.username_value == credential_.username &&
         ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
             stored_credential_form.url) == credential_.source_site_or_app) {

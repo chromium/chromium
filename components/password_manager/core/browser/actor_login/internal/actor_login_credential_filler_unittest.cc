@@ -489,6 +489,35 @@ TEST_P(
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
+TEST_P(ActorLoginCredentialFillerTest, DontFillGroupedMatch) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL(), origin);
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+  std::vector<password_manager::PasswordForm> saved_forms;
+  PasswordForm form =
+      CreateSavedPasswordForm(GURL("https://otherexample.com"), kTestUsername);
+  form.match_type = password_manager::PasswordForm::MatchType::kGrouped;
+  saved_forms.push_back(std::move(form));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(
+      origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+
+  filler.AttemptLogin(&mock_password_manager_);
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
+}
+
 TEST_P(ActorLoginCredentialFillerTest,
        InvalidCredential_SuppliedCredentialRequestOriginDiffers) {
   const url::Origin main_frame_origin =
