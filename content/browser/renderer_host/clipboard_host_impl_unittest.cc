@@ -144,8 +144,9 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
       ui::ClipboardFormatType::PngType(), ui::ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
-  std::vector<uint8_t> png =
-      ui::clipboard_test_util::ReadPng(system_clipboard());
+  std::vector<uint8_t> png = ui::clipboard_test_util::ReadPng(
+      system_clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   SkBitmap actual = gfx::PNGCodec::Decode(png);
   ASSERT_TRUE(!actual.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
@@ -434,8 +435,9 @@ TEST_F(ClipboardHostImplWriteTest, WriteBitmap) {
   clipboard_host_impl()->WriteImage(kBitmap);
   clipboard_host_impl()->CommitWrite();
 
-  std::vector<uint8_t> png =
-      ui::clipboard_test_util::ReadPng(system_clipboard());
+  std::vector<uint8_t> png = ui::clipboard_test_util::ReadPng(
+      system_clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   SkBitmap actual = gfx::PNGCodec::Decode(png);
   ASSERT_FALSE(actual.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
@@ -447,8 +449,9 @@ TEST_F(ClipboardHostImplWriteTest, WriteBitmap_Empty) {
   clipboard_host_impl()->WriteImage(SkBitmap());
   clipboard_host_impl()->CommitWrite();
 
-  std::vector<uint8_t> png =
-      ui::clipboard_test_util::ReadPng(system_clipboard());
+  std::vector<uint8_t> png = ui::clipboard_test_util::ReadPng(
+      system_clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   SkBitmap actual = gfx::PNGCodec::Decode(png);
   EXPECT_TRUE(actual.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));

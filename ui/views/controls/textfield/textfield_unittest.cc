@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -531,10 +532,9 @@ ui::ClipboardBuffer TextfieldTest::GetAndResetCopiedToClipboard() {
 
 std::u16string TextfieldTest::GetClipboardText(
     ui::ClipboardBuffer clipboard_buffer) {
-  std::u16string text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      clipboard_buffer, /* data_dst = */ nullptr, &text);
-  return text;
+  return ui::clipboard_test_util::ReadText(ui::Clipboard::GetForCurrentThread(),
+                                           clipboard_buffer,
+                                           /* data_dst = */ nullptr);
 }
 
 void TextfieldTest::SetClipboardText(ui::ClipboardBuffer clipboard_buffer,

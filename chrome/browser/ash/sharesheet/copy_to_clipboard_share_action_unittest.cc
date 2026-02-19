@@ -104,9 +104,9 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardOneFile) {
                                  {::sharesheet::kMimeTypeText}));
 
   // Check filenames copied correctly.
-  std::vector<ui::FileInfo> filenames;
-  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
+  std::vector<ui::FileInfo> filenames = ui::clipboard_test_util::ReadFilenames(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(filenames.size(), 1u);
   EXPECT_EQ(url.path(), filenames[0].path);
   histograms.ExpectBucketCount(
@@ -129,9 +129,9 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleFiles) {
           {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}));
 
   // Check filenames copied correctly.
-  std::vector<ui::FileInfo> filenames;
-  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
+  std::vector<ui::FileInfo> filenames = ui::clipboard_test_util::ReadFilenames(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(filenames.size(), 2u);
   EXPECT_EQ(url1.path(), filenames[0].path);
   EXPECT_EQ(url2.path(), filenames[1].path);
@@ -215,9 +215,9 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleImageFiles) {
                                  {"image/png", "image/jpg"}));
 
   // Check filenames copied correctly.
-  std::vector<ui::FileInfo> filenames;
-  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
+  std::vector<ui::FileInfo> filenames = ui::clipboard_test_util::ReadFilenames(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(filenames.size(), 2u);
   EXPECT_EQ(url1.path(), filenames[0].path);
   EXPECT_EQ(url2.path(), filenames[1].path);

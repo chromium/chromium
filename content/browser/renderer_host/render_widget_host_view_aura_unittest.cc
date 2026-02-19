@@ -99,6 +99,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/mock_input_method.h"
@@ -6659,9 +6660,8 @@ TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
     views_[index]->SelectionChanged(expected_text, 0U, gfx::Range(0, 5));
 
     // Retrieve the selected text from clipboard and verify it is as expected.
-    std::u16string result_text;
-    clipboard->ReadText(ui::ClipboardBuffer::kSelection,
-                        /* data_dst = */ nullptr, &result_text);
+    std::u16string result_text = ui::clipboard_test_util::ReadText(
+        clipboard, ui::ClipboardBuffer::kSelection, /* data_dst = */ nullptr);
     EXPECT_EQ(expected_text, result_text);
   }
 }

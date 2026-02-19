@@ -237,6 +237,7 @@ source_set("browser_tests") {
     "//ui/aura",
     "//ui/base",
     "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/data_transfer_policy",
     "//ui/gfx/geometry",

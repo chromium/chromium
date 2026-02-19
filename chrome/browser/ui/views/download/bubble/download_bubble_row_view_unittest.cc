@@ -18,6 +18,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/events/test/test_event.h"
 #include "ui/events/types/event_type.h"
@@ -106,10 +107,8 @@ TEST_F(DownloadBubbleRowViewTest, CopyAcceleratorCopiesFile) {
   ASSERT_TRUE(browser_view()->GetAccelerator(IDC_COPY, &accelerator));
 
   row_view()->AcceleratorPressed(accelerator);
-
-  std::vector<ui::FileInfo> filenames;
-  clipboard->ReadFilenames(ui::ClipboardBuffer::kCopyPaste, nullptr,
-                           &filenames);
+  std::vector<ui::FileInfo> filenames = ui::clipboard_test_util::ReadFilenames(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, nullptr);
   ASSERT_EQ(filenames.size(), 1u);
   EXPECT_EQ(filenames[0].path, target_path);
 

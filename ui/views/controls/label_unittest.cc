@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -111,10 +112,9 @@ void SetRTL(bool rtl) {
 }
 
 std::u16string GetClipboardText(ui::ClipboardBuffer clipboard_buffer) {
-  std::u16string clipboard_text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      clipboard_buffer, /* data_dst = */ nullptr, &clipboard_text);
-  return clipboard_text;
+  return ui::clipboard_test_util::ReadText(ui::Clipboard::GetForCurrentThread(),
+                                           clipboard_buffer,
+                                           /* data_dst = */ nullptr);
 }
 
 // Makes an RTL string by mapping 0..6 to [א,ב,ג,ד,ה,ו,ז].

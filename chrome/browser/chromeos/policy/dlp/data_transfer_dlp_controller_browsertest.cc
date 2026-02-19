@@ -46,6 +46,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -311,9 +312,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, EmptyPolicy) {
   SetClipboardText(kClipboardText116, nullptr);
 
   ui::DataTransferEndpoint data_dst((GURL("https://google.com")));
-  std::u16string result;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
+  std::u16string result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst);
   EXPECT_EQ(kClipboardText116, result);
 }
 
@@ -339,15 +340,15 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
       std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
   ui::DataTransferEndpoint data_dst1((GURL(kMailUrl)));
-  std::u16string result1;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
+  std::u16string result1 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst1);
   EXPECT_EQ(kClipboardText116, result1);
 
   ui::DataTransferEndpoint data_dst2((GURL(kDocsUrl)));
-  std::u16string result2;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
+  std::u16string result2 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst2);
   EXPECT_EQ(kClipboardText116, result2);
 
   base::RunLoop run_loop;
@@ -357,9 +358,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
                            kRuleId1, DlpRulesManager::Level::kBlock),
       run_loop);
   ui::DataTransferEndpoint data_dst3((GURL(kExampleUrl)));
-  std::u16string result3;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
+  std::u16string result3 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst3);
   EXPECT_EQ(std::u16string(), result3);
   ASSERT_TRUE(dlp_controller_->ObserveWidget());
   run_loop.Run();
@@ -369,9 +370,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
       std::make_unique<ui::DataTransferEndpoint>((GURL(kExampleUrl))));
 
   ui::DataTransferEndpoint data_dst4((GURL(kMailUrl)));
-  std::u16string result4;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result4);
+  std::u16string result4 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst1);
   EXPECT_EQ(kClipboardText116, result4);
 
   FlushMessageLoop();
@@ -464,9 +465,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, WarnDestination) {
 
   // Initiate a paste on nullptr data_dst.
   {
-    std::u16string result;
-    ui::Clipboard::GetForCurrentThread()->ReadText(
-        ui::ClipboardBuffer::kCopyPaste, nullptr, &result);
+    std::u16string result = ui::clipboard_test_util::ReadText(
+        ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+        nullptr);
     EXPECT_TRUE(!widget || widget->IsClosed());
 
     EXPECT_EQ(std::u16string(), result);

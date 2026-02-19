@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 
 using testing::_;
 using testing::Eq;
@@ -99,10 +100,10 @@ TEST_F(ClipboardAuraTest, WriteToClipboard) {
   StopAndResetClipboard();
   base::RunLoop().RunUntilIdle();
 
-  std::string clipboard_data;
   ui::Clipboard* aura_clipboard = ui::Clipboard::GetForCurrentThread();
-  aura_clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste,
-                                /* data_dst = */ nullptr, &clipboard_data);
+  std::string clipboard_data = ui::clipboard_test_util::ReadAsciiText(
+      aura_clipboard, ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
 
   EXPECT_EQ(clipboard_data, "Test data.")
       << "InjectClipboardEvent should write to aura clipboard";

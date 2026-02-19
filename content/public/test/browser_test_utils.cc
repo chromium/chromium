@@ -139,6 +139,7 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -3224,8 +3225,9 @@ void BrowserTestClipboardScope::SetText(const std::string& text) {
 }
 
 void BrowserTestClipboardScope::GetText(std::string* result) {
-  ui::Clipboard::GetForCurrentThread()->ReadAsciiText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, result);
+  *result = ui::clipboard_test_util::ReadAsciiText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
 }
 
 class FrameFocusedObserver::FrameTreeNodeObserverImpl

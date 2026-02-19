@@ -42,15 +42,15 @@ SharedClipboardTestBase::CreateMessage(const std::string& guid,
 }
 
 std::string SharedClipboardTestBase::GetClipboardText() {
-  std::u16string text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &text);
-  return base::UTF16ToUTF8(text);
+  return base::UTF16ToUTF8(ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
 }
 
 SkBitmap SharedClipboardTestBase::GetClipboardImage() {
-  std::vector<uint8_t> png_data =
-      ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
+  std::vector<uint8_t> png_data = ui::clipboard_test_util::ReadPng(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
   CHECK(!bitmap.isNull());
   return bitmap;

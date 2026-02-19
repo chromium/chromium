@@ -43,6 +43,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/widget.h"
@@ -263,15 +264,15 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
     writer.WriteText(kClipboardText116);
   }
   ui::DataTransferEndpoint data_dst1(ui::EndpointType::kDefault);
-  std::u16string result1;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
+  std::u16string result1 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst1);
   EXPECT_EQ(kClipboardText116, result1);
 
   ui::DataTransferEndpoint data_dst2(ui::EndpointType::kArc);
-  std::u16string result2;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
+  std::u16string result2 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst2);
   EXPECT_EQ(std::u16string(), result2);
   ASSERT_EQ(events.size(), 1u);
   EXPECT_THAT(
@@ -282,9 +283,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
           DlpRulesManager::Level::kBlock)));
 
   ui::DataTransferEndpoint data_dst3(ui::EndpointType::kCrostini);
-  std::u16string result3;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
+  std::u16string result3 = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &data_dst3);
   EXPECT_EQ(std::u16string(), result3);
   ASSERT_EQ(events.size(), 2u);
   EXPECT_THAT(
@@ -327,9 +328,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
   }
 
   ui::DataTransferEndpoint arc_endpoint(ui::EndpointType::kArc);
-  std::u16string result;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &arc_endpoint, &result);
+  std::u16string result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &arc_endpoint);
   EXPECT_EQ(kClipboardText116, result);
   ASSERT_EQ(events.size(), 1u);
   EXPECT_THAT(
@@ -340,9 +341,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
           DlpRulesManager::Level::kWarn)));
 
   ui::DataTransferEndpoint crostini_endpoint(ui::EndpointType::kCrostini);
-  result.clear();
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &crostini_endpoint, &result);
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      &crostini_endpoint);
   EXPECT_EQ(kClipboardText116, result);
   ASSERT_EQ(events.size(), 2u);
   EXPECT_THAT(

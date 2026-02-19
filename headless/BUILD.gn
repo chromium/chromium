@@ -788,6 +788,7 @@ test("headless_browsertests") {
     "//testing/gtest",
     "//tools/v8_context_snapshot:buildflags",
     "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_test_support",
     "//ui/shell_dialogs",
   ]
 

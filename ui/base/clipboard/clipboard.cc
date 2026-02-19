@@ -47,6 +47,7 @@ Clipboard::RawData::RawData(const RawData&) = default;
 Clipboard::RawData& Clipboard::RawData::operator=(const RawData&) = default;
 Clipboard::RawData::RawData(RawData&&) = default;
 Clipboard::RawData& Clipboard::RawData::operator=(RawData&&) = default;
+
 // static
 bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
   // Use lambda instead of local helper function in order to access private

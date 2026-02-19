@@ -333,6 +333,7 @@ source_set("unit_tests") {
     "//ui/aura",
     "//ui/aura:test_support",
     "//ui/base:test_support",
+    "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",

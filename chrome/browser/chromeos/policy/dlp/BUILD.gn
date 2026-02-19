@@ -303,6 +303,7 @@ if (!is_chromeos_device) {
       "//ui/aura",
       "//ui/base",
       "//ui/base/clipboard",
+      "//ui/base/clipboard:clipboard_test_support",
       "//ui/base/clipboard:clipboard_types",
       "//ui/base/data_transfer_policy",
       "//ui/base/dragdrop:types",

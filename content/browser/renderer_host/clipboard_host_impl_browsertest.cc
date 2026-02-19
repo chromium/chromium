@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "url/origin.h"
 
@@ -178,9 +179,9 @@ IN_PROC_BROWSER_TEST_P(ClipboardDocUrlBrowserTestP, HtmlUrl) {
   std::string src_url;
   uint32_t fragment_start;
   uint32_t fragment_end;
-  ui::Clipboard::GetForCurrentThread()->ReadHTML(
-      ui::ClipboardBuffer::kCopyPaste, nullptr, &html, &src_url,
-      &fragment_start, &fragment_end);
+  ui::clipboard_test_util::ReadHTML(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      nullptr, &html, &src_url, &fragment_start, &fragment_end);
   EXPECT_EQ(src_url, main_url.spec());
 }
 

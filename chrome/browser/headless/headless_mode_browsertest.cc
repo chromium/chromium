@@ -55,6 +55,7 @@
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/native_ui_types.h"
@@ -363,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardCopyPaste) {
       ui::ScopedClipboardWriter writer(buffer);
       writer.WriteText(paste_text);
     }
-    std::u16string copy_text;
-    clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
+    std::u16string copy_text = ui::clipboard_test_util::ReadText(
+        clipboard, buffer, /* data_dst = */ nullptr);
     EXPECT_EQ(paste_text, copy_text);
   }
 
@@ -373,8 +374,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardCopyPaste) {
     if (!ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
       continue;
     }
-    std::u16string copy_text;
-    clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
+    std::u16string copy_text = ui::clipboard_test_util::ReadText(
+        clipboard, buffer, /* data_dst = */ nullptr);
     EXPECT_EQ(paste_text, copy_text);
   }
 }

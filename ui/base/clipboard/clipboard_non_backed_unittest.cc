@@ -19,6 +19,7 @@
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
@@ -135,21 +136,20 @@ TEST_F(ClipboardNonBackedTest, PlainText) {
   auto data = std::make_unique<ClipboardData>();
   data->set_text("hello");
   clipboard()->WriteClipboardData(std::move(data));
-  std::vector<std::u16string> types;
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
 
   // Text data uses mime type 'text/plain'.
-  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"text/plain"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   // Validate reading back the text.
-  std::u16string text;
-  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                        &text);
-  EXPECT_EQ(u"hello", text);
+  EXPECT_EQ(u"hello", clipboard_test_util::ReadText(clipboard(),
+                                                    ClipboardBuffer::kCopyPaste,
+                                                    /*data_dst=*/nullptr));
 }
 
 // Tests that site bookmark URLs are accessed as text, and
@@ -159,12 +159,12 @@ TEST_F(ClipboardNonBackedTest, BookmarkURL) {
   data->set_bookmark_title("Example Page");
   data->set_bookmark_url("http://example.com");
   clipboard()->WriteClipboardData(std::move(data));
-  std::vector<std::u16string> types;
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
 
   // Bookmark data returns available type 'text/plain'.
-  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"text/plain"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
@@ -181,13 +181,13 @@ TEST_F(ClipboardNonBackedTest, BookmarkURL) {
   // Validate reading back the bookmark.
   std::u16string title;
   std::string url;
-  clipboard()->ReadBookmark(/*data_dst=*/nullptr, &title, &url);
+  clipboard_test_util::ReadBookmark(clipboard(), /*data_dst=*/nullptr, &title,
+                                    &url);
   EXPECT_EQ(u"Example Page", title);
-  EXPECT_EQ("http://example.com", url);
-  std::u16string text;
-  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                        &text);
-  EXPECT_EQ(u"http://example.com", text);
+  EXPECT_EQ("http://example.com/", url);
+  EXPECT_EQ(u"http://example.com", clipboard_test_util::ReadText(
+                                       clipboard(), ClipboardBuffer::kCopyPaste,
+                                       /*data_dst=*/nullptr));
 }
 
 // Filenames data uses mime type 'text/uri-list'.
@@ -196,10 +196,10 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   data->set_filenames(
       {FileInfo(base::FilePath(FILE_PATH_LITERAL("/path")), base::FilePath())});
   clipboard()->WriteClipboardData(std::move(data));
-  std::vector<std::u16string> types;
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
-  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                               ClipboardBuffer::kCopyPaste,
                                               /*data_dst=*/nullptr));
@@ -219,9 +219,10 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   data->SetCustomData(ui::ClipboardFormatType::DataTransferCustomType(),
                       std::string(pickle.data_as_char(), pickle.size()));
   clipboard()->WriteClipboardData(std::move(data));
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
-  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_FALSE(clipboard()->IsFormatAvailable(
       ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
@@ -234,10 +235,10 @@ TEST_F(ClipboardNonBackedTest, ImageEncoding) {
   data->SetBitmapData(test_bitmap);
   clipboard()->WriteClipboardData(std::move(data));
 
-  std::vector<std::u16string> types;
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
-  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"image/png"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
@@ -268,10 +269,10 @@ TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
   data->SetBitmapData(test_bitmap);
   clipboard()->WriteClipboardData(std::move(data));
 
-  std::vector<std::u16string> types;
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
-  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"image/png"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
@@ -327,10 +328,10 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
 
   clipboard()->WriteClipboardData(std::move(data));
 
-  std::vector<std::u16string> types;
-  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
-                                  /*data_dst=*/nullptr, &types);
-  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_EQ(std::vector<std::string>({"image/png"}),
+            UTF8Types(clipboard_test_util::ReadAvailableTypes(
+                clipboard(), ClipboardBuffer::kCopyPaste,
+                /*data_dst=*/nullptr)));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
@@ -396,8 +397,8 @@ TEST_F(ClipboardNonBackedTest, ClipboardBufferTypes) {
     if (ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
       ScopedClipboardWriter(buffer).WriteText(paste_text);
 
-      std::u16string copy_text;
-      clipboard()->ReadText(buffer, /*data_dst=*/nullptr, &copy_text);
+      std::u16string copy_text = clipboard_test_util::ReadText(
+          clipboard(), buffer, /*data_dst=*/nullptr);
       EXPECT_EQ(paste_text, copy_text);
     }
   }
@@ -405,8 +406,8 @@ TEST_F(ClipboardNonBackedTest, ClipboardBufferTypes) {
   // Verify that different clipboard buffer data is independent.
   for (const auto& [buffer, paste_text] : clipboard_buffers) {
     if (ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
-      std::u16string copy_text;
-      clipboard()->ReadText(buffer, /*data_dst=*/nullptr, &copy_text);
+      std::u16string copy_text = clipboard_test_util::ReadText(
+          clipboard(), buffer, /*data_dst=*/nullptr);
       EXPECT_EQ(paste_text, copy_text);
     }
   }
@@ -439,39 +440,38 @@ TEST_F(ClipboardNonBackedMockTimeTest,
   // This test will verify expectations for every kind of clipboard data read.
   std::vector<base::RepeatingClosure> test_cases = {{
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadAsciiText(
-            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-            /*result=*/std::make_unique<std::string>().get());
+        clipboard_test_util::ReadAsciiText(clipboard,
+                                           ClipboardBuffer::kCopyPaste,
+                                           /*data_dst=*/nullptr);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadBookmark(
-            /*data_dst=*/nullptr,
-            /*title=*/std::make_unique<std::u16string>().get(),
-            /*url=*/std::make_unique<std::string>().get());
+        std::u16string title;
+        std::string url;
+        clipboard_test_util::ReadBookmark(clipboard,
+                                          /*data_dst=*/nullptr, &title, &url);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadDataTransferCustomData(
-            ClipboardBuffer::kCopyPaste,
-            /*type=*/std::u16string(), /*data_dst=*/nullptr,
-            /*result=*/std::make_unique<std::u16string>().get());
+        clipboard_test_util::ReadDataTransferCustomData(
+            clipboard, ClipboardBuffer::kCopyPaste,
+            /*type=*/std::u16string(), /*data_dst=*/nullptr);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadData(ui::ClipboardFormatType(),
-                            /*data_dst=*/nullptr,
-                            /*result=*/std::make_unique<std::string>().get());
+        clipboard_test_util::ReadData(clipboard, ui::ClipboardFormatType(),
+                                      /*data_dst=*/nullptr);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadFilenames(
-            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-            /*result=*/std::make_unique<std::vector<ui::FileInfo>>().get());
+        clipboard_test_util::ReadFilenames(clipboard,
+                                           ClipboardBuffer::kCopyPaste,
+                                           /*data_dst=*/nullptr);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadHTML(
-            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-            /*markup=*/std::make_unique<std::u16string>().get(),
-            /*src_url=*/std::make_unique<std::string>().get(),
-            /*fragment_start=*/std::make_unique<uint32_t>().get(),
-            /*fragment_end=*/std::make_unique<uint32_t>().get());
+        std::u16string markup;
+        std::string src_url;
+        uint32_t fragment_start;
+        uint32_t fragment_end;
+        clipboard_test_util::ReadHTML(clipboard, ClipboardBuffer::kCopyPaste,
+                                      /*data_dst=*/nullptr, &markup, &src_url,
+                                      &fragment_start, &fragment_end);
       }),
       base::BindLambdaForTesting([&]() {
         clipboard->ReadPng(ClipboardBuffer::kCopyPaste,
@@ -479,18 +479,16 @@ TEST_F(ClipboardNonBackedMockTimeTest,
                            /*callback=*/base::DoNothing());
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadRTF(ClipboardBuffer::kCopyPaste,
-                           /*data_dst=*/nullptr,
-                           /*result=*/std::make_unique<std::string>().get());
+        clipboard_test_util::ReadRTF(clipboard, ClipboardBuffer::kCopyPaste,
+                                     /*data_dst=*/nullptr);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                           /*result=*/std::make_unique<std::u16string>().get());
+        clipboard_test_util::ReadSvg(clipboard, ClipboardBuffer::kCopyPaste,
+                                     /*data_dst=*/nullptr);
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadText(
-            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-            /*result=*/std::make_unique<std::u16string>().get());
+        clipboard_test_util::ReadText(clipboard, ClipboardBuffer::kCopyPaste,
+                                      /*data_dst=*/nullptr);
       }),
   }};
 

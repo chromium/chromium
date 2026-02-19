@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
@@ -29,8 +30,9 @@ std::u16string ReadHTMLFromClipboard(ui::Clipboard* clipboard) {
   std::string url;
   uint32_t start, end;
 
-  clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &markup, &url, &start, &end);
+  ui::clipboard_test_util::ReadHTML(clipboard, ui::ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr, &markup, &url, &start,
+                                    &end);
   return markup;
 }
 

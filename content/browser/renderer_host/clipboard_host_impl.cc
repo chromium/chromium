@@ -295,9 +295,9 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
     std::move(callback).Run(std::u16string());
     return;
   }
+  auto data_dst = CreateDataEndpoint();
   ui::Clipboard::GetForCurrentThread()->ReadSvg(
-      clipboard_buffer,
-      /*data_dst=*/std::nullopt,
+      clipboard_buffer, data_dst,
       base::BindOnce(&ClipboardHostImpl::OnReadSvg,
                      weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
                      std::move(callback)));

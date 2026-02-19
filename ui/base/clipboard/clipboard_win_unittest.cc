@@ -25,6 +25,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -95,8 +96,8 @@ TEST_F(ClipboardWinTest, DataChangedNotificationOnWrite) {
 TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   auto* clipboard = Clipboard::GetForCurrentThread();
 
-  std::vector<std::u16string> types;
-  clipboard->ReadAvailableTypes(ClipboardBuffer::kCopyPaste, nullptr, &types);
+  clipboard_test_util::ReadAvailableTypes(clipboard,
+                                          ClipboardBuffer::kCopyPaste, nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<std::vector<std::u16string>> types_future;
@@ -105,8 +106,8 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   ASSERT_TRUE(types_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::u16string text_result;
-  clipboard->ReadText(ClipboardBuffer::kCopyPaste, nullptr, &text_result);
+  clipboard_test_util::ReadText(clipboard, ClipboardBuffer::kCopyPaste,
+                                nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<std::u16string> text_future;
@@ -115,9 +116,8 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   ASSERT_TRUE(text_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::string ascii_text_result;
-  clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste, nullptr,
-                           &ascii_text_result);
+  clipboard_test_util::ReadAsciiText(clipboard, ClipboardBuffer::kCopyPaste,
+                                     nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<std::string> ascii_text_future;
@@ -136,16 +136,14 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   std::string src_url;
   uint32_t start;
   uint32_t end;
-  clipboard->ReadHTML(ClipboardBuffer::kCopyPaste, nullptr, &html, &src_url,
-                      &start, &end);
+  clipboard_test_util::ReadHTML(clipboard, ClipboardBuffer::kCopyPaste, nullptr,
+                                &html, &src_url, &start, &end);
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::u16string svg;
-  clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, nullptr, &svg);
+  clipboard_test_util::ReadSvg(clipboard, ClipboardBuffer::kCopyPaste, nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::string rtf;
-  clipboard->ReadRTF(ClipboardBuffer::kCopyPaste, nullptr, &rtf);
+  clipboard_test_util::ReadRTF(clipboard, ClipboardBuffer::kCopyPaste, nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<const std::vector<uint8_t>&> png_future;
@@ -154,13 +152,12 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   ASSERT_TRUE(png_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::u16string custom_data_result;
-  clipboard->ReadDataTransferCustomData(
-      ClipboardBuffer::kCopyPaste, u"text/plain", nullptr, &custom_data_result);
+  clipboard_test_util::ReadDataTransferCustomData(
+      clipboard, ClipboardBuffer::kCopyPaste, u"text/plain", nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::vector<FileInfo> file_infos;
-  clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, nullptr, &file_infos);
+  clipboard_test_util::ReadFilenames(clipboard, ClipboardBuffer::kCopyPaste,
+                                     nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<std::vector<FileInfo>> filenames_future;
@@ -171,12 +168,11 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
 
   std::u16string title;
   std::string bookmark_url;
-  clipboard->ReadBookmark(nullptr, &title, &bookmark_url);
+  clipboard_test_util::ReadBookmark(clipboard, nullptr, &title, &bookmark_url);
   ASSERT_EQ(data_changed_count(), 0);
 
-  std::string data_result;
-  clipboard->ReadData(ClipboardFormatType::PlainTextType(), nullptr,
-                      &data_result);
+  clipboard_test_util::ReadData(clipboard, ClipboardFormatType::PlainTextType(),
+                                nullptr);
   ASSERT_EQ(data_changed_count(), 0);
 }
 
@@ -244,9 +240,8 @@ TEST_F(ClipboardWinTest, NormalizeRtfStringToUTF8) {
     writer.WriteRTF(encodedString);
   }
 
-  std::string readString;
-  Clipboard::GetForCurrentThread()->ReadRTF(ClipboardBuffer::kCopyPaste,
-                                            nullptr, &readString);
+  std::string readString = clipboard_test_util::ReadRTF(
+      Clipboard::GetForCurrentThread(), ClipboardBuffer::kCopyPaste, nullptr);
 
   std::u16string resultString;
   base::CodepageToUTF16(readString, "UTF-8",
