@@ -313,6 +313,14 @@ void Host::PanelWasClosed() {
   }
 }
 
+void Host::StopMicrophone(base::OnceClosure done) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->StopMicrophone(std::move(done));
+  } else {
+    std::move(done).Run();
+  }
+}
+
 void Host::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {

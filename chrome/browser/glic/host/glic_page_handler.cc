@@ -1133,6 +1133,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().OnInteractionModeChange(page_handler_, new_mode);
   }
 
+  void OnMicrophoneStatusChange(glic::mojom::MicrophoneStatus status) override {
+    // TODO(crbug.com/472338366): Plumb microphone status to the Glic Instance.
+  }
+
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
@@ -1876,6 +1880,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void PanelWasClosed(base::OnceClosure done) override {
     web_client_->NotifyPanelWasClosed(
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
+  }
+
+  void StopMicrophone(base::OnceClosure done) override {
+    web_client_->StopMicrophone(std::move(done));
   }
 
   void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {

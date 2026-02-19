@@ -2249,6 +2249,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testJournal) {
   histogram_tester->ExpectTotalCount("Glic.Actor.JournalEvent.async_event", 1);
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testStopMicrophone) {
+  ExecuteJsTest();
+  base::test::TestFuture<void> microphone_stopped;
+  GetHost()->StopMicrophone(microphone_stopped.GetCallback());
+  EXPECT_TRUE(microphone_stopped.Wait());
+  ContinueJsTest();
+}
+
 // TODO(crbug.com/438812885): This is flaky.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   browser()->profile()->GetPrefs()->SetBoolean(

@@ -131,6 +131,7 @@ export class WebClient implements GlicWebClient {
   firstOpened = Promise.withResolvers<void>();
   initializedPromise = Promise.withResolvers<void>();
   onNotifyPanelWasClosed: () => void = () => {};
+  onStopMicrophone: () => void = () => {};
   panelOpenState = ObservableValue.withValue<boolean>(false);
   panelOpenStateKind = ObservableValue.withNoValue<PanelStateKind>();
   panelOpenData = ObservableValue.withNoValue<PanelOpeningData>();
@@ -157,6 +158,10 @@ export class WebClient implements GlicWebClient {
   async notifyPanelWasClosed(): Promise<void> {
     this.onNotifyPanelWasClosed();
     this.panelOpenState.assignAndSignal(false);
+  }
+
+  async stopMicrophone(): Promise<void> {
+    this.onStopMicrophone();
   }
 
   waitForFirstOpen(): Promise<void> {

@@ -838,6 +838,9 @@ interface WebClientHandler {
   // Notifies the browser that the web client has switched modes.
   OnModeChange(WebClientMode new_mode);
 
+  // Called when the microphone status changes in the web client.
+  OnMicrophoneStatusChange(MicrophoneStatus status);
+
   // Triggers the change profile flow, which allows the user to switch which
   // profile is used. If a new profile is chosen, this WebUI will be closed in
   // favor of a new one.
@@ -1399,6 +1402,15 @@ enum WebClientMode {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientMode)
 
 // @generate glic_api
+// Microphone status.
+[Stable, Extensible]
+enum MicrophoneStatus {
+  kNotListening = 0,
+  kListening = 1,
+  [Default] kUnknown = 2,
+};
+
+// @generate glic_api
 // Web client's operation model.
 [Stable, Extensible]
 enum WebClientModel {
@@ -1516,6 +1528,9 @@ interface WebClient {
   // The Microphone permission has changed either by action within the web
   // client or by user action in the glic settings.
   NotifyMicrophonePermissionStateChanged(bool enabled);
+
+  // Requests the web client to stop microphone recording.
+  StopMicrophone() => ();
 
   // The Location permission has changed either by action within the web client
   // or by user action in the glic settings.

@@ -184,6 +184,11 @@ export declare interface GlicWebClient {
    */
   invoke?(options: InvokeOptions): Promise<void>;
 
+  /**
+   * Requests the web client to stop microphone recording.
+   */
+  stopMicrophone?(): Promise<void>;
+
   // !!! ATTENTION !!!
   // Avoid adding new methods to this interface! Instead, to push information to
   // the web client it's much more preferable to add new functions to
@@ -1037,6 +1042,11 @@ export declare interface GlicBrowserHost {
    * corresponding task id).
    */
   actorTaskListRowClicked?(): Observable<number>;
+
+  /**
+   * Called when the microphone status changes in the web client.
+   */
+  onMicrophoneStatusChange?(status: MicrophoneStatus): void;
 }
 
 /** Information about a conversation. */
@@ -2725,6 +2735,15 @@ export enum WebClientMode {
   TEXT = 0,
   // Audio operation mode.
   AUDIO = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Microphone status.
+export enum MicrophoneStatus {
+  NOT_LISTENING = 0,
+  LISTENING = 1,
+  UNKNOWN = 2,
 }
 
 ///////////////////////////////////////////////

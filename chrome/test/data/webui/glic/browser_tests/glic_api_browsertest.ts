@@ -1944,6 +1944,16 @@ class ApiTests extends ApiTestFixtureBase {
     journalHost.stop();
   }
 
+  async testStopMicrophone() {
+    const stopMicrophonePromise = Promise.withResolvers<void>();
+    this.client.onStopMicrophone = () => {
+      stopMicrophonePromise.resolve();
+    };
+
+    await this.advanceToNextStep();
+    await waitFor(stopMicrophonePromise.promise);
+  }
+
   async testGetHostCapabilities() {
     assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =

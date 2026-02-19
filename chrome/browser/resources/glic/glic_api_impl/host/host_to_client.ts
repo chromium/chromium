@@ -96,6 +96,11 @@ export class WebClientImpl implements WebClientInterface {
         });
   }
 
+  stopMicrophone(): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicWebClientStopMicrophone', undefined);
+  }
+
   notifyLocationPermissionStateChanged(enabled: boolean): void {
     this.sender.requestNoResponse(
         'glicWebClientNotifyLocationPermissionStateChanged', {

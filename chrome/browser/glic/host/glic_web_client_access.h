@@ -33,6 +33,9 @@ class GlicWebClientAccess {
   // client should not be destroyed until after `done` is called.
   virtual void PanelWasClosed(base::OnceClosure done) = 0;
 
+  // Requests the web client to stop microphone recording.
+  virtual void StopMicrophone(base::OnceClosure done) = 0;
+
   // Informs the client that the state of the panel has changed.
   virtual void PanelStateChanged(
       const glic::mojom::PanelState& panel_state) = 0;

@@ -11,7 +11,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, SkillSource as MojomSkillSource, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, ViewChangedNotification, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, ViewChangedNotification, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
@@ -19,7 +19,7 @@ import type {PostMessageRequestSender} from '../post_message_transport.js';
 import type {HostRequestTypes, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TransferableException, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 
-import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, conversationInfoFromClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, platformToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
+import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, conversationInfoFromClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, platformToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
@@ -903,6 +903,12 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserOnModeChange(request: {newMode: WebClientMode}): void {
     this.handler.onModeChange(webClientModeToMojo(request.newMode));
+  }
+
+  glicBrowserOnMicrophoneStatusChange(request: {status: MicrophoneStatus}):
+      void {
+    this.handler.onMicrophoneStatusChange(
+        microphoneStatusToMojo(request.status));
   }
 
   glicBrowserSetOnboardingCompleted(): void {
