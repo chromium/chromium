@@ -7,15 +7,33 @@ package org.chromium.chrome.browser.search_engines.settings.custom_site_search;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import androidx.preference.PreferenceViewHolder;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
 @NullMarked
 public class CustomSiteSearchListPreference extends ChromeBasePreference {
+    private @Nullable Adapter mAdapter;
 
     public CustomSiteSearchListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.custom_site_search_list_preference);
+    }
+
+    public void setAdapter(@Nullable Adapter adapter) {
+        mAdapter = adapter;
+        notifyChanged();
+    }
+
+    @Override
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+        RecyclerView recyclerView = (RecyclerView) holder.itemView;
+        recyclerView.setAdapter(mAdapter);
     }
 }

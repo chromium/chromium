@@ -506,6 +506,13 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_LIST_MENU_DELETE" desc="Option in site search list menu. User can click the 'Delete' option to remove the search engine.">
         Delete
       </message>
+      <message name="IDS_SITE_SEARCH_ADD_SITE_SEARCH_BUTTON_LABEL" desc="Label for the 'Add site' button.">
+        Add site
+      </message>
+      <message name="IDS_SITE_SEARCH_ADDITIONAL_SITES_BUTTON_LABEL" desc="Label for the 'Additional sites' button.">
+        Additional sites
+      </message>
+
 
 
       <!-- Add Message -->
