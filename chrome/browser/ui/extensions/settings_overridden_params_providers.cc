@@ -57,22 +57,6 @@ namespace settings_overridden_params {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-// Returns the number of extensions that are currently enabled that override the
-// default search setting.
-size_t GetNumberOfExtensionsThatOverrideSearch(Profile* profile) {
-  const auto* const registry = extensions::ExtensionRegistry::Get(profile);
-  const auto overrides_search = [](auto extension) {
-    auto* const settings = extensions::SettingsOverrides::Get(extension.get());
-    return settings && settings->search_engine;
-  };
-  return std::ranges::count_if(registry->enabled_extensions(),
-                               overrides_search);
-}
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 // Returns true if the given |template_url| corresponds to Google search.
 bool IsGoogleSearch(const TemplateURL& template_url,
                     const TemplateURLService& template_url_service) {
@@ -97,6 +81,18 @@ bool GoogleIsDefaultSearchProvider(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+// Returns the number of extensions that are currently enabled that override the
+// default search setting.
+size_t GetNumberOfExtensionsThatOverrideSearch(Profile* profile) {
+  const auto* const registry = extensions::ExtensionRegistry::Get(profile);
+  const auto overrides_search = [](auto extension) {
+    auto* const settings = extensions::SettingsOverrides::Get(extension.get());
+    return settings && settings->search_engine;
+  };
+  return std::ranges::count_if(registry->enabled_extensions(),
+                               overrides_search);
+}
 
 struct SecondarySearchInfo {
   enum class Type {
