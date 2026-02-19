@@ -520,10 +520,11 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // database operations.
   int64_t GetSizeOfAllEntries() const;
 
-  // Loads the in-memory index. This is a no-op if the index has already been
-  // loaded or if a load is already in progress. Returns true if a load was
-  // initiated.
-  bool MaybeLoadInMemoryIndex(ErrorCallback callback);
+  // Loads the in-memory index if it hasn't been loaded yet. `callback` is
+  // invoked with the result of the load. If the index is already loaded, the
+  // callback is run immediately with the previous result. Multiple concurrent
+  // calls will all receive the same result when the load completes.
+  void MaybeLoadInMemoryIndex(ErrorCallback callback);
 
   // If there are entries that were doomed in a previous session, this method
   // triggers a task to delete them from the database. The cleanup is performed
@@ -618,6 +619,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   void OnInitializeFinished(ErrorCallback callback,
                             std::vector<InitResultOrError> results);
 
+  void OnLoadInMemoryIndexFinished(Error result);
   void ResumePendingEviction(
       std::vector<base::flat_set<SqlPersistentStore::ResId>>
           excluded_res_id_sets,
@@ -662,6 +664,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Whether loading of the in-memory index has been triggered.
   bool in_memory_load_triggered_ = false;
+  // The result of the in-memory index load, if it has finished.
+  std::optional<Error> in_memory_load_result_;
+  // Callbacks waiting for the in-memory index load to complete.
+  std::vector<ErrorCallback> pending_in_memory_load_result_callbacks_;
 
   base::WeakPtrFactory<SqlPersistentStore> weak_factory_{this};
 };

@@ -506,19 +506,31 @@ int64_t SqlPersistentStore::GetSizeOfAllEntries() const {
   return result;
 }
 
-bool SqlPersistentStore::MaybeLoadInMemoryIndex(ErrorCallback callback) {
-  if (in_memory_load_triggered_) {
-    return false;
+void SqlPersistentStore::MaybeLoadInMemoryIndex(ErrorCallback callback) {
+  if (in_memory_load_result_.has_value()) {
+    std::move(callback).Run(*in_memory_load_result_);
+    return;
   }
-  if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
-    return false;
+  pending_in_memory_load_result_callbacks_.push_back(std::move(callback));
+  if (!in_memory_load_triggered_) {
+    in_memory_load_triggered_ = true;
+    auto barrier_callback = CreateBarrierErrorCallback(
+        base::BindOnce(&SqlPersistentStore::OnLoadInMemoryIndexFinished,
+                       weak_factory_.GetWeakPtr()));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->LoadInMemoryIndex(barrier_callback);
+    }
   }
-  in_memory_load_triggered_ = true;
-  auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
-  for (const auto& backend_shard : backend_shards_) {
-    backend_shard->LoadInMemoryIndex(barrier_callback);
+}
+
+void SqlPersistentStore::OnLoadInMemoryIndexFinished(Error result) {
+  CHECK(!in_memory_load_result_.has_value());
+  in_memory_load_result_ = result;
+  auto callbacks = std::move(pending_in_memory_load_result_callbacks_);
+  pending_in_memory_load_result_callbacks_.clear();
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
   }
-  return true;
 }
 
 bool SqlPersistentStore::MaybeRunCleanupDoomedEntries(ErrorCallback callback) {
@@ -678,6 +690,9 @@ void SqlPersistentStore::OnInitializeFinished(
       std::move(callback).Run(result.error());
       return;
     }
+  }
+  if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
+    in_memory_load_result_ = Error::kOk;
   }
   for (const auto& result : results) {
     // Only the result from the shard 0 has max_bytes.

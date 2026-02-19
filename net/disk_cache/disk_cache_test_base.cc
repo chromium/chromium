@@ -149,8 +149,8 @@ void DiskCacheTestWithCache::LoadInMemoryIndex() {
   ASSERT_EQ(backend_to_test_, BackendToTest::kSql);
   CHECK(sql_cache_impl_);
   base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
-  ASSERT_TRUE(sql_cache_impl_->GetSqlStoreForTest()->MaybeLoadInMemoryIndex(
-      future.GetCallback()));
+  sql_cache_impl_->GetSqlStoreForTest()->MaybeLoadInMemoryIndex(
+      future.GetCallback());
   ASSERT_EQ(future.Get(), disk_cache::SqlPersistentStore::Error::kOk);
 }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND

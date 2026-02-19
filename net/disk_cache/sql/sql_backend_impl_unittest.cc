@@ -146,12 +146,8 @@ class SqlBackendImplTest : public testing::Test {
   bool LoadInMemoryIndex(SqlBackendImpl& backend) {
     auto* store = backend.GetSqlStoreForTest();
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    auto ret = store->MaybeLoadInMemoryIndex(future.GetCallback());
-    if (ret) {
-      CHECK_EQ(future.Get(), SqlPersistentStore::Error::kOk);
-      return true;
-    }
-    return false;
+    store->MaybeLoadInMemoryIndex(future.GetCallback());
+    return future.Get() == SqlPersistentStore::Error::kOk;
   }
 
   // Gets the total size of all entries.

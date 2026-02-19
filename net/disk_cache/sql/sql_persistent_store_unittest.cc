@@ -128,12 +128,8 @@ class SqlPersistentStoreTest : public testing::Test {
                              SqlPersistentStore::Error::kOk) {
     CHECK(store_);
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    auto ret = store_->MaybeLoadInMemoryIndex(future.GetCallback());
-    if (ret) {
-      CHECK_EQ(future.Get(), expected_result);
-      return true;
-    }
-    return false;
+    store_->MaybeLoadInMemoryIndex(future.GetCallback());
+    return future.Get() == expected_result;
   }
 
   // Gets the entry count.
@@ -4647,8 +4643,8 @@ TEST_F(SqlPersistentStoreTest, IndexState) {
   // Load the in memory index.
   EXPECT_TRUE(LoadInMemoryIndex());
 
-  // In memory index load process should not be triggered twice.
-  EXPECT_FALSE(LoadInMemoryIndex());
+  // Calling LoadInMemoryIndex should not cause crash.
+  EXPECT_TRUE(LoadInMemoryIndex());
 
   // After loading the in memory index, returns kHashNotFound.
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
@@ -4769,8 +4765,8 @@ TEST_F(SqlPersistentStoreTest, LoadIndexOnInitFeature) {
   EXPECT_EQ(store_->GetIndexStateForHash(CacheEntryKey("other").hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
 
-  // MaybeLoadInMemoryIndex() should do nothing.
-  EXPECT_FALSE(LoadInMemoryIndex());
+  // MaybeLoadInMemoryIndex() should not cause crash.
+  EXPECT_TRUE(LoadInMemoryIndex());
 }
 
 TEST_F(SqlPersistentStoreTest, IndexLoadNotInitializedFailure) {
@@ -5451,7 +5447,7 @@ TEST_F(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
 
   // 3. Start loading the index.
   base::test::TestFuture<SqlPersistentStore::Error> load_index_future;
-  ASSERT_TRUE(store_->MaybeLoadInMemoryIndex(load_index_future.GetCallback()));
+  store_->MaybeLoadInMemoryIndex(load_index_future.GetCallback());
 
   // 4. Doom two entries while index loading is in flight.
   base::test::TestFuture<SqlPersistentStore::Error> doom_future1;
