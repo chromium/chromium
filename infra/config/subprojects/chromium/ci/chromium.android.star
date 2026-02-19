@@ -1185,6 +1185,11 @@ ci.builder(
                     shards = 8,
                 ),
             ),
+            "webview_instrumentation_test_apk_bfcache_mutations": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_instrumentation_test_apk_bfcache_mutations.filter",
+                ],
+            ),
         },
     ),
     # TODO(https://crbug.com/482433957): Re-enable gardener when green.

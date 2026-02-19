@@ -166,6 +166,7 @@
           "--use-apk-under-test-flags-file",
           "--enable-features=WebViewBackForwardCache",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_instrumentation_test_apk_bfcache_mutations.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

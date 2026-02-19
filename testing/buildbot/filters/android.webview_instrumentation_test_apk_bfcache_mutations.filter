@@ -1,4 +1,5 @@
 # https://crbug.com/484182048
+-org.chromium.android_webview.test.NavigateApiTest.extraHeaders_reusedOnBack
 -org.chromium.android_webview.test.SafeBrowsingTest.testSafeBrowsingHardcodedMalwareUrl
 -org.chromium.android_webview.test.SafeBrowsingTest.testSafeBrowsingHardcodedPhishingUrl
 -org.chromium.android_webview.test.SafeBrowsingTest.testSafeBrowsingHardcodedUrlsIgnoreUserOptOut
