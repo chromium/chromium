@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
@@ -527,8 +525,13 @@ class AppMenu implements OnKeyListener {
                                 int oldTop,
                                 int oldRight,
                                 int oldBottom) {
-                            assumeNonNull(mListView);
-                            mListView.removeOnLayoutChangeListener(this);
+                            v.removeOnLayoutChangeListener(this);
+
+                            // If a view layout pass was not completed before the popup dismissal,
+                            // this listener may trigger after mListView is set to null.
+                            // If this is the case, since the popup is already dismissed, we won't
+                            // need to run the menu item enter animations.
+                            if (mListView == null) return;
                             runMenuItemEnterAnimations();
                         }
                     });
