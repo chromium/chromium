@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_MUTATOR_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,14 +36,14 @@ class AccountsMutator {
 
   // Updates the information of the account associated with |gaia_id|, first
   // adding that account to the system if it is not known.
-  // Passing `signin_metrics::AccessPoint::kUnknown` preserves the
-  // current access point if it's already set.
+  // Passing `std::nullopt` for `access_point` will not update the access point,
+  // and in particular will not clear it if it was previously set.
   virtual CoreAccountId AddOrUpdateAccount(
       const GaiaId& gaia_id,
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
-      signin_metrics::AccessPoint access_point,
+      std::optional<signin_metrics::AccessPoint> access_point,
       signin_metrics::SourceForRefreshTokenOperation source,
       const std::vector<uint8_t>& wrapped_binding_key =
           std::vector<uint8_t>()) = 0;

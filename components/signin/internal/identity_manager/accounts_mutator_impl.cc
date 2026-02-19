@@ -42,7 +42,7 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
     const std::string& email,
     const std::string& refresh_token,
     bool is_under_advanced_protection,
-    signin_metrics::AccessPoint access_point,
+    std::optional<signin_metrics::AccessPoint> access_point,
     signin_metrics::SourceForRefreshTokenOperation source,
     const std::vector<uint8_t>& wrapped_binding_key) {
 #if BUILDFLAG(IS_CHROMEOS)
