@@ -785,12 +785,12 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
 
   // ------------------------------------------------------------------------
   // `Sec-Purpose`:
-  updates_for_resource_request.modified_headers.SetHeader(
-      blink::kSecPurposeHeaderName, GetSecPurposeHeaderValue(url));
+  AddSecPurposeHeader(updates_for_resource_request.modified_headers, url,
+                      request());
   if (base::FeatureList::IsEnabled(
           features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-    updates_for_follow_redirect.modified_headers.SetHeader(
-        blink::kSecPurposeHeaderName, GetSecPurposeHeaderValue(url));
+    AddSecPurposeHeader(updates_for_follow_redirect.modified_headers, url,
+                        request());
   }
 
   // ------------------------------------------------------------------------
@@ -1642,8 +1642,7 @@ void PrefetchContainer::MakeInitialResourceRequest() {
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:
-  resource_request->headers.SetHeader(blink::kSecPurposeHeaderName,
-                                      GetSecPurposeHeaderValue(url));
+  AddSecPurposeHeader(resource_request->headers, url, request());
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Speculation-Tags`:
@@ -1906,37 +1905,6 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "Failed";
     case PrefetchContainer::LoadState::kFailedHeldback:
       return ostream << "FailedHeldback";
-  }
-}
-
-const char* PrefetchContainer::GetSecPurposeHeaderValue(
-    const GURL& request_url) const {
-  switch (request().preload_pipeline_info().planned_max_preloading_type()) {
-    case PreloadingType::kPrefetch:
-      if (IsProxyRequiredForURL(request_url)) {
-        return blink::kSecPurposePrefetchAnonymousClientIpHeaderValue;
-      } else {
-        return blink::kSecPurposePrefetchHeaderValue;
-      }
-    case PreloadingType::kPrerenderUntilScript:
-    case PreloadingType::kPrerender:
-      if (IsProxyRequiredForURL(request_url)) {
-        // Note that this path would be reachable if a prefetch ahead of
-        // prerender were triggered with a speculation candidate with
-        // `requires_anonymous_client_ip_when_cross_origin`. But such
-        // Speculation Rules are discarded in blink.
-        //
-        // See
-        // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
-        NOTREACHED();
-      } else {
-        return blink::kSecPurposePrefetchPrerenderHeaderValue;
-      }
-    case PreloadingType::kUnspecified:
-    case PreloadingType::kPreconnect:
-    case PreloadingType::kNoStatePrefetch:
-    case PreloadingType::kLinkPreview:
-      NOTREACHED();
   }
 }
 

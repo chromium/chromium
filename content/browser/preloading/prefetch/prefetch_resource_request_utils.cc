@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
 
@@ -38,6 +39,43 @@ constexpr net::NetworkTrafficAnnotationTag
               "embedder."
             policy_exception_justification: "Not implemented."
         })");
+
+void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
+                         const GURL& request_url,
+                         const PrefetchRequest& prefetch_request) {
+  const char* header_value = [&]() {
+    switch (prefetch_request.preload_pipeline_info()
+                .planned_max_preloading_type()) {
+      case PreloadingType::kPrefetch:
+        if (prefetch_request.IsProxyRequiredForURL(request_url)) {
+          return blink::kSecPurposePrefetchAnonymousClientIpHeaderValue;
+        } else {
+          return blink::kSecPurposePrefetchHeaderValue;
+        }
+      case PreloadingType::kPrerenderUntilScript:
+      case PreloadingType::kPrerender:
+        if (prefetch_request.IsProxyRequiredForURL(request_url)) {
+          // Note that this path would be reachable if a prefetch ahead of
+          // prerender were triggered with a speculation candidate with
+          // `requires_anonymous_client_ip_when_cross_origin`. But such
+          // Speculation Rules are discarded in blink.
+          //
+          // See
+          // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
+          NOTREACHED();
+        } else {
+          return blink::kSecPurposePrefetchPrerenderHeaderValue;
+        }
+      case PreloadingType::kUnspecified:
+      case PreloadingType::kPreconnect:
+      case PreloadingType::kNoStatePrefetch:
+      case PreloadingType::kLinkPreview:
+        NOTREACHED();
+    }
+  }();
+
+  request_headers.SetHeader(blink::kSecPurposeHeaderName, header_value);
+}
 
 void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
                               const GURL& request_url,
