@@ -1185,13 +1185,12 @@ std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
 CanvasNon2DResourceProviderSharedImage::Create(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
-    ShouldInitialize initialize_provider,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate) {
   return Create(size, color_params.GetSharedImageFormat(),
                 color_params.GetAlphaType(), color_params.GetGfxColorSpace(),
-                initialize_provider, std::move(context_provider_wrapper),
+                ShouldInitialize::kNo, std::move(context_provider_wrapper),
                 shared_image_usage_flags, delegate);
 }
 

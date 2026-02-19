@@ -637,7 +637,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
-      ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
