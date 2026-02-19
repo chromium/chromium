@@ -1268,7 +1268,6 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
 void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     content::WebContents* content) {
-  // TODO(crbug.com/459156156): Work on PDF distillation in a future CL.
   if (!features::IsReadAnythingWithReadabilityEnabled() || is_pdf_) {
     return;
   }

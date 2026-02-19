@@ -4942,7 +4942,7 @@ class ReadAnythingAppControllerReadabilityTest
     test::SetUpdateTreeID(&snapshot, tree_id_);
     AccessibilityEventReceived({std::move(snapshot)});
     controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
-                                         false);
+                                         /*is_pdf=*/false);
   }
 };
 
@@ -4983,10 +4983,27 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   // Navigate to a new tree.
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
-                                       false);
+                                       /*is_pdf=*/false);
 
   // Every new navigation should start with the preferred method (Readability in
   // this test suite).
   EXPECT_EQ(model().current_content_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnActiveAXTreeIDChanged_UsesScreen2xForPDF) {
+  // Simulate default method is readability.
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Navigate to a new tree.
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+
+  // Every new navigation should set screen2x as distillation method if page is
+  // PDF.
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
 }
