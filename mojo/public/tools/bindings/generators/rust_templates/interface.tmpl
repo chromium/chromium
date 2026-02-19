@@ -85,12 +85,13 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
   fn handle_incoming_message(
       &mut self,
       message: bindings::message::MojomMessage,
+      #[allow(unused_variables)] // Unused if no messages send a response
       send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static)
     where Self: Sized
   {
-    let _ = send_response; // Mark as used in case no messages take a response
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe.
+    #[allow(unused_variables, unused_mut)] // Unused if no messages send a response
     let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match message.header.name {
       {%- for method in interface.methods %}
@@ -132,6 +133,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
   fn handle_incoming_response(message: bindings::message::MojomMessage, send_response: Self::ResponseCallbackTy) {
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe.
+    #[allow(unused_variables, unused_mut)] // Unused if no messages take a response
     let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match (message.header.name, send_response) {
       {%- for method in interface.methods if method.response_parameters %}
