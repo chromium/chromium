@@ -317,6 +317,7 @@ class ReadAnythingUntrustedPageHandler :
   void SetLanguageCode(const std::string& code);
 
   void SetUpPdfObserver();
+  void CheckIfActiveAXTreeChangedToPdf();
 
   void OnGetPresentationState();
   ReadAnythingController* GetReadAnythingController();
