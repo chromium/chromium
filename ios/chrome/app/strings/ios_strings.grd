@@ -1816,9 +1816,6 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE" desc="The title of form for the user to edit an existing pinned site">
         Edit site
       </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER" desc="The footer of form for the user to add or edit a pinned site">
-        Your edits will only apply to your pinned sites on this device.
-      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME" desc="The label of the 'name' field of form for the user to add or edit a pinned site">
         Name
       </message>
