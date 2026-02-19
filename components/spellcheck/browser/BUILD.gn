@@ -41,6 +41,7 @@ source_set("browser") {
     "//components/spellcheck/common",
   ]
   deps = [
+    "//components/enterprise/connectors/core",
     "//components/prefs",
     "//components/user_prefs",
     "//content/public/browser",

@@ -51,6 +51,9 @@ bool IsAndroidSpellCheckFeatureEnabled() {
 BASE_FEATURE(kAndroidGrammarCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+BASE_FEATURE(kEnableSpellcheckRegionalSignal,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

@@ -32,6 +32,13 @@ inline constexpr char kSpellCheckBlocklistedDictionaries[] =
 inline constexpr char kSpellCheckUseSpellingService[] =
     "spellcheck.use_spelling_service";
 
+// Integer value controlling the data region to store covered data from Chrome.
+// By default, no preference is selected.
+// - 0: No preference
+// - 1: United States
+// - 2: Europe
+inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
+
 }  // namespace spellcheck::prefs
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_PREF_NAMES_H_

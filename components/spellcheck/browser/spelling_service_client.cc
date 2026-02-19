@@ -16,13 +16,16 @@
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -39,7 +42,7 @@ namespace {
 
 // The REST endpoint for requesting spell checking and sending user feedback.
 const char kSpellingServiceRestURL[] =
-    "https://www.googleapis.com/spelling/v%d/spelling/check?key=%s";
+    "https://%s.googleapis.com/spelling/v%d/spelling/check?key=%s";
 
 // The spellcheck suggestions object key in the JSON response from the spelling
 // service.
@@ -50,6 +53,23 @@ const char kErrorPath[] = "error";
 
 // Languages currently supported by SPELLCHECK.
 const char* const kValidLanguages[] = {"en", "es", "fi", "da"};
+
+GURL GetRegionalizedEndpoint(enterprise_connectors::DataRegion data_region,
+                             int version) {
+  const char* key = google_apis::GetAPIKey().c_str();
+  switch (data_region) {
+    case enterprise_connectors::DataRegion::NO_PREFERENCE:
+      return GURL(
+          base::StringPrintf(kSpellingServiceRestURL, "www", version, key));
+    case enterprise_connectors::DataRegion::UNITED_STATES:
+      return GURL(
+          base::StringPrintf(kSpellingServiceRestURL, "spelling-us", 2, key));
+    case enterprise_connectors::DataRegion::EUROPE:
+      return GURL(
+          base::StringPrintf(kSpellingServiceRestURL, "spelling-eu", 2, key));
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -137,7 +157,7 @@ bool SpellingServiceClient::RequestTextCheck(
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = BuildEndpointUrl(type);
+  resource_request->url = BuildEndpointUrl(context, type);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
 
@@ -205,9 +225,20 @@ void SpellingServiceClient::SetURLLoaderFactoryForTesting(
   url_loader_factory_for_testing_ = std::move(url_loader_factory_for_testing);
 }
 
-GURL SpellingServiceClient::BuildEndpointUrl(int type) {
-    return GURL(base::StringPrintf(kSpellingServiceRestURL, type,
+GURL SpellingServiceClient::BuildEndpointUrl(content::BrowserContext* context,
+                                             ServiceType type) {
+  if (!base::FeatureList::IsEnabled(
+          spellcheck::kEnableSpellcheckRegionalSignal)) {
+    return GURL(base::StringPrintf(kSpellingServiceRestURL, "www", type,
                                    google_apis::GetAPIKey().c_str()));
+  }
+
+  const PrefService* pref = user_prefs::UserPrefs::Get(context);
+  const int region_setting =
+      pref->GetInteger(spellcheck::prefs::kChromeDataRegionSetting);
+  enterprise_connectors::DataRegion region =
+      enterprise_connectors::ChromeDataRegionSettingToEnum(region_setting);
+  return GetRegionalizedEndpoint(region, type);
 }
 
 bool SpellingServiceClient::ParseResponse(

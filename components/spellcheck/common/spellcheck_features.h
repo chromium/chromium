@@ -38,6 +38,8 @@ bool IsAndroidSpellCheckFeatureEnabled();
 BASE_DECLARE_FEATURE(kAndroidGrammarCheck);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+BASE_DECLARE_FEATURE(kEnableSpellcheckRegionalSignal);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck
