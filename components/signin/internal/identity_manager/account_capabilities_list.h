@@ -149,6 +149,13 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
 
+#if BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(kCanSignInToChromeCapabilityName,
+                     CAN_SIGN_IN_TO_CHROME_CAPABILITY_NAME,
+                     "accountcapabilities/giztambnmnqxa",
+                     switches::kEnforceCanSignInToChromeCapability)
+#endif
+
 #if !defined(NDEBUG)
 // This is a fake account capability, used for unit tests only.
 // To avoid additional fetches in production code, only define this in debug

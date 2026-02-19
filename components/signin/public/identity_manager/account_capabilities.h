@@ -83,6 +83,11 @@ class AccountCapabilities {
   signin::Tribool
   can_show_history_sync_opt_ins_without_minor_mode_restrictions() const;
 
+#if BUILDFLAG(IS_IOS)
+  // Whether the user is allowed to sign in to Chrome.
+  signin::Tribool can_sign_in_to_chrome() const;
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome can toggle auto updates with this capability.
   signin::Tribool can_toggle_auto_updates() const;

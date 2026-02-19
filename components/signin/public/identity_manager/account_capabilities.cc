@@ -123,6 +123,12 @@ signin::Tribool AccountCapabilities::
       kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
 }
 
+#if BUILDFLAG(IS_IOS)
+signin::Tribool AccountCapabilities::can_sign_in_to_chrome() const {
+  return GetCapabilityByName(kCanSignInToChromeCapabilityName);
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
   return GetCapabilityByName(kCanToggleAutoUpdatesName);

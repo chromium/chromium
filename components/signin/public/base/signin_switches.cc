@@ -362,6 +362,11 @@ constexpr base::FeatureParam<SeamlessSigninStringType>
         SeamlessSigninStringType::kContinueButton, &kSeamlessSigninStringTypes};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kEnforceCanSignInToChromeCapability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables the management disclaimer for managed signed profiles. All signed in
 // profiles that never saw the management disclaimer will be shown the

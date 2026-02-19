@@ -134,6 +134,22 @@ TEST_F(AccountCapabilitiesTest,
       signin::Tribool::kFalse);
 }
 
+#if BUILDFLAG(IS_IOS)
+TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnforceCanSignInToChromeCapability};
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_sign_in_to_chrome(), signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_sign_in_to_chrome(true);
+  EXPECT_EQ(capabilities.can_sign_in_to_chrome(), signin::Tribool::kTrue);
+
+  mutator.set_can_sign_in_to_chrome(false);
+  EXPECT_EQ(capabilities.can_sign_in_to_chrome(), signin::Tribool::kFalse);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
   AccountCapabilities capabilities;
