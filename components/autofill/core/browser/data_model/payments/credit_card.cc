@@ -286,8 +286,11 @@ std::u16string CreditCard::NetworkForDisplay(const std::string& network) {
 int CreditCard::IconResourceId(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kCardAmericanExpress:
-      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_AMEX
-                                      : IDR_AUTOFILL_METADATA_CC_AMEX_OLD;
+      return base::FeatureList::IsEnabled(
+                 features::kAutofillEnableNewAmexNetworkArt)
+                 ? IDR_AUTOFILL_METADATA_CC_AMEX_NEW
+             : ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_AMEX
+                                        : IDR_AUTOFILL_METADATA_CC_AMEX_OLD;
     case Suggestion::Icon::kCardDiners:
       return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_DINERS
                                       : IDR_AUTOFILL_METADATA_CC_DINERS_OLD;

@@ -491,6 +491,15 @@ std::u16string JoinNameParts(std::u16string_view given,
 
 const PaymentRequestData& GetPaymentRequestData(
     std::string_view issuer_network) {
+  if (issuer_network == autofill::kAmericanExpressCard &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewAmexNetworkArt)) {
+    static const PaymentRequestData& payments_request_data = {
+        autofill::kAmericanExpressCard, "amex",
+        IDR_AUTOFILL_METADATA_CC_AMEX_NEW, IDS_AUTOFILL_CC_AMEX};
+    return payments_request_data;
+  }
+
   for (const PaymentRequestData& data : kPaymentRequestData) {
     if (issuer_network == data.issuer_network) {
       return data;

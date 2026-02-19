@@ -120,6 +120,12 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
 }  // namespace
 
 int GetIconResourceID(Suggestion::Icon resource_name) {
+  if ((resource_name == Suggestion::Icon::kCardAmericanExpress) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewAmexNetworkArt)) {
+    return IDR_AUTOFILL_METADATA_CC_AMEX_NEW;
+  }
+
   if (ShouldUseNewFopDisplay()) {
     auto it = kDataResources.find(resource_name);
     return it == kDataResources.end() ? kResourceNotFoundId : it->second;

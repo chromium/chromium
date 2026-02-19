@@ -128,6 +128,12 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 }
 
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
+  if (network == autofill::kAmericanExpressCard &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableNewAmexNetworkArt)) {
+    return "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX_NEW";
+  }
+
   if (ShouldUseNewFopDisplay()) {
     static constexpr auto kNetworkToResourceIdStringMap =
         base::MakeFixedFlatMap<std::string_view, std::string_view>(
