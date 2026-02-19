@@ -637,8 +637,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       gfx::Size size,
       const Canvas2DColorParams& color_params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      Delegate* delegate = nullptr);
+      gpu::SharedImageUsageSet shared_image_usage_flags);
 
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
   CreateForWebGPU(gfx::Size size,
