@@ -390,6 +390,9 @@ class ManagePasswordsUIController
   // the `autofill::BubbleManager` queue.
   bool BubbleManagerHasPasswordBubbleInQueue() const;
 
+  // Called when the auto sign-in toast is closed.
+  void OnAutoSignInToastClosed();
+
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
 

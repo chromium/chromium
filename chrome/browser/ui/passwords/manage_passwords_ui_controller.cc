@@ -377,6 +377,13 @@ void ManagePasswordsUIController::OnAutoSignin(
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::OnAutoSignInToastClosed() {
+  if (GetState() == password_manager::ui::AUTO_SIGNIN_STATE) {
+    passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
+    UpdateBubbleAndIconVisibility();
+  }
+}
+
 void ManagePasswordsUIController::ShowAutoSignInToast() {
   const password_manager::PasswordForm& form = GetPendingPassword();
   if (form.username_value.empty()) {
@@ -387,6 +394,9 @@ void ManagePasswordsUIController::ShowAutoSignInToast() {
         std::make_unique<ManagePasswordsAutoSigninToastDelegate>(
             web_contents());
   }
+  auto_signin_toast_delegate_->SetOnToastClosedCallback(
+      base::BindOnce(&ManagePasswordsUIController::OnAutoSignInToastClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
   auto_signin_toast_delegate_->OnAutoSignInToast(form.username_value);
 }
 
@@ -1287,6 +1297,14 @@ void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(
       state == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     state = password_manager::ui::INACTIVE_STATE;
   }
+
+  // If the auto sign-in toast is shown (Unified UI), hide the icon.
+  if (state == password_manager::ui::AUTO_SIGNIN_STATE &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kCredentialManagementUnifiedUi)) {
+    state = password_manager::ui::INACTIVE_STATE;
+  }
+
   // Update the visibility of the page action based on the current state,
   // blocklist status, and the passwords action item.
   controller->UpdateVisibility(state, is_blocklisted, *this,

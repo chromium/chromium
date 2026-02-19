@@ -39,9 +39,9 @@ void ManagePasswordsAutoSigninToastDelegate::ExecuteCommand(int command_id,
   }
 }
 
-void ManagePasswordsAutoSigninToastDelegate::NavigateToPasswordManagerSettings(
-    BrowserWindowInterface* browser) {
-  chrome::ShowPasswordManagerSettings(browser);
+void ManagePasswordsAutoSigninToastDelegate::SetOnToastClosedCallback(
+    base::OnceClosure on_toast_closed_callback) {
+  on_toast_closed_callback_ = std::move(on_toast_closed_callback);
 }
 
 void ManagePasswordsAutoSigninToastDelegate::OnAutoSignInToast(
@@ -50,6 +50,10 @@ void ManagePasswordsAutoSigninToastDelegate::OnAutoSignInToast(
   if (!toast_controller) {
     return;
   }
+  toast_observation_ =
+      toast_controller->RegisterOnWidgetDestroyed(base::BindRepeating(
+          &ManagePasswordsAutoSigninToastDelegate::OnToastWidgetDestroyed,
+          base::Unretained(this)));
 
   if (username.empty()) {
     return;
@@ -68,4 +72,16 @@ void ManagePasswordsAutoSigninToastDelegate::OnAutoSignInToast(
 
 ToastController* ManagePasswordsAutoSigninToastDelegate::GetToastController() {
   return ToastController::MaybeGetForWebContents(web_contents_);
+}
+
+void ManagePasswordsAutoSigninToastDelegate::NavigateToPasswordManagerSettings(
+    BrowserWindowInterface* browser) {
+  chrome::ShowPasswordManagerSettings(browser);
+}
+
+void ManagePasswordsAutoSigninToastDelegate::OnToastWidgetDestroyed(
+    ToastId toast_id) {
+  if (toast_id == ToastId::kAutoSignIn && on_toast_closed_callback_) {
+    std::move(on_toast_closed_callback_).Run();
+  }
 }
