@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_commands.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_child_coordinator.h"
-#import "ios/chrome/browser/assistant/gemini/coordinator/assistant_gemini_coordinator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
@@ -45,11 +44,6 @@
   switch (self.mode) {
     case AssistantSheetModeAI:
       _childCoordinator = [[AssistantAIMCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser];
-      break;
-    case AssistantSheetModeGemini:
-      _childCoordinator = [[AssistantGeminiCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
       break;

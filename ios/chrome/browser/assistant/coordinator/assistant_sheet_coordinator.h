@@ -11,8 +11,6 @@
 typedef NS_ENUM(NSUInteger, AssistantSheetMode) {
   // Mode for the AI assistant.
   AssistantSheetModeAI,
-  // Mode for Gemini.
-  AssistantSheetModeGemini,
 };
 
 // Coordinator for the assistant sheet.

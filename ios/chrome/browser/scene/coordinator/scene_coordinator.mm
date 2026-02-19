@@ -676,7 +676,7 @@ void OnListFamilyMembersResponse(
   _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
       initWithBaseViewController:self.activeViewController
                          browser:self.currentBrowser];
-  _assistantSheetCoordinator.mode = AssistantSheetModeGemini;
+  _assistantSheetCoordinator.mode = AssistantSheetModeAI;
   [_assistantSheetCoordinator start];
 }
 

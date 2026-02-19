@@ -11,7 +11,6 @@ source_set("coordinator") {
     ":child_coordinator",
     "//base",
     "//ios/chrome/browser/assistant/aim/coordinator",
-    "//ios/chrome/browser/assistant/gemini/coordinator",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
