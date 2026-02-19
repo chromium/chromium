@@ -1879,6 +1879,10 @@ void PhysicalBoxFragment::AssertFragmentTreeChildren(
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 #endif  // DCHECK_IS_ON()
 
+bool PhysicalBoxFragment::ShouldIgnoreOverflowContribution() const {
+  return layout_object_->IsPseudo(kPseudoIdViewTransition);
+}
+
 void PhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(children_);
   visitor->Trace(rare_data_);

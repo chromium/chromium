@@ -238,7 +238,12 @@ PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForScrollOrigin(
 
 PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
     const PhysicalBoxFragment& child_fragment) {
-  if (child_fragment.IsHiddenForPaint()) {
+  if (child_fragment.IsHiddenForPaint() ||
+      child_fragment.ShouldIgnoreOverflowContribution()) {
+    // ShouldIgnoreOverflowContribution() handles ::view-transition pseudos,
+    // which are a bit special. Note that both the scope and its container will
+    // ignore overflow from this pseudo; this should be correct as a consequence
+    // of the fact that the scope is treated as having contain:layout.
     return {};
   }
 

@@ -625,6 +625,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 #endif
 
+  bool ShouldIgnoreOverflowContribution() const;
+
  private:
   using BitField = ConcurrentlyReadBitField<uint32_t>;
   using ConstHasFragmentItemsFlag =
