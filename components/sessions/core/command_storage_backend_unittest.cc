@@ -87,11 +87,10 @@ class CommandStorageBackendTest : public testing::Test {
   }
 
   scoped_refptr<CommandStorageBackend> CreateBackend(
-      const std::vector<uint8_t>& decryption_key = {},
       base::Clock* clock = nullptr) {
     return MakeRefCounted<CommandStorageBackend>(
         task_environment_.GetMainThreadTaskRunner(), file_path_,
-        CommandStorageManager::SessionType::kOther, decryption_key, clock);
+        CommandStorageManager::SessionType::kOther, clock);
   }
 
   scoped_refptr<CommandStorageBackend> CreateBackendWithRestoreType() {
@@ -191,31 +190,23 @@ TEST_F(CommandStorageBackendTest, MigrateOther) {
   AssertCommandEqualsData(data2, commands[0].get());
 }
 
-TEST_F(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
-  std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
+TEST_F(CommandStorageBackendTest, SimpleReadWrite) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {1, "a"};
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
-  backend->AppendCommands(std::move(commands), true, base::DoNothing(), key);
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
 
   // Read it back in.
   backend = nullptr;
-  backend = CreateBackend(key);
+  backend = CreateBackend();
   commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
-
-  // Repeat, but with the wrong key.
-  backend = nullptr;
-  ++(key[0]);
-  backend = CreateBackend(key);
-  commands = backend->ReadLastSessionCommands().commands;
-  EXPECT_TRUE(commands.empty());
 }
 
-TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
+TEST_F(CommandStorageBackendTest, RandomData) {
   auto data = std::to_array<TestData>({
       {1, "a"},
       {2, "ab"},
@@ -232,9 +223,8 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
       {13, "abcdefghijklm"},
   });
 
-  const std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   for (size_t i = 0; i < std::size(data); ++i) {
-    scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
+    scoped_refptr<CommandStorageBackend> backend = CreateBackend();
     SessionCommands commands;
     if (i != 0) {
       // Read previous data.
@@ -244,23 +234,20 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
         AssertCommandEqualsData(data[j - commands.begin()], j->get());
       }
 
-      backend->AppendCommands(std::move(commands), true, base::DoNothing(),
-                              key);
+      backend->AppendCommands(std::move(commands), true, base::DoNothing());
       commands = SessionCommands{};
     }
     commands.push_back(CreateCommandFromData(data[i]));
-    backend->AppendCommands(std::move(commands), i == 0, base::DoNothing(),
-                            i == 0 ? key : std::vector<uint8_t>());
+    backend->AppendCommands(std::move(commands), i == 0, base::DoNothing());
   }
 }
 
-TEST_F(CommandStorageBackendTest, BigDataEncrypted) {
+TEST_F(CommandStorageBackendTest, BigData) {
   auto data = std::to_array<TestData>({
       {1, "a"},
       {2, "ab"},
   });
 
-  const std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   std::vector<std::unique_ptr<SessionCommand>> commands;
 
@@ -274,10 +261,10 @@ TEST_F(CommandStorageBackendTest, BigDataEncrypted) {
   big_command->contents()[big_size - 1] = 'z';
   commands.push_back(std::move(big_command));
   commands.push_back(CreateCommandFromData(data[1]));
-  backend->AppendCommands(std::move(commands), true, base::DoNothing(), key);
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
 
   backend = nullptr;
-  backend = CreateBackend(key);
+  backend = CreateBackend();
 
   commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(3U, commands.size());
@@ -290,41 +277,35 @@ TEST_F(CommandStorageBackendTest, BigDataEncrypted) {
   EXPECT_EQ('z', commands[1]->contents()[big_size - 1]);
 }
 
-TEST_F(CommandStorageBackendTest, MarkerOnlyEncrypted) {
-  std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
+TEST_F(CommandStorageBackendTest, MarkerOnly) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   SessionCommands commands;
-  std::vector<uint8_t> key2 = key;
-  ++(key2[0]);
-  backend->AppendCommands(std::move(commands), true, base::DoNothing(), key2);
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
 
   backend = nullptr;
-  backend = CreateBackend(key2);
+  backend = CreateBackend();
   commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
 }
 
 // Writes a command, appends another command with reset to true, then reads
 // making sure we only get back the second command.
-TEST_F(CommandStorageBackendTest, TruncateEncrypted) {
-  std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
+TEST_F(CommandStorageBackendTest, Truncate) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData first_data = {1, "a"};
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(first_data));
-  backend->AppendCommands(std::move(commands), true, base::DoNothing(), key);
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
 
   // Write another command, this time resetting the file when appending.
   struct TestData second_data = {2, "b"};
   commands.clear();
   commands.push_back(CreateCommandFromData(second_data));
-  std::vector<uint8_t> key2 = key;
-  ++(key2[0]);
-  backend->AppendCommands(std::move(commands), true, base::DoNothing(), key2);
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
 
   // Read it back in.
   backend = nullptr;
-  backend = CreateBackend(key2);
+  backend = CreateBackend();
   commands = backend->ReadLastSessionCommands().commands;
 
   // And make sure we get back the expected data.
@@ -342,31 +323,6 @@ std::unique_ptr<SessionCommand> CreateCommandWithMaxSize() {
   return command;
 }
 
-TEST_F(CommandStorageBackendTest, MaxSizeTypeEncrypted) {
-  std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
-  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
-
-  SessionCommands commands;
-  commands.push_back(CreateCommandWithMaxSize());
-  backend->AppendCommands(std::move(commands), true, base::DoNothing(), key);
-
-  // Read it back in.
-  backend = nullptr;
-  backend = CreateBackend(key);
-  commands = backend->ReadLastSessionCommands().commands;
-
-  // Encryption restricts the main size, and results in truncation.
-  ASSERT_EQ(1U, commands.size());
-  auto expected_command = CreateCommandWithMaxSize();
-  EXPECT_EQ(expected_command->id(), (commands[0])->id());
-  const size_type expected_size =
-      expected_command->size() -
-      CommandStorageBackend::kEncryptionOverheadInBytes -
-      sizeof(SessionCommand::id_type);
-  ASSERT_EQ(expected_size, (commands[0])->size());
-  EXPECT_EQ(commands[0]->contents(),
-            expected_command->contents().first(expected_size));
-}
 
 TEST_F(CommandStorageBackendTest, MaxSizeType) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
@@ -742,13 +698,9 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
   // They could have been written prior to commit 223e5cd on 2021-05-25.
   // They were never used in production.
   ASSERT_TRUE(copyTestDataToSessionFile("Session-v2NoMarkerEncrypted"));
-  std::string key_hex =
-      "1D61A221F7A35E0A9432BA41EDEAF28CE33977058295186D0F9C82FB16B2078D";
-  std::vector<uint8_t> key;
-  ASSERT_TRUE(base::HexStringToBytes(key_hex, &key));
 
   // V2 files are no longer supported.
-  scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   ASSERT_FALSE(backend->IsValidFileForTest(file_path()));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
@@ -772,17 +724,12 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
   // They have never been used in production, but could have been written from
   // early 2021 through at least 2026-02.
   ASSERT_TRUE(copyTestDataToSessionFile("Session-v4WithMarkerEncrypted"));
-  std::string key_hex =
-      "47AD6721D7F681651D568D8A59693BC5E03DE6BD0CBA974305F92532BC2E62AF";
-  std::vector<uint8_t> key;
-  ASSERT_TRUE(base::HexStringToBytes(key_hex, &key));
 
-  scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
+  // V4 files are no longer supported.
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  ASSERT_FALSE(backend->IsValidFileForTest(file_path()));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
-
-  ASSERT_EQ(1u, commands.size());
-  struct TestData expected_data = {1, "a"};
-  AssertCommandEqualsData(expected_data, commands[0].get());
+  ASSERT_TRUE(commands.empty());
 }
 
 TEST_F(CommandStorageBackendTest, NewFileOnTruncate) {
@@ -861,7 +808,7 @@ TEST_F(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
 TEST_F(CommandStorageBackendTest, PathTimeIncreases) {
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  scoped_refptr<CommandStorageBackend> backend = CreateBackend({}, &test_clock);
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend(&test_clock);
   // Write `data` and a marker.
   struct TestData data = {11, "X"};
   SessionCommands commands;

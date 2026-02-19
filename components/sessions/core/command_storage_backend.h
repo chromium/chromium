@@ -25,11 +25,7 @@
 namespace base {
 class Clock;
 class File;
-}
-
-namespace crypto {
-class Aead;
-}
+}  // namespace base
 
 namespace sessions {
 
@@ -78,9 +74,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // for testing.
   static const int kFileReadBufferSize;
 
-  // Number of bytes encryption adds.
-  static const size_type kEncryptionOverheadInBytes;
-
   // Represents data for a session. Public for tests.
   // Creates a CommandStorageBackend. This method is invoked on the MAIN thread,
   // and does no IO. The real work is done from InitIfNecessary(), which is
@@ -91,7 +84,6 @@ class SESSIONS_EXPORT CommandStorageBackend
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
       const base::FilePath& path,
       CommandStorageManager::SessionType type,
-      const std::vector<uint8_t>& decryption_key = {},
       base::Clock* clock = nullptr);
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
@@ -112,14 +104,12 @@ class SESSIONS_EXPORT CommandStorageBackend
   }
 
   // Appends the specified commands to the current file. If |truncate| is true
-  // the file is truncated. If |truncate| is true and |crypto_key| is non-empty,
-  // then all commands are encrypted using the supplied key. If there is an
-  // error writing the commands, `error_callback` is run.
+  // the file is truncated. If there is an error writing the commands,
+  // `error_callback` is run.
   void AppendCommands(
       std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
       bool truncate,
-      base::OnceClosure error_callback,
-      const std::vector<uint8_t>& crypto_key = std::vector<uint8_t>());
+      base::OnceClosure error_callback);
 
   bool inited_for_testing() const { return inited_; }
 
@@ -180,11 +170,8 @@ class SESSIONS_EXPORT CommandStorageBackend
       const base::FilePath& path,
       base::Time time);
 
-  // Reads the commands from the specified file.  If |crypto_key| is non-empty,
-  // it is used to decrypt the file.
-  static ReadCommandsResult ReadCommandsFromFile(
-      const base::FilePath& path,
-      const std::vector<uint8_t>& crypto_key);
+  // Reads the commands from the specified file.
+  static ReadCommandsResult ReadCommandsFromFile(const base::FilePath& path);
 
   // Closes the file. The next time AppendCommands() is called the file will
   // implicitly be reopened.
@@ -211,15 +198,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Writes |command| to |file|. Returns true on success.
   bool AppendCommandToFile(base::File* file,
                            const sessions::SessionCommand& command);
-
-  // Encrypts |command| and writes it to |file|. Returns true on success.
-  // The contents of the command and id are encrypted together. This is
-  // preceded by the length of the command.
-  bool AppendEncryptedCommandToFile(base::File* file,
-                                    const sessions::SessionCommand& command);
-
-  // Returns true if commands are encrypted.
-  bool IsEncrypted() const { return !crypto_key_.empty(); }
 
   // Gets data for the last session file.
   std::optional<SessionInfo> FindLastSessionFile() const;
@@ -250,12 +228,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // constructor for details.
   const base::FilePath supplied_path_;
 
-  // Used to decode the initial last session file.
-  // TODO(sky): this is currently required because InitIfNecessary() determines
-  // the last file. If that can be delayed, then this can be supplied to
-  // GetLastSessionCommands().
-  const std::vector<uint8_t> initial_decryption_key_;
-
   // TaskRunner that the callback is added to.
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
@@ -267,9 +239,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Whether InitIfNecessary() was called. InitIfNecessary() is called on the
   // background task runner.
   bool inited_ = false;
-
-  std::vector<uint8_t> crypto_key_;
-  std::unique_ptr<crypto::Aead> aead_;
 
   // Incremented every time a command is written.
   int commands_written_ = 0;

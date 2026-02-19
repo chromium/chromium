@@ -51,8 +51,7 @@ class SESSIONS_EXPORT CommandStorageManager {
   enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
   // Creates a new CommandStorageManager. `delegate` is not owned by this and
-  // must outlive this. If `enable_crypto` is true, the contents of the file
-  // are encrypted.
+  // must outlive this.
   //
   // The meaning of `path` depends upon the type. If `type` is `kOther`, then
   // the path is a file name to which `_TIMESTAMP` is added. If `type` is not
@@ -63,8 +62,6 @@ class SESSIONS_EXPORT CommandStorageManager {
       SessionType type,
       const base::FilePath& path,
       CommandStorageManagerDelegate* delegate,
-      bool enable_crypto = false,
-      const std::vector<uint8_t>& decryption_key = {},
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner = nullptr);
   CommandStorageManager(const CommandStorageManager&) = delete;
   CommandStorageManager& operator=(const CommandStorageManager&) = delete;
@@ -72,9 +69,6 @@ class SESSIONS_EXPORT CommandStorageManager {
 
   static scoped_refptr<base::SequencedTaskRunner>
   CreateDefaultBackendTaskRunner();
-
-  // Helper to generate a new key.
-  static std::vector<uint8_t> CreateCryptoKey();
 
   // Returns the set of commands which were scheduled to be written. Once
   // committed to the backend, the commands are removed from here.
@@ -152,9 +146,6 @@ class SESSIONS_EXPORT CommandStorageManager {
 
   // The backend object which reads and saves commands.
   scoped_refptr<CommandStorageBackend> backend_;
-
-  // If true, all commands are encrypted.
-  const bool use_crypto_;
 
   // Commands we need to send over to the backend.
   std::vector<std::unique_ptr<SessionCommand>> pending_commands_;

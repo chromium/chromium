@@ -149,7 +149,6 @@ source_set("shared") {
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/variations",
-    "//crypto",
     "//skia",
     "//ui/base",
     "//ui/gfx",
