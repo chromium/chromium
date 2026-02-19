@@ -5,14 +5,14 @@
 import 'chrome://history/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 
-import type {HistoryEmbeddingsFilterChips, Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
+import type {HistoryEmbeddingsFilterChipsElement, Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-history-embeddings-filter-chips', () => {
-  let element: HistoryEmbeddingsFilterChips;
+  let element: HistoryEmbeddingsFilterChipsElement;
 
   setup(() => {
     loadTimeData.overrideValues({

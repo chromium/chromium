@@ -25,7 +25,7 @@ const LIT_IMPORT_REGEX =
     ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
 const CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR =
-    'CallExpression[callee.name=/Mixin$/][arguments.0.name="CrLitElement"]';
+    'CallExpression[callee.name=/Mixin(Lit)?$/][arguments.0.name="CrLitElement"]';
 
 function isCrLitElementSubclass(node, programNode) {
   assert.ok(node.type === 'ClassDeclaration');

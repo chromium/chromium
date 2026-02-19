@@ -12,9 +12,9 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, testTree} from './test_util.js';
 
-const TestStoreClientBase = StoreClientMixinLit(CrLitElement);
+const TestStoreClientElementBase = StoreClientMixinLit(CrLitElement);
 
-class TestStoreClient extends TestStoreClientBase {
+class TestStoreClientElement extends TestStoreClientElementBase {
   static get is() {
     return 'test-store-client';
   }
@@ -63,7 +63,7 @@ class TestStoreClient extends TestStoreClientBase {
   }
 }
 
-customElements.define(TestStoreClient.is, TestStoreClient);
+customElements.define(TestStoreClientElement.is, TestStoreClientElement);
 
 suite('bookmarks.Store', function() {
   let store: TestStore;
@@ -105,7 +105,7 @@ suite('bookmarks.Store', function() {
 
 suite('bookmarks.StoreClientMixin', function() {
   let store: Store;
-  let client: TestStoreClient;
+  let client: TestStoreClientElement;
 
   function update(newState: BookmarksPageState): Promise<void> {
     store.data = newState;
@@ -132,7 +132,8 @@ suite('bookmarks.StoreClientMixin', function() {
     ]));
     store.init(state);
 
-    client = document.createElement('test-store-client') as TestStoreClient;
+    client =
+        document.createElement('test-store-client') as TestStoreClientElement;
     document.body.appendChild(client);
     return microtasksFinished();
   });

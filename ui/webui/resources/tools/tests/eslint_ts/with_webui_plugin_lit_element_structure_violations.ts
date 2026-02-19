@@ -160,9 +160,9 @@ declare global {
 customElements.define(TestError8ElementFoo.is, TestError8ElementFoo);
 
 // Case1.9: Class with incorrect class name, using "extends
-// TestError9ElementFooBase".
-const TestError9ElementFooBase = FooMixin(CrLitElement);
-export class TestError9ElementFoo extends TestError9ElementFooBase {
+// FooMixinLit(CrLitElement)" (note the "Lit" suffix in the Mixin name).
+export class TestError9ElementFoo extends FooMixinLit
+(CrLitElement) {
   static get is() {
     return 'test-error9';
   }
@@ -175,6 +175,23 @@ declare global {
 }
 
 customElements.define(TestError9ElementFoo.is, TestError9ElementFoo);
+
+// Case1.10: Class with incorrect class name, using "extends
+// TestError10ElementFooBase".
+const TestError10ElementFooBase = FooMixin(CrLitElement);
+export class TestError10ElementFoo extends TestError10ElementFooBase {
+  static get is() {
+    return 'test-error10';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-error10': TestError10ElementFoo;
+  }
+}
+
+customElements.define(TestError10ElementFoo.is, TestError10ElementFoo);
 
 
 /* Cases with no violations below. */

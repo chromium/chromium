@@ -54,16 +54,17 @@ function generateSuggestions(): Suggestion[] {
   ];
 }
 
-export interface HistoryEmbeddingsFilterChips {
+export interface HistoryEmbeddingsFilterChipsElement {
   $: {
     showByGroupSelectMenu: HTMLSelectElement,
   };
 }
 
-const HistoryEmbeddingsFilterChipsElementBase = I18nMixinLit(CrLitElement);
+const HistoryEmbeddingsFilterChipsElementElementBase =
+    I18nMixinLit(CrLitElement);
 
-export class HistoryEmbeddingsFilterChips extends
-    HistoryEmbeddingsFilterChipsElementBase {
+export class HistoryEmbeddingsFilterChipsElement extends
+    HistoryEmbeddingsFilterChipsElementElementBase {
   static get is() {
     return 'cr-history-embeddings-filter-chips';
   }
@@ -146,11 +147,12 @@ export class HistoryEmbeddingsFilterChips extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-history-embeddings-filter-chips': HistoryEmbeddingsFilterChips;
+    'cr-history-embeddings-filter-chips': HistoryEmbeddingsFilterChipsElement;
   }
 }
 
-export type FilterChipsElement = HistoryEmbeddingsFilterChips;
+export type FilterChipsElement = HistoryEmbeddingsFilterChipsElement;
 
 customElements.define(
-    HistoryEmbeddingsFilterChips.is, HistoryEmbeddingsFilterChips);
+    HistoryEmbeddingsFilterChipsElement.is,
+    HistoryEmbeddingsFilterChipsElement);

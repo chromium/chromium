@@ -312,6 +312,10 @@ class EslintTsTest(unittest.TestCase):
         _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
             'className': 'TestError9ElementFoo',
         },
+        # Case 1.10
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestError10ElementFoo',
+        },
     ]
     for e in errors:
       self.assertTrue(
