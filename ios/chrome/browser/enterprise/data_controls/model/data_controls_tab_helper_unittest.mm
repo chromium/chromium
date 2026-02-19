@@ -44,6 +44,9 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using enterprise::DialogType;
+using enterprise::GetWarningDialog;
+using enterprise::WarningDialog;
 using ::testing::_;
 
 namespace data_controls {
@@ -443,7 +446,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_NotBypassed) {
   }));
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
-  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardCopyWarn);
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardCopyWarn);
   WarningDialog dialog =
       GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
@@ -482,7 +485,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed) {
   }));
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
-  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardCopyWarn);
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardCopyWarn);
   WarningDialog dialog =
       GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
@@ -526,7 +529,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed_WithDomain) {
   }));
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
-  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardCopyWarn);
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardCopyWarn);
   WarningDialog dialog =
       GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
@@ -673,7 +676,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
   }));
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
-  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardPasteWarn);
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardPasteWarn);
   WarningDialog dialog =
       GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
@@ -712,7 +715,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed) {
   }));
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
-  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardPasteWarn);
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardPasteWarn);
   WarningDialog dialog =
       GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
@@ -756,7 +759,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed_WithDomain) {
   }));
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
-  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardPasteWarn);
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardPasteWarn);
   WarningDialog dialog =
       GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title

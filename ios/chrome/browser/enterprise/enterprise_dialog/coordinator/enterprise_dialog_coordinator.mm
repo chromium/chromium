@@ -5,27 +5,26 @@
 #import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 @implementation EnterpriseDialogCoordinator {
   // The underlying alert controller used to show the dialog.
   UIAlertController* _alertController;
   // The type of warning dialog to be displayed.
-  data_controls::DataControlsDialog::Type _dialogType;
+  enterprise::DialogType _dialogType;
   // The domain of the organization that triggered the dialog.
   std::string _organizationDomain;
   // The callback to be invoked when the user taps on the warning dialog.
   base::OnceCallback<void(bool)> _callback;
 }
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                    dialogType:
-                        (data_controls::DataControlsDialog::Type)dialogType
-            organizationDomain:(std::string_view)organizationDomain
-                      callback:(base::OnceCallback<void(bool)>)callback {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                dialogType:(enterprise::DialogType)dialogType
+                        organizationDomain:(std::string_view)organizationDomain
+                                  callback:
+                                      (base::OnceCallback<void(bool)>)callback {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _dialogType = dialogType;
@@ -58,8 +57,8 @@
 
 // Constructs and shows the warning alert using UIAlertController.
 - (void)showWarningAlert {
-  data_controls::WarningDialog warningDialog =
-      data_controls::GetWarningDialog(_dialogType, _organizationDomain);
+  enterprise::WarningDialog warningDialog =
+      enterprise::GetWarningDialog(_dialogType, _organizationDomain);
   _alertController =
       [UIAlertController alertControllerWithTitle:warningDialog.title
                                           message:warningDialog.label

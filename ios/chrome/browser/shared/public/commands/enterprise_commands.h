@@ -8,15 +8,14 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/callback.h"
-#import "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 
 // Commands for displaying Enterprise dialogs.
 @protocol EnterpriseCommands <NSObject>
 
 // Commands to show a warning dialog to warn user that their actions may violate
 // their organization's policy.
-- (void)showEnterpriseWarningDialog:
-            (data_controls::DataControlsDialog::Type)dialogType
+- (void)showEnterpriseWarningDialog:(enterprise::DialogType)dialogType
                  organizationDomain:(std::string_view)organizationDomain
                            callback:(base::OnceCallback<void(bool)>)callback;
 

@@ -609,6 +609,7 @@ test("ios_chrome_unittests") {
       "//ios/chrome/browser/enterprise/data_controls/model:unit_tests",
       "//ios/chrome/browser/enterprise/data_controls/utils:unit_tests",
       "//ios/chrome/browser/enterprise/enterprise_dialog/coordinator:unit_tests",
+      "//ios/chrome/browser/enterprise/enterprise_dialog/model:unit_tests",
     ]
   }
 

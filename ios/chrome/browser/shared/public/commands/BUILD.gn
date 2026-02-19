@@ -108,12 +108,12 @@ source_set("commands") {
   ]
 
   deps = [
-    "//components/enterprise/data_controls/core/browser",
     "//components/lens",
     "//components/tab_groups",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/browsing_data/model:util",
+    "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/reader_mode/model:constants",
     "//ios/chrome/browser/shared/ui/util:url_with_title",

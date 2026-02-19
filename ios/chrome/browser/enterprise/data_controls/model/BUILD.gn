@@ -29,6 +29,7 @@ source_set("model") {
     "//ios/chrome/browser/browser_content/model",
     "//ios/chrome/browser/enterprise/common",
     "//ios/chrome/browser/enterprise/data_controls/utils",
+    "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",

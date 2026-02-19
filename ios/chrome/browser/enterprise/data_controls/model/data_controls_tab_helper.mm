@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/enterprise/common/util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_metrics.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
-#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -46,7 +46,7 @@ void DataControlsTabHelper::ShouldAllowCopy(
   switch (verdicts.copy_action_verdict.level()) {
     case Rule::Level::kWarn:
       ShowWarningDialog(
-          DataControlsDialog::Type::kClipboardCopyWarn,
+          enterprise::DialogType::kClipboardCopyWarn,
           GetManagementDomain(profile),
           base::BindOnce(&DataControlsTabHelper::FinishCopy,
                          weak_factory_.GetWeakPtr(), source_url,
@@ -93,7 +93,7 @@ void DataControlsTabHelper::ShouldAllowPaste(
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
       ShowWarningDialog(
-          DataControlsDialog::Type::kClipboardPasteWarn, domain,
+          enterprise::DialogType::kClipboardPasteWarn, domain,
           base::BindOnce(
               &DataControlsTabHelper::FinishPaste, weak_factory_.GetWeakPtr(),
               destination_url, source.source_url, profile->AsWeakPtr(),
@@ -258,7 +258,7 @@ void DataControlsTabHelper::FinishPaste(
 }
 
 void DataControlsTabHelper::ShowWarningDialog(
-    DataControlsDialog::Type dialog_type,
+    enterprise::DialogType dialog_type,
     std::string_view org_domain,
     base::OnceCallback<void(bool)> on_bypassed_callback) {
   if (commands_handler_) {

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 
-#import "base/notreached.h"
+#import "base/notimplemented.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace data_controls {
+namespace enterprise {
 
-WarningDialog GetWarningDialog(DataControlsDialog::Type type,
+WarningDialog GetWarningDialog(DialogType type,
                                std::string_view organization_domain) {
   WarningDialog dialog;
   NSString* label =
@@ -20,7 +20,7 @@ WarningDialog GetWarningDialog(DataControlsDialog::Type type,
           : l10n_util::GetNSStringF(IDS_DATA_CONTROLS_WARNED_LABEL_WITH_DOMAIN,
                                     base::UTF8ToUTF16(organization_domain));
   switch (type) {
-    case DataControlsDialog::Type::kClipboardPasteWarn:
+    case DialogType::kClipboardPasteWarn:
       dialog.title =
           l10n_util::GetNSString(IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE);
       dialog.label = label;
@@ -30,7 +30,7 @@ WarningDialog GetWarningDialog(DataControlsDialog::Type type,
           l10n_util::GetNSString(IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON);
       break;
 
-    case DataControlsDialog::Type::kClipboardCopyWarn:
+    case DialogType::kClipboardCopyWarn:
       dialog.title =
           l10n_util::GetNSString(IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE);
       dialog.label = label;
@@ -40,7 +40,7 @@ WarningDialog GetWarningDialog(DataControlsDialog::Type type,
           l10n_util::GetNSString(IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON);
       break;
 
-    case DataControlsDialog::Type::kClipboardShareWarn:
+    case DialogType::kClipboardShareWarn:
       dialog.title =
           l10n_util::GetNSString(IDS_DATA_CONTROLS_CLIPBOARD_SHARE_WARN_TITLE);
       dialog.label = label;
@@ -50,7 +50,7 @@ WarningDialog GetWarningDialog(DataControlsDialog::Type type,
           l10n_util::GetNSString(IDS_DATA_CONTROLS_SHARE_WARN_CANCEL_BUTTON);
       break;
 
-    case DataControlsDialog::Type::kClipboardActionWarn:
+    case DialogType::kClipboardActionWarn:
       dialog.title =
           l10n_util::GetNSString(IDS_DATA_CONTROLS_CLIPBOARD_ACTION_WARN_TITLE);
       dialog.label = label;
@@ -58,16 +58,11 @@ WarningDialog GetWarningDialog(DataControlsDialog::Type type,
       dialog.cancel_button_id = l10n_util::GetNSString(IDS_CANCEL);
       break;
 
-    case DataControlsDialog::Type::kClipboardPasteBlock:
-    case DataControlsDialog::Type::kClipboardCopyBlock:
-    case DataControlsDialog::Type::kClipboardShareBlock:
-    case DataControlsDialog::Type::kClipboardActionBlock:
-    case DataControlsDialog::Type::kClipboardDragBlock:
-      // This case should not be reachable in practice.
-      NOTREACHED();
+    case DialogType::kDownloadWarn:
+      NOTIMPLEMENTED();
   }
 
   return dialog;
 }
 
-}  // namespace data_controls
+}  // namespace enterprise

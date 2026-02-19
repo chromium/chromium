@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_ENTERPRISE_DIALOG_COORDINATOR_ENTERPRISE_DIALOG_COORDINATOR_H_
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator for the Enterprise dialog.
@@ -17,14 +17,12 @@
 @interface EnterpriseDialogCoordinator : ChromeCoordinator
 
 // Initializes a new instance of `EnterpriseDialogCoordinator`.
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                    dialogType:
-                        (data_controls::DataControlsDialog::Type)dialogType
-            organizationDomain:(std::string_view)organizationDomain
-                      callback:(base::OnceCallback<void(bool)>)callback;
-
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                dialogType:(enterprise::DialogType)dialogType
+                        organizationDomain:(std::string_view)organizationDomain
+                                  callback:
+                                      (base::OnceCallback<void(bool)>)callback;
 @end
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_ENTERPRISE_DIALOG_COORDINATOR_ENTERPRISE_DIALOG_COORDINATOR_H_

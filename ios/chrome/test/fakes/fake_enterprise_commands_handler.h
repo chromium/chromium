@@ -7,13 +7,12 @@
 
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 
-// Fake commands handler for DataControlsTabHelper.
+// Fake commands handler for sending EnterpriseDialog.
 @interface FakeEnterpriseCommandsHandler : NSObject <EnterpriseCommands> {
  @public
   base::OnceCallback<void(bool)> _callback;
 }
-@property(readonly, nonatomic)
-    data_controls::DataControlsDialog::Type dialogType;
+@property(readonly, nonatomic) enterprise::DialogType dialogType;
 @property(readonly, nonatomic) std::string organizationDomain;
 @end
 

@@ -17,6 +17,10 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
+using enterprise::DialogType;
+using enterprise::GetWarningDialog;
+using enterprise::WarningDialog;
+
 namespace {
 
 inline constexpr std::string_view kOrganizationDomain = "google.com";
@@ -66,8 +70,7 @@ TEST_F(EnterpriseDialogCoordinatorTest, Initialization) {
   auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                      dialogType:data_controls::DataControlsDialog::Type::
-                                     kClipboardCopyWarn
+                      dialogType:DialogType::kClipboardCopyWarn
               organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   EXPECT_TRUE(coordinator);
@@ -81,8 +84,7 @@ TEST_F(EnterpriseDialogCoordinatorTest, StartPresentsAlert) {
   auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                      dialogType:data_controls::DataControlsDialog::Type::
-                                     kClipboardCopyWarn
+                      dialogType:DialogType::kClipboardCopyWarn
               organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
@@ -100,8 +102,7 @@ TEST_F(EnterpriseDialogCoordinatorTest, AlertContents) {
   auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                      dialogType:data_controls::DataControlsDialog::Type::
-                                     kClipboardCopyWarn
+                      dialogType:DialogType::kClipboardCopyWarn
               organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
@@ -111,9 +112,8 @@ TEST_F(EnterpriseDialogCoordinatorTest, AlertContents) {
       }));
   UIAlertController* alert = static_cast<UIAlertController*>(
       base_view_controller_.presentedViewController);
-  data_controls::WarningDialog dialog = data_controls::GetWarningDialog(
-      data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
-      kOrganizationDomain);
+  WarningDialog dialog =
+      GetWarningDialog(DialogType::kClipboardCopyWarn, kOrganizationDomain);
   EXPECT_NSEQ(alert.title, dialog.title);
   EXPECT_NSEQ(alert.message, dialog.label);
   EXPECT_EQ(alert.actions.count, 2u);
@@ -139,8 +139,7 @@ TEST_F(EnterpriseDialogCoordinatorTest, CancelButton) {
   auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                      dialogType:data_controls::DataControlsDialog::Type::
-                                     kClipboardCopyWarn
+                      dialogType:DialogType::kClipboardCopyWarn
               organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
@@ -150,9 +149,8 @@ TEST_F(EnterpriseDialogCoordinatorTest, CancelButton) {
       }));
   UIAlertController* alert = static_cast<UIAlertController*>(
       base_view_controller_.presentedViewController);
-  data_controls::WarningDialog dialog = data_controls::GetWarningDialog(
-      data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
-      kOrganizationDomain);
+  WarningDialog dialog =
+      GetWarningDialog(DialogType::kClipboardCopyWarn, kOrganizationDomain);
   UIAlertAction* cancel_action =
       GetActionWithTitle(alert, dialog.cancel_button_id);
 
@@ -168,8 +166,7 @@ TEST_F(EnterpriseDialogCoordinatorTest, OkButton) {
   auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                      dialogType:data_controls::DataControlsDialog::Type::
-                                     kClipboardCopyWarn
+                      dialogType:DialogType::kClipboardCopyWarn
               organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
@@ -179,9 +176,8 @@ TEST_F(EnterpriseDialogCoordinatorTest, OkButton) {
       }));
   UIAlertController* alert = static_cast<UIAlertController*>(
       base_view_controller_.presentedViewController);
-  data_controls::WarningDialog dialog = data_controls::GetWarningDialog(
-      data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
-      kOrganizationDomain);
+  WarningDialog dialog =
+      GetWarningDialog(DialogType::kClipboardCopyWarn, kOrganizationDomain);
   UIAlertAction* ok_action = GetActionWithTitle(alert, dialog.ok_button_id);
 
   void (^handler)(UIAlertAction*) = [ok_action valueForKey:@"handler"];
@@ -197,8 +193,7 @@ TEST_F(EnterpriseDialogCoordinatorTest, Stop) {
   auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                      dialogType:data_controls::DataControlsDialog::Type::
-                                     kClipboardCopyWarn
+                      dialogType:DialogType::kClipboardCopyWarn
               organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];

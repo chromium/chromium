@@ -9,7 +9,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/enterprise/data_controls/utils",
+    "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/util",
   ]

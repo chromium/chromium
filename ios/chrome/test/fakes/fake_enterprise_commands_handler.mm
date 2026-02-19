@@ -8,8 +8,7 @@
 @synthesize dialogType = _dialogType;
 @synthesize organizationDomain = _organizationDomain;
 
-- (void)showEnterpriseWarningDialog:
-            (data_controls::DataControlsDialog::Type)dialogType
+- (void)showEnterpriseWarningDialog:(enterprise::DialogType)dialogType
                  organizationDomain:(std::string_view)organizationDomain
                            callback:(base::OnceCallback<void(bool)>)callback {
   _dialogType = dialogType;

@@ -5190,8 +5190,7 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - EnterpriseCommands
 
-- (void)showEnterpriseWarningDialog:
-            (data_controls::DataControlsDialog::Type)dialogType
+- (void)showEnterpriseWarningDialog:(enterprise::DialogType)dialogType
                  organizationDomain:(std::string_view)organizationDomain
                            callback:(base::OnceCallback<void(bool)>)callback {
   // If a dialog is already shown, dismiss it before showing a new one.
