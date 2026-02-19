@@ -5,24 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_DOCKING_PROMO_UI_DOCKING_PROMO_METRICS_H_
 #define IOS_CHROME_BROWSER_DOCKING_PROMO_UI_DOCKING_PROMO_METRICS_H_
 
-// Name of the histogram that logs actions taken on the Docking Promo after it's
-// displayed to the user.
-extern const char kIOSDockingPromoActionHistogram[];
+enum class IOSDockingPromoEligibility;
 
 // Enum for metrics-releated histogram: IOS.DockingPromo.Action.
 //
 // Entries should not be renumbered and numeric values should never be reused.
-enum class IOSDockingPromoAction : int {
-  kToggleAppearance = 0,
+enum class IOSDockingPromoAction {
+  kToggleAppearance_OBSOLETE = 0,  // Feature removed.
   kGotIt = 1,
-  kRemindMeLater = 2,
+  kRemindMeLater_OBSOLETE = 2,  // Feature removed.
   kDismissViaSwipe = 3,
-  kDismissViaNoThanks = 4,
-  kMaxValue = kDismissViaNoThanks,
+  kDismissViaNoThanks_OBSOLETE = 4,  // Feature removed.
+  kMaxValue = kDismissViaNoThanks_OBSOLETE,
 };
 
-// Record Docking Promo `action` metric in the histogram
-// `kIOSDockingPromoActionHistogram`.
-void RecordDockingPromoAction(IOSDockingPromoAction action);
+// Records a user action on the promo, segmented by their eligibility type.
+void RecordDockingPromoAction(IOSDockingPromoAction action,
+                              IOSDockingPromoEligibility eligibility);
+
+// Records the eligibility status of the user at the moment the Docking Promo
+// impression occurs.
+void RecordDockingPromoImpression(IOSDockingPromoEligibility eligibility);
 
 #endif  // IOS_CHROME_BROWSER_DOCKING_PROMO_UI_DOCKING_PROMO_METRICS_H_

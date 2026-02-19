@@ -1744,11 +1744,38 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DockingPromo.Action" enum="IOSDockingPromoAction"
     expires_after="2025-09-14">
-  <owner>bwwilliams@google.com</owner>
-  <owner>hiramahmood@google.com</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs a user's action on the fullscreen, animated Docking Promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DockingPromo.Action.{Eligibility}"
+    enum="IOSDockingPromoAction" expires_after="2027-03-01">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs a user's action on the fullscreen, animated Docking Promo, segmented by
+    the user's eligibility criteria: {Eligibility}.
+  </summary>
+  <token key="Eligibility">
+    <variant name="LowEngagement" summary="low engagement users"/>
+    <variant name="LowEngagementWithNoRecentIconLaunches"
+        summary="low engagement users with no recent icon launches"/>
+    <variant name="NoRecentIconLaunches"
+        summary="users with no recent icon launches"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.DockingPromo.Impression" enum="IOSDockingPromoEligibility"
+    expires_after="2027-03-01">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the user's eligibility status at the moment of a Docking Promo
+    impression. This is recorded every time the DockingPromoCoordinator begins
+    the presentation flow.
   </summary>
 </histogram>
 

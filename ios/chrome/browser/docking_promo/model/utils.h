@@ -12,6 +12,24 @@
 #import "base/time/time.h"
 
 @class SceneState;
+class ProfileIOS;
+
+// Categorizes users based on their eligibility for the Docking Promo,
+// combining engagement levels and recent icon launch behavior.
+// LINT.IfChange
+enum class IOSDockingPromoEligibility {
+  kIneligible = 0,
+  kIsLowEngagementUser = 1,
+  kHasNoRecentIconLaunches = 2,
+  kIsLowEngagementWithNoRecentIconLaunches = 3,
+  kMaxValue = kIsLowEngagementWithNoRecentIconLaunches,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+
+// Returns the docking promo eligibility for `profile`. The promo is shown to
+// users with low engagement or those who haven't recently launched the app
+// from the home screen icon.
+IOSDockingPromoEligibility DockingPromoEligibility(ProfileIOS* profile);
 
 // For testing only.
 // Returns YES if the Docking Promo is forced for display via Chrome
