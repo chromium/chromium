@@ -252,4 +252,48 @@ suite('SettingsMenuElement', () => {
     settingsMenu.close();
     await whenFired;
   });
+
+  test('backward arrow is ignored when focus is on preview play button', () => {
+    settingsMenu['isOnPreviewPlayButton'] = true;
+
+    // If CLOSE_SUBMENU_REQUESTED is fired, update testing variable.
+    let closeSubmenuFired = false;
+    settingsMenu.addEventListener(
+        ToolbarEvent.CLOSE_SUBMENU_REQUESTED, () => closeSubmenuFired = true);
+
+    // Create and dispatch the Left Arrow event with a fake composedPath
+    const event = new KeyboardEvent('keydown', {
+      key: 'ArrowLeft',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    settingsMenu.dispatchEvent(event);
+
+    assertFalse(
+        closeSubmenuFired,
+        'Should NOT have closed submenu when on preview play button');
+  });
+
+  test('forward arrow is ignored when focus is on previewplaybutton', () => {
+    // Pretend we are in Voice Selection submenu.
+    settingsMenu['currentOpenId_'] = SettingsOption.VOICE_SELECTION;
+
+    // Move focus away from settings menu row.
+    const dummySubmenuElement = document.createElement('button');
+    document.body.appendChild(dummySubmenuElement);
+    dummySubmenuElement.focus();
+
+    // Create and dispatch the forward arrow event.
+    const event = new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    settingsMenu.dispatchEvent(event);
+
+    // Verify that the settings menu did NOT try to close the submenu.
+    assertFalse(event.defaultPrevented, 'Should not have canceled the event');
+  });
 });
