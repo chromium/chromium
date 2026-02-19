@@ -53,6 +53,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
@@ -136,11 +137,13 @@ EnrollmentScreen* EnrollmentScreen::Get(ScreenManager* manager) {
 }
 
 EnrollmentScreen::EnrollmentScreen(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     base::WeakPtr<EnrollmentScreenView> view,
     ErrorScreen* error_screen,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(EnrollmentScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       view_(std::move(view)),
       error_screen_(error_screen),
@@ -1023,7 +1026,8 @@ void EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   // Make sure we aren't overwriting any existing information.
   CHECK(!wizard_context->user_context);
   wizard_context->timebound_user_context_holder =
-      std::make_unique<TimeboundUserContextHolder>(std::move(user_context));
+      std::make_unique<TimeboundUserContextHolder>(shared_url_loader_factory_,
+                                                   std::move(user_context));
 
   return;
 }

@@ -13,9 +13,11 @@
 namespace ash {
 
 TimeboundUserContextHolder::TimeboundUserContextHolder(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     std::unique_ptr<UserContext> user_context)
     : user_context_{std::move(user_context)},
-      token_revoker_{std::make_unique<OAuth2TokenRevoker>()} {
+      token_revoker_{std::make_unique<OAuth2TokenRevoker>(
+          std::move(shared_url_loader_factory))} {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TimeboundUserContextHolder::OnTimeout,

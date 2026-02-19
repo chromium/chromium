@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -35,6 +36,10 @@
 namespace base {
 class ElapsedTimer;
 }
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
@@ -71,8 +76,10 @@ class EnrollmentScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   using TpmStatusCallback = chromeos::TpmManagerClient::TakeOwnershipCallback;
 
+  // `shared_url_loader_factory` must be non-null.
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   EnrollmentScreen(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       base::WeakPtr<EnrollmentScreenView> view,
       ErrorScreen* error_screen,
@@ -266,6 +273,8 @@ class EnrollmentScreen
   // if the appropriate conditions are met.
   void MaybeStoreUserContextInWizardContext();
 
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   const raw_ref<const policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
 

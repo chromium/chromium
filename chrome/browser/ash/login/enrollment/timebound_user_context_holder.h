@@ -19,6 +19,10 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "google_apis/gaia/gaia_id.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace ash {
 
 // This class is used to revoke OAuth2 token and delete a UserContext once one
@@ -33,7 +37,9 @@ class TimeboundUserContextHolder
   static constexpr base::TimeDelta kCredentialsVlidityPeriod =
       base::Minutes(10);
 
-  explicit TimeboundUserContextHolder(
+  // `shared_url_loader_factory` must be non-null.
+  TimeboundUserContextHolder(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       std::unique_ptr<UserContext> user_context);
   TimeboundUserContextHolder(const TimeboundUserContextHolder& other) = delete;
   TimeboundUserContextHolder(const TimeboundUserContextHolder&& other) = delete;

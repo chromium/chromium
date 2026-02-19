@@ -13,6 +13,10 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace policy {
 class BrowserPolicyConnectorAsh;
 }  // namespace policy
@@ -21,8 +25,10 @@ namespace ash {
 
 class MockEnrollmentScreen : public EnrollmentScreen {
  public:
+  // `shared_url_loader_factory` must be non-null.
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   MockEnrollmentScreen(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       base::WeakPtr<EnrollmentScreenView> view,
       ErrorScreen* error_screen,
