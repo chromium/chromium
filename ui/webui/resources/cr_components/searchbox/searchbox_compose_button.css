@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host{
-  --cr-hover-background-color:#FFFFFF;
+  --cr-hover-background-color:#FFF;
   --cr-button-height: 32px;
   flex-shrink: 0;
 }

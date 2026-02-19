@@ -29,6 +29,11 @@ export default {
     /*  Stylistic chceks. */
 
     'block-no-empty': true,
+
+    // https://google.github.io/styleguide/htmlcssguide.html#Hexadecimal_Notation
+    'color-hex-length': 'short',
+
+    // https://google.github.io/styleguide/htmlcssguide.html#0_and_Units
     'length-zero-no-unit': [true, { "ignore": ["custom-properties"] }],
 
     // https://google.github.io/styleguide/htmlcssguide.html#Rule_Separation

@@ -52,7 +52,7 @@
   font-size: 13px;
   font-weight: 500;
   border: none;
-  color: #FFFFFF; /* Replaced with direct color */
+  color: #FFF; /* Replaced with direct color */
   border-radius: 50px;
   cursor: pointer;
   text-decoration: none;
@@ -112,11 +112,11 @@
   }
 
   .banner-title {
-    color: #FFFFFF; /* Replaced with direct color */
+    color: #FFF; /* Replaced with direct color */
   }
 
   .banner-description {
-    color: #FFFFFF; /* Replaced with direct color */
+    color: #FFF; /* Replaced with direct color */
   }
 
   #close-icon-container {

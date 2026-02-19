@@ -5,11 +5,11 @@
 :root {
   color-scheme: light dark;
   --color--secondary-container: light-dark(#C2E7FF, #004A77);
-  --color--on-surface: light-dark(#1B1C1D, #FFFFFF);
+  --color--on-surface: light-dark(#1B1C1D, #FFF);
   --color--on-secondary-container: light-dark(#004A77, #C2E7FF);
   --color--error: light-dark(#B3261E, #F2B8B5);
   --color--primary: light-dark(#0B57D0, #A8C7FA);
-  --color--surface: light-dark(#FFFFFF, #1B1C1D);
+  --color--surface: light-dark(#FFF, #1B1C1D);
   --color--on-surface-variant: light-dark(#575B5F, #A2A9B0);
   --color--surface-container: light-dark(#F0F4F9, #282A2C);
 }
