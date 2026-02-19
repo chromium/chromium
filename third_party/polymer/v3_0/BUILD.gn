@@ -120,7 +120,6 @@ ts_library("library") {
     # strong reason to use Polymer.
 
     "//chrome/browser/resources/certificate_manager:build_ts",
-    "//chrome/browser/resources/compose:build_ts",
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/shared:build_ts",

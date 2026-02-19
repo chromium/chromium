@@ -152,7 +152,7 @@ class DisplayState {
     // Append words.
     while (allWords.length > this.words_.length) {
       const nextWord = allWords[this.words_.length];
-      if (nextWord.length > this.pendingChars_) {
+      if (nextWord === undefined || nextWord.length > this.pendingChars_) {
         break;
       }
       this.words_.push(nextWord);

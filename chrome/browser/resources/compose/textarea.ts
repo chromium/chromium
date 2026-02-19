@@ -63,7 +63,11 @@ export class ComposeTextareaElement extends CrLitElement {
   }
 
   accessor allowExitingReadonlyMode: boolean = false;
-  accessor inputParams: ConfigurableParams;
+  accessor inputParams: ConfigurableParams = {
+    minWordLimit: 0,
+    maxWordLimit: 0,
+    maxCharacterLimit: 0,
+  };
   accessor readonly: boolean = false;
   protected accessor invalidInput_: boolean = false;
   protected accessor tooLong_: boolean = false;
