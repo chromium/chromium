@@ -281,6 +281,8 @@ void VerticalTabView::Layout(PassKey) {
 }
 
 bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
+  CHECK(collection_node_);
+
   if (event.key_code() == ui::VKEY_RETURN && !selected_) {
     collection_node_->GetController()->SelectTab(GetTabInterface(),
                                                  GetGestureDetail(event));
@@ -290,6 +292,8 @@ bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {
+  CHECK(collection_node_);
+
   if (event.key_code() == ui::VKEY_SPACE && !selected_) {
     collection_node_->GetController()->SelectTab(GetTabInterface(),
                                                  GetGestureDetail(event));
@@ -299,6 +303,10 @@ bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
+  if (!collection_node_) {
+    return false;
+  }
+
   auto* controller = collection_node_->GetController();
   shift_pressed_on_mouse_down_ = event.IsShiftDown();
   RecordMousePressedInTab();
@@ -331,6 +339,7 @@ void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
   if (!collection_node_) {
     return;
   }
+
   auto* controller = collection_node_->GetController();
   base::WeakPtr<VerticalTabView> self = weak_ptr_factory_.GetWeakPtr();
   if (event.IsOnlyMiddleMouseButton()) {
@@ -362,6 +371,9 @@ void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
+  if (!collection_node_) {
+    return;
+  }
   UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kHover);
 
   // Hover state is handled by the parent if it is split.
@@ -373,6 +385,10 @@ void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
+  if (!collection_node_) {
+    return;
+  }
+
   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kHover);
 
   // Hover state is handled by the parent if it is split.
@@ -384,12 +400,23 @@ void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 bool VerticalTabView::OnMouseDragged(const ui::MouseEvent& event) {
+  // Protect against key presses when the tab is animating out. Drag events may
+  // call this function after the node has been deleted.
+  if (!collection_node_) {
+    return false;
+  }
+
   auto* controller = collection_node_->GetController();
   CHECK(controller);
   return controller->GetDragHandler().ContinueDrag(*this, event);
 }
 
 void VerticalTabView::OnGestureEvent(ui::GestureEvent* event) {
+  // Protect against key presses when the tab is animating out.
+  if (!collection_node_) {
+    return;
+  }
+
   auto* controller = collection_node_->GetController();
   CHECK(controller);
 
@@ -596,6 +623,12 @@ bool VerticalTabView::ShouldEnableMuteToggle(int required_width) {
 }
 
 void VerticalTabView::ToggleTabAudioMute() {
+  // The TabAlertIndicator can call this function even after the node has been
+  // deleted, so prevent calling if collection node doesnt exist.
+  if (!collection_node_) {
+    return;
+  }
+
   content::WebContents* const contents = GetTabInterface()->GetContents();
   bool mute = !contents->IsAudioMuted();
   base::UmaHistogramBoolean("Media.Audio.TabAudioMuted", mute);
@@ -659,9 +692,15 @@ void VerticalTabView::ResetCollectionNode() {
         nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
   }
   collection_node_ = nullptr;
+
+  // Update the callbacks for the buttons so that we dont call anything that
+  // needs the node.
+  close_button_->SetCallback(base::RepeatingClosure(base::DoNothing()));
 }
 
 void VerticalTabView::UpdateAccessibleName() {
+  CHECK(collection_node_);
+
   std::u16string name =
       tabs::GetAccessibleTabLabel(GetTabInterface(), /*is_for_tab=*/true);
   if (!name.empty()) {
@@ -685,6 +724,8 @@ void VerticalTabView::OnCollapsedStateChanged(
 }
 
 void VerticalTabView::OnDataChanged() {
+  CHECK(collection_node_);
+
   tabs::TabInterface* tab = const_cast<tabs::TabInterface*>(GetTabInterface());
   CHECK(tab);
 
@@ -790,6 +831,8 @@ void VerticalTabView::UpdateContrastRatioValues() {
 }
 
 void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
+  CHECK(collection_node_);
+
   if (active_) {
     base::RecordAction(base::UserMetricsAction("CloseTab_Active"));
   } else {
@@ -824,9 +867,7 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
     close_button_->SetVisible(false);
   }
 
-  if (collection_node_) {
-    collection_node_->GetController()->CloseTab(GetTabInterface());
-  }
+  collection_node_->GetController()->CloseTab(GetTabInterface());
 }
 
 void VerticalTabView::RecordMousePressedInTab() {
@@ -901,9 +942,7 @@ const tabs::TabInterface* VerticalTabView::GetTabInterface() const {
 
 void VerticalTabView::UpdateHoverCard(HoverCardAnchorTarget* target,
                                       int hover_card_update_type) {
-  if (!collection_node_) {
-    return;
-  }
+  CHECK(collection_node_);
 
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {
