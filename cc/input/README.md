@@ -106,7 +106,7 @@ Also called the "Layout Viewport" in web/Blink terminology. This is the main
 This is the scroller to which position: fixed elements remain fixed to.
 
 ## Compositor threaded scrollbar scrolling
-Contact: arakeri@microsoft.com
+Contact: gastonr@microsoft.com
 
 ### Introduction
 Scrollbar scrolling using the mouse happens on the main thread in Chromium. If
@@ -120,7 +120,7 @@ also helps with the grand scrolling unification.
 
 ### High-level design:
 
-![Image has moved. Contact arakeri@microsoft.com](https://github.com/rahul8805/CompositorThreadedScrollbarDocs/blob/master/designDiag.PNG?raw=true)
+![Image has moved. Contact gastonr@microsoft.com](https://github.com/rahul8805/CompositorThreadedScrollbarDocs/blob/master/designDiag.PNG?raw=true)
 
 ### Core Implementation Details:
 This is the basic principle:

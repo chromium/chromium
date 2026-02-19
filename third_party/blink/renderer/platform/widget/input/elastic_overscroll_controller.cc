@@ -240,7 +240,7 @@ void ElasticOverscrollController::Overscroll(
   adjusted_overscroll_delta += entry.pending_overscroll_delta;
   entry.pending_overscroll_delta = gfx::Vector2dF();
 
-  // TODO (arakeri): Make this prefer the writing mode direction instead.
+  // TODO (gastonr): Make this prefer the writing mode direction instead.
   // Only allow one direction to overscroll at a time, and slightly prefer
   // scrolling vertically by applying the equal case to delta_y.
   if (fabsf(overscroll_delta.y()) >= fabsf(overscroll_delta.x()))

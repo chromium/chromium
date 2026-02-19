@@ -2520,7 +2520,7 @@
   },
   {
     "name": "elastic-overscroll",
-    "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
+    "owners": [ "gastonr@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 150
   },
   {
@@ -8927,7 +8927,7 @@
   },
   {
     "name": "stylus-handwriting-win",
-    "owners": ["arakeri@microsoft.com", "gerchiko@microsoft.com", "flackr@chromium.org"],
+    "owners": [ "johna@microsoft.com", "gerchiko@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 150
   },
   {

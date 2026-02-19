@@ -242,8 +242,8 @@ ui::ScrollGranularity ScrollbarController::Granularity(
     return ui::ScrollGranularity::kScrollByPrecisePixel;
   }
 
-  // TODO(arakeri): This needs to be updated to kLine once cc implements
-  // handling it. crbug.com/959441
+  // TODO(crbug.com/41456637): This needs to be updated to kLine once cc
+  // implements handling it.
   return ui::ScrollGranularity::kScrollByPixel;
 }
 
@@ -657,7 +657,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerUp(
     scroll_result.type = PointerResultType::kScrollbarScroll;
   }
 
-  // TODO(arakeri): This needs to be moved to ScrollOffsetAnimationsImpl as it
+  // TODO(gastonr): This needs to be moved to ScrollOffsetAnimationsImpl as it
   // has knowledge about what type of animation is running. crbug.com/976353
   // Only abort the animation if it is an "autoscroll" animation.
   if (autoscroll_state_.has_value() &&

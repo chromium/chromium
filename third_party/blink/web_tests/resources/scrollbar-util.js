@@ -112,7 +112,7 @@ function isMainFrameScroller(scroller) {
   return scroller == scroller.ownerDocument.scrollingElement;
 }
 
-// TODO(arakeri): Add helpers for arrow widths.
+// TODO(gastonr): Add helpers for arrow widths.
 /*
   Getters for the center point in a scroller's scrollbar buttons (CSS visual
   coordinates). An empty argument requests the point for the main frame's

@@ -244,7 +244,7 @@ gfx::Vector2d
 ElasticOverscrollControllerBezier::StretchAmountForAccumulatedOverscroll(
     const OverscrollEntry& entry,
     const gfx::Vector2dF& accumulated_overscroll) const {
-  // TODO(arakeri): This should change as you pinch zoom in.
+  // TODO(gastonr): This should change as you pinch zoom in.
   const auto& element_scroll_bounds = ScrollBounds(entry.target_scroller_id);
   const gfx::Vector2dF overscroll_boundary =
       OverscrollBoundary(element_scroll_bounds);

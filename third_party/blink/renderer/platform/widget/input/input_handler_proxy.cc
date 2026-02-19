@@ -930,8 +930,8 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
 
       if (mouse_event.button == WebMouseEvent::Button::kLeft) {
         CHECK(input_handler_);
-        // TODO(arakeri): Pass in the modifier instead of a bool once the
-        // refactor (crbug.com/1022097) is done. For details, see
+        // TODO(crbug.com/40106459): Pass in the modifier instead of a bool
+        // once the refactor is done. For details, see
         // crbug.com/1016955.
         HandlePointerDown(event_with_callback, mouse_event.PositionInWidget());
       }
@@ -1174,8 +1174,8 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   // in progress.
   if (currently_active_gesture_device_.has_value() &&
       handling_gesture_on_impl_thread_) {
-    // TODO(arakeri): Once crbug.com/1074209 is fixed, delete calls to
-    // RecordScrollEnd.
+    // TODO(crbug.com/40127913): Once crbug.com/40127913 is fixed, delete calls
+    // to RecordScrollEnd.
     input_handler_->RecordScrollEnd(
         GestureScrollInputType(*currently_active_gesture_device_));
     InputHandlerScrollEnd();
@@ -1334,7 +1334,7 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   return scroll_result.did_scroll ? DID_HANDLE : DROP_EVENT;
 }
 
-// TODO(arakeri): Ensure that redudant GSE(s) in the CompositorThreadEventQueue
+// TODO(gastonr): Ensure that redundant GSE(s) in the CompositorThreadEventQueue
 // are handled gracefully. (i.e currently, when an ongoing scroll needs to end,
 // we call RecordScrollEnd and InputHandlerScrollEnd synchronously. Ideally, we
 // should end the scroll when the GSB is being handled).

@@ -14249,7 +14249,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
       /*is_left_side_vertical_scrollbar*/ false,
       /*is_overlay*/ false);
 
-  // TODO(arakeri): crbug.com/1070063 Setting the dimensions for scrollbar parts
+  // TODO(crbug.com/40126196): Setting the dimensions for scrollbar parts
   // (like thumb, track etc) should be moved to SetupScrollbarLayer.
   SetupScrollbarLayer(scroll_layer, scrollbar);
   const gfx::Size scrollbar_size = gfx::Size(15, 600);
@@ -14353,7 +14353,7 @@ TEST_P(LayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
       /*is_left_side_vertical_scrollbar*/ false,
       /*is_overlay*/ false);
 
-  // TODO(arakeri): crbug.com/1070063 Setting the dimensions for scrollbar parts
+  // TODO(crbug.com/40126196): Setting the dimensions for scrollbar parts
   // (like thumb, track etc) should be moved to SetupScrollbarLayer.
   SetupScrollbarLayer(scroll_layer, scrollbar);
   const gfx::Size scrollbar_size = gfx::Size(15, 600);

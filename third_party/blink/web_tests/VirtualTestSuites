@@ -927,7 +927,7 @@
     ],
     "expires": "never",
     "owners": [
-      "arakeri@microsoft.com"
+      "gastonr@microsoft.com"
     ]
   },
   {
@@ -1582,7 +1582,7 @@
   {
     "prefix": "hidpi",
     "owners": [
-      "arakeri@microsoft.com"
+      "gastonr@microsoft.com"
     ],
     "platforms": [
       "Linux",

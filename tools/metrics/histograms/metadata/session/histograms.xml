@@ -496,7 +496,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Session.TotalDuration.TimeInTabletMode" units="times"
     expires_after="2026-07-08">
   <owner>robliao@chromium.org</owner>
-  <owner>arakeri@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>wangsongjin@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
