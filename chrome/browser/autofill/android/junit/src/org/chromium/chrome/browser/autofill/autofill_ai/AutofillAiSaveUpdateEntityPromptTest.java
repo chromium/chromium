@@ -208,16 +208,19 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(0),
                 /* attributeName= */ "Passport number",
+                /* attributeNameAxLabel= */ null,
                 /* attributeValue= */ "AA1111",
                 /* oldAttributeValue= */ "");
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(1),
                 /* attributeName= */ "Passport name",
+                /* attributeNameAxLabel= */ null,
                 /* attributeValue= */ "John Doe",
                 /* oldAttributeValue= */ "");
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(2),
                 /* attributeName= */ "Passport expiration date",
+                /* attributeNameAxLabel= */ null,
                 /* attributeValue= */ "12/12/2030",
                 /* oldAttributeValue= */ "");
     }
@@ -257,16 +260,19 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(0),
                 /* attributeName= */ "Passport number",
+                /* attributeNameAxLabel= */ "Passport number, new",
                 /* attributeValue= */ "AA1111  New",
                 /* oldAttributeValue= */ "");
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(1),
                 /* attributeName= */ "Passport name",
+                /* attributeNameAxLabel= */ "Passport name, was Seb Doe",
                 /* attributeValue= */ "John Doe",
                 /* oldAttributeValue= */ "Seb Doe");
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(2),
                 /* attributeName= */ "Passport expiration date",
+                /* attributeNameAxLabel= */ null,
                 /* attributeValue= */ "12/12/2030",
                 /* oldAttributeValue= */ "");
     }
@@ -274,11 +280,13 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     private void assertAttributeNameAndValue(
             View attributeInfo,
             String attributeName,
+            String attributeNameAxLabel,
             String attributeValue,
             String oldAttributeValue) {
         TextView nameTextView = attributeInfo.findViewById(R.id.attribute_name);
         assertEquals(attributeName, nameTextView.getText());
         assertThat(nameTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, is(0));
+        assertEquals(attributeNameAxLabel, nameTextView.getContentDescription());
         TextView valueTextView = attributeInfo.findViewById(R.id.attribute_value);
         assertEquals(attributeValue, valueTextView.getText().toString());
         assertThat(valueTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, is(0));

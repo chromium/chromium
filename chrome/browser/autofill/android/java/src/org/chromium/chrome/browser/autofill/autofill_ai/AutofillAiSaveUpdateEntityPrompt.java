@@ -144,58 +144,73 @@ public class AutofillAiSaveUpdateEntityPrompt {
             attributeName.setText(updateDetails.getAttributeName());
             attributeValue.setText(updateDetails.getAttributeValue());
 
-            switch (updateDetails.getUpdateType()) {
-                case EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED:
-                    if (isUpdatePrompt) {
-                        attributeValue.setText(
-                                SpanApplier.applySpans(
-                                        mContext.getString(
-                                                        R.string
-                                                                .autofill_ai_save_or_update_entity_new_attribute_with_badge)
-                                                .replace("$1", updateDetails.getAttributeValue()),
-                                        new SpanInfo(
-                                                "<new>",
-                                                "</new>",
-                                                new SuperscriptSpan(),
-                                                new RelativeSizeSpan(0.6f),
-                                                new ForegroundColorSpan(
-                                                        SemanticColorUtils
-                                                                .getDefaultTextColorAccent1(
-                                                                        mContext)))));
-                    }
-                    attributeName.setContentDescription(
-                            mContext.getString(
-                                            R.string
-                                                    .autofill_ai_save_or_update_entity_new_attribute_accessibility_name)
-                                    .replace("$1", updateDetails.getAttributeName()));
-                    break;
-                case EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UPDATED:
-                    // Show the old attribute value with the strikethrough text and use
-                    // corresponding
-                    // accessibility label for the attribute name text view.
-                    TextView oldAttributeValue =
-                            attributeInfo.findViewById(R.id.old_attribute_value);
-                    oldAttributeValue.setPaintFlags(
-                            oldAttributeValue.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    oldAttributeValue.setVisibility(View.VISIBLE);
-                    oldAttributeValue.setText(updateDetails.getOldAttributeValue());
-                    attributeName.setContentDescription(
-                            mContext.getString(
-                                            R.string
-                                                    .autofill_ai_save_or_update_entity_updated_attribute_accessibility_name)
-                                    .replace("$1", updateDetails.getAttributeName())
-                                    .replace("$2", updateDetails.getOldAttributeValue()));
-                    break;
-                case EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED:
-                    // No custom accessibility label needed.
-                    break;
-                default:
-                    assert false
-                            : "Unhandled attribute update type: " + updateDetails.getUpdateType();
+            if (isUpdatePrompt) {
+                setBadgeAndAxLabelsInUpdatePrompt(attributeInfo, updateDetails);
             }
 
             attributeList.addView(attributeInfo);
         }
+    }
+
+    private void setBadgeAndAxLabelsInUpdatePrompt(
+            View attributeInfo, EntityAttributeUpdateDetails updateDetails) {
+        switch (updateDetails.getUpdateType()) {
+            case EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED:
+                configureAddedAttribute(attributeInfo, updateDetails);
+                break;
+            case EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UPDATED:
+                configureUpdatedAttribute(attributeInfo, updateDetails);
+                break;
+            case EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED:
+                // No custom accessibility label needed.
+                break;
+            default:
+                assert false : "Unhandled attribute update type: " + updateDetails.getUpdateType();
+        }
+    }
+
+    private void configureAddedAttribute(
+            View attributeInfo, EntityAttributeUpdateDetails updateDetails) {
+        TextView attributeName = attributeInfo.findViewById(R.id.attribute_name);
+        attributeName.setContentDescription(
+                mContext.getString(
+                                R.string
+                                        .autofill_ai_save_or_update_entity_new_attribute_accessibility_name)
+                        .replace("$1", updateDetails.getAttributeName()));
+
+        TextView attributeValue = attributeInfo.findViewById(R.id.attribute_value);
+        attributeValue.setText(
+                SpanApplier.applySpans(
+                        mContext.getString(
+                                        R.string
+                                                .autofill_ai_save_or_update_entity_new_attribute_with_badge)
+                                .replace("$1", updateDetails.getAttributeValue()),
+                        new SpanInfo(
+                                "<new>",
+                                "</new>",
+                                new SuperscriptSpan(),
+                                new RelativeSizeSpan(0.6f),
+                                new ForegroundColorSpan(
+                                        SemanticColorUtils.getDefaultTextColorAccent1(mContext)))));
+    }
+
+    private void configureUpdatedAttribute(
+            View attributeInfo, EntityAttributeUpdateDetails updateDetails) {
+        TextView attributeName = attributeInfo.findViewById(R.id.attribute_name);
+        attributeName.setContentDescription(
+                mContext.getString(
+                                R.string
+                                        .autofill_ai_save_or_update_entity_updated_attribute_accessibility_name)
+                        .replace("$1", updateDetails.getAttributeName())
+                        .replace("$2", updateDetails.getOldAttributeValue()));
+
+        // Show the old attribute value with the strikethrough text and use corresponding
+        // accessibility label for the attribute name text view.
+        TextView oldAttributeValue = attributeInfo.findViewById(R.id.old_attribute_value);
+        oldAttributeValue.setPaintFlags(
+                oldAttributeValue.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        oldAttributeValue.setVisibility(View.VISIBLE);
+        oldAttributeValue.setText(updateDetails.getOldAttributeValue());
     }
 
     @CalledByNative
