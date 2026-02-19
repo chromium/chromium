@@ -100,13 +100,17 @@ class PageContext;
 
 // Whether to use the response ready interval to show the response ready
 // notification in the floaty.
-@property(nonatomic) double responseReadyInterval;
+@property(nonatomic, assign) double responseReadyInterval;
 
 // Whether to use the dynamic size for the response view in the floaty.
-@property(nonatomic) BOOL responseViewDynamicSizeEnabled;
+@property(nonatomic, assign) BOOL responseViewDynamicSizeEnabled;
 
 // The initial bottom offset of the floaty.
-@property(nonatomic) CGFloat initialBottomOffset;
+@property(nonatomic, assign) CGFloat initialBottomOffset;
+
+// The window scene in which the Gemini view window is initialized and
+// presented.
+@property(nonatomic, strong) UIWindowScene* hostWindowScene;
 
 @end
 

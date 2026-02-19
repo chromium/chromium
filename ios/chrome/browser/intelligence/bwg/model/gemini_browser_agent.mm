@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -842,6 +843,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
     config.initialBottomOffset =
         GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
   }
+  config.hostWindowScene = browser_->GetSceneState().scene;
 
   // Start the overlay and update the tab helper to reflect this.
   base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
