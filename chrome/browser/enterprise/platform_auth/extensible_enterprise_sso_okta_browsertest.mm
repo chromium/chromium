@@ -57,19 +57,6 @@ namespace {
 
 constexpr char kLoginWebsiteDomain[] = "foo.bar.example";
 
-std::string CreateSsoRequest(std::string_view domain) {
-  std::string path = enterprise_auth::kOktaSsoURLPattern.Get();
-
-  // Replace all wildcard segments in the path.
-  size_t pos = path.find('*');
-  while (pos != std::string::npos) {
-    path.replace(pos, 1, "123");
-    pos = path.find('*', pos);
-  }
-
-  return base::StrCat({"https://", domain, path});
-}
-
 ScopedPropList HostsToPropRef(const std::vector<std::string>& hosts) {
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> res(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
@@ -180,6 +167,16 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
     http_response->set_content("<html><body><h1>Login Page</h1></body></html>");
     http_response->set_content_type("text/html");
     return http_response;
+  }
+
+  std::string CreateSsoRequest(std::string_view domain) {
+    std::string path = enterprise_auth::kOktaSsoURLPattern.Get();
+
+    // Replace all wildcard segments in the path.
+    base::ReplaceChars(path, "*", "123", &path);
+
+    const GURL test_gurl = https_server_.GetURL(domain, path);
+    return test_gurl.spec();
   }
 
   void CheckSSORequest(bool expect_response,
