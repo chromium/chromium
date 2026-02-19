@@ -120,6 +120,24 @@ chromium-metrics-reviews@google.com.
   <variant name=".RenderProcessGone" summary="RenderProcessGone"/>
 </variants>
 
+<variants name="NavigationAbandonReasonNoDot">
+  <variant name="" summary="any reason"/>
+  <variant name="AppBackgrounded" summary="AppBackgrounded"/>
+  <variant name="ErrorPage" summary="ErrorPage"/>
+  <variant name="ExplicitCancellation" summary="ExplicitCancellation"/>
+  <variant name="FrameRemoved" summary="FrameRemoved"/>
+  <variant name="Hidden" summary="Hidden"/>
+  <variant name="InternalCancellation" summary="InternalCancellation"/>
+  <variant name="NewDuplicateNavigation" summary="NewDuplicateNavigation"/>
+  <variant name="NewHistoryNavigation" summary="NewHistoryNavigation"/>
+  <variant name="NewOtherNavigationBrowserInitiated"
+      summary="NewOtherNavigationBrowserInitiated"/>
+  <variant name="NewOtherNavigationRendererInitiated"
+      summary="NewOtherNavigationRendererInitiated"/>
+  <variant name="NewReloadNavigation" summary="NewReloadNavigation"/>
+  <variant name="RenderProcessGone" summary="RenderProcessGone"/>
+</variants>
+
 <variants name="NavigationCountType">
   <variant name="IsFirstNavigation"
       summary="first navigation after browser started"/>
@@ -3398,7 +3416,7 @@ chromium-metrics-reviews@google.com.
   <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
   <token key="HiddenSuffix" variants="HiddenSuffix"/>
   <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
-  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
+  <token key="NavigationAbandonReason" variants="NavigationAbandonReasonNoDot"/>
   <token key="NavigationType" variants="NavigationTypeForAbandonment"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
   <token key="ResponseFromCache" variants="ResponseFromCache"/>
