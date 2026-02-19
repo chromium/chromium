@@ -223,20 +223,6 @@ app_restore::AppRestoreData* GetAppRestoreData(DeskTemplate& admin_template,
   return nullptr;
 }
 
-// Returns true if all windows have bounds.
-bool DoesAllWindowsHaveBounds(const DeskTemplate& admin_template) {
-  const auto& app_id_to_launch_list =
-      admin_template.desk_restore_data()->app_id_to_launch_list();
-  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
-    for (auto& [window_id, app_restore_data] : launch_list) {
-      if (!app_restore_data->window_info.current_bounds.has_value()) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
 struct BoundsCoeff {
   float x;
   float y;
@@ -391,7 +377,10 @@ void AdminTemplateLaunchTracker::LaunchTemplate(SavedDeskDelegate* delegate,
   // If all windows in the template have bounds, then we will use those when
   // launching. If that's not the case, we will auto-generate a placement for
   // the windows.
-  if (DoesAllWindowsHaveBounds(*admin_template)) {
+  if (saved_desk_util::AreAllTemplateWindowsSatisfied(
+          *admin_template, [](const app_restore::WindowInfo& window_info) {
+            return window_info.current_bounds.has_value();
+          })) {
     auto& app_id_to_launch_list = admin_template->mutable_desk_restore_data()
                                       ->mutable_app_id_to_launch_list();
     for (auto& [app_id, launch_list] : app_id_to_launch_list) {

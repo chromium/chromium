@@ -41,20 +41,6 @@ bool IsGuestSession() {
   return user_session->user_info.type == user_manager::UserType::kGuest;
 }
 
-// Returns true if all windows have bounds.
-bool DoesAllWindowsHaveActivationIndices(const DeskTemplate& admin_template) {
-  const auto& app_id_to_launch_list =
-      admin_template.desk_restore_data()->app_id_to_launch_list();
-  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
-    for (auto& [window_id, app_restore_data] : launch_list) {
-      if (!app_restore_data->window_info.activation_index.has_value()) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
 }  // namespace
 
 namespace saved_desk_util {
@@ -147,6 +133,21 @@ bool IsWindowOnTopForTemplate(aura::Window* window) {
          *activation_index <= kTemplateStartingActivationIndex;
 }
 
+bool AreAllTemplateWindowsSatisfied(
+    const DeskTemplate& saved_desk,
+    base::FunctionRef<bool(const app_restore::WindowInfo&)> predicate) {
+  const auto& app_id_to_launch_list =
+      saved_desk.desk_restore_data()->app_id_to_launch_list();
+  for (const auto& [app_id, launch_list] : app_id_to_launch_list) {
+    for (const auto& [window_id, app_restore_data] : launch_list) {
+      if (!predicate(app_restore_data->window_info)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 void UpdateTemplateActivationIndices(DeskTemplate& saved_desk) {
   auto& app_id_to_launch_list =
       saved_desk.mutable_desk_restore_data()->mutable_app_id_to_launch_list();
@@ -163,7 +164,10 @@ void UpdateTemplateActivationIndices(DeskTemplate& saved_desk) {
 
 void UpdateTemplateActivationIndicesRelativeOrder(DeskTemplate& saved_desk) {
   // Use relative ordering iff every window has an activation index.
-  if (!DoesAllWindowsHaveActivationIndices(saved_desk)) {
+  if (!AreAllTemplateWindowsSatisfied(
+          saved_desk, [](const app_restore::WindowInfo& window_info) {
+            return window_info.activation_index.has_value();
+          })) {
     UpdateTemplateActivationIndices(saved_desk);
     return;
   }

@@ -8,11 +8,16 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/functional/function_ref.h"
 
 class PrefRegistrySimple;
 
 namespace aura {
 class Window;
+}
+
+namespace app_restore {
+struct WindowInfo;
 }
 
 namespace ash {
@@ -53,6 +58,11 @@ ASH_EXPORT std::string GetAppId(aura::Window* window);
 // Returns true if `window` was launched from an admin template and should be on
 // top relative to other desk templates windows.
 bool IsWindowOnTopForTemplate(aura::Window* window);
+
+// Returns true if all windows in the template satisfy the given `predicate`.
+ASH_EXPORT bool AreAllTemplateWindowsSatisfied(
+    const DeskTemplate& saved_desk,
+    base::FunctionRef<bool(const app_restore::WindowInfo&)> predicate);
 
 // This function updates the activation indices of all the windows in a
 // template so that windows launched from it will stack in the order they are
