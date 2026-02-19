@@ -551,6 +551,8 @@ void CloudBinaryUploadService::OnGetRequestData(
   } else {
     NOTREACHED();
   }
+  // TODO(crbug.com/485578457): Add test validation to check that the
+  // `access_token` is indeed set for the `upload_request`.
   upload_request->set_access_token(request->access_token());
 
   WebUIContentInfoSingleton::GetInstance()->AddToDeepScanRequests(
