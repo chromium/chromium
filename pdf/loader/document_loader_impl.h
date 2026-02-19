@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/loader/chunk_stream.h"
@@ -44,16 +45,52 @@ class DocumentLoaderImpl : public DocumentLoader {
   bool is_partial_loader_active() const { return is_partial_loader_active_; }
 
  private:
+  // Allow tests to access private Chunk class.
+  friend class DocumentLoaderImplChunkTest;
   using DataStream = ChunkStream<kDefaultRequestSize>;
-  struct Chunk {
+
+  // Chunk manages a single chunk buffer during PDF loading.
+  // It encapsulates data accumulation and state transitions.
+  class Chunk {
+   public:
     Chunk();
+    Chunk(const Chunk&) = delete;
+    Chunk& operator=(const Chunk&) = delete;
     ~Chunk();
 
+    // Resets the chunk to the initial state
     void Clear();
 
-    uint32_t chunk_index = 0;
-    uint32_t data_size = 0;
-    std::unique_ptr<DataStream::ChunkData> chunk_data;
+    // Set the chunk index (used when starting a new range request)
+    void SetIndex(uint32_t index);
+
+    // Append data to the chunk buffer
+    // Returns the number of bytes actually appended
+    size_t AppendData(base::span<const uint8_t> input);
+
+    // Check if the chunk buffer is full (reached kChunkSize)
+    bool IsFull() const;
+
+    // Check if the chunk has no data
+    bool IsEmpty() const;
+
+    // Get the current chunk index
+    uint32_t index() const { return chunk_index_; }
+
+    // Compute the byte position at the end of current chunk data
+    size_t EndPosition() const;
+
+    // Transfer ownership of chunk data and advance to next chunk index
+    // Resets data_size to 0 and increments chunk_index
+    std::unique_ptr<DataStream::ChunkData> TakeDataAndAdvance();
+
+   private:
+    // Lazily allocate chunk_data if not already allocated
+    void EnsureDataAllocated();
+
+    uint32_t chunk_index_ = 0;
+    size_t data_size_ = 0;
+    std::unique_ptr<DataStream::ChunkData> chunk_data_;
   };
 
   // Called by the completion callback of the document's URLLoader.
@@ -73,8 +110,6 @@ class DocumentLoaderImpl : public DocumentLoader {
 
   bool SaveBuffer(uint32_t input_size);
   void SaveChunkData();
-
-  uint32_t EndOfCurrentChunk() const;
 
   const raw_ptr<Client> client_;
   std::string url_;

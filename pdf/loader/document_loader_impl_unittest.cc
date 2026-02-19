@@ -1198,4 +1198,123 @@ TEST_F(DocumentLoaderImplTest, IgnoreDataMoreThanExpectedWithPartialAtFileEnd) {
   EXPECT_TRUE(client.partial_loader_data()->closed());
 }
 
+// Tests for the Chunk class.
+class DocumentLoaderImplChunkTest : public testing::Test {
+ protected:
+  using Chunk = DocumentLoaderImpl::Chunk;
+  using DataStream = DocumentLoaderImpl::DataStream;
+};
+
+TEST_F(DocumentLoaderImplChunkTest, InitialState) {
+  Chunk chunk;
+  EXPECT_TRUE(chunk.IsEmpty());
+  EXPECT_FALSE(chunk.IsFull());
+  EXPECT_EQ(0u, chunk.index());
+  EXPECT_EQ(0u, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, SetIndex) {
+  Chunk chunk;
+  chunk.SetIndex(5);
+  EXPECT_EQ(5u, chunk.index());
+  EXPECT_EQ(5u * kDefaultRequestSize, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, AppendDataPartialWrite) {
+  Chunk chunk;
+  std::vector<uint8_t> data(100, 0xAB);
+  size_t bytes_copied = chunk.AppendData(data);
+
+  EXPECT_EQ(100u, bytes_copied);
+  EXPECT_FALSE(chunk.IsEmpty());
+  EXPECT_FALSE(chunk.IsFull());
+  EXPECT_EQ(100u, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, AppendDataFillsChunk) {
+  Chunk chunk;
+  std::vector<uint8_t> data(kDefaultRequestSize, 0xCD);
+  size_t bytes_copied = chunk.AppendData(data);
+
+  EXPECT_EQ(kDefaultRequestSize, bytes_copied);
+  EXPECT_FALSE(chunk.IsEmpty());
+  EXPECT_TRUE(chunk.IsFull());
+  EXPECT_EQ(kDefaultRequestSize, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, AppendDataMultipleWrites) {
+  Chunk chunk;
+  std::vector<uint8_t> data1(100, 0x11);
+  std::vector<uint8_t> data2(200, 0x22);
+
+  size_t bytes1 = chunk.AppendData(data1);
+  size_t bytes2 = chunk.AppendData(data2);
+
+  EXPECT_EQ(100u, bytes1);
+  EXPECT_EQ(200u, bytes2);
+  EXPECT_EQ(300u, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, AppendDataOverflow) {
+  Chunk chunk;
+  // Try to append more data than chunk can hold
+  std::vector<uint8_t> data(kDefaultRequestSize + 100, 0xEF);
+  size_t bytes_copied = chunk.AppendData(data);
+
+  // Should only copy up to kChunkSize
+  EXPECT_EQ(kDefaultRequestSize, bytes_copied);
+  EXPECT_TRUE(chunk.IsFull());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, AppendDataEmpty) {
+  Chunk chunk;
+  std::vector<uint8_t> empty_data;
+  size_t bytes_copied = chunk.AppendData(empty_data);
+
+  EXPECT_EQ(0u, bytes_copied);
+  EXPECT_TRUE(chunk.IsEmpty());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, TakeDataAndAdvance) {
+  Chunk chunk;
+  chunk.SetIndex(3);
+  std::vector<uint8_t> data(100, 0x55);
+  chunk.AppendData(data);
+
+  auto chunk_data = chunk.TakeDataAndAdvance();
+
+  ASSERT_TRUE(chunk_data);
+  EXPECT_EQ(kDefaultRequestSize, chunk_data->size());
+  // Verify the returned buffer preserves the 0x55 pattern for the first 100
+  // bytes that were appended.
+  EXPECT_THAT(base::span(*chunk_data).first(data.size()),
+              testing::Each(testing::Eq(0x55)));
+  EXPECT_TRUE(chunk.IsEmpty());
+  EXPECT_EQ(4u, chunk.index());  // Index should be incremented
+  EXPECT_EQ(4u * kDefaultRequestSize, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, Clear) {
+  Chunk chunk;
+  chunk.SetIndex(5);
+  std::vector<uint8_t> data(100, 0x77);
+  chunk.AppendData(data);
+
+  chunk.Clear();
+
+  EXPECT_TRUE(chunk.IsEmpty());
+  EXPECT_EQ(0u, chunk.index());
+  EXPECT_EQ(0u, chunk.EndPosition());
+}
+
+TEST_F(DocumentLoaderImplChunkTest, EndPositionWithIndexAndData) {
+  Chunk chunk;
+  chunk.SetIndex(2);
+  std::vector<uint8_t> data(500, 0x99);
+  chunk.AppendData(data);
+
+  // EndPosition = chunk_index * kChunkSize + data_size
+  EXPECT_EQ(2u * kDefaultRequestSize + 500u, chunk.EndPosition());
+}
+
 }  // namespace chrome_pdf
