@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/private_ai_service_factory.h"
+#include "chrome/browser/private_ai/private_ai_service_factory.h"
 
 #include <optional>
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/private_ai/features.h"

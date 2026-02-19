@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "chrome/browser/legion/private_ai_service.h"
-#include "chrome/browser/legion/private_ai_service_factory.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals_page_handler.h"

@@ -70,8 +70,8 @@
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/legion/private_ai_service.h"
-#include "chrome/browser/legion/private_ai_service_factory.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/testing/mock_legion_client.h"

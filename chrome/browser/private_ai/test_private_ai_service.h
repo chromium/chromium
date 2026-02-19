@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LEGION_TEST_PRIVATE_AI_SERVICE_H_
-#define CHROME_BROWSER_LEGION_TEST_PRIVATE_AI_SERVICE_H_
+#ifndef CHROME_BROWSER_PRIVATE_AI_TEST_PRIVATE_AI_SERVICE_H_
+#define CHROME_BROWSER_PRIVATE_AI_TEST_PRIVATE_AI_SERVICE_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
 #include "components/private_ai/phosphor/blind_sign_auth_factory.h"
 #include "components/private_ai/phosphor/mock_blind_sign_auth.h"
 
@@ -67,4 +67,4 @@ class TestPrivateAiService : public PrivateAiService {
 
 }  // namespace private_ai
 
-#endif  // CHROME_BROWSER_LEGION_TEST_PRIVATE_AI_SERVICE_H_
+#endif  // CHROME_BROWSER_PRIVATE_AI_TEST_PRIVATE_AI_SERVICE_H_

@@ -86,7 +86,7 @@ source_set("impl") {
   } else {
     sources += [ "legion_model_execution_fetcher.cc" ]
     deps += [
-      "//chrome/browser/legion",
+      "//chrome/browser/private_ai",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/private_ai",

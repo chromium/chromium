@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 if (!is_android) {
-  source_set("legion") {
+  source_set("private_ai") {
     sources = [
       "private_ai_service.cc",
       "private_ai_service.h",
@@ -39,7 +39,7 @@ if (!is_android) {
       "test_private_ai_service.h",
     ]
     public_deps = [
-      ":legion",
+      ":private_ai",
       "//components/private_ai/phosphor",
       "//components/private_ai/phosphor:test_support",
     ]
@@ -56,7 +56,7 @@ if (!is_android) {
       "private_ai_service_unittest.cc",
     ]
     deps = [
-      ":legion",
+      ":private_ai",
       ":test_support",
       "//base/test:test_support",
       "//chrome/browser/profiles:test_support",
@@ -81,7 +81,7 @@ if (!is_android) {
     ]
 
     deps = [
-      ":legion",
+      ":private_ai",
       ":test_support",
       "//base",
       "//base/test:test_support",

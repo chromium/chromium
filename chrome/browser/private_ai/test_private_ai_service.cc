@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/test_private_ai_service.h"
+#include "chrome/browser/private_ai/test_private_ai_service.h"
 
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

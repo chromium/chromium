@@ -2583,7 +2583,7 @@ static_library("browser") {
       "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/indigo",
       "//chrome/browser/indigo:impl",
-      "//chrome/browser/legion",
+      "//chrome/browser/private_ai",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",
       "//chrome/browser/startup",

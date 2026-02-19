@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
 
 #include "base/sequence_checker.h"
 #include "chrome/browser/profiles/profile.h"
