@@ -55,11 +55,12 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
 
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldDisplayFavicon();
+  bool IsMonochromeFavicon();
 #endif
 
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
-  ui::ImageModel GetFavicon() const;
+  ui::ImageModel GetFavicon();
 
   // Return true if the throbber should be hidden during a page load.
   bool ShouldHideThrobber() const;

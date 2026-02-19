@@ -68,27 +68,7 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.favicon = tab_ui_helper->GetFavicon();
   data.title = tab_ui_helper->GetTitle();
   data.needs_attention = tab_ui_helper->needs_attention();
-  auto* const bwi = tab->GetBrowserWindowInterface();
-
-  // Note that in unit tests, this may be null.
-  if (bwi) {
-    const int index = bwi->GetTabStripModel()->GetIndexOfTab(tab);
-    // Tabbed web apps should use the app icon on the home tab.
-    if (auto* const app_controller =
-            web_app::WebAppBrowserController::From(bwi);
-        app_controller && app_controller->ShouldShowAppIconOnTab(index)) {
-      gfx::ImageSkia home_tab_icon = app_controller->GetHomeTabIcon();
-      if (!home_tab_icon.isNull()) {
-        data.is_monochrome_favicon = true;
-        data.favicon = ui::ImageModel::FromImageSkia(home_tab_icon);
-      } else {
-        home_tab_icon = app_controller->GetFallbackHomeTabIcon();
-        if (!home_tab_icon.isNull()) {
-          data.favicon = ui::ImageModel::FromImageSkia(home_tab_icon);
-        }
-      }
-    }
-  }
+  data.is_monochrome_favicon = tab_ui_helper->IsMonochromeFavicon();
 
   ThumbnailTabHelper* const thumbnail_tab_helper =
       ThumbnailTabHelper::FromWebContents(contents);

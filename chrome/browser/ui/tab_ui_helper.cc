@@ -31,11 +31,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #endif
 
 namespace {
@@ -54,6 +58,32 @@ bool IsNTP(const GURL& url) {
 #endif  // !BUILDFLAG(IS_ANDROID)
           url.GetHost() == chrome::kChromeUINewTabPageHost);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+web_app::WebAppBrowserController* GetWebAppBrowserController(
+    tabs::TabInterface* tab_interface) {
+  // The browser window interface can be null during unit tests.
+  BrowserWindowInterface* const browser_window_interface =
+      tab_interface->GetBrowserWindowInterface();
+  return browser_window_interface
+             ? web_app::WebAppBrowserController::From(browser_window_interface)
+             : nullptr;
+}
+
+bool ShouldShowAppIcon(web_app::WebAppBrowserController* app_controller,
+                       tabs::TabInterface* tab_interface) {
+  if (!app_controller) {
+    return false;
+  }
+
+  BrowserWindowInterface* const browser_window_interface =
+      tab_interface->GetBrowserWindowInterface();
+  CHECK(browser_window_interface);
+  const int index = browser_window_interface->GetTabStripModel()->GetIndexOfTab(
+      tab_interface);
+  return app_controller->ShouldShowAppIconOnTab(index);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 DEFINE_USER_DATA(TabUIHelper);
@@ -147,9 +177,16 @@ bool TabUIHelper::ShouldDisplayFavicon() {
   // Otherwise, always display the favicon.
   return true;
 }
+
+bool TabUIHelper::IsMonochromeFavicon() {
+  web_app::WebAppBrowserController* const web_app_browser_controller =
+      GetWebAppBrowserController(&tab());
+  return ShouldShowAppIcon(web_app_browser_controller, &tab()) &&
+         !web_app_browser_controller->GetHomeTabIcon().isNull();
+}
 #endif
 
-ui::ImageModel TabUIHelper::GetFavicon() const {
+ui::ImageModel TabUIHelper::GetFavicon() {
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
       tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
   if (wc_listener) {
@@ -158,6 +195,24 @@ ui::ImageModel TabUIHelper::GetFavicon() const {
       return deferred_tab_state.value().favicon();
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  web_app::WebAppBrowserController* const web_app_browser_controller =
+      GetWebAppBrowserController(&tab());
+  if (ShouldShowAppIcon(web_app_browser_controller, &tab())) {
+    const gfx::ImageSkia home_tab_icon =
+        web_app_browser_controller->GetHomeTabIcon();
+    if (!home_tab_icon.isNull()) {
+      return ui::ImageModel::FromImageSkia(home_tab_icon);
+    } else {
+      gfx::ImageSkia fallback_home_icon =
+          web_app_browser_controller->GetFallbackHomeTabIcon();
+      if (!fallback_home_icon.isNull()) {
+        return ui::ImageModel::FromImageSkia(fallback_home_icon);
+      }
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return ui::ImageModel::FromImage(
       favicon::TabFaviconFromWebContents(web_contents()));
