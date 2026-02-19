@@ -15,6 +15,8 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/public/fido_constants.h"
 #include "net/base/port_util.h"
@@ -42,7 +44,7 @@ std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
 
   std::optional<base::Process> enclave_process;
   uint16_t port;
-  char port_str[6];
+  std::array<char, 6> port_str;
 
   for (int i = 0; i < 10; i++) {
 #if BUILDFLAG(IS_WIN)
@@ -65,7 +67,8 @@ std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
     CHECK(enclave_process->IsValid());
 
     DWORD read_bytes;
-    CHECK(ReadFile(read_handle, port_str, sizeof(port_str), &read_bytes, NULL));
+    CHECK(ReadFile(read_handle, port_str.data(), sizeof(port_str), &read_bytes,
+                   NULL));
     CloseHandle(read_handle);
 #else
     int fds[2];
@@ -77,14 +80,19 @@ std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
     close(fds[1]);
 
     const ssize_t read_bytes =
-        HANDLE_EINTR(read(fds[0], port_str, sizeof(port_str)));
+        HANDLE_EINTR(read(fds[0], port_str.data(), sizeof(port_str)));
     close(fds[0]);
 #endif
 
     CHECK(read_bytes > 0);
-    UNSAFE_TODO(port_str[read_bytes - 1]) = 0;
+    // We don't need to include the whitespace character in the string view so
+    // subtract one byte.
+    const size_t port_str_len = read_bytes - 1;
+    CHECK(base::IsAsciiWhitespace(port_str[port_str_len]));
+    auto port_str_view =
+        base::as_string_view(base::span(port_str).first(port_str_len));
     unsigned u_port;
-    CHECK(base::StringToUint(port_str, &u_port)) << port_str;
+    CHECK(base::StringToUint(port_str_view, &u_port)) << port_str_view;
     port = base::checked_cast<uint16_t>(u_port);
 
     if (net::IsPortAllowedForScheme(port, "wss")) {
