@@ -5,13 +5,11 @@
 #ifndef ASH_CONSTANTS_URL_CONSTANTS_H_
 #define ASH_CONSTANTS_URL_CONSTANTS_H_
 
-// Contains constants for known URLs for ash components. URL constants for
-// ash-chrome should be in chrome/common/url_contants.h.
+// Contains constants for known URLs for OS system parts of chromeos-chrome.
 //
 // - Keep the constants sorted by name within its section.
-// - Use the same order in this header and ash_url_constants.cc.
 
-namespace chrome {
+namespace ash::external_urls {
 
 // URL for the Google Privacy Policy.
 inline constexpr char kGooglePrivacyPolicyUrl[] =
@@ -48,6 +46,6 @@ inline constexpr char kMultiDeviceLearnMoreURL[] =
 inline constexpr char kSafetyPixelbookURL[] = "https://g.co/Pixelbook/legal";
 inline constexpr char kSafetyPixelSlateURL[] = "https://g.co/PixelSlate/legal";
 
-}  // namespace chrome
+}  // namespace ash::external_urls
 
 #endif  // ASH_CONSTANTS_URL_CONSTANTS_H_

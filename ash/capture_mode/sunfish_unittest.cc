@@ -5029,7 +5029,7 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerFromSmartActionsButton) {
 
 TEST_F(ScannerTest, DisclaimerTosLinkFromScreenshotMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kGooglePrivacyPolicyUrl), _, _));
 
   UnackAllScannerDisclaimers();
   ActionButtonView* smart_actions_button = GetSmartActionsButton();
@@ -5059,7 +5059,7 @@ TEST_F(ScannerTest, DisclaimerTosLinkFromScreenshotMode) {
 
 TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromScreenshotMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kScannerLearnMoreUrl), _, _));
 
   UnackAllScannerDisclaimers();
   ActionButtonView* smart_actions_button = GetSmartActionsButton();
@@ -5089,7 +5089,7 @@ TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromScreenshotMode) {
 
 TEST_F(ScannerTest, ReminderDisclaimerTosLinkFromScreenshotMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kGooglePrivacyPolicyUrl), _, _));
 
   PrefService& prefs =
       *Shell::Get()->session_controller()->GetActivePrefService();
@@ -5121,7 +5121,7 @@ TEST_F(ScannerTest, ReminderDisclaimerTosLinkFromScreenshotMode) {
 
 TEST_F(ScannerTest, ReminderDisclaimerLearnMoreLinkFromScreenshotMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kScannerLearnMoreUrl), _, _));
 
   PrefService& prefs =
       *Shell::Get()->session_controller()->GetActivePrefService();
@@ -5153,7 +5153,7 @@ TEST_F(ScannerTest, ReminderDisclaimerLearnMoreLinkFromScreenshotMode) {
 
 TEST_F(ScannerTest, DisclaimerTosLinkFromSunfishMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kGooglePrivacyPolicyUrl), _, _));
 
   UnackAllScannerDisclaimers();
   auto* controller = CaptureModeController::Get();
@@ -5182,7 +5182,7 @@ TEST_F(ScannerTest, DisclaimerTosLinkFromSunfishMode) {
 
 TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromSunfishMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kScannerLearnMoreUrl), _, _));
 
   UnackAllScannerDisclaimers();
   auto* controller = CaptureModeController::Get();
@@ -5211,7 +5211,7 @@ TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromSunfishMode) {
 
 TEST_F(ScannerTest, ReminderDisclaimerTosLinkFromSunfishMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kGooglePrivacyPolicyUrl), _, _));
 
   PrefService& prefs =
       *Shell::Get()->session_controller()->GetActivePrefService();
@@ -5244,7 +5244,7 @@ TEST_F(ScannerTest, ReminderDisclaimerTosLinkFromSunfishMode) {
 
 TEST_F(ScannerTest, ReminderDisclaimerLearnMoreLinkFromSunfishMode) {
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+              OpenUrl(GURL(ash::external_urls::kScannerLearnMoreUrl), _, _));
 
   PrefService& prefs =
       *Shell::Get()->session_controller()->GetActivePrefService();

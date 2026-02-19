@@ -177,10 +177,10 @@ std::string GetSafetyInfoLink() {
   const std::vector<std::string_view> board = base::SplitStringPiece(
       release_board, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (board[0] == "nocturne") {
-    return chrome::kSafetyPixelSlateURL;
+    return ash::external_urls::kSafetyPixelSlateURL;
   }
   if (board[0] == "eve" || board[0] == "atlas") {
-    return chrome::kSafetyPixelbookURL;
+    return ash::external_urls::kSafetyPixelbookURL;
   }
 
   return std::string();

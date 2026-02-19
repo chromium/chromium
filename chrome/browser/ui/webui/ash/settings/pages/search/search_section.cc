@@ -291,11 +291,13 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("helpMeReadWriteLearnMoreUrl",
-                         chrome::kHelpMeReadWriteLearnMoreURL);
+                         ash::external_urls::kHelpMeReadWriteLearnMoreURL);
 
-  html_source->AddString("lobsterLearnMoreUrl", chrome::kLobsterLearnMoreURL);
+  html_source->AddString("lobsterLearnMoreUrl",
+                         ash::external_urls::kLobsterLearnMoreURL);
 
-  html_source->AddString("scannerLearnMoreUrl", chrome::kScannerLearnMoreUrl);
+  html_source->AddString("scannerLearnMoreUrl",
+                         ash::external_urls::kScannerLearnMoreUrl);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
 

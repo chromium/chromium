@@ -452,7 +452,7 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kHelpMeReadWriteLearnMoreURL),
+              OpenUrl(GURL(ash::external_urls::kHelpMeReadWriteLearnMoreURL),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
   disclaimer_text->ClickFirstLinkForTesting();

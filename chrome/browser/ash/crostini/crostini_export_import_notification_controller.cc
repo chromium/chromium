@@ -213,9 +213,9 @@ void CrostiniExportImportNotificationController::SetStatusFailedWithMessageUI(
     case Status::FAILED_ARCHITECTURE_MISMATCH:
       delegate_->SetCallback(base::BindRepeating(
           [](Profile* profile) {
-            NavigateParams params(profile,
-                                  GURL(chrome::kLinuxExportImportHelpURL),
-                                  ui::PAGE_TRANSITION_LINK);
+            NavigateParams params(
+                profile, GURL(ash::external_urls::kLinuxExportImportHelpURL),
+                ui::PAGE_TRANSITION_LINK);
             params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
             params.window_action = NavigateParams::WindowAction::kShowWindow;
             Navigate(&params);

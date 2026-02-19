@@ -1589,10 +1589,10 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
                           std::move(decline_callback)),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
                           weak_ptr_factory_.GetWeakPtr(),
-                          chrome::kGooglePrivacyPolicyUrl),
+                          ash::external_urls::kGooglePrivacyPolicyUrl),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
                           weak_ptr_factory_.GetWeakPtr(),
-                          chrome::kScannerLearnMoreUrl));
+                          ash::external_urls::kScannerLearnMoreUrl));
   disclaimer_->Show();
   focus_cycler_->OnDisclaimerWidgetOpened(disclaimer_.get());
 }

@@ -559,13 +559,13 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("apnSettingsDescriptionWithLink",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK,
-                             chrome::kApnSettingsLearnMoreUrl));
+                             ash::external_urls::kApnSettingsLearnMoreUrl));
 
   html_source->AddString(
       "apnSelectionDialogDescriptionWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION_WITH_LINK,
-          chrome::kApnSettingsLearnMoreUrl));
+          ash::external_urls::kApnSettingsLearnMoreUrl));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

@@ -948,7 +948,7 @@ void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
 
 void MahiPanelView::OnLearnMoreLinkClicked() {
   NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(chrome::kHelpMeReadWriteLearnMoreURL),
+      GURL(ash::external_urls::kHelpMeReadWriteLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
   base::UmaHistogramEnumeration(mahi_constants::kMahiButtonClickHistogramName,
