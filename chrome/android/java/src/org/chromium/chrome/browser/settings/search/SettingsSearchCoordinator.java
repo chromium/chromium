@@ -15,11 +15,6 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.transition.ChangeBounds;
-import android.transition.Fade;
-import android.transition.Transition;
-import android.transition.TransitionManager;
-import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -404,11 +399,15 @@ public class SettingsSearchCoordinator
                         new SlidingPaneLayout.SimplePanelSlideListener() {
                             @Override
                             public void onPanelOpened(View panel) {
+                                if (mUseMultiColumn) return;
+
                                 showUiInSingleColumn(searchBox, /* show= */ false);
                             }
 
                             @Override
                             public void onPanelClosed(View panel) {
+                                if (mUseMultiColumn) return;
+
                                 showUiInSingleColumn(searchBox, /* show= */ true);
                             }
                         });
@@ -476,14 +475,6 @@ public class SettingsSearchCoordinator
             mHandler.post(() -> showUiInSingleColumn(searchBox, show));
             return;
         }
-
-        Transition transition =
-                new TransitionSet()
-                        .addTransition(new Fade(show ? Fade.IN : Fade.OUT))
-                        .addTransition(new ChangeBounds())
-                        .setOrdering(TransitionSet.ORDERING_TOGETHER);
-        var parentView = (ViewGroup) mActivity.findViewById(R.id.settings_activity);
-        TransitionManager.beginDelayedTransition(parentView, transition);
         searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
@@ -659,7 +650,13 @@ public class SettingsSearchCoordinator
         View searchBox = mActivity.findViewById(R.id.search_box);
         View queryContainer = mActivity.findViewById(R.id.search_query_container);
         queryContainer.setVisibility(View.GONE);
-        searchBox.setVisibility(View.VISIBLE);
+
+        // In single-column mode, search box visibility is handled by
+        // SlidingPaneLayout#SimplePanelSlideListener set up in initializeMultiColumnSearchUi
+        // for mutli-column settings, and by FragmentManager.FragmentLifecycleCallbacks set up
+        // in observeFragmentForVisibilityChange for single-column settings.
+        if (mUseMultiColumn) searchBox.setVisibility(View.VISIBLE);
+
         mQueryEntered = false;
         showBackArrowInSingleColumnMode(true);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
