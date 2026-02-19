@@ -2725,6 +2725,12 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
                            withQuery:(NSString*)query {
+  if (!IsComposeboxIOSEnabled()) {
+    [_omniboxCommandsHandler focusOmnibox];
+    [_omniboxCommandsHandler insertTextToOmnibox:query];
+    return;
+  }
+
   CHECK(base::FeatureList::IsEnabled(kComposeboxIOS));
   if (_composeboxCoordinator) {
     return;

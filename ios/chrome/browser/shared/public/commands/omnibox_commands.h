@@ -14,6 +14,10 @@
 // Give focus to the omnibox, if it is visible. No-op if it is not visible.
 // If current page is an NTP, first focus the NTP fakebox.
 - (void)focusOmnibox;
+// Inserts text to the omnibox without triggering autocomplete.
+// Use this method to insert target URL or search terms for alternative input
+// methods, such as QR code scanner or voice search.
+- (void)insertTextToOmnibox:(NSString*)string;
 // Focus the omnibox but skip the NTP check.
 - (void)focusOmniboxFromFakebox;
 // Moves the focus of VoiceOver to the omnibox, without activating it.

@@ -580,6 +580,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 }
 
+- (void)insertTextToOmnibox:(NSString*)string {
+  CHECK(!IsComposeboxIOSEnabled());
+  [self.omniboxCoordinator insertTextToOmnibox:string];
+}
+
 - (void)focusOmniboxForVoiceOver {
   [self.viewController focusSteadyViewForVoiceOver];
 }
