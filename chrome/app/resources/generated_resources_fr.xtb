@@ -1128,7 +1128,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1750238553597293878">Continuez d'utiliser les mots de passe de votre compte Google</translation>
 <translation id="175081537116822146">Connexion et synchronisation requises</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> pourra modifier des fichiers du dossier <ph name="FOLDERNAME" /> jusqu'à ce que vous fermiez tous les onglets de ce site</translation>
-<translation id="1751335846119670066">M'aider à lire</translation>
+<translation id="1751335846119670066">Aide-moi à lire</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="175196451752279553">&amp;Rouvrir l'onglet fermé</translation>
 <translation id="1753067873202720523">Votre Chromebook risque de ne pas se charger lorsqu'il est allumé.</translation>
@@ -3800,7 +3800,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3567168891086460374">Enregistrer autrement</translation>
 <translation id="3567284462585300767">Vous devez être visible pour recevoir et accepter des fichiers de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
-<translation id="3568431410312984116">Autoriser M'aider à écrire à s'ouvrir automatiquement</translation>
+<translation id="3568431410312984116">Autoriser Aide-moi à écrire à s'ouvrir automatiquement</translation>
 <translation id="3569304198553566878"><ph name="NUM_DISPLAYED_EVENTS" />événement(s) affiché(s) sur <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran ?</translation>
 <translation id="3569614820047645079">Les fichiers dans Mon Drive sont automatiquement synchronisés sur votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
@@ -7591,7 +7591,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6170498031581934115">Impossible d'activer le débogage ADB. Accédez aux paramètres et réessayez.</translation>
 <translation id="6170675927290506430">Accéder aux paramètres de notification</translation>
 <translation id="6171779718418683144">Demander à chaque visite</translation>
-<translation id="6172020488605056255">Effectuez un clic droit pour utiliser M'aider à lire</translation>
+<translation id="6172020488605056255">Effectuez un clic droit pour utiliser Aide-moi à lire</translation>
 <translation id="617213288191670920">Aucune langue ajoutée</translation>
 <translation id="6173623053897475761">Saisir à nouveau votre code</translation>
 <translation id="6174909075810107548">Utiliser "5" pour appuyer sur un bouton de la souris</translation>
@@ -7677,7 +7677,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6231881193380278751">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batterie</translation>
 <translation id="6232116551750539448">La connexion à "<ph name="NAME" />" a été interrompue.</translation>
-<translation id="623261264391834964">Effectuez un clic droit dans une zone de texte pour utiliser M'aider à écrire</translation>
+<translation id="623261264391834964">Effectuez un clic droit dans une zone de texte pour utiliser Aide-moi à écrire</translation>
 <translation id="6233154960150021497">Utiliser par défaut les commandes vocales plutôt que le clavier</translation>
 <translation id="6234108445915742946">Les conditions d'utilisation de Chrome vont changer le 31 mars</translation>
 <translation id="6235208551686043831">La caméra de l'appareil est activée. Veuillez placer le QR code de votre eSIM face à la caméra.</translation>
@@ -8416,7 +8416,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6758056191028427665">Faites-nous part de vos commentaires.</translation>
 <translation id="6759193508432371551">Rétablir la configuration d'usine</translation>
 <translation id="6760354150216532978">Avertissement : Ce site peut voir les modifications que vous apportez</translation>
-<translation id="6761209758867628753">Outil : M'aider à écrire</translation>
+<translation id="6761209758867628753">Outil : Aide-moi à écrire</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Données des sites non autorisées sur l'appareil</translation>
 <translation id="6762833852331690540">Activé</translation>
@@ -9394,7 +9394,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7423807071740419372">L'exécution de <ph name="APP_NAME" /> requiert votre autorisation</translation>
 <translation id="7424153922653300265">Économiseur d'énergie activé</translation>
 <translation id="7424818322350938336">Réseau ajouté</translation>
-<translation id="7425037327577270384">M'aider à écrire</translation>
+<translation id="7425037327577270384">Aide-moi à écrire</translation>
 <translation id="7427348830195639090">Page en arrière-plan : <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Ce profil est géré</translation>
 <translation id="7427798576651127129">Passer un appel avec <ph name="DEVICE_NAME" /></translation>
@@ -9604,7 +9604,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="756876171895853918">Personnaliser l'avatar</translation>
 <translation id="7568790562536448087">Mise à jour en cours</translation>
 <translation id="7569983096843329377">Noir</translation>
-<translation id="7570548610653957960">M'aider à lire</translation>
+<translation id="7570548610653957960">Aide-moi à lire</translation>
 <translation id="7571643774869182231">Espace de stockage insuffisant pour la mise à jour</translation>
 <translation id="7573172247376861652">Charge de la batterie</translation>
 <translation id="7573594921350120855">Les sites utilisent généralement votre caméra vidéo pour proposer des fonctionnalités de communication comme le chat vidéo</translation>
@@ -9816,7 +9816,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7702463352133825032">Arrêter de diffuser sur <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tâche</translation>
 <translation id="7704521324619958564">Ouvrir le Play Store</translation>
-<translation id="7705085181312584869">M'aider à écrire</translation>
+<translation id="7705085181312584869">Aide-moi à écrire</translation>
 <translation id="7705276765467986571">Impossible de charger le modèle du favori.</translation>
 <translation id="7705334495398865155">Attribuez aléatoirement un ID (BSSID) au matériel pour empêcher d'autres personnes d'effectuer le suivi de cet appareil.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -11007,7 +11007,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="850382998924680137">Vu aujourd'hui</translation>
 <translation id="850399339579925930">Dictionnaires</translation>
-<translation id="850561044295157831">En savoir plus sur M'aider à écrire</translation>
+<translation id="850561044295157831">En savoir plus sur Aide-moi à écrire</translation>
 <translation id="8505669004895429027">Petites économies</translation>
 <translation id="8507227974644337342">Résolution d'écran</translation>
 <translation id="850763987657366362">Impossible d'importer le certificat</translation>
@@ -11283,7 +11283,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="869167754614449887"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements</translation>
 <translation id="8691990641861252959">Vous avertit des connexions non sécurisées sur l'Internet ouvert</translation>
 <translation id="8692107307702113268">Le mot de passe contient plus de 1 000 caractères</translation>
-<translation id="8693862390730570097">Ne pas autoriser M'aider à écrire à s'ouvrir automatiquement</translation>
+<translation id="8693862390730570097">Ne pas autoriser Aide-moi à écrire à s'ouvrir automatiquement</translation>
 <translation id="8694596275649352090">Verrouiller quand l'appareil est en veille ou que l'écran est rabattu</translation>
 <translation id="8695139659682234808">Activer le contrôle parental après la configuration</translation>
 <translation id="8695825812785969222">Ouvrir une &amp;adresse...</translation>
@@ -11950,7 +11950,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9112987648460918699">Rechercher...</translation>
 <translation id="9113240369465613386">Pages impaires uniquement</translation>
 <translation id="9113469270512809735">Afficher/Masquer les éléments fermés récemment</translation>
-<translation id="9113529408970052045">M'aider à écrire peut s'ouvrir automatiquement quand une zone de texte sur un site peut être renseignée avec un contenu court</translation>
+<translation id="9113529408970052045">Aide-moi à écrire peut s'ouvrir automatiquement quand une zone de texte sur un site peut être renseignée avec un contenu court</translation>
 <translation id="9114210796909453187">Finalisez votre vue partagée</translation>
 <translation id="9114663181201435112">Connectez-vous en toute simplicité</translation>
 <translation id="9115675100829699941">&amp;Favoris</translation>

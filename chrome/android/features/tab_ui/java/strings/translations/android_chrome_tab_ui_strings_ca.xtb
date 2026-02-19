@@ -35,7 +35,7 @@
 <translation id="1982637982196732906">Mou a la secció inactiva</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Afegeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada a les adreces d'interès}other{Afegeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades a les adreces d'interès}}</translation>
 <translation id="2055057176188061528">Selecciona un grup de pestanyes o crea'n un de nou</translation>
-<translation id="2074527029802029717">No fixis la pestanya</translation>
+<translation id="2074527029802029717">Deixa de fixar la pestanya</translation>
 <translation id="2118649612461486615">Informació de la botiga</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Pots tornar a obrir la pestanya i el grup tancats des de les seccions Pestanyes recents i Grups de pestanyes. La pestanya d'incògnit no estarà disponible.}other{Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Deixa de silenciar el lloc web}other{Deixa de silenciar els llocs web}}</translation>

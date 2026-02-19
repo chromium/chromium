@@ -35,7 +35,7 @@
 <translation id="1982637982196732906">Etkin olmayanlar bölümüne taşıyın</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
 <translation id="2055057176188061528">Sekme grubu seçin veya yeni sekme grubu oluşturun</translation>
-<translation id="2074527029802029717">Sekmeyi ayır</translation>
+<translation id="2074527029802029717">Sekmenin sabitlemesini kaldır</translation>
 <translation id="2118649612461486615">Mağaza bilgileri</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. Gizli sekmeniz kullanılamaz.}other{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. # gizli sekmeniz kullanılamaz.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Sitenin sesini aç}other{Sitelerin sesini aç}}</translation>

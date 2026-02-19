@@ -498,7 +498,7 @@ Si elle est définie sur "PromptInTab", lorsque l'authentification de l'utilisat
 <translation id="1395988776118675626">Activer la fonctionnalité "Mémoriser le mot de passe" pour Kerberos</translation>
 <translation id="1396119629372155901">Fonctionnalité ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes désactivée</translation>
 <translation id="1397855852561539316">URL de suggestions de recherche du moteur de recherche par défaut</translation>
-<translation id="140076409387986842">Autoriser M'aider à écrire sans améliorer les modèles d'IA.</translation>
+<translation id="140076409387986842">Autoriser Aide-moi à écrire sans améliorer les modèles d'IA.</translation>
 <translation id="1401249111997036083">Si cette règle est définie sur "False", les applis Android peuvent capturer les liens compatibles par défaut.
 Si elle est définie sur "True", tous les liens s'ouvrent par défaut dans le navigateur Chrome.
 Si cette règle n'est pas configurée, les liens s'ouvrent par défaut dans les applis Android pour les utilisateurs gérés et dans le navigateur pour les utilisateurs standards.</translation>
@@ -3730,7 +3730,7 @@ Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuille
 <translation id="3625900437628963632">Permet de spécifier si le mot de passe Kerberos défini dans cet élément de règle doit être mémorisé ou non. Si cette règle n'est pas configurée ou si elle est définie sur "true", le mot de passe est mémorisé. Si cette règle est définie sur "false", le mot de passe n'est pas mémorisé. Si le champ de mot de passe (disponible à partir de la version 116 de ChromeOS) n'est pas spécifié pour ce compte, la règle est ignorée.</translation>
 <translation id="3627678165642179114">Activer ou désactiver le service Web de correction orthographique</translation>
 <translation id="3628480121685794414">Activer l'impression recto</translation>
-<translation id="36319015509487508">Ne pas autoriser M'aider à lire.</translation>
+<translation id="36319015509487508">Ne pas autoriser Aide-moi à lire.</translation>
 <translation id="3634125384445314047">Autoriser l'accès aux photos et vidéos récentes prises sur le téléphone via Phone Hub.</translation>
 <translation id="3637063789824963261">Si cette règle est activée, les appareils enregistrés signalent des compteurs d'exécution de l'appareil (Intel vPro de 14e génération et version ultérieures uniquement).
 
@@ -4967,7 +4967,7 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="4512407512989846472">Permettre de bloquer la copie dans le presse-papiers sur les URL spécifiées</translation>
 <translation id="4513691822411041977">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google ou du mode restreint sur YouTube</translation>
 <translation id="4515404363392014383">Activer la navigation sécurisée pour les sources fiables</translation>
-<translation id="4517327050150780380">Paramètres de la fonctionnalité M'aider à lire</translation>
+<translation id="4517327050150780380">Paramètres de la fonctionnalité Aide-moi à lire</translation>
 <translation id="4518251772179446575">Demander chaque fois qu'un site veut suivre la position géographique des utilisateurs</translation>
 <translation id="4521193243799782295">Lors de la connexion, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut être effectuée sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
@@ -5281,7 +5281,7 @@ Les utilisateurs peuvent activer ou désactiver les services de localisation Goo
 <translation id="4674542060943819878">Activer la fermeture des alertes de mot de passe compromis</translation>
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
 <translation id="4680961954980851756">Activer la saisie automatique</translation>
-<translation id="46845898956959634">Autoriser M'aider à écrire et améliorer les modèles d'IA.</translation>
+<translation id="46845898956959634">Autoriser Aide-moi à écrire et améliorer les modèles d'IA.</translation>
 <translation id="4685721728282448265">Algorithme clé-contrat post-quantique CECPQ2 activé pour TLS</translation>
 <translation id="468822697351680932">Utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
 <translation id="4693190628432874457">Activer la mise à jour de la position de l'appareil</translation>
@@ -5793,7 +5793,7 @@ Si cette règle est désactivée, cette fonctionnalité l'est aussi.</translatio
 <translation id="499654521603185442">Rapports de télémétrie de site Web</translation>
 <translation id="4997074784107449343">Lorsqu'elle est disponible, l'option "Imprimer en tant qu'image" permettant de générer un aperçu avant impression d'un PDF n'est pas proposée par défaut.</translation>
 <translation id="500149597848135831">Activer toutes les variantes</translation>
-<translation id="5006222080181284191">Contrôler l'activation de la fonctionnalité "M'aider à écrire" de ChromeOS</translation>
+<translation id="5006222080181284191">Contrôler l'activation de la fonctionnalité "Aide-moi à écrire" de ChromeOS</translation>
 <translation id="5017157692744444035">Cette règle détermine si les informations exploitables à des fins d'identification des ordinateurs, telles que leur nom ou les adresses réseau, doivent être enregistrées.
 
 Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -5904,13 +5904,13 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="5073609397321802133">Si cette règle est définie sur "False", les utilisateurs ne peuvent pas personnaliser l'arrière-plan sur la page "Nouvel onglet". Tout arrière-plan personnalisé actuel sera définitivement supprimé, même si la règle est définie sur "True" par la suite.
 
       Si celle-ci est définie sur "True" ou si elle n'est pas configurée, les utilisateurs peuvent personnaliser l'arrière-plan sur la page "Nouvel onglet".</translation>
-<translation id="5073788301065423829">Cette règle active ou désactive "M'aider à écrire" pour ChromeOS.
+<translation id="5073788301065423829">Cette règle active ou désactive "Aide-moi à écrire" pour ChromeOS.
 
-Si cette règle est activée, "M'aider à écrire" l'est aussi.
+Si cette règle est activée, "Aide-moi à écrire" l'est aussi.
 
-Si cette règle est désactivée, "M'aider à écrire" l'est aussi.
+Si cette règle est désactivée, "Aide-moi à écrire" l'est aussi.
 
-Si cette règle n'est pas configurée, "M'aider à écrire" sera activé sur les appareils non gérés et désactivé sur les appareils gérés par une entreprise.</translation>
+Si cette règle n'est pas configurée, "Aide-moi à écrire" sera activé sur les appareils non gérés et désactivé sur les appareils gérés par une entreprise.</translation>
 <translation id="5076953589932162038">Paramètres des ensembles propriétaires</translation>
 <translation id="5078623750797048009">Activer les annotations des PDF</translation>
 <translation id="5080300140183363718">Paramètres de migration des données de séparation des profils</translation>
@@ -6596,7 +6596,7 @@ Cette API a été supprimée dans M112.</translation>
 <translation id="55057839818162162">Autoriser la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo</translation>
 <translation id="55057971769693300">Désactiver la mise en surbrillance du curseur de saisie</translation>
 <translation id="5508307164752647432">Activer la fonctionnalité Kerberos</translation>
-<translation id="5511266910976210617">Ne pas autoriser M'aider à écrire.</translation>
+<translation id="5511266910976210617">Ne pas autoriser Aide-moi à écrire.</translation>
 <translation id="5511702823008968136">Activer le barre de favoris</translation>
 <translation id="5512418063782665071">URL de la page d'accueil</translation>
 <translation id="5512785896190859782">Cette règle contrôle la visibilité de la carte des fichiers SharePoint et OneDrive sur la page "Nouvel onglet". La carte ne s'affiche sur la page "Nouvel onglet" que si la règle est activée et si votre organisation a autorisé l'utilisation des données de fichiers SharePoint et OneDrive dans le navigateur.
@@ -7749,7 +7749,7 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
           Cette règle n'a aucune incidence sur l'activation du clavier virtuel tactile. Par exemple, le clavier virtuel tactile s'affiche toujours sur une tablette, même si cette règle est définie sur "False".</translation>
 <translation id="6254498834449523938">Interdire à l'utilisateur de contourner l'avertissement de navigation sécurisée</translation>
 <translation id="625580680776945310">Le mode Haute efficacité sera activé.</translation>
-<translation id="6258314216623064461">Paramètres de M'aider à écrire</translation>
+<translation id="6258314216623064461">Paramètres de Aide-moi à écrire</translation>
 <translation id="6258502079038650092">Détermine si les utilisateurs peuvent utiliser ou non Chrome for Testing.
 
       Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent installer et exécuter Chrome for Testing.
@@ -8253,7 +8253,7 @@ Remarque : La validité des mots de passe peut dépasser le délai spécifié e
 
       Si cette règle n'est pas configurée, les utilisateurs reçoivent des notifications lorsqu'un périphérique USB est connecté.</translation>
 <translation id="6536600139108165863">Redémarrer automatiquement à l'arrêt de l'appareil</translation>
-<translation id="6538355612742474835">Autoriser M'aider à lire et améliorer les modèles d'IA.</translation>
+<translation id="6538355612742474835">Autoriser Aide-moi à lire et améliorer les modèles d'IA.</translation>
 <translation id="6538653424603921690">Toujours désactiver l'écran de confidentialité sur l'écran de connexion</translation>
 <translation id="6539246272469751178">Cette règle n'a aucun effet sur les applications Android. Celles-ci se servent toujours du répertoire de téléchargements par défaut. Elles ne peuvent pas accéder aux fichiers téléchargés par <ph name="PRODUCT_OS_NAME" /> dans un autre répertoire de téléchargements.</translation>
 <translation id="6541383786427998658">Activer la journalisation système des extensions d'entreprise</translation>
@@ -11168,7 +11168,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="8465065632133292531">Paramètres pour l'URL instantanée utilisant POST</translation>
 <translation id="8466326735698755782">Autoriser le comparateur d'onglets sans améliorer les modèles d'IA.</translation>
 <translation id="8467267413626499807">Activer le service SSO flottant</translation>
-<translation id="8467463980805035993">Autoriser M'aider à lire sans améliorer les modèles d'IA.</translation>
+<translation id="8467463980805035993">Autoriser Aide-moi à lire sans améliorer les modèles d'IA.</translation>
 <translation id="846994437739309080">Si cette règle est activée (ou n'est pas configurée), les certificats TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme seront utilisés pour la création de chemins pour l'authentification du serveur TLS.
 
 Si elle est désactivée, les certificats TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme ne seront pas utilisés pour la création de chemins pour l'authentification du serveur TLS.</translation>
@@ -11305,7 +11305,7 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
 
       Elle remplace <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.</translation>
 <translation id="8528951285051082869">N'autoriser aucune appli Web à accéder à certains types de fichiers via l'API File Handling</translation>
-<translation id="8529958869261780079">Cette règle contrôle les paramètres de la fonctionnalité M'aider à lire pour <ph name="PRODUCT_OS_NAME" />.
+<translation id="8529958869261780079">Cette règle contrôle les paramètres de la fonctionnalité Aide-moi à lire pour <ph name="PRODUCT_OS_NAME" />.
 
 0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
 
@@ -11327,7 +11327,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="8553491595730354263">Permet à l'hôte d'accès à distance d'utiliser des authentifications par code ou association lorsqu'il accepte des connexions client</translation>
 <translation id="8559221882677768248">Désactiver Sélectionner pour écouter sur l'écran de connexion</translation>
 <translation id="8561512522781085002">Les paramètres Page précédente/Page suivante utilisent le raccourci qui contient la touche de modification de recherche</translation>
-<translation id="8562398722263115493">M'aider à écrire est un assistant de rédaction basé sur l'IA pour les contenus courts sur le Web. Le contenu suggéré dépend des prompts saisis par l'utilisateur et du contenu de la page Web.
+<translation id="8562398722263115493">Aide-moi à écrire est un assistant de rédaction basé sur l'IA pour les contenus courts sur le Web. Le contenu suggéré dépend des prompts saisis par l'utilisateur et du contenu de la page Web.
 
 0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
 

@@ -998,7 +998,7 @@
 <translation id="1653958716132599769">関連するタブをグループ化</translation>
 <translation id="1654580009054503925">リクエストの表示を許可しないウェブサイト</translation>
 <translation id="1654713139320245449">キャスト先が見つかりません。サポートが必要ですか？</translation>
-<translation id="1656528038316521561">背景の透明度</translation>
+<translation id="1656528038316521561">背景の不透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
 <translation id="1657937299377480641">教育リソースにアクセスするために再度ログインするには、保護者の方に許可してもらってください</translation>
 <translation id="1658424621194652532">このページはマイクにアクセスしています。</translation>
@@ -10303,7 +10303,7 @@
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041093619605951337">幸せ</translation>
 <translation id="8041267120753677077">スマートフォンのアプリをストリーミングします</translation>
-<translation id="8042142357103597104">テキストの透明度</translation>
+<translation id="8042142357103597104">テキストの不透明度</translation>
 <translation id="8042331986490021244">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> から応答がありません。</translation>
 <translation id="8044899503464538266">遅い</translation>
