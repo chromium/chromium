@@ -2361,23 +2361,6 @@
     ],
     "expires": "Dec 1, 2026"
   },
-  {
-    "prefix": "orb-errors-for-all-fetches",
-    "owners": [
-      "vogelheim@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "args": [
-      "--enable-features=OpaqueResponseBlockingErrorsForAllFetches"
-    ],
-    "bases": [
-      "external/wpt/fetch/orb",
-      "external/wpt/fetch/corb"
-    ],
-    "expires": "Jul 1, 2024"
-  },
   "The origin trials suite tests that OT-controlled features are exposed to",
   "the web as expected, so should not expire.",
   {
