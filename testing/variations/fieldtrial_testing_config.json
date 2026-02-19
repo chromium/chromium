@@ -11852,7 +11852,8 @@
                         "GeminiAntiscamProtectionMinScamScoreLogPageContent": "0.5"
                     },
                     "enable_features": [
-                        "GeminiAntiscamProtectionForMetricsCollection"
+                        "GeminiAntiscamProtectionForMetricsCollection",
+                        "GeminiAntiscamProtectionMqlsLogging"
                     ]
                 }
             ]
