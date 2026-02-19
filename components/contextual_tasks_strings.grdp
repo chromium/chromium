@@ -38,7 +38,7 @@
     When tabs are shared, their contents and URLs are sent to Google.
   </message>
   <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE" desc="Learn more clickable span shown on the first run experience of the contextual task page.">
-    Learn more
+    Learn more about AI and privacy
   </message>
   <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON" desc="Accept button shown on the first run experience of the contextual task page.">
     Got it

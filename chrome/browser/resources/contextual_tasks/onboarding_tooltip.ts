@@ -7,7 +7,6 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
 import type {CrTooltipElement} from '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -38,14 +37,6 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
   // The element that the tooltip is anchored to.
   accessor target: Element|null = null;
   accessor shouldShow: boolean = false;
-  protected onboardingTitle_: string =
-      loadTimeData.getString('onboardingTitle');
-  protected onboardingBody_: string = loadTimeData.getString('onboardingBody');
-  protected onboardingLink_: string = loadTimeData.getString('onboardingLink');
-  protected onboardingLinkUrl_: string =
-      loadTimeData.getString('onboardingLinkUrl');
-  protected onboardingAcceptButton_: string =
-      loadTimeData.getString('onboardingAcceptButton');
 
   private get tooltip_(): CrTooltipElement {
     return this.shadowRoot.querySelector('cr-tooltip')!;
