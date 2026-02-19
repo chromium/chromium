@@ -19753,26 +19753,17 @@
                     "enable_features": [
                         "AbslFlatMapInVariantMap",
                         "AsyncSetCookie",
-                        "AvoidCloneArgsOnExtensionFunctionDispatch",
-                        "AvoidUnnecessaryGetMinimizeButtonOffset",
-                        "AvoidUnnecessaryShouldRenderRichAnimation",
                         "CompressParkableStrings",
                         "FastPathNoRaster",
                         "GCOnArrayBufferAllocationFailure",
-                        "MacAllowBackgroundingRenderProcesses",
-                        "MacCriticalDiskSpacePressure",
-                        "MvcUpdateViewWhenModelChanged",
-                        "NoPreReadMainDllIfSsd",
-                        "PageAllocatorRetryOnCommitFailure",
                         "ReducePPMs",
-                        "ReloadTabUiResourcesIfChanged",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure",
                         "RemoveCancelledScriptedIdleTasks",
-                        "ScreenWinDisplayLookupByHMONITOR",
-                        "SlimDirectReceiverIpc",
-                        "TerminationTargetPolicy",
-                        "UpdateDirectManipulationHelperOnParentChange"
+                        "SlimDirectReceiverIpc"
                     ],
                     "disable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
                         "MemoryCacheStrongReference",
                         "SuppressMemoryListeners",
                         "SuppressMemoryMonitor"
