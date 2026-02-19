@@ -542,7 +542,9 @@ class ToolbarViewVerticalTabsRTLTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ToolbarViewVerticalTabsRTLTest, ReloadButtonWorks) {
+// TODO(crbug.com/485291602): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(ToolbarViewVerticalTabsRTLTest,
+                       DISABLED_ReloadButtonWorks) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
   ASSERT_TRUE(embedded_test_server()->Start());
