@@ -2546,6 +2546,8 @@ public class AwContents implements SmartClipProvider {
         historyUrl = fixupHistory(historyUrl);
 
         if (baseUrl.startsWith("data:")) {
+            RecordHistogram.recordCount1MHistogram(
+                    "Android.WebView.LoadDataWithBaseUrl.DataSize.DataScheme", data.length());
             // For backwards compatibility with WebViewClassic, we use the value of |encoding|
             // as the charset, as long as it's not "base64".
             boolean isBase64 = isBase64Encoded(encoding);
@@ -2558,6 +2560,8 @@ public class AwContents implements SmartClipProvider {
                             historyUrl,
                             isBase64 ? null : encoding);
         } else {
+            RecordHistogram.recordCount1MHistogram(
+                    "Android.WebView.LoadDataWithBaseUrl.DataSize.NonDataScheme", data.length());
             // When loading data with a non-data: base URL, the classic WebView would effectively
             // "dump" that string of data into the WebView without going through regular URL
             // loading steps such as decoding URL-encoded entities. We achieve this same behavior by

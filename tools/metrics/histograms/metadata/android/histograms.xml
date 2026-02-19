@@ -7782,6 +7782,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.LoadDataWithBaseUrl.DataSize.DataScheme"
+    units="characters" expires_after="2026-06-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The size of the 'data' string passed to loadDataWithBaseURL() when the
+    'baseUrl' starts with 'data:'.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.LoadDataWithBaseUrl.DataSize.NonDataScheme"
+    units="characters" expires_after="2026-06-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The size of the 'data' string passed to loadDataWithBaseURL() when the
+    'baseUrl' does not start with 'data:'.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.FailureScheme" enum="WebViewUrlScheme"
     expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
