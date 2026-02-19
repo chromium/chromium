@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -36,13 +37,13 @@ class FakePrintPreviewBrowserAshClient
   ~FakePrintPreviewBrowserAshClient() override = default;
 
   // chromeos::PrintPreviewCrosClient overrides
-  void GeneratePrintPreview(const base::UnguessableToken& token,
-                            crosapi::mojom::PrintSettingsPtr settings,
+  void GeneratePrintPreview(const base::UnguessableToken& /*token*/,
+                            crosapi::mojom::PrintSettingsPtr /*settings*/,
                             GeneratePrintPreviewCallback callback) override {
     std::move(callback).Run(/*success=*/true);
   }
 
-  void HandleDialogClosed(const base::UnguessableToken& token,
+  void HandleDialogClosed(const base::UnguessableToken& /*token*/,
                           HandleDialogClosedCallback callback) override {
     std::move(callback).Run(/*success=*/true);
     ++handle_dialog_closed_count_;
@@ -87,48 +88,52 @@ class PrintPreviewAshBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(CrosapiManager::IsInitialized());
+
+    print_preview_cros_adapter_ = CrosapiManager::Get()
+                                      ->crosapi_ash()
+                                      ->print_preview_webcontents_adapter_ash();
+
+    print_preview_cros_adapter_->RegisterAshClient(&ash_client_);
+  }
+
+  void TearDownOnMainThread() override {
+    if (print_preview_cros_adapter_) {
+      print_preview_cros_adapter_->RegisterAshClient(nullptr);
+      print_preview_cros_adapter_ = nullptr;
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  raw_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
+      print_preview_cros_adapter_ = nullptr;
+  FakePrintPreviewBrowserAshClient ash_client_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests `PrintPreviewCros` api calls don't crash.
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
-  ASSERT_TRUE(CrosapiManager::IsInitialized());
+  // No crashes.
+  CallPrintPreviewBrowserDelegateMethods(print_preview_cros_adapter_);
 
-  auto* print_preview_cros_adapter =
-      CrosapiManager::Get()
-          ->crosapi_ash()
-          ->print_preview_webcontents_adapter_ash();
-
-    FakePrintPreviewBrowserAshClient ash_client;
-    print_preview_cros_adapter->RegisterAshClient(&ash_client);
-
-    // No crashes.
-    CallPrintPreviewBrowserDelegateMethods(print_preview_cros_adapter);
-
-    // Via ash client directly.
-    base::test::TestFuture<bool> future;
-    print_preview_cros_adapter->StartGetPreview(
-        base::UnguessableToken::Create(),
-        chromeos::CreatePrintSettings(/*preview_id=*/0), future.GetCallback());
-    EXPECT_TRUE(future.Get());
+  // Via ash client directly.
+  base::test::TestFuture<bool> future;
+  print_preview_cros_adapter_->StartGetPreview(
+      base::UnguessableToken::Create(),
+      chromeos::CreatePrintSettings(/*preview_id=*/0), future.GetCallback());
+  EXPECT_TRUE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {
-  ASSERT_TRUE(CrosapiManager::IsInitialized());
-
-  auto* print_preview_cros_adapter =
-      CrosapiManager::Get()
-          ->crosapi_ash()
-          ->print_preview_webcontents_adapter_ash();
-
-    FakePrintPreviewBrowserAshClient ash_client;
-    print_preview_cros_adapter->RegisterAshClient(&ash_client);
-
-    EXPECT_EQ(0, ash_client.handle_dialog_closed_count());
-    print_preview_cros_adapter->OnDialogClosed(
-        base::UnguessableToken::Create());
-    EXPECT_EQ(1, ash_client.handle_dialog_closed_count());
+  EXPECT_EQ(0, ash_client_.handle_dialog_closed_count());
+  print_preview_cros_adapter_->OnDialogClosed(base::UnguessableToken::Create());
+  EXPECT_EQ(1, ash_client_.handle_dialog_closed_count());
 }
 
 }  // namespace
