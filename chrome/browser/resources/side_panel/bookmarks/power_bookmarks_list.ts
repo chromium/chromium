@@ -1006,8 +1006,12 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   private notifyBookmarksListResize_() {
     for (let i = 0; i < this.displayLists_.length; i++) {
-      if (this.displayLists_[i].length > 0) {
-        this.getDisplayListElement_(i)!.notifyResize();
+      const displayListElement = this.getDisplayListElement_(i);
+      // When switching between filtered and non-filtered views, the list of
+      // display elements might become briefly out of sync with
+      // `this.displayLists_` so check that it exists.
+      if (displayListElement) {
+        displayListElement.notifyResize();
       }
     }
   }
