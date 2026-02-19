@@ -2224,6 +2224,7 @@ void DatabaseConnection::DeleteIdbDatabase(
   metadata_ = blink::IndexedDBDatabaseMetadata(metadata_.name);
   interface_wrapper_weak_factory_.InvalidateWeakPtrs();
   CHECK(!blob_writers_weak_factory_.HasWeakPtrs());
+  CHECK(!active_rw_transaction_);
 
   if (CanSelfDestruct()) {
     // Fast path: skip explicitly deleting data as the whole database will be
@@ -2237,22 +2238,38 @@ void DatabaseConnection::DeleteIdbDatabase(
   cursor_statements_.clear();
 
   // Since blobs are still active, reset to zygotic state instead of destroying.
-  bool success =
-      db_->Execute(
-          "DELETE FROM blob_references WHERE record_row_id IS NOT NULL") &&
-      db_->Execute("DELETE FROM index_references") &&
-      db_->Execute("DELETE FROM indexes") &&
-      db_->Execute("DELETE FROM records") &&
-      db_->Execute("DELETE FROM object_stores") && [&]() {
-        sql::Statement statement(db_->GetUniqueStatement(
-            "UPDATE indexed_db_metadata SET version = ?"));
-        statement.BindInt64(0, blink::IndexedDBDatabaseMetadata::NO_VERSION);
-        return statement.Run();
-      }();
+  bool reset_success = [this]() {
+    sql::Transaction delete_txn(db_.get());
+    return delete_txn.Begin() &&
+           db_->Execute(
+               "DELETE FROM blob_references WHERE record_row_id IS NOT NULL") &&
+           db_->Execute("DELETE FROM index_references") &&
+           db_->Execute("DELETE FROM indexes") &&
+           db_->Execute("DELETE FROM records") &&
+           db_->Execute("DELETE FROM object_stores") &&
+           [&]() {
+             sql::Statement statement(db_->GetUniqueStatement(
+                 "UPDATE indexed_db_metadata SET version = ?"));
+             statement.BindInt64(0,
+                                 blink::IndexedDBDatabaseMetadata::NO_VERSION);
+             return statement.Run();
+           }() &&
+           delete_txn.Commit();
+  }();
 
-  // If there are any errors in the above, then blobs will probably error out
-  // too, so go ahead and destroy `this`.
-  if (!success) {
+  if (reset_success) {
+    // Checkpoint to make sure that the data is deleted right away. This ensures
+    // the data will be wiped from disk even if the browser later crashes. We
+    // don't checkpoint on every deletion from the database for performance
+    // reasons, but we do strive to ensure entire database deletion will be
+    // "secure".
+    //
+    // In the case where blobs are *not* still present, this is ensured by the
+    // post-close checkpoint + WAL deletion.
+    db_->CheckpointDatabase(/*truncate=*/true);
+  } else {
+    // If there are any errors in the above, then blobs will probably error out
+    // too, so go ahead and destroy `this`.
     backing_store_->DestroyConnection(metadata_.name, std::move(locks));
     // `this` is deleted.
   }

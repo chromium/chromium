@@ -2302,8 +2302,9 @@ TEST_P(SQLDatabaseTest, OpenedInCorrectMode) {
 }
 
 TEST_P(SQLDatabaseTest, CheckpointDatabase) {
-  if (!IsWALEnabled())
-    return;
+  if (!IsWALEnabled()) {
+    GTEST_SKIP();
+  }
 
   // WAL file initially not present until there are modifications to the db.
   base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
@@ -2333,6 +2334,14 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
             "2");
+
+  // Checkpointing doesn't normally reduce the WAL file size, unless used with
+  // `truncate`.
+  std::optional<int64_t> post_checkpoint_wal_size = GetFileSize(wal_path);
+  EXPECT_EQ(post_checkpoint_wal_size, wal_size);
+  EXPECT_TRUE(db_->CheckpointDatabase(/*truncate=*/true));
+  std::optional<int64_t> post_truncate_wal_size = GetFileSize(wal_path);
+  EXPECT_EQ(post_truncate_wal_size, 0);
 }
 
 TEST_P(SQLDatabaseTest, WALCommitCallback) {

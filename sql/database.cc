@@ -375,12 +375,14 @@ void Database::OnWalDataCommit(base::cstring_view db_name, int pages) {
   } else if (pages >= kDefaultWalAutoCheckpoint) {
     // Perform the default behavior of checkpointing if more than 1000 pages are
     // in the log.
-    (void)WalCheckpointImpl(db_name, /*is_auto_checkpoint=*/true);
+    (void)WalCheckpointImpl(db_name, /*is_auto_checkpoint=*/true,
+                            /*truncate=*/false);
   }
 }
 
 int Database::WalCheckpointImpl(base::cstring_view db_name,
-                                bool is_auto_checkpoint) {
+                                bool is_auto_checkpoint,
+                                bool truncate) {
   // The number of frames in the write-ahead log after the checkpoint completes.
   int log_frame_count = 0;
 
@@ -401,10 +403,11 @@ int Database::WalCheckpointImpl(base::cstring_view db_name,
   InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   base::ElapsedTimer timer;
-  const int result =
-      sqlite3_wal_checkpoint_v2(db_, db_name.c_str(), SQLITE_CHECKPOINT_PASSIVE,
-                                /*pnLog=*/&log_frame_count,
-                                /*pnCkpt=*/&checkpointed_frame_count);
+  const int result = sqlite3_wal_checkpoint_v2(
+      db_, db_name.c_str(),
+      truncate ? SQLITE_CHECKPOINT_TRUNCATE : SQLITE_CHECKPOINT_PASSIVE,
+      /*pnLog=*/&log_frame_count,
+      /*pnCkpt=*/&checkpointed_frame_count);
   RecordTimingHistogram(is_auto_checkpoint
                             ? "Sql.Database.AutoCheckpoint.Time."
                             : "Sql.Database.ManualCheckpoint.Time.",
@@ -2688,11 +2691,11 @@ bool Database::UseWALMode() const {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
-bool Database::CheckpointDatabase() {
+bool Database::CheckpointDatabase(bool truncate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return WalCheckpointImpl(kSqliteMainDatabaseName,
-                           /*is_auto_checkpoint=*/false) == SQLITE_OK;
+                           /*is_auto_checkpoint=*/false, truncate) == SQLITE_OK;
 }
 
 }  // namespace sql
