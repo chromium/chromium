@@ -343,8 +343,10 @@ bool FileConductor::CopyAndDelete(const base::FilePath& source,
     return false;
   }
   // Else `source` might be a directory or this process might lack permission to
-  // copy it.
-  VLOG(1) << "Attempting manual copy of directory " << source << " to "
+  // copy it. Retain the error from the attempt to copy `source`.
+  const DWORD copy_error = ::GetLastError();
+
+  VLOG(1) << "Attempting manual copy of presumed directory " << source << " to "
           << destination;
 
   // Recursively copy the contents of `source` to `destination`, deleting each
@@ -369,10 +371,13 @@ bool FileConductor::CopyAndDelete(const base::FilePath& source,
       return true;
 
     case ProcessDirectoryResult::kCantEnumerate:
-      // `source` doesn't appear to be a directory, or the process has
-      // insufficient permission to enumerate its contents.
-      PLOG(ERROR) << "Failed to either copy " << source << " to " << destination
-                  << " or enumerate its contents to copy it recursively";
+      // Perhaps `source` isn't a directory or the process has insufficient
+      // permission to enumerate its contents. Restore the error from the
+      // attempt to copy it above so that it is included in the log.
+      ::SetLastError(copy_error);
+      PLOG(ERROR) << "Failed to copy " << source << " to " << destination
+                  << " with the following error, then failed to enumerate its"
+                     " contents to copy it recursively";
       return false;
 
     case ProcessDirectoryResult::kFailed:
@@ -410,13 +415,23 @@ FileConductor::ProcessDirectoryResult FileConductor::ProcessDirectory(
       return ProcessDirectoryResult::kFailed;
     }
   }
+
   if (file_enumerator.GetError() != base::File::FILE_OK) {
-    const auto error = ::GetLastError();
-    // `source` could not be fully enumerated; possibly because it is not a
-    // directory.
-    PLOG_IF(ERROR, error != ERROR_DIRECTORY)
-        << "Failed to enumerate contents of directory " << source;
-    return ProcessDirectoryResult::kCantEnumerate;
+    // Enumeration stopped prematurely due to an error.
+    if (!destination_created) {
+      // This error originates from the call to FindFirstFileEx for `source`. It
+      // likely means that `source` isn't a directory, but could also mean that
+      // the process lacks permission or some other issue. Callers of
+      // ProcessDirectory typically do so after some other operation fails
+      // without knowing for certain whether `source` is a file or directory, so
+      // do not emit a log message in this case.
+      PLOG_IF(ERROR, ::GetLastError() != ERROR_DIRECTORY)
+          << "Failed to enumerate contents of directory " << source;
+      return ProcessDirectoryResult::kCantEnumerate;
+    }
+    // Else this error originates from FindNextFile.
+    PLOG(ERROR) << "Failed while enumerating contents of directory " << source;
+    return ProcessDirectoryResult::kFailed;
   }
 
   // `destination_created` is false if `source` was an empty directory. Create
