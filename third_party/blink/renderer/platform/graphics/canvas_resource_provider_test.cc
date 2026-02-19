@@ -296,7 +296,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvasResourceProvider(
+std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvas2DResourceProvider(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
@@ -305,10 +305,9 @@ std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvasResourceProvider(
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  return CanvasNon2DResourceProviderSharedImage::Create(
-      gfx::Size(10, 10), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper, shared_image_usage_flags);
+  return Canvas2DResourceProviderSharedImage::Create(
+      gfx::Size(10, 10), color_params, context_provider_wrapper,
+      RasterMode::kGPU, shared_image_usage_flags);
 }
 
 scoped_refptr<CanvasResource> UpdateResource(
@@ -415,7 +414,7 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 
-  auto provider = MakeCanvasResourceProvider(context_provider_wrapper_);
+  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto new_resource = UpdateResource(provider.get());
@@ -445,7 +444,7 @@ TEST_F(CanvasResourceProviderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kCanvas2DReclaimUnusedResources);
 
-  auto provider = MakeCanvasResourceProvider(context_provider_wrapper_);
+  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto new_resource = UpdateResource(provider.get());
@@ -465,7 +464,7 @@ TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderUnusedResourcesAreNotCollectedWhenYoung) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 
-  auto provider = MakeCanvasResourceProvider(context_provider_wrapper_);
+  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto new_resource = UpdateResource(provider.get());
@@ -727,7 +726,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
 }
 
 TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
-  auto provider = MakeCanvasResourceProvider(context_provider_wrapper_);
+  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
@@ -751,7 +750,7 @@ TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
 
 TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   std::unique_ptr<CanvasResourceProvider> provider =
-      MakeCanvasResourceProvider(context_provider_wrapper_);
+      MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
@@ -768,7 +767,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
 
 TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   std::unique_ptr<CanvasResourceProvider> provider =
-      MakeCanvasResourceProvider(context_provider_wrapper_);
+      MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
