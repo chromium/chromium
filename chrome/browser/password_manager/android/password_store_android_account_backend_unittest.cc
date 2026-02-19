@@ -1132,11 +1132,13 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(store_notification_trigger, Run(_)).Times(0);
   lifecycle_helper()->OnForegroundSessionStart();
 
-  EXPECT_CALL(store_notification_trigger, Run(Eq(std::nullopt)));
+  EXPECT_CALL(store_notification_trigger,
+              Run(VariantWith<PasswordChanges>(Eq(std::nullopt))));
   task_environment_.FastForwardBy(base::Seconds(5));
 
   // Subsequent foregroundings should issue immediate notifications.
-  EXPECT_CALL(store_notification_trigger, Run(Eq(std::nullopt)));
+  EXPECT_CALL(store_notification_trigger,
+              Run(VariantWith<PasswordChanges>(Eq(std::nullopt))));
   lifecycle_helper()->OnForegroundSessionStart();
 }
 

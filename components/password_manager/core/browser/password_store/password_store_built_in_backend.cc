@@ -60,7 +60,7 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
 
 // Records in a pref that passwords were deleted via sync. The pref is used to
 // report metrics.
-std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
+PasswordChangesOrError MaybeRecordPasswordDeletionViaSync(
     base::RepeatingCallback<void(password_manager::IsAccountStore)>
         write_prefs_callback,
     std::optional<PasswordStoreChangeList> password_store_change_list,

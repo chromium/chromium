@@ -135,9 +135,8 @@ class PasswordStore : public PasswordStoreInterface {
   // Notifies observers that password store data may have been changed. If
   // available, it forwards the changes to observers. Otherwise, all logins are
   // requested and forwarded to `NotifyLoginsRetainedOnMainSequence`.
-  void NotifyLoginsChangedOnMainSequence(
-      LoginsChangedTrigger change_event,
-      std::optional<PasswordStoreChangeList> changes);
+  void NotifyLoginsChangedOnMainSequence(LoginsChangedTrigger change_event,
+                                         PasswordChangesOrError);
 
   // Notifies observers with all logins remaining after a modifying operation.
   void NotifyLoginsRetainedOnMainSequence(LoginsResultOrError result);

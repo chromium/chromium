@@ -23,6 +23,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -491,16 +493,21 @@ TEST_F(PasswordStoreTest,
   store->Init(/*affiliated_match_helper=*/nullptr);
 
   base::test::TestFuture<bool> completion_future;
+  MockPasswordStoreObserver mock_observer;
+  store->AddObserver(&mock_observer);
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
       .WillOnce(WithArg<4>([](PasswordChangesOrErrorReply reply) -> void {
-        std::move(reply).Run(kBackendError);
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
                                     base::Time::FromSecondsSinceUnixEpoch(0),
                                     base::Time::FromSecondsSinceUnixEpoch(2),
                                     completion_future.GetCallback());
   EXPECT_FALSE(completion_future.Take());
 
+  store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();
 }
 
@@ -1343,6 +1350,33 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfRemovalReturnsError) {
+  const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
+  MockPasswordStoreObserver mock_observer;
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
+  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->AddObserver(&mock_observer);
+
+  // Expect that observers does not receive the removal when backend fails.
+  EXPECT_CALL(*mock_backend, RemoveLoginAsync(_, Eq(kTestForm), _))
+      .WillOnce(WithArg<2>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
+      }));
+  EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
+  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
+  store->RemoveLogin(FROM_HERE, kTestForm);
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
 TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
   const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
@@ -1413,11 +1447,43 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfAdditionReturnsError) {
   // Expect that observers does not receive the change when backend fails.
   EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
-        std::move(reply).Run(kBackendError);
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
-  // TODO(crbug.com/483324125): Expect a call to OnErrorStateChanged.
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
+  store->AddLogin(kTestForm);
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest,
+       DoNotCallOnErrorStateChangedIfAdditionReturnsErrorAndFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPasswordStorePropagatesActionableErrors);
+
+  const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
+  MockPasswordStoreObserver mock_observer;
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
+  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->AddObserver(&mock_observer);
+
+  // Expect that observers does not receive the change when backend fails.
+  EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
+      }));
+  EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
+  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
+  EXPECT_CALL(mock_observer, OnErrorStateChanged).Times(0);
   store->AddLogin(kTestForm);
   WaitForPasswordStore();
 
@@ -1439,10 +1505,12 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfUpdateReturnsError) {
   // Expect that observers does not receive the update when backend fails.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
-        std::move(reply).Run(kBackendError);
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
   store->UpdateLogin(kTestForm);
   WaitForPasswordStore();
 

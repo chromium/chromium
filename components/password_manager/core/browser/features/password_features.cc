@@ -141,6 +141,9 @@ BASE_FEATURE(kPasswordGenerationChunking,
 
 BASE_FEATURE(kPasswordManagerLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordStorePropagatesActionableErrors,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProactivelyDownloadModelForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

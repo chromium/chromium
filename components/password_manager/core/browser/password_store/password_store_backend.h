@@ -44,7 +44,7 @@ using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
 class PasswordStoreBackend {
  public:
   using RemoteChangesReceived =
-      base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>)>;
+      base::RepeatingCallback<void(PasswordChangesOrError)>;
 
   PasswordStoreBackend() = default;
   PasswordStoreBackend(const PasswordStoreBackend&) = delete;

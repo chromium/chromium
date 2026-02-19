@@ -161,6 +161,10 @@ BASE_DECLARE_FEATURE(kPasswordGenerationChunking);
 BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolutionOnDesktop);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// When enabled, the password store triggers the `OnErrorStateChanged`
+// notifications.
+BASE_DECLARE_FEATURE(kPasswordStorePropagatesActionableErrors);
+
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);

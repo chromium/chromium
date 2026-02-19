@@ -27,10 +27,10 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -44,15 +44,14 @@ namespace {
 // Helper function which invokes |notifying_callback| with potential changes
 // and |completion_callback| with success indication.
 void InvokeCallbacksForSuspectedChanges(
-    base::OnceCallback<void(PasswordChanges)> notifying_callback,
+    PasswordChangesOrErrorReply notifying_callback,
     base::OnceCallback<void(bool)> completion_callback,
     PasswordChangesOrError changes_or_error) {
   DCHECK(notifying_callback);
   bool success =
       !std::holds_alternative<PasswordStoreBackendError>(changes_or_error);
 
-  std::move(notifying_callback)
-      .Run(GetPasswordChangesOrNulloptOnFailure(std::move(changes_or_error)));
+  std::move(notifying_callback).Run(std::move(changes_or_error));
   if (completion_callback) {
     std::move(completion_callback).Run(success);
   }
@@ -217,10 +216,8 @@ void PasswordStore::RemoveLogin(const base::Location& location,
 
   backend_->RemoveLoginAsync(
       location, form,
-      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
-          .Then(
-              base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                             this, LoginsChangedTrigger::Deletion)));
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                     LoginsChangedTrigger::Deletion));
 }
 
 void PasswordStore::RemoveLoginsCreatedBetween(
@@ -466,13 +463,29 @@ void PasswordStore::OnInitCompleted(bool success) {
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
     LoginsChangedTrigger logins_changed_trigger,
-    std::optional<PasswordStoreChangeList> changes) {
+    PasswordChangesOrError changes_or_error) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   // Don't propagate reference to this store after its shutdown. No caller
   // should expect any notifications from a shut down store in any case.
   if (!backend_) {
     return;
+  }
+
+  PasswordChanges changes = std::nullopt;
+  ActionableError error = ActionableError::kNoError;
+  if (std::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
+    const PasswordStoreBackendError& backend_error =
+        std::get<PasswordStoreBackendError>(changes_or_error);
+    error = BackendErrorToActionableError(backend_error.type);
+  } else {
+    changes = std::move(std::get<PasswordChanges>(changes_or_error));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordStorePropagatesActionableErrors)) {
+    for (auto& observer : observers_) {
+      observer.OnErrorStateChanged(this, error);
+    }
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -490,8 +503,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   }
 #else
   if (!changes.has_value()) {
-    // TODO(crbug.com/40260035): Record the silent failure.
-    // TODO(crbug.com/483324125): Call OnErrorStateChanged?
+    // The error has already been propagated. A changelist doesn't exist.
     return;
   }
 #endif

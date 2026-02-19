@@ -16,17 +16,12 @@ namespace password_manager {
 // Aggregates a vector of PasswordChangesOrError into a single
 // PasswordChangesOrError. Does not check for duplicate values.
 // Will return first occurred error if any.
-PasswordChanges JoinPasswordStoreChanges(
-    const std::vector<PasswordChangesOrError>& changes);
+PasswordChangesOrError JoinPasswordStoreChanges(
+    const std::vector<PasswordChangesOrError>& changes_to_join);
 
 // Returns logins if |result| holds them, or an empty list if |result|
 // holds an error.
 LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
-
-// Returns password changes if |result| holds them, or std::nullopt if |result|
-// holds an std::nullopt or error.
-PasswordChanges GetPasswordChangesOrNulloptOnFailure(
-    PasswordChangesOrError result);
 
 // Wraps all password forms in the provided vector in a unique pointer.
 std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(

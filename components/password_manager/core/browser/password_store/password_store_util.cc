@@ -9,12 +9,12 @@
 
 namespace password_manager {
 
-PasswordChanges JoinPasswordStoreChanges(
+PasswordChangesOrError JoinPasswordStoreChanges(
     const std::vector<PasswordChangesOrError>& changes_to_join) {
   PasswordStoreChangeList joined_changes;
   for (const auto& changes_or_error : changes_to_join) {
     if (std::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
-      return std::nullopt;
+      return std::get<PasswordStoreBackendError>(changes_or_error);
     }
     const PasswordChanges& changes =
         std::get<PasswordChanges>(changes_or_error);
@@ -31,14 +31,6 @@ LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
     return {};
   }
   return std::move(std::get<LoginsResult>(result));
-}
-
-PasswordChanges GetPasswordChangesOrNulloptOnFailure(
-    PasswordChangesOrError result) {
-  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-    return std::nullopt;
-  }
-  return std::move(std::get<PasswordChanges>(result));
 }
 
 std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(
