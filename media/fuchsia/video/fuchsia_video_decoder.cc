@@ -561,7 +561,7 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       fidl::ToUnderlying(output_format_.image_format.pixel_format.type));
 
   VideoPixelFormat pixel_format;
-  // The GMB is either kNV12 or kYV12.
+  // The output handle is either kNV12 or kYV12.
   viz::SharedImageFormat si_format;
   switch (sysmem_pixel_format) {
     case fuchsia::images2::PixelFormat::NV12:
