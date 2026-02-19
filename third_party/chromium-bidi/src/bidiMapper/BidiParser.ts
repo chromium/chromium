@@ -147,6 +147,9 @@ export interface BidiCommandParameterParser {
   parseSetScriptingEnabledParams(
     params: unknown,
   ): Emulation.SetScriptingEnabledParameters;
+  parseSetScrollbarTypeOverrideParams(
+    params: unknown,
+  ): Emulation.SetScrollbarTypeOverrideParameters;
   parseSetTimezoneOverrideParams(
     params: unknown,
   ): Emulation.SetTimezoneOverrideParameters;

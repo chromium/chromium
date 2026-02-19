@@ -1059,6 +1059,7 @@ export type EmulationCommand =
   | Emulation.SetScreenOrientationOverride
   | Emulation.SetScreenSettingsOverride
   | Emulation.SetScriptingEnabled
+  | Emulation.SetScrollbarTypeOverride
   | Emulation.SetTimezoneOverride
   | Emulation.SetTouchOverride
   | Emulation.SetUserAgentOverride;
@@ -1068,6 +1069,7 @@ export type EmulationResult =
   | Emulation.SetLocaleOverrideResult
   | Emulation.SetScreenOrientationOverrideResult
   | Emulation.SetScriptingEnabledResult
+  | Emulation.SetScrollbarTypeOverrideResult
   | Emulation.SetTimezoneOverrideResult
   | Emulation.SetTouchOverrideResult
   | Emulation.SetUserAgentOverrideResult;
@@ -1312,6 +1314,25 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export type SetScriptingEnabledResult = EmptyResult;
+}
+export namespace Emulation {
+  export type SetScrollbarTypeOverride = {
+    method: 'emulation.setScrollbarTypeOverride';
+    params: Emulation.SetScrollbarTypeOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type SetScrollbarTypeOverrideParameters = {
+    scrollbarType: 'classic' | 'overlay' | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export type SetScrollbarTypeOverrideResult = EmptyResult;
 }
 export namespace Emulation {
   export type SetTimezoneOverride = {

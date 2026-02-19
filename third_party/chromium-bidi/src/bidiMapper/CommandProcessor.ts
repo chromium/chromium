@@ -353,6 +353,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#emulationProcessor.setScriptingEnabled(
           this.#parser.parseSetScriptingEnabledParams(command.params),
         );
+      case 'emulation.setScrollbarTypeOverride':
+        this.#parser.parseSetScrollbarTypeOverrideParams(command.params);
+        throw new UnsupportedOperationException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'emulation.setTimezoneOverride':
         return await this.#emulationProcessor.setTimezoneOverride(
           this.#parser.parseSetTimezoneOverrideParams(command.params),

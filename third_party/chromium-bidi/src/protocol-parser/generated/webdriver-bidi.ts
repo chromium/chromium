@@ -1314,6 +1314,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetScreenOrientationOverrideSchema,
     Emulation.SetScreenSettingsOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
+    Emulation.SetScrollbarTypeOverrideSchema,
     Emulation.SetTimezoneOverrideSchema,
     Emulation.SetTouchOverrideSchema,
     Emulation.SetUserAgentOverrideSchema,
@@ -1326,6 +1327,7 @@ export const EmulationResultSchema = z.lazy(() =>
     Emulation.SetLocaleOverrideResultSchema,
     Emulation.SetScreenOrientationOverrideResultSchema,
     Emulation.SetScriptingEnabledResultSchema,
+    Emulation.SetScrollbarTypeOverrideResultSchema,
     Emulation.SetTimezoneOverrideResultSchema,
     Emulation.SetTouchOverrideResultSchema,
     Emulation.SetUserAgentOverrideResultSchema,
@@ -1611,6 +1613,35 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export const SetScriptingEnabledResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
+  export const SetScrollbarTypeOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setScrollbarTypeOverride'),
+      params: Emulation.SetScrollbarTypeOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetScrollbarTypeOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      scrollbarType: z.union([
+        z.literal('classic'),
+        z.literal('overlay'),
+        z.null(),
+      ]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetScrollbarTypeOverrideResultSchema = z.lazy(
     () => EmptyResultSchema,
   );
 }
