@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -41,6 +42,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -70,6 +74,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,6 +89,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.signin.base.AccountInfo;
@@ -96,6 +103,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -191,11 +199,15 @@ public class AutofillProfilesFragmentTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SyncService mSyncService;
+    private static EntityDataManager sEntityDataManager;
 
     private final AutofillTestHelper mHelper = new AutofillTestHelper();
 
     @BeforeClass
     public static void setUpClass() {
+        sEntityDataManager = mock(EntityDataManager.class);
+        when(sEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
         sSettingsActivityTestRule.startSettingsActivity();
     }
 
@@ -996,6 +1008,75 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sSettingsActivityTestRule.getActivity().onBackPressed();
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_renderedCorrectly() throws Exception {
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ false);
+
+        EntityInstanceWithLabels entity2 =
+                new EntityInstanceWithLabels(
+                        "guid2",
+                        /*entityName*/ "Passport",
+                        /* entityInstanceSubLabel= */ "Germany",
+                        /* storedInWallet= */ false);
+
+        when(sEntityDataManager.getEntitiesWithLabels())
+                .thenReturn(Arrays.asList(entity1, entity2));
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Trigger a rebuild of the profile list to pick up the new mock entities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    Preference vehicleCategory = fragment.findPreference("Vehicle");
+                    Criteria.checkThat(
+                            "Vehicle entity category should exist",
+                            vehicleCategory,
+                            Matchers.notNullValue());
+                    Preference vehicleEntity = fragment.findPreference("guid1");
+                    Criteria.checkThat(
+                            "Vehicle entity should exist", vehicleEntity, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Vehicle summary should match",
+                            vehicleEntity.getSummary(),
+                            Matchers.is("Mercedez"));
+
+                    Preference passportCategory = fragment.findPreference("Passport");
+                    Criteria.checkThat(
+                            "Passport entity category should exist",
+                            passportCategory,
+                            Matchers.notNullValue());
+                    Preference passportEntity = fragment.findPreference("guid2");
+                    Criteria.checkThat(
+                            "Passport entity should exist",
+                            passportEntity,
+                            Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Passport summary should match",
+                            passportEntity.getSummary(),
+                            Matchers.is("Germany"));
+
+                    PreferenceScreen screen = fragment.getPreferenceScreen();
+                    int categoryCount = 0;
+                    for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                        if (screen.getPreference(i) instanceof PreferenceCategory) {
+                            categoryCount++;
+                        }
+                    }
+                    Criteria.checkThat(
+                            "Entities category count should be 2", categoryCount, Matchers.is(2));
                 });
     }
 
