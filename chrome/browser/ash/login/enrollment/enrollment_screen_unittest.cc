@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
@@ -98,6 +99,9 @@ class EnrollmentScreenBaseTest : public testing::Test {
   // Creates the EnrollmentScreen and sets required parameters.
   void SetUpEnrollmentScreen(const policy::EnrollmentConfig& config) {
     enrollment_screen_ = std::make_unique<EnrollmentScreen>(
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash(),
         mock_view_.AsWeakPtr(), &mock_error_screen_,
         base::BindRepeating(&EnrollmentScreenBaseTest::HandleScreenExit,
                             base::Unretained(this)));

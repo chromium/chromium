@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -39,11 +39,13 @@ std::string AutoEnrollmentCheckScreen::GetResultString(Result result) {
 }
 
 AutoEnrollmentCheckScreen::AutoEnrollmentCheckScreen(
+    PrefService* local_state,
     base::WeakPtr<AutoEnrollmentCheckScreenView> view,
     ErrorScreen* error_screen,
     const base::RepeatingCallback<void(Result result)>& exit_callback)
     : BaseScreen(AutoEnrollmentCheckScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
@@ -265,8 +267,7 @@ void AutoEnrollmentCheckScreen::OnConnectRequested() {
 
 void AutoEnrollmentCheckScreen::RunExitCallback(Result result) {
   if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
-    g_browser_process->local_state()->SetBoolean(
-        ash::prefs::kAutoEnrollmentCheckExited, true);
+    local_state_->SetBoolean(ash::prefs::kAutoEnrollmentCheckExited, true);
   }
   exit_callback_.Run(result);
 }

@@ -696,6 +696,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnUpdateScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnrollmentScreen>(
+      browser_policy_connector_ash,
       oobe_ui->GetView<EnrollmentScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnEnrollmentScreenExit,
@@ -782,6 +783,7 @@ WizardController::CreateScreens() {
   }
 
   append(std::make_unique<AutoEnrollmentCheckScreen>(
+      local_state,
       oobe_ui->GetView<AutoEnrollmentCheckScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnAutoEnrollmentCheckScreenExit,

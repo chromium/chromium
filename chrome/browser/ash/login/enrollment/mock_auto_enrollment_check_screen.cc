@@ -7,10 +7,14 @@
 namespace ash {
 
 MockAutoEnrollmentCheckScreen::MockAutoEnrollmentCheckScreen(
+    PrefService* local_state,
     base::WeakPtr<AutoEnrollmentCheckScreenView> view,
     ErrorScreen* error_screen,
     const base::RepeatingCallback<void(Result result)>& exit_callback)
-    : AutoEnrollmentCheckScreen(std::move(view), error_screen, exit_callback) {}
+    : AutoEnrollmentCheckScreen(local_state,
+                                std::move(view),
+                                error_screen,
+                                exit_callback) {}
 
 MockAutoEnrollmentCheckScreen::~MockAutoEnrollmentCheckScreen() = default;
 

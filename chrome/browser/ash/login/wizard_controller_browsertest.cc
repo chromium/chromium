@@ -588,6 +588,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     mock_enrollment_screen_view_ = std::make_unique<MockEnrollmentScreenView>();
     mock_enrollment_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockEnrollmentScreen>(
+            g_browser_process->platform_part()->browser_policy_connector_ash(),
             mock_enrollment_screen_view_->AsWeakPtr(), GetErrorScreen(),
             base::BindRepeating(&WizardController::OnEnrollmentScreenExit,
                                 base::Unretained(wizard_controller))));
@@ -596,6 +597,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockAutoEnrollmentCheckScreenView>();
     mock_auto_enrollment_check_screen_ = MockScreen(
         std::make_unique<testing::NiceMock<MockAutoEnrollmentCheckScreen>>(
+            g_browser_process->local_state(),
             mock_auto_enrollment_check_screen_view_.get()->AsWeakPtr(),
             GetErrorScreen(),
             base::BindRepeating(
@@ -2154,6 +2156,7 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
         std::make_unique<MockAutoEnrollmentCheckScreenView>();
     mock_auto_enrollment_check_screen_ = MockScreen(
         std::make_unique<testing::NiceMock<MockAutoEnrollmentCheckScreen>>(
+            g_browser_process->local_state(),
             mock_auto_enrollment_check_screen_view_.get()->AsWeakPtr(),
             GetErrorScreen(),
             base::BindRepeating(

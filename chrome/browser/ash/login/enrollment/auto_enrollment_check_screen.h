@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+
+class PrefService;
 
 namespace policy {
 class AutoEnrollmentController;
@@ -39,7 +42,9 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   };
   using TView = AutoEnrollmentCheckScreenView;
 
+  // `local_state` must be non-null and must outlive `this`.
   AutoEnrollmentCheckScreen(
+      PrefService* local_state,
       base::WeakPtr<AutoEnrollmentCheckScreenView> view,
       ErrorScreen* error_screen,
       const base::RepeatingCallback<void(Result result)>& exit_callback);
@@ -116,6 +121,8 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
 
   // Clears the cached state so that the check can be retried.
   void ClearState();
+
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_;

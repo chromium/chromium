@@ -13,13 +13,20 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 class MockEnrollmentScreen : public EnrollmentScreen {
  public:
-  MockEnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
-                       ErrorScreen* error_screen,
-                       const ScreenExitCallback& exit_callback);
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  MockEnrollmentScreen(
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      base::WeakPtr<EnrollmentScreenView> view,
+      ErrorScreen* error_screen,
+      const ScreenExitCallback& exit_callback);
   ~MockEnrollmentScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
