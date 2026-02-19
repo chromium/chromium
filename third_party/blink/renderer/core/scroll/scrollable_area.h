@@ -803,6 +803,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
 // Traverse all enclosing scrollable layout boxes of the scroll target
 // node in nearest order.
+// TODO(crbug.com/485240464): This is not a correct order for OverscrollAreas,
+// which requires either special treatment or scroll tree traversal (which in
+// turn requires clean prepaint).
 class CORE_EXPORT ScrollableAreaTraversal {
   STACK_ALLOCATED();
 

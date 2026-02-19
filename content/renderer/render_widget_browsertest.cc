@@ -135,7 +135,7 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPI) {
                   .GetScrollableContainerId());
 
     // Hit overflow:hidden div
-    EXPECT_EQ(GetCompositorElementId(),
+    EXPECT_EQ(GetCompositorElementId("blue"),
               GetWebFrameWidget()
                   ->HitTestResultAt(GetCenterPointOfElement("blue"))
                   .GetScrollableContainerId());
@@ -180,9 +180,7 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPIWithImplicitRootScroller) {
         height:50px; background:white;'>some more content</div>
       )HTML");
   // Hit sibling of a implicit root scroller node
-  EXPECT_EQ(GetMainFrame()
-                ->GetDocument()
-                .GetVisualViewportScrollingElementIdForTesting(),
+  EXPECT_EQ(GetCompositorElementId(),
             GetWebFrameWidget()
                 ->HitTestResultAt(GetCenterPointOfElement("white"))
                 .GetScrollableContainerId());

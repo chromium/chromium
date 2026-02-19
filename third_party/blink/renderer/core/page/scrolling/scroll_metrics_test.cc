@@ -250,7 +250,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
             /* Make the box not opaque to hit test, so that not eligible for
                fast scroll hit test. */
             border-radius: 5px; }
-     .hidden { overflow: hidden; }
+     .hidden { overflow: clip; }
      .spacer { height: 1000px; }
     </style>
     <div id='box' class='box'>

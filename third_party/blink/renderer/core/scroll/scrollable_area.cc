@@ -1422,10 +1422,12 @@ ScrollableArea* GetNearestScrollableArea(LayoutBox* current_box) {
   // callback that performs scrolling as well as associated "root" actions like
   // browser control movement and overscroll glow.
   do {
-    if (next_box->IsGlobalRootScroller() ||
-        (next_box->IsScrollContainer() &&
-         (next_box->GetScrollableArea()->ScrollsOverflow() ||
-          !next_box->GetScrollableArea()->CanPropagateScroll()))) {
+    // Note that we don't check for scrollable overflow, because there are cases
+    // (OverscrollGestures) where the scrolling chaining path differs from the
+    // layout box tree. In these cases, if we look for scrollable overflow we
+    // may miss a valid scroll chain.
+    // TODO(crbug.com/485240464): Make this correct for overscroll areas.
+    if (next_box->IsGlobalRootScroller() || next_box->IsScrollContainer()) {
       return next_box->GetScrollableArea();
     }
 
