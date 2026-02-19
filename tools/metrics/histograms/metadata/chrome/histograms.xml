@@ -33,12 +33,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.BuildState.BuildStateUpdateType"
-    enum="BuildStateUpdateType" expires_after="2026-06-06">
+    enum="BuildStateUpdateType" expires_after="2027-02-02">
   <owner>ajgo@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <summary>
     Result of polling for the installed version of Chrome. Logged once at
     startup then approximately every two hours.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.BuildState.PageBlockingUpdate"
+    enum="PageBlockingUpdate" expires_after="2027-02-02">
+  <owner>ajgo@chromium.org</owner>
+  <owner>ellyjones@chromium.org</owner>
+  <summary>
+    Emitted during every upload of UMA records for the current session when a
+    single tab and a single window are blocking an update from applying. The
+    chrome:// scheme value is not logged if a more specific value could be
+    logged. Only recorded on Windows, Linux and Mac.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.BuildState.PendingUpdateState"
+    enum="PendingUpdateState" expires_after="2027-02-02">
+  <owner>ajgo@chromium.org</owner>
+  <owner>ellyjones@chromium.org</owner>
+  <summary>
+    Records if an update is available, and the state of the client that is
+    currently blocking an update from applying. Recorded on every upload of UMA
+    data for the current session. Only recorded on Windows, Linux and Mac.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.BuildState.TimeSinceUpdateAvailable" units="minutes"
+    expires_after="2027-02-02">
+  <owner>ajgo@chromium.org</owner>
+  <owner>ellyjones@chromium.org</owner>
+  <summary>
+    The time since an update has been available. Recorded on every upload of UMA
+    data for the current session when an update is available. Only recorded on
+    Windows, Linux and Mac.
   </summary>
 </histogram>
 

@@ -7049,6 +7049,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
       "//chrome/browser/ui/webui/updater:mojo_bindings",
+      "//chrome/browser/updates:update_metrics",
       "//chrome/services/system_signals/public/cpp/browser",
       "//chrome/updater:browser_sources",
       "//components/on_device_translation",
