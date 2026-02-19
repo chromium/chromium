@@ -485,7 +485,6 @@ cq_build_perf_builder(
             config = "chromium",
             apply_configs = [
                 "mb",
-                # TODO: b/481207190: Remove after the experiments.
                 "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
@@ -505,8 +504,6 @@ cq_build_perf_builder(
     ),
     siso_configs = ["builder"],
     siso_profile_mode = "local",
-    # TODO: b/481207190: Remove after the experiments.
-    xcode = xcode.xcode_default,
 )
 
 cq_build_perf_builder(
@@ -736,7 +733,6 @@ This builder measures build performance for Mac developer builds, by simulating 
             config = "chromium",
             apply_configs = [
                 "mb",
-                # TODO: b/481207190: Remove after the experiments.
                 "mac_toolchain",
             ],
             target_platform = builder_config.target_platform.MAC,
@@ -757,8 +753,6 @@ This builder measures build performance for Mac developer builds, by simulating 
     siso_configs = [],
     siso_profile_mode = "local",
     siso_remote_jobs = 5120,  # Siso doesn't set remote limit for Mac builds.
-    # TODO: b/481207190: Remove after the experiments.
-    xcode = xcode.xcode_default,
 )
 
 developer_build_perf_builder(
