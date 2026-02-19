@@ -24,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
@@ -213,7 +214,7 @@ std::unique_ptr<DecryptConfig> SplitSubsamples(
 
     // if clear+cipher bytes would be over the max of uint32_t, we need to
     // quit immediately, to prevent malicious overflowing.
-    if (0xFFFFFFFF - subsample_clear < subsample_cipher) {
+    if (!base::CheckAdd(subsample_clear, subsample_cipher).IsValid()) {
       DVLOG(1) << "Invalid subsample alignment";
       return nullptr;
     }
@@ -526,9 +527,12 @@ bool Vp9Parser::ParseUncompressedHeader(const FrameInfo& frame_info,
     *result = kOk;
     return true;
   }
-  if (curr_frame_header_.uncompressed_header_size +
-          curr_frame_header_.header_size_in_bytes >
-      base::checked_cast<size_t>(frame_info.size)) {
+  size_t total_header_size;
+  base::CheckedNumeric<size_t> total_header_size_checked =
+      curr_frame_header_.uncompressed_header_size;
+  total_header_size_checked += curr_frame_header_.header_size_in_bytes;
+  if (!total_header_size_checked.AssignIfValid(&total_header_size) ||
+      total_header_size > base::checked_cast<size_t>(frame_info.size)) {
     DVLOG(1) << "header_size_in_bytes="
              << curr_frame_header_.header_size_in_bytes
              << " is larger than bytes left in buffer: "
@@ -710,7 +714,7 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ExtractFrames(
   for (size_t i = 0; i < num_frames; ++i) {
     uint32_t size = 0;
     for (size_t j = 0; j < mag; ++j) {
-      size |= *index_ptr << (j * 8);
+      size |= static_cast<uint32_t>(*index_ptr) << (j * 8);
       ++index_ptr;
     }
 

@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {
@@ -852,8 +853,13 @@ bool Vp8Parser::ParsePartitions(Vp8FrameHeader* fhdr) {
   // stream after the first partition, each 3 bytes long. The size of last
   // DCT partition is not stored in the stream, but is instead calculated by
   // taking the remainder of the frame size after the penultimate DCT partition.
-  size_t first_dct_pos = fhdr->first_part_offset + fhdr->first_part_size +
-                         (fhdr->num_of_dct_partitions - 1) * 3;
+  size_t first_dct_pos;
+  base::CheckedNumeric<size_t> first_dct_pos_checked = fhdr->first_part_offset;
+  first_dct_pos_checked += fhdr->first_part_size;
+  first_dct_pos_checked += (fhdr->num_of_dct_partitions - 1) * 3;
+  if (!first_dct_pos_checked.AssignIfValid(&first_dct_pos)) {
+    return false;
+  }
 
   // Make sure we have enough data for the first partition and partition sizes.
   if (fhdr->frame_size < first_dct_pos)
