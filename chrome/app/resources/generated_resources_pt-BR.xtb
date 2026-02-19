@@ -4991,7 +4991,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4327380114687339519">Menu de extensões</translation>
 <translation id="4330191372652740264">Água com gelo</translation>
 <translation id="4330387663455830245">Nunca traduzir <ph name="LANGUAGE" /></translation>
-<translation id="4332976768901252016">Configurar o controle dos pais</translation>
+<translation id="4332976768901252016">Configurar os controles da família</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 com criptografia RSA</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> não vai aparecer de novo</translation>
 <translation id="4335835283689002019">A Navegação Segura está desativada</translation>
@@ -9411,6 +9411,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7401559588859088661">Transferir e abrir</translation>
 <translation id="7401778920660465883">Dispensar esta mensagem</translation>
 <translation id="7402198013420237102">Mover senhas salvas para sua Conta do Google?</translation>
+<translation id="7402375256128852434">Adicione guias recentes</translation>
 <translation id="740333000181878130">Som de inicialização do dispositivo</translation>
 <translation id="7403642243184989645">Fazendo o download de recursos</translation>
 <translation id="7406113532070524618">Essa configuração funciona sem identificar você ou permitir que sites acessem o histórico de navegação. Apesar disso, os sites podem compartilhar uma pequena quantidade de informações como parte da verificação.</translation>
@@ -10165,7 +10166,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="791247712619243506">Cancelar configuração</translation>
 <translation id="7912974581251770345">Tradução</translation>
 <translation id="7914399737746719723">App instalado</translation>
-<translation id="7915457674565721553">Conecte-se à Internet para configurar o controle dos pais</translation>
+<translation id="7915457674565721553">Conecte-se à Internet para configurar os controles da família</translation>
 <translation id="7916364730877325865">Sua organização não permite ativar a sincronização com esta conta</translation>
 <translation id="791698251820376781">Sua organização não permite que você faça login</translation>
 <translation id="7918257978052780342">Inscrever-se</translation>

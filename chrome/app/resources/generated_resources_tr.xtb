@@ -6748,7 +6748,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5562588178647493983">Daha fazla bilgi edinmek için yöneticinize başvurun</translation>
 <translation id="556321030400250233">yerel veya paylaşılan dosya</translation>
 <translation id="5563234215388768762">Google'da arayın veya URL'yi yazın</translation>
-<translation id="5563698194918415761">Ağ politikası veya proxy sunucusu tarafından güncelleme engellendi.</translation>
+<translation id="5563698194918415761">Güncelleme, ağ politikası veya proxy sunucusu tarafından engellendi.</translation>
 <translation id="5563824734298958390">Sekme grubundan ayrılmak istiyor musunuz?</translation>
 <translation id="5565735124758917034">Etkin</translation>
 <translation id="5568069709869097550">Oturum açılamıyor</translation>
@@ -9390,6 +9390,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7401559588859088661">Taşı ve aç</translation>
 <translation id="7401778920660465883">Bu iletiyi kapat</translation>
 <translation id="7402198013420237102">Kayıtlı şifreler Google Hesabınıza taşınsın mı?</translation>
+<translation id="7402375256128852434">Son sekmeleri ekle</translation>
 <translation id="740333000181878130">Cihaz başlatma sesi</translation>
 <translation id="7403642243184989645">Kaynaklar indiriliyor</translation>
 <translation id="7406113532070524618">Bu ayar çalışırken kimliğinizin belirlenmesine veya sitelerin tarama geçmişinizi görmesine izin verilmez. Ancak siteler, doğrulama kapsamında az miktarda bilgi paylaşabilir</translation>
@@ -10759,7 +10760,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8312841338723044391">CANLI</translation>
 <translation id="8313308349366087671">Uygulama seçenekleri</translation>
 <translation id="8313599942510782709">Göreviniz hâlâ devam ediyor</translation>
-<translation id="8314219340741508325">İndirilen güncelleme, beklenen içeriği içermiyor.</translation>
+<translation id="8314219340741508325">İndirilen güncellemenin içeriği bozuk görünüyor.</translation>
 <translation id="8314381333424235892">Eksik veya yüklemesi kaldırılmış uzantı</translation>
 <translation id="831440797644402910">Bu klasör açılamaz</translation>
 <translation id="8314835274931377415">Anahtar Erişimi kurulumu başlasın mı?</translation>
