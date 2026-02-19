@@ -61,9 +61,8 @@ void BrowserDownloadService::OnDownloadCreated(
     }
   } else if (IsUsdzFileFormat(task->GetMimeType(), task->GenerateFileName()) &&
              !base::FeatureList::IsEnabled(kARKillSwitch)) {
-    ARQuickLookTabHelper* tab_helper =
-        ARQuickLookTabHelper::GetOrCreateForWebState(web_state);
-    if (tab_helper) {
+    if (ARQuickLookTabHelper* tab_helper =
+            ARQuickLookTabHelper::FromWebState(web_state)) {
       tab_helper->Download(std::move(task));
     }
 

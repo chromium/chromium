@@ -62,7 +62,6 @@
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/public/provider/chrome/browser/intelligence/classification_metrics_tab_helper_api.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -132,6 +131,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
+#import "ios/public/provider/chrome/browser/intelligence/classification_metrics_tab_helper_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/public/web_state.h"
@@ -369,6 +369,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<SafariDownloadTabHelper>();
   attacher.Create<VcardTabHelper>();
   attacher.Create<DocumentDownloadTabHelper>();
+  attacher.Create<ARQuickLookTabHelper>();
 
   attacher.Create<PageloadForegroundDurationTabHelper>();
 

@@ -47,12 +47,12 @@ class ARQuickLookTabHelperTest : public PlatformTest,
  protected:
   ARQuickLookTabHelperTest()
       : delegate_([[FakeARQuickLookTabHelperDelegate alloc] init]) {
-    ARQuickLookTabHelper::GetOrCreateForWebState(&web_state_)
-        ->set_delegate(delegate_);
+    ARQuickLookTabHelper::CreateForWebState(&web_state_);
+    ARQuickLookTabHelper::FromWebState(&web_state_)->set_delegate(delegate_);
   }
 
   ARQuickLookTabHelper* tab_helper() {
-    return ARQuickLookTabHelper::GetOrCreateForWebState(&web_state_);
+    return ARQuickLookTabHelper::FromWebState(&web_state_);
   }
 
   FakeARQuickLookTabHelperDelegate* delegate() { return delegate_; }
