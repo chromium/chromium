@@ -169,23 +169,27 @@ void InstallerDownloaderModelImpl::StartDownload(
                                           R"(semantics {
           sender: "Windows Installer Downloader"
           description:
-            "Download Chrome installer to the user OneDrive folder on "
+            "Download Chrome installer to the user's OneDrive folder on "
             "their consent."
-          trigger: "Once, when the user accept the download request."
+          trigger: "Once, when the user accepts the download request."
           data: "None."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-            owners: "//chrome/browser/win/installer_downloader/OWNERS"
+              owners: "//chrome/browser/win/installer_downloader/OWNERS"
+            }
           }
-        }
-        last_reviewed: "2025-05-01
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2026-02-10"
       }
       policy {
         cookies_allowed: NO
         setting:
-          "Users can controller this feature by closing the Installer"
+          "Users can control this feature by closing the Installer "
           "Downloader Infobar."
+        policy_exception_justification: "Not implemented."
     })");
 
   auto params = std::make_unique<download::DownloadUrlParameters>(
