@@ -89,13 +89,13 @@ SegmentationPlatformServiceAndroid::SegmentationPlatformServiceAndroid(
     : segmentation_platform_service_(segmentation_platform_service) {
   DCHECK(segmentation_platform_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(env, Java_SegmentationPlatformServiceImpl_create(
+  java_obj_.Reset(env, JSegmentationPlatformServiceImplClass::create(
                            env, reinterpret_cast<int64_t>(this)));
 }
 
 SegmentationPlatformServiceAndroid::~SegmentationPlatformServiceAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SegmentationPlatformServiceImpl_clearNativePtr(env, java_obj_);
+  java_obj_->clearNativePtr(env);
 }
 
 void SegmentationPlatformServiceAndroid::GetSelectedSegment(

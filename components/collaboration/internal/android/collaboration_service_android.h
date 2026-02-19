@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "components/collaboration/internal/core_jni_headers/CollaborationServiceImpl_shared_jni.h"
 #include "components/collaboration/public/collaboration_service.h"
 
 namespace collaboration {
@@ -61,7 +62,7 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data,
  private:
   // A reference to the Java counterpart of this class.  See
   // CollaborationServiceImpl.java.
-  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+  base::android::ScopedJavaGlobalRef<JCollaborationServiceImpl> java_obj_;
 
   // Not owned.
   raw_ptr<CollaborationService> collaboration_service_;

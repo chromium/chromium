@@ -31,26 +31,27 @@ class JniDelegateImpl : public JniDelegate {
 
   void Create(const gfx::NativeWindow window_android,
               AcknowledgeGroupedCredentialSheetBridge* bridge) override {
-    java_bridge_.Reset(Java_AcknowledgeGroupedCredentialSheetBridge_Constructor(
-        base::android::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
+    java_bridge_.Reset(
+        JAcknowledgeGroupedCredentialSheetBridgeClass::Constructor(
+            base::android::AttachCurrentThread(),
+            reinterpret_cast<intptr_t>(bridge),
+            window_android->GetJavaObject()));
   }
 
   void Show(const std::string& current_hostname,
             const std::string& credential_hostname) override {
-    Java_AcknowledgeGroupedCredentialSheetBridge_show(
-        base::android::AttachCurrentThread(), java_bridge_, current_hostname,
-        credential_hostname);
+    java_bridge_->show(base::android::AttachCurrentThread(), current_hostname,
+                       credential_hostname);
   }
 
   void Dismiss() override {
-    Java_AcknowledgeGroupedCredentialSheetBridge_dismiss(
-        base::android::AttachCurrentThread(), java_bridge_);
+    java_bridge_->dismiss(base::android::AttachCurrentThread());
   }
 
  private:
   // The corresponding Java GroupedCredentialAcknowledgeSheetBridge.
-  base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
+  base::android::ScopedJavaGlobalRef<JAcknowledgeGroupedCredentialSheetBridge>
+      java_bridge_;
 };
 }  // namespace
 

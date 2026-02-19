@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformServiceImpl_shared_jni.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 using base::android::JavaRef;
@@ -57,7 +58,7 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
  private:
   // A reference to the Java counterpart of this class.  See
   // SegmentationPlatformServiceImpl.java.
-  ScopedJavaGlobalRef<jobject> java_obj_;
+  ScopedJavaGlobalRef<JSegmentationPlatformServiceImpl> java_obj_;
 
   // Not owned.
   raw_ptr<SegmentationPlatformService> segmentation_platform_service_;

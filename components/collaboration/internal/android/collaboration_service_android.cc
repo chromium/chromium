@@ -60,13 +60,13 @@ CollaborationServiceAndroid::CollaborationServiceAndroid(
     : collaboration_service_(collaboration_service) {
   DCHECK(collaboration_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(env, Java_CollaborationServiceImpl_create(
+  java_obj_.Reset(env, JCollaborationServiceImplClass::create(
                            env, reinterpret_cast<int64_t>(this)));
 }
 
 CollaborationServiceAndroid::~CollaborationServiceAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CollaborationServiceImpl_clearNativePtr(env, java_obj_);
+  java_obj_->clearNativePtr(env);
 }
 
 bool CollaborationServiceAndroid::IsEmptyService(JNIEnv* env) {
@@ -115,7 +115,7 @@ ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
     JNIEnv* env) {
   ServiceStatus status = collaboration_service_->GetServiceStatus();
 
-  return Java_ServiceStatus_createServiceStatus(
+  return JServiceStatusClass::createServiceStatus(
       env, static_cast<int>(status.signin_status),
       static_cast<int>(status.sync_status),
       static_cast<int>(status.collaboration_status));
@@ -171,17 +171,16 @@ void CollaborationServiceAndroid::OnServiceStatusChanged(
     const ServiceStatusUpdate& update) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  auto j_old_status = Java_ServiceStatus_createServiceStatus(
+  auto j_old_status = JServiceStatusClass::createServiceStatus(
       env, static_cast<int>(update.old_status.signin_status),
       static_cast<int>(update.old_status.sync_status),
       static_cast<int>(update.old_status.collaboration_status));
-  auto j_new_status = Java_ServiceStatus_createServiceStatus(
+  auto j_new_status = JServiceStatusClass::createServiceStatus(
       env, static_cast<int>(update.new_status.signin_status),
       static_cast<int>(update.new_status.sync_status),
       static_cast<int>(update.new_status.collaboration_status));
 
-  Java_CollaborationServiceImpl_onServiceStatusChanged(
-      env, java_obj_, j_old_status, j_new_status);
+  java_obj_->onServiceStatusChanged(env, j_old_status, j_new_status);
 }
 
 }  // namespace collaboration
