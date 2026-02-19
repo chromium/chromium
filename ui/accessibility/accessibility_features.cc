@@ -450,6 +450,15 @@ bool IsReadAnythingWithReadabilityEnabled() {
   ;
 }
 
+BASE_FEATURE(kReadAnythingWithReadabilityAllowLinks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingWithReadabilityAllowLinksEnabled() {
+  return base::FeatureList::IsEnabled(
+             ::features::kReadAnythingWithReadability) &&
+         base::FeatureList::IsEnabled(
+             ::features::kReadAnythingWithReadabilityAllowLinks);
+}
+
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
 BASE_FEATURE(kScreenAIDebugMode, base::FEATURE_DISABLED_BY_DEFAULT);

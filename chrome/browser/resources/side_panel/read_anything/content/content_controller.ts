@@ -277,6 +277,9 @@ export class ContentController {
       this.updateImages(contentContainer);
       contentFragment.appendChild(contentContainer);
 
+      // Ensure link visibility is updated with user preferences.
+      this.updateLinksForReadability(contentContainer);
+
       // TODO(crbug.com/40910704): Remove ReadabilityImageClassifier once we
       // share code with mobile's Reading Mode.
       ReadabilityImageClassifier.processImagesIn(contentContainer);
@@ -482,6 +485,32 @@ export class ContentController {
     }
   }
 
+  // TODO: crbug.com/458961470- This should be merged with updateLinks. This
+  // is being kept as a separate method temporarily in order to make things
+  // slightly safer for cherrypicking.
+  updateLinksForReadability(root?: ParentNode) {
+    if (!root || !this.hasContent()) {
+      return;
+    }
+
+    const showLinks = this.shouldShowLinks_();
+    const selector = showLinks ? LINKS_OFF_SELECTOR : LINKS_ON_TAG;
+    const elements = root.querySelectorAll<HTMLElement>(selector);
+    for (const elem of elements) {
+      this.transformLinkContainer_(elem, showLinks);
+    }
+
+    // Ensure the link attributes are set initially when reading mode is
+    // first opened.
+    if (isDistilledByReadability()) {
+      const links = root.querySelectorAll('a');
+      for (const link of links) {
+        const nodeId = this.nodeStore_.getAxId(link);
+        this.setLinkAttributes_(link, link.href, nodeId);
+      }
+    }
+  }
+
   private transformLinkContainer_(
       elemToReplace: HTMLElement, showLinks: boolean) {
     const nodeId = this.nodeStore_.getAxId(elemToReplace);
@@ -538,6 +567,13 @@ export class ContentController {
 
   // TODO(crbug.com/40910704): Potentially hide links during distillation.
   private shouldShowLinks_(): boolean {
+    // If Readability is enabled and the ReadabilityWithLinks flag is disabled,
+    // don't show links.
+    if (chrome.readingMode.isReadabilityEnabled &&
+        !chrome.readingMode.isReadabilityWithLinksEnabled) {
+      return false;
+    }
+
     // Links should only show when Read Aloud is paused.
     return chrome.readingMode.linksEnabled &&
         !this.speechController_.isSpeechActive();

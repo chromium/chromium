@@ -1278,6 +1278,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::GetDistillationMethod)
       .SetProperty("isLineFocusEnabled",
                    &ReadAnythingAppController::IsLineFocusEnabled)
+      .SetProperty("isReadabilityWithLinksEnabled",
+                   &ReadAnythingAppController::IsReadabilityWithLinksEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
@@ -1902,6 +1904,10 @@ bool ReadAnythingAppController::IsReadabilityEnabled() const {
 
 bool ReadAnythingAppController::IsLineFocusEnabled() const {
   return features::IsReadAnythingLineFocusEnabled();
+}
+
+bool ReadAnythingAppController::IsReadabilityWithLinksEnabled() const {
+  return features::IsReadAnythingWithReadabilityAllowLinksEnabled();
 }
 
 bool ReadAnythingAppController::IsChromeOsAsh() const {

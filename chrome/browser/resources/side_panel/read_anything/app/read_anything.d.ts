@@ -113,6 +113,10 @@ declare namespace chrome {
     // Whether the line focus feature flag is enabled.
     let isLineFocusEnabled: boolean;
 
+    // Whether the links can be enabled when the Readability feature flag is
+    // enabled.
+    let isReadabilityWithLinksEnabled: boolean;
+
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
 

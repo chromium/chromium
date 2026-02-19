@@ -299,6 +299,7 @@ class ReadAnythingAppController
   bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;
   bool IsLineFocusEnabled() const;
+  bool IsReadabilityWithLinksEnabled() const;
   bool IsChromeOsAsh() const;
   bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
