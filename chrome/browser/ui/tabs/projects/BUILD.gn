@@ -26,6 +26,7 @@ source_set("impl") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",

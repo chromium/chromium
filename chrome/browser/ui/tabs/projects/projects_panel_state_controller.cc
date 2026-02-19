@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -54,8 +55,9 @@ void ProjectsPanelStateController::NotifyStateChanged() {
 }
 
 void ProjectsPanelStateController::UpdateProjectsActionItem() {
-  const gfx::VectorIcon& icon =
-      IsProjectsPanelVisible() ? views::kMenuOpenIcon : views::kMenuIcon;
+  const gfx::VectorIcon& icon = IsProjectsPanelVisible()
+                                    ? kCloseChromeRefreshIcon
+                                    : kSavedTabGroupBarEverythingIcon;
   const auto& text = IsProjectsPanelVisible() ? IDS_HIDE_PROJECTS_PANEL
                                               : IDS_VIEW_PROJECTS_PANEL;
 
