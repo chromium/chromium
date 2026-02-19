@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
     return representation_ && !representation_access_;
   }
 
+  // Returns true if the tensor is an interop tensor.
+  bool has_shared_image() const { return representation_ != nullptr; }
+
   // This method will be called by `ImportTensor()` or
   // `WebNNContext::CreateTensorFromMailbox()` for WebNN to begin access of the
   // platform-specific tensor as a shared image and then call

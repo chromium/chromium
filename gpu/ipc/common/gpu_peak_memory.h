@@ -13,7 +13,8 @@ enum class GpuPeakMemoryAllocationSource {
   SHARED_CONTEXT_STATE,
   SHARED_IMAGE_STUB,
   SKIA,
-  GPU_PEAK_MEMORY_ALLOCATION_SOURCE_MAX = SKIA,
+  WEBNN,
+  GPU_PEAK_MEMORY_ALLOCATION_SOURCE_MAX = WEBNN,
 };
 
 }  // namespace gpu

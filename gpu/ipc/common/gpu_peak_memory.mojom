@@ -13,4 +13,5 @@ enum GpuPeakMemoryAllocationSource
   SHARED_CONTEXT_STATE,
   SHARED_IMAGE_STUB,
   SKIA,
+  WEBNN,
 };

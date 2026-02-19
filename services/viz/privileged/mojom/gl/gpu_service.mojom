@@ -127,6 +127,7 @@ interface GpuService {
   BindWebNNContextProvider(
       pending_receiver<webnn.mojom.WebNNContextProvider>? receiver,
       int32 client_id,
+      uint64 client_tracing_id,
       bool is_incognito);
 
   // Returns current video memory usage.

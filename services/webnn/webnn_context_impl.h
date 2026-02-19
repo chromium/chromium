@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
@@ -56,7 +57,8 @@ class ScopedGpuSequence;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public WebNNObjectBase<mojom::WebNNContext,
                              blink::WebNNContextToken,
-                             mojo::Receiver<mojom::WebNNContext>> {
+                             mojo::Receiver<mojom::WebNNContext>>,
+      public base::trace_event::MemoryDumpProvider {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
@@ -256,6 +258,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // context.
   mojom::CreateContextOptionsPtr options_;
 
+  // The MemoryTypeTracker is used to track creation of tensors.
+  // It is stored on the context because only the tracker it was created with
+  // is thread safe.
+  gpu::MemoryTypeTracker memory_type_tracker_;
+
   // TensorImpls owned by the context so the WebNN service can look them up
   // by token and use them during MLContext operations from the renderer
   // process. This cache only contains valid TensorImpls whose size is managed
@@ -271,6 +278,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   friend class base::DeleteHelper<WebNNContextImpl>;
 
   void OnDisconnect() override;
+
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Graph builders owned by this context.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
@@ -294,11 +304,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   mojo::ScopedDataPipeConsumerHandle write_tensor_consumer_;
   mojo::ScopedDataPipeProducerHandle read_tensor_producer_;
 
-  // The MemoryTypeTracker is used for creating tensors from shared images.
-  // It is stored on the context because only the tracker it was created with
-  // is thread safe.
-  gpu::MemoryTypeTracker memory_type_tracker_;
-
   // The SharedImageManager is used for creating tensors from shared images.
   // It is provided by the provider but stored per context, because only the
   // SharedImageManager is thread-safe.
@@ -315,6 +320,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // The owning_task_runner is the underlying single-thread runner for the GPU
   // sequence.
   scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner_;
+
+  // A process-unique ID used for disambiguating memory dumps from different
+  // WebNN contexts.
+  const int tracing_id_;
 };
 
 }  // namespace webnn

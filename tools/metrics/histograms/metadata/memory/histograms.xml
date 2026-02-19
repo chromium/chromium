@@ -136,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <variant name="vulkan"/>
   <variant name="WebMediaPlayer_MainThread"/>
   <variant name="WebMediaPlayer_MediaThread"/>
+  <variant name="WebNN"/>
 </variants>
 
 <variants name="ProcessMemoryAllocator2">
@@ -2285,6 +2286,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SharedImageStub" summary="Shared Image Stub"/>
     <variant name="Skia" summary="Skia"/>
     <variant name="Unknown" summary="an unknown source"/>
+    <variant name="WebNN" summary="WebNN context"/>
   </token>
 </histogram>
 

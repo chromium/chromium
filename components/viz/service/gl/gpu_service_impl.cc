@@ -632,12 +632,13 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id,
+    uint64_t client_tracing_id,
     bool is_incognito) {
   if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GpuServiceImpl::BindWebNNContextProvider, weak_ptr_,
-                       std::move(pending_receiver), client_id, is_incognito));
+        FROM_HERE, base::BindOnce(&GpuServiceImpl::BindWebNNContextProvider,
+                                  weak_ptr_, std::move(pending_receiver),
+                                  client_id, client_tracing_id, is_incognito));
     return;
   }
 
@@ -651,13 +652,14 @@ void GpuServiceImpl::BindWebNNContextProvider(
     // `client_id` in order to support memory metrics.
     webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
         std::move(shared_context_state), gpu_feature_info_, gpu_info_,
-        shared_image_manager(),
+        shared_image_manager(), gpu_channel_manager_->peak_memory_monitor(),
         base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
         main_runner(), GetGpuScheduler(), gpu_host_);
   }
 
-  webnn_context_provider_->BindWebNNContextProvider(std::move(pending_receiver),
-                                                    {is_incognito, client_id});
+  webnn_context_provider_->BindWebNNContextProvider(
+      std::move(pending_receiver),
+      {is_incognito, client_id, client_tracing_id});
 }
 
 void GpuServiceImpl::GetVideoMemoryUsageStats(

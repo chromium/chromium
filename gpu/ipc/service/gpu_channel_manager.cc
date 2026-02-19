@@ -164,6 +164,8 @@ void FormatAllocationSourcesForTracing(
       allocation_sources[GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB]);
   dict->SetInteger("SKIA",
                    allocation_sources[GpuPeakMemoryAllocationSource::SKIA]);
+  dict->SetInteger("WEBNN",
+                   allocation_sources[GpuPeakMemoryAllocationSource::WEBNN]);
 }
 
 void SetCrashKeyTimeDelta(base::debug::CrashKeyString* key,
@@ -279,6 +281,9 @@ GpuChannelManager::GpuPeakMemoryMonitor::StopTrackingTracedValue(
         break;
       case GpuPeakMemoryAllocationSource::SKIA:
         dict->SetInteger("SKIA", diff);
+        break;
+      case GpuPeakMemoryAllocationSource::WEBNN:
+        dict->SetInteger("WEBNN", diff);
         break;
     }
   }

@@ -60,6 +60,8 @@ constexpr const char* GetAllocationSourceName(
       return "SharedImageStub";
     case gpu::GpuPeakMemoryAllocationSource::SKIA:
       return "Skia";
+    case gpu::GpuPeakMemoryAllocationSource::WEBNN:
+      return "WebNN";
   }
 }
 

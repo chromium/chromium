@@ -29,6 +29,8 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<
         return gpu::mojom::GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB;
       case gpu::GpuPeakMemoryAllocationSource::SKIA:
         return gpu::mojom::GpuPeakMemoryAllocationSource::SKIA;
+      case gpu::GpuPeakMemoryAllocationSource::WEBNN:
+        return gpu::mojom::GpuPeakMemoryAllocationSource::WEBNN;
     }
     NOTREACHED() << "Invalid GpuPeakMemoryAllocationSource:"
                  << static_cast<int>(gpu_peak_memory_allocation_source);
@@ -51,6 +53,9 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<
         return true;
       case gpu::mojom::GpuPeakMemoryAllocationSource::SKIA:
         *out = gpu::GpuPeakMemoryAllocationSource::SKIA;
+        return true;
+      case gpu::mojom::GpuPeakMemoryAllocationSource::WEBNN:
+        *out = gpu::GpuPeakMemoryAllocationSource::WEBNN;
         return true;
     }
     NOTREACHED() << "Invalid GpuPeakMemoryAllocationSource: " << input;

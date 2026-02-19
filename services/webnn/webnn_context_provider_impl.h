@@ -64,6 +64,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
       gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
@@ -73,6 +74,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     // Indicates whether the provider is operating in incognito mode.
     const bool is_incognito;
     const int32_t client_id;
+    const uint64_t client_tracing_id;
   };
 
   // Called to add a another WebNNContextProvider receiver to this
@@ -133,6 +135,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
       gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
@@ -170,7 +173,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContext> remote,
       CreateWebNNContextCallback callback,
-      bool is_incognito);
+      bool is_incognito,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker);
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
@@ -203,6 +207,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
                        mojo::PendingRemote<mojom::WebNNContext> remote,
                        CreateWebNNContextCallback callback,
                        bool is_incognito,
+                       scoped_refptr<gpu::MemoryTracker> memory_tracker,
                        base::expected<scoped_refptr<ort::Environment>,
                                       std::string> env_creation_results);
 
@@ -220,6 +225,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingRemote<mojom::WebNNContext> remote,
       CreateWebNNContextCallback callback,
       bool is_incognito,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -255,11 +261,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
-  // The memory tracker from the `shared_context_state_` which is used to create
-  // tensors from shared images.
-  // TODO(crbug.com/345352987): give WebNN its own memory source and
-  // tracker.
-  scoped_refptr<gpu::MemoryTracker> memory_tracker_;
+  const scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
 
   mojo::SharedRemote<viz::mojom::GpuHost> gpu_host_;
 

@@ -201,6 +201,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider>
           pending_receiver,
       int client_id,
+      uint64_t client_tracing_id,
       bool is_incognito) override;
 
   void GetVideoMemoryUsageStats(

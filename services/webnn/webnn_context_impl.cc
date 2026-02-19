@@ -10,7 +10,9 @@
 #include "base/atomic_sequence_num.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
@@ -35,6 +37,11 @@
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
 #endif  // BUILD_TFLITE_WITH_XNNPACK
 
+namespace {
+// Generates process-unique IDs to use for tracing resources.
+base::AtomicSequenceNumber g_next_webnn_context_tracing_id;
+}  // namespace
+
 namespace webnn {
 
 WebNNContextImpl::WebNNContextImpl(
@@ -57,26 +64,38 @@ WebNNContextImpl::WebNNContextImpl(
       context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
+      memory_type_tracker_(std::move(memory_tracker)),
       gpu_sequence_(std::move(gpu_sequence)),
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)),
-      memory_type_tracker_(std::move(memory_tracker)),
       shared_image_manager_(shared_image_manager),
       main_task_runner_(std::move(main_task_runner)),
-      owning_task_runner_(std::move(owning_task_runner)) {
+      owning_task_runner_(std::move(owning_task_runner)),
+      tracing_id_(g_next_webnn_context_tracing_id.GetNext()) {
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Initialize XNNPACK
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
   CHECK_EQ(status, xnn_status_success);
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "WebNN", owning_task_runner_);
 }
 
 WebNNContextImpl::~WebNNContextImpl() {
-  // Close all tensor pipes explicitly so no response callbacks are pending as
-  // Mojo forbids callbacks that are pending during destruction.
   for (auto impl : tensor_impls_) {
+    // Close all tensor pipes explicitly so no response callbacks are pending as
+    // Mojo forbids callbacks that are pending during destruction.
     impl->ResetMojoReceiver();
+    // Delete non-interop tensor instances from the tracker as they can't
+    // unregister themselves since they're ref-counted and might outlive the
+    // context.
+    if (!impl->has_shared_image()) {
+      memory_type_tracker_.TrackMemFree(impl->PackedByteLength());
+    }
   }
+
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Deinitialize XNNPACK
@@ -212,6 +231,8 @@ void WebNNContextImpl::CreateTensor(
   std::move(callback).Run(
       mojom::CreateTensorResult::NewSuccess(std::move(success)));
 
+  memory_type_tracker_.TrackMemAlloc(result.value()->PackedByteLength());
+
   // Associates a `WebNNTensor` instance with this context so the WebNN service
   // can access the implementation.
   tensor_impls_.emplace(*std::move(result));
@@ -303,6 +324,8 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                 "Failed to create tensor.";
 
             // Tensor will own the representation.
+            // TODO(https://crbug.com/481747252): When SharedImageBacking memory
+            // tracking is fixed memory tracking for interop should work.
             WebNNTensorImpl::RepresentationPtr representation(
                 self.shared_image_manager_
                     ->ProduceWebNNTensor(mailbox, &self.memory_type_tracker_)
@@ -348,6 +371,9 @@ void WebNNContextImpl::RemoveWebNNTensorImpl(
     const blink::WebNNTensorToken& handle) {
   const auto it = tensor_impls_.find(handle);
   CHECK(it != tensor_impls_.end());
+  if (!it->get()->has_shared_image()) {
+    memory_type_tracker_.TrackMemFree(it->get()->PackedByteLength());
+  }
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNTensorImpl`.
   tensor_impls_.erase(it);
@@ -388,6 +414,17 @@ scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
     return nullptr;
   }
   return it->get();
+}
+
+bool WebNNContextImpl::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  std::string dump_name = base::StringPrintf("webnn/context_0x%x", tracing_id_);
+  auto* const dump = pmd->CreateAllocatorDump(dump_name);
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  memory_type_tracker_.memory_tracker()->GetSize());
+  return true;
 }
 
 ContextProperties WebNNContextImpl::IntersectWithBaseProperties(

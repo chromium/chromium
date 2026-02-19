@@ -118,7 +118,8 @@ WebNNTestEnvironment::WebNNTestEnvironment(
   context_provider_ = WebNNContextProviderImpl::Create(
       /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
       std::move(gpu_info),
-      /*shared_image_manager=*/nullptr, std::move(lose_all_contexts_callback),
+      /*shared_image_manager=*/nullptr, /*peak_memory_monitor=*/nullptr,
+      std::move(lose_all_contexts_callback),
       task_environment_->GetMainThreadTaskRunner(), g_webnn_scheduler.get(),
       mojo::SharedRemote(std::move(gpu_host_proxy)));
 }
@@ -128,8 +129,11 @@ void WebNNTestEnvironment::BindWebNNContextProvider(
     bool is_incognito) {
   // All tests use the same client ID since no other client exists.
   constexpr int32_t kFakeClientIdForTesting = 0;
+  // All tests use the same tracing ID since no other client exists.
+  constexpr uint64_t kFakeClientTracingIdForTesting = 0;
   context_provider_->BindWebNNContextProvider(
-      std::move(pending_receiver), {is_incognito, kFakeClientIdForTesting});
+      std::move(pending_receiver),
+      {is_incognito, kFakeClientIdForTesting, kFakeClientTracingIdForTesting});
 }
 
 WebNNTestEnvironment::~WebNNTestEnvironment() = default;

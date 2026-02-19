@@ -15778,6 +15778,11 @@ be describing additional metrics about the same event.
       Measure of total memory used by media/webmediaplayer/video.
     </summary>
   </metric>
+  <metric name="WebNN">
+    <summary>
+      Measure of the backing memory consumed by the WebNN service.
+    </summary>
+  </metric>
 </event>
 
 <event name="Memory.TabFootprint">
