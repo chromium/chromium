@@ -123,6 +123,7 @@
 }
 
 #composebox {
+  --cr-composebox-font-size: 16px;
   --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
   --text-input-left-spacing: 24px;

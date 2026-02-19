@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7542872"));
+                      /*baseline_cl=*/"7589836"));
 }
 
 struct AppPixelTestParams {
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, Screenshots) {
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshots not captured on this platform."),
       ScreenshotWebUi(kActiveTab, kApp, "ContextualTasksApp",
-                      /*baseline_cl=*/"7577477"));
+                      /*baseline_cl=*/"7589836"));
 }
 
 enum class TitleType { kNone, kShort, kLong };
