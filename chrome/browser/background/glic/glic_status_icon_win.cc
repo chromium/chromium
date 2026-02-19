@@ -24,7 +24,13 @@ namespace glic {
 
 GlicStatusIconWin::GlicStatusIconWin(GlicController* controller,
                                      StatusTray* status_tray)
-    : GlicStatusIcon(controller, status_tray) {
+    : GlicStatusIcon(controller, status_tray) {}
+
+GlicStatusIconWin::~GlicStatusIconWin() = default;
+
+void GlicStatusIconWin::Init() {
+  GlicStatusIcon::Init();
+
   if (hkcu_themes_regkey_.Open(
           HKEY_CURRENT_USER,
           L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
@@ -40,8 +46,6 @@ GlicStatusIconWin::GlicStatusIconWin(GlicController* controller,
     native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   }
 }
-
-GlicStatusIconWin::~GlicStatusIconWin() = default;
 
 void GlicStatusIconWin::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   CHECK(!hkcu_themes_regkey_.Valid());

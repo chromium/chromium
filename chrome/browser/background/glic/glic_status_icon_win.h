@@ -27,6 +27,9 @@ class GlicStatusIconWin : public GlicStatusIcon,
 
   ~GlicStatusIconWin() override;
 
+  // GlicStatusIcon:
+  void Init() override;
+
   // ui::NativeThemeObserver
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 

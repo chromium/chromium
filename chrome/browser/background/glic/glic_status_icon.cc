@@ -108,7 +108,23 @@ std::unique_ptr<GlicStatusIcon> GlicStatusIcon::Create(
 
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
-    : controller_(controller), status_tray_(status_tray) {
+    : controller_(controller), status_tray_(status_tray) {}
+
+GlicStatusIcon::~GlicStatusIcon() {
+  context_menu_ = nullptr;
+  if (status_icon_) {
+#if !BUILDFLAG(IS_LINUX)
+    status_icon_->RemoveObserver(this);
+#endif
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray_->RemoveStatusIcon(status_icon_);
+    status_icon_ = nullptr;
+    removed_icon.reset();
+  }
+  status_tray_ = nullptr;
+}
+
+void GlicStatusIcon::Init() {
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIcon(),
       l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
@@ -149,20 +165,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   if (GlicKeyedService* service = manager->GetLastActiveGlic()) {
     panel_state_observer_.Observe(&service->window_controller());
   }
-}
-
-GlicStatusIcon::~GlicStatusIcon() {
-  context_menu_ = nullptr;
-  if (status_icon_) {
-#if !BUILDFLAG(IS_LINUX)
-    status_icon_->RemoveObserver(this);
-#endif
-    std::unique_ptr<StatusIcon> removed_icon =
-        status_tray_->RemoveStatusIcon(status_icon_);
-    status_icon_ = nullptr;
-    removed_icon.reset();
-  }
-  status_tray_ = nullptr;
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {

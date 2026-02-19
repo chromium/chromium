@@ -44,6 +44,8 @@ class GlicStatusIcon : public StatusIconObserver,
 
   ~GlicStatusIcon() override;
 
+  virtual void Init();
+
   // StatusIconObserver:
   void OnStatusIconClicked() override;
 

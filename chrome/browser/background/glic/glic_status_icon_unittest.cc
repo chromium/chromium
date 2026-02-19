@@ -82,6 +82,7 @@ class GlicStatusIconTest : public testing::Test {
 
     glic_status_icon_ =
         GlicStatusIcon::Create(&glic_controller_, &status_tray_);
+    glic_status_icon_->Init();
   }
 
   void TearDown() override {
