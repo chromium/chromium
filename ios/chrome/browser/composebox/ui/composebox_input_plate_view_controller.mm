@@ -1980,10 +1980,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 }
 
 - (NSString*)createImageActionTitle {
-  BOOL isPro = _modelOption == ComposeboxModelOption::kThinking;
-  return l10n_util::GetNSString(isPro
-                                    ? IDS_IOS_COMPOSEBOX_CREATE_IMAGE_PRO_ACTION
-                                    : IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION);
+  return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION);
 }
 
 // Creates a new canvas button to be displayed in the input plate.
