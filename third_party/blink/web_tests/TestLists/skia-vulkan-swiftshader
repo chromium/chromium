@@ -558,7 +558,7 @@ css3/blending/svg-isolation-add-masking.html
 css3/blending/svg-isolation-embed-isolate.html
 css3/calc/border.html
 css3/calc/calc-errors.html
-css3/calc/calc-numbers.html
+external/wpt/css/css-values/calc-numbers.html
 css3/calc/getComputedStyle-border-radius.html
 css3/calc/img-size.html
 css3/calc/letter-spacing.html
