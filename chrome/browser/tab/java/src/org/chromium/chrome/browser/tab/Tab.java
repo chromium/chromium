@@ -175,7 +175,10 @@ public interface Tab extends TabLifecycle {
     @TabId
     int getId();
 
-    /** Returns parameters that should be used for a lazily loaded Tab. May be null. */
+    /**
+     * Returns parameters that should be used for a lazily initialized or navigated Tab. May be
+     * null.
+     */
     @Nullable LoadUrlParams getPendingLoadParams();
 
     /**
@@ -328,9 +331,7 @@ public interface Tab extends TabLifecycle {
     void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title);
 
     /**
-     * Loads the tab if it's not loaded (e.g. because it was killed in background). This will
-     * trigger a regular load for tabs with pending lazy first load (tabs opened in background on
-     * low-memory devices).
+     * Loads the tab if it's not loaded (e.g. frozen, lazily loaded, it was background, etc.).
      *
      * @param caller The caller of this method.
      * @return true iff the Tab handled the request.
@@ -342,7 +343,8 @@ public interface Tab extends TabLifecycle {
 
     /**
      * Reloads the current page content.
-     * This version ignores the cache and reloads from the network.
+     *
+     * <p>This version ignores the cache and reloads from the network.
      */
     void reloadIgnoringCache();
 
