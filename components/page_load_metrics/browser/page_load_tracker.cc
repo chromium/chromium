@@ -1131,7 +1131,7 @@ void PageLoadTracker::OnSoftNavigationChanged(
     observer->OnSoftNavigationUpdated(new_soft_navigation_metrics);
   }
 
-  largest_contentful_paint_handler_.UpdateSoftNavigationLargestContentfulPaint(
+  metrics_update_dispatcher_.UpdateSoftNavigationLargestContentfulPaint(
       *new_soft_navigation_metrics.largest_contentful_paint);
 
   // Reset the soft_navigation_interval_interaction_to_next_paint_calculator_
@@ -1365,6 +1365,11 @@ PageLoadTracker::GetLargestContentfulPaintHandler() const {
 const LargestContentfulPaintHandler&
 PageLoadTracker::GetExperimentalLargestContentfulPaintHandler() const {
   return experimental_largest_contentful_paint_handler_;
+}
+
+const ContentfulPaintTimingInfo&
+PageLoadTracker::GetSoftNavigationLargestContentfulPaint() const {
+  return metrics_update_dispatcher_.GetSoftNavigationLargestContentfulPaint();
 }
 
 ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {

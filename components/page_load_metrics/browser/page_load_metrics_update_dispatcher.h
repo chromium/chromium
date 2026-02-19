@@ -244,6 +244,15 @@ class PageLoadMetricsUpdateDispatcher {
         .ClearEventTimings();
   }
 
+  void UpdateSoftNavigationLargestContentfulPaint(
+      const page_load_metrics::mojom::LargestContentfulPaintTiming&);
+
+  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
+      const {
+    return soft_navigation_contentful_paint_candidate_
+        .MergeTextAndImageTiming();
+  }
+
   const PageRenderData& main_frame_render_data() const {
     return main_frame_render_data_;
   }
@@ -405,6 +414,9 @@ class PageLoadMetricsUpdateDispatcher {
   // to the page load end.
   InteractionToNextPaintCalculator
       soft_navigation_interval_interaction_to_next_paint_calculator_;
+
+  // Keeps track of the LCP candidate of a soft navigation.
+  ContentfulPaint soft_navigation_contentful_paint_candidate_;
 };
 
 }  // namespace page_load_metrics

@@ -219,6 +219,10 @@ class PageLoadMetricsObserverDelegate {
   virtual const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const = 0;
 
+  // Returns the current soft navigation related Largest Contentful Paint info.
+  virtual const ContentfulPaintTimingInfo&
+  GetSoftNavigationLargestContentfulPaint() const = 0;
+
   // Returns the current soft navigation count - https://bit.ly/soft-navigation
   // Soft navigations are JS-driven same-document navigations that are using the
   // history API or the new Navigation API, triggered by a user gesture and

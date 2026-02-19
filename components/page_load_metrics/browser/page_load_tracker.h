@@ -282,6 +282,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const override;
   const InteractionToNextPaintCalculator&
   GetSoftNavigationIntervalInteractionToNextPaintCalculator() const override;
+  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
+      const override;
   const std::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
   const PageRenderData& GetMainFrameRenderData() const override;

@@ -862,7 +862,6 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
 const page_load_metrics::ContentfulPaintTimingInfo&
 UkmPageLoadMetricsObserver::GetSoftNavigationLargestContentfulPaint() const {
   return GetDelegate()
-      .GetLargestContentfulPaintHandler()
       .GetSoftNavigationLargestContentfulPaint();
 }
 

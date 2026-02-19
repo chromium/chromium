@@ -397,8 +397,10 @@ PageLoadMetricsUpdateDispatcher::PageLoadMetricsUpdateDispatcher(
       pending_merged_page_timing_(CreatePageLoadTiming()),
       main_frame_metadata_(mojom::FrameMetadata::New()),
       subframe_metadata_(mojom::FrameMetadata::New()),
-      is_prerendered_page_load_(navigation_handle->IsInPrerenderedMainFrame()) {
-}
+      is_prerendered_page_load_(navigation_handle->IsInPrerenderedMainFrame()),
+      soft_navigation_contentful_paint_candidate_(
+          false,
+          blink::LargestContentfulPaintType::kNone) {}
 
 PageLoadMetricsUpdateDispatcher::~PageLoadMetricsUpdateDispatcher() {
   ShutDown();
@@ -506,6 +508,40 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
     return;
   }
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
+}
+
+void PageLoadMetricsUpdateDispatcher::
+    UpdateSoftNavigationLargestContentfulPaint(
+        const page_load_metrics::mojom::LargestContentfulPaintTiming&
+            largest_contentful_paint) {
+  if (largest_contentful_paint.largest_text_paint.has_value()) {
+    // Image load start/end are not applicable to text LCP elements.
+    soft_navigation_contentful_paint_candidate_.Text().Reset(
+        largest_contentful_paint.largest_text_paint,
+        largest_contentful_paint.largest_text_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        /*image_bpp=*/0.0,
+        /*image_request_priority=*/std::nullopt,
+        /*image_discovery_time=*/std::nullopt,
+        /*image_load_start=*/std::nullopt,
+        /*image_load_end=*/std::nullopt);
+  }
+  if (largest_contentful_paint.largest_image_paint.has_value()) {
+    std::optional<net::RequestPriority> request_priority;
+    if (largest_contentful_paint.image_request_priority_valid) {
+      request_priority = largest_contentful_paint.image_request_priority_value;
+    }
+    soft_navigation_contentful_paint_candidate_.Image().Reset(
+        largest_contentful_paint.largest_image_paint,
+        largest_contentful_paint.largest_image_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        largest_contentful_paint.image_bpp, request_priority,
+        largest_contentful_paint.resource_load_timings->discovery_time,
+        largest_contentful_paint.resource_load_timings->load_start,
+        largest_contentful_paint.resource_load_timings->load_end);
+  }
 }
 
 void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForDroppedFrames(

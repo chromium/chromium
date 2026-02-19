@@ -78,6 +78,8 @@ class FakePageLoadMetricsObserverDelegate
       const override;
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
+  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
+      const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
   ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
@@ -113,6 +115,7 @@ class FakePageLoadMetricsObserverDelegate
   ResourceTracker resource_tracker_;
   LargestContentfulPaintHandler largest_contentful_paint_handler_;
   LargestContentfulPaintHandler experimental_largest_contentful_paint_handler_;
+  ContentfulPaint soft_navigation_contentful_paint_candidate_;
   int64_t navigation_id_;
   base::TimeTicks navigation_start_;
   std::optional<base::TimeTicks> first_background_time_ = std::nullopt;
