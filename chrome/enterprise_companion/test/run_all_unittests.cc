@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
 
 int main(int argc, char* argv[]) {
   logging::InitLogging({.logging_dest = logging::LOG_TO_STDERR});
@@ -15,6 +22,11 @@ int main(int argc, char* argv[]) {
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
   base::TestSuite test_suite(argc, argv);
+#if BUILDFLAG(IS_WIN)
+  auto scoped_com_initializer =
+      std::make_unique<base::win::ScopedCOMInitializer>(
+          base::win::ScopedCOMInitializer::kMTA);
+#endif
   return base::LaunchUnitTests(
       argc, argv,
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
