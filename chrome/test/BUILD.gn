@@ -8050,7 +8050,6 @@ test("unit_tests") {
     sources += [
       "../browser/android/backup/dict_pref_backup_serializer_unittest.cc",
       "../browser/android/compositor/compositor_view_unittest.cc",
-      "../browser/android/compositor/layer/tab_layer_unittest.cc",
       "../browser/android/compositor/tab_content_manager_unittest.cc",
       "../browser/android/customtabs/detached_resource_request_unittest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_android_unittest.cc",
