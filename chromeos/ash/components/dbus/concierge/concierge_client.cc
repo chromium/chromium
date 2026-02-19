@@ -589,10 +589,10 @@ class ConciergeClientImpl : public ConciergeClient {
 
   base::ObserverList<Observer> observer_list_{
       ConciergeClient::kObserverListPolicy};
-  base::ObserverList<VmObserver>::UncheckedAndDanglingUntriaged
-      vm_observer_list_{ConciergeClient::kObserverListPolicy};
-  base::ObserverList<DiskImageObserver>::UncheckedAndDanglingUntriaged
-      disk_image_observer_list_{ConciergeClient::kObserverListPolicy};
+  base::ObserverList<VmObserver> vm_observer_list_{
+      ConciergeClient::kObserverListPolicy};
+  base::ObserverList<DiskImageObserver> disk_image_observer_list_{
+      ConciergeClient::kObserverListPolicy};
 
   bool is_vm_started_signal_connected_ = false;
   bool is_vm_stopped_signal_connected_ = false;

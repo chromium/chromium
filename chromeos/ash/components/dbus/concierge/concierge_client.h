@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   };
 
   // Used for observing VMs starting and stopping.
-  class VmObserver {
+  class VmObserver : public base::CheckedObserver {
    public:
     // OnVmStarted is signaled by Concierge when a VM starts.
     virtual void OnVmStarted(
@@ -53,23 +53,17 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
     // OnVmSwapping is signaled by Concierge when a VM is swapping.
     virtual void OnVmSwapping(
         const vm_tools::concierge::VmSwappingSignal& signal) {}
-
-   protected:
-    virtual ~VmObserver() = default;
   };
 
   // Used for observing all concierge signals related to VM disk image
   // operations, e.g. importing.
-  class DiskImageObserver {
+  class DiskImageObserver : public base::CheckedObserver {
    public:
     // OnDiskImageProgress is signaled by Concierge after an
     // {Import,Export}DiskImage call has been made and an update about the
     // status of the import/export is available.
     virtual void OnDiskImageProgress(
         const vm_tools::concierge::DiskImageStatusResponse& signal) = 0;
-
-   protected:
-    virtual ~DiskImageObserver() = default;
   };
 
   ConciergeClient(const ConciergeClient&) = delete;
