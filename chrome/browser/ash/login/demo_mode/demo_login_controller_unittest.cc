@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -159,7 +160,11 @@ class DemoLoginControllerTest : public testing::Test {
 
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 
-    existing_user_controller_ = std::make_unique<ExistingUserController>();
+    existing_user_controller_ = std::make_unique<ExistingUserController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage());
 
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());

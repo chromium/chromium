@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -33,6 +34,9 @@
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "url/gurl.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace base {
 class ElapsedTimer;
@@ -67,7 +71,11 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   static ExistingUserController* current_controller();
 
   // All UI initialization is deferred till Init() call.
-  ExistingUserController();
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  ExistingUserController(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage);
 
   ExistingUserController(const ExistingUserController&) = delete;
   ExistingUserController& operator=(const ExistingUserController&) = delete;
@@ -293,6 +301,9 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Clear the recorded displayed email, displayed name, given name so it won't
   // affect any future attempts.
   void ClearRecordedNames();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Public session auto-login timer.
   std::unique_ptr<base::OneShotTimer> auto_login_timer_;

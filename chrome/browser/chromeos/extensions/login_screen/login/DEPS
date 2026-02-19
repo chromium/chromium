@@ -30,3 +30,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "login_api_ash_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+}

@@ -20,6 +20,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/shell.h"
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -102,6 +103,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -241,6 +243,7 @@ void SetLoginExtensionApiCanLockManagedGuestSessionPref(
 }
 
 std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
+    PrefService& local_state,
     const UserContext& user_context,
     bool has_incomplete_migration) {
   if (has_incomplete_migration) {
@@ -253,7 +256,7 @@ std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
     return EncryptionMigrationMode::START_MIGRATION;
   }
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const bool profile_has_policy =
       known_user.GetProfileRequiresPolicy(user_context.GetAccountId()) ==
           user_manager::ProfileRequiresPolicy::kPolicyRequired ||
@@ -355,8 +358,12 @@ ExistingUserController* ExistingUserController::current_controller() {
 ////////////////////////////////////////////////////////////////////////////////
 // ExistingUserController, public:
 
-ExistingUserController::ExistingUserController()
-    : cros_settings_(CrosSettings::Get()),
+ExistingUserController::ExistingUserController(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      cros_settings_(CrosSettings::Get()),
       network_state_helper_(new login::NetworkStateHelper),
       pin_salt_storage_(std::make_unique<quick_unlock::PinSaltStorage>()) {
   HttpAuthDialog::AddObserver(this);
@@ -864,9 +871,8 @@ void ExistingUserController::FinalizeAuthAndStartSession(
             ->browser_policy_connector_ash()
             ->GetDeviceLocalAccountPolicyService()
             ->GetBrokerForUser(user_id);
-    bool privacy_warnings_enabled =
-        g_browser_process->local_state()->GetBoolean(
-            prefs::kManagedGuestSessionPrivacyWarningsEnabled);
+    bool privacy_warnings_enabled = local_state_->GetBoolean(
+        prefs::kManagedGuestSessionPrivacyWarningsEnabled);
     if (ash::login::IsFullManagementDisclosureNeeded(broker) &&
         privacy_warnings_enabled) {
       ShowAutoLaunchManagedGuestSessionNotification();
@@ -923,7 +929,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
       profile_connector->IsManaged() &&
       user_context.GetUserType() != user_manager::UserType::kChild;
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetIsEnterpriseManaged(user_context.GetAccountId(),
                                     is_enterprise_managed);
 
@@ -1047,7 +1053,8 @@ void ExistingUserController::OnOldEncryptionDetected(
     std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
   std::optional<EncryptionMigrationMode> encryption_migration_mode =
-      GetEncryptionMigrationMode(*user_context, has_incomplete_migration);
+      GetEncryptionMigrationMode(local_state_.get(), *user_context,
+                                 has_incomplete_migration);
   CHECK(login_performer_);
   if (!encryption_migration_mode.has_value()) {
     ContinuePerformLoginWithoutMigration(login_performer_->auth_mode(),
@@ -1621,7 +1628,7 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
 void ExistingUserController::DoCompleteLogin(
     const UserContext& login_user_context) {
   UserContext user_context = login_user_context;
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
 
   if (user_context.GetDeviceId().empty()) {
     std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
@@ -1670,7 +1677,7 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
       guest_mode_url_ = GURL(specifics.guest_mode_url);
       if (specifics.guest_mode_url_append_locale) {
         guest_mode_url_ = google_util::AppendGoogleLocaleParam(
-            guest_mode_url_, g_browser_process->GetApplicationLocale());
+            guest_mode_url_, application_locale_storage_->Get());
       }
     }
     LoginAsGuest();

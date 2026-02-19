@@ -206,6 +206,7 @@ static_library("login") {
     "//chromeos/strings",
     "//chromeos/ui/vector_icons",
     "//chromeos/version",
+    "//components/application_locale_storage",
     "//components/google/core/common",
     "//components/keyed_service/content",
     "//components/metrics",

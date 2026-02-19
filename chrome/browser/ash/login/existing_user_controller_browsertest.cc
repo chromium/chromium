@@ -47,6 +47,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
@@ -215,7 +216,9 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    existing_user_controller_ = std::make_unique<ExistingUserController>();
+    existing_user_controller_ = std::make_unique<ExistingUserController>(
+        g_browser_process->local_state(),
+        g_browser_process->GetFeatures()->application_locale_storage());
     EXPECT_CALL(*mock_login_display_host_, GetExistingUserController())
         .Times(AnyNumber())
         .WillRepeatedly(Return(existing_user_controller_.get()));

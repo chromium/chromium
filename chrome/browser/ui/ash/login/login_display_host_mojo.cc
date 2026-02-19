@@ -53,6 +53,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
@@ -991,7 +992,13 @@ void LoginDisplayHostMojo::StopObservingOobeUI() {
 }
 
 void LoginDisplayHostMojo::CreateExistingUserController() {
-  existing_user_controller_ = std::make_unique<ExistingUserController>();
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+  const ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
+  existing_user_controller_ = std::make_unique<ExistingUserController>(
+      local_state, application_locale_storage);
 
   // We need auth attempt results to notify views-based login screen.
   existing_user_controller_->AddLoginStatusConsumer(this);

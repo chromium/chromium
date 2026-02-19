@@ -1068,7 +1068,12 @@ void LoginDisplayHostWebUI::OnLoginPromptVisible() {
 }
 
 void LoginDisplayHostWebUI::CreateExistingUserController() {
-  existing_user_controller_ = std::make_unique<ExistingUserController>();
+  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+  const ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
+  existing_user_controller_ = std::make_unique<ExistingUserController>(
+      GetLocalState(), application_locale_storage);
 }
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {

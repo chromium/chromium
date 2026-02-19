@@ -68,6 +68,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # TODO(crbug.com/403154552): Avoid g_browser_process->GetFeatures().
+  "login_display_host_mojo\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
   ".*_(browser|unit)test\\.cc": [
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_window.h",
