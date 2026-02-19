@@ -27,13 +27,6 @@ ChromeExtensionsAPIClient::CreateUsbDevicePermissionsPrompt(
   return nullptr;
 }
 
-std::unique_ptr<DisplayInfoProvider>
-ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
-  // TODO(crbug.com/417786011): Support display APIs on desktop Android.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 std::vector<KeyedServiceBaseFactory*>
 ChromeExtensionsAPIClient::GetFactoryDependencies() {
   // TODO(crbug.com/402488726): Delete this stub and use the version from

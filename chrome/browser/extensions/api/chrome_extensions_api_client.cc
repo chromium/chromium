@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -47,6 +48,7 @@
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_message_port.h"
+#include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_action.h"
@@ -521,6 +523,11 @@ ChromeExtensionsAPIClient::CreateNativeMessagePortDispatcher(
     scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
   return std::make_unique<ChromeNativeMessagePortDispatcher>(
       std::move(host), std::move(port), std::move(message_service_task_runner));
+}
+
+std::unique_ptr<DisplayInfoProvider>
+ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
+  return CreateChromeDisplayInfoProvider();
 }
 
 }  // namespace extensions

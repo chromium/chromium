@@ -97,6 +97,20 @@ void MockDisplayInfoProvider::SetMirrorMode(
       FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
+void MockDisplayInfoProvider::StartObserving() {
+  is_observing_for_testing_ = true;
+  DisplayInfoProviderBase::StartObserving();
+}
+
+void MockDisplayInfoProvider::StopObserving() {
+  is_observing_for_testing_ = false;
+  DisplayInfoProviderBase::StopObserving();
+}
+
+void MockDisplayInfoProvider::TriggerOnDisplayChangedForTesting() {
+  DispatchOnDisplayChangedEvent();
+}
+
 void MockDisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
     const std::vector<display::Display>& displays,
     DisplayUnitInfoList& units) const {

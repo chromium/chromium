@@ -596,6 +596,7 @@ source_set("extensions") {
     "//extensions/browser:keepalive",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
+    "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/forced_extensions",
     "//extensions/browser/updater",
@@ -643,6 +644,8 @@ source_set("extensions") {
       "extension_error_ui_android.h",
       "external_install_error_android.cc",
       "external_install_error_android.h",
+      "system_display/display_info_provider_android.cc",
+      "system_display/display_info_provider_android.h",
     ]
     deps += [
       "//chrome/android:chrome_jni_headers",
@@ -1052,7 +1055,6 @@ source_set("extensions") {
       "//extensions:extensions_resources",
       "//extensions/browser/api:extensions_api_client",
       "//extensions/browser/api/content_settings",
-      "//extensions/browser/api/system_display:display_info_provider",
       "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/strings",

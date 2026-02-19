@@ -17,6 +17,7 @@
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"  // nogncheck
 #include "extensions/browser/api/storage/storage_frontend.h"  // nogncheck
+#include "extensions/browser/api/system_display/system_display_api.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
@@ -81,6 +82,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   RuntimeAPI::GetFactoryInstance();
   SessionStorageManager::GetFactory();
   StorageFrontend::GetFactoryInstance();
+#if BUILDFLAG(IS_ANDROID)
+  SystemDisplayAPI::GetFactoryInstance();
+#endif
   WebRequestAPI::GetFactoryInstance();
   WebRequestProxyingURLLoaderFactory::EnsureAssociatedFactoryBuilt();
   WebRequestProxyingWebSocket::EnsureAssociatedFactoryBuilt();

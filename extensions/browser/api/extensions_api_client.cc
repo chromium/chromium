@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_message_port_dispatcher.h"
+#include "extensions/browser/api/system_display/display_info_provider.h"
 
 namespace extensions {
 

@@ -1,0 +1,10 @@
+{
+    "name": "ondisplaychangedevent",
+    "manifest_version": 3,
+    "version": "1.0",
+    "description": "Test system.display API with Android provider",
+    "permissions": ["system.display"],
+    "background": {
+        "service_worker":"background.js"
+    }
+}

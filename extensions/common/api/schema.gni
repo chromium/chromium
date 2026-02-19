@@ -26,6 +26,7 @@ extensions_api_schema_files_ = [
   "runtime.json",
   "storage.json",
   "system_cpu.webidl",
+  "system_display.webidl",
   "system_memory.webidl",
   "system_network.webidl",
   "test.json",
@@ -90,7 +91,6 @@ if (enable_extensions) {
     "sockets_tcp_server.idl",
     "sockets_tcp.idl",
     "sockets_udp.idl",
-    "system_display.webidl",
     "system_storage.webidl",
     "usb.webidl",
     "virtual_keyboard_private.json",
@@ -114,7 +114,6 @@ if (enable_desktop_android_extensions) {
   extensions_types_only_schema_files_ += [
     "clipboard.webidl",
     "scripts_internal.idl",
-    "system_display.webidl",
     "usb.webidl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.webidl",

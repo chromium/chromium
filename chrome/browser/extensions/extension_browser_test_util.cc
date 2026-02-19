@@ -121,10 +121,22 @@ void UpgradeWebAccessibleResources(base::DictValue& manifest_dict) {
 
 // Modifies `manifest_dict` changing its manifest version to 3.
 bool ModifyManifestForManifestVersion3(base::DictValue& manifest_dict) {
-  // This should only be used for manifest v2 extension.
   std::optional<int> current_manifest_version =
       manifest_dict.FindInt(manifest_keys::kManifestVersion);
-  if (!current_manifest_version || *current_manifest_version != 2) {
+  if (!current_manifest_version) {
+    ADD_FAILURE() << manifest_dict
+                  << " should specify an integer manifest version";
+    return false;
+  }
+
+  // Already MV3; nothing to do.
+  // This helper is intentionally idempotent because shared test loading paths
+  // still run it for MV3 service worker contexts.
+  if (*current_manifest_version == 3) {
+    return true;
+  }
+
+  if (*current_manifest_version != 2) {
     ADD_FAILURE() << manifest_dict << " should have a manifest version of 2.";
     return false;
   }
@@ -154,6 +166,20 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
     ADD_FAILURE() << extension_root.value()
                   << " 'background' key not found in manifest.json";
     return false;
+  }
+
+  // Already service worker-based; nothing to do.
+  // This helper is intentionally idempotent because shared test loading paths
+  // can invoke it for extensions authored directly as service worker-based.
+  const std::string* existing_service_worker =
+      background_dict->FindString("service_worker");
+  if (existing_service_worker) {
+    if (existing_service_worker->empty()) {
+      ADD_FAILURE() << extension_root.value()
+                    << ": The \"service_worker\" key must not be empty.";
+      return false;
+    }
+    return true;
   }
   {
     std::optional<bool> background_persistent =
@@ -274,6 +300,9 @@ bool ModifyExtensionIfNeeded(const LoadOptions& options,
     return false;
   }
 
+  // These conversions intentionally allow already-converted manifests because
+  // this shared loader path is used for both legacy MV2 test data and tests
+  // authored directly as MV3/service worker extensions.
   if (load_as_service_worker &&
       !ModifyExtensionForServiceWorker(extension_root, *manifest_dict)) {
     return false;

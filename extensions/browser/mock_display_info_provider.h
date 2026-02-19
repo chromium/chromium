@@ -50,6 +50,11 @@ class MockDisplayInfoProvider : public DisplayInfoProviderBase {
   void SetMirrorMode(const api::system_display::MirrorModeInfo& info,
                      ErrorCallback callback) override;
 
+  void StartObserving() override;
+  void StopObserving() override;
+
+  void TriggerOnDisplayChangedForTesting();
+
   // Helpers, accessors.
   std::optional<base::DictValue> GetSetInfoValue() {
     return std::move(set_info_value_);
@@ -71,6 +76,8 @@ class MockDisplayInfoProvider : public DisplayInfoProviderBase {
     native_touch_calibration_success_ = success;
   }
 
+  bool is_observing_for_testing() const { return is_observing_for_testing_; }
+
  private:
   // DisplayInfoProvider override.
   // Update the content of each unit in `units` obtained from the corresponding
@@ -86,6 +93,7 @@ class MockDisplayInfoProvider : public DisplayInfoProviderBase {
   std::set<std::string> overscan_adjusted_;
 
   bool native_touch_calibration_success_ = false;
+  bool is_observing_for_testing_ = false;
 
   MockScreen screen_;
 

@@ -52,8 +52,8 @@ namespace extensions {
 class AutomationInternalApiDelegate;
 class AppViewGuestDelegate;
 class ContentRulesRegistry;
-class UsbDevicePermissionsPrompt;
 class DisplayInfoProvider;
+class UsbDevicePermissionsPrompt;
 class ExtensionOptionsGuest;
 class ExtensionOptionsGuestDelegate;
 class FeedbackPrivateDelegate;

@@ -1639,6 +1639,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/sessions/sessions_apitest.cc",
       "../browser/extensions/api/settings_overrides/settings_overrides_browsertest.cc",
       "../browser/extensions/api/storage/settings_apitest.cc",
+      "../browser/extensions/api/system_display/system_display_extension_apitest.cc",
       "../browser/extensions/api/system_network/system_network_apitest.cc",
       "../browser/extensions/api/tab_capture/tab_capture_apitest.cc",
       "../browser/extensions/api/tab_groups/tab_groups_api_apitest.cc",
@@ -4840,7 +4841,6 @@ if (!is_android) {
         "../browser/extensions/api/settings_private/settings_private_apitest.cc",
         "../browser/extensions/api/side_panel/side_panel_apitest.cc",
         "../browser/extensions/api/socket/socket_apitest.cc",
-        "../browser/extensions/api/system_display/system_display_extension_apitest.cc",
         "../browser/extensions/api/system_private/system_private_apitest.cc",
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.cc",
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.h",
@@ -8231,7 +8231,10 @@ test("unit_tests") {
     ]
 
     if (enable_extensions_core) {
-      sources += [ "../browser/android/extensions/extensions_url_override_state_tracker_unittest.cc" ]
+      sources += [
+        "../browser/android/extensions/extensions_url_override_state_tracker_unittest.cc",
+        "../browser/extensions/system_display/display_info_provider_android_unittest.cc",
+      ]
       deps += [ "//chrome/browser/android/extensions:android" ]
     }
 
