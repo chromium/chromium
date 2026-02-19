@@ -623,12 +623,6 @@
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="application/pdf"/>
-        <data android:scheme="content"/>
-      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
-      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
-        <action android:name="android.intent.action.VIEW"/>
-        <category android:name="android.intent.category.DEFAULT"/>
         <data android:mimeType="application/xhtml+xml"/>
         <data android:mimeType="text/html"/>
         <data android:mimeType="text/plain"/>
