@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -619,9 +620,16 @@ AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()
   return static_cast<AnchorPositionScrollData*>(
       GetField(FieldId::kAnchorPositionScrollData));
 }
+
 void ElementRareDataVector::RemoveAnchorPositionScrollData() {
+  if (auto* scroll_data = GetAnchorPositionScrollData()) {
+    if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
+      observer->MonitorAnchor(nullptr);
+    }
+  }
   SetFieldToNullIfExists(FieldId::kAnchorPositionScrollData);
 }
+
 std::pair<std::reference_wrapper<AnchorPositionScrollData>,
           ElementRareDataVector*>
 ElementRareDataVector::EnsureAnchorPositionScrollData(
