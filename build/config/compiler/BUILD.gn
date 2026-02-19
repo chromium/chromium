@@ -162,7 +162,7 @@ declare_args() {
 
   # Enable DWARF v5.
   # See analysis for is_android at https://crbug.com/479802735
-  use_dwarf5 = is_android && !is_official_build  # Untested on official builds.
+  use_dwarf5 = is_android
 
   # Override this to put full paths to PDBs in Windows PE files. This helps
   # windbg and Windows Performance Analyzer with finding the PDBs in some local-
