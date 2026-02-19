@@ -5,8 +5,8 @@
 source_set("ui") {
   sources = [
     "safety_check_audience.h",
-    "safety_check_state.h",
-    "safety_check_state.mm",
+    "safety_check_config.h",
+    "safety_check_config.mm",
     "safety_check_view.h",
     "safety_check_view.mm",
   ]

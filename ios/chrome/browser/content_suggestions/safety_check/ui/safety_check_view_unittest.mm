@@ -9,8 +9,8 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_utils.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/public/safety_check_constants.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_item_type.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "testing/platform_test.h"
@@ -102,14 +102,14 @@ class SafetyCheckViewTest : public PlatformTest {
 // Tests that the module can be initialized, create subviews, and that the
 // default module state is displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithDefaultState) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -132,14 +132,14 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithDefaultState) {
 // Tests that the module can be initialized, create subviews, and that the
 // running module state is displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithRunningState) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kRunning];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -162,15 +162,15 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithRunningState) {
 // Tests that the module can be initialized, create subviews, and that the
 // module state for a single check issue (passwords) is displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithSinglePasswordsIssue) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
                   passwordState:PasswordSafetyCheckState::
                                     kUnmutedCompromisedPasswords
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -193,14 +193,14 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSinglePasswordsIssue) {
 // Tests that the module can be initialized, create subviews, and that the
 // module state for a single check issue (safe browsing) is displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleSafeBrowsingIssue) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -223,14 +223,14 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleSafeBrowsingIssue) {
 // Tests that the module can be initialized, create subviews, and that the
 // module state for a single check issue (update chrome) is displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleUpdateChromeIssue) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kOutOfDate
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -254,15 +254,15 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleUpdateChromeIssue) {
 // module state for a multiple check issues (update chrome & passwords) are
 // displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndUpdateChromeIssues) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kOutOfDate
                   passwordState:PasswordSafetyCheckState::
                                     kUnmutedCompromisedPasswords
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -285,15 +285,15 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndUpdateChromeIssues) {
 // module state for a multiple check issues (passwords & safe browsing) are
 // displayed.
 TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndSafeBrowsingIssues) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
                   passwordState:PasswordSafetyCheckState::
                                     kUnmutedCompromisedPasswords
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -317,14 +317,14 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndSafeBrowsingIssues) {
 // displayed.
 TEST_F(SafetyCheckViewTest,
        DisplaysModuleWithUpdateChromeAndSafeBrowsingIssues) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kOutOfDate
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -379,14 +379,14 @@ TEST_F(SafetyCheckViewTest, FindsSafetyCheckItemTypeFromName) {
 // Tests that the module can be initialized, create subviews, and that the
 // signed out module state is displayed as the Default state.
 TEST_F(SafetyCheckViewTest, DisplaysDefaultStateWhenPasswordCheckSignedOut) {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
+  SafetyCheckConfig* config = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
                   passwordState:PasswordSafetyCheckState::kSignedOut
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
-                                             contentViewDelegate:nil];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithConfig:config
+                                              contentViewDelegate:nil];
 
   [_superview addSubview:view];
 

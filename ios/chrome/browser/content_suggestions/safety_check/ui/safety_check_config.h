@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SAFETY_CHECK_UI_SAFETY_CHECK_STATE_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SAFETY_CHECK_UI_SAFETY_CHECK_STATE_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SAFETY_CHECK_UI_SAFETY_CHECK_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SAFETY_CHECK_UI_SAFETY_CHECK_CONFIG_H_
 
 #import <optional>
 
@@ -18,9 +18,11 @@ enum class SafeBrowsingSafetyCheckState;
 enum class SafetyCheckItemType;
 enum class UpdateChromeSafetyCheckState;
 
-// Helper class to contain the current Safety Check state.
-@interface SafetyCheckState : IconDetailViewConfig <IconDetailViewTapDelegate>
+// Helper class to contain the current Safety Check configuration.
+@interface SafetyCheckConfig : IconDetailViewConfig <IconDetailViewTapDelegate>
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // The current state of the Update Chrome check.
 @property(nonatomic, readwrite) UpdateChromeSafetyCheckState updateChromeState;
 
@@ -50,8 +52,9 @@ enum class UpdateChromeSafetyCheckState;
 
 // The item type that this safety check state should be configured for.
 @property(nonatomic, assign) SafetyCheckItemType itemType;
+// LINT.ThenChange(safety_check_config.mm:Copy)
 
-// Initializes a `SafetyCheckState` with `updateChromeState`, `passwordState`,
+// Initializes a `SafetyCheckConfig` with `updateChromeState`, `passwordState`,
 // `safeBrowsingState`, and `runningState`.
 - (instancetype)
     initWithUpdateChromeState:(UpdateChromeSafetyCheckState)updateChromeState
@@ -71,4 +74,4 @@ enum class UpdateChromeSafetyCheckState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SAFETY_CHECK_UI_SAFETY_CHECK_STATE_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SAFETY_CHECK_UI_SAFETY_CHECK_CONFIG_H_

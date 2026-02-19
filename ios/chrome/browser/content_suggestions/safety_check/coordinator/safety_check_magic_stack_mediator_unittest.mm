@@ -11,7 +11,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_prefs.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -31,7 +31,7 @@
 
 @interface SafetyCheckMagicStackMediator (Testing)
 
-- (void)safetyCheckStateDidChange:(SafetyCheckState*)state;
+- (void)safetyCheckStateDidChange:(SafetyCheckConfig*)config;
 
 @end
 
@@ -92,7 +92,7 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
 TEST_F(SafetyCheckMagicStackMediatorTest, CallsDelegateWithRunningState) {
   safety_check_manager_->StopSafetyCheck();
 
-  SafetyCheckState* expected = [[SafetyCheckState alloc]
+  SafetyCheckConfig* expected = [[SafetyCheckConfig alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kRunning
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kSafe
@@ -100,11 +100,11 @@ TEST_F(SafetyCheckMagicStackMediatorTest, CallsDelegateWithRunningState) {
 
   OCMExpect([mediator_
       safetyCheckStateDidChange:[OCMArg checkWithBlock:^BOOL(
-                                            SafetyCheckState* state) {
-        return state.updateChromeState == expected.updateChromeState &&
-               state.passwordState == expected.passwordState &&
-               state.safeBrowsingState == expected.safeBrowsingState &&
-               state.runningState == expected.runningState;
+                                            SafetyCheckConfig* config) {
+        return config.updateChromeState == expected.updateChromeState &&
+               config.passwordState == expected.passwordState &&
+               config.safeBrowsingState == expected.safeBrowsingState &&
+               config.runningState == expected.runningState;
       }]]);
   OCMExpect([safety_check_magic_stack_mediator_delegate_
       safetyCheckMagicStackMediatorDidReconfigureItem]);

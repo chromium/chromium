@@ -21,8 +21,8 @@ struct InsecurePasswordCounts;
 enum class PasswordCheckReferrer;
 }  // namespace password_manager
 class GURL;
+@class SafetyCheckConfig;
 enum class SafetyCheckItemType;
-@class SafetyCheckState;
 
 // Fires the proper UI command to navigate users to `chrome_upgrade_url` if the
 // app is on a valid channel.

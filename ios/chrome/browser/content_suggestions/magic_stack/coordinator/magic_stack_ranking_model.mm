@@ -61,7 +61,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_prefs.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/coordinator/send_tab_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/coordinator/send_tab_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_config.h"
@@ -339,8 +339,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_prefService)) {
     return;
   }
-  SafetyCheckState* state = _safetyCheckMediator.safetyCheckState;
-  [self.delegate magicStackRankingModel:self didReconfigureItem:state];
+  SafetyCheckConfig* config = _safetyCheckMediator.safetyCheckConfig;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:config];
 }
 
 - (void)removeSafetyCheckModule {
@@ -351,7 +351,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
                                 ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_safetyCheckMediator.safetyCheckState
+                          didRemoveItem:_safetyCheckMediator.safetyCheckConfig
                                 animate:YES
                          withCompletion:nil];
 }
@@ -1030,7 +1030,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
             prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount);
 
         int issuesCount =
-            [_safetyCheckMediator.safetyCheckState numberOfIssues];
+            [_safetyCheckMediator.safetyCheckConfig numberOfIssues];
 
         BOOL hidden = ShouldHideSafetyCheckModuleIfNoIssues() &&
                       (previousIssuesCount == 0) &&
@@ -1042,7 +1042,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           break;
         }
 
-        [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
+        [magicStackOrder addObject:_safetyCheckMediator.safetyCheckConfig];
 
         break;
       }

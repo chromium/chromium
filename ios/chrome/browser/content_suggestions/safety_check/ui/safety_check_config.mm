@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "components/version_info/version_info.h"
@@ -31,7 +31,7 @@ constexpr CGFloat kIconWidth = 22;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 
-@implementation SafetyCheckState
+@implementation SafetyCheckConfig
 
 #pragma mark - Public
 
@@ -96,18 +96,21 @@ using l10n_util::GetNSStringF;
 #pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
-  SafetyCheckState* state = [[super copyWithZone:zone]
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
+  SafetyCheckConfig* config = [[super copyWithZone:zone]
       initWithUpdateChromeState:self.updateChromeState
                   passwordState:self.passwordState
               safeBrowsingState:self.safeBrowsingState
                    runningState:self.runningState];
-  state.weakPasswordsCount = self.weakPasswordsCount;
-  state.reusedPasswordsCount = self.reusedPasswordsCount;
-  state.compromisedPasswordsCount = self.compromisedPasswordsCount;
-  state.lastRunTime = self.lastRunTime;
-  state.audience = self.audience;
-  state.itemType = self.itemType;
-  return state;
+  config.weakPasswordsCount = self.weakPasswordsCount;
+  config.reusedPasswordsCount = self.reusedPasswordsCount;
+  config.compromisedPasswordsCount = self.compromisedPasswordsCount;
+  config.lastRunTime = self.lastRunTime;
+  config.audience = self.audience;
+  config.itemType = self.itemType;
+  // LINT.ThenChange(safety_check_config.h:Copy)
+  return config;
 }
 
 #pragma mark - MagicStackModule

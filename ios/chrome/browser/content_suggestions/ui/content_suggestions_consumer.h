@@ -5,18 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_CONSUMER_H_
 
-#import "base/ios/block_types.h"
-
 enum class ContentSuggestionsModuleType;
-@class ContentSuggestionsWhatsNewItem;
 @class MostVisitedTilesConfig;
-@class SafetyCheckState;
-@class SetUpListConfig;
-enum class SetUpListItemType;
-@class SetUpListItemViewData;
-@class ShortcutsConfig;
-@class ParcelTrackingItem;
-@class TabResumptionItem;
 
 // MagicStackOrderChange is used in `updateMagicStackOrder:withStatus:` to
 // indicate what module has changed and how it needs to be updated.

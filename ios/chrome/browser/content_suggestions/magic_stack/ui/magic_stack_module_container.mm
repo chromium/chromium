@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_utils.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
@@ -479,8 +479,8 @@ const CGFloat kSeparatorHeight = 0.5;
       _reducedBottomMargin = true;
       break;
     case ContentSuggestionsModuleType::kSafetyCheck: {
-      SafetyCheckState* safetyCheckConfig =
-          static_cast<SafetyCheckState*>(config);
+      SafetyCheckConfig* safetyCheckConfig =
+          static_cast<SafetyCheckConfig*>(config);
       if ([safetyCheckConfig numberOfIssues] > 1) {
         _contentStackViewBottomMarginAnchor.constant =
             isContentOversized(_stackView)
@@ -557,8 +557,8 @@ const CGFloat kSeparatorHeight = 0.5;
 // Returns the module's subtitle, if any, given the Magic Stack module `type`.
 - (NSString*)subtitleStringForConfig:(MagicStackModule*)config {
   if (config.type == ContentSuggestionsModuleType::kSafetyCheck) {
-    SafetyCheckState* safetyCheckConfig =
-        static_cast<SafetyCheckState*>(config);
+    SafetyCheckConfig* safetyCheckConfig =
+        static_cast<SafetyCheckConfig*>(config);
     return FormatElapsedTimeSinceLastSafetyCheck(safetyCheckConfig.lastRunTime);
   }
 

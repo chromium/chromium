@@ -12,15 +12,15 @@
 class IOSChromeSafetyCheckManager;
 class PrefService;
 @class ProfileState;
+@class SafetyCheckConfig;
 @protocol SafetyCheckMagicStackMediatorDelegate;
-@class SafetyCheckState;
 
 // Mediator for managing the state of the Safety Check Magic Stack module
 @interface SafetyCheckMagicStackMediator : NSObject
 
 // Used by the Safety Check (Magic Stack) module for the current Safety Check
-// state.
-@property(nonatomic, strong, readonly) SafetyCheckState* safetyCheckState;
+// configuration.
+@property(nonatomic, strong, readonly) SafetyCheckConfig* safetyCheckConfig;
 
 // Delegate.
 @property(nonatomic, weak) id<SafetyCheckMagicStackMediatorDelegate> delegate;

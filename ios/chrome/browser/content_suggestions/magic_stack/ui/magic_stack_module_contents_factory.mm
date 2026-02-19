@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_stack_view.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_view.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/coordinator/set_up_list_mediator.h"
@@ -73,8 +73,8 @@
       return [self tabResumptionViewForConfig:tabResumptionItem];
     }
     case ContentSuggestionsModuleType::kSafetyCheck: {
-      SafetyCheckState* safetyCheckConfig =
-          static_cast<SafetyCheckState*>(config);
+      SafetyCheckConfig* safetyCheckConfig =
+          static_cast<SafetyCheckConfig*>(config);
       return [self safetyCheckViewForConfigState:safetyCheckConfig
                              contentViewDelegate:contentViewDelegate];
     }
@@ -185,13 +185,13 @@
   return view;
 }
 
-- (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state
+- (UIView*)safetyCheckViewForConfigState:(SafetyCheckConfig*)config
                      contentViewDelegate:
                          (id<MagicStackModuleContentViewDelegate>)
                              contentViewDelegate {
   SafetyCheckView* safetyCheckView =
-      [[SafetyCheckView alloc] initWithState:state
-                         contentViewDelegate:contentViewDelegate];
+      [[SafetyCheckView alloc] initWithConfig:config
+                          contentViewDelegate:contentViewDelegate];
   return safetyCheckView;
 }
 
