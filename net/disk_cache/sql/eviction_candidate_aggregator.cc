@@ -33,25 +33,6 @@ EvictionCandidateAggregator::EvictionCandidate&
 EvictionCandidateAggregator::EvictionCandidate::operator=(
     const EvictionCandidate&) = default;
 
-EvictionCandidateAggregator::EvictionTarget::EvictionTarget(
-    SqlPersistentStore::ResId res_id,
-    int64_t entry_size_with_overhead)
-    : res_id(res_id), entry_size_with_overhead(entry_size_with_overhead) {}
-EvictionCandidateAggregator::EvictionTarget::~EvictionTarget() = default;
-EvictionCandidateAggregator::EvictionTarget::EvictionTarget(EvictionTarget&&) =
-    default;
-EvictionCandidateAggregator::EvictionTarget&
-EvictionCandidateAggregator::EvictionTarget::operator=(EvictionTarget&&) =
-    default;
-EvictionCandidateAggregator::EvictionTarget::EvictionTarget(
-    const EvictionTarget&) = default;
-EvictionCandidateAggregator::EvictionTarget&
-EvictionCandidateAggregator::EvictionTarget::operator=(const EvictionTarget&) =
-    default;
-
-bool EvictionCandidateAggregator::EvictionTarget::operator==(
-    const EvictionTarget& other) const = default;
-
 EvictionCandidateAggregator::EvictionCandidateAggregator(
     int64_t size_to_be_removed,
     std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners)
@@ -116,15 +97,16 @@ void EvictionCandidateAggregator::AggregateCandidatesAndRunCallbacks(
       all_candidates.begin(), all_candidates.end(),
       [](const auto& a, const auto& b) { return a.last_used < b.last_used; });
 
-  std::vector<EvictionTargetList> eviction_targets_per_shard(GetSizeOfShards());
+  std::vector<EvictionTargetQueue> eviction_targets_per_shard(
+      GetSizeOfShards());
   int64_t removed_total_size = 0;
   for (const EvictionCandidate& candidate : all_candidates) {
-    removed_total_size += candidate.entry_size_with_overhead;
-    eviction_targets_per_shard[candidate.shard_id.value()].emplace_back(
-        candidate.res_id, candidate.entry_size_with_overhead);
-    if (removed_total_size > size_to_be_removed_) {
+    if (removed_total_size >= size_to_be_removed_) {
       break;
     }
+    removed_total_size += candidate.entry_size_with_overhead;
+    eviction_targets_per_shard[candidate.shard_id.value()].emplace(
+        candidate.res_id, candidate.entry_size_with_overhead);
   }
 
   // Post the eviction tasks back to each shard.

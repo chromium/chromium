@@ -23,7 +23,18 @@ using ResId = SqlPersistentStore::ResId;
 using ShardId = SqlPersistentStore::ShardId;
 using EvictionCandidateList =
     EvictionCandidateAggregator::EvictionCandidateList;
-using EvictionTarget = EvictionCandidateAggregator::EvictionTarget;
+using EvictionTarget = SqlPersistentStore::EvictionTarget;
+
+std::vector<EvictionTarget> QueueToVector(
+    SqlPersistentStore::EvictionTargetQueue queue) {
+  std::vector<EvictionTarget> vec;
+  vec.reserve(queue.size());
+  while (!queue.empty()) {
+    vec.push_back(queue.front());
+    queue.pop();
+  }
+  return vec;
+}
 
 class EvictionCandidateAggregatorTest : public testing::Test {
  public:
@@ -65,20 +76,20 @@ TEST_F(EvictionCandidateAggregatorTest, SortsByTime) {
 
   auto cb0 = base::BindOnce(
       [](base::OnceClosure on_done,
-         EvictionCandidateAggregator::EvictionTargetList eviction_targets,
+         SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
         // This shard had the oldest candidate (ResId(1)).
-        EXPECT_THAT(eviction_targets,
+        EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(1), 50)));
         std::move(on_done).Run();
       },
       on_done);
   auto cb1 = base::BindOnce(
       [](base::OnceClosure on_done,
-         EvictionCandidateAggregator::EvictionTargetList eviction_targets,
+         SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
         // This shard had the second oldest candidate (ResId(3)).
-        EXPECT_THAT(eviction_targets,
+        EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(3), 60)));
         std::move(on_done).Run();
       },
@@ -117,9 +128,9 @@ TEST_F(EvictionCandidateAggregatorTest, SelectsEnoughToRemove) {
   base::RunLoop run_loop;
   auto cb = base::BindOnce(
       [](base::OnceClosure on_done,
-         EvictionCandidateAggregator::EvictionTargetList eviction_targets,
+         SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
-        EXPECT_THAT(eviction_targets,
+        EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(1), 40),
                                          EvictionTarget(ResId(2), 50),
                                          EvictionTarget(ResId(3), 50)));
@@ -166,10 +177,10 @@ TEST_F(EvictionCandidateAggregatorTest, HandlesMultipleSequences) {
   auto cb0 = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> runner,
          base::OnceClosure on_done,
-         EvictionCandidateAggregator::EvictionTargetList eviction_targets,
+         SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
         EXPECT_TRUE(runner->RunsTasksInCurrentSequence());
-        EXPECT_THAT(eviction_targets,
+        EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(1), 50)));
         std::move(on_done).Run();
       },
@@ -178,10 +189,10 @@ TEST_F(EvictionCandidateAggregatorTest, HandlesMultipleSequences) {
   auto cb1 = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> runner,
          base::OnceClosure on_done,
-         EvictionCandidateAggregator::EvictionTargetList eviction_targets,
+         SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
         EXPECT_TRUE(runner->RunsTasksInCurrentSequence());
-        EXPECT_THAT(eviction_targets,
+        EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(3), 60)));
         std::move(on_done).Run();
       },
@@ -190,10 +201,10 @@ TEST_F(EvictionCandidateAggregatorTest, HandlesMultipleSequences) {
   auto cb2 = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> runner,
          base::OnceClosure on_done,
-         EvictionCandidateAggregator::EvictionTargetList eviction_targets,
+         SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
         EXPECT_TRUE(runner->RunsTasksInCurrentSequence());
-        EXPECT_THAT(eviction_targets,
+        EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(4), 70)));
         std::move(on_done).Run();
       },

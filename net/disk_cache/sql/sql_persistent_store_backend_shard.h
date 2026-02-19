@@ -5,9 +5,11 @@
 #ifndef NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_BACKEND_SHARD_H_
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_BACKEND_SHARD_H_
 
+#include <atomic>
 #include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "net/base/cache_type.h"
@@ -104,11 +106,23 @@ class SqlPersistentStore::BackendShard {
                                      Int64OrErrorCallback callback);
   void OpenNextEntry(const EntryIterator& iterator,
                      OptionalEntryInfoWithKeyAndIteratorCallback callback);
-  void StartEviction(int64_t size_to_be_removed,
-                     base::flat_set<ResId> excluded_res_ids,
-                     bool is_idle_time_eviction,
-                     scoped_refptr<EvictionCandidateAggregator> aggregator,
-                     ResIdListOrErrorCallback callback);
+  void StartEviction(
+      int64_t size_to_be_removed,
+      base::flat_set<ResId> excluded_res_ids,
+      bool is_idle_time_eviction,
+      scoped_refptr<EvictionCandidateAggregator> aggregator,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+          remaining_mandatory_size,
+      ResIdListOrErrorCallback callback);
+  void ResumePendingEviction(
+      base::flat_set<ResId> excluded_res_ids,
+      bool is_idle_time_eviction,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+          remaining_mandatory_size,
+      ResIdListOrErrorCallback callback);
+  bool HasPendingEviction() const { return !pending_eviction_targets_.empty(); }
 
   int32_t GetEntryCount() const;
   void GetEntryCountAsync(Int32Callback callback) const;
@@ -143,6 +157,7 @@ class SqlPersistentStore::BackendShard {
   void EnableStrictCorruptionCheckForTesting();
   void SetSimulateDbFailureForTesting(bool fail);
   void RazeAndPoisonForTesting();
+  void SetEvictionHookForTesting(base::RepeatingClosure hook);
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -198,7 +213,7 @@ class SqlPersistentStore::BackendShard {
   WrapErrorCallbackToRemoveFromIndex(ErrorCallback callback,
                                      IndexMismatchLocation location);
   void OnEvictionFinished(ResIdListOrErrorCallback callback,
-                          ResIdListOrErrorAndStoreStatus result);
+                          EvictionResultOrErrorAndStoreStatus result);
   void RecordIndexMismatch(IndexMismatchLocation location);
 
   base::SequenceBound<Backend> backend_;
@@ -223,6 +238,10 @@ class SqlPersistentStore::BackendShard {
   ResIdList pending_doomed_res_ids_;
 
   bool strict_corruption_check_enabled_ = false;
+
+  // The list of eviction candidates that were selected but not yet evicted
+  // because the eviction was paused.
+  SqlPersistentStore::EvictionTargetQueue pending_eviction_targets_;
 
   base::WeakPtrFactory<BackendShard> weak_factory_{this};
 };

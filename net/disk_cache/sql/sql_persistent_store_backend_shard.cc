@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store_backend.h"
@@ -285,15 +286,39 @@ void SqlPersistentStore::BackendShard::StartEviction(
     base::flat_set<ResId> excluded_res_ids,
     bool is_idle_time_eviction,
     scoped_refptr<EvictionCandidateAggregator> aggregator,
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+    scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+        remaining_mandatory_size,
     ResIdListOrErrorCallback callback) {
-  ResIdListOrErrorAndStoreStatusCallback result_callback =
+  EvictionResultOrErrorAndStoreStatusCallback result_callback =
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BackendShard::OnEvictionFinished,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
   backend_.AsyncCall(&SqlPersistentStore::Backend::StartEviction)
       .WithArgs(size_to_be_removed, std::move(excluded_res_ids),
                 is_idle_time_eviction, std::move(aggregator),
+                std::move(abort_flag), std::move(remaining_mandatory_size),
                 std::move(result_callback));
+}
+
+void SqlPersistentStore::BackendShard::ResumePendingEviction(
+    base::flat_set<ResId> excluded_res_ids,
+    bool is_idle_time_eviction,
+    scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+    scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+        remaining_mandatory_size,
+    ResIdListOrErrorCallback callback) {
+  if (pending_eviction_targets_.empty()) {
+    std::move(callback).Run(ResIdList());
+    return;
+  }
+  backend_.AsyncCall(&SqlPersistentStore::Backend::ResumePendingEviction)
+      .WithArgs(std::move(pending_eviction_targets_),
+                std::move(excluded_res_ids), is_idle_time_eviction,
+                std::move(abort_flag), std::move(remaining_mandatory_size),
+                base::TimeTicks::Now())
+      .Then(base::BindOnce(&BackendShard::OnEvictionFinished,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 int32_t SqlPersistentStore::BackendShard::GetEntryCount() const {
@@ -369,6 +394,12 @@ void SqlPersistentStore::BackendShard::SetSimulateDbFailureForTesting(
 
 void SqlPersistentStore::BackendShard::RazeAndPoisonForTesting() {
   backend_.AsyncCall(&SqlPersistentStore::Backend::RazeAndPoisonForTesting);
+}
+
+void SqlPersistentStore::BackendShard::SetEvictionHookForTesting(  // IN-TEST
+    base::RepeatingClosure hook) {
+  backend_.AsyncCall(&Backend::SetEvictionHookForTesting)
+      .WithArgs(std::move(hook));
 }
 
 SqlPersistentStore::IndexState
@@ -507,16 +538,23 @@ SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
 
 void SqlPersistentStore::BackendShard::OnEvictionFinished(
     ResIdListOrErrorCallback callback,
-    ResIdListOrErrorAndStoreStatus result) {
-  if (result.result.has_value() && index_.has_value()) {
-    for (ResId res_id : *result.result) {
-      if (!index_->Remove(res_id)) {
-        RecordIndexMismatch(IndexMismatchLocation::kStartEviction);
+    EvictionResultOrErrorAndStoreStatus result) {
+  if (result.result.has_value()) {
+    if (index_.has_value()) {
+      for (ResId res_id : result.result->deleted_res_ids) {
+        if (!index_->Remove(res_id)) {
+          RecordIndexMismatch(IndexMismatchLocation::kStartEviction);
+        }
       }
     }
+    pending_eviction_targets_ =
+        std::move(result.result->pending_eviction_targets);
   }
   store_status_ = result.store_status;
-  std::move(callback).Run(std::move(result.result));
+  std::move(callback).Run(
+      result.result.has_value()
+          ? ResIdListOrError(std::move(result.result->deleted_res_ids))
+          : base::unexpected(result.result.error()));
 }
 
 void SqlPersistentStore::BackendShard::RecordIndexMismatch(

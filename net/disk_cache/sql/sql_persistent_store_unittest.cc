@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/sys_byteorder.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -29,10 +30,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/entry_write_buffer.h"
@@ -416,10 +419,16 @@ class SqlPersistentStoreTest : public testing::Test {
   // Synchronous wrapper for StartEviction.
   SqlPersistentStore::Error StartEviction(
       std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list,
-      bool is_idle_time_eviction) {
+      bool is_idle_time_eviction,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag =
+          nullptr) {
+    if (!abort_flag) {
+      abort_flag = base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+    }
     base::test::TestFuture<SqlPersistentStore::Error> future;
     store_->StartEviction(std::move(excluded_list), is_idle_time_eviction,
-                          future.GetCallback());
+                          std::move(abort_flag), future.GetCallback());
     return future.Take();
   }
 
@@ -635,6 +644,83 @@ class SqlPersistentStoreTest : public testing::Test {
       }
       key += "_";
     }
+  }
+
+  // Populates the cache with `num_entries` entries of `entry_size`.
+  // The keys are generated as "key_0", "key_1", ...
+  // The entries are created with increasing last_used times, so "key_0" is the
+  // oldest.
+  void PopulateCache(
+      int num_entries,
+      int entry_size,
+      std::vector<SqlPersistentStore::ResId>* res_ids = nullptr) {
+    for (int i = 0; i < num_entries; ++i) {
+      const CacheEntryKey key("key_" + base::NumberToString(i));
+      auto res_id = CreateEntryAndGetResId(key);
+      if (res_ids) {
+        res_ids->push_back(res_id);
+      }
+      std::string data(entry_size, 'a');
+      WriteDataAndAssertSuccess(key, res_id, 0, 0, data, false);
+      UpdateEntryLastUsedByKey(key, base::Time::Now() + base::Milliseconds(i));
+    }
+  }
+
+  // Finds the next entry that would be evicted (the oldest existing entry).
+  // This assumes entries were created with PopulateCache (or similar sequential
+  // keys).
+  void FindNextEntryToEvict(int num_entries,
+                            CacheEntryKey& key_out,
+                            int& index_out) {
+    for (int i = 0; i < num_entries; ++i) {
+      const CacheEntryKey key("key_" + base::NumberToString(i));
+      auto open_result = OpenEntry(key);
+      ASSERT_TRUE(open_result.has_value());
+      if (open_result->has_value()) {
+        key_out = key;
+        index_out = i;
+        break;
+      }
+    }
+    ASSERT_NE(key_out.string(), "");
+  }
+
+  // Starts eviction and waits until the eviction process hits the hook,
+  // pausing execution at that point. This allows testing state during eviction.
+  void StartAndPauseEviction() {
+    auto eviction_running_signal = std::make_unique<base::WaitableEvent>(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    auto pause_eviction_signal = std::make_unique<base::WaitableEvent>(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+    store_->SetEvictionHookForTesting(base::BindLambdaForTesting(
+        [eviction_running = eviction_running_signal.get(),
+         pause_eviction = pause_eviction_signal.get()]() {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+          if (!eviction_running->IsSignaled()) {
+            eviction_running->Signal();
+          }
+          if (!pause_eviction->IsSignaled()) {
+            pause_eviction->Wait();
+          }
+        }));
+
+    auto abort_flag =
+        base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+            std::in_place, false);
+    base::test::TestFuture<SqlPersistentStore::Error> eviction_future;
+    store_->StartEviction({}, false, abort_flag, eviction_future.GetCallback());
+
+    eviction_running_signal->Wait();
+    abort_flag->data.store(true);
+    pause_eviction_signal->Signal();
+
+    ASSERT_EQ(eviction_future.Get(), SqlPersistentStore::Error::kOk);
+    EXPECT_TRUE(store_->HasPendingEviction());
+
+    store_->SetEvictionHookForTesting(base::DoNothing());
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -4338,7 +4424,9 @@ TEST_F(SqlPersistentStoreTest, ShouldStartEvictionReturnsFalseWhileInProgress) {
             SqlPersistentStore::EvictionUrgency::kNeeded);
 
   base::test::TestFuture<SqlPersistentStore::Error> future;
-  store_->StartEviction({}, /*is_idle_time_eviction=*/false,
+  auto flag = base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+      std::in_place, false);
+  store_->StartEviction({}, /*is_idle_time_eviction=*/false, flag,
                         future.GetCallback());
 
   // While eviction is in progress, ShouldStartEviction should return false.
@@ -4954,9 +5042,13 @@ TEST_F(SqlPersistentStoreTest, IdleTimeEviction) {
   test_helper->SetInputScenario(ScenarioScope::kGlobal,
                                 InputScenario::kNoInput);
 
-  // Idle time eviction should be aborted
+  // Idle time eviction should be aborted.
+  // Therefore, it has not been deleted down to the low water mark.
   ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/true),
-            SqlPersistentStore::Error::kAbortedDueToBrowserActivity);
+            SqlPersistentStore::Error::kOk);
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+  EXPECT_GT(GetSizeOfAllEntries(), kLowWatermark);
 
   // Set the state to idle.
   test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
@@ -4969,9 +5061,373 @@ TEST_F(SqlPersistentStoreTest, IdleTimeEviction) {
             SqlPersistentStore::Error::kOk);
 
   // Eviction should have run and reduced the size.
-  const int64_t kLowWatermark =
-      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
   EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+}
+
+TEST_F(SqlPersistentStoreTest, IdleTimeEvictionAbortsDuringEviction) {
+  const int64_t kMaxBytes = 100000;
+  const int64_t kIdleTimeHighWatermark =
+      kMaxBytes * kSqlBackendIdleTimeEvictionHighWaterMarkPermille /
+      1000;  // 92500
+
+  CreateStore(kMaxBytes);
+  store_->EnableStrictCorruptionCheckForTesting();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add entries to trigger idle time eviction.
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kIdleTimeHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+  }
+
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kIdleTime);
+
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+
+  // Set the state to idle.
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  // Set hook to simulate user activity during eviction.
+  store_->SetEvictionHookForTesting(base::BindLambdaForTesting([&]() {
+    test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                    LoadingScenario::kVisiblePageLoading);
+  }));
+
+  // Start idle time eviction. It should start, but abort mid-way.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/true),
+            SqlPersistentStore::Error::kOk);
+
+  // Eviction should have run partially, so size reduced, but likely not fully
+  // to low watermark if it aborted early.
+  EXPECT_LE(GetSizeOfAllEntries(), kIdleTimeHighWatermark);
+  EXPECT_GT(GetSizeOfAllEntries(),
+            kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000);
+}
+
+TEST_F(SqlPersistentStoreTest, EvictionPausesOnAbortFlagSet) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Fill with enough data to trigger the mandatory eviction.
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  PopulateCache(kNumEntries, kEntrySize);
+
+  // Start eviction, pause it halfway.
+  StartAndPauseEviction();
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
+
+  // Eviction should happen until the total size is less than the high water
+  // mark.
+  EXPECT_LE(GetSizeOfAllEntries(),
+            kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000);
+  // Eviction is paused when the total size becomes less than the high water
+  // mark, so it does not decrease to the low water mark.
+  EXPECT_GE(GetSizeOfAllEntries(),
+            kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000);
+
+  // Resume eviction.
+  EXPECT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+
+  // Eviction is executed until the total size becomes smaller than the low
+  // water mark.
+  EXPECT_LE(GetSizeOfAllEntries(),
+            kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000);
+}
+
+TEST_F(SqlPersistentStoreTest, ResumeEvictionCanBePaused) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Fill with enough data to have a gap between mandatory and target.
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  PopulateCache(kNumEntries, kEntrySize);
+
+  // 1. Start eviction, pause it halfway.
+  StartAndPauseEviction();
+
+  // 2. Resume eviction, but pause it AGAIN.
+  StartAndPauseEviction();
+  // Should still have pending eviction.
+  EXPECT_TRUE(store_->HasPendingEviction());
+
+  // 3. Finally finish it.
+  EXPECT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+}
+
+TEST_F(SqlPersistentStoreTest, ResumeEvictionRespectsExcludedResIds) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  std::vector<SqlPersistentStore::ResId> res_ids;
+  PopulateCache(kNumEntries, kEntrySize, &res_ids);
+
+  // Start eviction, pause it halfway.
+  StartAndPauseEviction();
+
+  // Find the next entry to be evicted.
+  CacheEntryKey existing_entry_key;
+  int existing_entry_index;
+  FindNextEntryToEvict(kNumEntries, existing_entry_key, existing_entry_index);
+  auto excluded_id = SqlPersistentStore::ResIdAndShardId(
+      res_ids[existing_entry_index],
+      store_->GetShardIdForHash(existing_entry_key.hash()));
+
+  // Resume eviction with exclusion.
+  ASSERT_EQ(StartEviction({excluded_id}, false),
+            SqlPersistentStore::Error::kOk);
+
+  // The excluded entry should still exist.
+  auto open_result = OpenEntry(existing_entry_key);
+  ASSERT_TRUE(open_result.has_value());
+  EXPECT_TRUE(open_result->has_value());
+
+  // Another entry should be gone.
+  const CacheEntryKey evicted_key(
+      "key_" + base::NumberToString(existing_entry_index + 1));
+  auto open_result_evicted = OpenEntry(evicted_key);
+  ASSERT_TRUE(open_result_evicted.has_value());
+  EXPECT_FALSE(open_result_evicted->has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, ResumeEvictionHandlesModifiedEntrySize) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  std::vector<SqlPersistentStore::ResId> res_ids;
+  PopulateCache(kNumEntries, kEntrySize, &res_ids);
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // Find the next entry to be evicted.
+  CacheEntryKey existing_entry_key;
+  int existing_entry_index;
+  FindNextEntryToEvict(kNumEntries, existing_entry_key, existing_entry_index);
+
+  // Modify the existing_entry_key entry by appending data.
+  const SqlPersistentStore::ResId res_id = res_ids[existing_entry_index];
+  const int kAppendSize = 5000;
+  EntryWriteBuffer write_buffer(
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kAppendSize, 'b')),
+      kAppendSize, 0);
+  ASSERT_EQ(WriteEntryData(existing_entry_key, res_id, kEntrySize,
+                           std::move(write_buffer), false),
+            SqlPersistentStore::Error::kOk);
+
+  // Resume eviction.
+  ASSERT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+
+  // Verify `existing_entry_key` is evicted.
+  auto final_result = OpenEntry(existing_entry_key);
+  ASSERT_TRUE(final_result.has_value());
+  EXPECT_FALSE(final_result->has_value());
+
+  // Verify total size is correct (should be below low watermark).
+  // The fact that key_0 was larger than expected should simply mean we freed
+  // more space.
+  EXPECT_LE(GetSizeOfAllEntries(),
+            kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000);
+}
+
+TEST_F(SqlPersistentStoreTest, ResumeEvictionDatabaseError) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Fill up.
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  PopulateCache(kNumEntries, kEntrySize);
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // Simulate DB failure.
+  store_->SetSimulateDbFailureForTesting(true);
+
+  // Resume eviction, should fail.
+  EXPECT_EQ(StartEviction({}, false),
+            SqlPersistentStore::Error::kFailedForTesting);
+}
+
+TEST_F(SqlPersistentStoreTest, ResumePendingEvictionInternalNotFound) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  std::vector<SqlPersistentStore::ResId> res_ids;
+  PopulateCache(kNumEntries, kEntrySize, &res_ids);
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // Manually delete an entry that is likely to be next in eviction.
+  CacheEntryKey existing_key;
+  int index;
+  FindNextEntryToEvict(kNumEntries, existing_key, index);
+  ASSERT_EQ(DeleteLiveEntry(existing_key), SqlPersistentStore::Error::kOk);
+
+  // Resume eviction should succeed even if an entry is not found.
+  ASSERT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+}
+
+TEST_F(SqlPersistentStoreTest,
+       ResumeEvictionWithMultipleShardsBiasedToShardZero) {
+  // Add another task runner to enable multiple shards.
+  background_task_runners_.emplace_back(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Fill up using keys only for Shard 0.
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  for (int i = 0; i < kNumEntries; ++i) {
+    std::string key_str = "key_" + base::NumberToString(i);
+    // Ensure it falls into Shard 0.
+    CacheEntryKey key(key_str);
+    while (store_->GetShardIdForHash(key.hash()).value() != 0) {
+      key_str += "_retry";
+      key = CacheEntryKey(key_str);
+    }
+
+    const auto res_id = CreateEntryAndGetResId(key);
+    std::string data(kEntrySize, 'a');
+    WriteDataAndAssertSuccess(key, res_id, 0, 0, data, false);
+    UpdateEntryLastUsedByKey(key, base::Time::Now() + base::Milliseconds(i));
+  }
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // Resume eviction should succeed.
+  ASSERT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+}
+
+TEST_F(SqlPersistentStoreTest, ResumeEvictionWithMultipleShards) {
+  // Add another task runner to enable multiple shards.
+  background_task_runners_.emplace_back(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Fill up normally (should distribute across shards).
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  PopulateCache(kNumEntries, kEntrySize);
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // Resume eviction should succeed.
+  ASSERT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+}
+
+TEST_F(SqlPersistentStoreTest, IdleTimeResumeEvictionAbortsDuringEviction) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Fill with enough data to trigger the mandatory eviction.
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  PopulateCache(kNumEntries, kEntrySize);
+
+  // 1. Start normal eviction and pause it.
+  StartAndPauseEviction();
+
+  // 2. Resume eviction as IDLE time eviction.
+  auto test_helper = PerformanceScenarioTestHelper::Create();
+  test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                  LoadingScenario::kNoPageLoading);
+  test_helper->SetInputScenario(ScenarioScope::kGlobal,
+                                InputScenario::kNoInput);
+
+  // Set hook to simulate activity.
+  store_->SetEvictionHookForTesting(base::BindLambdaForTesting([&]() {
+    test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
+                                    LoadingScenario::kVisiblePageLoading);
+  }));
+
+  // Resume eviction should return kOk (aborted).
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/true),
+            SqlPersistentStore::Error::kOk);
+
+  // Since it aborted, we still have pending eviction.
+  EXPECT_TRUE(store_->HasPendingEviction());
+
+  // Resume a non-idle time eviction.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // All pending evictions are completed.
+  EXPECT_FALSE(store_->HasPendingEviction());
+  EXPECT_LE(GetSizeOfAllEntries(),
+            kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000);
+}
+
+TEST_F(SqlPersistentStoreTest, ResumeEvictionSyncFinishOnAbortFlagSet) {
+  const int64_t kMaxBytes = 100000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 95000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add entries until just beyond the high water mark.
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+  }
+  EXPECT_EQ(GetEntryCount(), i);
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // StartAndPauseEviction() definitely deletes one entry, so the total size
+  // becomes less than (or equal to) the high water mark.
+  EXPECT_LE(GetSizeOfAllEntries(), kHighWatermark);
+  EXPECT_EQ(GetEntryCount(), i - 1);
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, true);
+  base::test::TestFuture<SqlPersistentStore::Error> eviction_future;
+  store_->StartEviction({}, false, abort_flag, eviction_future.GetCallback());
+  // If the abort flag is true and the total size is less than (or equal to)
+  // the high water mark, the resume eviction process synchronously returns OK.
+  ASSERT_TRUE(eviction_future.IsReady());
+  ASSERT_EQ(eviction_future.Get(), SqlPersistentStore::Error::kOk);
 }
 
 TEST_F(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {

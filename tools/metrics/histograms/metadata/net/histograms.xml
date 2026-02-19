@@ -157,8 +157,10 @@ chromium-metrics-reviews@google.com.
   <variant name="OpenNextEntry"/>
   <variant name="OpenOrCreateEntry"/>
   <variant name="ReadEntryData"/>
-  <variant name="RunEviction"/>
-  <variant name="RunEvictionOnIdleTime"/>
+  <variant name="ResumeEviction"/>
+  <variant name="ResumeEvictionOnIdleTime"/>
+  <variant name="RunNewEviction"/>
+  <variant name="RunNewEvictionOnIdleTime"/>
   <variant name="UpdateEntryLastUsedByKey"/>
   <variant name="WriteEntryData"/>
   <variant name="WriteEntryDataAndMetadata"/>
@@ -8162,8 +8164,10 @@ chromium-metrics-reviews@google.com.
     SQL-based disk cache. This is recorded after the eviction is finished.
   </summary>
   <token key="EvictionType">
-    <variant name="RunEviction"/>
-    <variant name="RunEvictionOnIdleTime"/>
+    <variant name="ResumeEviction"/>
+    <variant name="ResumeEvictionOnIdleTime"/>
+    <variant name="RunNewEviction"/>
+    <variant name="RunNewEvictionOnIdleTime"/>
   </token>
 </histogram>
 

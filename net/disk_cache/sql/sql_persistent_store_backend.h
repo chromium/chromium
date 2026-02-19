@@ -5,6 +5,9 @@
 #ifndef NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_BACKEND_H_
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_BACKEND_H_
 
+#include <atomic>
+
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
@@ -108,11 +111,65 @@ class SqlPersistentStore::Backend {
   OptionalEntryInfoWithKeyAndIterator OpenNextEntry(
       const EntryIterator& iterator,
       base::TimeTicks start_time);
-  void StartEviction(int64_t size_to_be_removed,
-                     base::flat_set<ResId> excluded_res_ids,
-                     bool is_idle_time_eviction,
-                     scoped_refptr<EvictionCandidateAggregator> aggregator,
-                     ResIdListOrErrorAndStoreStatusCallback callback);
+
+  // Starts the eviction process.
+  //
+  // The process begins by selecting eviction candidates from the database.
+  // Then, `aggregator->OnCandidate()` is called to aggregate candidates from
+  // all shards. Finally, `EvictEntries()` is called to delete the selected
+  // entries.
+  //
+  // `size_to_be_removed`: The target size to be removed from this shard. This
+  //                       is used to select candidates.
+  // `excluded_res_ids`: A set of resource IDs to exclude from eviction (e.g.,
+  //                     currently active entries).
+  // `is_idle_time_eviction`: True if this is an eviction triggered by idle
+  //                          time. If true, the eviction may be aborted if the
+  //                          browser becomes active.
+  // `aggregator`: The aggregator used to collect and select candidates across
+  //               all shards.
+  // `abort_flag`: A flag used to signal an abort request. If set to true, the
+  //               eviction process will stop after the mandatory size has been
+  //               removed.
+  // `remaining_mandatory_size`: The remaining size that *must* be evicted even
+  //                             if `abort_flag` is set. This is typically the
+  //                             amount needed to bring the cache size below the
+  //                             high watermark. Once this value becomes <= 0,
+  //                             and `abort_flag` is set, the eviction will
+  //                             stop.
+  // `callback`: Called when the eviction finishes or is aborted.
+  void StartEviction(
+      int64_t size_to_be_removed,
+      base::flat_set<ResId> excluded_res_ids,
+      bool is_idle_time_eviction,
+      scoped_refptr<EvictionCandidateAggregator> aggregator,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+          remaining_mandatory_size,
+      EvictionResultOrErrorAndStoreStatusCallback callback);
+
+  // Resumes a previously paused eviction.
+  //
+  // This method continues evicting entries from `eviction_targets` that were
+  // left over from a previous `StartEviction` or `ResumePendingEviction` call
+  // that was aborted.
+  //
+  // `eviction_targets`: The queue of eviction targets remaining from the
+  //                     previous attempt.
+  // `excluded_res_ids`: A set of resource IDs to exclude from eviction.
+  // `is_idle_time_eviction`: See `StartEviction`.
+  // `abort_flag`: See `StartEviction`.
+  // `remaining_mandatory_size`: See `StartEviction`.
+  // `start_time`: The time when the resume operation was posted.
+  EvictionResultOrErrorAndStoreStatus ResumePendingEviction(
+      EvictionTargetQueue eviction_targets,
+      base::flat_set<ResId> excluded_res_ids,
+      bool is_idle_time_eviction,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+          remaining_mandatory_size,
+      base::TimeTicks start_time);
+
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndex();
   bool MaybeRunCheckpoint();
 
@@ -129,6 +186,10 @@ class SqlPersistentStore::Backend {
     store_status_ = StoreStatus();
   }
 
+  void SetEvictionHookForTesting(base::RepeatingClosure hook) {
+    eviction_hook_ = std::move(hook);
+  }
+
  private:
   using RangeResultOrError = base::expected<RangeResult, Error>;
   using OptionalEntryInfoWithKeyAndIteratorOrError =
@@ -136,7 +197,7 @@ class SqlPersistentStore::Backend {
 
   using EvictionCandidateList =
       EvictionCandidateAggregator::EvictionCandidateList;
-  using EvictionTargetList = EvictionCandidateAggregator::EvictionTargetList;
+  using EvictionTargetQueue = SqlPersistentStore::EvictionTargetQueue;
 
   // A helper struct to associate an IOBuffer with a starting offset.
   struct BufferWithStart {
@@ -264,6 +325,9 @@ class SqlPersistentStore::Backend {
   Error DeleteBlobsByResIds(const std::vector<ResId>& res_ids);
   // Deletes a single resource entry from the `resources` table by its `res_id`.
   Error DeleteResourceByResId(ResId res_id);
+  // Deletes a single resource entry from the `resources` table by its `res_id`
+  // and returns the `bytes_usage` of the deleted entry.
+  Int64OrError DeleteResourceByResIdReturnUsage(ResId res_id);
   // Deletes multiple resource entries from the `resources` table by their
   // `res_id`s.
   Error DeleteResourcesByResIds(const std::vector<ResId>& res_ids);
@@ -276,16 +340,29 @@ class SqlPersistentStore::Backend {
       bool is_idle_time_eviction);
   // Called by the `EvictionCandidateAggregator` to evict a list of selected
   // entries.
-  void EvictEntries(ResIdListOrErrorAndStoreStatusCallback callback,
-                    bool is_idle_time_eviction,
-                    EvictionTargetList eviction_target_list,
-                    base::TimeTicks post_task_time);
-  // The internal implementation of `EvictEntries`. Deletes the entries from the
-  // database and updates the store status.
-  Error EvictEntriesInternal(const ResIdList& res_ids,
-                             int64_t bytes_usage,
-                             bool is_idle_time_eviction,
-                             bool& corruption_detected);
+  void EvictEntries(
+      EvictionResultOrErrorAndStoreStatusCallback callback,
+      bool is_idle_time_eviction,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+          remaining_mandatory_size,
+      EvictionTargetQueue eviction_targets,
+      base::TimeTicks post_task_time);
+
+  // A helper function to evict entries.
+  // `trust_target_size`: If true, it assumes the entry exists and uses the size
+  // from `eviction_targets` (used for new eviction). If false, entries that are
+  // not found in the DB are ignored, and the size is retrieved from the DB
+  // (used for resuming eviction).
+  EvictionResultOrError EvictEntriesHelper(
+      EvictionTargetQueue eviction_targets,
+      const base::flat_set<ResId>& excluded_res_ids,
+      bool is_idle_time_eviction,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
+          remaining_mandatory_size,
+      bool trust_target_size,
+      bool& corruption_detected);
 
   // Updates the in-memory `store_status_` by `entry_count_delta` and
   // `total_size_delta`. If the update results in an overflow or a negative
@@ -333,6 +410,9 @@ class SqlPersistentStore::Backend {
   int wal_pages_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // A hook called during eviction for testing purposes.
+  base::RepeatingClosure eviction_hook_;
 
   base::WeakPtrFactory<Backend> weak_factory_{this};
 };

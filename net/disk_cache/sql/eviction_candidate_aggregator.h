@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -42,25 +43,11 @@ class NET_EXPORT_PRIVATE EvictionCandidateAggregator
     int64_t entry_size_with_overhead;
     base::Time last_used;
   };
-  struct NET_EXPORT_PRIVATE EvictionTarget {
-    EvictionTarget(SqlPersistentStore::ResId res_id,
-                   int64_t entry_size_with_overhead);
-    ~EvictionTarget();
-    EvictionTarget(EvictionTarget&&);
-    EvictionTarget& operator=(EvictionTarget&&);
-    EvictionTarget(const EvictionTarget&);
-    EvictionTarget& operator=(const EvictionTarget&);
-
-    bool operator==(const EvictionTarget& other) const;
-
-    SqlPersistentStore::ResId res_id;
-    int64_t entry_size_with_overhead;
-  };
-
-  using EvictionTargetList = std::vector<EvictionTarget>;
+  using EvictionTarget = SqlPersistentStore::EvictionTarget;
+  using EvictionTargetQueue = SqlPersistentStore::EvictionTargetQueue;
   using EvictionCandidateList = std::vector<EvictionCandidate>;
   using EvictionCandidateSelectedCallback =
-      base::OnceCallback<void(EvictionTargetList eviction_targets,
+      base::OnceCallback<void(EvictionTargetQueue eviction_targets,
                               base::TimeTicks post_task_time)>;
 
   EvictionCandidateAggregator(

@@ -175,6 +175,10 @@ inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
 inline constexpr const char kDeleteResourceByResIds_DeleteFromResources[] =
     "DELETE FROM resources WHERE res_id=?";
 
+inline constexpr const char
+    kDeleteResourceByResIds_DeleteFromResourcesReturnUsage[] =
+        "DELETE FROM resources WHERE res_id=? RETURNING bytes_usage";
+
 inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
     // clang-format off
     "UPDATE resources "
@@ -521,6 +525,7 @@ enum class Query {
   kDeleteAllEntries_DeleteFromBlobs,
   kDeleteLiveEntriesBetween_SelectLiveResources,
   kDeleteResourceByResIds_DeleteFromResources,
+  kDeleteResourceByResIds_DeleteFromResourcesReturnUsage,
   kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
   kInsertIntoResources,
   kUpdateLastUsed,
@@ -584,6 +589,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDeleteLiveEntriesBetween_SelectLiveResources;
     case Query::kDeleteResourceByResIds_DeleteFromResources:
       return internal::kDeleteResourceByResIds_DeleteFromResources;
+    case Query::kDeleteResourceByResIds_DeleteFromResourcesReturnUsage:
+      return internal::kDeleteResourceByResIds_DeleteFromResourcesReturnUsage;
     case Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed:
       return internal::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed;
     case Query::kInsertIntoResources:
