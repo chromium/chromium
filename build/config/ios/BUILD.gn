@@ -158,6 +158,9 @@ config("ios_executable_flags") {
   if (xcode_version_int >= 2600) {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
   }
+  if (xcode_version_int >= 2640) {
+    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+  }
 }
 
 config("ios_extension_executable_flags") {
@@ -179,6 +182,9 @@ config("ios_extension_executable_flags") {
   # TODO(crbug.com/424634516): Remove once Apple fixes the issue.
   if (xcode_version_int >= 2600) {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
+  }
+  if (xcode_version_int >= 2640) {
+    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
   }
 }
 
@@ -237,6 +243,9 @@ config("ios_shared_library_flags") {
   if (xcode_version_int >= 2600) {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
   }
+  if (xcode_version_int >= 2640) {
+    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+  }
 }
 
 config("xctest_config") {
@@ -264,6 +273,9 @@ config("xctest_config") {
   # TODO(crbug.com/424634516): Remove once Apple fixes the issue.
   if (xcode_version_int >= 2600) {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
+  }
+  if (xcode_version_int >= 2640) {
+    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
   }
 }
 
