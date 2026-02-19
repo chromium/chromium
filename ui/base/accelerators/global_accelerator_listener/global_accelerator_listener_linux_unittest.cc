@@ -386,6 +386,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
   writer.AppendObjectPath(session_proxy->object_path());
   writer.AppendString(expected_command_id);
   writer.AppendUint64(0);  // timestamp
+  dbus_utils::WriteValue(writer, DbusDictionary());  // options
   activated_callback.Run(&signal);
 
   // Cleanup

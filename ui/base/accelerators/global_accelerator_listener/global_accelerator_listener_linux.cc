@@ -80,7 +80,7 @@ void GlobalAcceleratorListenerLinux::OnServiceStarted(uint32_t version) {
   global_shortcuts_proxy_ = bus_->GetObjectProxy(
       kPortalServiceName, dbus::ObjectPath(kPortalObjectPath));
 
-  dbus_utils::ConnectToSignal<"ost">(
+  dbus_utils::ConnectToSignal<"osta{sv}">(
       global_shortcuts_proxy_, kGlobalShortcutsInterface, kSignalActivated,
       base::BindRepeating(&GlobalAcceleratorListenerLinux::OnActivatedSignal,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -303,13 +303,14 @@ void GlobalAcceleratorListenerLinux::OnBindShortcuts(
 }
 
 void GlobalAcceleratorListenerLinux::OnActivatedSignal(
-    dbus_utils::ConnectToSignalResultSig<"ost"> result) {
+    dbus_utils::ConnectToSignalResultSig<"osta{sv}"> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to parse Activated signal.";
     return;
   }
 
-  auto [session_handle, shortcut_id, timestamp] = std::move(result.value());
+  auto [session_handle, shortcut_id, timestamp, options] =
+      std::move(result.value());
 
   // Only process the signal if it comes from our current session.
   if (!session_proxy_ || session_proxy_->object_path() != session_handle) {

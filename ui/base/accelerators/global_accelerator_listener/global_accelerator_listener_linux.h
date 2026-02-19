@@ -98,7 +98,8 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
 
   // Callbacks for DBus signals.
-  void OnActivatedSignal(dbus_utils::ConnectToSignalResultSig<"ost"> result);
+  void OnActivatedSignal(
+      dbus_utils::ConnectToSignalResultSig<"osta{sv}"> result);
 
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
