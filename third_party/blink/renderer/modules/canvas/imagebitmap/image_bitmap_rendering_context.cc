@@ -183,17 +183,16 @@ bool ImageBitmapRenderingContext::PushFrame() {
     const gfx::ColorSpace color_space = GetColorSpace();
     if (SharedGpuContext::IsGpuCompositingEnabled()) {
       resource_provider_for_offscreen_canvas_ =
-          CanvasNon2DResourceProviderSharedImage::Create(
+          CanvasNon2DResourceProviderSharedImage::CreateWithClear(
               Host()->Size(), format, alpha_type, color_space,
-              CanvasResourceProvider::ShouldInitialize::kCallClear,
               SharedGpuContext::ContextProviderWrapper(),
               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
     } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
       resource_provider_for_offscreen_canvas_ =
-          CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-              Host()->Size(), format, alpha_type, color_space,
-              CanvasResourceProvider::ShouldInitialize::kCallClear,
-              SharedGpuContext::SharedImageInterfaceProvider(), Host());
+          CanvasNon2DResourceProviderSharedImage::
+              CreateWithClearForSoftwareCompositor(
+                  Host()->Size(), format, alpha_type, color_space,
+                  SharedGpuContext::SharedImageInterfaceProvider(), Host());
     }
 
     Host()->UpdateMemoryUsage();

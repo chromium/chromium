@@ -624,6 +624,16 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
+
+  // The returned instance will have been cleared at creation.
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  CreateWithClear(gfx::Size size,
+                  viz::SharedImageFormat format,
+                  SkAlphaType alpha_type,
+                  const gfx::ColorSpace& color_space,
+                  base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                  gpu::SharedImageUsageSet shared_image_usage_flags,
+                  Delegate* delegate = nullptr);
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
@@ -647,6 +657,16 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      Delegate* delegate = nullptr);
+
+  // The returned instance will have been cleared at creation.
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  CreateWithClearForSoftwareCompositor(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate = nullptr);
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
