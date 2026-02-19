@@ -1094,7 +1094,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             assert profile != null;
             chromeAndroidTask.addFeature(
-                    new ChromeAndroidTaskFeatureKey(ExtensionWindowControllerBridge.class, profile),
+                    new ChromeAndroidTaskFeatureKey(
+                            ExtensionWindowControllerBridge.class, profile, activityWindowAndroid),
                     () ->
                             ExtensionWindowControllerBridgeFactory.create(
                                     chromeAndroidTask, profile));
