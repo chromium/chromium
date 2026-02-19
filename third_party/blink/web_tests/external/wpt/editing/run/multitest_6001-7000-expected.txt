@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 119 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["fontsize","4"],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
 [FAIL] [["fontsize","4"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
@@ -44,60 +44,28 @@ Found 119 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["fontsize","4"],["justifycenter",""]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["fontsize","4"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["fontsize","4"],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<font size=\\"4\\">a</font>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["fontsize","4"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["fontsize","4"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["fontsize","4"],["justifyfull",""]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["fontsize","4"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["fontsize","4"],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<font size=\\"4\\">a</font>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["fontsize","4"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["fontsize","4"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["fontsize","4"],["justifyleft",""]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["fontsize","4"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["fontsize","4"],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"4\\">a</font>bar" but got "fooabar"
 [FAIL] [["fontsize","4"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["fontsize","4"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["fontsize","4"],["justifyright",""]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["fontsize","4"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["fontsize","4"],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<font size=\\"4\\">a</font>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["fontsize","4"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") after
   assert_equals: Wrong result returned expected "4" but got "3"
-[FAIL] [["fontsize","4"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["fontsize","4"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["fontsize","4"],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"4\\">a</font>bar" but got "foo<span style=\\"font-size:large\\">a</span>bar"
 [FAIL] [["forecolor","#0000FF"],["inserttext","a"]] "foo[]bar" compare innerHTML
@@ -184,59 +152,27 @@ Found 119 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifycenter",""]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["forecolor","#0000FF"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<font color=\\"#0000ff\\">a</font>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["forecolor","#0000FF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["forecolor","#0000FF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifyfull",""]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["forecolor","#0000FF"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<font color=\\"#0000ff\\">a</font>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["forecolor","#0000FF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["forecolor","#0000FF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifyleft",""]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["forecolor","#0000FF"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\\"#0000ff\\">a</font>bar" but got "fooabar"
 [FAIL] [["forecolor","#0000FF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["forecolor","#0000FF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifyright",""]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["forecolor","#0000FF"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["forecolor","#0000FF"],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<font color=\\"#0000ff\\">a</font>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["forecolor","#0000FF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["forecolor","#0000FF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["forecolor","#0000FF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 Harness: the test ran to completion.
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 193 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
@@ -152,10 +152,6 @@ Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -164,20 +160,12 @@ Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -186,20 +174,12 @@ Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "fooabar"
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -208,20 +188,12 @@ Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -230,10 +202,6 @@ Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandValue("subscript") after

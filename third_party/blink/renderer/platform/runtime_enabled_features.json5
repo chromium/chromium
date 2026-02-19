@@ -2621,6 +2621,11 @@
       status: "stable",
     },
     {
+      // Returns alignment value instead of a boolean
+      name: "FixJustifyQueryCommandValue",
+      status: "stable",
+    },
+    {
       name: "FixLinebreakForPreTag",
       status: "stable",
     },

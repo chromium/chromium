@@ -155,6 +155,7 @@ class CORE_EXPORT StyleCommands {
   static String ValueFontSizeDelta(const EditorInternalCommand&,
                                    LocalFrame&,
                                    Event*);
+  static String ValueJustify(const EditorInternalCommand&, LocalFrame&, Event*);
 
  private:
   static void ApplyStyle(LocalFrame&,

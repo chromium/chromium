@@ -1434,6 +1434,15 @@ static String ValueStateOrNull(const EditorInternalCommand& self,
              : "false";
 }
 
+static String ValueJustifyOrStateOrNull(const EditorInternalCommand& self,
+                                        LocalFrame& frame,
+                                        Event* triggering_event) {
+  if (RuntimeEnabledFeatures::FixJustifyQueryCommandValueEnabled()) {
+    return StyleCommands::ValueJustify(self, frame, triggering_event);
+  }
+  return ValueStateOrNull(self, frame, triggering_event);
+}
+
 // The command has no value.
 // https://w3c.github.io/editing/execCommand.html#querycommandvalue()
 // > ... or has no value, return the empty string.
@@ -1488,13 +1497,13 @@ static const EditorInternalCommand* InternalCommand(
       // Covered by unit tests in editing_command_test.cc
       {EditingCommandType::kAlignJustified, ExecuteJustifyFull,
        SupportedFromMenuOrKeyBinding, EnabledInRichlyEditableText, StateNone,
-       ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
+       ValueJustifyOrStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kAlignLeft, ExecuteJustifyLeft,
        SupportedFromMenuOrKeyBinding, EnabledInRichlyEditableText, StateNone,
-       ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
+       ValueJustifyOrStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kAlignRight, ExecuteJustifyRight,
        SupportedFromMenuOrKeyBinding, EnabledInRichlyEditableText, StateNone,
-       ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
+       ValueJustifyOrStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kBackColor, StyleCommands::ExecuteBackColor,
        Supported, EnabledInRichlyEditableText, StateNone,
        StyleCommands::ValueBackColor, kNotTextInsertion,
@@ -1634,20 +1643,20 @@ static const EditorInternalCommand* InternalCommand(
        Supported, EnabledInRichlyEditableText, StyleCommands::StateItalic,
        ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kJustifyCenter, ExecuteJustifyCenter, Supported,
-       EnabledInRichlyEditableText, StateJustifyCenter, ValueStateOrNull,
-       kNotTextInsertion, CanNotExecuteWhenDisabled},
+       EnabledInRichlyEditableText, StateJustifyCenter,
+       ValueJustifyOrStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kJustifyFull, ExecuteJustifyFull, Supported,
-       EnabledInRichlyEditableText, StateJustifyFull, ValueStateOrNull,
+       EnabledInRichlyEditableText, StateJustifyFull, ValueJustifyOrStateOrNull,
        kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kJustifyLeft, ExecuteJustifyLeft, Supported,
-       EnabledInRichlyEditableText, StateJustifyLeft, ValueStateOrNull,
+       EnabledInRichlyEditableText, StateJustifyLeft, ValueJustifyOrStateOrNull,
        kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kJustifyNone, ExecuteJustifyLeft, Supported,
-       EnabledInRichlyEditableText, StateNone, ValueStateOrNull,
+       EnabledInRichlyEditableText, StateNone, ValueJustifyOrStateOrNull,
        kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kJustifyRight, ExecuteJustifyRight, Supported,
-       EnabledInRichlyEditableText, StateJustifyRight, ValueStateOrNull,
-       kNotTextInsertion, CanNotExecuteWhenDisabled},
+       EnabledInRichlyEditableText, StateJustifyRight,
+       ValueJustifyOrStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kMakeTextWritingDirectionLeftToRight,
        StyleCommands::ExecuteMakeTextWritingDirectionLeftToRight,
        SupportedFromMenuOrKeyBinding, EnabledInRichlyEditableText,
@@ -1984,7 +1993,7 @@ static const EditorInternalCommand* InternalCommand(
        ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kAlignCenter, ExecuteJustifyCenter,
        SupportedFromMenuOrKeyBinding, EnabledInRichlyEditableText, StateNone,
-       ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
+       ValueJustifyOrStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
       {EditingCommandType::kPasteFromImageURL,
        ClipboardCommands::ExecutePasteFromImageURL,
        SupportedFromMenuOrKeyBinding, EnabledInEditableText, StateNone,

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 117 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\\"#0000ff\\">a</font>bar" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">a</span>bar"
 [FAIL] [["hilitecolor","#00FFFF"],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -142,74 +142,42 @@ Found 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "fooabar"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["hilitecolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"],["outdent",""]] "foo[]bar" queryCommandValue("hilitecolor") after

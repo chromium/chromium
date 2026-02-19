@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 186 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["italic",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["italic",""],["insertparagraph",""]] "foo[]bar" compare innerHTML
@@ -42,10 +42,6 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifycenter",""]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["italic",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["italic",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<i>a</i>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["italic",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") before
@@ -54,20 +50,12 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["italic",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["italic",""],["justifyfull",""]] "foo[]bar" queryCommandValue("italic") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["italic",""],["justifyfull",""]] "foo[]bar" queryCommandState("italic") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifyfull",""]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["italic",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["italic",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<i>a</i>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["italic",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") before
@@ -76,20 +64,12 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["italic",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["italic",""],["justifyleft",""]] "foo[]bar" queryCommandValue("italic") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["italic",""],["justifyleft",""]] "foo[]bar" queryCommandState("italic") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifyleft",""]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["italic",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["italic",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>bar" but got "fooabar"
 [FAIL] [["italic",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") before
@@ -98,20 +78,12 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["italic",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["italic",""],["justifyright",""]] "foo[]bar" queryCommandValue("italic") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["italic",""],["justifyright",""]] "foo[]bar" queryCommandState("italic") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifyright",""]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["italic",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["italic",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<i>a</i>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["italic",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") before
@@ -120,10 +92,6 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["italic",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["italic",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["italic",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["italic",""],["outdent",""]] "foo[]bar" queryCommandValue("italic") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["italic",""],["outdent",""]] "foo[]bar" queryCommandValue("italic") after
@@ -314,10 +282,6 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifycenter",""]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["strikethrough",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["strikethrough",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<s>a</s>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["strikethrough",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") before
@@ -326,20 +290,12 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["strikethrough",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "true"
 [FAIL] [["strikethrough",""],["justifyfull",""]] "foo[]bar" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["strikethrough",""],["justifyfull",""]] "foo[]bar" queryCommandState("strikethrough") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifyfull",""]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["strikethrough",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["strikethrough",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<s>a</s>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["strikethrough",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") before
@@ -348,20 +304,12 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["strikethrough",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "true"
 [FAIL] [["strikethrough",""],["justifyleft",""]] "foo[]bar" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["strikethrough",""],["justifyleft",""]] "foo[]bar" queryCommandState("strikethrough") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifyleft",""]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["strikethrough",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["strikethrough",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>bar" but got "fooabar"
 [FAIL] [["strikethrough",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") before
@@ -370,20 +318,12 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
-  assert_equals: Wrong result returned expected "left" but got "true"
-[FAIL] [["strikethrough",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
-  assert_equals: Wrong result returned expected "left" but got "true"
 [FAIL] [["strikethrough",""],["justifyright",""]] "foo[]bar" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["strikethrough",""],["justifyright",""]] "foo[]bar" queryCommandState("strikethrough") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifyright",""]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["strikethrough",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["strikethrough",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<s>a</s>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["strikethrough",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") before
@@ -392,10 +332,6 @@ Found 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["strikethrough",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["strikethrough",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
-  assert_equals: Wrong result returned expected "left" but got "false"
-[FAIL] [["strikethrough",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
-  assert_equals: Wrong result returned expected "right" but got "true"
 [FAIL] [["strikethrough",""],["outdent",""]] "foo[]bar" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["strikethrough",""],["outdent",""]] "foo[]bar" queryCommandValue("strikethrough") after
