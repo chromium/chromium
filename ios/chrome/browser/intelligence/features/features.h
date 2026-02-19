@@ -335,4 +335,16 @@ enum class PageActionMenuIconVariations {
 
 PageActionMenuIconVariations GetPageActionMenuIcon();
 
+// Feature flag for enabling Gemini backend migration.
+BASE_DECLARE_FEATURE(kGeminiBackendMigration);
+bool IsGeminiBackendMigrationEnabled();
+
+// Feature flag for enabling Gemini actor.
+BASE_DECLARE_FEATURE(kGeminiActor);
+bool IsGeminiActorEnabled();
+
+// Feature flag for enabling rich APC (v2) extraction for Gemini.
+BASE_DECLARE_FEATURE(kGeminiRichAPCExtraction);
+bool IsGeminiRichAPCExtractionEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

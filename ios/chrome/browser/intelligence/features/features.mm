@@ -518,3 +518,21 @@ PageActionMenuIconVariations GetPageActionMenuIcon() {
   }
   return PageActionMenuIconVariations::kDefault;
 }
+
+BASE_FEATURE(kGeminiBackendMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiBackendMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiBackendMigration);
+}
+
+BASE_FEATURE(kGeminiActor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiActorEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiActor);
+}
+
+BASE_FEATURE(kGeminiRichAPCExtraction, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiRichAPCExtractionEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiRichAPCExtraction);
+}

@@ -635,6 +635,13 @@ const char kFullscreenTransitionSpeedDescription[] =
     "When enabled, the speed of the fullscreen' transition is "
     "increased-decreased.";
 
+const char kGeminiActorName[] = "Gemini Actor";
+const char kGeminiActorDescription[] = "Enables the Gemini Actor.";
+
+const char kGeminiBackendMigrationName[] = "Gemini Backend Migration";
+const char kGeminiBackendMigrationDescription[] =
+    "Enables the backend migration for Gemini.";
+
 const char kGeminiCopresenceName[] = "Gemini Copresence";
 const char kGeminiCopresenceDescription[] =
     "Enables the Gemini Copresence feature, which provides a persistent Gemini "
@@ -683,6 +690,10 @@ const char kGeminiResponseViewDynamicResizingName[] =
     "Gemini Response View Dynamic Resizing";
 const char kGeminiResponseViewDynamicResizingDescription[] =
     "Enables dynamic resizing for the Gemini response view.";
+
+const char kGeminiRichAPCExtractionName[] = "Gemini Rich APC Extraction";
+const char kGeminiRichAPCExtractionDescription[] =
+    "Enables rich APC extraction for Gemini.";
 
 const char kGeminiUpdatedEligibilityName[] = "Gemini Updated Eligibility";
 const char kGeminiUpdatedEligibilityDescription[] =

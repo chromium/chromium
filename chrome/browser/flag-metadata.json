@@ -4992,12 +4992,28 @@
     "expiry_milestone": 152
   },
   {
+    "name": "gemini-actor",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "gemini-antiscam-protections-metrics-only",
     "owners": [
       "skrakowi@chromium.org",
       "chrome-counter-abuse-alerts@google.com"
     ],
     "expiry_milestone": 151
+  },
+  {
+    "name": "gemini-backend-migration",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 155
   },
   {
     "name": "gemini-copresence",
@@ -5074,6 +5090,14 @@
       "bling-alchemy-eng@google.com"
     ],
     "expiry_milestone": 160
+  },
+  {
+    "name": "gemini-rich-apc-extraction",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 155
   },
   {
     "name": "gemini-updated-eligibility",

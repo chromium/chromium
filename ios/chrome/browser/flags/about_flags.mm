@@ -2697,6 +2697,16 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSDateToCalendarSignedOutName,
      flag_descriptions::kIOSDateToCalendarSignedOutDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSDateToCalendarSignedOut)},
+    {"gemini-backend-migration", flag_descriptions::kGeminiBackendMigrationName,
+     flag_descriptions::kGeminiBackendMigrationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiBackendMigration)},
+    {"gemini-actor", flag_descriptions::kGeminiActorName,
+     flag_descriptions::kGeminiActorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiActor)},
+    {"gemini-rich-apc-extraction",
+     flag_descriptions::kGeminiRichAPCExtractionName,
+     flag_descriptions::kGeminiRichAPCExtractionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiRichAPCExtraction)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
