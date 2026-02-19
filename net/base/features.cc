@@ -449,7 +449,7 @@ BASE_FEATURE_PARAM(int,
                    kSqlDiskCacheForceCheckpointThreshold,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheForceCheckpointThreshold",
-                   20000);
+                   2000);
 BASE_FEATURE_PARAM(int,
                    kSqlDiskCacheIdleCheckpointThreshold,
                    &kDiskCacheBackendExperiment,
