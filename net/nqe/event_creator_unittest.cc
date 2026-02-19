@@ -15,8 +15,8 @@ namespace net::nqe::internal {
 
 namespace {
 
-// Returns the number of entries in |net_log| that have type set to
-// |NetLogEventType::NETWORK_QUALITY_CHANGED|.
+// Returns the number of entries in `net_log` that have type set to
+// `NetLogEventType::NETWORK_QUALITY_CHANGED`.
 int GetNetworkQualityChangedEntriesCount(RecordingNetLogObserver* net_log) {
   return net_log->GetEntriesWithType(NetLogEventType::NETWORK_QUALITY_CHANGED)
       .size();

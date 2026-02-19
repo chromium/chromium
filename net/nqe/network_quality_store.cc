@@ -69,7 +69,7 @@ bool NetworkQualityStore::GetById(
   for (const auto& cached_quality : cached_network_qualities_) {
     if (network_id.type != cached_quality.first.type ||
         network_id.id != cached_quality.first.id) {
-      // The |type| and |id| must match.
+      // The `type` and `id` must match.
       continue;
     }
 
@@ -94,7 +94,7 @@ bool NetworkQualityStore::GetById(
     for (auto it = cached_network_qualities_.begin();
          it != cached_network_qualities_.end(); ++it) {
       if (network_id.type != it->first.type || network_id.id != it->first.id) {
-        // The |type| and |id| must match.
+        // The `type` and `id` must match.
         continue;
       }
 
@@ -119,9 +119,9 @@ bool NetworkQualityStore::GetById(
   // Finally, handle the case where the current network has a valid signal
   // strength, but there is no exact match.
 
-  // |matching_it| points to the entry that has the same connection type and
-  // id as |network_id|, and has the signal strength closest to the signal
-  // stength of |network_id|.
+  // `matching_it` points to the entry that has the same connection type and
+  // id as `network_id`, and has the signal strength closest to the signal
+  // strength of `network_id`.
   auto matching_it = cached_network_qualities_.end();
   int matching_it_diff_signal_strength = INT32_MAX;
 
@@ -129,19 +129,19 @@ bool NetworkQualityStore::GetById(
   for (auto it = cached_network_qualities_.begin();
        it != cached_network_qualities_.end(); ++it) {
     if (network_id.type != it->first.type || network_id.id != it->first.id) {
-      // The |type| and |id| must match.
+      // The `type` and `id` must match.
       continue;
     }
 
     DCHECK_LE(0, network_id.signal_strength);
 
-    // Determine if the signal strength of |network_id| is closer to the
-    // signal strength of the network at |it| then that of the network at
-    // |matching_it|.
+    // Determine if the signal strength of `network_id` is closer to the
+    // signal strength of the network at `it` then that of the network at
+    // `matching_it`.
     int diff_signal_strength;
     if (it->first.signal_strength == INT32_MIN) {
       // Current network has signal strength available. However, the persisted
-      // network does not. Set the |diff_signal_strength| to INT32_MAX. This
+      // network does not. Set the `diff_signal_strength` to INT32_MAX. This
       // ensures that if an entry with a valid signal strength is found later
       // during iteration, then that entry will be used. If no entry with valid
       // signal strength is found, then this entry will be used.
@@ -170,7 +170,7 @@ void NetworkQualityStore::AddNetworkQualitiesCacheObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   network_qualities_cache_observer_list_.AddObserver(observer);
 
-  // Notify the |observer| on the next message pump since |observer| may not
+  // Notify the `observer` on the next message pump since `observer` may not
   // be completely set up for receiving the callbacks.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

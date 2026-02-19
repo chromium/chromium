@@ -32,8 +32,8 @@ class NET_EXPORT_PRIVATE EventCreator {
   // May add network quality changed event to the net-internals log if there
   // is a change in the effective connection type, or if there is a meaningful
   // change in the values of HTTP RTT, transport RTT or bandwidth.
-  // |effective_connection_type| is the current effective connection type.
-  // |network_quality| is the current network quality.
+  // `effective_connection_type` is the current effective connection type.
+  // `network_quality` is the current network quality.
   void MaybeAddNetworkQualityChangedEventToNetLog(
       EffectiveConnectionType effective_connection_type,
       const NetworkQuality& network_quality);

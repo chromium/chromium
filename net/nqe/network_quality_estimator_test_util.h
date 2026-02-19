@@ -76,7 +76,7 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   }
 
   // Returns the effective connection type that was set using
-  // |set_effective_connection_type|. If the connection type has not been set,
+  // `set_effective_connection_type`. If the connection type has not been set,
   // then the base implementation is called.
   EffectiveConnectionType GetEffectiveConnectionType() const override;
 
@@ -91,9 +91,9 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   }
 
   // Returns the effective connection type that was set using
-  // |set_effective_connection_type|. If the connection type has not been set,
-  // then the base implementation is called. |http_rtt|, |transport_rtt| and
-  // |downstream_throughput_kbps| are set to the values that were previously
+  // `set_effective_connection_type`. If the connection type has not been set,
+  // then the base implementation is called. `http_rtt`, `transport_rtt` and
+  // `downstream_throughput_kbps` are set to the values that were previously
   // set by calling set_recent_http_rtt(), set_recent_transport_rtt()
   // and set_recent_transport_rtt() methods, respectively.
   EffectiveConnectionType GetRecentEffectiveConnectionTypeUsingMetrics(
@@ -152,13 +152,13 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     recent_downlink_throughput_kbps_ = recent_downlink_throughput_kbps;
   }
   // Returns the downlink throughput that was set using
-  // |set_recent_downlink_throughput_kbps|. If the downlink throughput has not
+  // `set_recent_downlink_throughput_kbps`. If the downlink throughput has not
   // been set, then the base implementation is called.
   bool GetRecentDownlinkThroughputKbps(const base::TimeTicks& start_time,
                                        int32_t* kbps) const override;
 
   // Returns the recent HTTP RTT value that was set using
-  // |set_rtt_estimate_internal|. If it has not been set, then the base
+  // `set_rtt_estimate_internal`. If it has not been set, then the base
   // implementation is called.
   base::TimeDelta GetRTTEstimateInternal(
       base::TimeTicks start_time,
@@ -181,11 +181,11 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     end_to_end_rtt_observation_count_at_last_ect_computation_ = count;
   }
 
-  // Returns the number of entries in |net_log_| that have type set to |type|.
+  // Returns the number of entries in `net_log_` that have type set to `type`.
   int GetEntriesCount(NetLogEventType type) const;
 
-  // Returns the value of the parameter with name |key| from the last net log
-  // entry that has type set to |type|. Different methods are provided for
+  // Returns the value of the parameter with name `key` from the last net log
+  // entry that has type set to `type`. Different methods are provided for
   // values of different types.
   std::string GetNetLogLastStringValue(NetLogEventType type,
                                        const std::string& key) const;
@@ -193,19 +193,19 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
                                 const std::string& key) const;
 
   // Notifies the registered observers that the network quality estimate has
-  // changed to |network_quality|.
+  // changed to `network_quality`.
   void NotifyObserversOfRTTOrThroughputEstimatesComputed(
       const net::nqe::internal::NetworkQuality& network_quality);
 
-  // Updates the computed effective connection type to |type| and notifies the
+  // Updates the computed effective connection type to `type` and notifies the
   // registered observers that the effective connection type has changed to
-  // |type|.
+  // `type`.
   void SetAndNotifyObserversOfEffectiveConnectionType(
       EffectiveConnectionType type);
 
-  // Updates the count of active P2P connections to |count| and notifies the
+  // Updates the count of active P2P connections to `count` and notifies the
   // registered observers that the active P2P connection counts has changed to
-  // |count|.
+  // `count`.
   void SetAndNotifyObserversOfP2PActiveConnectionsCountChange(uint32_t count);
 
   void SetTransportRTTAtastECTSampleCount(size_t count) {
@@ -252,20 +252,20 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   std::string current_network_id_;
 
   // If set, GetRecentHttpRTT() would return one of the set values.
-  // |start_time_null_http_rtt_| is returned if the |start_time| is null.
-  // Otherwise, |recent_http_rtt_| is returned.
+  // `start_time_null_http_rtt_` is returned if the `start_time` is null.
+  // Otherwise, `recent_http_rtt_` is returned.
   std::optional<base::TimeDelta> start_time_null_http_rtt_;
   std::optional<base::TimeDelta> recent_http_rtt_;
 
   // If set, GetRecentTransportRTT() would return one of the set values.
-  // |start_time_null_transport_rtt_| is returned if the |start_time| is null.
-  // Otherwise, |recent_transport_rtt_| is returned.
+  // `start_time_null_transport_rtt_` is returned if the `start_time` is null.
+  // Otherwise, `recent_transport_rtt_` is returned.
   std::optional<base::TimeDelta> start_time_null_transport_rtt_;
   std::optional<base::TimeDelta> recent_transport_rtt_;
 
   // If set, GetRecentDownlinkThroughputKbps() would return one of the set
-  // values. |start_time_null_downlink_throughput_kbps_| is returned if the
-  // |start_time| is null. Otherwise, |recent_downlink_throughput_kbps_| is
+  // values. `start_time_null_downlink_throughput_kbps_` is returned if the
+  // `start_time` is null. Otherwise, `recent_downlink_throughput_kbps_` is
   // returned.
   std::optional<int32_t> start_time_null_downlink_throughput_kbps_;
   std::optional<int32_t> recent_downlink_throughput_kbps_;

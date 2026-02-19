@@ -48,14 +48,14 @@ namespace nqe::internal {
 //     observation, that window is discarded.
 class NET_EXPORT_PRIVATE ThroughputAnalyzer {
  public:
-  // |throughput_observation_callback| is called on the |task_runner| when
-  // |this| has a new throughput observation.
-  // |use_local_host_requests_for_tests| should only be true when testing
+  // `throughput_observation_callback` is called on the `task_runner` when
+  // `this` has a new throughput observation.
+  // `use_local_host_requests_for_tests` should only be true when testing
   // against local HTTP server and allows the requests to local host to be
-  // used for network quality estimation. |use_smaller_responses_for_tests|
+  // used for network quality estimation. `use_smaller_responses_for_tests`
   // should only be true when testing, and allows the responses smaller than
-  // |kMinTransferSizeInBits| or shorter than
-  // |kMinRequestDurationMicroseconds| to be used for network quality
+  // `kMinTransferSizeInBits` or shorter than
+  // `kMinRequestDurationMicroseconds` to be used for network quality
   // estimation.
   // Virtualized for testing.
   ThroughputAnalyzer(
@@ -71,27 +71,27 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
 
   virtual ~ThroughputAnalyzer();
 
-  // Notifies |this| that the headers of |request| are about to be sent.
+  // Notifies `this` that the headers of `request` are about to be sent.
   void NotifyStartTransaction(const URLRequest& request,
                               const base::TimeTicks& time);
 
-  // Notifies |this| that unfiltered bytes have been read for |request|.
+  // Notifies `this` that unfiltered bytes have been read for `request`.
   void NotifyBytesRead(const URLRequest& request);
 
-  // Notifies |this| that |request| has completed.
+  // Notifies `this` that `request` has completed.
   void NotifyRequestCompleted(const URLRequest& request);
 
-  // Notifies |this| that |request| has an expected response body size in octets
-  // (8-bit bytes). |expected_content_size| is an estimate of total body length
+  // Notifies `this` that `request` has an expected response body size in octets
+  // (8-bit bytes). `expected_content_size` is an estimate of total body length
   // based on the Content-Length header field when available or a general size
   // estimate when the Content-Length is not provided.
   void NotifyExpectedResponseContentSize(const URLRequest& request,
                                          int64_t expected_content_size);
 
-  // Notifies |this| of a change in connection type.
+  // Notifies `this` of a change in connection type.
   void OnConnectionTypeChanged();
 
-  // |use_localhost_requests| should only be true when testing against local
+  // `use_localhost_requests` should only be true when testing against local
   // HTTP server and allows the requests to local host to be used for network
   // quality estimation.
   void SetUseLocalHostRequestsForTesting(bool use_localhost_requests);
@@ -100,7 +100,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // observation window.
   bool IsCurrentlyTrackingThroughput() const;
 
-  // Overrides the tick clock used by |this| for testing.
+  // Overrides the tick clock used by `this` for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   // Returns the number of bits received by Chromium so far. The count may not
@@ -129,7 +129,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
     return disable_throughput_measurements_;
   }
 
-  // Removes hanging requests from |requests_|. If any hanging requests are
+  // Removes hanging requests from `requests_`. If any hanging requests are
   // detected to be in-flight, the observation window is ended. Protected for
   // testing.
   void EraseHangingRequests(const URLRequest& request);
@@ -156,19 +156,19 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   typedef std::unordered_set<raw_ptr<const URLRequest, CtnExperimental>>
       AccuracyDegradingRequests;
 
-  // Updates the response content size map for |request|. Also keeps the total
+  // Updates the response content size map for `request`. Also keeps the total
   // response content size counter updated. Adds an new entry if there is no
   // matching record in the map.
   void UpdateResponseContentSize(const URLRequest* request,
                                  int64_t response_size);
 
   // Returns true if downstream throughput can be recorded. In that case,
-  // |downstream_kbps| is set to the computed downstream throughput (in
+  // `downstream_kbps` is set to the computed downstream throughput (in
   // kilobits per second). If a downstream throughput observation is taken,
   // then the throughput observation window is reset so as to continue
   // tracking throughput. A throughput observation can be taken only if the
   // time-window is currently active, and enough bytes have accumulated in
-  // that window. |downstream_kbps| should not be null.
+  // that window. `downstream_kbps` should not be null.
   bool MaybeGetThroughputObservation(int32_t* downstream_kbps);
 
   // Starts the throughput observation window that keeps track of network
@@ -176,26 +176,26 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // (i) All active requests are non-local;
   // (ii) There is at least one active, non-local request; and,
   // (iii) The throughput observation window is not already tracking
-  // throughput. The window is started by setting the |start_| and
-  // |bits_received_|.
+  // throughput. The window is started by setting the `start_` and
+  // `bits_received_`.
   void MaybeStartThroughputObservationWindow();
 
   // EndThroughputObservationWindow ends the throughput observation window.
   void EndThroughputObservationWindow();
 
-  // Returns true if the |request| degrades the accuracy of the throughput
+  // Returns true if the `request` degrades the accuracy of the throughput
   // observation window. A local request or a request that spans a connection
   // change degrades the accuracy of the throughput computation.
   bool DegradesAccuracy(const URLRequest& request) const;
 
-  // Bounds |accuracy_degrading_requests_| and |requests_| to ensure their sizes
+  // Bounds `accuracy_degrading_requests_` and `requests_` to ensure their sizes
   // do not exceed their capacities.
   void BoundRequestsSize();
 
-  // Guaranteed to be non-null during the duration of |this|.
+  // Guaranteed to be non-null during the duration of `this`.
   const raw_ptr<const NetworkQualityEstimator> network_quality_estimator_;
 
-  // Guaranteed to be non-null during the duration of |this|.
+  // Guaranteed to be non-null during the duration of `this`.
   const raw_ptr<const NetworkQualityEstimatorParams> params_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -203,7 +203,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Called every time a new throughput observation is available.
   ThroughputObservationCallback throughput_observation_callback_;
 
-  // Guaranteed to be non-null during the lifetime of |this|.
+  // Guaranteed to be non-null during the lifetime of `this`.
   // This isn't a const pointer since SetTickClockForTesting() modifies it.
   raw_ptr<const base::TickClock> tick_clock_;
 
@@ -214,7 +214,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // the window is not currently active.
   base::TimeTicks window_start_time_;
 
-  // Number of bits received prior to |start_| as reported by
+  // Number of bits received prior to `start_` as reported by
   // NetworkActivityMonitor.
   int64_t bits_received_at_window_start_ = 0;
 
@@ -237,7 +237,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Last time when the check for hanging requests was run.
   base::TimeTicks last_hanging_request_check_;
 
-  // If true, then |this| throughput analyzer stops tracking the throughput
+  // If true, then `this` throughput analyzer stops tracking the throughput
   // observations until Chromium is restarted. This may happen if the throughput
   // analyzer has lost track of the requests that degrade throughput computation
   // accuracy.

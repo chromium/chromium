@@ -22,7 +22,7 @@ class NET_EXPORT_PRIVATE EffectiveConnectionTypeObserver {
   // Notifies the observer of a change in the effective connection type.
   // NetworkQualityEstimator computes the effective connection type once in
   // every interval of duration
-  // |effective_connection_type_recomputation_interval_|. Additionally, when
+  // `effective_connection_type_recomputation_interval_`. Additionally, when
   // there is a change in the connection type of the device, then the
   // effective connection type is immediately recomputed.
   //

@@ -80,14 +80,14 @@ std::optional<int32_t> ObservationBuffer::GetPercentile(
   // Stores weighted observations in increasing order by value.
   std::vector<WeightedObservation> weighted_observations;
 
-  // Total weight of all observations in |weighted_observations|.
+  // Total weight of all observations in `weighted_observations`.
   double total_weight = 0.0;
 
   ComputeWeightedObservations(begin_timestamp, current_signal_strength,
                               &weighted_observations, &total_weight);
 
   if (observations_count) {
-    // |observations_count| may be null.
+    // `observations_count` may be null.
     *observations_count = weighted_observations.size();
   }
 
@@ -104,9 +104,9 @@ std::optional<int32_t> ObservationBuffer::GetPercentile(
   }
 
   // Computation may reach here due to floating point errors. This may happen
-  // if |percentile| was 100 (or close to 100), and |desired_weight| was
-  // slightly larger than |total_weight| (due to floating point errors).
-  // In this case, we return the highest |value| among all observations.
+  // if `percentile` was 100 (or close to 100), and `desired_weight` was
+  // slightly larger than `total_weight` (due to floating point errors).
+  // In this case, we return the highest `value` among all observations.
   // This is same as value of the last observation in the sorted vector.
   return weighted_observations.at(weighted_observations.size() - 1).value;
 }
@@ -162,9 +162,9 @@ void ObservationBuffer::ComputeWeightedObservations(
   DCHECK_LE(0.0, *total_weight);
   DCHECK(weighted_observations->empty() || 0.0 < *total_weight);
 
-  // |weighted_observations| may have a smaller size than |observations_|
+  // `weighted_observations` may have a smaller size than `observations_`
   // since the former contains only the observations later than
-  // |begin_timestamp|.
+  // `begin_timestamp`.
   DCHECK_GE(observations_.size(), weighted_observations->size());
 }
 

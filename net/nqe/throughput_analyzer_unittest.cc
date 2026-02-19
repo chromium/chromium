@@ -170,7 +170,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
                                                  tick_clock->NowTicks());
       requests.push_back(std::move(request));
     }
-    // Too many local requests should cause the |throughput_analyzer| to disable
+    // Too many local requests should cause the `throughput_analyzer` to disable
     // throughput measurements.
     EXPECT_NE(test_case.is_local,
               throughput_analyzer.IsCurrentlyTrackingThroughput());
@@ -251,7 +251,7 @@ TEST_F(ThroughputAnalyzerTest,
                                                  tick_clock->NowTicks());
       requests.push_back(std::move(request));
     }
-    // Too many local requests should cause the |throughput_analyzer| to disable
+    // Too many local requests should cause the `throughput_analyzer` to disable
     // throughput measurements.
     EXPECT_NE(use_network_isolation_key,
               throughput_analyzer.IsCurrentlyTrackingThroughput());
@@ -268,7 +268,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
   NetworkQualityEstimatorParams params(variation_params);
   // Set HTTP RTT to a large value so that the throughput observation window
   // is not detected as hanging. In practice, this would be provided by
-  // |network_quality_estimator| based on the recent observations.
+  // `network_quality_estimator` based on the recent observations.
   network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
 
   for (size_t num_requests = 1;
@@ -302,7 +302,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
     }
 
     // Increment the bytes received count to emulate the bytes received for
-    // |request_local| and |requests_not_local|.
+    // `request_local` and `requests_not_local`.
     throughput_analyzer.IncrementBitsReceived(100 * 1000 * 8);
 
     for (const auto& request : requests_not_local) {
@@ -317,7 +317,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
   }
 }
 
-// Tests that the hanging requests are dropped from the |requests_|, and
+// Tests that the hanging requests are dropped from the `requests_`, and
 // throughput observation window is ended.
 TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
   static const struct {
@@ -327,7 +327,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
     bool expect_throughput_observation;
   } tests[] = {
       {
-          // |requests_hang_duration| is less than 5 times the HTTP RTT.
+          // `requests_hang_duration` is less than 5 times the HTTP RTT.
           // Requests should not be marked as hanging.
           5,
           base::Milliseconds(1000),
@@ -335,7 +335,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
           true,
       },
       {
-          // |requests_hang_duration| is more than 5 times the HTTP RTT.
+          // `requests_hang_duration` is more than 5 times the HTTP RTT.
           // Requests should be marked as hanging.
           5,
           base::Milliseconds(200),
@@ -343,8 +343,8 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
           false,
       },
       {
-          // |requests_hang_duration| is less than
-          // |hanging_request_min_duration_msec|. Requests should not be marked
+          // `requests_hang_duration` is less than
+          // `hanging_request_min_duration_msec`. Requests should not be marked
           // as hanging.
           1,
           base::Milliseconds(100),
@@ -352,8 +352,8 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
           true,
       },
       {
-          // |requests_hang_duration| is more than
-          // |hanging_request_min_duration_msec|. Requests should be marked as
+          // `requests_hang_duration` is more than
+          // `hanging_request_min_duration_msec`. Requests should be marked as
           // hanging.
           1,
           base::Milliseconds(2000),
@@ -361,7 +361,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
           false,
       },
       {
-          // |requests_hang_duration| is less than 5 times the HTTP RTT.
+          // `requests_hang_duration` is less than 5 times the HTTP RTT.
           // Requests should not be marked as hanging.
           5,
           base::Seconds(2),
@@ -425,7 +425,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
     }
 
     // Increment the bytes received count to emulate the bytes received for
-    // |request_local| and |requests_not_local|.
+    // `request_local` and `requests_not_local`.
     throughput_analyzer.IncrementBitsReceived(100 * 1000 * 8);
 
     // Mark in-flight requests as hanging requests (if specified in the test
@@ -623,7 +623,7 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   throughput_analyzer.EraseHangingRequests(*request_not_local);
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
-  // |request_not_local| should be deleted since it has been idle for 2.4
+  // `request_not_local` should be deleted since it has been idle for 2.4
   // seconds.
   tick_clock.Advance(base::Milliseconds(500));
   throughput_analyzer.NotifyBytesRead(*request_not_local);
@@ -702,10 +702,10 @@ TEST_F(ThroughputAnalyzerTest,
 
     EXPECT_EQ(0, throughput_analyzer.throughput_observations_received());
 
-    // If |test.start_local_request| is true, then |request_local| starts
-    // before |request_not_local|, and ends after |request_not_local|. Thus,
+    // If `test.start_local_request` is true, then `request_local` starts
+    // before `request_not_local`, and ends after `request_not_local`. Thus,
     // network quality estimator should not get a chance to record throughput
-    // observation from |request_not_local| because of ongoing local request
+    // observation from `request_not_local` because of ongoing local request
     // at all times.
     if (test.start_local_request)
       throughput_analyzer.NotifyStartTransaction(*request_local,
@@ -722,7 +722,7 @@ TEST_F(ThroughputAnalyzerTest,
     }
 
     // Increment the bytes received count to emulate the bytes received for
-    // |request_local| and |requests_not_local|.
+    // `request_local` and `requests_not_local`.
     throughput_analyzer.IncrementBitsReceived(100 * 1000 * 8);
 
     for (const auto& request : requests_not_local) {
@@ -781,7 +781,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
     NetworkQualityEstimatorParams params(variation_params);
     // Set HTTP RTT to a large value so that the throughput observation window
     // is not detected as hanging. In practice, this would be provided by
-    // |network_quality_estimator| based on the recent observations.
+    // `network_quality_estimator` based on the recent observations.
     network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
 
     TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
@@ -817,7 +817,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
     }
 
     // Increment the bytes received count to emulate the bytes received for
-    // |request_network_1| and |request_network_2|.
+    // `request_network_1` and `request_network_2`.
     throughput_analyzer.IncrementBitsReceived(test.increment_bits);
 
     for (size_t i = 0; i < test.number_requests_in_flight; ++i) {
@@ -851,7 +851,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
   NetworkQualityEstimatorParams params(variation_params);
   // Set HTTP RTT to a large value so that the throughput observation window
   // is not detected as hanging. In practice, this would be provided by
-  // |network_quality_estimator| based on the recent observations.
+  // `network_quality_estimator` based on the recent observations.
   network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
 
   TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
@@ -895,7 +895,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
   const size_t increment_bits = 100 * 1000 * 8;
 
   // Increment the bytes received count to emulate the bytes received for
-  // |request_1| and |request_2|.
+  // `request_1` and `request_2`.
   throughput_analyzer.IncrementBitsReceived(increment_bits);
 
   throughput_analyzer.NotifyRequestCompleted(*(request_1.get()));

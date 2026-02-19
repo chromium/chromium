@@ -182,7 +182,7 @@ void ThroughputAnalyzer::NotifyBytesRead(const URLRequest& request) {
   if (requests_.erase(&request) == 0)
     return;
 
-  // Update the time when the bytes were received for |request|.
+  // Update the time when the bytes were received for `request`.
   requests_[&request] = tick_clock_->NowTicks();
 }
 
@@ -198,7 +198,7 @@ void ThroughputAnalyzer::NotifyRequestCompleted(const URLRequest& request) {
   if (disable_throughput_measurements_)
     return;
 
-  // Return early if the |request| is not present in the collections of
+  // Return early if the `request` is not present in the collections of
   // requests. This may happen when a completed request is later destroyed.
   if (requests_.find(&request) == requests_.end() &&
       accuracy_degrading_requests_.find(&request) ==
@@ -216,16 +216,16 @@ void ThroughputAnalyzer::NotifyRequestCompleted(const URLRequest& request) {
         base::BindOnce(throughput_observation_callback_, downstream_kbps));
   }
 
-  // Try to remove the request from either |accuracy_degrading_requests_| or
-  // |requests_|, since it is no longer active.
+  // Try to remove the request from either `accuracy_degrading_requests_` or
+  // `requests_`, since it is no longer active.
   if (accuracy_degrading_requests_.erase(&request) == 1u) {
-    // Generally, |request| cannot be in both |accuracy_degrading_requests_|
-    // and |requests_| at the same time. However, in some cases, the same
+    // Generally, `request` cannot be in both `accuracy_degrading_requests_`
+    // and `requests_` at the same time. However, in some cases, the same
     // request may appear in both vectors. See https://crbug.com/849604 for
     // more details.
-    // It's safe to delete |request| from |requests_| since (i)
+    // It's safe to delete `request` from `requests_` since (i)
     // The observation window is currently not recording throughput, and (ii)
-    // |requests_| is a best effort guess of requests that are currently
+    // `requests_` is a best effort guess of requests that are currently
     // in-flight.
     DCHECK(!IsCurrentlyTrackingThroughput());
     requests_.erase(&request);
@@ -273,16 +273,16 @@ bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
   static constexpr size_t kCwndSizeKilobytes = 10 * 1.5;
   static constexpr size_t kCwndSizeBits = kCwndSizeKilobytes * 1000 * 8;
 
-  // Scale the |duration| to one HTTP RTT, and compute the number of bits that
+  // Scale the `duration` to one HTTP RTT, and compute the number of bits that
   // would be received over a duration of one HTTP RTT.
   size_t bits_received_over_one_http_rtt =
       bits_received *
       (network_quality_estimator_->GetHttpRTT().value_or(base::Seconds(10)) /
        duration);
 
-  // If |is_hanging| is true, it implies that less than
+  // If `is_hanging` is true, it implies that less than
   // kCwndSizeKilobytes were received over a period of 1 HTTP RTT. For a network
-  // that is not under-utilized, it is expected that at least |kCwndSizeBits|
+  // that is not under-utilized, it is expected that at least `kCwndSizeBits`
   // are received over a duration of 1 HTTP RTT.
   bool is_hanging =
       bits_received_over_one_http_rtt <
@@ -317,7 +317,7 @@ bool ThroughputAnalyzer::MaybeGetThroughputObservation(
   const base::TimeDelta duration = now - window_start_time_;
 
   // Ignore tiny/short transfers, which will not produce accurate rates. Skip
-  // the checks if |use_small_responses_| is true.
+  // the checks if `use_small_responses_` is true.
   if (!params_->use_small_responses() &&
       bits_received < params_->GetThroughputMinTransferSizeBits()) {
     return false;
@@ -331,7 +331,7 @@ bool ThroughputAnalyzer::MaybeGetThroughputObservation(
     return false;
   }
 
-  // Round-up |downstream_kbps_double|.
+  // Round-up `downstream_kbps_double`.
   *downstream_kbps = base::ClampCeil<int32_t>(downstream_kbps_double);
   DCHECK(IsCurrentlyTrackingThroughput());
 
@@ -351,7 +351,7 @@ void ThroughputAnalyzer::OnConnectionTypeChanged() {
   // All the requests that were previously not degrading the througpput
   // computation are now spanning a connection change event. These requests
   // would now degrade the throughput computation accuracy. So, move them to
-  // |accuracy_degrading_requests_|.
+  // `accuracy_degrading_requests_`.
   for (const auto& request : requests_) {
     accuracy_degrading_requests_.insert(request.first);
   }
@@ -401,10 +401,10 @@ bool ThroughputAnalyzer::DegradesAccuracy(const URLRequest& request) const {
 
 void ThroughputAnalyzer::BoundRequestsSize() {
   if (accuracy_degrading_requests_.size() > kMaxRequestsSize) {
-    // Clear |accuracy_degrading_requests_| since its size has exceeded its
+    // Clear `accuracy_degrading_requests_` since its size has exceeded its
     // capacity.
     accuracy_degrading_requests_.clear();
-    // Disable throughput measurements since |this| has lost track of the
+    // Disable throughput measurements since `this` has lost track of the
     // accuracy degrading requests.
     disable_throughput_measurements_ = true;
 
@@ -419,7 +419,7 @@ void ThroughputAnalyzer::BoundRequestsSize() {
   }
 
   if (requests_.size() > kMaxRequestsSize) {
-    // Clear |requests_| since its size has exceeded its capacity.
+    // Clear `requests_` since its size has exceeded its capacity.
     EndThroughputObservationWindow();
     DCHECK(!IsCurrentlyTrackingThroughput());
     requests_.clear();

@@ -19,7 +19,7 @@ class NET_EXPORT_PRIVATE CachedNetworkQuality {
   explicit CachedNetworkQuality(
       EffectiveConnectionType effective_connection_type);
 
-  // |last_update_time| is the time when the |network_quality| was computed.
+  // `last_update_time` is the time when the `network_quality` was computed.
   CachedNetworkQuality(base::TimeTicks last_update_time,
                        const NetworkQuality& network_quality,
                        EffectiveConnectionType effective_connection_type);
@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE CachedNetworkQuality {
   CachedNetworkQuality& operator=(const CachedNetworkQuality& other);
 
   // Returns true if this cache entry was updated before
-  // |cached_network_quality|.
+  // `cached_network_quality`.
   bool OlderThan(const CachedNetworkQuality& cached_network_quality) const;
 
   base::TimeTicks last_update_time() { return last_update_time_; }

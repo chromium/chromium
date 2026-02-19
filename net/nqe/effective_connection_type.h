@@ -62,18 +62,18 @@ enum EffectiveConnectionType {
   EFFECTIVE_CONNECTION_TYPE_LAST,
 };
 
-// Returns the string equivalent of |type|.
+// Returns the string equivalent of `type`.
 NET_EXPORT const char* GetNameForEffectiveConnectionType(
     EffectiveConnectionType type);
 
 // Returns the EffectiveConnectionType that corresponds to
-// |connection_type_name|. If the effective connection type is unavailable or if
-// |connection_type_name| does not match to a known effective connection type,
+// `connection_type_name`. If the effective connection type is unavailable or if
+// `connection_type_name` does not match to a known effective connection type,
 // an unset value is returned.
 NET_EXPORT std::optional<EffectiveConnectionType>
 GetEffectiveConnectionTypeForName(std::string_view connection_type_name);
 
-// Returns the string equivalent of |type|. Deprecated, and replaced by
+// Returns the string equivalent of `type`. Deprecated, and replaced by
 // GetNameForEffectiveConnectionType.
 NET_EXPORT_PRIVATE const char* DeprecatedGetNameForEffectiveConnectionType(
     EffectiveConnectionType type);

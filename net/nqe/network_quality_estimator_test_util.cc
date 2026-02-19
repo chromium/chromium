@@ -341,7 +341,7 @@ void TestNetworkQualityEstimator::SetStartTimeNullHttpRtt(
   // Force compute effective connection type so that the new RTT value is
   // immediately picked up. This ensures that the next call to
   // GetEffectiveConnectionType() returns the effective connnection type
-  // that was computed based on |http_rtt|.
+  // that was computed based on `http_rtt`.
   ComputeEffectiveConnectionType();
 }
 
@@ -351,7 +351,7 @@ void TestNetworkQualityEstimator::SetStartTimeNullTransportRtt(
   // Force compute effective connection type so that the new RTT value is
   // immediately picked up. This ensures that the next call to
   // GetEffectiveConnectionType() returns the effective connnection type
-  // that was computed based on |transport_rtt|.
+  // that was computed based on `transport_rtt`.
   ComputeEffectiveConnectionType();
 }
 

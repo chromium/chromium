@@ -235,8 +235,8 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentRSSI) {
                                       NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP));
   }
 
-  // When the current RSSI is |high_rssi|, higher weight should be assigned
-  // to observations that were taken at |high_rssi|.
+  // When the current RSSI is `high_rssi`, higher weight should be assigned
+  // to observations that were taken at `high_rssi`.
   for (int i = 1; i < 100; ++i) {
     std::optional<int32_t> result =
         buffer.GetPercentile(now, high_rssi, i, nullptr);
@@ -244,8 +244,8 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentRSSI) {
     EXPECT_NEAR(result.value(), 51 + 0.49 * i, 2);
   }
 
-  // When the current RSSI is |low_rssi|, higher weight should be assigned
-  // to observations that were taken at |low_rssi|.
+  // When the current RSSI is `low_rssi`, higher weight should be assigned
+  // to observations that were taken at `low_rssi`.
   for (int i = 1; i < 100; ++i) {
     std::optional<int32_t> result =
         buffer.GetPercentile(now, low_rssi, i, nullptr);
@@ -291,7 +291,7 @@ TEST(NetworkQualityObservationBufferTest, RemoveObservations) {
 
   DeletedObservationSources deleted_observation_sources = {};
 
-  // Since all entries in |deleted_observation_sources| are set to false, no
+  // Since all entries in `deleted_observation_sources` are set to false, no
   // observations should be deleted.
   buffer.RemoveObservationsWithSource(deleted_observation_sources);
   EXPECT_EQ(200u, buffer.Size());

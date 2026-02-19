@@ -14,8 +14,8 @@ namespace net::nqe::internal {
 
 // NetworkID is used to uniquely identify a network.
 // For the purpose of network quality estimation and caching, a network is
-// uniquely identified by a combination of |type| and
-// |id|. This approach is unable to distinguish networks with
+// uniquely identified by a combination of `type` and
+// `id`. This approach is unable to distinguish networks with
 // same name (e.g., different Wi-Fi networks with same SSID).
 // This is a protected member to expose it to tests.
 struct NET_EXPORT_PRIVATE NetworkID {

@@ -28,7 +28,7 @@ namespace {
 // (iii) Effective connection type of the network (an enum).
 constexpr size_t kMaxCacheSize = 20u;
 
-// Parses |value| into a map of NetworkIDs and CachedNetworkQualities,
+// Parses `value` into a map of NetworkIDs and CachedNetworkQualities,
 // and returns the map.
 ParsedPrefs ConvertDictionaryValueToMap(const base::DictValue& value) {
   DCHECK_GE(kMaxCacheSize, value.size());
@@ -75,11 +75,11 @@ void NetworkQualitiesPrefsManager::InitializeOnNetworkThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_quality_estimator);
 
-  // Read |prefs_| again since they have now been fully initialized. This
-  // overwrites any values that may have been added to |prefs_| since
-  // construction of |this| via OnChangeInCachedNetworkQuality(). However, it's
+  // Read `prefs_` again since they have now been fully initialized. This
+  // overwrites any values that may have been added to `prefs_` since
+  // construction of `this` via OnChangeInCachedNetworkQuality(). However, it's
   // expected that InitializeOnNetworkThread will be called soon after
-  // construction of |this|. So, any loss of values would be minimal.
+  // construction of `this`. So, any loss of values would be minimal.
   prefs_ = pref_delegate_->GetDictionaryValue();
   read_prefs_startup_ = ConvertDictionaryValueToMap(prefs_);
 
@@ -123,16 +123,16 @@ void NetworkQualitiesPrefsManager::OnChangeInCachedNetworkQuality(
 
   if (prefs_.size() > kMaxCacheSize) {
     // Delete one randomly selected value that has a key that is different from
-    // |network_id|.
+    // `network_id`.
     DCHECK_EQ(kMaxCacheSize + 1, prefs_.size());
-    // Generate a random number in the range [0, |kMaxCacheSize| - 1] since the
-    // number of network IDs in |prefs_| other than |network_id| is
-    // |kMaxCacheSize|.
+    // Generate a random number in the range [0, `kMaxCacheSize` - 1] since the
+    // number of network IDs in `prefs_` other than `network_id` is
+    // `kMaxCacheSize`.
     int index_to_delete = base::RandIntInclusive(0, kMaxCacheSize - 1);
 
     for (auto it : prefs_) {
       // Delete the kth element in the dictionary, not including the element
-      // that represents the current network. k == |index_to_delete|.
+      // that represents the current network. k == `index_to_delete`.
       if (nqe::internal::NetworkID::FromString(it.first) == network_id)
         continue;
 

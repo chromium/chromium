@@ -13,7 +13,7 @@
 
 namespace net::nqe::internal {
 
-// RTT and throughput values are set to |INVALID_RTT_THROUGHPUT| if a valid
+// RTT and throughput values are set to `INVALID_RTT_THROUGHPUT` if a valid
 // value is unavailable.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net
 enum RttThroughputValues {
@@ -22,18 +22,18 @@ enum RttThroughputValues {
 };
 
 // Returns the RTT value to be used when the valid RTT is unavailable. Readers
-// should discard RTT if it is set to the value returned by |InvalidRTT()|.
+// should discard RTT if it is set to the value returned by `InvalidRTT()`.
 // TODO(tbansal): Remove this method, and replace all calls by
-// |INVALID_RTT_THROUGHPUT|.
+// `INVALID_RTT_THROUGHPUT`.
 NET_EXPORT_PRIVATE base::TimeDelta InvalidRTT();
 
 // NetworkQuality is used to cache the quality of a network connection.
 class NET_EXPORT_PRIVATE NetworkQuality {
  public:
   NetworkQuality();
-  // |http_rtt| is the estimate of the round trip time at the HTTP layer.
-  // |transport_rtt| is the estimate of the round trip time at the transport
-  // layer. |downstream_throughput_kbps| is the estimate of the downstream
+  // `http_rtt` is the estimate of the round trip time at the HTTP layer.
+  // `transport_rtt` is the estimate of the round trip time at the transport
+  // layer. `downstream_throughput_kbps` is the estimate of the downstream
   // throughput in kilobits per second.
   NetworkQuality(const base::TimeDelta& http_rtt,
                  const base::TimeDelta& transport_rtt,
@@ -45,7 +45,7 @@ class NET_EXPORT_PRIVATE NetworkQuality {
 
   bool operator==(const NetworkQuality& other) const;
 
-  // Returns true if |this| is at least as fast as |other| for all parameters
+  // Returns true if `this` is at least as fast as `other` for all parameters
   // (HTTP RTT, transport RTT etc.)
   bool IsFaster(const NetworkQuality& other) const;
 

@@ -14,7 +14,7 @@ namespace net::nqe::internal {
 
 namespace {
 
-// Tests if |weight_multiplier_per_second()| returns correct value for various
+// Tests if `weight_multiplier_per_second()` returns correct value for various
 // values of half life parameter.
 TEST(NetworkQualityEstimatorParamsTest, HalfLifeParam) {
   std::map<std::string, std::string> variation_params;

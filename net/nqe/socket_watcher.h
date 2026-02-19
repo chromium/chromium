@@ -45,16 +45,16 @@ namespace nqe::internal {
 class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
  public:
   // Creates a SocketWatcher which can be used to watch a socket that uses
-  // |protocol| as the transport layer protocol. The socket watcher will call
-  // |updated_rtt_observation_callback| on |task_runner| every time a new RTT
-  // observation is available. |address| is the IPAddress that the socket may
-  // connect to. |min_notification_interval| is the minimum interval between
+  // `protocol` as the transport layer protocol. The socket watcher will call
+  // `updated_rtt_observation_callback` on `task_runner` every time a new RTT
+  // observation is available. `address` is the IPAddress that the socket may
+  // connect to. `min_notification_interval` is the minimum interval between
   // consecutive notifications to this socket watcher.
-  // |allow_rtt_private_address| is true if |updated_rtt_observation_callback|
+  // `allow_rtt_private_address` is true if `updated_rtt_observation_callback`
   // should be called when RTT observation from a socket connected to private
-  // address is received. |tick_clock| is guaranteed to be non-null.
-  // |should_notify_rtt_callback| callback should be called back on
-  // |task_runner| by the created socket watchers to check if RTT observation
+  // address is received. `tick_clock` is guaranteed to be non-null.
+  // `should_notify_rtt_callback` callback should be called back on
+  // `task_runner` by the created socket watchers to check if RTT observation
   // should be taken and notified.
   SocketWatcher(SocketPerformanceWatcherFactory::Protocol protocol,
                 const IPAddress& address,
@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   void OnConnectionChanged() override;
 
  private:
-  // Transport layer protocol used by the socket that |this| is watching.
+  // Transport layer protocol used by the socket that `this` is watching.
   const SocketPerformanceWatcherFactory::Protocol protocol_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -85,7 +85,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   OnUpdatedRTTAvailableCallback updated_rtt_observation_callback_;
 
   // Called to determine if the RTT notification should be notified using
-  // |updated_rtt_observation_callback_|.
+  // `updated_rtt_observation_callback_`.
   ShouldNotifyRTTCallback should_notify_rtt_callback_;
 
   // Minimum interval betweeen consecutive incoming notifications.
@@ -96,7 +96,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   const bool allow_rtt_private_address_;
 
   // True if the RTT observations from this socket can be notified using
-  // |updated_rtt_observation_callback_|.
+  // `updated_rtt_observation_callback_`.
   const bool run_rtt_callback_;
 
   // Time when this was last notified of updated RTT.

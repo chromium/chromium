@@ -29,8 +29,8 @@ static const int kMinimumRTTVariationParameterMsec = 1;
 // kilobits per second) values.
 static const int kMinimumThroughputVariationParameterKbps = 1;
 
-// Returns the value of |parameter_name| read from |params|. If the
-// value is unavailable from |params|, then |default_value| is returned.
+// Returns the value of `parameter_name` read from `params`. If the
+// value is unavailable from `params`, then `default_value` is returned.
 int64_t GetValueForVariationParam(
     const std::map<std::string, std::string>& params,
     const std::string& parameter_name,
@@ -44,8 +44,8 @@ int64_t GetValueForVariationParam(
   return default_value;
 }
 
-// Returns the variation value for |parameter_name|. If the value is
-// unavailable, |default_value| is returned.
+// Returns the variation value for `parameter_name`. If the value is
+// unavailable, `default_value` is returned.
 double GetDoubleValueForVariationParamWithDefaultValue(
     const std::map<std::string, std::string>& params,
     const std::string& parameter_name,
@@ -60,8 +60,8 @@ double GetDoubleValueForVariationParamWithDefaultValue(
   return variations_value;
 }
 
-// Returns the variation value for |parameter_name|. If the value is
-// unavailable, |default_value| is returned.
+// Returns the variation value for `parameter_name`. If the value is
+// unavailable, `default_value` is returned.
 std::string GetStringValueForVariationParamWithDefaultValue(
     const std::map<std::string, std::string>& params,
     const std::string& parameter_name,
@@ -132,7 +132,7 @@ const char* GetNameForConnectionTypeInternal(
 }
 
 // Sets the default observation for different connection types in
-// |default_observations|. The default observations are different for
+// `default_observations`. The default observations are different for
 // different connection types (e.g., 2G, 3G, 4G, WiFi). The default
 // observations may be used to determine the network quality in absence of any
 // other information.
@@ -246,7 +246,7 @@ const std::array<base::TimeDelta, net::EFFECTIVE_CONNECTION_TYPE_LAST>
 const std::array<int32_t, net::EFFECTIVE_CONNECTION_TYPE_LAST>
     kTypicalDownlinkKbpsEffectiveConnectionType = {0, 0, 40, 75, 400, 1600};
 
-// Sets |typical_network_quality| to typical network quality for different
+// Sets `typical_network_quality` to typical network quality for different
 // effective connection types.
 void ObtainTypicalNetworkQualities(
     const std::map<std::string, std::string>& params,
@@ -305,7 +305,7 @@ void ObtainTypicalNetworkQualities(
 }
 
 // Sets the thresholds for different effective connection types in
-// |connection_thresholds|.
+// `connection_thresholds`.
 void ObtainConnectionThresholds(
     const std::map<std::string, std::string>& params,
     base::span<nqe::internal::NetworkQuality> connection_thresholds) {
@@ -563,7 +563,7 @@ size_t NetworkQualityEstimatorParams::throughput_min_requests_in_flight()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If |use_small_responses_| is set to true for testing, then consider one
+  // If `use_small_responses_` is set to true for testing, then consider one
   // request as sufficient for taking throughput sample.
   return use_small_responses_ ? 1 : throughput_min_requests_in_flight_;
 }

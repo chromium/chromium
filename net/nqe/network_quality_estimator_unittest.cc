@@ -56,7 +56,7 @@
 namespace {
 
 // Verifies that the number of samples in the bucket with minimum value
-// |bucket_min| in |histogram| are at least |expected_min_count_samples|.
+// `bucket_min` in `histogram` are at least `expected_min_count_samples`.
 void ExpectBucketCountAtLeast(base::HistogramTester* histogram_tester,
                               const std::string& histogram,
                               int32_t bucket_min,
@@ -163,7 +163,7 @@ class TestRTTObserver : public NetworkQualityEstimator::RTTObserver {
     observations_.emplace_back(rtt_ms, timestamp, source);
   }
 
-  // Returns the last received RTT observation that has source set to |source|.
+  // Returns the last received RTT observation that has source set to `source`.
   base::TimeDelta last_rtt(NetworkQualityObservationSource source) {
     for (const auto& observation : base::Reversed(observations_)) {
       if (observation.source == source)
@@ -383,7 +383,7 @@ TEST_F(NetworkQualityEstimatorTest, Caching) {
     TestThroughputObserver throughput_observer;
     estimator.AddThroughputObserver(&throughput_observer);
 
-    // |observer| should be notified as soon as it is added.
+    // `observer` should be notified as soon as it is added.
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(1U, observer.effective_connection_types().size());
 
@@ -421,7 +421,7 @@ TEST_F(NetworkQualityEstimatorTest, Caching) {
     base::RunLoop().RunUntilIdle();
 
     // Verify that the cached network quality was read, and observers were
-    // notified. |observer| must be notified once right after it was added, and
+    // notified. `observer` must be notified once right after it was added, and
     // once again after the cached network quality was read.
     EXPECT_LE(2U, observer.effective_connection_types().size());
     EXPECT_EQ(estimator.GetEffectiveConnectionType(),
@@ -436,7 +436,7 @@ TEST_F(NetworkQualityEstimatorTest, Caching) {
 TEST_F(NetworkQualityEstimatorTest, CachingDisabled) {
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> variation_params;
-  // Do not set |persistent_cache_reading_enabled| variation param.
+  // Do not set `persistent_cache_reading_enabled` variation param.
   variation_params["persistent_cache_reading_enabled"] = "false";
   variation_params["throughput_min_requests_in_flight"] = "1";
   variation_params["add_default_platform_observations"] = "false";
@@ -498,7 +498,7 @@ TEST_F(NetworkQualityEstimatorTest, CachingDisabled) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the cached network quality was read, and observers were
-  // notified. |observer| must be notified once right after it was added, and
+  // notified. `observer` must be notified once right after it was added, and
   // once again after the cached network quality was read.
   EXPECT_EQ(0U, rtt_observer.observations().size());
   EXPECT_EQ(0U, throughput_observer.observations().size());
@@ -680,7 +680,7 @@ TEST_F(NetworkQualityEstimatorTest, DefaultObservations) {
   std::map<std::string, std::string> variation_params;
   TestNetworkQualityEstimator estimator(variation_params, false, false);
 
-  // Default observations should be added when constructing the |estimator|.
+  // Default observations should be added when constructing the `estimator`.
   histogram_tester.ExpectBucketCount(
       "NQE.RTT.ObservationSource",
       NETWORK_QUALITY_OBSERVATION_SOURCE_DEFAULT_HTTP_FROM_PLATFORM, 1);
@@ -877,7 +877,7 @@ TEST_F(NetworkQualityEstimatorTest, DefaultObservationsOverridden) {
   EXPECT_EQ(kbps, estimator.GetDownstreamThroughputKbps().value());
 }
 
-// Tests that |GetEffectiveConnectionType| returns
+// Tests that `GetEffectiveConnectionType` returns
 // EFFECTIVE_CONNECTION_TYPE_OFFLINE when the device is currently offline.
 TEST_F(NetworkQualityEstimatorTest, Offline) {
   std::map<std::string, std::string> variation_params;
@@ -901,7 +901,7 @@ TEST_F(NetworkQualityEstimatorTest, Offline) {
   }
 }
 
-// Tests that |GetEffectiveConnectionType| returns correct connection type when
+// Tests that `GetEffectiveConnectionType` returns correct connection type when
 // only RTT thresholds are specified in the variation params.
 TEST_F(NetworkQualityEstimatorTest, ObtainThresholdsOnlyRTT) {
   std::map<std::string, std::string> variation_params;
@@ -1067,7 +1067,7 @@ TEST_F(NetworkQualityEstimatorTest, DefaultHttpRTTBasedThresholds) {
   }
 }
 
-// Tests that |GetEffectiveConnectionType| returns correct connection type when
+// Tests that `GetEffectiveConnectionType` returns correct connection type when
 // both HTTP RTT and throughput thresholds are specified in the variation
 // params.
 TEST_F(NetworkQualityEstimatorTest, ObtainThresholdsHttpRTTandThroughput) {
@@ -1300,8 +1300,8 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestEffectiveConnectionTypeObserver) {
   variation_params["add_default_platform_observations"] = "false";
   TestNetworkQualityEstimator estimator(variation_params);
   estimator.AddEffectiveConnectionTypeObserver(&observer);
-  // |observer| may be notified as soon as it is added. Run the loop to so that
-  // the notification to |observer| is finished.
+  // `observer` may be notified as soon as it is added. Run the loop to so that
+  // the notification to `observer` is finished.
   base::RunLoop().RunUntilIdle();
   estimator.SetTickClockForTesting(&tick_clock);
 
@@ -1368,10 +1368,10 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestEffectiveConnectionTypeObserver) {
   estimator.AddEffectiveConnectionTypeObserver(&observer_2);
   EXPECT_EQ(0U, observer_2.effective_connection_types().size());
   base::RunLoop().RunUntilIdle();
-  // |observer_2| must be notified as soon as it is added.
+  // `observer_2` must be notified as soon as it is added.
   EXPECT_EQ(1U, observer_2.effective_connection_types().size());
 
-  // |observer_3| should not be notified since it unregisters before the
+  // `observer_3` should not be notified since it unregisters before the
   // message loop is run.
   TestEffectiveConnectionTypeObserver observer_3;
   estimator.AddEffectiveConnectionTypeObserver(&observer_3);
@@ -1455,8 +1455,8 @@ TEST_F(NetworkQualityEstimatorTest, TestEndToEndRttUsedForHttpRttComputation) {
           EFFECTIVE_CONNECTION_TYPE_4G,
       },
       {
-          // |http_rtt| is lower than |end_to_end_rtt|. The HTTP RTT estimate
-          // should be set to |end_to_end_rtt|.
+          // `http_rtt` is lower than `end_to_end_rtt`. The HTTP RTT estimate
+          // should be set to `end_to_end_rtt`.
           base::Milliseconds(100),
           base::Milliseconds(200),
           true,
@@ -1613,7 +1613,7 @@ TEST_F(NetworkQualityEstimatorTest, TestRTTAndThroughputEstimatesObserver) {
   EXPECT_NE(nqe::internal::INVALID_RTT_THROUGHPUT,
             observer_2.downstream_throughput_kbps());
 
-  // |observer_3| should not be notified because it is unregisters before the
+  // `observer_3` should not be notified because it is unregisters before the
   // message loop is run.
   TestRTTAndThroughputEstimatesObserver observer_3;
   estimator.AddRTTAndThroughputEstimatesObserver(&observer_3);
@@ -1688,8 +1688,8 @@ TEST_F(NetworkQualityEstimatorTest,
   estimator.SimulateNetworkChange(NetworkChangeNotifier::CONNECTION_WIFI,
                                   "test");
   estimator.AddEffectiveConnectionTypeObserver(&observer);
-  // |observer| may be notified as soon as it is added. Run the loop to so that
-  // the notification to |observer| is finished.
+  // `observer` may be notified as soon as it is added. Run the loop to so that
+  // the notification to `observer` is finished.
   base::RunLoop().RunUntilIdle();
 
   TestDelegate test_delegate;
@@ -1956,8 +1956,8 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestTCPSocketRTT) {
       NetworkChangeNotifier::ConnectionType::CONNECTION_2G, "test");
 
   estimator.AddRTTObserver(&rtt_observer);
-  // |observer| may be notified as soon as it is added. Run the loop to so that
-  // the notification to |observer| is finished.
+  // `observer` may be notified as soon as it is added. Run the loop to so that
+  // the notification to `observer` is finished.
   base::RunLoop().RunUntilIdle();
 
   TestDelegate test_delegate;
@@ -2075,7 +2075,7 @@ TEST_F(NetworkQualityEstimatorTest, CacheObserver) {
   TestNetworkQualitiesCacheObserver observer;
   TestNetworkQualityEstimator estimator;
 
-  // Add |observer| as a persistent caching observer.
+  // Add `observer` as a persistent caching observer.
   estimator.AddNetworkQualitiesCacheObserver(&observer);
 
   estimator.set_recent_effective_connection_type(EFFECTIVE_CONNECTION_TYPE_3G);
@@ -2108,7 +2108,7 @@ TEST_F(NetworkQualityEstimatorTest, CacheObserver) {
   estimator.RunOneRequest();
   EXPECT_EQ(1u, observer.get_notification_received_and_reset());
 
-  // Remove |observer|, and it should not receive any notifications.
+  // Remove `observer`, and it should not receive any notifications.
   estimator.RemoveNetworkQualitiesCacheObserver(&observer);
   estimator.set_recent_effective_connection_type(EFFECTIVE_CONNECTION_TYPE_3G);
   estimator.SimulateNetworkChange(
@@ -2134,8 +2134,8 @@ TEST_F(NetworkQualityEstimatorTest,
     estimator.AddEffectiveConnectionTypeObserver(&ect_observer);
     TestRTTAndThroughputEstimatesObserver rtt_throughput_observer;
     estimator.AddRTTAndThroughputEstimatesObserver(&rtt_throughput_observer);
-    // |observer| may be notified as soon as it is added. Run the loop to so
-    // that the notification to |observer| is finished.
+    // `observer` may be notified as soon as it is added. Run the loop to so
+    // that the notification to `observer` is finished.
     base::RunLoop().RunUntilIdle();
 
     TestDelegate test_delegate;
@@ -2202,8 +2202,8 @@ TEST_F(NetworkQualityEstimatorTest, SimulateNetworkQualityChangeForTesting) {
     TestEffectiveConnectionTypeObserver ect_observer;
     estimator.AddEffectiveConnectionTypeObserver(&ect_observer);
 
-    // |observer| may be notified as soon as it is added. Run the loop to so
-    // that the notification to |observer| is finished.
+    // `observer` may be notified as soon as it is added. Run the loop to so
+    // that the notification to `observer` is finished.
     base::RunLoop().RunUntilIdle();
 
     TestDelegate test_delegate;
@@ -2229,8 +2229,8 @@ TEST_F(NetworkQualityEstimatorTest, TypicalNetworkQualities) {
        effective_connection_type <= EFFECTIVE_CONNECTION_TYPE_4G;
        ++effective_connection_type) {
     // Set the RTT and throughput values to the typical values for
-    // |effective_connection_type|. The effective connection type should be
-    // computed as |effective_connection_type|.
+    // `effective_connection_type`. The effective connection type should be
+    // computed as `effective_connection_type`.
     estimator.SetStartTimeNullHttpRtt(
         estimator.params_
             ->TypicalNetworkQuality(
@@ -2493,7 +2493,7 @@ TEST_F(NetworkQualityEstimatorTest,
 
   // RTT observation with source
   // DEPRECATED_NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_EXTERNAL_ESTIMATE should
-  // be removed from |estimator.rtt_ms_observations_| when a cached estimate is
+  // be removed from `estimator.rtt_ms_observations_` when a cached estimate is
   // received.
   EXPECT_EQ(
       1u,
@@ -2542,7 +2542,7 @@ TEST_F(NetworkQualityEstimatorTest,
   EXPECT_EQ(1u, throughput_observer.observations().size());
   // Throughput observation with source
   // DEPRECATED_NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_EXTERNAL_ESTIMATE should
-  // be removed from |estimator.downstream_throughput_kbps_observations_| when a
+  // be removed from `estimator.downstream_throughput_kbps_observations_` when a
   // cached estimate is received.
   EXPECT_EQ(1u, estimator.http_downstream_throughput_kbps_observations_.Size());
   estimator.AddAndNotifyObserversOfThroughput(nqe::internal::Observation(
@@ -2669,14 +2669,14 @@ TEST_F(NetworkQualityEstimatorTest, HangingRequestEndToEndUsingHttpOnly) {
       {base::Milliseconds(10), true, false},
       {base::Milliseconds(10), false, false},
       {base::Milliseconds(100), true, false},
-      // |observed_http_rtt| is not large enough. Request is expected to be
+      // `observed_http_rtt` is not large enough. Request is expected to be
       // classified as not hanging.
       {base::Milliseconds(
            (end_to_end_rtt_milliseconds *
             hanging_request_http_rtt_upper_bound_transport_rtt_multiplier) -
            1),
        true, false},
-      // |observed_http_rtt| is large. Request is expected to be classified as
+      // `observed_http_rtt` is large. Request is expected to be classified as
       // hanging.
       {base::Milliseconds(
            (end_to_end_rtt_milliseconds *
@@ -2762,10 +2762,10 @@ TEST_F(NetworkQualityEstimatorTest, TestPeerToPeerConnectionsCountObserver) {
   EXPECT_EQ(0u, observer.count());
   estimator.OnPeerToPeerConnectionsCountChange(5u);
   base::RunLoop().RunUntilIdle();
-  // |observer| has not yet registered with |estimator|.
+  // `observer` has not yet registered with `estimator`.
   EXPECT_EQ(0u, observer.count());
 
-  // |observer| should be notified of the current count on registration.
+  // `observer` should be notified of the current count on registration.
   estimator.AddPeerToPeerConnectionsCountObserver(&observer);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(5u, observer.count());
@@ -2778,7 +2778,7 @@ TEST_F(NetworkQualityEstimatorTest, TestPeerToPeerConnectionsCountObserver) {
 // Tests that the HTTP RTT and ECT are adjusted when the count of transport RTTs
 // is low. The test adds only HTTP RTT observations and does not add any
 // transport RTT observations. Absence of transport RTT observations should
-// trigger adjusting of HTTP RTT if param |add_default_platform_observations| is
+// trigger adjusting of HTTP RTT if param `add_default_platform_observations` is
 // set to true.
 TEST_F(NetworkQualityEstimatorTest, AdjustHttpRttBasedOnRttCounts) {
   for (const bool adjust_rtt_based_on_rtt_counts : {false, true}) {
@@ -2816,7 +2816,7 @@ TEST_F(NetworkQualityEstimatorTest, AdjustHttpRttBasedOnRttCounts) {
           rtt.InMilliseconds(), tick_clock.NowTicks(), INT32_MIN,
           NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP, host));
     }
-    // If |adjust_rtt_based_on_rtt_counts| is set, then the HTTP RTT should be
+    // If `adjust_rtt_based_on_rtt_counts` is set, then the HTTP RTT should be
     // that of a typical 4G connection. Otherwise, the RTT estimate should be
     // based only on the RTT of the observations added to the buffer.
     EXPECT_EQ(adjust_rtt_based_on_rtt_counts ? typical_http_rtt_4g : rtt,

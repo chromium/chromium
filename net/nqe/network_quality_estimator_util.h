@@ -22,7 +22,7 @@ namespace nqe::internal {
 // A unified compact representation of an IPv6 or an IPv4 address.
 typedef uint64_t IPHash;
 
-// Returns true if the host contained of |request.url()| is a host in a
+// Returns true if the host contained of `request.url()` is a host in a
 // private Internet as defined by RFC 1918 or if the requests to it are not
 // expected to generate useful network quality information. This includes
 // localhost, hosts on private subnets, and hosts on subnets that are reserved

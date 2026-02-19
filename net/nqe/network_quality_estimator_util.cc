@@ -27,7 +27,7 @@ bool IsPrivateHost(HostResolver* host_resolver,
                    url::SchemeHostPort scheme_host_port,
                    const NetworkAnonymizationKey& network_anonymization_key,
                    NetLogWithSource net_log) {
-  // Try resolving |host_port_pair.host()| synchronously.
+  // Try resolving `host_port_pair.host()` synchronously.
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =

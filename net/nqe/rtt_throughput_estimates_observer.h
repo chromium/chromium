@@ -22,7 +22,7 @@ class NET_EXPORT_PRIVATE RTTAndThroughputEstimatesObserver {
   // Additionally, when there is a change in the connection type of the
   // device, then the estimates are immediately computed.
   //
-  // |http_rtt|, |transport_rtt| and |downstream_throughput_kbps| are the
+  // `http_rtt`, `transport_rtt` and `downstream_throughput_kbps` are the
   // computed estimates of the HTTP RTT, transport RTT and downstream
   // throughput (in kilobits per second), respectively. If an estimate of the
   // HTTP or transport RTT is unavailable, it will be set to

@@ -15,7 +15,7 @@ namespace net::nqe::internal {
 
 namespace {
 
-// Generate a compact representation for |ip_addr|. For IPv4, all 32 bits
+// Generate a compact representation for `ip_addr`. For IPv4, all 32 bits
 // are used and for IPv6, the first 64 bits are used as the remote host
 // identifier.
 std::optional<IPHash> CalculateIPHash(const IPAddress& ip_addr) {
@@ -84,11 +84,11 @@ bool SocketWatcher::ShouldNotifyUpdatedRTT() const {
   }
 
   // Do not allow incoming notifications if the last notification was more
-  // recent than |rtt_notifications_minimum_interval_| ago. This helps in
+  // recent than `rtt_notifications_minimum_interval_` ago. This helps in
   // reducing the overhead of obtaining the RTT values.
   // Enables a socket watcher to send RTT observation, helps in reducing
   // starvation by allowing every socket watcher to notify at least one RTT
-  // notification every |rtt_notifications_minimum_interval_| duration.
+  // notification every `rtt_notifications_minimum_interval_` duration.
   return now - last_rtt_notification_ >= rtt_notifications_minimum_interval_;
 }
 

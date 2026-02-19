@@ -41,7 +41,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   };
 
   // Creates an instance of the NetworkQualitiesPrefsManager. Ownership of
-  // |pref_delegate| is taken by this class.
+  // `pref_delegate` is taken by this class.
   explicit NetworkQualitiesPrefsManager(
       std::unique_ptr<PrefDelegate> pref_delegate);
 

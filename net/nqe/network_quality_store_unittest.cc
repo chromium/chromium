@@ -340,12 +340,12 @@ TEST(NetworkQualityStoreTest, TestLRUCacheMaximumSize) {
     }
   }
 
-  // Ensure that the number of entries in cache are fewer than |network_count|.
+  // Ensure that the number of entries in cache are fewer than `network_count`.
   EXPECT_LT(cache_match_count, network_count);
   EXPECT_GT(cache_match_count, 0u);
 
   // Ensure that only LRU entries are cached by comparing the
-  // |earliest_last_update_time|.
+  // `earliest_last_update_time`.
   EXPECT_EQ(tick_clock.NowTicks() - base::Seconds(cache_match_count),
             earliest_last_update_time);
 }

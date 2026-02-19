@@ -35,7 +35,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
       const base::TimeDelta& rtt,
       const std::optional<IPHash>& host) {
     // Need to verify before another callback is executed, or explicitly call
-    // |ResetCallbackParams()|.
+    // `ResetCallbackParams()`.
     ASSERT_FALSE(callback_executed_);
     callback_rtt_ = rtt;
     callback_host_ = host;
@@ -47,7 +47,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
       const base::TimeDelta& rtt,
       const std::optional<IPHash>& host) {
     // Need to verify before another callback is executed, or explicitly call
-    // |ResetCallbackParams()|.
+    // `ResetCallbackParams()`.
     ASSERT_FALSE(callback_executed_);
     callback_executed_ = true;
   }
@@ -125,7 +125,7 @@ TEST_F(NetworkQualitySocketWatcherTest, NotificationsThrottled) {
   EXPECT_FALSE(socket_watcher.ShouldNotifyUpdatedRTT());
 
   // Advance the clock by 1000 msec more so that the current time is at least
-  // 2000 msec more than the last time |socket_watcher| received a notification.
+  // 2000 msec more than the last time `socket_watcher` received a notification.
   tick_clock.Advance(base::Milliseconds(1000));
   EXPECT_TRUE(socket_watcher.ShouldNotifyUpdatedRTT());
   ResetExpectedCallbackParams();
@@ -157,7 +157,7 @@ TEST_F(NetworkQualitySocketWatcherTest, QuicFirstNotificationDropped) {
   socket_watcher.OnUpdatedRTTAvailable(base::Seconds(10));
   base::RunLoop().RunUntilIdle();
   // First notification from a QUIC connection should be dropped, and it should
-  // be possible to notify the |socket_watcher| again.
+  // be possible to notify the `socket_watcher` again.
   EXPECT_TRUE(NetworkQualitySocketWatcherTest::callback_rtt().is_zero());
   EXPECT_TRUE(socket_watcher.ShouldNotifyUpdatedRTT());
   ResetExpectedCallbackParams();
@@ -174,7 +174,7 @@ TEST_F(NetworkQualitySocketWatcherTest, QuicFirstNotificationDropped) {
   EXPECT_FALSE(socket_watcher.ShouldNotifyUpdatedRTT());
 
   // Advance the clock by 1000 msec more so that the current time is at least
-  // 2000 msec more than the last time |socket_watcher| received a notification.
+  // 2000 msec more than the last time `socket_watcher` received a notification.
   tick_clock.Advance(base::Milliseconds(1000));
   EXPECT_TRUE(socket_watcher.ShouldNotifyUpdatedRTT());
 }
