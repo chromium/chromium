@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
 
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
       callbacks_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
@@ -30,77 +31,74 @@ namespace ash {
 class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
  public:
   // Interface for observing changes from the cras audio changes.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when cras audio client starts or re-starts, which happens when
     // cros device powers up or restarted.
-    virtual void AudioClientRestarted();
+    virtual void AudioClientRestarted() {}
 
     // Called when audio output mute state changed to new state of |mute_on|.
-    virtual void OutputMuteChanged(bool mute_on);
+    virtual void OutputMuteChanged(bool mute_on) {}
 
     // Called when audio input mute state changed to new state of |mute_on|.
-    virtual void InputMuteChanged(bool mute_on);
+    virtual void InputMuteChanged(bool mute_on) {}
 
     // Called when audio nodes change.
-    virtual void NodesChanged();
+    virtual void NodesChanged() {}
 
     // Called when active audio output node changed to new node with |node_id|.
-    virtual void ActiveOutputNodeChanged(uint64_t node_id);
+    virtual void ActiveOutputNodeChanged(uint64_t node_id) {}
 
     // Called when active audio input node changed to new node with |node_id|.
-    virtual void ActiveInputNodeChanged(uint64_t node_id);
+    virtual void ActiveInputNodeChanged(uint64_t node_id) {}
 
     // Called when output node's volume changed.
-    virtual void OutputNodeVolumeChanged(uint64_t node_id, int volume);
+    virtual void OutputNodeVolumeChanged(uint64_t node_id, int volume) {}
 
     // Called when input node's gain changed.
-    virtual void InputNodeGainChanged(uint64_t node_id, int volume);
+    virtual void InputNodeGainChanged(uint64_t node_id, int volume) {}
 
     // Called when hotword is triggered.
-    virtual void HotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec);
+    virtual void HotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec) {}
 
     // Called when the number of active output streams has changed.
-    virtual void NumberOfActiveStreamsChanged();
+    virtual void NumberOfActiveStreamsChanged() {}
 
     // Called when the battery level for a Bluetooth headset changed.
     virtual void BluetoothBatteryChanged(const std::string& address,
-                                         uint32_t level);
+                                         uint32_t level) {}
 
     // Called when the number of input streams with permission per client type
     // changed.
     virtual void NumberOfInputStreamsWithPermissionChanged(
-        const base::flat_map<std::string, uint32_t>& num_input_streams);
+        const base::flat_map<std::string, uint32_t>& num_input_streams) {}
 
     // Called when an audio survey should be triggered.
     virtual void SurveyTriggered(
-        const base::flat_map<std::string, std::string>& survey_specific_data);
+        const base::flat_map<std::string, std::string>& survey_specific_data) {}
 
     // Called when a new speak-on-mute signal is detected.
-    virtual void SpeakOnMuteDetected();
+    virtual void SpeakOnMuteDetected() {}
 
     // Called when ewma power reported by cras.
-    virtual void EwmaPowerReported(double power);
+    virtual void EwmaPowerReported(double power) {}
 
     // Called when NumberOfNonChromeOutputStreamsChanged is detected.
-    virtual void NumberOfNonChromeOutputStreamsChanged();
+    virtual void NumberOfNonChromeOutputStreamsChanged() {}
 
     // Called when num-stream-ignore-ui-gains is changed.
-    virtual void NumStreamIgnoreUiGains(int32_t num);
+    virtual void NumStreamIgnoreUiGains(int32_t num) {}
 
     // Called when NumberOfArcStreamsChanged is detected.
-    virtual void NumberOfArcStreamsChanged();
+    virtual void NumberOfArcStreamsChanged() {}
 
     // Called when there is a new active node to indicate whether sidetone is
     // supported.
-    virtual void SidetoneSupportedChanged(bool supported);
+    virtual void SidetoneSupportedChanged(bool supported) {}
 
     // Called when there is a new audio effect ui appearance to render.
     virtual void AudioEffectUIAppearanceChanged(
-        VoiceIsolationUIAppearance appearance);
-
-   protected:
-    virtual ~Observer();
+        VoiceIsolationUIAppearance appearance) {}
   };
 
   // Creates and initializes the global instance. |bus| must not be null.

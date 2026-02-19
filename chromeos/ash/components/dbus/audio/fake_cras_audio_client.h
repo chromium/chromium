@@ -246,7 +246,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   int32_t number_arc_streams_ = 0;
   std::string audio_effect_dlcs_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<FakeCrasAudioClient> weak_ptr_factory_{this};
 };

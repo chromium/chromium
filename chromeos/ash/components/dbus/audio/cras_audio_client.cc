@@ -1664,7 +1664,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
   }
 
   raw_ptr<dbus::ObjectProxy> cras_proxy_ = nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
@@ -1672,56 +1672,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
 };
 
 }  // namespace
-
-CrasAudioClient::Observer::~Observer() = default;
-
-void CrasAudioClient::Observer::AudioClientRestarted() {}
-
-void CrasAudioClient::Observer::OutputMuteChanged(bool mute_on) {}
-
-void CrasAudioClient::Observer::InputMuteChanged(bool mute_on) {}
-
-void CrasAudioClient::Observer::NodesChanged() {}
-
-void CrasAudioClient::Observer::ActiveOutputNodeChanged(uint64_t node_id) {}
-
-void CrasAudioClient::Observer::ActiveInputNodeChanged(uint64_t node_id) {}
-
-void CrasAudioClient::Observer::OutputNodeVolumeChanged(uint64_t node_id,
-                                                        int volume) {}
-
-void CrasAudioClient::Observer::InputNodeGainChanged(uint64_t node_id,
-                                                     int gain) {}
-
-void CrasAudioClient::Observer::HotwordTriggered(uint64_t tv_sec,
-                                                 uint64_t tv_nsec) {}
-
-void CrasAudioClient::Observer::NumberOfActiveStreamsChanged() {}
-
-void CrasAudioClient::Observer::BluetoothBatteryChanged(
-    const std::string& address,
-    uint32_t level) {}
-
-void CrasAudioClient::Observer::NumberOfInputStreamsWithPermissionChanged(
-    const base::flat_map<std::string, uint32_t>& num_input_streams) {}
-
-void CrasAudioClient::Observer::SurveyTriggered(
-    const base::flat_map<std::string, std::string>& survey_specific_data) {}
-
-void CrasAudioClient::Observer::SpeakOnMuteDetected() {}
-
-void CrasAudioClient::Observer::EwmaPowerReported(double power) {}
-
-void CrasAudioClient::Observer::NumberOfNonChromeOutputStreamsChanged() {}
-
-void CrasAudioClient::Observer::NumStreamIgnoreUiGains(int32_t num) {}
-
-void CrasAudioClient::Observer::NumberOfArcStreamsChanged() {}
-
-void CrasAudioClient::Observer::SidetoneSupportedChanged(bool supported) {}
-
-void CrasAudioClient::Observer::AudioEffectUIAppearanceChanged(
-    VoiceIsolationUIAppearance appearance) {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);
