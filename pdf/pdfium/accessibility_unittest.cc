@@ -206,7 +206,7 @@ TEST_P(AccessibilityTest, AccessibilityStructureTree) {
       engine->GetStructureTree();
   ASSERT_TRUE(doc_structure);
 
-  static constexpr char kExpectedStructureTree[] = R"(/S /Document
+  static constexpr char kExpectedStructureTree[] = R"(/S /Document /Lang (en-US)
 ++/S /Part
 ++++/S /Document /Lang (en-US)
 ++++++/S /Art AssociatedTextRunLens={ 9 }
@@ -233,7 +233,7 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithImages) {
       engine->GetStructureTree();
   ASSERT_TRUE(doc_structure);
 
-  static constexpr char kExpectedStructureTree[] = R"(/S /Document
+  static constexpr char kExpectedStructureTree[] = R"(/S /Document /Lang (en-US)
 ++/S /Part
 ++++/S /Document
 ++++++/S /P
@@ -276,6 +276,24 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithMultipleMCIDs) {
   // all their text runs, not just the first one.
   EXPECT_EQ(kExpectedStructureTree,
             AccessibilityStructureElementToString(*doc_structure));
+}
+
+TEST_P(AccessibilityTest, DocumentLanguageFromCatalog) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(features::kPdfTags);
+
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("tags.pdf"));
+  ASSERT_TRUE(engine);
+
+  std::unique_ptr<AccessibilityStructureElement> doc_structure =
+      engine->GetStructureTree();
+  ASSERT_TRUE(doc_structure);
+
+  // Verify the document root has the language from the catalog's /Lang entry.
+  EXPECT_EQ(PdfTagType::kDocument, doc_structure->type);
+  EXPECT_EQ("en-US", doc_structure->language);
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {

@@ -1534,8 +1534,11 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumEngine::GetStructureTree()
   auto structure_tree_root = std::make_unique<AccessibilityStructureElement>();
   structure_tree_root->type = PdfTagType::kDocument;
   structure_tree_root->children.reserve(pages_.size());
-  // TODO(crbug.com/40707542): Get the /Lang string from
-  // AccessibilityStructureElement.
+  structure_tree_root->language =
+      base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+          base::BindRepeating(&FPDFCatalog_GetLanguage, doc()),
+          /*check_expected_size=*/true));
+
   for (const std::unique_ptr<PDFiumPage>& page : pages_) {
     auto page_structure = page->GetStructureTree();
     if (page_structure) {

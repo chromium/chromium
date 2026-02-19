@@ -403,6 +403,10 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                 l10n_util::GetPluralStringFUTF8(
                                     IDS_PDF_DOCUMENT_PAGE_COUNT, page_count_));
+  if (doc_structure_tree_root_ && !doc_structure_tree_root_->language.empty()) {
+    doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
+                                  doc_structure_tree_root_->language);
+  }
 
   // Because all of the coordinates are expressed relative to the
   // doc's coordinates, the origin of the doc must be (0, 0). Its
