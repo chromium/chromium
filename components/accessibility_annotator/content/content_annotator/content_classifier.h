@@ -5,42 +5,59 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
 
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "base/types/pass_key.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotator_url_matcher_classifier.h"
+#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
 
-// Data collected from various observations about a URL for classification.
-struct ContentClassificationInput {
-  explicit ContentClassificationInput(GURL url);
-  ContentClassificationInput(const ContentClassificationInput&);
-  ~ContentClassificationInput();
+// This class encapsulates the logic for content classification. It is designed
+// to be extensible with multiple individual classifiers.
+class ContentClassifier {
+ public:
+  using PassKey = base::PassKey<ContentClassifier>;
 
-  GURL url;
-  std::optional<float> sensitivity_score;
-  std::optional<base::Time> navigation_timestamp;
-  std::optional<std::string> adopted_language;
-  std::optional<std::string> page_title;
-  scoped_refptr<const base::RefCountedData<
-      optimization_guide::proto::AnnotatedPageContent>>
-      annotated_page_content;
+  // Creates a ContentClassifier, fully initialized with all sub-classifiers.
+  // Returns nullptr if unparsable rules are provided for all sub-classifiers.
+  static std::unique_ptr<ContentClassifier> Create();
 
-  // Returns true if all fields are populated.
-  bool IsComplete() const;
+  explicit ContentClassifier(
+      PassKey pass_key,
+      std::unique_ptr<ContentAnnotatorRuleBasedClassifier>
+          title_keyword_classifier,
+      std::unique_ptr<ContentAnnotatorUrlMatcherClassifier>
+          url_match_classifier);
+
+  ContentClassifier(const ContentClassifier&) = delete;
+  ContentClassifier& operator=(const ContentClassifier&) = delete;
+  virtual ~ContentClassifier();
+  ContentClassifier(ContentClassifier&&);
+  ContentClassifier& operator=(ContentClassifier&&);
+
+  // Runs all classifiers on the given input and returns the result.
+  // Classifiers are run only if the input is complete and the classifier
+  // supports the input data.
+  virtual ContentClassificationResult Classify(
+      const ContentClassificationInput& input) const;
+
+ protected:
+  // For testing.
+  ContentClassifier();
+
+ private:
+  // The classifier for matching keywords in the page title.
+  std::unique_ptr<ContentAnnotatorRuleBasedClassifier>
+      title_keyword_classifier_;
+  // The classifier for matching URLs.
+  std::unique_ptr<ContentAnnotatorUrlMatcherClassifier> url_match_classifier_;
 };
-
-// TODO(crbug.com/479259274): Finalize expected output of classification.
-struct ContentClassificationResult {
-  enum class Status { kUnknown };
-  Status status = Status::kUnknown;
-};
-
-// Runs classification on the given input.
-ContentClassificationResult RunContentClassification(
-    const ContentClassificationInput& input);
 
 }  // namespace accessibility_annotator
 

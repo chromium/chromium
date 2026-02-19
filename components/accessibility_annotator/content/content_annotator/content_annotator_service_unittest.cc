@@ -5,10 +5,12 @@
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
+#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
@@ -22,6 +24,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
@@ -37,10 +40,38 @@ class ContentAnnotatorFeatureList {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class MockContentClassifier : public ContentClassifier {
+ public:
+  MockContentClassifier() = default;
+  ~MockContentClassifier() override = default;
+
+  MOCK_METHOD(ContentClassificationResult,
+              Classify,
+              (const ContentClassificationInput&),
+              (const, override));
+};
+
 // Inherit from RenderViewHostTestHarness to provide WebContents and Page
 // objects.
 class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
  public:
+  // A test-only class to allow for construction of the service.
+  class TestContentAnnotatorService : public ContentAnnotatorService {
+   public:
+    TestContentAnnotatorService(
+        page_content_annotations::PageContentAnnotationsService&
+            page_content_annotations_service,
+        page_content_annotations::PageContentExtractionService&
+            page_content_extraction_service,
+        optimization_guide::RemoteModelExecutor&
+            optimization_guide_remote_model_executor,
+        std::unique_ptr<ContentClassifier> content_classifier)
+        : ContentAnnotatorService(page_content_annotations_service,
+                                  page_content_extraction_service,
+                                  optimization_guide_remote_model_executor,
+                                  std::move(content_classifier)) {}
+  };
+
   ContentAnnotatorServiceTest() = default;
   ~ContentAnnotatorServiceTest() override = default;
 
@@ -60,14 +91,19 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     mock_remote_model_executor_ =
         std::make_unique<optimization_guide::MockRemoteModelExecutor>();
 
-    service_.emplace(*page_content_annotations_service_,
-                     *page_content_extraction_service_,
-                     *mock_remote_model_executor_);
+    auto mock_classifier =
+        std::make_unique<testing::StrictMock<MockContentClassifier>>();
+    mock_classifier_ = mock_classifier.get();
+
+    service_ = std::make_unique<TestContentAnnotatorService>(
+        *page_content_annotations_service_, *page_content_extraction_service_,
+        *mock_remote_model_executor_, std::move(mock_classifier));
   }
 
   void TearDown() override {
     // Explicitly destroy services before the TestHarness tears down the
     // environment.
+    mock_classifier_ = nullptr;
     service_.reset();
     page_content_annotations_service_.reset();
     page_content_extraction_service_.reset();
@@ -89,8 +125,8 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
       page_content_annotations_service_;
   std::unique_ptr<optimization_guide::MockRemoteModelExecutor>
       mock_remote_model_executor_;
-
-  std::optional<ContentAnnotatorService> service_;
+  std::unique_ptr<ContentAnnotatorService> service_;
+  raw_ptr<testing::StrictMock<MockContentClassifier>> mock_classifier_;
 };
 
 // TODO(crbug.com/463734845): Remove/replace these tests with meaningful tests

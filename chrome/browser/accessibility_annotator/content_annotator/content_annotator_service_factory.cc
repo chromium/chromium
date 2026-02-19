@@ -70,9 +70,9 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<ContentAnnotatorService>(
-      *page_content_annotations_service, *page_content_extraction_service,
-      *optimization_guide_service);
+  return ContentAnnotatorService::Create(*page_content_annotations_service,
+                                         *page_content_extraction_service,
+                                         *optimization_guide_service);
 }
 
 bool ContentAnnotatorServiceFactory::ServiceIsCreatedWithBrowserContext()

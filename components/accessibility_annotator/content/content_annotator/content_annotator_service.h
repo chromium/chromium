@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/containers/lru_cache.h"
@@ -12,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
+#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -30,13 +31,15 @@ struct LanguageDetectionDetails;
 
 namespace accessibility_annotator {
 
+class ContentClassifier;
+
 class ContentAnnotatorService
     : public KeyedService,
       public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver,
       public page_content_annotations::PageContentExtractionService::Observer {
  public:
-  explicit ContentAnnotatorService(
+  static std::unique_ptr<ContentAnnotatorService> Create(
       page_content_annotations::PageContentAnnotationsService&
           page_content_annotations_service,
       page_content_annotations::PageContentExtractionService&
@@ -70,6 +73,16 @@ class ContentAnnotatorService
       scoped_refptr<
           const page_content_annotations::RefCountedAnnotatedPageContent>
           page_content) override;
+
+ protected:
+  ContentAnnotatorService(
+      page_content_annotations::PageContentAnnotationsService&
+          page_content_annotations_service,
+      page_content_annotations::PageContentExtractionService&
+          page_content_extraction_service,
+      optimization_guide::RemoteModelExecutor&
+          optimization_guide_remote_model_executor,
+      std::unique_ptr<ContentClassifier> content_classifier);
 
  private:
   using CacheIterator =
@@ -117,6 +130,8 @@ class ContentAnnotatorService
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<ContentClassifier> content_classifier_;
 
   base::WeakPtrFactory<ContentAnnotatorService> weak_ptr_factory_{this};
 };

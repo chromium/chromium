@@ -4,11 +4,16 @@
 
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
+#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -21,18 +26,39 @@
 
 namespace accessibility_annotator {
 
+// static
+std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
+    page_content_annotations::PageContentAnnotationsService&
+        page_content_annotations_service,
+    page_content_annotations::PageContentExtractionService&
+        page_content_extraction_service,
+    optimization_guide::RemoteModelExecutor&
+        optimization_guide_remote_model_executor) {
+  std::unique_ptr<ContentClassifier> content_classifier =
+      ContentClassifier::Create();
+  if (!content_classifier) {
+    return nullptr;
+  }
+  return base::WrapUnique(new ContentAnnotatorService(
+      page_content_annotations_service, page_content_extraction_service,
+      optimization_guide_remote_model_executor, std::move(content_classifier)));
+}
+
 ContentAnnotatorService::ContentAnnotatorService(
     page_content_annotations::PageContentAnnotationsService&
         page_content_annotations_service,
     page_content_annotations::PageContentExtractionService&
         page_content_extraction_service,
     optimization_guide::RemoteModelExecutor&
-        optimization_guide_remote_model_executor)
+        optimization_guide_remote_model_executor,
+    std::unique_ptr<ContentClassifier> content_classifier)
     : page_content_annotations_service_(page_content_annotations_service),
       page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_remote_model_executor_(
           optimization_guide_remote_model_executor),
-      join_entries_(kContentAnnotatorMaxPendingUrls.Get()) {
+      join_entries_(kContentAnnotatorMaxPendingUrls.Get()),
+      content_classifier_(std::move(content_classifier)) {
+  CHECK(content_classifier_);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
   page_content_extraction_service_observation_.Observe(
@@ -100,7 +126,13 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
   join_entries_.Erase(it);
   // TODO(crbug.com/475859254): Move this call to a separate task/sequence as
   // needed.
-  RunContentClassification(std::move(complete_data));
+  ContentClassificationResult result =
+      content_classifier_->Classify(complete_data);
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "AccessibilityAnnotator.ContentAnnotator.MaybeAnnotate."
+      "ContentClassificationResult",
+      result.title_keyword_result.has_value() ||
+          result.url_match_result.has_value());
   // TODO(crbug.com/476434957): Process classification result.
 }
 
