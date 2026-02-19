@@ -121,6 +121,7 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
@@ -2560,14 +2561,25 @@ bool HTMLElement::IsValidBuiltinPopoverCommand(CommandEventType command) {
 
 bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                         CommandEventType command) {
-  return Element::IsValidBuiltinCommand(invoker, command) ||
-         IsValidBuiltinPopoverCommand(command) ||
-         (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
-          (command == CommandEventType::kToggleFullscreen ||
-           command == CommandEventType::kRequestFullscreen ||
-           command == CommandEventType::kExitFullscreen)) ||
-         (RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled() &&
-          Element::IsScrollByPageCommand(command));
+  if (Element::IsValidBuiltinCommand(invoker, command) ||
+      IsValidBuiltinPopoverCommand(command)) {
+    return true;
+  }
+  if (command == CommandEventType::kToggleFullscreen ||
+      command == CommandEventType::kRequestFullscreen ||
+      command == CommandEventType::kExitFullscreen) {
+    CHECK(RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled());
+    return true;
+  }
+  if (Element::IsScrollByPageCommand(command)) {
+    CHECK(RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled());
+    return true;
+  }
+  if (command == CommandEventType::kToggleOverscroll) {
+    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    return true;
+  }
+  return false;
 }
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
@@ -2576,6 +2588,14 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     return false;
   }
   if (Element::HandleCommandInternal(invoker, command)) {
+    return true;
+  }
+
+  if (command == CommandEventType::kToggleOverscroll) {
+    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    // TODO: This should handle "toggle" behavior, by scrolling `this` into
+    // view if not currently activated, and scrolling back out of view
+    // otherwise.
     return true;
   }
 
