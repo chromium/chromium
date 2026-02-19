@@ -48,25 +48,24 @@ function getFileNames() {
   };
 }
 
+// Minimum acceptable signal-to-noise ratio (SNR) in decibels for each
+// channel. The current value of 89dB is chosen as a reasonable upper limit of
+// what is audible to the human ear, combined with the limitations found from
+// real world testing of various codecs. For example, decoding FLAC audio with
+// FFmpeg versus Symphonia can produce SNRs of 90-95 dB. In contrast, bigger
+// changes like switching sample type from S16 to F32 can produce SNRs of
+// as low as 30 dB.
+const DEFAULT_MIN_SNR_DB = 89.0;
+
 // Performs the actual codec test, using `options` where provided, and default
 // values when not provided.
 function runCodecTest(options) {
-  // Epsilon / absolute tolerance for sample-level comparison. While the
-  // most important part of the the test is the strict SNR analysis,
-  // sample-level comparison is a very useful tool for determining what
   // types of problems may be causing issues with potential SNR failures.
   // The current tolerance has been chosen experimentally to align with
   // `kMinSnrDb`, meaning that you are quite unlikely to pass the SNR
   // analysis but then get a sample-level failure.
   const absTolerance = options.absTolerance ?? 5e-5;
-  // Minimum acceptable signal-to-noise ratio (SNR) in decibels for each
-  // channel. The current value of 89dB is chosen as a reasonable upper limit of
-  // what is audible to the human ear, combined with the limitations found from
-  // real world testing of various codecs. For example, decoding FLAC audio with
-  // FFmpeg versus Symphonia can produce SNRs of 90-95 dB. In contrast, bigger
-  // changes like switching sample type from S16 to F32 can produce SNRs of
-  // as low as 30 dB.
-  const minSnrDb = options.minSnrDb ?? 89.0;
+  const minSnrDb = options.minSnrDb ?? DEFAULT_MIN_SNR_DB;
 
   const fileNames = getFileNames();
 

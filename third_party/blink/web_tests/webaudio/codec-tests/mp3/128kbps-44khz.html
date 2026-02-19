@@ -19,6 +19,9 @@
       encodedFileName: '../../resources/media/128kbps-44khz.mp3',
       sampleRate: 44100,
       description: 'Decoded MP3 matches reference WAV',
+      // MP3 is a lossy codec, so we expect a lower SNR compared to lossless
+      // codecs like FLAC.
+      minSnrDb: 75.0,
     });
   </script>
 </body>

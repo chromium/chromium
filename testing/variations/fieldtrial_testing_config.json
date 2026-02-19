@@ -25901,6 +25901,24 @@
             ]
         }
     ],
+    "SymphoniaMp3Decoding": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SymphoniaMp3Decoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncDeviceInfoUseWallClockTimer": [
         {
             "platforms": [

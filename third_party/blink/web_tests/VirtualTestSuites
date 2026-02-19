@@ -4383,8 +4383,10 @@
   },
   {
     "prefix": "symphonia-audio-decoding",
-    "owners": ["jophba@chromium.org"],
-    "platforms": ["Android", "Fuchsia", "Linux", "Mac", "Win", "Webview"],
+    "owners": [
+      "jophba@chromium.org"
+    ],
+    "platforms": ["Linux", "Mac", "Win", "ChromeOS"],
     "bases": [
       "webaudio/codec-tests"
     ],
@@ -4394,6 +4396,18 @@
       "--enable-features=SymphoniaAudioDecoding"
     ],
     "expires": "Jul 7, 2026"
+  },
+   {
+    "prefix": "symphonia-mp3-decoding",
+    "owners": ["wenz@google.com"],
+    "platforms": ["Linux", "Mac", "Win", "ChromeOS"],
+    "bases": [
+      "webaudio/codec-tests"
+    ],
+    "args": [
+      "--enable-features=SymphoniaMp3Decoding"
+    ],
+    "expires": "Aug 10, 2026"
   },
   {
     "prefix": "freeze-shared-worker-bfcache",
