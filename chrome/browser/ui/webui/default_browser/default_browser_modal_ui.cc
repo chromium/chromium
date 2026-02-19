@@ -56,10 +56,6 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
           : IDS_DEFAULT_BROWSER_MODAL_BODY_WITHOUT_SETTINGS_ILLUSTRATION);
 
   source->AddResourcePath("chrome_logo.svg", IDR_PRODUCT_LOGO_SVG);
-  source->AddResourcePath("illustration.svg",
-                          IDR_DEFAULT_BROWSER_MODAL_SETTINGS_ILLUSTRATION_SVG);
-  source->AddResourcePath("header_background.svg",
-                          IDR_DEFAULT_BROWSER_MODAL_HEADER_BACKGROUND_SVG);
 
   source->AddBoolean("useSettingsIllustration", use_settings_illustration);
 }

@@ -45,6 +45,12 @@
   object-fit: contain;
 }
 
+@media (prefers-color-scheme: dark) {
+  #header-background {
+    content: url(header_background_dark.svg);
+  }
+}
+
 #icon {
   --icon-size: 40px;
   height: var(--icon-size);

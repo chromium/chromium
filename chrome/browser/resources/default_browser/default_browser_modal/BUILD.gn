@@ -11,6 +11,7 @@ build_webui("build") {
     "default_browser_modal.css",
     "default_browser_modal.html",
     "header_background.svg",
+    "header_background_dark.svg",
     "settings_illustration.svg",
   ]
 
