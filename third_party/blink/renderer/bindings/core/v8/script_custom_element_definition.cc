@@ -111,11 +111,6 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
   // 5.1.3.9 Set result’s namespace prefix to prefix.
   if (element->prefix() != tag_name.Prefix())
     element->SetTagNameForCreateElementNS(tag_name);
-  // 5.1.3.11 Set result's element registry to registry.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      registry != nullptr) {
-    element->SetCustomElementRegistry(registry);
-  }
   DCHECK_EQ(element->GetCustomElementState(), CustomElementState::kCustom);
   return To<HTMLElement>(element);
 }

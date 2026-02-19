@@ -170,6 +170,9 @@ HTMLElement* CustomElementDefinition::CreateElement(
     if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
         !registry_->IsGlobalRegistry()) {
       Element* element = CreateElementForConstructor(document);
+      // Set the registry for the element before running the constructor,
+      // to ensure user gets the correct registry in constructor if need.
+      element->SetCustomElementRegistry(registry_);
       CustomElementConstructionStackScope construction_stack_scope(*this,
                                                                    *element);
       // Keeping the following creation call here to avoid the construction

@@ -19,4 +19,6 @@ This is a testharness.js-based test.
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] customElementRegistry on a defined custom element created by calling createElement on CustomElementRegistry should return the registry
   Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] customElementRegistry inside a custom element constructor should return the correct registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
