@@ -767,6 +767,12 @@ bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
     return true;
   }
 
+  // This method may trigger from the timer after our PaymentRequest is no
+  // longer valid but before we ourselves have been torn down.
+  if (!request_) {
+    return true;
+  }
+
   if (!request_->window_size_check_enabled()) {
     return true;
   }
