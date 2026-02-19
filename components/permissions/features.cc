@@ -15,7 +15,7 @@ namespace features {
 BASE_FEATURE(kAndroidWindowManagementWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Shows or hides the cancel button in the ItemChooserDialog.
-BASE_FEATURE(kAndroidItemChooserCancelButton, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidItemChooserCancelButton, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables or disables whether pages with pending permission requests will
