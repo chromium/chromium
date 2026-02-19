@@ -162,8 +162,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      * @param tabCountSupplier Supplier of {@link
      *     org.chromium.chrome.browser.toolbar.CustomTabCount}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
-     * @param homepageNonNtpSupplier Supplier of whether homepage is set to something other than the
-     *     NTP.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param historyDelegate Delegate used to display navigation history.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
@@ -199,7 +197,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             @Nullable ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             MonotonicObservableSupplier<Integer> tabCountSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
-            NonNullObservableSupplier<Boolean> homepageNonNtpSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             HistoryDelegate historyDelegate,
             boolean initializeWithIncognitoColors,
@@ -304,8 +301,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addSyncObserverAndCallIfNonNull(
                 (show) -> mToolbarLayout.onHomeButtonIsEnabledUpdate(show));
-        homepageNonNtpSupplier.addSyncObserverAndCallIfNonNull(
-                (isNonNtp) -> mToolbarLayout.onHomepageIsNonNtpUpdate(isNonNtp));
 
         // When we can force height adjustment on start up, we need to create tab strip transition
         // earlier, before native is ready.

@@ -31,7 +31,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for HomeButtonCoordinator. */
@@ -129,24 +128,15 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testUpdateState() {
         mHomeButtonCoordinator.updateState(
-                VisualState.NEW_TAB_NORMAL,
-                /* isHomeButtonEnabled= */ true,
-                /* isHomepageNonNtp= */ false,
-                /* urlHasFocus= */ false);
+                /* isHomeButtonEnabled= */ true, /* urlHasFocus= */ false);
         verify(mHomeButton).setVisibility(View.VISIBLE);
 
         mHomeButtonCoordinator.updateState(
-                VisualState.NEW_TAB_NORMAL,
-                /* isHomeButtonEnabled= */ true,
-                /* isHomepageNonNtp= */ false,
-                /* urlHasFocus= */ true);
+                /* isHomeButtonEnabled= */ true, /* urlHasFocus= */ true);
         verify(mHomeButton).setVisibility(View.INVISIBLE);
 
         mHomeButtonCoordinator.updateState(
-                VisualState.NEW_TAB_NORMAL,
-                /* isHomeButtonEnabled= */ false,
-                /* isHomepageNonNtp= */ false,
-                /* urlHasFocus= */ false);
+                /* isHomeButtonEnabled= */ false, /* urlHasFocus= */ false);
         verify(mHomeButton).setVisibility(View.GONE);
     }
 

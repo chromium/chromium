@@ -9,9 +9,9 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 
 /** Interface for managing the display and behavior of home button(s) in the toolbar. */
@@ -46,16 +46,10 @@ public interface HomeButtonDisplay extends TintObserver {
      * for deciding internal visibility of buttons if it's a coordinator, or the overall visibility
      * of the single home button.
      *
-     * @param toolbarVisualState The current {@link ToolbarPhone.VisualState} of the toolbar.
      * @param isHomeButtonEnabled Whether the home button is enabled.
-     * @param isHomepageNonNtp Whether the current homepage is not the New Tab Page.
      * @param urlHasFocus True if the url bar has focus.
      */
-    void updateState(
-            @ToolbarPhone.VisualState int toolbarVisualState,
-            boolean isHomeButtonEnabled,
-            boolean isHomepageNonNtp,
-            boolean urlHasFocus);
+    void updateState(boolean isHomeButtonEnabled, boolean urlHasFocus);
 
     /**
      * Sets the view to be traversed before this home button view in accessibility.

@@ -164,11 +164,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
     }
 
     @Override
-    public void updateState(
-            int toolbarVisualState,
-            boolean isHomeButtonEnabled,
-            boolean isHomepageNonNtp,
-            boolean urlHasFocus) {
+    public void updateState(boolean isHomeButtonEnabled, boolean urlHasFocus) {
         boolean hideHomeButton = !isHomeButtonEnabled;
         if (hideHomeButton) {
             mHomeButton.setVisibility(View.GONE);

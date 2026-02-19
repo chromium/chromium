@@ -257,7 +257,6 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mBrandColorTransitionActive;
 
     private boolean mIsHomeButtonEnabled;
-    private boolean mIsHomepageNonNtp;
 
     private @Nullable Runnable mLayoutUpdater;
     private @Nullable Runnable mDefaultSearchEngineChangedRunnable;
@@ -285,7 +284,7 @@ public class ToolbarPhone extends ToolbarLayout
         VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface VisualState {
+    @interface VisualState {
         int NORMAL = 0;
         int INCOGNITO = 1;
         int BRAND_COLOR = 2;
@@ -366,15 +365,6 @@ public class ToolbarPhone extends ToolbarLayout
 
             mToolbarButtonsContainer = findViewById(R.id.toolbar_buttons);
 
-            if (ChromeFeatureList.sNewTabPageCustomization.isEnabled()
-                    && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled()) {
-                ViewStub homePageButtonsStub = findViewById(R.id.home_page_buttons_stub);
-
-                if (homePageButtonsStub != null) {
-                    homePageButtonsStub.inflate();
-                }
-            }
-
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
             if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
@@ -438,9 +428,6 @@ public class ToolbarPhone extends ToolbarLayout
         mHomeButtonDisplay = assumeNonNull(homeButtonDisplay);
 
         getToolbarDataProvider().addToolbarDataProviderObserver(this);
-
-        mHomeButtonDisplay.updateState(
-                mVisualState, mIsHomeButtonEnabled, mIsHomepageNonNtp, urlHasFocus());
     }
 
     @Override
@@ -2029,12 +2016,6 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    public void onHomepageIsNonNtpUpdate(boolean isHomepageNonNtp) {
-        mIsHomepageNonNtp = isHomepageNonNtp;
-        updateButtonVisibility();
-    }
-
-    @Override
     public void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         updateButtonVisibility();
@@ -2043,8 +2024,7 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void updateButtonVisibility() {
         if (mHomeButtonDisplay != null) {
-            mHomeButtonDisplay.updateState(
-                    mVisualState, mIsHomeButtonEnabled, mIsHomepageNonNtp, urlHasFocus());
+            mHomeButtonDisplay.updateState(mIsHomeButtonEnabled, urlHasFocus());
         }
     }
 
@@ -3246,9 +3226,6 @@ public class ToolbarPhone extends ToolbarLayout
             // handled by the transition instead.
             updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, newVisualState);
         }
-
-        mHomeButtonDisplay.updateState(
-                mVisualState, mIsHomeButtonEnabled, mIsHomepageNonNtp, urlHasFocus());
 
         // Refresh the toolbar texture.
         if ((mVisualState == VisualState.BRAND_COLOR || visualStateChanged)

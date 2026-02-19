@@ -26,13 +26,6 @@ found in the LICENSE file.
         app:menuPositionedAtStart="true"
         app:tint="@color/default_icon_color_tint_list"/>
 
-    <ViewStub
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:id="@+id/home_page_buttons_stub"
-        android:layout="@layout/home_page_buttons_layout"
-        android:visibility="gone"/>
-
     <View
         android:id="@+id/location_bar_background_view"
         android:visibility="gone"

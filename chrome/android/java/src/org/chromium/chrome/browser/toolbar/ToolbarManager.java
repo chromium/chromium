@@ -161,7 +161,6 @@ import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFra
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -268,8 +267,6 @@ public class ToolbarManager
     private final FullscreenManager.Observer mFullscreenObserver;
     private final SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final SettableNonNullObservableSupplier<Boolean> mHomepageNonNtpSupplier =
-            ObservableSuppliers.createNonNull(false);
     private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -365,7 +362,6 @@ public class ToolbarManager
     private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     private @MonotonicNonNull HomeButtonCoordinator mHomeButtonCoordinator;
-    private @MonotonicNonNull HomePageButtonsCoordinator mHomePageButtonsCoordinator;
     private @MonotonicNonNull ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     private @MonotonicNonNull BackButtonCoordinator mBackButtonCoordinator;
     private @MonotonicNonNull ForwardButtonCoordinator mForwardButtonCoordinator;
@@ -427,7 +423,6 @@ public class ToolbarManager
     private final ToolbarProgressBarLayer mToolbarProgressBarLayer;
     private @Nullable Supplier<Integer> mBookmarkBarHeightSupplier;
     private boolean mInTabSwitcherTransition;
-    private final boolean mIsNewTabPageCustomizationToolbarButtonEnabled;
 
     private @Nullable Tab mLastTab;
 
@@ -867,10 +862,6 @@ public class ToolbarManager
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mCustomTabCount = new CustomTabCount(tabModelSelectorSupplier);
         mProfileSupplier = profileSupplier;
-        mIsNewTabPageCustomizationToolbarButtonEnabled =
-                !mIsTablet
-                        && ChromeFeatureList.sNewTabPageCustomization.isEnabled()
-                        && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
         mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
 
         mToolbarLayout = mActivity.findViewById(R.id.toolbar);
@@ -1060,34 +1051,17 @@ public class ToolbarManager
                     HistoryManagerUtils.showHistoryManager(activityFromTab, tab, tab.getProfile());
                 };
 
-        if (!mIsNewTabPageCustomizationToolbarButtonEnabled) {
-            View homeButton = controlContainer.findViewById(R.id.home_button);
-            if (homeButton != null) {
-                mHomeButtonCoordinator =
-                        new HomeButtonCoordinator(
-                                mActivity,
-                                homeButton,
-                                this::onHomePageButtonClick,
-                                this::onHomeButtonMenuClick,
-                                HomepagePolicyManager::isHomepageLocationManaged,
-                                browsingModeThemeColorProviderWithAdjustableTint,
-                                mIncognitoStateProvider);
-            }
-        } else {
-            View homePageButtonsContainer =
-                    controlContainer.findViewById(R.id.home_page_buttons_layout);
-            if (homePageButtonsContainer != null) {
-                mHomePageButtonsCoordinator =
-                        new HomePageButtonsCoordinator(
-                                mActivity,
-                                profileSupplier,
-                                homePageButtonsContainer,
-                                this::onHomeButtonMenuClick,
-                                HomepagePolicyManager::isHomepageLocationManaged,
-                                mBottomSheetController,
-                                this::onHomePageButtonClick,
-                                mWindowAndroid);
-            }
+        View homeButton = controlContainer.findViewById(R.id.home_button);
+        if (homeButton != null) {
+            mHomeButtonCoordinator =
+                    new HomeButtonCoordinator(
+                            mActivity,
+                            homeButton,
+                            this::onHomePageButtonClick,
+                            this::onHomeButtonMenuClick,
+                            HomepagePolicyManager::isHomepageLocationManaged,
+                            browsingModeThemeColorProviderWithAdjustableTint,
+                            mIncognitoStateProvider);
         }
 
         ChromeImageButton backButton = mControlContainer.findViewById(R.id.back_button);
@@ -1173,10 +1147,7 @@ public class ToolbarManager
                         ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                                 mActivity, mIsCustomTab));
 
-        HomeButtonDisplay homeButtonDisplay =
-                mIsNewTabPageCustomizationToolbarButtonEnabled
-                        ? mHomePageButtonsCoordinator
-                        : mHomeButtonCoordinator;
+        HomeButtonDisplay homeButtonDisplay = mHomeButtonCoordinator;
         if (homeButtonDisplay != null) {
             browsingModeThemeColorProviderWithAdjustableTint.addTintObserver(homeButtonDisplay);
         }
@@ -1984,7 +1955,6 @@ public class ToolbarManager
                         mTabSwitcherButtonCoordinator,
                         mCustomTabCount.getObservable(),
                         mHomepageEnabledSupplier,
-                        mHomepageNonNtpSupplier,
                         mCompositorViewHolder::getResourceManager,
                         historyDelegate,
                         initializeWithIncognitoColors,
@@ -2011,7 +1981,6 @@ public class ToolbarManager
         mHomepageStateListener =
                 () -> {
                     mHomepageEnabledSupplier.set(HomepageManager.getInstance().isHomepageEnabled());
-                    mHomepageNonNtpSupplier.set(HomepageManager.getInstance().isHomepageNonNtp());
                 };
 
         HomepageManager.getInstance().addListener(mHomepageStateListener);
