@@ -64,6 +64,7 @@ build_webui("build") {
     "composebox_dropdown.css",
     "composebox_lens_search.css",
     "composebox_match.css",
+    "composebox_shared_style.css",
     "composebox_tab_favicon.css",
     "composebox_tool_chip.css",
     "composebox_voice_search.css",

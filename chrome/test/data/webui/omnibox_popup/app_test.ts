@@ -149,60 +149,60 @@ suite('AppTest', function() {
     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
       testProxy.page.updateAimEligibility(false);
       await microtasksFinished();
-      const carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertFalse(!!carousel);
+      const contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertFalse(!!contextualEntrypoint);
     });
 
-    test('AiModePrefUpdatesCarouselVisibility', async () => {
-      let carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(!!carousel);
-      assertTrue(isVisible(carousel));
+    test('AiModePrefUpdatesContextualEntrypointVisibility', async () => {
+      let contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextualEntrypoint);
+      assertTrue(isVisible(contextualEntrypoint));
 
       // Disable AI Mode Shortcuts.
       testProxy.page.onShowAiModePrefChanged(false);
       await microtasksFinished();
-      carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertFalse(!!carousel);
+      contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertFalse(!!contextualEntrypoint);
 
       // Enable AI Mode Shortcuts.
       testProxy.page.onShowAiModePrefChanged(true);
       await microtasksFinished();
-      carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(!!carousel);
-      assertTrue(isVisible(carousel));
+      contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextualEntrypoint);
+      assertTrue(isVisible(contextualEntrypoint));
     });
 
-    test('KeywordModeUpdatesCarouselVisibility', async () => {
-      let carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(!!carousel);
-      assertTrue(isVisible(carousel));
+    test('KeywordModeUpdatesContextualEntrypointVisibility', async () => {
+      let contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextualEntrypoint);
+      assertTrue(isVisible(contextualEntrypoint));
 
       // Enter keyword mode.
       testProxy.page.setKeywordSelected(true);
       await microtasksFinished();
-      assertFalse(isVisible(carousel));
+      assertFalse(isVisible(contextualEntrypoint));
 
       // Exit keyword mode.
       testProxy.page.setKeywordSelected(false);
       await microtasksFinished();
-      carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(isVisible(carousel));
+      contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(isVisible(contextualEntrypoint));
     });
 
     test('OnShowCallsBlur', async () => {
       // Arrange: Focus the button and confirm it's focused.
-      const carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(!!carousel);
+      const contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextualEntrypoint);
       await microtasksFinished();
       const entrypointButton =
-          carousel.$.contextEntrypoint.shadowRoot.querySelector<HTMLElement>(
+          contextualEntrypoint.shadowRoot?.querySelector<HTMLElement>(
               '#entrypoint');
       assertTrue(!!entrypointButton);
       entrypointButton.focus();
@@ -244,11 +244,8 @@ suite('AppTest', function() {
       testProxy.page.onShow();
       await microtasksFinished();
 
-      const carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(!!carousel);
-      const recentTabChip =
-          carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
+      const recentTabChip = localApp.shadowRoot?.querySelector(
+          'composebox-recent-tab-chip');
       // Assert chip shows.
       assertTrue(!!recentTabChip);
     });
@@ -270,21 +267,21 @@ suite('AppTest', function() {
     test('AimEligibility', async () => {
       testProxy.page.updateAimEligibility(false);
       await microtasksFinished();
-      let carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertFalse(isVisible(carousel));
+      let contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertFalse(isVisible(contextualEntrypoint));
 
       testProxy.page.updateAimEligibility(true);
       await microtasksFinished();
-      carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(isVisible(carousel));
+      contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(isVisible(contextualEntrypoint));
 
       testProxy.page.updateAimEligibility(false);
       await microtasksFinished();
-      carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertFalse(isVisible(carousel));
+      contextualEntrypoint = localApp.shadowRoot?.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertFalse(isVisible(contextualEntrypoint));
     });
   });
 });

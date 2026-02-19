@@ -19,6 +19,7 @@ build_webui("build") {
     "aim_app.ts",
     "aim_browser_proxy.ts",
     "app.html.ts",
+    "app_contextual_entrypoint.html.ts",
     "app.ts",
     "full_app.html.ts",
     "full_app.ts",

@@ -1,0 +1,49 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+.context-menu-container {
+  align-items: center;
+  cursor: text;
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
+  min-height: var(--cr-icon-button-size);
+  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
+  flex-wrap: nowrap;
+}
+
+.context-menu-container > * {
+  flex-shrink: 0;
+}
+
+.context-menu-container:has(.contextual-chip) {
+  padding-bottom: var(--contextual-entrypoint-and-carousel-contextual-chip-padding-bottom);
+}
+
+.carousel-divider {
+  border-radius: 100px;
+  border-top: 1px solid
+    var(--color-composebox-file-carousel-divider);
+  margin-inline-end: 16px;
+  margin-inline-start: var(--text-input-inline-start-spacing);
+  margin-top: var(--contextual-entrypoint-and-carousel-carousel-divider-margin-top, 20px);
+  margin-bottom: var(--contextual-entrypoint-and-carousel-carousel-divider-margin-bottom, 10px);
+}
+
+.upload-button {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
+  --cr-icon-button-size: 48px;
+  color: var(--color-composebox-upload-button);
+  display: flex;
+  flex-wrap: nowrap;
+}
