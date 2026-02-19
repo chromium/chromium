@@ -323,11 +323,10 @@ void AdpfHintSession::UpdateEfficiencyHintIfNeeded(
   if (result == 0) [[likely]] {
     prefer_efficiency_applied_ = prefer_efficient_scheduling;
     if (!prefer_efficient_scheduling) {
-      TRACE_EVENT_ASYNC_BEGIN1("android.adpf", "AdpfHintSession::Boost", this,
-                               "session", (uintptr_t)this);
+      TRACE_EVENT_BEGIN("android.adpf", "AdpfHintSession::Boost",
+                        perfetto::Track::FromPointer(this));
     } else {
-      TRACE_EVENT_ASYNC_END1("android.adpf", "AdpfHintSession::Boost", this,
-                             "session", (uintptr_t)this);
+      TRACE_EVENT_END("android.adpf", perfetto::Track::FromPointer(this));
     }
   } else {
     LOG(ERROR) << "setPreferPowerEfficiency (service failure). Returned: "
