@@ -109,6 +109,7 @@ suite('ContextualTasksComposeboxTest', () => {
       composeboxShowZps: true,
       enableBasicModeZOrder: true,
       composeboxShowContextMenu: true,
+      composeboxHintTextLensOverlay: 'Test Lens Hint',
     });
 
     testProxy = new TestContextualTasksBrowserProxy('https://google.com');
@@ -1876,5 +1877,37 @@ suite('ContextualTasksComposeboxTest', () => {
     await contextualComposebox.updateComplete;
 
     assertTrue(contextualComposebox.hasAttribute('input-enabled'));
+  });
+
+  test('lens overlay showing updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+    const inputElement = innerComposebox.$.input;
+
+    // Initially false, placeholder override should be empty.
+    assertFalse(contextualComposebox.isLensOverlayShowing);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+    assertEquals('', innerComposebox.inputPlaceholderOverride);
+
+    const initialPlaceholder = inputElement.placeholder;
+
+    // Set to true.
+    contextualComposebox.isLensOverlayShowing = true;
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertTrue(contextualComposebox.isLensOverlayShowing);
+    assertEquals('Test Lens Hint', innerComposebox.inputPlaceholderOverride);
+    assertEquals('Test Lens Hint', inputElement.placeholder);
+
+    // Set back to false.
+    contextualComposebox.isLensOverlayShowing = false;
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertFalse(contextualComposebox.isLensOverlayShowing);
+    assertEquals('', innerComposebox.inputPlaceholderOverride);
+    assertEquals(initialPlaceholder, inputElement.placeholder);
   });
 });

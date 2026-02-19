@@ -48,6 +48,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .forcedComposeboxBounds="${this.forcedComposeboxBounds_}"
           .isSidePanel="${!this.isShownInTab_}"
+          .isLensOverlayShowing="${this.isLensOverlayShowing_}"
           .enableNativeZeroStateSuggestions=
               "${this.enableNativeZeroStateSuggestions_}"
           .inputEnabled="${!this.isInputLocked_}">

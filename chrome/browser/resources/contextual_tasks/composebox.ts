@@ -77,6 +77,9 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      isLensOverlayShowing: {
+        type: Boolean,
+      },
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
       isComposeboxFocused_: {
@@ -110,6 +113,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   accessor enableNativeZeroStateSuggestions: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
+  accessor isLensOverlayShowing: boolean = false;
   accessor inputEnabled: boolean = true;
   accessor forcedComposeboxBounds: Rect|null = null;
 
@@ -265,6 +269,12 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   get showLensButton_() {
     //Lens should be hidden in the side panel if deep search is enabled.
     return this.isSidePanel && this.activeToolMode_ !== ToolMode.kDeepSearch;
+  }
+
+  protected getInputPlaceholder_() {
+    return this.isLensOverlayShowing ?
+        loadTimeData.getString('composeboxHintTextLensOverlay') :
+        '';
   }
 
   protected getComposeboxBoundsStyles_() {

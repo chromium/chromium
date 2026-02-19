@@ -44,6 +44,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .lensButtonDisabled="${false}"
           .showLensButton="${this.showLensButton_}"
           .disableCaretColorAnimation="${true}"
+          .inputPlaceholderOverride="${this.getInputPlaceholder_()}"
           .isInCoBrowsingZeroState="${this.isZeroState}"
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"

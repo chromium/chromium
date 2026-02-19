@@ -333,3 +333,8 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest,
   RunTest("cr_components/composebox/composebox_audio_animation_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxInputPlaceholder) {
+  RunTest("cr_components/composebox/composebox_input_placeholder_test.js",
+          "mocha.run()");
+}
