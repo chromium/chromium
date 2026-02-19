@@ -180,16 +180,13 @@ def _RunLint(lint_jar_path,
              android_sdk_root,
              lint_gen_dir,
              baseline,
-             create_cache,
              manifest_path,
              warnings_as_errors=False):
   logging.info('Lint starting')
   if not cache_dir:
     # Use per-target cache directory when --cache-dir is not used.
-    cache_dir = os.path.join(lint_gen_dir, 'cache')
+    cache_dir = os.path.join(lint_gen_dir, 'android_lint_cache')
     # Lint complains if the directory does not exist.
-    # When --create-cache is used, ninja will create this directory because the
-    # stamp file is created within it.
     os.makedirs(cache_dir, exist_ok=True)
 
   if baseline and not os.path.exists(baseline):
@@ -229,14 +226,12 @@ def _RunLint(lint_jar_path,
       '--stacktrace',  # Prints full stacktraces for internal lint errors.
   ]
 
-  # Only disable for real runs since otherwise you get UnknownIssueId warnings
-  # when disabling custom lint checks since they are not passed during cache
-  # creation.
-  if not create_cache:
-    cmd += [
-        '--disable',
-        ','.join(_DISABLED_ALWAYS),
-    ]
+  # Some custom lint checks are not always available, which can cause
+  # UnknownIssueId warnings. Disable them to avoid noise.
+  cmd += [
+      '--disable',
+      ','.join(_DISABLED_ALWAYS),
+  ]
 
   logging.info('Generating config.xml')
   backported_methods = _RetrieveBackportedMethods(backported_methods_path)
@@ -368,9 +363,6 @@ def _ParseArgs(argv):
   parser.add_argument('--android-sdk-root',
                       required=True,
                       help='Lint needs an explicit path to the android sdk.')
-  parser.add_argument('--create-cache',
-                      action='store_true',
-                      help='Whether this invocation is just warming the cache.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -435,11 +427,10 @@ def main():
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place. Forward the command
   # after the depfile has been written as siso requires it.
-  if (not args.create_cache
-      and server_utils.MaybeRunCommand(name=args.target_name,
-                                       argv=sys.argv,
-                                       stamp_file=args.stamp,
-                                       use_build_server=args.use_build_server)):
+  if server_utils.MaybeRunCommand(name=args.target_name,
+                                  argv=sys.argv,
+                                  stamp_file=args.stamp,
+                                  use_build_server=args.use_build_server):
     return
 
   _RunLint(args.lint_jar_path,
@@ -456,7 +447,6 @@ def main():
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
-           args.create_cache,
            args.manifest,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')

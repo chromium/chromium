@@ -16,13 +16,6 @@ if (build_with_chromium) {
 }
 
 if (enable_java_templates) {
-  # Create or update the API versions cache if necessary by running a
-  # functionally empty lint task. This prevents racy creation of the
-  # cache while linting java targets in android_lint.
-  android_lint("prepare_android_lint_cache") {
-    create_cache = true
-  }
-
   generate_build_config_srcjar("placeholder_build_config_srcjar") {
   }
 

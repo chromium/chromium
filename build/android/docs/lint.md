@@ -125,6 +125,13 @@ Here is an example of how to structure a suppressions XML file:
 </lint>
 ```
 
+
+### Per-target cache
+
+To avoid race conditions and IO-related flakes when running Lint in parallel,
+Chromium uses a per-target cache directory located in the target's generated
+directory (e.g., `gen/.../android_lint_cache`).
+
 ## What are `lint-baseline.xml` files for?
 
 Baseline files are to help us introduce new lint warnings and errors without

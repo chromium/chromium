@@ -1089,11 +1089,6 @@ if (enable_java_templates) {
         _lint_jar_path = _default_lint_jar_path
       }
 
-      # It is not safe to run two lint versions concurrently since they will
-      # wipe the cache on version mismatch. When using a non-default lint
-      # version, make each target use their own cache directory.
-      _use_custom_cache_dir = _lint_jar_path != _default_lint_jar_path
-
       # Save generated xml files in a consistent location for debugging.
       if (defined(invoker.lint_gen_dir)) {
         _lint_gen_dir = invoker.lint_gen_dir
@@ -1124,17 +1119,6 @@ if (enable_java_templates) {
         "--backported-methods",
         rebase_path(_backported_methods, root_build_dir),
       ]
-
-      if (!_use_custom_cache_dir) {
-        _cache_dir = "$root_build_dir/android_lint_cache"
-        _create_cache_stamp_path = "$_cache_dir/build.lint.stamp"
-
-        # By default, lint.py will use "$_lint_gen_dir/cache".
-        args += [
-          "--cache-dir",
-          rebase_path(_cache_dir, root_build_dir),
-        ]
-      }
 
       if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
@@ -1173,41 +1157,30 @@ if (enable_java_templates) {
         ]
       }
 
-      if (defined(invoker.create_cache) && invoker.create_cache) {
-        # Putting the stamp file in the cache dir allows us to depend on ninja
-        # to create the cache dir for us.
-        args += [ "--create-cache" ]
-        _stamp_path = _create_cache_stamp_path
-      } else {
-        _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
-        deps += [ invoker.build_config_dep ]
-        if (!_use_custom_cache_dir) {
-          deps += [ "//build/android:prepare_android_lint_cache" ]
-          inputs += [ _create_cache_stamp_path ]
-        }
-        _lint_json = string_replace(invoker.build_config,
-                                    ".build_config.json",
-                                    ".lint.build_config.json")
-        inputs += [ _lint_json ]
-        _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
+      _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
+      deps += [ invoker.build_config_dep ]
+      _lint_json = string_replace(invoker.build_config,
+                                  ".build_config.json",
+                                  ".lint.build_config.json")
+      inputs += [ _lint_json ]
+      _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
 
-        inputs += [ invoker.manifest ]
-        args += [
-          "--manifest",
-          rebase_path(invoker.manifest, root_build_dir),
+      inputs += [ invoker.manifest ]
+      args += [
+        "--manifest",
+        rebase_path(invoker.manifest, root_build_dir),
 
-          # Lint requires all source and all resource files to be passed in the
-          # same invocation for checks like UnusedResources.
-          "--sources=@FileArg($_rebased_lint_json:sources)",
-          "--aars=@FileArg($_rebased_lint_json:aars)",
-          "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
-          "--resource-sources=@FileArg($_rebased_lint_json:resource_sources)",
-          "--resource-zips=@FileArg($_rebased_lint_json:resource_zips)",
+        # Lint requires all source and all resource files to be passed in the
+        # same invocation for checks like UnusedResources.
+        "--sources=@FileArg($_rebased_lint_json:sources)",
+        "--aars=@FileArg($_rebased_lint_json:aars)",
+        "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
+        "--resource-sources=@FileArg($_rebased_lint_json:resource_sources)",
+        "--resource-zips=@FileArg($_rebased_lint_json:resource_zips)",
 
-          # The required for annotation checks like @IntDef.
-          "--classpath=@FileArg($_rebased_lint_json:classpath)",
-        ]
-      }
+        # The required for annotation checks like @IntDef.
+        "--classpath=@FileArg($_rebased_lint_json:classpath)",
+      ]
 
       outputs = [ _stamp_path ]
       args += [
