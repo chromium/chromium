@@ -368,7 +368,7 @@ public class NewTabAnimationLayout extends Layout {
 
         LayoutTab layoutTab = getLayoutTab();
         layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT, isActive());
-        layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset() + mTopPadding);
+        layoutTab.set(LayoutTab.CONTENT_OFFSET_Y, browserControls.getContentOffset() + mTopPadding);
         mSceneLayer.update(layoutTab);
     }
 

@@ -684,7 +684,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         LayoutTab layoutTab = getLayoutTab();
         layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT, isActive());
-        layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset());
+        layoutTab.set(LayoutTab.CONTENT_OFFSET_Y, browserControls.getContentOffset());
         mTabSceneLayer.update(layoutTab);
     }
 

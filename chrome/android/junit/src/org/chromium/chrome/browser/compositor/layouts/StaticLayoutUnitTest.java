@@ -254,19 +254,19 @@ public class StaticLayoutUnitTest {
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
-        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        mModel.set(LayoutTab.CONTENT_OFFSET, 0);
+        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
+        mModel.set(LayoutTab.CONTENT_OFFSET_Y, 0);
 
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, true);
-        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        mModel.set(LayoutTab.CONTENT_OFFSET, 0);
+        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
+        mModel.set(LayoutTab.CONTENT_OFFSET_Y, 0);
 
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
-        assertEquals(height, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+        assertEquals(height, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
     }
 
     @Test
@@ -400,14 +400,14 @@ public class StaticLayoutUnitTest {
                 .getValue()
                 .onOffsetTagsInfoChanged(null, tagsInfo, 0, false);
         assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
-        assertEquals(0, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+        assertEquals(0, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
 
         tagsInfo = new BrowserControlsOffsetTagsInfo();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
                 .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
-        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
     }
 
     @Test
@@ -424,7 +424,7 @@ public class StaticLayoutUnitTest {
         assertEquals(
                 "Content offset should be applied when mNeedsOffsetTags is true.",
                 offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+                (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
         assertEquals(
                 "Content offset tag should be updated.",
                 tagsInfo.getContentOffsetTag(),
@@ -445,7 +445,7 @@ public class StaticLayoutUnitTest {
         assertEquals(
                 "Content offset should be applied when mNeedsOffsetTags is false.",
                 offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+                (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
         assertNull(
                 "Content offset tag should not be updated.",
                 mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
@@ -465,7 +465,7 @@ public class StaticLayoutUnitTest {
         assertEquals(
                 "Content offset should be applied when mNeedsOffsetTags is true.",
                 offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+                (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
         assertEquals(
                 "Content offset tag should be updated.",
                 tagsInfo.getContentOffsetTag(),
@@ -483,7 +483,7 @@ public class StaticLayoutUnitTest {
         assertEquals(
                 "Content offset should still be applied even when mNeedsOffsetTags is false.",
                 offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+                (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
         assertEquals(
                 "Content offset tag should not be updated.",
                 null,
@@ -501,7 +501,7 @@ public class StaticLayoutUnitTest {
         assertEquals(
                 "Content offset should be applied after toggling mNeedsOffsetTags back to true.",
                 offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+                (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
         assertEquals(
                 "Content offset tag should be updated.",
                 tagsInfo.getContentOffsetTag(),

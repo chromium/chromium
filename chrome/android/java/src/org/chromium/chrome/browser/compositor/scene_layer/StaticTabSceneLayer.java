@@ -49,9 +49,11 @@ public class StaticTabSceneLayer extends SceneLayer {
             return;
         }
 
-        float x = model.get(LayoutTab.RENDER_X) * LayoutTab.sDpToPx;
+        float x =
+                model.get(LayoutTab.CONTENT_OFFSET_X)
+                        + model.get(LayoutTab.RENDER_X) * LayoutTab.sDpToPx;
         float y =
-                model.get(LayoutTab.CONTENT_OFFSET)
+                model.get(LayoutTab.CONTENT_OFFSET_Y)
                         + model.get(LayoutTab.RENDER_Y) * LayoutTab.sDpToPx;
 
         // Check isActiveLayout to prevent pushing a TAB_ID for a static layer that may already be

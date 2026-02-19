@@ -389,7 +389,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(
                 "Top padding should be applied.",
                 150,
-                layoutTab.get(LayoutTab.CONTENT_OFFSET),
+                layoutTab.get(LayoutTab.CONTENT_OFFSET_Y),
                 MathUtils.EPSILON);
     }
 

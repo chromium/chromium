@@ -180,7 +180,7 @@ public class StaticLayout extends Layout {
         mPxToDp = 1.0f / dpToPx;
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mModel.set(LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
+        mModel.set(LayoutTab.CONTENT_OFFSET_Y, mBrowserControlsStateProvider.getContentOffset());
 
         mUpdateOffsetTagsCallback = (ignored) -> updateOffsetTag();
         mNeedsOffsetTag.addSyncObserverAndPostIfNonNull(mUpdateOffsetTagsCallback);
@@ -198,7 +198,7 @@ public class StaticLayout extends Layout {
 
                         if (shouldUpdateOffsets) {
                             mModel.set(
-                                    LayoutTab.CONTENT_OFFSET,
+                                    LayoutTab.CONTENT_OFFSET_Y,
                                     mBrowserControlsStateProvider.getContentOffset());
                         }
                     }
@@ -215,13 +215,13 @@ public class StaticLayout extends Layout {
                             boolean isVisibilityForced) {
                         if (requestNewFrame || isVisibilityForced) {
                             int contentOffset = mBrowserControlsStateProvider.getContentOffset();
-                            mModel.set(LayoutTab.CONTENT_OFFSET, contentOffset);
+                            mModel.set(LayoutTab.CONTENT_OFFSET_Y, contentOffset);
                         } else {
                             // We need to set the height, as it would have changed if this is the
                             // first frame of an animation. Any existing offsets from scrolling and
                             // animations will be applied by OffsetTags.
                             int height = mBrowserControlsStateProvider.getTopControlsHeight();
-                            mModel.set(LayoutTab.CONTENT_OFFSET, height);
+                            mModel.set(LayoutTab.CONTENT_OFFSET_Y, height);
                         }
                     }
                 };

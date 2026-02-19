@@ -96,9 +96,19 @@ public class LayoutTab extends PropertyModel {
 
     public static final WritableIntPropertyKey TEXT_BOX_BACKGROUND_COLOR =
             new WritableIntPropertyKey();
+
     // End section --------------
 
-    public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
+    /**
+     * The x-offset for the content layer. Primarily used to offset in response to side-anchored UI.
+     */
+    public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET_X =
+            new PropertyModel.WritableFloatPropertyKey();
+
+    /**
+     * The y-offset for the content layer. Primarily used to offset in response to the top controls.
+     */
+    public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET_Y =
             new PropertyModel.WritableFloatPropertyKey();
 
     public static final PropertyModel.WritableBooleanPropertyKey IS_ACTIVE_LAYOUT =
@@ -134,7 +144,8 @@ public class LayoutTab extends PropertyModel {
                 BACKGROUND_COLOR,
                 TOOLBAR_BACKGROUND_COLOR,
                 TEXT_BOX_BACKGROUND_COLOR,
-                CONTENT_OFFSET,
+                CONTENT_OFFSET_X,
+                CONTENT_OFFSET_Y,
                 IS_ACTIVE_LAYOUT,
                 CONTENT_OFFSET_TAG
             };

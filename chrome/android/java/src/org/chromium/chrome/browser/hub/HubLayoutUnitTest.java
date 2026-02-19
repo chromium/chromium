@@ -939,7 +939,7 @@ public class HubLayoutUnitTest {
         verify(mTabContentManager)
                 .updateVisibleIds(eq(Collections.singletonList(tabId)), eq(Tab.INVALID_TAB_ID));
 
-        assertEquals(0f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
+        assertEquals(0f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_Y), FLOAT_ERROR);
 
         float contentOffset = 100f;
         when(mBrowserControlsStateProvider.getContentOffset())
@@ -950,7 +950,7 @@ public class HubLayoutUnitTest {
                 mTabContentManager,
                 mResourceManager,
                 mBrowserControlsStateProvider);
-        assertEquals(contentOffset, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
+        assertEquals(contentOffset, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_Y), FLOAT_ERROR);
 
         // Change this so updateSnap() returns true.
         layoutTabs[0].set(LayoutTab.RENDER_X, 5);
