@@ -30,8 +30,6 @@ const CGFloat kInputPlateTrailingPadding = 8.0f;
 const CGFloat kInputPlateTopPadding = 4.0f;
 /// The size for the close button.
 const CGFloat kCloseButtonSize = 30.0f;
-/// The alpha for the close button.
-const CGFloat kCloseButtonAlpha = 0.6f;
 /// The ammount of padding to add vertically to the incognito view content.
 const CGFloat kIncognitoVerticalPadding = 24.0f;
 /// The bottom margin between the composebox and the container.
@@ -42,14 +40,13 @@ const CGFloat kReducedTransparencyInputPlateBottomMargin = 4.0f;
 
 /// The image for the close button.
 UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
-  NSArray<UIColor*>* palette = @[
-    [UIColor.tertiaryLabelColor colorWithAlphaComponent:kCloseButtonAlpha],
-    backgroundColor
-  ];
+  NSArray<UIColor*>* palette =
+      @[ [UIColor colorNamed:kTextfieldPlaceholderColor], backgroundColor ];
 
   if (highlighted) {
     palette = @[
-      [UIColor.tertiaryLabelColor colorWithAlphaComponent:0.3],
+      [[UIColor colorNamed:kTextfieldPlaceholderColor]
+          colorWithAlphaComponent:0.3],
       [backgroundColor colorWithAlphaComponent:0.6]
     ];
   }
