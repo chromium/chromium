@@ -37,6 +37,8 @@ source_set("browser_tests") {
       "glic_actor_context_fetch_browsertest.cc",
       "glic_actor_functional_browsertest.cc",
       "glic_actor_functional_browsertest.h",
+      "glic_actor_metrics_functional_browsertest.cc",
+      "glic_actor_tab_functional_browsertest.cc",
       "glic_actor_task_lifecycle_browsertest.cc",
     ]
 

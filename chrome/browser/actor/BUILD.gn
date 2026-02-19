@@ -456,7 +456,6 @@ source_set("browser_tests") {
   # attempt_form_filling_tool tests once flakiness is resolved.
   if (!skip_android_unmigrated_actor_files && enable_glic) {
     sources += [
-      "actor_functional_browsertest.cc",
       "execution_engine_browsertest.cc",
       "execution_engine_origin_gating_browsertest.cc",
       "site_policy_browsertest.cc",

@@ -1,48 +1,36 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string_view>
-
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
-namespace actor {
+namespace glic::actor {
 namespace {
 
-using ::base::test::ValueIs;
-using ::glic::actor::HasResultCode;
+using ::actor::ActorObservationOutcome;
+using ::actor::ActorTabObservationResult;
 using ::glic::actor::ScopedMockTabObservationResult;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::TabObservation;
 using ::page_content_annotations::FetchPageContextResult;
 
-class ActorFunctionalBrowserTest
-    : public glic::actor::GlicActorFunctionalBrowserTestBase {
+class GlicActorMetricsFunctionalBrowserTest
+    : public GlicActorFunctionalBrowserTestBase {
  public:
-  ActorFunctionalBrowserTest() = default;
-  ~ActorFunctionalBrowserTest() override = default;
+  GlicActorMetricsFunctionalBrowserTest() = default;
+  ~GlicActorMetricsFunctionalBrowserTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
-    glic::test::GlicFunctionalBrowserTestBase::SetUpOnMainThread();
+    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
     RunTestSequence(OpenGlic());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/465188408): Move all test cases to dedicated files grouped by
-// the functionality being tested.
-
-IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
                        LogsActorTaskCreatedOnCreateTask) {
   base::HistogramTester histogram_tester;
 
@@ -53,10 +41,10 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   histogram_tester.ExpectUniqueSample(kActorTaskCreatedHistogram, true, 1);
 }
 
-class ActorFunctionalBrowserTestWithoutPolicyExemption
-    : public ActorFunctionalBrowserTest {
+class GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption
+    : public GlicActorMetricsFunctionalBrowserTest {
  public:
-  ActorFunctionalBrowserTestWithoutPolicyExemption() {
+  GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlicActor,
                                {{features::kGlicActorPolicyControlExemption
@@ -64,14 +52,16 @@ class ActorFunctionalBrowserTestWithoutPolicyExemption
                                  "false"}}}},
         /*disabled_features=*/{});
   }
-  ~ActorFunctionalBrowserTestWithoutPolicyExemption() override = default;
+  ~GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption() override =
+      default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTestWithoutPolicyExemption,
-                       LogsActorTaskFailedOnCreateTask) {
+IN_PROC_BROWSER_TEST_F(
+    GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption,
+    LogsActorTaskFailedOnCreateTask) {
   base::HistogramTester histogram_tester;
 
   base::expected<TaskId, std::string> result = CreateTask();
@@ -81,8 +71,13 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTestWithoutPolicyExemption,
   histogram_tester.ExpectUniqueSample(kActorTaskCreatedHistogram, false, 1);
 }
 
-class ActorPageContextMetricsTest : public ActorFunctionalBrowserTest {
+class GlicActorPageContextMetricsFunctionalBrowserTest
+    : public GlicActorFunctionalBrowserTestBase {
  public:
+  void SetUpOnMainThread() override {
+    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
+    RunTestSequence(OpenGlic());
+  }
   using ResultCallback =
       base::RepeatingCallback<void(size_t /*fetch_num*/,
                                    TabObservation*,
@@ -92,8 +87,9 @@ class ActorPageContextMetricsTest : public ActorFunctionalBrowserTest {
     ASSERT_NE(task_id, TaskId());
 
     // Perform an arbitrary action.
-    Actions action = MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
-                               ClickAction::LEFT, ClickAction::SINGLE);
+    Actions action =
+        ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
+                           ClickAction::LEFT, ClickAction::SINGLE);
     action.set_task_id(task_id.value());
 
     // Each test case provides its own faked/mocked result for the
@@ -123,7 +119,7 @@ class ActorPageContextMetricsTest : public ActorFunctionalBrowserTest {
   size_t num_fetches_ = 0;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        ObservationOutcomeMetrics_Success) {
   base::HistogramTester histogram_tester;
 
@@ -135,11 +131,12 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
 
   ASSERT_EQ(num_fetches(), 1ul);
 
-  histogram_tester.ExpectUniqueSample(kActorPageContextObservationOutcome,
-                                      ActorObservationOutcome::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      ::actor::kActorPageContextObservationOutcome,
+      ActorObservationOutcome::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        ObservationOutcomeMetrics_SuccessAfterRetry) {
   base::HistogramTester histogram_tester;
 
@@ -157,11 +154,11 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
   ASSERT_EQ(num_fetches(), 2ul);
 
   histogram_tester.ExpectUniqueSample(
-      kActorPageContextObservationOutcome,
+      ::actor::kActorPageContextObservationOutcome,
       ActorObservationOutcome::kSuccessAfterRetry, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        ObservationOutcomeMetrics_Failure) {
   base::HistogramTester histogram_tester;
 
@@ -175,11 +172,11 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
   ASSERT_EQ(num_fetches(), 2ul);
 
   histogram_tester.ExpectUniqueSample(
-      kActorPageContextObservationOutcome,
+      ::actor::kActorPageContextObservationOutcome,
       ActorObservationOutcome::kFailureAfterRetry, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_Success) {
   base::HistogramTester histogram_tester;
 
@@ -191,11 +188,12 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
 
   ASSERT_EQ(num_fetches(), 1ul);
 
-  histogram_tester.ExpectUniqueSample(kActorPageContextTabObservationResult,
-                                      ActorTabObservationResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_APCFailure) {
   base::HistogramTester histogram_tester;
 
@@ -216,14 +214,17 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
 
   // Ensure we record a failure in APC (for initial failure) and a success (for
   // retry).
-  histogram_tester.ExpectTotalCount(kActorPageContextTabObservationResult, 2);
-  histogram_tester.ExpectBucketCount(kActorPageContextTabObservationResult,
-                                     ActorTabObservationResult::kApcError, 1);
-  histogram_tester.ExpectBucketCount(kActorPageContextTabObservationResult,
-                                     ActorTabObservationResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      ::actor::kActorPageContextTabObservationResult, 2);
+  histogram_tester.ExpectBucketCount(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kApcError, 1);
+  histogram_tester.ExpectBucketCount(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_RepeatedAPCFailure) {
   base::HistogramTester histogram_tester;
 
@@ -239,11 +240,12 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
   ASSERT_EQ(num_fetches(), 2ul);
 
   // Ensure we record two failures in APC since the retry fails as well.
-  histogram_tester.ExpectUniqueSample(kActorPageContextTabObservationResult,
-                                      ActorTabObservationResult::kApcError, 2);
+  histogram_tester.ExpectUniqueSample(
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kApcError, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_APCAndScreenshotFailure) {
   base::HistogramTester histogram_tester;
 
@@ -261,11 +263,11 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
   // Since both APC and screenshot had failures ensure the combined bucket is
   // used.
   histogram_tester.ExpectUniqueSample(
-      kActorPageContextTabObservationResult,
+      ::actor::kActorPageContextTabObservationResult,
       ActorTabObservationResult::kApcAndScreenshotNotOk, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+IN_PROC_BROWSER_TEST_F(GlicActorPageContextMetricsFunctionalBrowserTest,
                        TabObservationResult_MultipleFailures) {
   base::HistogramTester histogram_tester;
 
@@ -285,81 +287,15 @@ IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
 
   ASSERT_EQ(num_fetches(), 2ul);
 
-  histogram_tester.ExpectTotalCount(kActorPageContextTabObservationResult, 2);
-  histogram_tester.ExpectBucketCount(kActorPageContextTabObservationResult,
-                                     ActorTabObservationResult::kApcTimeout, 1);
+  histogram_tester.ExpectTotalCount(
+      ::actor::kActorPageContextTabObservationResult, 2);
   histogram_tester.ExpectBucketCount(
-      kActorPageContextTabObservationResult,
+      ::actor::kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kApcTimeout, 1);
+  histogram_tester.ExpectBucketCount(
+      ::actor::kActorPageContextTabObservationResult,
       ActorTabObservationResult::kWebContentsChanged, 1);
 }
 
-class ActorFunctionalBrowserTestCreateActorTab
-    : public ActorFunctionalBrowserTest,
-      public ::testing::WithParamInterface<GURL> {
- public:
-  ActorFunctionalBrowserTestCreateActorTab() = default;
-  ~ActorFunctionalBrowserTestCreateActorTab() override = default;
-
-  GURL GetInitiatorTabUrl() { return GetParam(); }
-};
-
-IN_PROC_BROWSER_TEST_P(ActorFunctionalBrowserTestCreateActorTab,
-                       CreateActorTab) {
-  // Navigate the current tab to the initiator URL.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitiatorTabUrl()));
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 1u);
-  SessionID initiator_window_id = browser()->session_id();
-  tabs::TabHandle initiator_tab = active_tab()->GetHandle();
-
-  base::expected<TaskId, std::string> task_id = CreateTask();
-  ASSERT_TRUE(task_id.has_value()) << task_id.error();
-
-  // Create a new tab for the task.
-  base::expected<tabs::TabHandle, std::string> new_tab_handler =
-      CreateActorTab(task_id.value(), /*open_in_background=*/false,
-                     base::ToString(initiator_tab.raw_value()),
-                     base::ToString(initiator_window_id.id()));
-  ASSERT_TRUE(new_tab_handler.has_value()) << new_tab_handler.error();
-
-  // Verify it is bound to the task.
-  EXPECT_TRUE(actor_keyed_service()
-                  ->GetTask(task_id.value())
-                  ->GetTabs()
-                  .contains(new_tab_handler.value()));
-}
-
-IN_PROC_BROWSER_TEST_P(ActorFunctionalBrowserTestCreateActorTab,
-                       CreateActorTabWithInvalidTask) {
-  // Navigate the current tab to the initiator URL.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitiatorTabUrl()));
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 1u);
-  SessionID initiator_window_id = browser()->session_id();
-  tabs::TabHandle initiator_tab = active_tab()->GetHandle();
-
-  base::expected<TaskId, std::string> task_id = CreateTask();
-  ASSERT_TRUE(task_id.has_value()) << task_id.error();
-
-  TaskId invalid_task_id = actor::TaskId(task_id.value().value() + 100);
-
-  // Create a new tab with an invalid task id.
-  base::expected<tabs::TabHandle, std::string> new_tab_handler =
-      CreateActorTab(invalid_task_id, /*open_in_background=*/false,
-                     base::ToString(initiator_tab.raw_value()),
-                     base::ToString(initiator_window_id.id()));
-
-  // CreateActorTab should have returned an error;
-  EXPECT_FALSE(new_tab_handler.has_value());
-
-  // Verify it is bound to the task.
-  EXPECT_TRUE(
-      actor_keyed_service()->GetTask(task_id.value())->GetTabs().empty());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    ActorFunctionalBrowserTestCreateActorTab,
-    ::testing::Values(GURL(chrome::kChromeUINewTabURL),
-                      GURL(url::kAboutBlankURL)));
-
 }  // namespace
-}  // namespace actor
+}  // namespace glic::actor
