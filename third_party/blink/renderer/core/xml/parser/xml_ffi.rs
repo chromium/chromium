@@ -10,7 +10,7 @@ use xml::{
     common::{Position, TextPosition},
     namespace::{Namespace, NS_XMLNS_URI, NS_XML_URI},
     reader::{
-        EventReader as XmlEventReader,
+        ErrorKind, EventReader as XmlEventReader,
         XmlEvent::{
             CData, Characters, Comment, Doctype, EndDocument, EndElement, ProcessingInstruction,
             StartDocument, StartElement, Whitespace,
@@ -42,6 +42,7 @@ fn create_reader() -> XmlEventReader<Cursor<Vec<u8>>> {
         .override_encoding(Some(Encoding::Utf8))
         .ignore_invalid_encoding_declarations(true)
         .ignore_comments(false)
+        .ignore_end_of_stream(true)
         .allow_multiple_root_elements(false);
     XmlEventReader::new_with_config(cursor, parser_config)
 }
@@ -256,6 +257,19 @@ fn saw_error(read_state: &XmlReadState) -> bool {
     read_state.error_details.is_some()
 }
 
+fn is_error_resumable(read_state: &XmlReadState) -> bool {
+    // See XML crate's parser.rs handle_eof() handling.
+    // which returns SyntaxError::UnbalancedRootElement on
+    // temporary end of read stream situations.
+    matches!(read_state.error_details.as_ref().map(|error| error.kind()),
+             Some(ErrorKind::Syntax(msg)) if
+             msg == "Unexpected end of stream: still inside the root element")
+}
+
+fn reset_error(read_state: &mut XmlReadState) {
+    read_state.error_details = None;
+}
+
 fn attributes_next<'a>(
     attributes: &mut AttributesIterator<'a>,
     mut attribute_view: Pin<&mut AttributeView>,
@@ -427,6 +441,8 @@ mod ffi {
             col: &mut u64,
         ) -> bool;
         fn saw_error(read_state: &XmlReadState) -> bool;
+        fn is_error_resumable(read_state: &XmlReadState) -> bool;
+        fn reset_error(read_state: &mut XmlReadState);
 
         unsafe fn parse_attributes(
             attributes_string: &[u8],

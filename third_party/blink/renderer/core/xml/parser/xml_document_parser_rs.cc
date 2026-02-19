@@ -255,7 +255,13 @@ void XMLDocumentParserRs::ProcessEvents() {
           OrdinalNumber::FromZeroBasedInt(static_cast<int>(row)),
           OrdinalNumber::FromZeroBasedInt(static_cast<int>(column)));
     }
-    HandleError(XMLErrors::kErrorTypeFatal, error_message.c_str(), position);
+    if (xml_ffi::is_error_resumable(*read_state_) && !finish_called_) {
+      carry_unbalanced_root_error_ = {String::FromUTF8(error_message.c_str()),
+                                      position};
+      xml_ffi::reset_error(*read_state_);
+    } else {
+      HandleError(XMLErrors::kErrorTypeFatal, error_message.c_str(), position);
+    }
   }
 }
 
@@ -604,6 +610,7 @@ void XMLDocumentParserRs::DocType(rust::Str name_rs,
 
 void XMLDocumentParserRs::EndDocument() {
   UpdateLeafTextNode();
+  carry_unbalanced_root_error_ = std::nullopt;
   bool xml_viewer_mode =
       !saw_error_ && !saw_css_ && HasNoStyleInformation(GetDocument());
   if (xml_viewer_mode) {
@@ -678,6 +685,12 @@ void XMLDocumentParserRs::Finish() {
     return;
   }
 
+  if (carry_unbalanced_root_error_) {
+    HandleError(XMLErrors::kErrorTypeFatal,
+                carry_unbalanced_root_error_->error_message.Utf8().c_str(),
+                carry_unbalanced_root_error_->position);
+  }
+
   if (parser_paused_) {
     finish_called_ = true;
   } else {
@@ -727,7 +740,7 @@ void XMLDocumentParserRs::Detach() {
 }
 
 bool XMLDocumentParserRs::WellFormed() const {
-  return !xml_ffi::saw_error(*read_state_);
+  return !xml_ffi::saw_error(*read_state_) && !carry_unbalanced_root_error_;
 }
 
 void XMLDocumentParserRs::InsertErrorMessageBlock() {

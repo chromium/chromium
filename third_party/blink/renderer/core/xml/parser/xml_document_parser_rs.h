@@ -139,6 +139,12 @@ class XMLDocumentParserRs final : public ScriptableDocumentParser,
   bool added_pending_parser_blocking_stylesheet_ = false;
   bool finish_called_ = false;
 
+  struct CarryUnbalancedRootElementError {
+    String error_message;
+    TextPosition position;
+  };
+  std::optional<CarryUnbalancedRootElementError> carry_unbalanced_root_error_;
+
   AtomicString default_namespace_uri_;
   typedef HashMap<AtomicString, AtomicString> PrefixForNamespaceMap;
   PrefixForNamespaceMap prefix_to_namespace_map_;
