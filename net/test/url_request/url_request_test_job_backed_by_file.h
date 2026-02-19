@@ -11,9 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "net/url_request/url_request.h"
@@ -118,7 +120,8 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
   void DidSeek(int64_t result);
 
   // Callback after data is asynchronously read from the file into |buf|.
-  void DidRead(scoped_refptr<IOBuffer> buf, int result);
+  void DidRead(scoped_refptr<IOBuffer> buf,
+               base::expected<base::ByteSize, net::Error> result);
 
   std::unique_ptr<FileStream> stream_;
   FileMetaInfo meta_info_;

@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/task_runner.h"
 #include "net/base/file_stream.h"
@@ -45,8 +47,8 @@ base::ScopedFD PipeReader::StartIO(CompletionCallback callback) {
 
   // Post an initial async read to setup data collection
   // Expect asynchronous operation.
-  int rv = RequestRead();
-  if (rv != net::ERR_IO_PENDING) {
+  auto rv = RequestRead();
+  if (rv.has_value() || rv.error() != net::ERR_IO_PENDING) {
     LOG(ERROR) << "Unable to post initial read";
     data_stream_.reset();
     return base::ScopedFD();
@@ -58,33 +60,46 @@ base::ScopedFD PipeReader::StartIO(CompletionCallback callback) {
   return pipe_write_end;
 }
 
-int PipeReader::RequestRead() {
+base::expected<base::ByteSize, net::Error> PipeReader::RequestRead() {
   DCHECK(data_stream_.get());
   return data_stream_->Read(
       io_buffer_.get(), io_buffer_->size(),
       base::BindOnce(&PipeReader::OnRead, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PipeReader::OnRead(int byte_count) {
-  DVLOG(1) << "OnRead byte_count: " << byte_count;
-  if (byte_count <= 0) {
-    // On EOF (= 0), or on error (< 0).
-    std::optional<std::string> result =
-        byte_count < 0 ? std::nullopt : std::make_optional(std::move(data_));
-    // Clear members before calling the |callback|.
+void PipeReader::OnRead(base::expected<base::ByteSize, net::Error> result) {
+  if (!result.has_value()) {
+    // The error variant should never contain net::OK; EOF is represented as
+    // a success result with zero bytes.
+    CHECK_NE(result.error(), net::OK);
+    DVLOG(1) << "OnRead error: " << net::ErrorToString(result.error());
     data_.clear();
     data_stream_.reset();
-    std::move(callback_).Run(std::move(result));
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 
-  data_.append(io_buffer_->data(), byte_count);
+  DVLOG(1) << "OnRead byte_count: " << *result;
+  if (result->is_zero()) {
+    // EOF - return collected data.
+    std::string data = std::move(data_);
+    data_.clear();
+    data_stream_.reset();
+    std::move(callback_).Run(std::move(data));
+    return;
+  }
+
+  data_.append(io_buffer_->data(),
+               base::checked_cast<size_t>(result->InBytes()));
 
   // Post another read.
-  int rv = RequestRead();
-  if (rv != net::ERR_IO_PENDING) {
-    // Calls OnRead() again with the error, which handles remaining clean up.
-    OnRead(rv > 0 ? net::ERR_FAILED : rv);
+  auto read_result = RequestRead();
+  if (read_result.has_value() || read_result.error() != net::ERR_IO_PENDING) {
+    // TODO(hjanuschka): crbug.com/485271327 - Fix synchronous read to append
+    // data instead of discarding. Preserving old behavior for now.
+    OnRead((read_result.has_value() && read_result->is_positive())
+               ? base::unexpected(net::ERR_FAILED)
+               : std::move(read_result));
   }
 }
 

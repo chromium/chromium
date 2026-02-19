@@ -9,13 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/offline_pages/core/archive_validator.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
+#include "net/base/net_errors.h"
 
 namespace base {
 class FilePath;
@@ -192,14 +195,15 @@ class OfflinePageRequestHandler {
   void DidGetFileSizeForValidation(std::optional<int64_t> file_size);
   void DidOpenForValidation(int result);
   void ReadForValidation();
-  void DidReadForValidation(int result);
+  void DidReadForValidation(base::expected<base::ByteSize, net::Error> result);
   void DidComputeActualDigestForValidation(const std::string& actual_digest);
   void OnFileValidationDone(FileValidationResult result);
 
   // All the work related to serving from the archive file.
   void DidOpenForServing(int result);
   void DidSeekForServing(int64_t result);
-  void DidReadForServing(scoped_refptr<net::IOBuffer> buf, int result);
+  void DidReadForServing(scoped_refptr<net::IOBuffer> buf,
+                         base::expected<base::ByteSize, net::Error> result);
   void NotifyReadRawDataComplete(int result);
   void DidComputeActualDigestForServing(int result,
                                         const std::string& actual_digest);

@@ -10,12 +10,15 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 
 namespace net {
@@ -62,7 +65,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
 
   // Writes asynchronously to the file.
   int InitiateWrite(net::IOBuffer* buf, int buf_len);
-  void DidWrite(int result);
+  void DidWrite(base::expected<base::ByteSize, net::Error> result);
 
   // Flushes asynchronously to the file.
   int InitiateFlush(net::CompletionOnceCallback callback);

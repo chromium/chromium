@@ -6,11 +6,33 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
+#include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/file_stream_context.h"
 #include "net/base/net_errors.h"
 
 namespace net {
+
+namespace {
+
+// Converts an int result (bytes >= 0 or error < 0) from the internal Context
+// to expected<ByteSize, Error>.
+base::expected<base::ByteSize, net::Error> IntToReadWriteResult(int result) {
+  if (result >= 0) {
+    return base::ByteSize(base::checked_cast<uint64_t>(result));
+  }
+  return base::unexpected(static_cast<net::Error>(result));
+}
+
+// Adapts a ReadWriteCallback to a CompletionOnceCallback for internal use.
+void RunReadWriteCallback(FileStream::ReadWriteCallback callback, int result) {
+  std::move(callback).Run(IntToReadWriteResult(result));
+}
+
+}  // namespace
 
 FileStream::FileStream(const scoped_refptr<base::TaskRunner>& task_runner)
     : context_(std::make_unique<Context>(task_runner)) {}
@@ -53,26 +75,33 @@ int FileStream::Seek(int64_t offset, Int64CompletionOnceCallback callback) {
   return ERR_IO_PENDING;
 }
 
-int FileStream::Read(IOBuffer* buf,
-                     int buf_len,
-                     CompletionOnceCallback callback) {
+base::expected<base::ByteSize, net::Error>
+FileStream::Read(IOBuffer* buf, int buf_len, ReadWriteCallback callback) {
   if (!IsOpen())
-    return ERR_UNEXPECTED;
+    return base::unexpected(ERR_UNEXPECTED);
 
   // read(..., 0) will return 0, which indicates end-of-file.
   DCHECK_GT(buf_len, 0);
 
-  return context_->Read(buf, buf_len, std::move(callback));
+  // TODO(hjanuschka): Update FileStream::Context to return
+  // base::expected<base::ByteSize, net::Error> directly, eliminating the need
+  // for IntToReadWriteResult() and RunReadWriteCallback().
+  return IntToReadWriteResult(context_->Read(
+      buf, buf_len,
+      base::BindOnce(&RunReadWriteCallback, std::move(callback))));
 }
 
-int FileStream::Write(IOBuffer* buf,
-                      int buf_len,
-                      CompletionOnceCallback callback) {
+base::expected<base::ByteSize, net::Error>
+FileStream::Write(IOBuffer* buf, int buf_len, ReadWriteCallback callback) {
   if (!IsOpen())
-    return ERR_UNEXPECTED;
+    return base::unexpected(ERR_UNEXPECTED);
 
   DCHECK_GE(buf_len, 0);
-  return context_->Write(buf, buf_len, std::move(callback));
+  // TODO(hjanuschka): Update FileStream::Context to return
+  // base::expected<base::ByteSize, net::Error> directly.
+  return IntToReadWriteResult(context_->Write(
+      buf, buf_len,
+      base::BindOnce(&RunReadWriteCallback, std::move(callback))));
 }
 
 int FileStream::GetFileInfo(base::File::Info* file_info,

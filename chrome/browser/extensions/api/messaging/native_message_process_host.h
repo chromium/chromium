@@ -8,15 +8,18 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/containers/queue.h"
 #include "base/files/platform_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -71,14 +74,14 @@ class NativeMessageProcessHost : public NativeMessageHost {
   // Helper methods to read incoming messages.
   void WaitRead();
   void DoRead();
-  void OnRead(int result);
-  void HandleReadResult(int result);
+  void OnRead(base::expected<base::ByteSize, net::Error> result);
+  void HandleReadResult(base::expected<base::ByteSize, net::Error> result);
   void ProcessIncomingData(const char* data, int data_size);
 
   // Helper methods to write outgoing messages.
   void DoWrite();
-  void HandleWriteResult(int result);
-  void OnWritten(int result);
+  void HandleWriteResult(base::expected<base::ByteSize, net::Error> result);
+  void OnWritten(base::expected<base::ByteSize, net::Error> result);
 
   // Closes the connection and reports the `error_message` to the client.
   void Close(const std::string& error_message);

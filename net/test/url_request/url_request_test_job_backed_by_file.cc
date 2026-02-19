@@ -20,13 +20,16 @@
 
 #include "net/test/url_request/url_request_test_job_backed_by_file.h"
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/file_stream.h"
 #include "net/base/filename_util.h"
@@ -83,16 +86,19 @@ int URLRequestTestJobBackedByFile::ReadRawData(IOBuffer* dest, int dest_size) {
   if (!dest_size)
     return 0;
 
-  int rv = stream_->Read(dest, dest_size,
-                         base::BindOnce(&URLRequestTestJobBackedByFile::DidRead,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        base::WrapRefCounted(dest)));
-  if (rv >= 0) {
-    remaining_bytes_ -= rv;
+  auto result =
+      stream_->Read(dest, dest_size,
+                    base::BindOnce(&URLRequestTestJobBackedByFile::DidRead,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   base::WrapRefCounted(dest)));
+  if (result.has_value()) {
+    int bytes_read = base::checked_cast<int>(result->InBytes());
+    remaining_bytes_ -= bytes_read;
     DCHECK_GE(remaining_bytes_, 0);
+    return bytes_read;
   }
 
-  return rv;
+  return result.error();
 }
 
 bool URLRequestTestJobBackedByFile::GetMimeType(std::string* mime_type) const {
@@ -242,17 +248,21 @@ void URLRequestTestJobBackedByFile::DidSeek(int64_t result) {
   NotifyHeadersComplete();
 }
 
-void URLRequestTestJobBackedByFile::DidRead(scoped_refptr<IOBuffer> buf,
-                                            int result) {
-  if (result >= 0) {
-    remaining_bytes_ -= result;
+void URLRequestTestJobBackedByFile::DidRead(
+    scoped_refptr<IOBuffer> buf,
+    base::expected<base::ByteSize, net::Error> result) {
+  if (result.has_value()) {
+    int bytes_read = base::checked_cast<int>(result->InBytes());
+    remaining_bytes_ -= bytes_read;
     DCHECK_GE(remaining_bytes_, 0);
+    OnReadComplete(buf.get(), bytes_read);
+    buf = nullptr;
+    ReadRawDataComplete(bytes_read);
+  } else {
+    OnReadComplete(buf.get(), result.error());
+    buf = nullptr;
+    ReadRawDataComplete(result.error());
   }
-
-  OnReadComplete(buf.get(), result);
-  buf = nullptr;
-
-  ReadRawDataComplete(result);
 }
 
 }  // namespace net

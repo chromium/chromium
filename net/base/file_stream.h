@@ -14,9 +14,13 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/files/file.h"
+#include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 
 namespace base {
@@ -30,6 +34,12 @@ class IOBuffer;
 
 class NET_EXPORT FileStream {
  public:
+  // Callback type for Read() and Write() - returns either the number of bytes
+  // transferred (as base::ByteSize) on success or a net::Error (never net::OK)
+  // on failure.
+  using ReadWriteCallback =
+      base::OnceCallback<void(base::expected<base::ByteSize, net::Error>)>;
+
   // Uses |task_runner| for asynchronous operations.
   explicit FileStream(const scoped_refptr<base::TaskRunner>& task_runner);
 
@@ -54,7 +64,7 @@ class NET_EXPORT FileStream {
   //
   // Once the operation is done, |callback| will be run on the thread where
   // Open() was called, with the result code. open_flags is a bitfield of
-  // base::File::Flags.
+  // base::File::Flags and must include FLAG_ASYNC.
   //
   // If the file stream is not closed manually, the underlying file will be
   // automatically closed when FileStream is destructed in an asynchronous
@@ -83,15 +93,13 @@ class NET_EXPORT FileStream {
 
   // Call this method to read data from the current stream position
   // asynchronously. Up to buf_len bytes will be copied into buf.  (In
-  // other words, partial reads are allowed.)  Returns the number of bytes
-  // copied, 0 if at end-of-file, or an error code if the operation could
-  // not be performed.
+  // other words, partial reads are allowed.)  If the operation completes
+  // synchronously, the result (the number of bytes copied as base::ByteSize,
+  // 0 if at end-of-file, or a net::Error (never net::OK)) is returned. If
+  // the operation does not complete synchronously, ERR_IO_PENDING is returned
+  // (as an error), and the callback is called asynchronously with the result.
   //
-  // The file must be opened with FLAG_ASYNC, and a non-null
-  // callback must be passed to this method. If the read could not
-  // complete synchronously, then ERR_IO_PENDING is returned, and the
-  // callback will be run on the thread where Read() was called, when the
-  // read has completed.
+  // A non-null callback must be passed to this method.
   //
   // It is valid to destroy or close the file stream while there is an
   // asynchronous read in progress.  That will cancel the read and allow
@@ -101,19 +109,18 @@ class NET_EXPORT FileStream {
   // in-flight asynchronous operation.
   //
   // This method must not be called if the stream was opened WRITE_ONLY.
-  virtual int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback);
+  virtual base::expected<base::ByteSize, net::Error>
+  Read(IOBuffer* buf, int buf_len, ReadWriteCallback callback);
 
   // Call this method to write data at the current stream position
   // asynchronously.  Up to buf_len bytes will be written from buf. (In
-  // other words, partial writes are allowed.)  Returns the number of
-  // bytes written, or an error code if the operation could not be
-  // performed.
+  // other words, partial writes are allowed.)  If the operation completes
+  // synchronously, the result (the number of bytes written as base::ByteSize,
+  // or a net::Error (never net::OK)) is returned. If the operation does not
+  // complete synchronously, ERR_IO_PENDING is returned (as an error), and the
+  // callback is called asynchronously with the result.
   //
-  // The file must be opened with FLAG_ASYNC, and a non-null
-  // callback must be passed to this method. If the write could not
-  // complete synchronously, then ERR_IO_PENDING is returned, and the
-  // callback will be run on the thread where Write() was called when
-  // the write has completed.
+  // A non-null callback must be passed to this method.
   //
   // It is valid to destroy or close the file stream while there is an
   // asynchronous write in progress.  That will cancel the write and allow
@@ -125,9 +132,8 @@ class NET_EXPORT FileStream {
   // This method must not be called if the stream was opened READ_ONLY.
   //
   // Zero byte writes are not allowed.
-  virtual int Write(IOBuffer* buf,
-                    int buf_len,
-                    CompletionOnceCallback callback);
+  virtual base::expected<base::ByteSize, net::Error>
+  Write(IOBuffer* buf, int buf_len, ReadWriteCallback callback);
 
   // Gets status information about File. May fail synchronously, but never
   // succeeds synchronously.

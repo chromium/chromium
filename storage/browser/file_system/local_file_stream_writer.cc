@@ -8,7 +8,10 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
@@ -214,18 +217,24 @@ int LocalFileStreamWriter::InitiateWrite(net::IOBuffer* buf, int buf_len) {
   DCHECK(has_pending_operation_);
   DCHECK(stream_impl_.get());
 
-  return stream_impl_->Write(buf, buf_len,
-                             base::BindOnce(&LocalFileStreamWriter::DidWrite,
-                                            weak_factory_.GetWeakPtr()));
+  auto result =
+      stream_impl_->Write(buf, buf_len,
+                          base::BindOnce(&LocalFileStreamWriter::DidWrite,
+                                         weak_factory_.GetWeakPtr()));
+  return result.has_value() ? base::checked_cast<int>(result->InBytes())
+                            : result.error();
 }
 
-void LocalFileStreamWriter::DidWrite(int result) {
+void LocalFileStreamWriter::DidWrite(
+    base::expected<base::ByteSize, net::Error> result) {
   DCHECK(has_pending_operation_);
 
   if (CancelIfRequested())
     return;
   has_pending_operation_ = false;
-  std::move(write_callback_).Run(result);
+  std::move(write_callback_)
+      .Run(result.has_value() ? base::checked_cast<int>(result->InBytes())
+                              : result.error());
 }
 
 int LocalFileStreamWriter::InitiateFlush(net::CompletionOnceCallback callback) {

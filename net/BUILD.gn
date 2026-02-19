@@ -2140,8 +2140,6 @@ static_library("test_support") {
     "base/connection_endpoint_metadata_test_util.h",
     "base/load_timing_info_test_util.cc",
     "base/load_timing_info_test_util.h",
-    "base/mock_file_stream.cc",
-    "base/mock_file_stream.h",
     "base/mock_network_change_notifier.cc",
     "base/mock_network_change_notifier.h",
     "base/mock_proxy_delegate.cc",

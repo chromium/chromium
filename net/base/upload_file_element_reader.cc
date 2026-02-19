@@ -6,10 +6,13 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -118,11 +121,23 @@ int UploadFileElementReader::Read(IOBuffer* buf,
     return 0;
 
   next_state_ = State::READ_COMPLETE;
-  int result = file_stream_->Read(
+  auto read_result = file_stream_->Read(
       buf, num_bytes_to_read,
-      base::BindOnce(base::IgnoreResult(&UploadFileElementReader::OnIOComplete),
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          [](base::WeakPtr<UploadFileElementReader> weak_this,
+             base::expected<base::ByteSize, net::Error> result) {
+            if (!weak_this) {
+              return;
+            }
+            weak_this->OnIOComplete(
+                result.has_value() ? base::checked_cast<int>(result->InBytes())
+                                   : result.error());
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 
+  int result = read_result.has_value()
+                   ? base::checked_cast<int>(read_result->InBytes())
+                   : read_result.error();
   if (result != ERR_IO_PENDING)
     result = DoLoop(result);
 

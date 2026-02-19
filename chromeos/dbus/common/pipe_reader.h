@@ -9,11 +9,14 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "net/base/net_errors.h"
 
 namespace base {
 class TaskRunner;
@@ -56,10 +59,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_COMMON) PipeReader {
  private:
   // Posts a task to read the data from the pipe. Returns
   // net::FileStream::Read()'s result.
-  int RequestRead();
+  base::expected<base::ByteSize, net::Error> RequestRead();
 
   // Called when |io_buffer_| is filled via |data_stream_.Read()|.
-  void OnRead(int byte_count);
+  void OnRead(base::expected<base::ByteSize, net::Error> result);
 
   scoped_refptr<net::IOBufferWithSize> io_buffer_;
   scoped_refptr<base::TaskRunner> task_runner_;
