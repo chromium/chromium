@@ -664,6 +664,22 @@ TEST_F(AccountNameEmailStoreTest,
       ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(test_name),
                                             base::UTF8ToUTF16(test_email))));
 }
+
+// Tests that `MaybeUpdateOrCreateAccountNameEmail()` returns early when an
+// empty account name is provided.
+// Regression test for https://crbug.com/485186158.
+TEST_F(AccountNameEmailStoreTest,
+       MaybeUpdateOrCreateAccountNameEmail_EmptyName) {
+  std::string test_name = "";
+  std::string test_email = "testing@gmail.com";
+
+  CreatePrimaryAccount(std::string(), kTestEmailAddress1);
+  ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  account_name_email_store().MaybeUpdateOrCreateAccountNameEmail(test_name,
+                                                                 test_email);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 class AccountNameEmailStoreSyncTest : public AccountNameEmailStoreCoreTest {

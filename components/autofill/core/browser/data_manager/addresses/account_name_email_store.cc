@@ -130,6 +130,10 @@ void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail(
     return;
   }
 
+  if (account_name.empty()) {
+    return;
+  }
+
   AccountInfo info = AccountInfo::Builder(GaiaId("dummy"), email)
                          .SetFullName(account_name)
                          .Build();
