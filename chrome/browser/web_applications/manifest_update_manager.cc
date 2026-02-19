@@ -242,12 +242,16 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
           WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp())) {
     return;
   }
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
-      !manifest->migrate_from.empty()) {
-    // If the manifest contains a `migrate_from` field, we might need to install
-    // the app if one of the source apps is installed.
-    provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
-        web_contents.GetWeakPtr(), manifest.Clone(), base::DoNothing());
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    if (!manifest->migrate_from.empty()) {
+      provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
+          web_contents.GetWeakPtr(), manifest.Clone(), base::DoNothing());
+    }
+    if (manifest->migrate_to) {
+      provider_->scheduler().ScheduleInstallMigrateToApp(
+          manifest->id, manifest->migrate_to->id,
+          manifest->migrate_to->install_url, base::DoNothing());
+    }
   }
 
   webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
