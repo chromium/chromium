@@ -1334,11 +1334,13 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     }
     dom_distiller_content_ = full_html;
 
-    if (dom_distiller_title() && dom_distiller_content()) {
+    // If distillation successfully produced content, update the distillation
+    // state and notify the renderer.
+    if (dom_distiller_content()) {
       page_->OnReadabilityDistillationStateChanged(
           read_anything::mojom::ReadAnythingDistillationState::
               kDistillationWithContent);
-      page_->UpdateContent(dom_distiller_title().value(),
+      page_->UpdateContent(dom_distiller_title().value_or(""),
                            dom_distiller_content().value());
     }
   } else {
