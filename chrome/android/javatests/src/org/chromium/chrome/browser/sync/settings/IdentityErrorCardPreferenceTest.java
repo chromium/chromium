@@ -64,7 +64,7 @@ public class IdentityErrorCardPreferenceTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private static final String RENDER_TEST_DESCRIPTION = "Identity error card.";
-    private static final int RENDER_TEST_REVISION = 2;
+    private static final int RENDER_TEST_REVISION = 3;
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
