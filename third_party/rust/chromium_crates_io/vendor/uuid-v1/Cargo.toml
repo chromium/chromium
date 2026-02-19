@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.63.0"
+rust-version = "1.85.0"
 name = "uuid"
-version = "1.20.0"
+version = "1.21.0"
 authors = [
     "Ashley Mannix<ashleymannix@live.com.au>",
     "Dylan DPC<dylan.dpc@gmail.com>",
@@ -162,7 +162,7 @@ optional = true
 default-features = false
 
 [dependencies.bytemuck]
-version = "1.20.0"
+version = "1.21.0"
 features = ["derive"]
 optional = true
 
@@ -209,7 +209,7 @@ version = "1.0.56"
 version = "1.0.52"
 
 [target.'cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies.uuid-rng-internal-lib]
-version = "1.20.0"
+version = "1.21.0"
 optional = true
 package = "uuid-rng-internal"
 
@@ -231,7 +231,7 @@ optional = true
 default-features = false
 
 [target.'cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))'.dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 optional = true
 
 [target.'cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))'.dependencies.rand]
