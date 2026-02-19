@@ -151,7 +151,7 @@ public class ProfileDataCacheUnitTest {
 
     @Test
     public void cacheShouldBePopulatedOnIdentityManagerAccountsUpdate() {
-        mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
         mProfileDataCache.addObserver(mObserverMock);
 
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
@@ -166,7 +166,7 @@ public class ProfileDataCacheUnitTest {
 
     @Test
     public void cacheShouldNotBePopulatedOnInitializationWhenGetAccountsFails() {
-        mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
         var profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                         RuntimeEnvironment.application.getApplicationContext(),
@@ -186,7 +186,7 @@ public class ProfileDataCacheUnitTest {
     @Test
     public void
             cacheShouldBeNotPopulatedOnAccountWithoutDisplayableInfoOnIdentityManagerAccountsUpdate() {
-        mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
@@ -211,7 +211,7 @@ public class ProfileDataCacheUnitTest {
     @Test
     public void
             cacheShouldBePopulatedOnAccountWithoutDisplayableInfoWithCustomBadgeOnIdentityManagerAccountsUpdate() {
-        mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
         mProfileDataCache.setBadge(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
                 ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
@@ -303,7 +303,7 @@ public class ProfileDataCacheUnitTest {
 
     @Test
     public void testOnProfileDataUpdatedIsEmittedIfAccountsAreNotReadyDuringInitialization() {
-        var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
         var profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
@@ -335,7 +335,7 @@ public class ProfileDataCacheUnitTest {
 
     @Test
     public void testObserverIsExecutedOnIdentityManagerAccountsUpdate() {
-        mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
         mProfileDataCache.addObserver(mObserverMock);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         verify(mObserverMock, never()).onAccountsUpdated(any());
