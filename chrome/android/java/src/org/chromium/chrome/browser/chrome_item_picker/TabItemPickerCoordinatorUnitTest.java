@@ -19,8 +19,10 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Looper;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 
 import org.junit.After;
@@ -71,19 +73,20 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class TabItemPickerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private Profile mProfile;
     @Mock private TabModelSelectorImpl mTabModelSelector;
-    @Mock private Callback<TabModelSelector> mCallback;
+    @Mock private Callback<Boolean> mCallback;
     @Mock private Activity mActivity;
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private ViewGroup mRootView;
     @Mock private ViewGroup mContainerView;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
-    @Mock private android.view.Window mWindow;
-    @Mock private android.view.ViewGroup mDecorView;
-    @Mock private android.content.res.Resources mResources;
+    @Mock private Window mWindow;
+    @Mock private ViewGroup mDecorView;
+    @Mock private Resources mResources;
     @Mock private WindowManager mWindowManager;
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
@@ -164,7 +167,7 @@ public class TabItemPickerCoordinatorUnitTest {
 
     @Test
     public void testShowTabItemPicker_SuccessPath() {
-        // Mock the window manager to return a valid selector upon request
+        // Mock the window manager to return a valid selector upon request.
         when(TabWindowManagerSingleton.getInstance()
                         .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
                 .thenReturn(mTabModelSelector);
@@ -173,12 +176,12 @@ public class TabItemPickerCoordinatorUnitTest {
         mProfileSupplierImpl.set(mProfile);
         shadowOf(Looper.getMainLooper()).idle();
 
-        // Verification 1: The window manager was called correctly
+        // Verification 1: The window manager was called correctly.
         verify(TabWindowManagerSingleton.getInstance())
                 .requestSelectorWithoutActivity(eq(mWindowId), eq(mProfile));
 
-        // Verification 2: The final callback is called with the initialized selector
-        verify(mCallback).onResult(mTabModelSelector);
+        // Verification 2: The success callback is called with true.
+        verify(mCallback).onResult(true);
     }
 
     @Test
@@ -204,8 +207,8 @@ public class TabItemPickerCoordinatorUnitTest {
         verify(mTabWindowManager, never())
                 .requestSelectorWithoutActivity(anyInt(), any(Profile.class));
 
-        // Verification 2: The final callback is called with null.
-        verify(mCallback).onResult(null);
+        // Verification 2: The success callback is called with false.
+        verify(mCallback).onResult(false);
     }
 
     @Test
@@ -221,8 +224,8 @@ public class TabItemPickerCoordinatorUnitTest {
         // Verification 1: The window manager was called (it ran the core logic)
         verify(mTabWindowManager).requestSelectorWithoutActivity(eq(mWindowId), eq(mProfile));
 
-        // Verification 2: The final callback is called with null.
-        verify(mCallback).onResult(null);
+        // Verification 2: The success callback is called with false.
+        verify(mCallback).onResult(false);
     }
 
     @Test

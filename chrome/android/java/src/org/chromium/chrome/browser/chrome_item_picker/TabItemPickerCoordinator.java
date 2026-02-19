@@ -71,6 +71,7 @@ public class TabItemPickerCoordinator {
     private final int mAllowedSelectionCount;
     private final boolean mIsSingleContextMode;
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
+    private @Nullable Callback<Boolean> mSuccessCallback;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
@@ -109,39 +110,54 @@ public class TabItemPickerCoordinator {
         mCallbackController = new CallbackController();
     }
 
+    private void runSuccessCallbackIfSame(boolean success, Callback<Boolean> successCallback) {
+        if (mSuccessCallback == successCallback) {
+            runSuccessCallback(success);
+        }
+    }
+
+    private void runSuccessCallback(boolean success) {
+        if (mSuccessCallback != null) {
+            mSuccessCallback.onResult(success);
+            mSuccessCallback = null;
+        }
+    }
+
     /**
-     * Initiates the asynchronous loading of the TabModel data and calls the core logic to acquire
-     * the TabModelSelector.
+     * Shows the Tab Item Picker UI.
      *
-     * @param callback The callback to execute once the TabModelSelector is fully initialized (or
-     *     null).
+     * @param successCallback invoked with a false value if the picker cannot be shown or true
+     *     otherwise.
      */
-    // TODO: Return selected tabs instead of the TabModelSelector
-    void showTabItemPicker(Callback<@Nullable TabModelSelector> callback) {
+    void showTabItemPicker(Callback<Boolean> successCallback) {
+        runSuccessCallback(false);
+        mSuccessCallback = successCallback;
+
         mProfileSupplier.onAvailable(
                 mCallbackController.makeCancelable(
                         (profile) -> {
                             if (mWindowId == TabWindowManager.INVALID_WINDOW_ID) {
-                                callback.onResult(null);
+                                runSuccessCallbackIfSame(false, successCallback);
                                 return;
                             }
-                            showTabItemPickerWithProfile(profile, mWindowId, callback);
+                            showTabItemPickerWithProfile(profile, mWindowId, successCallback);
                         }));
     }
 
     /**
-     * Requests and initializes the headless TabModelSelector instance for a specific window using
-     * {@link TabWindowManagerSingleton#requestSelectorWithoutActivity()}to access the list of tabs
+     * Requests and initializes the TabModelSelector instance for a specific window using {@link
+     * TabWindowManagerSingleton#requestSelectorWithoutActivity()} to access the list of tabs
      * without requiring a live {@code ChromeTabbedActivity}.
      *
      * @param profile The Profile instance required to scope the tab data.
      * @param windowId The ID of the Chrome window to load the selector for. This ID is used by
      *     {@code requestSelectorWithoutActivity()} to ensure the tab model is loaded and usable,
      *     with or without an activity holding the tab model loaded
-     * @param callback The callback to execute once the TabModelSelector is fully initialized.
+     * @param successCallback The callback to execute once the tab model is available and the UI
+     *     will show.
      */
     private void showTabItemPickerWithProfile(
-            Profile profile, int windowId, Callback<@Nullable TabModelSelector> callback) {
+            Profile profile, int windowId, Callback<Boolean> successCallback) {
 
         // Request the headless TabModelSelector instance.
         mTabModelSelector =
@@ -149,7 +165,7 @@ public class TabItemPickerCoordinator {
                         .requestSelectorWithoutActivity(windowId, profile);
 
         if (mTabModelSelector == null) {
-            callback.onResult(null);
+            runSuccessCallbackIfSame(false, successCallback);
             return;
         }
 
@@ -158,8 +174,10 @@ public class TabItemPickerCoordinator {
                 mTabModelSelector,
                 mCallbackController.makeCancelable(
                         (@Nullable TabModelSelector s) -> {
-                            callback.onResult(s);
-                            if (s != null) {
+                            boolean loaded = s != null;
+                            runSuccessCallbackIfSame(loaded, successCallback);
+                            if (loaded) {
+                                assumeNonNull(s);
                                 mTabListEditorCoordinator = createTabListEditorCoordinator(s);
                                 refreshTabsToShow();
                             }
@@ -390,6 +408,7 @@ public class TabItemPickerCoordinator {
                     .removeObserver(mBackPressEnabledObserver);
             mTabListEditorCoordinator.destroy();
         }
+        runSuccessCallback(false);
         mBackPressCallback.remove();
         mCallbackController.destroy();
     }
