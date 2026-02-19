@@ -23,6 +23,7 @@ import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
 import type {Rect} from './post_message_handler.js';
+import {getNonOccludedClipPath} from './utils/clip_path.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -41,6 +42,12 @@ export type OnBeforeRequestDetails = Parameters<
 // The url query parameter keys for the viewport size.
 const VIEWPORT_HEIGHT_KEY = 'bih';
 const VIEWPORT_WIDTH_KEY = 'biw';
+
+// The extra padding to add to the occluders to ensure that the composebox is
+// fully visible. This helps to account for inconsistencies between the bounding
+// boxes of the element, and what is actually rendered (for example, box shadows
+// on the elements might not be included in the bounding box).
+const OCCLUDER_EXTRA_PADDING_PX = 15;
 
 export interface ContextualTasksAppElement {
   $: {
@@ -171,6 +178,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       friendlyZeroStateGaiaName_: {type: String},
       friendlyZeroStateTitleBeforeName_: {type: String},
       friendlyZeroStateTitleAfterName_: {type: String},
+      occluders_: {type: Array},
     };
   }
 
@@ -199,6 +207,12 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor isGhostLoaderVisible_: boolean = false;
   protected accessor isInputLocked_: boolean = false;
   protected accessor forcedComposeboxBounds_: Rect|null = null;
+  // A list of occluders that are currently visible to the user. An occluder is
+  // any element that is currently visible to the user that may be intersecting
+  // and rendering over the composebox. This is a dynamic list send from the
+  // embedded page, which allows the client to keep track and know which parts
+  // of the composebox are not visible to the user, and therefore not clickable.
+  protected accessor occluders_: Rect[]|null = null;
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -430,9 +444,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   override firstUpdated() {
     this.postMessageHandler_ =
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
-    this.postMessageHandler_.setInputPlateBoundsUpdateCallback((rect: Rect) => {
-      this.forcedComposeboxBounds_ = rect;
-    });
+    this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
+        this.onInputPlateBoundsUpdate_.bind(this));
 
     this.eventTracker_.add(
         this.$.composebox, 'composebox-height-update', (e: CustomEvent) => {
@@ -458,6 +471,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.updateCommonSearchParams();
     }
   }
+
   private setStyleVariable(variable: string, value: string) {
     this.$.composebox.style.setProperty(variable, `${value}px`);
   }
@@ -485,6 +499,23 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.setStyleVariable(
           '--composebox-margin-left', `${position.marginLeft}px`);
     }
+  }
+
+  private onInputPlateBoundsUpdate_(inputRect: Rect, occluders: Rect[]) {
+    this.forcedComposeboxBounds_ = inputRect;
+    this.occluders_ = occluders;
+  }
+
+  getThreadFrameStyles(): string {
+    if (!this.forcedComposeboxBounds_ || this.occluders_ == null) {
+      return '';
+    }
+    // If occluders are present, set the clip path and a z-index that ensures
+    // the thread frame is above the occluders.
+    return getNonOccludedClipPath(
+               this.forcedComposeboxBounds_, this.occluders_,
+               OCCLUDER_EXTRA_PADDING_PX) +
+        'z-index: 100;';
   }
 
   protected async onNewThreadClick_() {
@@ -521,9 +552,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   // specific thread, this will return the same URL that was provided.
   private maybeUpdateThreadUrlForRestore(threadUrl: URL, webUiUrl: URL):
       string {
-    // Check if the provided URL is default by checking for thread ID, turn ID,
-    // and title. If those params are not present, but are present on the WebUI
-    // URL, apply them to the thread URL.
+    // Check if the provided URL is default by checking for thread ID, turn
+    // ID, and title. If those params are not present, but are present on the
+    // WebUI URL, apply them to the thread URL.
     // TODO(470107169): The ContextualTasksService should provide this URL
     //                  based on task ID alone.
     const updatedThreadUrl = new URL(threadUrl.href);
@@ -544,8 +575,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private maybeLoadPendingUrl_() {
-    // If all the data needed to make the initial request is available, load the
-    // pending URL.
+    // If all the data needed to make the initial request is available, load
+    // the pending URL.
     if (this.pendingUrl_ && this.commonSearchParams_) {
       this.$.threadFrame.src = this.pendingUrl_;
       this.pendingUrl_ = '';
@@ -680,8 +711,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.popStateFinishedCallbackForTesting_ = callback;
   }
 
-  setMockPostMessageHandlerForTesting(mockPostMessageHandler:
-                                          PostMessageHandler) {
+  setMockPostMessageHandlerForTesting(
+      mockPostMessageHandler: PostMessageHandler) {
     this.postMessageHandler_ = mockPostMessageHandler;
   }
 

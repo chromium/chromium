@@ -55,6 +55,7 @@ build_webui("build") {
     "sources_menu.ts",
     "top_toolbar.html.ts",
     "top_toolbar.ts",
+    "utils/clip_path.ts",
   ]
 
   css_files = [

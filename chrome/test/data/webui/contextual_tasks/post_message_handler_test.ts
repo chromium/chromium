@@ -95,9 +95,11 @@ suite('PostMessageHandlerTest', () => {
 
     let callbackCalled = false;
     let receivedRect: any = null;
-    postMessageHandler.setInputPlateBoundsUpdateCallback((rect) => {
+    let receivedOccluders: any = null;
+    postMessageHandler.setInputPlateBoundsUpdateCallback((rect, occluders) => {
       callbackCalled = true;
       receivedRect = rect;
+      receivedOccluders = occluders;
     });
 
     const rect = {
@@ -108,9 +110,11 @@ suite('PostMessageHandlerTest', () => {
       right: 120,
       bottom: 210,
     };
+    const occluders = [rect];
     const message = {
       'type': 'input-plate-bounds-update',
       'bounds-rect': rect,
+      'occluders': occluders,
     };
 
     simulateMessage(message, TARGET_ORIGIN);
@@ -118,6 +122,7 @@ suite('PostMessageHandlerTest', () => {
 
     assertTrue(callbackCalled, 'Callback should be called');
     assertDeepEquals(rect, receivedRect, 'Rect should match');
+    assertDeepEquals(occluders, receivedOccluders, 'Occluders should match');
   });
 });
 
