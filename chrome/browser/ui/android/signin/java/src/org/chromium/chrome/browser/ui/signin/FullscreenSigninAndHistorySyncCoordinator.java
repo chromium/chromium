@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -102,6 +104,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final FullscreenSigninAndHistorySyncConfig mConfig;
     private final @SigninAccessPoint int mSigninAccessPoint;
+    private final SigninManager mSigninManager;
     private final Delegate mDelegate;
     private final boolean mDidShowSignin;
     private final long mActivityStartTime;
@@ -138,6 +141,10 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         mActivityStartTime = activityStartTime;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         inflateViewBundle();
+        Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
+        final SigninManager signinManager =
+                IdentityServicesProvider.get().getSigninManager(profile);
+        mSigninManager = assertNonNull(signinManager);
         if (isSignedIn()) {
             advanceToNextPage();
             mDidShowSignin = false;
@@ -205,12 +212,11 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
     public @BackPressResult int handleBackPress() {
         switch (mCurrentView) {
             case ChildView.SIGNIN:
+                if (isSigninForced()) {
+                    return BackPressResult.IGNORED;
+                }
                 if (isSignedIn()) {
-                    Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
-                    SigninManager signinManager =
-                            IdentityServicesProvider.get().getSigninManager(profile);
-                    assumeNonNull(signinManager);
-                    signinManager.signOut(SignoutReason.ABORT_SIGNIN);
+                    mSigninManager.signOut(SignoutReason.ABORT_SIGNIN);
                 }
                 mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
                 break;
@@ -379,6 +385,13 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+    }
+
+    private boolean isSigninForced() {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)) {
+            return false;
+        }
+        return mSigninManager.isForceSigninEnabled();
     }
 
     private void showChildView(@ChildView int child) {

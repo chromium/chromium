@@ -39,6 +39,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,6 +58,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -74,6 +77,8 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.policy.test.annotations.Policies.Add;
+import org.chromium.components.policy.test.annotations.Policies.Item;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -146,6 +151,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                         })
                 .when(mHistorySyncHelperMock)
                 .setHistoryAndTabsSync(anyBoolean());
+    }
+
+    @After
+    public void tearDown() {
+        ApplicationTestUtils.finishActivity(mActivity);
     }
 
     @Test
@@ -569,6 +579,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testBackPress() {
         mBlankUiActivityTestRule.launchActivity(null);
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
@@ -594,6 +605,24 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    @Add(@Item(key = "BrowserSignin", string = "2"))
+    public void testBackPressWhenSigninIsForcedByPolicy() {
+        mBlankUiActivityTestRule.launchActivity(null);
+
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown and press back.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        Espresso.pressBack();
+
+        // The backpress should be ignored, verify that the fullscreen sign-in promo is still
+        // displayed.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
     }
 
     @Test
