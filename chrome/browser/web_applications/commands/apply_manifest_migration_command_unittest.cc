@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -261,11 +263,20 @@ TEST_F(ApplyManifestMigrationCommandTest,
         base::UTF16ToUTF8(destination_app_name)));
   }
 
+  base::test::TestFuture<const webapps::AppId&, const webapps::AppId&> future;
+  WebAppInstallManagerObserverAdapter observer(
+      &fake_provider().install_manager());
+  observer.SetWebAppMigratedDelegate(future.GetRepeatingCallback());
+
   // Trigger the command, and verify a successful migration.
   ApplyManifestMigrationResult result =
       RunMigrationAndGetResult(source_app_id, destination_app_id);
   ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
             result);
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<0>(), source_app_id);
+  EXPECT_EQ(future.Get<1>(), destination_app_id);
 
   EXPECT_THAT(
       GetApplyMigrationHistograms(),

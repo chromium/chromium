@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -99,7 +100,7 @@ ApplyManifestMigrationCommand::ApplyManifestMigrationCommand(
       profile_keep_alive_(std::move(profile_keep_alive)) {
   GetMutableDebugValue().Set("source_app_id", source_app_id_);
   GetMutableDebugValue().Set("destination_app_id", destination_app_id_);
-  GetMutableDebugValue().Set("migration_behavior_",
+  GetMutableDebugValue().Set("migration_behavior",
                              base::ToString(migration_behavior_));
 }
 
@@ -328,6 +329,11 @@ void ApplyManifestMigrationCommand::AppUninstalledCompleteMigration(
 
 void ApplyManifestMigrationCommand::CompleteCommandAndSelfDestruct(
     ApplyManifestMigrationResult result) {
+  if (result ==
+      ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully) {
+    all_apps_lock_->install_manager().NotifyWebAppMigrated(source_app_id_,
+                                                           destination_app_id_);
+  }
   GetMutableDebugValue().Set("migration_result", base::ToString(result));
   CompleteAndSelfDestruct(CommandResult::kSuccess, result);
 }

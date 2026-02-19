@@ -268,12 +268,20 @@ TEST_P(InstallFromSyncTest, MigrationFromSourceApp) {
   web_contents_manager().GetOrCreateIconState(kTrustedIconUrl).bitmaps = {
       gfx::test::CreateBitmap(kTrustedIconSize, kTrustedIconColor)};
 
+  base::test::TestFuture<const webapps::AppId&, const webapps::AppId&> future;
+  WebAppInstallManagerObserverAdapter observer(&provider()->install_manager());
+  observer.SetWebAppMigratedDelegate(future.GetRepeatingCallback());
+
   // Install target app from sync with migration
   InstallResult result = InstallFromSyncAndWait(
       kWebAppStartUrl, kWebAppManifestId, kOtherWebAppManifestId);
   ASSERT_TRUE(result.callback_triggered);
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<0>(), source_app_id);
+  EXPECT_EQ(future.Get<1>(), target_app_id);
 
   // Verify target app installed with OS integration
   EXPECT_EQ(registrar().GetInstallState(target_app_id),

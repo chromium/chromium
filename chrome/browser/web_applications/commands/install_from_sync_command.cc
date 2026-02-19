@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -414,6 +415,9 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   bool success = IsSuccess(code);
   GetMutableDebugValue().Set("result_code", base::ToString(code));
   if (success) {
+    if (source_app_id_.has_value()) {
+      lock_->install_manager().NotifyWebAppMigrated(*source_app_id_, app_id);
+    }
     RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                       webapps::WebappInstallSource::SYNC);
   }

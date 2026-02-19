@@ -40,6 +40,10 @@ class WebAppInstallManagerObserver : public base::CheckedObserver {
   // Called after web app's install source is removed, currently only used by
   // tests.
   virtual void OnWebAppSourceRemoved(const webapps::AppId& app_id) {}
+
+  // Called when a web app is migrated to another app id.
+  virtual void OnWebAppMigrated(const webapps::AppId& source_app_id,
+                                const webapps::AppId& target_app_id) {}
 };
 
 }  // namespace web_app

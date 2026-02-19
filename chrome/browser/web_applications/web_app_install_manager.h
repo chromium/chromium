@@ -46,6 +46,8 @@ class WebAppInstallManager {
   void NotifyWebAppManifestUpdated(const webapps::AppId& app_id);
   void NotifyWebAppWillBeUninstalled(const webapps::AppId& app_id);
   void NotifyWebAppInstallManagerDestroyed();
+  void NotifyWebAppMigrated(const webapps::AppId& source_app_id,
+                            const webapps::AppId& target_app_id);
 
  private:
   const raw_ptr<Profile, DanglingUntriaged> profile_;

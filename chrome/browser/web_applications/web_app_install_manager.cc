@@ -110,4 +110,14 @@ void WebAppInstallManager::NotifyWebAppInstallManagerDestroyed() {
   }
 }
 
+void WebAppInstallManager::NotifyWebAppMigrated(
+    const webapps::AppId& source_app_id,
+    const webapps::AppId& target_app_id) {
+  DVLOG(1) << "NotifyWebAppMigrated " << source_app_id << " to "
+           << target_app_id;
+  for (WebAppInstallManagerObserver& observer : observers_) {
+    observer.OnWebAppMigrated(source_app_id, target_app_id);
+  }
+}
+
 }  // namespace web_app
