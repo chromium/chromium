@@ -36,10 +36,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesManagerClient {
   };
 
   // Interface for observing Hermes Manager changes.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Called when a new Euicc objects are added or removed.
     virtual void OnAvailableEuiccListChanged() {}
 
@@ -75,13 +73,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesManagerClient {
   HermesManagerClient();
   virtual ~HermesManagerClient();
 
-  const base::ObserverList<HermesManagerClient::Observer>::Unchecked&
-  observers() {
+  const base::ObserverList<HermesManagerClient::Observer>& observers() {
     return observers_;
   }
 
  private:
-  base::ObserverList<HermesManagerClient::Observer>::Unchecked observers_;
+  base::ObserverList<HermesManagerClient::Observer> observers_;
 };
 
 }  // namespace ash

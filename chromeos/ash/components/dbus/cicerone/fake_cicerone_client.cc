@@ -133,11 +133,11 @@ bool FakeCiceroneClient::IsLowDiskSpaceTriggeredSignalConnected() {
   return is_low_disk_space_triggered_signal_connected_;
 }
 
-bool FakeCiceroneClient::IsInhibitScreensaverSignalConencted() {
+bool FakeCiceroneClient::IsInhibitScreensaverSignalConnected() {
   return is_inhibit_screensaver_signal_connected_;
 }
 
-bool FakeCiceroneClient::IsUninhibitScreensaverSignalConencted() {
+bool FakeCiceroneClient::IsUninhibitScreensaverSignalConnected() {
   return is_uninhibit_screensaver_signal_connected_;
 }
 

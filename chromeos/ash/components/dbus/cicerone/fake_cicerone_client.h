@@ -44,8 +44,8 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool IsStartLxdProgressSignalConnected() override;
   bool IsFileWatchTriggeredSignalConnected() override;
   bool IsLowDiskSpaceTriggeredSignalConnected() override;
-  bool IsInhibitScreensaverSignalConencted() override;
-  bool IsUninhibitScreensaverSignalConencted() override;
+  bool IsInhibitScreensaverSignalConnected() override;
+  bool IsUninhibitScreensaverSignalConnected() override;
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
       chromeos::DBusMethodCallback<
@@ -477,7 +477,7 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
 
   LaunchContainerApplicationCallback launch_container_application_callback_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<FakeCiceroneClient> weak_factory_{this};
 };

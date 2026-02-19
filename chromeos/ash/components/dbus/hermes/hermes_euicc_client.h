@@ -187,10 +187,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   };
 
   // Interface for observing Hermes Euicc changes.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Called when an euicc property changes.
     virtual void OnEuiccPropertyChanged(const dbus::ObjectPath& euicc_path,
                                         const std::string& property_name) {}
@@ -209,7 +207,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   virtual void RemoveObserver(Observer* observer);
 
   // Install a carrier profile in the Euicc at |euicc_path| with given
-  // |activation_code| and |conirmation_code|. |confirmation_code| can be empty
+  // |activation_code| and |confirmation_code|. |confirmation_code| can be empty
   // if no confirmation is required by carrier. Returns the object path to the
   // carrier profile that was just installed.
   virtual void InstallProfileFromActivationCode(
@@ -288,15 +286,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   HermesEuiccClient();
   virtual ~HermesEuiccClient();
 
-  const base::ObserverList<Observer>::Unchecked& observers() {
-    return observers_;
-  }
+  const base::ObserverList<Observer>& observers() { return observers_; }
 
  private:
   friend class HermesEuiccClientTest;
   friend class HermesEuiccClientImpl;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   static constexpr base::TimeDelta kInstallRetryDelay = base::Seconds(3);
   static const int kMaxInstallAttempts = 4;
 };

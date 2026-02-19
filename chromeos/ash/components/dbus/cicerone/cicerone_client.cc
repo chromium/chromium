@@ -106,11 +106,11 @@ class CiceroneClientImpl : public CiceroneClient {
     return is_low_disk_space_triggered_signal_connected_;
   }
 
-  bool IsInhibitScreensaverSignalConencted() override {
+  bool IsInhibitScreensaverSignalConnected() override {
     return is_inhibit_screensaver_signal_connected_;
   }
 
-  bool IsUninhibitScreensaverSignalConencted() override {
+  bool IsUninhibitScreensaverSignalConnected() override {
     return is_uninhibit_screensaver_signal_connected_;
   }
 
@@ -151,7 +151,7 @@ class CiceroneClientImpl : public CiceroneClient {
     dbus::MessageWriter writer(&method_call);
 
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to encode ContainerAppIonRequest protobuf";
+      LOG(ERROR) << "Failed to encode ContainerAppIconRequest protobuf";
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
@@ -1033,7 +1033,7 @@ class CiceroneClientImpl : public CiceroneClient {
 
   raw_ptr<dbus::ObjectProxy> cicerone_proxy_ = nullptr;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   bool is_container_started_signal_connected_ = false;
   bool is_container_shutdown_signal_connected_ = false;

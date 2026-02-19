@@ -78,10 +78,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
   };
 
   // Interface for observing changes to profile objects.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Called when a carrier profile property changes.
     virtual void OnCarrierProfilePropertyChanged(
         const dbus::ObjectPath& object_path,
@@ -137,13 +135,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
   HermesProfileClient();
   virtual ~HermesProfileClient();
 
-  const base::ObserverList<HermesProfileClient::Observer>::Unchecked&
-  observers() {
+  const base::ObserverList<HermesProfileClient::Observer>& observers() {
     return observers_;
   }
 
  private:
-  base::ObserverList<HermesProfileClient::Observer>::Unchecked observers_;
+  base::ObserverList<HermesProfileClient::Observer> observers_;
 };
 
 }  // namespace ash

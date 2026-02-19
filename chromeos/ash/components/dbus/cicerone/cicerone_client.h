@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CICERONE_CICERONE_CLIENT_H_
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
@@ -17,7 +18,7 @@ namespace ash {
 // communicate with containers running inside VMs.
 class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when Cicerone service exits.
     virtual void CiceroneServiceStopped() {}
@@ -98,9 +99,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     // sleep.
     virtual void OnUninhibitScreensaver(
         const vm_tools::cicerone::UninhibitScreensaverSignal& signal) {}
-
-   protected:
-    virtual ~Observer() = default;
   };
 
   CiceroneClient(const CiceroneClient&) = delete;
@@ -162,11 +160,11 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
 
   // This should be true before expecting to receive
   // InhibitScreensaverSignal
-  virtual bool IsInhibitScreensaverSignalConencted() = 0;
+  virtual bool IsInhibitScreensaverSignalConnected() = 0;
 
   // This should be true before expecting to receive
   // UninhibitScreensaverSignal.
-  virtual bool IsUninhibitScreensaverSignalConencted() = 0;
+  virtual bool IsUninhibitScreensaverSignalConnected() = 0;
 
   // Launches an application inside a running Container.
   // |callback| is called after the method call finishes.
