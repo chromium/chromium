@@ -248,6 +248,8 @@ source_set("impl") {
     "service/glic_instance_coordinator_impl.h",
     "service/glic_instance_impl.cc",
     "service/glic_instance_impl.h",
+    "service/glic_invoke_handler.cc",
+    "service/glic_invoke_handler.h",
     "service/glic_state_tracker.cc",
     "service/glic_state_tracker.h",
     "service/glic_ui_embedder.h",
