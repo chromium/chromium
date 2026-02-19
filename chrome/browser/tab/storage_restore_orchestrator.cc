@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
+#include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -48,6 +49,11 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
       loaded_data_(loaded_data),
       is_data_observer_registered_(true) {
   loaded_data_->RegisterObserver(&data_observer_);
+
+  if (loaded_data_->GetTracker()->HasNothingToAssociate()) {
+    StorageCollectionSynchronizer synchronizer(collection_, service_);
+    synchronizer.FullSave();
+  }
 }
 
 StorageRestoreOrchestrator::~StorageRestoreOrchestrator() {

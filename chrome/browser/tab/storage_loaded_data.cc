@@ -240,7 +240,10 @@ StorageLoadedData::StorageLoadedData(
       loaded_groups_(std::move(loaded_groups)),
       tracker_(std::move(tracker)),
       active_tab_index_(active_tab_index),
-      context_(std::move(context)) {}
+      context_(std::move(context)) {
+  // Re-assign context, since it was moved.
+  tracker_->SetLoadingContext(&context_);
+}
 
 StorageLoadedData::~StorageLoadedData() {
   observers_.Notify(&Observer::OnDestroyed);

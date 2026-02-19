@@ -43,6 +43,7 @@ class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
   bool AssociateTabAndAncestors(const TabInterface*) override;
   void AssociatePinnedCollection(const PinnedTabCollection*) override;
   bool HasCollectionBeenAssociated(TabCollection::Handle) override;
+  bool HasNothingToAssociate() override;
   std::optional<StorageId> GetParentIdForTab(int tab_android_id);
 
  private:

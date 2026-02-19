@@ -65,6 +65,9 @@ class RestoreEntityTracker {
 
   // Returns true if the collection has been associated.
   virtual bool HasCollectionBeenAssociated(TabCollection::Handle) = 0;
+
+  // Returns true when there is nothing to associate.
+  virtual bool HasNothingToAssociate() = 0;
 };
 
 }  // namespace tabs
