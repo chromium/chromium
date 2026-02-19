@@ -120,7 +120,7 @@ bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
       GetContentClient()->browser()->GetAppContainerSidForSandboxType(
           GetSandboxType(), ac_flags);
   if (!sid.empty()) {
-    sandbox::policy::SandboxWin::AddAppContainerPolicy(config, sid.c_str());
+    sandbox::policy::SandboxWin::AddAppContainerPolicy(config, sid);
   }
 
   if (dynamic_code_can_be_disabled_) {

@@ -44,16 +44,16 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
   ::sandbox::JobLevel GetJobLevel() const override { return {}; }
   void SetJobMemoryLimit(size_t memory_limit) override {}
   ::sandbox::ResultCode AllowFileAccess(::sandbox::FileSemantics semantics,
-                                        const wchar_t* pattern) override {
+                                        std::wstring_view pattern) override {
     return ::sandbox::SBOX_ALL_OK;
   }
-  ::sandbox::ResultCode AllowExtraDll(const wchar_t* path) override {
+  ::sandbox::ResultCode AllowExtraDll(std::wstring_view path) override {
     return ::sandbox::SBOX_ALL_OK;
   }
   ::sandbox::ResultCode SetFakeGdiInit() override {
     return ::sandbox::SBOX_ALL_OK;
   }
-  void AddDllToUnload(const wchar_t* dll_name) override {}
+  void AddDllToUnload(std::wstring_view dll_name) override {}
   const std::vector<std::wstring>& blocklisted_dlls() const {
     return blocklisted_dlls_;
   }
@@ -63,7 +63,7 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
   }
   ::sandbox::IntegrityLevel GetIntegrityLevel() const override { return {}; }
   void SetDelayedIntegrityLevel(::sandbox::IntegrityLevel level) override {}
-  ::sandbox::ResultCode SetLowBox(const wchar_t* sid) override {
+  ::sandbox::ResultCode SetLowBox(base::wcstring_view sid) override {
     return ::sandbox::SBOX_ALL_OK;
   }
   ::sandbox::ResultCode SetProcessMitigations(
@@ -84,7 +84,7 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
   void SetDisconnectCsrss() override {}
 
   ::sandbox::ResultCode AddAppContainerProfile(
-      const wchar_t* package_name) override {
+      base::wcstring_view package_name) override {
     return ::sandbox::SBOX_ALL_OK;
   }
 

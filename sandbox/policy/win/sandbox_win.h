@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
+#include "base/strings/cstring_view.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/win/scoped_process_information.h"
 #include "build/build_config.h"
@@ -122,7 +123,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
 
   // Add AppContainer policy for |sid| on supported OS.
   static ResultCode AddAppContainerPolicy(TargetConfig* config,
-                                          const wchar_t* sid);
+                                          base::wcstring_view sid);
 
   // Add the win32k lockdown policy on supported OS.
   static ResultCode AddWin32kLockdownPolicy(TargetConfig* config);
@@ -133,7 +134,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   static ResultCode AddAppContainerProfileToConfig(
       const base::CommandLine& command_line,
       sandbox::mojom::Sandbox sandbox_type,
-      const std::string& appcontainer_id,
+      std::string_view appcontainer_id,
       TargetConfig* config);
 
   // Returns whether the AppContainer sandbox is enabled or not for a specific
@@ -177,10 +178,10 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
       sandbox::mojom::Sandbox sandbox_type);
 };
 
-// Add a block list DLL to a configuration |config| based on the name of the DLL
-// passed as |module_name|. The DLL must be loaded in the current process.
+// Add a block list DLL to a configuration `config` based on the name of the DLL
+// passed as `module_name`. The DLL must be loaded in the current process.
 SANDBOX_POLICY_EXPORT
-void BlocklistAddOneDllForTesting(const wchar_t* module_name,
+void BlocklistAddOneDllForTesting(base::wcstring_view module_name,
                                   TargetConfig* config);
 
 }  // namespace policy

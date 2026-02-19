@@ -906,7 +906,7 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   EXPECT_EQ(sandbox::SBOX_ALL_OK,
             config->AllowExtraDll(
-                exe_path.Append(hooking_dll::g_hook_dll_file).value().c_str()));
+                exe_path.Append(hooking_dll::g_hook_dll_file).value()));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 #endif  // !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
@@ -925,12 +925,12 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyMultipleLoads) {
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
             SBOX_ALL_OK);
-  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path.c_str()));
+  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path));
   TestRunner runner2;
   config = runner2.GetPolicy()->GetConfig();
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
             SBOX_ALL_OK);
-  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path.c_str()));
+  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path));
 }
 
 //------------------------------------------------------------------------------
@@ -1429,7 +1429,7 @@ TEST(ProcessMitigationsTest, NoAllowExtraDllWildcards) {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   EXPECT_EQ(sandbox::SBOX_ERROR_BAD_PARAMS,
-            config->AllowExtraDll(exe_path.Append(L"*.dll").value().c_str()));
+            config->AllowExtraDll(exe_path.Append(L"*.dll").value()));
 }
 
 }  // namespace sandbox

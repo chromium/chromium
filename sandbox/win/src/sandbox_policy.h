@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "base/strings/cstring_view.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_level.h"
 
@@ -143,23 +144,22 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Files matching `pattern` can be opened following FileSemantics.
   //
   // pattern: A specific full path or a full path with wildcard patterns.
-  //   The valid wildcards are:
+  //   The only valid wildcard is:
   //   '*' : Matches zero or more character. Only one in series allowed.
-  //   '?' : Matches a single character. One or more in series are allowed.
   // Examples:
   //   "c:\\documents and settings\\vince\\*.dmp"
   //   "c:\\documents and settings\\*\\crashdumps\\*.dmp"
-  //   "c:\\temp\\app_log_?????_chrome.txt"
   //
   // Note: Do not add new uses of this function - instead proxy file handles
   // into your process via normal Chrome IPC.
-  [[nodiscard]] virtual ResultCode AllowFileAccess(FileSemantics semantics,
-                                                   const wchar_t* pattern) = 0;
+  [[nodiscard]] virtual ResultCode AllowFileAccess(
+      FileSemantics semantics,
+      std::wstring_view pattern) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
   // Modules patching `path` exactly can still be loaded under
   // Code-Integrity Guard (MITIGATION_FORCE_MS_SIGNED_BINS).
-  [[nodiscard]] virtual ResultCode AllowExtraDll(const wchar_t* path) = 0;
+  [[nodiscard]] virtual ResultCode AllowExtraDll(std::wstring_view path) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
   // Fake gdi init to allow user32 and gdi32 to initialize under Win32 Lockdown.
@@ -168,7 +168,7 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Adds a dll that will be unloaded in the target process before it gets
   // a chance to initialize itself. Typically, dlls that cause the target
   // to crash go here.
-  virtual void AddDllToUnload(const wchar_t* dll_name) = 0;
+  virtual void AddDllToUnload(std::wstring_view dll_name) = 0;
 
   // Sets the integrity level of the process in the sandbox. Both the initial
   // token and the main token will be affected by this. If the integrity level
@@ -188,7 +188,7 @@ class [[clang::lto_visibility_public]] TargetConfig {
 
   // Sets the LowBox token for sandboxed process. This is mutually exclusive
   // with SetAppContainer method.
-  [[nodiscard]] virtual ResultCode SetLowBox(const wchar_t* sid) = 0;
+  [[nodiscard]] virtual ResultCode SetLowBox(base::wcstring_view sid) = 0;
 
   // Sets the mitigations enabled when the process is created. Most of these
   // are implemented as attributes passed via STARTUPINFOEX. So they take
@@ -217,10 +217,10 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // resources.
   virtual void SetLockdownDefaultDacl() = 0;
 
-  // Configure policy to use an AppContainer profile. |package_name| is the
+  // Configure policy to use an AppContainer profile. `package_name` is the
   // name of the profile to use.
   [[nodiscard]] virtual ResultCode AddAppContainerProfile(
-      const wchar_t* package_name) = 0;
+      base::wcstring_view package_name) = 0;
 
   // Get the configured AppContainer. The returned object lasts only as long as
   // the containing TargetConfig.

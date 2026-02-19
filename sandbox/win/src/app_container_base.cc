@@ -8,9 +8,6 @@
 
 #include <userenv.h>
 
-#include <memory>
-#include <optional>
-#include <string>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -30,9 +27,10 @@ struct FreeSidDeleter {
   inline void operator()(void* ptr) const { ::FreeSid(ptr); }
 };
 
-std::optional<base::win::Sid> DerivePackageSid(const wchar_t* package_name) {
+std::optional<base::win::Sid> DerivePackageSid(
+    base::wcstring_view package_name) {
   PSID package_sid_ptr = nullptr;
-  HRESULT hr = ::DeriveAppContainerSidFromAppContainerName(package_name,
+  HRESULT hr = ::DeriveAppContainerSidFromAppContainerName(package_name.c_str(),
                                                            &package_sid_ptr);
   if (FAILED(hr)) {
     return std::nullopt;
@@ -56,11 +54,12 @@ T BindFunc(const char* name) {
 }
 
 HRESULT RegisterSid(const base::win::Sid& package_sid,
-                    const wchar_t* moniker,
-                    const wchar_t* display_name) {
+                    base::wcstring_view moniker,
+                    base::wcstring_view display_name) {
   static auto register_sid_fn =
       BindFunc<decltype(&AppContainerRegisterSid)>("AppContainerRegisterSid");
-  return register_sid_fn(package_sid.GetPSID(), moniker, display_name);
+  return register_sid_fn(package_sid.GetPSID(), moniker.c_str(),
+                         display_name.c_str());
 }
 
 HRESULT UnregisterSid(const base::win::Sid& package_sid) {
@@ -88,7 +87,7 @@ base::expected<std::wstring, HRESULT> LookupMoniker(
   return moniker;
 }
 
-std::optional<base::FilePath> GetProfilePath(const wchar_t* package_name) {
+std::optional<base::FilePath> GetProfilePath(base::wcstring_view package_name) {
   base::FilePath local_app_data;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &local_app_data)) {
     return std::nullopt;
@@ -127,7 +126,7 @@ bool CreateAppContainerDirectory(const base::FilePath& profile_path,
   return base::CreateDirectory(ac_path.Append(L"Temp"));
 }
 
-bool CreateProfileDirectory(const wchar_t* package_name,
+bool CreateProfileDirectory(base::wcstring_view package_name,
                             const base::win::Sid& package_sid) {
   std::optional<base::FilePath> profile_path = GetProfilePath(package_name);
   if (!profile_path) {
@@ -175,8 +174,8 @@ class ProfileLock {
 
 // static
 std::unique_ptr<AppContainerBase> AppContainerBase::CreateProfile(
-    const wchar_t* package_name,
-    const wchar_t* display_name) {
+    base::wcstring_view package_name,
+    base::wcstring_view display_name) {
   auto package_sid = DerivePackageSid(package_name);
   if (!package_sid) {
     return nullptr;
@@ -208,7 +207,7 @@ std::unique_ptr<AppContainerBase> AppContainerBase::CreateProfile(
 
 // static
 std::unique_ptr<AppContainerBase> AppContainerBase::Open(
-    const wchar_t* package_name) {
+    base::wcstring_view package_name) {
   auto package_sid = DerivePackageSid(package_name);
   if (!package_sid) {
     return nullptr;
@@ -218,18 +217,8 @@ std::unique_ptr<AppContainerBase> AppContainerBase::Open(
 }
 
 // static
-std::unique_ptr<AppContainerBase> AppContainerBase::CreateLowbox(
-    const wchar_t* sid) {
-  auto package_sid = base::win::Sid::FromSddlString(std::wstring(sid));
-  if (!package_sid)
-    return nullptr;
 
-  return std::make_unique<AppContainerBase>(L"lowbox", std::move(*package_sid),
-                                            AppContainerType::kLowbox);
-}
-
-// static
-bool AppContainerBase::ProfileExists(const wchar_t* package_name) {
+bool AppContainerBase::ProfileExists(base::wcstring_view package_name) {
   auto package_sid = DerivePackageSid(package_name);
   if (!package_sid) {
     return false;
@@ -238,7 +227,7 @@ bool AppContainerBase::ProfileExists(const wchar_t* package_name) {
 }
 
 // static
-bool AppContainerBase::Delete(const wchar_t* package_name) {
+bool AppContainerBase::Delete(base::wcstring_view package_name) {
   auto package_sid = DerivePackageSid(package_name);
   if (!package_sid) {
     return false;
@@ -259,7 +248,7 @@ bool AppContainerBase::Delete(const wchar_t* package_name) {
          base::DeletePathRecursively(*profile_path) && result;
 }
 
-AppContainerBase::AppContainerBase(const wchar_t* package_name,
+AppContainerBase::AppContainerBase(std::wstring_view package_name,
                                    base::win::Sid package_sid,
                                    AppContainerType type)
     : package_name_(package_name),
@@ -269,7 +258,7 @@ AppContainerBase::AppContainerBase(const wchar_t* package_name,
 
 AppContainerBase::~AppContainerBase() {}
 
-bool AppContainerBase::AccessCheck(const wchar_t* object_name,
+bool AppContainerBase::AccessCheck(base::wcstring_view object_name,
                                    base::win::SecurityObjectType object_type,
                                    DWORD desired_access,
                                    DWORD* granted_access,
@@ -325,7 +314,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
   return true;
 }
 
-void AppContainerBase::AddCapability(const wchar_t* capability_name) {
+void AppContainerBase::AddCapability(std::wstring_view capability_name) {
   AddCapability(base::win::Sid::FromNamedCapability(capability_name), false);
 }
 
@@ -334,9 +323,8 @@ void AppContainerBase::AddCapability(
   AddCapability(base::win::Sid::FromKnownCapability(capability), false);
 }
 
-bool AppContainerBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
-  return AddCapability(base::win::Sid::FromSddlString(std::wstring(sddl_sid)),
-                       false);
+bool AppContainerBase::AddCapabilitySddl(base::wcstring_view sddl_sid) {
+  return AddCapability(base::win::Sid::FromSddlString(sddl_sid), false);
 }
 
 bool AppContainerBase::AddCapability(
@@ -351,7 +339,7 @@ bool AppContainerBase::AddCapability(
 }
 
 void AppContainerBase::AddImpersonationCapability(
-    const wchar_t* capability_name) {
+    std::wstring_view capability_name) {
   AddCapability(base::win::Sid::FromNamedCapability(capability_name), true);
 }
 
@@ -360,9 +348,9 @@ void AppContainerBase::AddImpersonationCapability(
   AddCapability(base::win::Sid::FromKnownCapability(capability), true);
 }
 
-bool AppContainerBase::AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) {
-  return AddCapability(base::win::Sid::FromSddlString(std::wstring(sddl_sid)),
-                       true);
+bool AppContainerBase::AddImpersonationCapabilitySddl(
+    base::wcstring_view sddl_sid) {
+  return AddCapability(base::win::Sid::FromSddlString(sddl_sid), true);
 }
 
 const std::vector<base::win::Sid>& AppContainerBase::GetCapabilities() {
@@ -378,8 +366,8 @@ const base::win::Sid& AppContainerBase::GetPackageSid() const {
   return package_sid_;
 }
 
-const wchar_t* AppContainerBase::GetPackageName() const {
-  return package_name_.c_str();
+std::wstring_view AppContainerBase::GetPackageName() const {
+  return package_name_;
 }
 
 void AppContainerBase::SetEnableLowPrivilegeAppContainer(bool enable) {

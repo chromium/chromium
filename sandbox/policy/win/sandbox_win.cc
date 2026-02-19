@@ -82,7 +82,7 @@ BrokerServices* g_broker_services = NULL;
 //
 // If modifying this list, be sure to update WinTroublesomeDllName enum in
 // tools/metrics/histograms/metadata/others/enums.xml.
-const wchar_t* const kTroublesomeDlls[] = {
+const base::wcstring_view kTroublesomeDlls[] = {
     L"btkeyind.dll",       // Widcomm Bluetooth.
     L"dockshellhook.dll",  // Stardock Objectdock.
     L"easyhook32.dll",     // GDIPP and others.
@@ -132,18 +132,18 @@ std::map<std::wstring, std::wstring> GetShortNameModules() {
 // attempt to map a long name to the actual loaded name, this can be initialized
 // with a call to GetShortNameModules. Returns true if the DLL is loaded and
 // will be blocked in the child.
-bool BlocklistAddOneDll(const wchar_t* module_name,
+bool BlocklistAddOneDll(base::wcstring_view module_name,
                         const std::map<std::wstring, std::wstring>& modules,
                         TargetConfig* config) {
   DCHECK(!config->IsConfigured());
-  if (::GetModuleHandleW(module_name) != nullptr) {
+  if (::GetModuleHandleW(module_name.c_str()) != nullptr) {
     config->AddDllToUnload(module_name);
     DVLOG(1) << "dll to unload found: " << module_name;
     return true;
   } else {
     auto short_name = modules.find(base::ToLowerASCII(module_name));
     if (short_name != modules.end()) {
-      config->AddDllToUnload(short_name->second.c_str());
+      config->AddDllToUnload(short_name->second);
       config->AddDllToUnload(module_name);
       return true;
     }
@@ -163,7 +163,7 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   base::FilePath pdb_path = exe.DirName().Append(L"*.pdb");
   {
     ResultCode result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
-                                                pdb_path.value().c_str());
+                                                pdb_path.value());
     if (result != SBOX_ALL_OK) {
       return result;
     }
@@ -186,7 +186,7 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
         base::FilePath(coverage_dir).Append(L"*.sancov");
     {
       ResultCode result = config->AllowFileAccess(FileSemantics::kAllowAny,
-                                                  sancov_path.value().c_str());
+                                                  sancov_path.value());
       if (result != SBOX_ALL_OK) {
         return result;
       }
@@ -198,7 +198,7 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   // Adds policy rules for unloading the known dlls that cause Chrome to crash.
   // Eviction of injected DLLs is done by the sandbox so that the injected
   // module does not get a chance to execute any code.
-  for (const wchar_t* blocklist_dll : kTroublesomeDlls) {
+  for (const auto& blocklist_dll : kTroublesomeDlls) {
     if (BlocklistAddOneDll(blocklist_dll, modules, config)) {
       // Log the module to help with list cleanup.
       base::UmaHistogramSparse("Process.Sandbox.DllBlocked",
@@ -329,34 +329,33 @@ bool IsAppContainerEnabled() {
   return base::FeatureList::IsEnabled(features::kRendererAppContainer);
 }
 
+std::string_view GetAppContainerNameFromType(Sandbox sandbox_type) {
+  switch (sandbox_type) {
+    case Sandbox::kXrCompositing:
+      return "cr.sb.xr";
+    case Sandbox::kMediaFoundationCdm:
+      return "cr.sb.cdm";
+    case Sandbox::kNetwork:
+      return "cr.sb.net";
+    case Sandbox::kOnDeviceModelExecution:
+      return "cr.sb.odm";
+    case Sandbox::kPrintCompositor:
+      return "cr.sb.prnc";
+    case Sandbox::kProxyResolver:
+      return "cr.sb.pxy";
+    default:
+      return {};
+  }
+}
+
 // Generate a unique sandbox AC profile for the appcontainer based on the SHA1
 // hash of the appcontainer_id. This does not need to be secure so using SHA1
 // isn't a security concern.
-std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
+std::wstring GetAppContainerProfileName(std::string_view appcontainer_id,
                                         Sandbox sandbox_type) {
-  std::string sandbox_base_name;
-  switch (sandbox_type) {
-    case Sandbox::kXrCompositing:
-      sandbox_base_name = std::string("cr.sb.xr");
-      break;
-    case Sandbox::kMediaFoundationCdm:
-      sandbox_base_name = std::string("cr.sb.cdm");
-      break;
-    case Sandbox::kNetwork:
-      sandbox_base_name = std::string("cr.sb.net");
-      break;
-    case Sandbox::kOnDeviceModelExecution:
-      sandbox_base_name = std::string("cr.sb.odm");
-      break;
-    case Sandbox::kPrintCompositor:
-      sandbox_base_name = std::string("cr.sb.prnc");
-      break;
-    case Sandbox::kProxyResolver:
-      sandbox_base_name = std::string("cr.sb.pxy");
-      break;
-    default:
-      DCHECK(0);
-  }
+  std::string_view sandbox_base_name =
+      GetAppContainerNameFromType(sandbox_type);
+  DCHECK(!sandbox_base_name.empty());
 
   auto sha1 = base::SHA1HashString(appcontainer_id);
   std::string profile_name =
@@ -370,10 +369,10 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
 }
 
 void AddCapabilitiesFromString(AppContainer* container,
-                               const std::wstring& caps) {
+                               std::wstring_view caps) {
   for (const std::wstring& cap : base::SplitString(
            caps, L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    container->AddCapability(cap.c_str());
+    container->AddCapability(cap);
   }
 }
 
@@ -724,7 +723,7 @@ void SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
 
 // static
 ResultCode SandboxWin::AddAppContainerPolicy(TargetConfig* config,
-                                             const wchar_t* sid) {
+                                             base::wcstring_view sid) {
   DCHECK(!config->IsConfigured());
   if (IsAppContainerEnabled()) {
     ResultCode result = config->SetLowBox(sid);
@@ -761,7 +760,7 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
 ResultCode SandboxWin::AddAppContainerProfileToConfig(
     const base::CommandLine& command_line,
     Sandbox sandbox_type,
-    const std::string& appcontainer_id,
+    std::string_view appcontainer_id,
     TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
@@ -769,7 +768,7 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
   std::wstring profile_name =
       GetAppContainerProfileName(appcontainer_id, sandbox_type);
 
-  ResultCode result = config->AddAppContainerProfile(profile_name.c_str());
+  ResultCode result = config->AddAppContainerProfile(profile_name);
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -781,12 +780,11 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
   DWORD granted_access;
   BOOL granted_access_status;
   const base::FilePath program = command_line.GetProgram();
-  bool access_check =
-      config->GetAppContainer()->AccessCheck(
-          program.value().c_str(), base::win::SecurityObjectType::kFile,
-          GENERIC_READ | GENERIC_EXECUTE, &granted_access,
-          &granted_access_status) &&
-      granted_access_status;
+  bool access_check = config->GetAppContainer()->AccessCheck(
+                          program.value(), base::win::SecurityObjectType::kFile,
+                          GENERIC_READ | GENERIC_EXECUTE, &granted_access,
+                          &granted_access_status) &&
+                      granted_access_status;
   if (!access_check) {
     PLOG(ERROR) << "Sandbox cannot access executable " << program
                 << ". Check filesystem permissions are valid. See "
@@ -1037,7 +1035,7 @@ ResultCode SandboxWin::GetPolicyDiagnostics(
   return g_broker_services->GetPolicyDiagnostics(std::move(receiver));
 }
 
-void BlocklistAddOneDllForTesting(const wchar_t* module_name,
+void BlocklistAddOneDllForTesting(base::wcstring_view module_name,
                                   TargetConfig* config) {
   std::map<std::wstring, std::wstring> modules = GetShortNameModules();
   BlocklistAddOneDll(module_name, modules, config);

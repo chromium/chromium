@@ -158,8 +158,7 @@ std::wstring GetAppContainerProfileName() {
 // Adds an app container policy similar to network service.
 ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   std::wstring profile_name = GetAppContainerProfileName();
-  ResultCode ret =
-      policy->GetConfig()->AddAppContainerProfile(profile_name.c_str());
+  ResultCode ret = policy->GetConfig()->AddAppContainerProfile(profile_name);
   if (SBOX_ALL_OK != ret)
     return ret;
   ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
@@ -167,7 +166,7 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
     return ret;
   AppContainer* app_container = policy->GetConfig()->GetAppContainer();
 
-  constexpr const wchar_t* kBaseCapsSt[] = {
+  constexpr const base::wcstring_view kBaseCapsSt[] = {
       L"lpacChromeInstallFiles", L"registryRead", L"lpacIdentityServices",
       L"lpacCryptoServices"};
   constexpr const base::win::WellKnownCapability kBaseCapsWK[] = {
@@ -175,7 +174,7 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
       base::win::WellKnownCapability::kInternetClient,
       base::win::WellKnownCapability::kEnterpriseAuthentication};
 
-  for (const auto* cap : kBaseCapsSt) {
+  for (const auto& cap : kBaseCapsSt) {
     app_container->AddCapability(cap);
   }
 
@@ -198,8 +197,8 @@ class AppContainerTest : public ::testing::Test {
     policy_ = broker_services_->CreatePolicy();
     ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetProcessMitigations(
                                MITIGATION_HEAP_TERMINATE));
-    ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->AddAppContainerProfile(
-                               package_name_.c_str()));
+    ASSERT_EQ(SBOX_ALL_OK,
+              policy_->GetConfig()->AddAppContainerProfile(package_name_));
     created_profile_ = true;
   }
 
@@ -208,7 +207,7 @@ class AppContainerTest : public ::testing::Test {
       ::TerminateProcess(scoped_process_info_.process_handle(), 0);
     }
     if (created_profile_) {
-      AppContainerBase::Delete(package_name_.c_str());
+      AppContainerBase::Delete(package_name_);
     }
   }
 
@@ -463,7 +462,7 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
 
-  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+  AppContainerBase::Delete(GetAppContainerProfileName());
 }
 
 TEST(AppContainerLaunchTest, IsAppContainer) {
@@ -474,7 +473,7 @@ TEST(AppContainerLaunchTest, IsAppContainer) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
 
-  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+  AppContainerBase::Delete(GetAppContainerProfileName());
 }
 
 TEST(AppContainerLaunchTest, IsNotAppContainer) {
@@ -500,15 +499,15 @@ TEST(AppContainerLaunchTest, CreateTempFile) {
   }
   TestRunner runner;
   std::wstring package_name = GenerateRandomPackageName();
-  ASSERT_EQ(SBOX_ALL_OK,
-            runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
-                package_name.c_str()));
+  ASSERT_EQ(
+      SBOX_ALL_OK,
+      runner.GetPolicy()->GetConfig()->AddAppContainerProfile(package_name));
   EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetTokenLevel(
                              USER_UNPROTECTED, USER_UNPROTECTED));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"CreateTempFileInAppContainer"));
-  EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
+  EXPECT_TRUE(AppContainerBase::Delete(package_name));
 }
 
 TEST(LowBoxTest, ChildProcessMitigationLowBox) {
@@ -531,7 +530,7 @@ TEST(LowBoxTest, ChildProcessMitigationLowBox) {
   cmd = cmd.Append(L"calc.exe");
 
   std::wstring test_command = L"TestChildProcess \"";
-  test_command += cmd.value().c_str();
+  test_command += cmd.value();
   test_command += L"\" false";
 
   EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(test_command.c_str()));

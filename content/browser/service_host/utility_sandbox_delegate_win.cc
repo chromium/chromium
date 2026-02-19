@@ -94,7 +94,7 @@ bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
   if (!app_container) {
     return false;
   }
-  app_container->AddCapability(lpac_capability.c_str());
+  app_container->AddCapability(lpac_capability);
 
   // Add capability SID for 'network_service' for loopback access for testing.
   // Run 'checkNetIsolation.exe loopbackExempt -a -n=network_service' while

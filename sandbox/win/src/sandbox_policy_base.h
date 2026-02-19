@@ -60,21 +60,21 @@ class ConfigBase final : public TargetConfig {
   JobLevel GetJobLevel() const override;
   void SetJobMemoryLimit(size_t memory_limit) override;
   ResultCode AllowFileAccess(FileSemantics semantics,
-                             const wchar_t* pattern) override;
-  ResultCode AllowExtraDll(const wchar_t* path) override;
+                             std::wstring_view pattern) override;
+  ResultCode AllowExtraDll(std::wstring_view path) override;
   ResultCode SetFakeGdiInit() override;
-  void AddDllToUnload(const wchar_t* dll_name) override;
+  void AddDllToUnload(std::wstring_view dll_name) override;
   ResultCode SetIntegrityLevel(IntegrityLevel integrity_level) override;
   IntegrityLevel GetIntegrityLevel() const override;
   void SetDelayedIntegrityLevel(IntegrityLevel integrity_level) override;
-  ResultCode SetLowBox(const wchar_t* sid) override;
+  ResultCode SetLowBox(base::wcstring_view sid) override;
   ResultCode SetProcessMitigations(MitigationFlags flags) override;
   MitigationFlags GetProcessMitigations() override;
   ResultCode SetDelayedProcessMitigations(MitigationFlags flags) override;
   MitigationFlags GetDelayedProcessMitigations() const override;
   void AddRestrictingRandomSid() override;
   void SetLockdownDefaultDacl() override;
-  ResultCode AddAppContainerProfile(const wchar_t* package_name) override;
+  ResultCode AddAppContainerProfile(base::wcstring_view package_name) override;
   AppContainer* GetAppContainer() override;
   void AddKernelObjectToClose(HandleToClose handle_info) override;
   void SetDisconnectCsrss() override;

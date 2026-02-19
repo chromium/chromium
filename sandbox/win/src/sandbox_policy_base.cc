@@ -257,7 +257,7 @@ sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
 }
 
 ResultCode ConfigBase::AllowFileAccess(FileSemantics semantics,
-                                       const wchar_t* pattern) {
+                                       std::wstring_view pattern) {
   if (!FileSystemPolicy::GenerateRules(pattern, semantics, PolicyMaker())) {
     return SBOX_ERROR_BAD_PARAMS;
   }
@@ -274,7 +274,7 @@ ResultCode ConfigBase::SetFakeGdiInit() {
   return SBOX_ALL_OK;
 }
 
-ResultCode ConfigBase::AllowExtraDll(const wchar_t* path) {
+ResultCode ConfigBase::AllowExtraDll(std::wstring_view path) {
   // Signed intercept rules only supported on Windows 10 TH2 and above. This
   // must match the version checks in process_mitigations.cc for
   // consistency.
@@ -293,8 +293,8 @@ ResultCode ConfigBase::AllowExtraDll(const wchar_t* path) {
   return SBOX_ALL_OK;
 }
 
-void ConfigBase::AddDllToUnload(const wchar_t* dll_name) {
-  blocklisted_dlls_.push_back(dll_name);
+void ConfigBase::AddDllToUnload(std::wstring_view dll_name) {
+  blocklisted_dlls_.emplace_back(dll_name);
 }
 
 ResultCode ConfigBase::SetIntegrityLevel(IntegrityLevel integrity_level) {
@@ -312,18 +312,23 @@ void ConfigBase::SetDelayedIntegrityLevel(IntegrityLevel integrity_level) {
   delayed_integrity_level_ = integrity_level;
 }
 
-ResultCode ConfigBase::SetLowBox(const wchar_t* sid) {
-  if (!features::IsAppContainerSandboxSupported())
+ResultCode ConfigBase::SetLowBox(base::wcstring_view sid) {
+  if (!features::IsAppContainerSandboxSupported()) {
     return SBOX_ERROR_UNSUPPORTED;
+  }
 
-  DCHECK(sid);
-  if (app_container_)
+  DCHECK(!sid.empty());
+  if (app_container_) {
     return SBOX_ERROR_BAD_PARAMS;
+  }
 
-  app_container_ = AppContainerBase::CreateLowbox(sid);
-  if (!app_container_)
+  auto package_sid = base::win::Sid::FromSddlString(sid);
+  if (!package_sid) {
     return SBOX_ERROR_INVALID_LOWBOX_SID;
+  }
 
+  app_container_ = std::make_unique<AppContainerBase>(
+      L"lowbox", std::move(*package_sid), AppContainerType::kLowbox);
   return SBOX_ALL_OK;
 }
 
@@ -364,12 +369,13 @@ void ConfigBase::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
-ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name) {
+ResultCode ConfigBase::AddAppContainerProfile(
+    base::wcstring_view package_name) {
   if (!features::IsAppContainerSandboxSupported())
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(!configured_);
-  DCHECK(package_name);
+  DCHECK(!package_name.empty());
   if (app_container_ || integrity_level_ != INTEGRITY_LEVEL_LAST) {
     return SBOX_ERROR_BAD_PARAMS;
   }
