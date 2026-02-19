@@ -229,10 +229,15 @@ class AppBannerManagerAndroid
                               GURL primary_icon_url,
                               const SkBitmap& bitmap);
 
+  base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager(
+      JNIEnv* env) const;
   const std::unique_ptr<ChromeDelegate> delegate_;
 
-  // The Java-side AppBannerManager.
-  base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
+  // A weak reference to the Java object. The Java object will be kept alive by
+  // a static map in the Java code. ScopedJavaGlobalRef would scale poorly with
+  // a large number of WebContents as each entry would consume a slot in the
+  // finite global ref table.
+  JavaObjectWeakGlobalRef java_banner_manager_;
 
   // A weak ref to the Java-side AppData. As a strong ref this is owned by the
   // `java_banner_manager_` and points to the last acquired data. This is
