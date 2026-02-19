@@ -566,4 +566,12 @@ public class LocationBarLayout extends ConstraintLayout {
      * assumed that this will be called when the session ends.
      */
     public void onSpecializedFuseboxModeActivatedC(boolean isSpecializedRequestType) {}
+
+    /**
+     * Signal that the list of suggestions shown in the associated omnibox suggestions list has
+     * changed
+     *
+     * @param hasSuggestions Number of suggestions being presented
+     */
+    void onSuggestionsChanged(boolean hasSuggestions) {}
 }

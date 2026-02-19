@@ -702,7 +702,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
-        verify(mAutocompleteDelegate).onSuggestionsChanged(any());
+        verify(mAutocompleteDelegate).onSuggestionsChanged(any(), anyBoolean());
 
         // Ensure duplicate requests are not suppressed, to preserve the
         // relationship between Native and Java AutocompleteResult objects.
@@ -715,7 +715,7 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.remove(0);
         mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
-        verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch);
+        verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, true);
     }
 
     @Test

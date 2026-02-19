@@ -696,9 +696,10 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch) {
+    public void onSuggestionsChanged(
+            @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
         assert defaultMatch == null || defaultMatch.allowedToBeDefaultMatch();
-        mLocationBarMediator.onSuggestionsChanged(defaultMatch);
+        mLocationBarMediator.onSuggestionsChanged(defaultMatch, hasSuggestions);
     }
 
     @Override

@@ -26,8 +26,9 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
      * Notified that suggestions have changed.
      *
      * @param defaultMatch default AutocompleteMatch.
+     * @param hasSuggestions Whether 1 or more suggestions are being displayed.
      */
-    void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch);
+    void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions);
 
     /**
      * Requests the keyboard visibility update.

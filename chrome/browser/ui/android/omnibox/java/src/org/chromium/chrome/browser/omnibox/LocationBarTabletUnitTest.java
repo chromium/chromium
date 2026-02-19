@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.Gravity;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
@@ -182,6 +185,46 @@ public class LocationBarTabletUnitTest {
 
         assertEquals(expectedMargin - delta, layoutParams.leftMargin, MathUtils.EPSILON);
         assertEquals(expectedMargin + delta, layoutParams.rightMargin, MathUtils.EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "w800dp-xhdpi")
+    public void testFuseboxBackground_noSuggestions() {
+        int prefocusWidth = 400;
+        mLocationBarTablet.measure(
+                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        mLocationBarTablet.onSuggestionsChanged(false);
+
+        int expansionPx =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        assertEquals(-expansionPx, layoutParams.bottomMargin);
+        LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
+        GradientDrawable outerRect = (GradientDrawable) background.getDrawable(0);
+        float cornerRadius =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
+        int inset =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+        assertEquals(cornerRadius, outerRect.getCornerRadius(), MathUtils.EPSILON);
+        assertEquals(inset, background.getLayerInsetBottom(1));
+
+        mLocationBarTablet.onSuggestionsChanged(true);
+        assertEquals(0, layoutParams.bottomMargin);
+        assertArrayEquals(
+                new float[] {cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0},
+                outerRect.getCornerRadii(),
+                MathUtils.EPSILON);
+        assertEquals(0, background.getLayerInsetBottom(1));
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

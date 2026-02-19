@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -37,6 +40,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private static final int HIDEABLE_BUTTON_COUNT = 3;
     private static final float OVERLAY_Z_TRANSLATION = 1.0f;
     private static final float NEUTRAL_Z_TRANSLATION = 0.0f;
+    private final LayerDrawable mFocusedPopupDrawable;
 
     private View mLocationBarIcon;
     private View mBookmarkButton;
@@ -59,6 +63,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private UrlBar mUrlBar;
 
     private WindowAndroid mWindowAndroid;
+    private @FuseboxState int mFuseboxState;
+    private boolean mHasSuggestions;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -71,6 +77,13 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
         mMicButtonWidth = locationBarIconWidth;
         mLensButtonWidth = locationBarIconWidth;
+        mFocusedPopupDrawable =
+                (LayerDrawable)
+                        assumeNonNull(
+                                AppCompatResources.getDrawable(
+                                        context,
+                                        R.drawable
+                                                .modern_toolbar_tablet_text_box_background_focused_popup));
         mGlifBorderDrawable = new GlifStrokeDrawable(context);
     }
 
@@ -357,13 +370,22 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    void onSuggestionsChanged(boolean hasSuggestions) {
+        mHasSuggestions = hasSuggestions;
+        if (getBackground() != mFocusedPopupDrawable) {
+            return;
+        }
+
+        adjustBackgroundForSuggestions();
+    }
+
+    @Override
     public void onSpecializedFuseboxModeActivatedC(boolean isSpecializedRequestType) {
-        var layerDrawable = (LayerDrawable) getBackground();
         if (isSpecializedRequestType) {
-            layerDrawable.setDrawableByLayerId(R.id.glif_border_layer, mGlifBorderDrawable);
+            mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, mGlifBorderDrawable);
             mGlifBorderDrawable.start();
         } else {
-            layerDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
+            mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
         }
     }
 
@@ -371,6 +393,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     public void onFuseboxStateChanged(@FuseboxState int state) {
         super.onFuseboxStateChanged(state);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+        mFuseboxState = state;
         if (state == FuseboxState.COMPACT || state == FuseboxState.EXPANDED) {
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx =
@@ -384,8 +407,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             setTranslationZ(OVERLAY_Z_TRANSLATION);
             ViewUtils.setAncestorsShouldClipToPadding(this, false, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, false, View.NO_ID);
-            setBackgroundResource(
-                    R.drawable.modern_toolbar_tablet_text_box_background_focused_popup);
+            setBackground(mFocusedPopupDrawable);
         } else {
             layoutParams.leftMargin = 0;
             layoutParams.rightMargin = 0;
@@ -401,10 +423,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             // Put the focused background back into its starting state before swapping it out;
             // without this, it may still display the GLIF animation when we refocus.
             mGlifBorderDrawable.reset();
-            var layerDrawable = (LayerDrawable) getBackground();
-            layerDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
+            mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
+            // Reset our background to reflect non-zero suggestion count, which is the typical
+            // state. Not setting this risks visual glitches when returning to the fusebox.
             setBackgroundResource(R.drawable.modern_toolbar_tablet_text_box_background);
         }
+        adjustBackgroundForSuggestions();
         setLayoutParams(layoutParams);
     }
 
@@ -442,5 +466,34 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             layoutParams.leftMargin = -expansionPx;
             layoutParams.rightMargin = -expansionPx;
         }
+    }
+
+    private void adjustBackgroundForSuggestions() {
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+        GradientDrawable outerRect = (GradientDrawable) mFocusedPopupDrawable.getDrawable(0);
+        Resources resources = getResources();
+        int inset =
+                resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+        float cornerRadius =
+                resources.getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
+        if (!mHasSuggestions
+                && (mFuseboxState == FuseboxState.COMPACT
+                        || mFuseboxState == FuseboxState.EXPANDED)) {
+            // Add extra padding and round the corners of the outer rect to account for the lack of
+            // a visible suggestions dropdown to bleed into.
+            layoutParams.bottomMargin = -inset;
+            outerRect.setCornerRadius(cornerRadius);
+            mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, inset);
+        } else {
+            // Remove the extra padding and un-round the corners of the outer rect since we're now
+            // bleeding into the suggestions dropdown.
+            layoutParams.bottomMargin = 0;
+            outerRect.setCornerRadii(
+                    new float[] {
+                        cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0
+                    });
+            mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, 0);
+        }
+        setLayoutParams(layoutParams);
     }
 }
