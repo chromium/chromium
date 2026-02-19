@@ -610,6 +610,100 @@ suite('ContentController', () => {
 
       assertTrue(root instanceof HTMLDivElement);
     });
+
+    test(
+        'honors links disabled preference on first open with Readability',
+        async () => {
+          const url = 'https://www.google.com/';
+          const text = 'best link ever';
+          chrome.readingMode.isReadabilityEnabled = true;
+          chrome.readingMode.isReadabilityWithLinksEnabled = false;
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+          contentController.configureTrustedTypes();
+          readingMode.htmlContent = `<a href="${url}">${text}</a>`;
+          chrome.readingMode.linksEnabled = false;
+
+          const root = contentController.updateContent();
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          const container = document.createElement('div');
+          document.body.appendChild(container);
+          const shadowRoot = container.attachShadow({mode: 'open'});
+          const contentDiv = (root as DocumentFragment).querySelector('div');
+          assertTrue(!!contentDiv);
+          shadowRoot.append(...contentDiv.childNodes);
+
+          const link = shadowRoot.querySelector('a');
+          assertFalse(!!link);
+          const span = shadowRoot.querySelector<HTMLElement>('span[data-link]');
+          assertTrue(!!span);
+          assertEquals(url, span.dataset['link']);
+          assertEquals(text, span.textContent);
+        });
+
+    test(
+        'honors links enabled preference on first open with Readability with links enabled',
+        async () => {
+          const url = 'https://www.google.com/';
+          const text = 'best link ever';
+          chrome.readingMode.isReadabilityEnabled = true;
+          chrome.readingMode.isReadabilityWithLinksEnabled = true;
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+          contentController.configureTrustedTypes();
+          readingMode.htmlContent = `<a href="${url}">${text}</a>`;
+          chrome.readingMode.linksEnabled = true;
+
+          const root = contentController.updateContent();
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          const container = document.createElement('div');
+          document.body.appendChild(container);
+          const shadowRoot = container.attachShadow({mode: 'open'});
+          const contentDiv = (root as DocumentFragment).querySelector('div');
+          assertTrue(!!contentDiv);
+          shadowRoot.append(...contentDiv.childNodes);
+
+          const link = shadowRoot.querySelector('a');
+          assertTrue(!!link);
+          assertEquals(url, link.href);
+          assertEquals(text, link.textContent);
+        });
+
+    test('links are disabled when ReadabilityWithLinks is false', async () => {
+      const url = 'https://www.google.com/';
+      const text = 'best link ever';
+      chrome.readingMode.isReadabilityEnabled = true;
+      chrome.readingMode.isReadabilityWithLinksEnabled = false;
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
+      contentController.configureTrustedTypes();
+      readingMode.htmlContent = `<a href="${url}">${text}</a>`;
+      chrome.readingMode.linksEnabled = true;
+
+      const root = contentController.updateContent();
+      await microtasksFinished();
+
+      assertTrue(!!root);
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+      const shadowRoot = container.attachShadow({mode: 'open'});
+      const contentDiv = (root as DocumentFragment).querySelector('div');
+      assertTrue(!!contentDiv);
+      shadowRoot.append(...contentDiv.childNodes);
+
+      // There should be no `<a>` tag.
+      const link = shadowRoot.querySelector('a');
+      assertFalse(!!link);
+      // Instead there should be a `<span>` tag.
+      const span = shadowRoot.querySelector<HTMLElement>('span[data-link]');
+      assertTrue(!!span);
+      assertEquals(url, span.dataset['link']);
+      assertEquals(text, span.textContent);
+    });
   });
 
   suite('updateLinks', () => {

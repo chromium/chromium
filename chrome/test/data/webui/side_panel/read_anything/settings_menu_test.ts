@@ -18,6 +18,13 @@ import {FakeReadingMode} from './fake_reading_mode.js';
 suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
 
+  function queryLinksToggle(): HTMLButtonElement|null {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    return menuItems.find(item => item.id === SettingsOption.LINKS) || null;
+  }
+
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
@@ -295,5 +302,37 @@ suite('SettingsMenuElement', () => {
 
     // Verify that the settings menu did NOT try to close the submenu.
     assertFalse(event.defaultPrevented, 'Should not have canceled the event');
+  });
+
+
+  test(
+      'links toggle is hidden when readability is on but links are off',
+      async () => {
+        chrome.readingMode.isReadabilityEnabled = true;
+        chrome.readingMode.isReadabilityWithLinksEnabled = false;
+        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+        await microtasksFinished();
+
+        assertFalse(!!queryLinksToggle());
+      });
+
+  test(
+      'links toggle is shown when readability is on and links are on',
+      async () => {
+        chrome.readingMode.isReadabilityEnabled = true;
+        chrome.readingMode.isReadabilityWithLinksEnabled = true;
+        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+        await microtasksFinished();
+
+        assertTrue(!!queryLinksToggle());
+      });
+
+  test('links toggle is shown when readability is off', async () => {
+    chrome.readingMode.isReadabilityEnabled = false;
+    chrome.readingMode.isReadabilityWithLinksEnabled = false;
+    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+    await microtasksFinished();
+
+    assertTrue(!!queryLinksToggle());
   });
 });
