@@ -85,8 +85,7 @@
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 namespace {
 
@@ -127,7 +126,7 @@ void __cdecl ForceCrashOnSigAbort(int) {
 // Returns the current platform role. We use the PowerDeterminePlatformRoleEx
 // API for that.
 POWER_PLATFORM_ROLE GetPlatformRole() {
-  return PowerDeterminePlatformRoleEx(POWER_PLATFORM_ROLE_V2);
+  return ::PowerDeterminePlatformRoleEx(POWER_PLATFORM_ROLE_V2);
 }
 
 // Enable V2 per-monitor high-DPI support for the process. This will cause
@@ -156,7 +155,7 @@ bool EnablePerMonitorV2() {
 }
 
 bool* GetDomainEnrollmentStateStorage() {
-  static bool state = IsOS(OS_DOMAINMEMBER);
+  static bool state = ::IsOS(OS_DOMAINMEMBER);
   return &state;
 }
 
@@ -658,7 +657,7 @@ void IsDeviceSlateWithKeyboard(HWND hwnd,
   // If no touch screen detected, assume keyboard attached.
   // TODO(crbug.com/383267933) If the device is mouse only with no touch screen,
   // this will determine that the device has a keyboard.
-  if ((GetSystemMetrics(SM_DIGITIZER) & NID_INTEGRATED_TOUCH) !=
+  if ((::GetSystemMetrics(SM_DIGITIZER) & NID_INTEGRATED_TOUCH) !=
       NID_INTEGRATED_TOUCH) {
     reason << "NID_INTEGRATED_TOUCH\n";
   }
@@ -858,7 +857,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   // reason is NULL.
   std::optional<bool> ret;
 
-  if (GetSystemMetrics(SM_MAXIMUMTOUCHES) == 0) {
+  if (::GetSystemMetrics(SM_MAXIMUMTOUCHES) == 0) {
     if (!reason) {
       return false;
     }
@@ -868,7 +867,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   }
 
   // If the device is docked, the user is treating the device as a PC.
-  if (GetSystemMetrics(SM_SYSTEMDOCKED) != 0) {
+  if (::GetSystemMetrics(SM_SYSTEMDOCKED) != 0) {
     if (!reason) {
       return false;
     }
@@ -883,7 +882,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   // a convertible or a detachable.
   // See
   // https://msdn.microsoft.com/en-us/library/windows/desktop/dn629263(v=vs.85).aspx
-  using GetAutoRotationStateType = decltype(GetAutoRotationState)*;
+  using GetAutoRotationStateType = decltype(::GetAutoRotationState)*;
   static const auto get_auto_rotation_state_func =
       reinterpret_cast<GetAutoRotationStateType>(
           GetUser32FunctionPointer("GetAutoRotationState"));
@@ -899,7 +898,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   POWER_PLATFORM_ROLE role = GetPlatformRole();
   bool is_tablet = false;
   if (role == PlatformRoleMobile || role == PlatformRoleSlate) {
-    is_tablet = !GetSystemMetrics(SM_CONVERTIBLESLATEMODE);
+    is_tablet = !::GetSystemMetrics(SM_CONVERTIBLESLATEMODE);
     if (!is_tablet) {
       if (!reason) {
         return false;
@@ -1035,7 +1034,7 @@ std::wstring WStringFromGUID(const ::GUID& rguid) {
   constexpr int kGuidStringCharacters =
       1 + 8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12 + 1 + 1;
   wchar_t guid_string[kGuidStringCharacters];
-  CHECK(SUCCEEDED(StringCchPrintfW(
+  CHECK(SUCCEEDED(::StringCchPrintfW(
       guid_string, kGuidStringCharacters,
       L"{%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}", rguid.Data1,
       rguid.Data2, rguid.Data3, rguid.Data4[0], rguid.Data4[1], rguid.Data4[2],
@@ -1145,7 +1144,7 @@ bool IsCurrentSessionRemote() {
 }
 
 bool IsAppVerifierLoaded() {
-  return GetModuleHandleA(kApplicationVerifierDllName);
+  return ::GetModuleHandleA(kApplicationVerifierDllName);
 }
 
 std::optional<std::wstring> ExpandEnvironmentVariables(wcstring_view str) {
@@ -1313,5 +1312,4 @@ ScopedDeviceConvertibilityStateForTesting::
 ScopedDeviceConvertibilityStateForTesting::
     ~ScopedDeviceConvertibilityStateForTesting() = default;
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
