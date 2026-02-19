@@ -18,6 +18,7 @@
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 
 namespace tabs {
 
@@ -50,9 +51,16 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
       is_data_observer_registered_(true) {
   loaded_data_->RegisterObserver(&data_observer_);
 
-  if (loaded_data_->GetTracker()->HasNothingToAssociate()) {
+  RestoreEntityTracker* tracker = loaded_data_->GetTracker();
+  // This is required to save the unique collections that do not emit observable
+  // events on creation.
+  if (tracker->HasNothingToAssociate()) {
     StorageCollectionSynchronizer synchronizer(collection_, service_);
     synchronizer.FullSave();
+  } else {
+    tracker->AssociateCollection(collection_);
+    tracker->AssociateCollection(collection_->pinned_collection());
+    tracker->AssociateCollection(collection_->unpinned_collection());
   }
 }
 
@@ -76,7 +84,7 @@ void StorageRestoreOrchestrator::OnSaveChildTab(
   TabHandle tab_handle = canonicalizer.Run(tab)->GetHandle();
 
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
-  bool was_tab_on_disk = tracker->AssociateTabAndAncestors(tab);
+  bool was_tab_on_disk = tracker->AssociateTab(tab);
 
   TabCollectionHandle parent_handle = parent->GetHandle();
   DCHECK(tracker->HasCollectionBeenAssociated(parent_handle));
@@ -112,18 +120,11 @@ void StorageRestoreOrchestrator::OnSaveChildCollection(
     return;
   }
 
-  TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
-  if (type == TabStorageType::kPinned) {
-    loaded_data_->GetTracker()->AssociatePinnedCollection(
-        static_cast<const PinnedTabCollection*>(collection));
-  }
-
+  RestoreEntityTracker* tracker = loaded_data_->GetTracker();
   TabCollectionHandle parent_handle = parent->GetHandle();
   StorageId parent_id = service_->GetStorageId(parent);
 
-  bool was_collection_on_disk =
-      loaded_data_->GetTracker()->HasCollectionBeenAssociated(
-          collection_handle);
+  bool was_collection_on_disk = tracker->AssociateCollection(collection);
   if (was_collection_on_disk && !restored_nodes_.contains(handle)) {
     restored_nodes_.insert(handle);
   } else {

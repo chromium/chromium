@@ -26,9 +26,10 @@ enum class TabStorageType {
 enum class StorageLoadingStatus {
   kSuccess = 0,
   kParseError,
-  kMultipleRootNodesError,
+  kMultipleUniqueNodesError,
   kTreeTooDeepError,
   kMissingTabError,
+  kUnknownCollectionTypeError,
 };
 
 }  // namespace tabs

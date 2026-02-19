@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
@@ -121,6 +122,7 @@ void StorageLoadedData::Builder::AddNode(
     StorageId id,
     TabStorageType type,
     base::span<const uint8_t> payload,
+    std::optional<base::span<const uint8_t>> children,
     base::PassKey<TabStateStorageDatabase> passkey) {
   if (context_.HasError()) {
     return;
@@ -135,9 +137,28 @@ void StorageLoadedData::Builder::AddNode(
       context_.SetStatus(StorageLoadingStatus::kParseError,
                          "Failed to parse tab state for id: " + id.ToString());
     }
-  } else if (type == TabStorageType::kTabStrip) {
+    return;
+  }
+
+  DCHECK(children.has_value());
+  tabs_pb::Children children_proto;
+  if (children_proto.ParseFromArray(children->data(), children->size())) {
+    std::vector<StorageId> storage_ids_vector;
+    storage_ids_vector.reserve(children_proto.storage_id_size());
+    for (const auto& child_id : children_proto.storage_id()) {
+      storage_ids_vector.push_back(StorageIdFromTokenProto(child_id));
+    }
+    children_map_.emplace(id, std::move(storage_ids_vector));
+  } else {
+    context_.SetStatus(StorageLoadingStatus::kParseError,
+                       "Failed to parse children for id: " + id.ToString());
+    return;
+  }
+
+  std::optional<base::Token> collection_specific_id;
+  if (type == TabStorageType::kTabStrip) {
     if (root_storage_id_.has_value()) {
-      context_.SetStatus(StorageLoadingStatus::kMultipleRootNodesError,
+      context_.SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
                          "Multiple root nodes for window tag in the database.");
       return;
     }
@@ -158,39 +179,19 @@ void StorageLoadedData::Builder::AddNode(
     if (group_state.ParseFromArray(payload.data(), payload.size())) {
       loaded_groups_.emplace_back(
           std::make_unique<TabGroupCollectionData>(group_state));
+      collection_specific_id = loaded_groups_.back()->tab_group_id_;
     } else {
       context_.SetStatus(
           StorageLoadingStatus::kParseError,
           "Failed to parse group state for id: " + id.ToString());
     }
+  } else if (type == TabStorageType::kSplit) {
+    // TODO(crbug.com/485306544): Add support for split collections once they
+    // are supported on Android.
+    NOTIMPLEMENTED();
   }
-}
-
-void StorageLoadedData::Builder::AddChildren(
-    StorageId id,
-    TabStorageType type,
-    base::span<const uint8_t> children,
-    base::PassKey<TabStateStorageDatabase> passkey) {
-  if (context_.HasError()) {
-    return;
-  }
-
-  if (type == TabStorageType::kTab) {
-    return;
-  }
-  tabs_pb::Children children_proto;
-  if (children_proto.ParseFromArray(children.data(), children.size())) {
-    tracker_->RegisterCollection(id, type, children_proto, passkey);
-    std::vector<StorageId> storage_ids_vector;
-    storage_ids_vector.reserve(children_proto.storage_id_size());
-    for (const auto& child_id : children_proto.storage_id()) {
-      storage_ids_vector.push_back(StorageIdFromTokenProto(child_id));
-    }
-    children_map_.emplace(id, std::move(storage_ids_vector));
-  } else {
-    context_.SetStatus(StorageLoadingStatus::kParseError,
-                       "Failed to parse children for id: " + id.ToString());
-  }
+  tracker_->RegisterCollection(id, type, children_proto, collection_specific_id,
+                               passkey);
 }
 
 std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build() {

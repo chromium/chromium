@@ -10,8 +10,12 @@
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "components/tabs/public/pinned_tab_collection.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -34,35 +38,48 @@ class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
   void RegisterCollection(StorageId storage_id,
                           TabStorageType type,
                           const tabs_pb::Children& children,
+                          std::optional<base::Token> collection_specific_id,
                           base::PassKey<TabStateStorageDatabase>) override;
 
   void RegisterTab(StorageId storage_id,
                    const tabs_pb::TabState& tab_state,
                    base::PassKey<TabStateStorageDatabase>) override;
 
-  bool AssociateTabAndAncestors(const TabInterface*) override;
-  void AssociatePinnedCollection(const PinnedTabCollection*) override;
-  bool HasCollectionBeenAssociated(TabCollection::Handle) override;
+  bool AssociateTab(const TabInterface* tab) override;
+  bool AssociateCollection(const TabCollection* collection) override;
+  bool HasCollectionBeenAssociated(TabCollection::Handle handle) override;
+
   bool HasNothingToAssociate() override;
   std::optional<StorageId> GetParentIdForTab(int tab_android_id);
 
  private:
-  // Associates a loaded TabCollection and its ancestors with their respective
-  // storage IDs. This method should be called when a TabCollection is
-  // instantiated using data from storage.
-  void AssociateAncestorsInternal(StorageId storage_id,
-                                  const TabCollection* collection);
+  bool AssociateTabStripCollection(const TabStripCollection* collection);
+  bool AssociatePinnedCollection(const PinnedTabCollection* collection);
+  bool AssociateUnpinnedCollection(const UnpinnedTabCollection* collection);
+  bool AssociateTabGroupTabCollection(const TabGroupTabCollection* collection);
+  bool AssociateSplitTabCollection(const SplitTabCollection* collection);
 
-  // Checks to see if a node should be processed. Ensures we do not process
-  // previously associated nodes or unmapped nodes.
-  bool ShouldProcessCollection(StorageId storage_id,
-                               TabCollection::Handle collection);
+  // Helper method for associating a unique collection (tab strip, unpinned, or
+  // pinned collection) with its storage ID.
+  bool AssociateUniqueCollection(std::optional<StorageId> storage_id,
+                                 const TabCollection* collection);
 
-  absl::flat_hash_map<StorageId, StorageId> id_to_parent_id_;
+  // Helper method for associating a collection able to be uniquely identified
+  // by a collection-specific token-based ID with its storage ID.
+  // `id_to_storage_id` is a map of collection-specific IDs to storage IDs.
+  bool AssociateCollectionUsingId(
+      absl::flat_hash_map<base::Token, StorageId> id_to_storage_id,
+      base::Token collection_specific_id,
+      const TabCollection* collection);
+
   absl::flat_hash_map<int, StorageId> tab_android_id_to_storage_id_;
-  absl::flat_hash_set<TabCollection::Handle> associated_collections_;
+  absl::flat_hash_map<base::Token, StorageId> tab_group_id_to_storage_id_;
+  absl::flat_hash_map<base::Token, StorageId> split_tab_id_to_storage_id_;
+  absl::flat_hash_set<TabCollectionNodeHandle> associated_nodes_;
 
   std::optional<StorageId> pinned_collection_id_;
+  std::optional<StorageId> unpinned_collection_id_;
+  std::optional<StorageId> tab_strip_collection_id_;
 
   OnTabAssociation on_tab_association_;
   OnCollectionAssociation on_collection_association_;

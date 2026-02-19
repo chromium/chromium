@@ -373,20 +373,24 @@ std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
     TabStorageType type =
         static_cast<TabStorageType>(select_statement.ColumnInt(1));
     base::span<const uint8_t> payload = select_statement.ColumnBlob(2);
+
+    std::optional<base::span<const uint8_t>> children;
+    if (type != TabStorageType::kTab) {
+      children = select_statement.ColumnBlob(3);
+    }
+
     if (is_off_the_record) {
       std::optional<std::vector<uint8_t>> open_payload =
           Open(id, window_tag, payload);
       if (!open_payload) {
         continue;
       }
-      builder->AddNode(id, type, *open_payload,
+      builder->AddNode(id, type, *open_payload, children,
                        base::PassKey<TabStateStorageDatabase>());
     } else {
-      builder->AddNode(id, type, payload,
+      builder->AddNode(id, type, payload, children,
                        base::PassKey<TabStateStorageDatabase>());
     }
-    builder->AddChildren(id, type, select_statement.ColumnBlob(3),
-                         base::PassKey<TabStateStorageDatabase>());
   }
   return builder->Build();
 }

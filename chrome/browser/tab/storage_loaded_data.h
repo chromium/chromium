@@ -84,16 +84,12 @@ class StorageLoadedData {
     Builder(Builder&&);
     Builder& operator=(Builder&&);
 
-    // Called on the DB task runner to process a payload.
+    // Called on the DB task runner to process a node.
     void AddNode(StorageId id,
                  TabStorageType type,
                  base::span<const uint8_t> payload,
+                 std::optional<base::span<const uint8_t>> children,
                  base::PassKey<TabStateStorageDatabase>);
-    // Called on the DB task runner to process children.
-    void AddChildren(StorageId id,
-                     TabStorageType type,
-                     base::span<const uint8_t> children,
-                     base::PassKey<TabStateStorageDatabase>);
     std::unique_ptr<StorageLoadedData> Build();
 
    private:

@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
@@ -15,7 +17,7 @@
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_storage_type.h"
-#include "components/tabs/public/tab_strip_collection.h"
+#include "chrome/browser/tab/tab_storage_util.h"
 
 namespace tabs {
 
@@ -36,24 +38,40 @@ void RestoreEntityTrackerAndroid::RegisterCollection(
     StorageId storage_id,
     TabStorageType type,
     const tabs_pb::Children& children,
+    std::optional<base::Token> collection_specific_id,
     base::PassKey<TabStateStorageDatabase>) {
   DCHECK(context_);
   if (context_->HasError()) {
     return;
   }
 
-  // Build a mapping of children IDs to parent IDs;
-  for (const tabs_pb::Token& child_id : children.storage_id()) {
-    id_to_parent_id_[StorageIdFromTokenProto(child_id)] = storage_id;
-  }
-
   if (type == TabStorageType::kPinned) {
     if (pinned_collection_id_) {
-      context_->SetStatus(StorageLoadingStatus::kParseError,
+      context_->SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
                           "Should only have one pinned collection.");
       return;
     }
     pinned_collection_id_ = storage_id;
+  } else if (type == TabStorageType::kUnpinned) {
+    if (unpinned_collection_id_) {
+      context_->SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
+                          "Should only have one unpinned collection.");
+      return;
+    }
+    unpinned_collection_id_ = storage_id;
+  } else if (type == TabStorageType::kTabStrip) {
+    if (tab_strip_collection_id_) {
+      context_->SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
+                          "Should only have one tab strip collection.");
+      return;
+    }
+    tab_strip_collection_id_ = storage_id;
+  } else if (type == TabStorageType::kSplit) {
+    DCHECK(collection_specific_id.has_value());
+    split_tab_id_to_storage_id_[*collection_specific_id] = storage_id;
+  } else if (type == TabStorageType::kGroup) {
+    DCHECK(collection_specific_id.has_value());
+    tab_group_id_to_storage_id_[*collection_specific_id] = storage_id;
   }
 }
 
@@ -68,13 +86,18 @@ void RestoreEntityTrackerAndroid::RegisterTab(
   tab_android_id_to_storage_id_[tab_state.tab_id()] = storage_id;
 }
 
-bool RestoreEntityTrackerAndroid::AssociateTabAndAncestors(
-    const TabInterface* tab) {
+bool RestoreEntityTrackerAndroid::AssociateTab(const TabInterface* tab) {
   DCHECK(context_);
   if (context_->HasError()) {
     return false;
   }
+
   const TabAndroid* tab_android = ToTabAndroidChecked(tab);
+  TabHandle handle = tab->GetHandle();
+  if (associated_nodes_.contains(handle)) {
+    return false;
+  }
+
   auto it = tab_android_id_to_storage_id_.find(tab_android->GetAndroidId());
   if (it == tab_android_id_to_storage_id_.end()) {
     return false;
@@ -82,21 +105,98 @@ bool RestoreEntityTrackerAndroid::AssociateTabAndAncestors(
 
   StorageId storage_id = it->second;
   on_tab_association_.Run(storage_id, tab_android);
-  AssociateAncestorsInternal(id_to_parent_id_.at(storage_id),
-                             tab->GetParentCollection());
+  associated_nodes_.insert(handle);
   return true;
 }
 
-void RestoreEntityTrackerAndroid::AssociatePinnedCollection(
-    const PinnedTabCollection* collection) {
+bool RestoreEntityTrackerAndroid::AssociateCollection(
+    const TabCollection* collection) {
   DCHECK(context_);
   if (context_->HasError()) {
-    return;
+    return false;
   }
-  if (pinned_collection_id_) {
-    on_collection_association_.Run(pinned_collection_id_.value(), collection);
-    associated_collections_.insert(collection->GetHandle());
+
+  TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
+  if (type == TabStorageType::kPinned) {
+    return AssociatePinnedCollection(
+        static_cast<const PinnedTabCollection*>(collection));
+  } else if (type == TabStorageType::kUnpinned) {
+    return AssociateUnpinnedCollection(
+        static_cast<const UnpinnedTabCollection*>(collection));
+  } else if (type == TabStorageType::kTabStrip) {
+    return AssociateTabStripCollection(
+        static_cast<const TabStripCollection*>(collection));
+  } else if (type == TabStorageType::kSplit) {
+    return AssociateSplitTabCollection(
+        static_cast<const SplitTabCollection*>(collection));
+  } else if (type == TabStorageType::kGroup) {
+    return AssociateTabGroupTabCollection(
+        static_cast<const TabGroupTabCollection*>(collection));
+  } else {
+    context_->SetStatus(StorageLoadingStatus::kUnknownCollectionTypeError,
+                        "Unknown collection type: " +
+                            base::NumberToString(static_cast<int>(type)));
+    return false;
   }
+}
+
+bool RestoreEntityTrackerAndroid::AssociateUniqueCollection(
+    std::optional<StorageId> storage_id,
+    const TabCollection* collection) {
+  TabCollection::Handle handle = collection->GetHandle();
+  if (storage_id && !associated_nodes_.contains(handle)) {
+    on_collection_association_.Run(storage_id.value(), collection);
+    associated_nodes_.insert(handle);
+    return true;
+  }
+  return false;
+}
+
+bool RestoreEntityTrackerAndroid::AssociateCollectionUsingId(
+    absl::flat_hash_map<base::Token, StorageId> id_to_storage_id,
+    base::Token collection_specific_id,
+    const TabCollection* collection) {
+  TabCollection::Handle handle = collection->GetHandle();
+  if (associated_nodes_.contains(handle)) {
+    return false;
+  }
+
+  auto it = id_to_storage_id.find(collection_specific_id);
+  if (it == id_to_storage_id.end()) {
+    return false;
+  }
+  on_collection_association_.Run(it->second, collection);
+  associated_nodes_.insert(handle);
+  return true;
+}
+
+bool RestoreEntityTrackerAndroid::AssociatePinnedCollection(
+    const PinnedTabCollection* collection) {
+  return AssociateUniqueCollection(pinned_collection_id_, collection);
+}
+
+bool RestoreEntityTrackerAndroid::AssociateUnpinnedCollection(
+    const UnpinnedTabCollection* collection) {
+  return AssociateUniqueCollection(unpinned_collection_id_, collection);
+}
+
+bool RestoreEntityTrackerAndroid::AssociateTabStripCollection(
+    const TabStripCollection* collection) {
+  return AssociateUniqueCollection(tab_strip_collection_id_, collection);
+}
+
+bool RestoreEntityTrackerAndroid::AssociateTabGroupTabCollection(
+    const TabGroupTabCollection* collection) {
+  return AssociateCollectionUsingId(tab_group_id_to_storage_id_,
+                                    collection->GetTabGroupId().token(),
+                                    collection);
+}
+
+bool RestoreEntityTrackerAndroid::AssociateSplitTabCollection(
+    const SplitTabCollection* collection) {
+  return AssociateCollectionUsingId(split_tab_id_to_storage_id_,
+                                    collection->GetSplitTabId().token(),
+                                    collection);
 }
 
 bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
@@ -105,57 +205,19 @@ bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
   if (context_->HasError()) {
     return false;
   }
-  return associated_collections_.contains(handle);
+  return associated_nodes_.contains(handle);
 }
 
 bool RestoreEntityTrackerAndroid::HasNothingToAssociate() {
-  return id_to_parent_id_.empty();
+  // Tab strip collection is the root collection, so if it does not need to be
+  // associated, none of the other collections do either.
+  return !tab_strip_collection_id_.has_value();
 }
 
 std::optional<StorageId> RestoreEntityTrackerAndroid::GetParentIdForTab(
     int tab_android_id) {
-  auto it = tab_android_id_to_storage_id_.find(tab_android_id);
-  if (it == tab_android_id_to_storage_id_.end()) {
-    return std::nullopt;
-  }
-
-  auto parent_it = id_to_parent_id_.find(it->second);
-  if (parent_it == id_to_parent_id_.end()) {
-    return std::nullopt;
-  }
-  return parent_it->second;
-}
-
-void RestoreEntityTrackerAndroid::AssociateAncestorsInternal(
-    StorageId storage_id,
-    const TabCollection* collection) {
-  TabCollection::Handle curr_collection = collection->GetHandle();
-  StorageId curr_id = storage_id;
-
-  while (ShouldProcessCollection(curr_id, curr_collection)) {
-    const TabCollection* curr_collection_ptr = curr_collection.Get();
-    on_collection_association_.Run(curr_id, curr_collection_ptr);
-    associated_collections_.insert(curr_collection);
-
-    // Handle root node.
-    if (!curr_collection_ptr->GetParentCollection()) {
-      return;
-    }
-
-    // Update curr node details.
-    curr_collection = curr_collection_ptr->GetParentCollection()->GetHandle();
-    curr_id = id_to_parent_id_.at(curr_id);
-  }
-}
-
-bool RestoreEntityTrackerAndroid::ShouldProcessCollection(
-    StorageId storage_id,
-    TabCollection::Handle collection) {
-  // Must allow for root collection.
-  bool is_root = !collection.Get()->GetParentCollection();
-  bool is_child = id_to_parent_id_.contains(storage_id);
-
-  return !associated_collections_.contains(collection) && (is_root || is_child);
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 }  // namespace tabs

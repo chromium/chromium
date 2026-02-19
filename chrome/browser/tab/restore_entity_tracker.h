@@ -43,10 +43,15 @@ class RestoreEntityTracker {
 
   // Registers the persisted state of a collection, including its children's
   // storage IDs. Builds the parent-child relationships between nodes.
-  virtual void RegisterCollection(StorageId storage_id,
-                                  TabStorageType type,
-                                  const tabs_pb::Children& children,
-                                  base::PassKey<TabStateStorageDatabase>) = 0;
+  //
+  // `collection_specific_id` represents the base::Token-backed collection
+  // identifier, specific to group or split collections.
+  virtual void RegisterCollection(
+      StorageId storage_id,
+      TabStorageType type,
+      const tabs_pb::Children& children,
+      std::optional<base::Token> collection_specific_id,
+      base::PassKey<TabStateStorageDatabase>) = 0;
 
   // Registers the persisted state of a single tab, associating its storage ID
   // with its in-memory representation.
@@ -54,17 +59,16 @@ class RestoreEntityTracker {
                            const tabs_pb::TabState& tab_state,
                            base::PassKey<TabStateStorageDatabase>) = 0;
 
-  // Associates a tab and its ancestor TabCollections with their respective
-  // storage IDs. Returns true if the tab was successfully associated.
-  virtual bool AssociateTabAndAncestors(const TabInterface*) = 0;
+  // Associates a tab with its respective storage ID.
+  // Returns true if the tab was successfully associated.
+  virtual bool AssociateTab(const TabInterface* tab) = 0;
 
-  // Associates a PinnedTabCollection with its storage ID. This must be
-  // associated separately since it may be empty and not contain any tabs.
-  // Returns true if successfully associated.
-  virtual void AssociatePinnedCollection(const PinnedTabCollection*) = 0;
+  // Associates a collection with its respective storage ID.
+  // Returns true if the collection was successfully associated.
+  virtual bool AssociateCollection(const TabCollection* collection) = 0;
 
   // Returns true if the collection has been associated.
-  virtual bool HasCollectionBeenAssociated(TabCollection::Handle) = 0;
+  virtual bool HasCollectionBeenAssociated(TabCollection::Handle handle) = 0;
 
   // Returns true when there is nothing to associate.
   virtual bool HasNothingToAssociate() = 0;
