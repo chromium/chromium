@@ -57,6 +57,7 @@ robolectric_library("junit") {
     "//components/messages/android:java",
     "//components/messages/android:manager_java",
     "//components/search_engines/android:java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

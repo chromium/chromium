@@ -129,6 +129,19 @@ public final class DefaultBrowserInfo {
         }
     }
 
+    /**
+     * Return null when task not finished yet or be canceled, otherwise return the previous result.
+     */
+    public static @Nullable DefaultInfo getDefaultBrowserInfoCacheResult() {
+        // Add a local reference to avoid sDefaultInfoTask being changed in another thread.
+        DefaultInfoTask infoTask = sDefaultInfoTask;
+        // If the task is not done yet or cancelled, return null.
+        if (infoTask == null || infoTask.getStatus() != AsyncTask.Status.FINISHED) {
+            return null;
+        }
+        return infoTask.getDefaultInfo();
+    }
+
     public static void setDefaultInfoForTests(DefaultInfo info) {
         DefaultInfoTask.setDefaultInfoForTests(info);
     }
@@ -140,11 +153,17 @@ public final class DefaultBrowserInfo {
     private static class DefaultInfoTask extends AsyncTask<DefaultInfo> {
         private static @Nullable AtomicReference<DefaultInfo> sTestInfo;
 
+        private @Nullable volatile DefaultInfo mDefaultInfo;
+
         private final ObserverList<Callback<@Nullable DefaultInfo>> mObservers =
                 new ObserverList<>();
 
         public static void setDefaultInfoForTests(DefaultInfo info) {
             sTestInfo = new AtomicReference<>(info);
+        }
+
+        public @Nullable DefaultInfo getDefaultInfo() {
+            return mDefaultInfo;
         }
 
         public static void clearDefaultInfoForTests() {
@@ -252,6 +271,7 @@ public final class DefaultBrowserInfo {
         }
 
         private void flushCallbacks(@Nullable DefaultInfo info) {
+            mDefaultInfo = info;
             for (Callback<@Nullable DefaultInfo> callback : mObservers) {
                 callback.onResult(info);
             }

@@ -12,6 +12,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
 /**
@@ -41,12 +42,7 @@ public class DefaultBrowserStateProvider {
      * @return boolean if promo dialog can be displayed.
      */
     public boolean shouldShowPromo() {
-        ResolveInfo info = getDefaultWebBrowserActivityResolveInfo();
-        if (info == null) {
-            return false;
-        }
-
-        int state = getCurrentDefaultBrowserState(info);
+        int state = getCurrentDefaultBrowserState(true);
         if (state == DefaultBrowserState.CHROME_DEFAULT) {
             return false;
         } else if (state == DefaultBrowserState.NO_DEFAULT) {
@@ -54,25 +50,36 @@ public class DefaultBrowserStateProvider {
             return !isChromeStable() || !isChromePreStableInstalled();
         } else { // other default
             // Criteria 1
-            return !isCurrentDefaultBrowserChrome(info);
+            return state != DefaultBrowserState.OTHER_CHROME_DEFAULT;
         }
     }
 
     public @DefaultBrowserState int getCurrentDefaultBrowserState() {
-        ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
-        return getCurrentDefaultBrowserState(info);
+        return getCurrentDefaultBrowserState(false);
     }
 
-    boolean isCurrentDefaultBrowserChrome(ResolveInfo info) {
-        String packageName = info.activityInfo.packageName;
-        for (String name : CHROME_PACKAGE_NAMES) {
-            if (name.equals(packageName)) return true;
-        }
-        return false;
+    /**
+     * Gets the current default browser state. After {@link
+     * ChromeFeatureList.sDefaultBrowserPromoEntryPoint} enable by default, The parameter will be
+     * deleted and the no the no-arg method can also be removed.
+     *
+     * @param needIdentifyOtherChromeDefault Determines whether the result includes
+     *     OTHER_CHROME_DEFAULT.
+     * @return The current default browser state.
+     */
+    public @DefaultBrowserState int getCurrentDefaultBrowserState(
+            boolean needIdentifyOtherChromeDefault) {
+        DefaultBrowserInfo.DefaultInfo defaultBrowserInfo =
+                DefaultBrowserInfo.getDefaultBrowserInfoCacheResult();
+        return defaultBrowserInfo != null
+                ? defaultBrowserInfo.defaultBrowserState
+                : getCurrentDefaultBrowserState(
+                        getDefaultWebBrowserActivityResolveInfo(), needIdentifyOtherChromeDefault);
     }
 
     @DefaultBrowserState
-    int getCurrentDefaultBrowserState(@Nullable ResolveInfo info) {
+    int getCurrentDefaultBrowserState(
+            @Nullable ResolveInfo info, boolean needIdentifyOtherChromeDefault) {
         if (info == null || info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
 
         String defaultPackage = info.activityInfo.packageName;
@@ -83,7 +90,8 @@ public class DefaultBrowserStateProvider {
 
         //  Check if it is a different Chrome (e.g. the user is in Canary, but Stable is the
         // default).
-        if (ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()) {
+        if (ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()
+                || needIdentifyOtherChromeDefault) {
             for (String chromePackage : CHROME_PACKAGE_NAMES) {
                 if (chromePackage.equals(defaultPackage)) {
                     return DefaultBrowserState.OTHER_CHROME_DEFAULT;

@@ -40,7 +40,7 @@ public class DefaultBrowserStateProviderTest {
         Assert.assertEquals(
                 "Should be no default when resolve info matches no browser.",
                 DefaultBrowserState.NO_DEFAULT,
-                mProvider.getCurrentDefaultBrowserState(createResolveInfo("android", 0)));
+                mProvider.getCurrentDefaultBrowserState(createResolveInfo("android", 0), false));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class DefaultBrowserStateProviderTest {
         Assert.assertEquals(
                 "Should be other default when resolve info matches another browser.",
                 DefaultBrowserState.OTHER_DEFAULT,
-                mProvider.getCurrentDefaultBrowserState(createResolveInfo("android", 1)));
+                mProvider.getCurrentDefaultBrowserState(createResolveInfo("android", 1), false));
     }
 
     @Test
@@ -57,8 +57,8 @@ public class DefaultBrowserStateProviderTest {
                 "Should be chrome default when resolve info matches current package name.",
                 DefaultBrowserState.CHROME_DEFAULT,
                 mProvider.getCurrentDefaultBrowserState(
-                        createResolveInfo(
-                                ContextUtils.getApplicationContext().getPackageName(), 1)));
+                        createResolveInfo(ContextUtils.getApplicationContext().getPackageName(), 1),
+                        false));
     }
 
     @Test
@@ -91,20 +91,6 @@ public class DefaultBrowserStateProviderTest {
                     name + " should be considered as a pre-stable channel",
                     mProvider.isChromePreStableInstalled());
         }
-    }
-
-    @Test
-    public void testIsCurrentDefaultBrowserChrome() {
-        for (String name : DefaultBrowserStateProvider.CHROME_PACKAGE_NAMES) {
-            Assert.assertTrue(
-                    name + " should be considered as a chrome channel",
-                    mProvider.isCurrentDefaultBrowserChrome(createResolveInfo(name, 1)));
-        }
-
-        Assert.assertFalse(
-                "A random string should not be considered as a chrome channel",
-                mProvider.isCurrentDefaultBrowserChrome(
-                        createResolveInfo("com.android.chrome.random.string", 1)));
     }
 
     private ResolveInfo createResolveInfo(String packageName, int match) {

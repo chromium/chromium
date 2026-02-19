@@ -30,12 +30,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowRoleManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -63,9 +67,11 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collection;
 
 /** Unit test for {@link DefaultBrowserPromoUtils}. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class DefaultBrowserPromoUtilsTest {
     @Mock private DefaultBrowserPromoImpressionCounter mCounter;
     @Mock private DefaultBrowserStateProvider mProvider;
@@ -78,12 +84,23 @@ public class DefaultBrowserPromoUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
 
     private ShadowRoleManager mShadowRoleManager;
 
     DefaultBrowserPromoUtils mUtils;
+
+    @Parameter(0)
+    public boolean mFlagEnabled;
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {{true}, {false}});
+    }
 
     private static class TestingDefaultBrowserPromoUtils extends DefaultBrowserPromoUtils {
 
@@ -124,6 +141,9 @@ public class DefaultBrowserPromoUtilsTest {
 
         mUtils = new DefaultBrowserPromoUtils(mCounter, mProvider);
         setDepsMockWithDefaultValues();
+        FeatureOverrides.newBuilder()
+                .flag(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT, mFlagEnabled)
+                .apply();
     }
 
     @After
@@ -225,7 +245,6 @@ public class DefaultBrowserPromoUtilsTest {
                 .thenReturn(
                         createResolveInfo(
                                 DefaultBrowserStateProvider.CHROME_STABLE_PACKAGE_NAME, 1));
-        when(mProvider.isCurrentDefaultBrowserChrome(any())).thenCallRealMethod();
         Assert.assertFalse(
                 "Should not promo when another chrome channel browser has been default.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -245,10 +264,14 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     @Test
-    public void testNoPromo_webBrowserActivityNotExist() {
+    public void testNoPromo_isNoDefaultWithPreChromePreStableInstalled() {
         when(mProvider.getDefaultWebBrowserActivityResolveInfo()).thenReturn(null);
+        when(mProvider.isChromeStable()).thenReturn(true);
+        when(mProvider.isChromePreStableInstalled()).thenReturn(true);
+
         Assert.assertFalse(
-                "Should not promo when web browser activity does not exist.",
+                "Should not promo when current is chrome stable and has chrome pre stable"
+                        + " installed.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
         Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
@@ -534,11 +557,12 @@ public class DefaultBrowserPromoUtilsTest {
         when(mProvider.shouldShowPromo()).thenCallRealMethod();
         when(mProvider.isChromeStable()).thenReturn(false);
         when(mProvider.isChromePreStableInstalled()).thenReturn(false);
-        when(mProvider.isCurrentDefaultBrowserChrome(any())).thenReturn(false);
         // No Default
         when(mProvider.getDefaultWebBrowserActivityResolveInfo())
                 .thenReturn(createResolveInfo("android", 0));
-        when(mProvider.getCurrentDefaultBrowserState(any())).thenCallRealMethod();
+        when(mProvider.getCurrentDefaultBrowserState()).thenCallRealMethod();
+        when(mProvider.getCurrentDefaultBrowserState(anyBoolean())).thenCallRealMethod();
+        when(mProvider.getCurrentDefaultBrowserState(any(), anyBoolean())).thenCallRealMethod();
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
     }
