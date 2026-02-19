@@ -93,10 +93,9 @@ public class CustomSearchEngineListMediator
     }
 
     private void fetchFavicon(TemplateUrl url, PropertyModel model) {
-        String urlString = mTemplateUrlService.getSearchEngineUrlFromTemplateUrl(url.getKeyword());
-        if (urlString == null) return;
+        GURL faviconUrl = url.getFaviconURL();
+        if (faviconUrl == null) return;
 
-        GURL faviconUrl = new GURL(urlString);
         SearchEngineIconUtils.updateIcon(
                 mContext,
                 model,
