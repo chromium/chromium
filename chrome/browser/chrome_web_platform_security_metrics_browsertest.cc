@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
@@ -78,10 +81,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   }
 
   content::WebContents* OpenPopup(const GURL& url) {
-    content::WebContentsAddedObserver new_tab_observer;
+    ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer(1);
     EXPECT_TRUE(content::ExecJs(web_contents(), "window.open('" + url.spec() +
                                                     "', '_blank', 'popup')"));
-    content::WebContents* web_contents = new_tab_observer.GetWebContents();
+    content::WebContents* web_contents = new_tab_observer.Wait();
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     return web_contents;
   }
@@ -480,8 +483,9 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal \
   PrivateNetworkAccessWebSocketConnectedLocalToLocal
 #endif
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
-                       MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWebSocketMetricBrowserTest,
+    MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       http_server().GetURL(
