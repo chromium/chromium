@@ -334,11 +334,6 @@ base::FilePath SandboxOriginDatabase::GetDatabasePath() const {
   return file_system_directory_.Append(kOriginDatabaseName);
 }
 
-void SandboxOriginDatabase::RemoveDatabase() {
-  DropDatabase();
-  base::DeletePathRecursively(GetDatabasePath());
-}
-
 bool SandboxOriginDatabase::GetLastPathNumber(int* number) {
   DCHECK(db_);
   DCHECK(number);

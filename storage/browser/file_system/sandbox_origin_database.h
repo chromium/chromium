@@ -50,9 +50,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabase
   void RewriteDatabase() override;
   void DropDatabase() override;
 
-  base::FilePath GetDatabasePath() const;
-  void RemoveDatabase();
-
  private:
   enum RecoveryOption {
     REPAIR_ON_CORRUPTION,
@@ -64,6 +61,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabase
     CREATE_IF_NONEXISTENT,
     FAIL_IF_NONEXISTENT,
   };
+
+  base::FilePath GetDatabasePath() const;
 
   bool Init(InitOption init_option, RecoveryOption recovery_option);
   bool RepairDatabase(const std::string& db_path);
