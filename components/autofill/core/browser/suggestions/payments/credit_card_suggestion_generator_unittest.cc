@@ -1550,7 +1550,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
 TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
   std::vector<Suggestion> footer_suggestions =
       GetCreditCardFooterSuggestionsForTest(
-          autofill_client(), /*should_show_bnpl_suggestion*/ false,
+          autofill_client(), /*should_show_pay_later_tab_suggestions=*/false,
+          /*should_append_bnpl_suggestion=*/false,
           /*should_show_scan_credit_card=*/true, /*is_autofilled=*/true,
           /*with_gpay_logo=*/true, payments::AmountExtractionStatus());
 
@@ -2294,6 +2295,60 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 
   EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(bnpl_it->payload));
   EXPECT_EQ(std::get<Suggestion::BnplIssuer>(bnpl_it->payload).value(),
+            linked_issuer);
+}
+
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GenerateCreditCardOrCvcFieldSuggestionsSync_CardNumberFieldNotEmpty_PayLaterIssuerDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+
+  payments_data().AddCreditCard(test::GetCreditCard());
+  BnplIssuer linked_issuer =
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip);
+  payments_data().AddBnplIssuer(linked_issuer);
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/false);
+
+  auto disabled_bnpl_suggestion = std::find_if(
+      suggestions.begin(), suggestions.end(),
+      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
+
+  ASSERT_NE(disabled_bnpl_suggestion, suggestions.end())
+      << "Expected a BNPL suggestion to be generated.";
+
+  EXPECT_EQ(disabled_bnpl_suggestion->main_text.value,
+            linked_issuer.GetDisplayName());
+  EXPECT_EQ(disabled_bnpl_suggestion->icon, Suggestion::Icon::kBnplZipLinked);
+  EXPECT_THAT(
+      disabled_bnpl_suggestion->labels,
+      ElementsAre(std::vector<Suggestion::Text>{
+          Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}));
+  EXPECT_EQ(disabled_bnpl_suggestion->acceptability,
+            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+  EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(
+      disabled_bnpl_suggestion->payload));
+  EXPECT_EQ(std::get<Suggestion::BnplIssuer>(disabled_bnpl_suggestion->payload)
+                .value(),
             linked_issuer);
 }
 

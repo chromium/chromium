@@ -304,9 +304,8 @@ TextWithLink GetBnplUiFooterTextForAi(
   return text_with_link;
 }
 
-bool ShouldAppendBnplSuggestion(const AutofillClient& client,
-                                bool is_card_number_field_empty,
-                                FieldType trigger_field_type) {
+bool ShouldShowBnplSuggestions(const AutofillClient& client,
+                               FieldType trigger_field_type) {
   // If this is called on Chrome Android, it must be called due to attempting to
   // add BNPL to the keyboard accessory suggestions, which is not supported.
   if constexpr (BUILDFLAG(IS_ANDROID)) {
@@ -314,11 +313,6 @@ bool ShouldAppendBnplSuggestion(const AutofillClient& client,
   }
   // BNPL suggestions should not be shown for CVC fields.
   if (kCvcFieldTypes.contains(trigger_field_type)) {
-    return false;
-  }
-  // BNPL suggestions should not be shown if the card number field is not empty
-  // after sanitizing.
-  if (!is_card_number_field_empty) {
     return false;
   }
   // BNPL suggestions require that at least one BNPL issuer is present and the

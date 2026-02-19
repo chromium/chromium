@@ -39,7 +39,8 @@ namespace {
 
 Suggestion CreateBnplSuggestion(
     const payments::BnplIssuerContext& issuer_context,
-    const std::string& app_locale) {
+    const std::string& app_locale,
+    const bool is_card_number_field_empty) {
   const bool is_linked = issuer_context.issuer.payment_instrument().has_value();
 
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
@@ -49,10 +50,17 @@ Suggestion CreateBnplSuggestion(
                       IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT,
                       issuer_context.issuer.GetDisplayName()),
       Suggestion::Text::IsPrimary(true));
-  bnpl_suggestion.labels = {
-      {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
-          issuer_context.issuer.issuer_id(), app_locale,
-          base::span_from_ref(issuer_context)))}};
+  if (is_card_number_field_empty) {
+    bnpl_suggestion.labels = {
+        {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
+            issuer_context.issuer.issuer_id(), app_locale,
+            base::span_from_ref(issuer_context)))}};
+  } else {
+    bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}};
+    bnpl_suggestion.acceptability =
+        Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  }
   bnpl_suggestion.icon = payments::GetBnplSuggestionIcon(
       issuer_context.issuer.issuer_id(), is_linked);
   bnpl_suggestion.payload = Suggestion::BnplIssuer(issuer_context.issuer);
@@ -176,15 +184,16 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
 
-  // TODO(crbug.com/477689220) Handle showing disabled issuers when
-  // `is_card_number_field_empty` is `false`, but BNPL is otherwise eligible.
-  const bool should_show_bnpl_suggestions =
-      payments::ShouldAppendBnplSuggestion(client, is_card_number_field_empty,
-                                           trigger_field_type);
+  const bool should_show_pay_later_tab_suggestions =
+      payments::ShouldShowBnplSuggestions(client, trigger_field_type) &&
+      base::FeatureList::IsEnabled(features::kAutofillEnablePayNowPayLaterTabs);
+  const bool should_append_bnpl_suggestion =
+      payments::ShouldShowBnplSuggestions(client, trigger_field_type) &&
+      is_card_number_field_empty &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs);
 
-  if (should_show_bnpl_suggestions &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnablePayNowPayLaterTabs)) {
+  if (should_show_pay_later_tab_suggestions) {
     const PaymentsDataManager& payments_data_manager =
         client.GetPersonalDataManager().payments_data_manager();
     if (payments::ShouldStartPayLaterWithLoadingSpinner(
@@ -200,15 +209,16 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
       for (const payments::BnplIssuerContext& context :
            payments::GetSortedBnplIssuerContext(
                client, /*checkout_amount=*/std::nullopt)) {
-        suggestions.push_back(
-            CreateBnplSuggestion(context, client.GetAppLocale()));
+        suggestions.push_back(CreateBnplSuggestion(
+            context, client.GetAppLocale(), is_card_number_field_empty));
       }
     }
   }
 
   std::ranges::move(
       GetCreditCardFooterSuggestions(
-          client, should_show_bnpl_suggestions, should_show_scan_credit_card,
+          client, should_show_pay_later_tab_suggestions,
+          should_append_bnpl_suggestion, should_show_scan_credit_card,
           // TODO(crbug.com/393114125): Change to use
           // `AutofillField::field_modifiers_` after launching
           // `kAutofillFixIsAutofilled`.
@@ -301,7 +311,8 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
   }
 
   std::ranges::move(GetCreditCardFooterSuggestions(
-                        client, /*should_show_bnpl_suggestion=*/false,
+                        client, /*should_show_pay_later_tab_suggestions=*/false,
+                        /*should_append_bnpl_suggestion=*/false,
                         /*should_show_scan_credit_card=*/false,
                         // TODO(crbug.com/393114125): Change to use
                         // `AutofillField::field_modifiers_` after launching
@@ -515,7 +526,8 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
     base::Extend(suggestions,
                  GetCreditCardFooterSuggestions(
-                     client, /*should_show_bnpl_suggestion=*/false,
+                     client, /*should_show_pay_later_tab_suggestions=*/false,
+                     /*should_append_bnpl_suggestion=*/false,
                      ShouldShowScanCreditCard(*form_structure,
                                               *trigger_autofill_field, client),
                      // TODO(crbug.com/393114125): Change to use

@@ -108,7 +108,8 @@ class BnplUtilTest : public Test, public WithTestAutofillClientDriverManager<> {
         {features::kAutofillEnableAmountExtraction,
          features::kAutofillEnableBuyNowPayLaterSyncing,
          features::kAutofillEnableBuyNowPayLater,
-         features::kAutofillEnableAiBasedAmountExtraction},
+         features::kAutofillEnableAiBasedAmountExtraction,
+         features::kAutofillEnablePayNowPayLaterTabs},
         /*disabled_features=*/{});
   }
 
@@ -357,36 +358,26 @@ TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold) {
 
 // Verify that if the triggering field is CVC, the BNPL option should not be
 // appended.
-TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_IsCvcField) {
-  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
-                                          /*is_card_number_field_empty=*/true,
-                                          CREDIT_CARD_VERIFICATION_CODE));
-}
-
-// Verify that if there was some content filled in the card number field, the
-// BNPL option should not be appended.
-TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_CardNumberFilled) {
-  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
-                                          /*is_card_number_field_empty=*/false,
-                                          CREDIT_CARD_NUMBER));
+TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_IsCvcField) {
+  EXPECT_FALSE(ShouldShowBnplSuggestions(autofill_client(),
+                                         CREDIT_CARD_VERIFICATION_CODE));
 }
 
 // Verify that if this profile is not eligible for BNPL, the BNPL option should
 // not be appended.
-TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_BnplNotEligible) {
+TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_BnplNotEligible) {
   ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
               autofill_client().GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(false));
 
-  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
-                                          /*is_card_number_field_empty=*/true,
-                                          CREDIT_CARD_NUMBER));
+  EXPECT_FALSE(
+      ShouldShowBnplSuggestions(autofill_client(), CREDIT_CARD_NUMBER));
 }
 
 // Verify that if the feature flag `kAutofillEnableAiBasedAmountExtraction` is
 // disabled, the BNPL option should not be appended.
-TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_FeatureDisabled) {
+TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
@@ -394,22 +385,18 @@ TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_FeatureDisabled) {
                             features::kAutofillEnableBuyNowPayLater},
       /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction});
 
-  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
-                                          /*is_card_number_field_empty=*/true,
-                                          CREDIT_CARD_NUMBER));
+  EXPECT_FALSE(
+      ShouldShowBnplSuggestions(autofill_client(), CREDIT_CARD_NUMBER));
 }
 
-// Verify when the triggering field is not CVC, the suggestion is not empty,
-// this profile is eligible for BNPL on the non-Android platform, the BNPL
-// option should be appended.
-TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_AllConditionsMet) {
+// Verify when the triggering field is not CVC and this profile is eligible for
+// BNPL on the non-Android platform, the BNPL option should be appended.
+TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_AllConditionsMet) {
   FieldType trigger_field = CREDIT_CARD_NUMBER;
   if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_FALSE(ShouldAppendBnplSuggestion(
-        autofill_client(), /*is_card_number_field_empty=*/true, trigger_field));
+    EXPECT_FALSE(ShouldShowBnplSuggestions(autofill_client(), trigger_field));
   } else {
-    EXPECT_TRUE(ShouldAppendBnplSuggestion(
-        autofill_client(), /*is_card_number_field_empty=*/true, trigger_field));
+    EXPECT_TRUE(ShouldShowBnplSuggestions(autofill_client(), trigger_field));
   }
 }
 

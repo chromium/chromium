@@ -111,9 +111,8 @@ TextWithLink GetBnplUiFooterTextForAi(
 // Returns true if the user has initiated an action on the credit card form
 // and the current context meets all conditions for BNPL eligibility to be
 // shown.
-bool ShouldAppendBnplSuggestion(const AutofillClient& client,
-                                bool is_card_number_field_empty,
-                                FieldType trigger_field_type);
+bool ShouldShowBnplSuggestions(const AutofillClient& client,
+                               FieldType trigger_field_type);
 
 // Determines if autofill BNPL is supported.
 // Returns true if:
