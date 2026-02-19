@@ -24,6 +24,7 @@ if (is_chromeos_device) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//chromeos/ash/components/dbus/printscanmgr",
+      "//chromeos/ash/experiences/settings_ui",
       "//net:test_support",
       "//printing:printing_base",
     ]

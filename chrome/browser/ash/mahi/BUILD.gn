@@ -144,6 +144,8 @@ static_library("test_util") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/mahi",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/magic_boost/public/cpp",
     "//components/manta",
     "//testing/gtest",

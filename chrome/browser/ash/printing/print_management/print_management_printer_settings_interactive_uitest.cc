@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/accelerators/accelerator.h"

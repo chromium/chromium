@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/secure_channel",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/common/channel_info.h",
   "+chrome/grit",

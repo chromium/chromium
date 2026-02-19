@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]

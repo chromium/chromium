@@ -17,13 +17,13 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/hats",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
   "cras_audio_handler_delegate_impl_unittest.cc": [
     "+chrome/browser/ui/chrome_pages.h",
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+chrome/test/base/browser_with_test_window_test.h",
   ],
 

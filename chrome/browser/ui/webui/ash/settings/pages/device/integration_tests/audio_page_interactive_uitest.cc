@@ -12,12 +12,16 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -167,9 +171,13 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
     return Steps(
         Log("Open OS Settings to Audio Page"),
         InstrumentNextTab(kOsSettingsElementId, AnyBrowser()), Do([&]() {
-          chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-              GetActiveUserProfile(),
-              chromeos::settings::mojom::kAudioSubpagePath);
+          auto* session =
+              session_manager::SessionManager::Get()->GetActiveSession();
+          CHECK(session);
+          ash::SettingsAppManager::Get()->Open(
+              CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                  session->account_id())),
+              {.sub_page = chromeos::settings::mojom::kAudioSubpagePath});
         }),
         WaitForShow(kOsSettingsElementId),
 

@@ -63,7 +63,6 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public",
-    "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+chrome/browser/ui/web_applications/test",
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",

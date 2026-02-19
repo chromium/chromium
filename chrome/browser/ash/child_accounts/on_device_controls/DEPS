@@ -30,7 +30,6 @@ specific_include_rules = {
     "+chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h",
   ],
   "app_controls_notifier.cc": [
-    "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+ui/message_center/message_center.h",
   ],
   "app_controls_notifier_unittest.cc": [

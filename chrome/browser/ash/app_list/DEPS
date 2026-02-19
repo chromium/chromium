@@ -58,7 +58,6 @@ include_rules = [
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/settings/app_management",
   "+chrome/browser/ui/webui/ash/settings/calculator",
@@ -118,9 +117,11 @@ specific_include_rules = {
 
   "app_list_syncable_service_unittest\\.cc": [
     "+cc/base/math_util.h",
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
   ],
 
   "app_list_client_impl_browsertest\\.cc": [
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+ui/message_center/test/message_center_waiter.h",
   ],
 }

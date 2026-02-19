@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/common/chrome_features.h",

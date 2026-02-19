@@ -43,10 +43,6 @@ include_rules = [
   "+chrome/browser/upgrade_detector",
   "+chrome/common",
   "+chrome/test",
-
-  # TODO(crbug.com/454737637): Temporarily added for partial rollback.
-  # Remove with relanding.
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
 ]
 
 specific_include_rules = {

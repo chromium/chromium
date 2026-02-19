@@ -4,11 +4,13 @@
 
 #include "ash/shell.h"
 #include "ash/test/active_window_waiter.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,7 +35,10 @@ IN_PROC_BROWSER_TEST_F(WmpBrowserTest, DragAndDropWindow) {
 
   // Launch the OS Settings app.
   ActiveWindowWaiter window_waiter(Shell::GetPrimaryRootWindow());
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile);
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
+      {});
   aura::Window* window = window_waiter.Wait();
   ASSERT_TRUE(window);
 

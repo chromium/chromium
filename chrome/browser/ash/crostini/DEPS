@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/views/crostini",
   "+chrome/browser/ui/webui/ash",
   "+chrome/common/chrome_features.h",

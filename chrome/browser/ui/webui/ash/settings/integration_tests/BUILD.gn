@@ -22,6 +22,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//chrome/test/base/ash/interactive:test_support",
+      "//chromeos/ash/experiences/settings_ui",
       "//ui/base",
     ]
   }

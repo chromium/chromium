@@ -68,6 +68,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/frame",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/util:test_support",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/coral/public/mojom",
     "//content/test:test_support",
     "//ui/display",

@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/cellular_setup",
   "+chrome/browser/ui/webui/ash/floating_workspace",
   "+chrome/common",

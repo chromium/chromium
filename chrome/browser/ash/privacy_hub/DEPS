@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
 ]
 
 specific_include_rules = {

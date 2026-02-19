@@ -46,7 +46,6 @@ include_rules = [
   "+chrome/browser/ui/content_settings",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/login",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/toolbar",
   "+chrome/browser/ui/view_ids.h",
   "+chrome/browser/ui/views/location_bar/location_bar_view.h",

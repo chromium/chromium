@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/manage_mirrorsync",
   "+chrome/common/chrome_features.h",
@@ -67,7 +66,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "private_api_dialog.cc" : [
+  "private_api_dialog\\.cc" : [
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   ],
+
+  "system_notification_manager_unittest\\.cc": [
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  ]
 }

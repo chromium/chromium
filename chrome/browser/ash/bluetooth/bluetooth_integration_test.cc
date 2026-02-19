@@ -11,15 +11,20 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
 #include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -159,8 +164,13 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
 
       Log("Opening OS settings system web app"),
       InstrumentNextTab(kOsSettingsElementId, AnyBrowser()), Do([&]() {
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            GetActiveUserProfile(), kBluetoothDevicesSubpagePath);
+        auto* session =
+            session_manager::SessionManager::Get()->GetActiveSession();
+        CHECK(session);
+        ash::SettingsAppManager::Get()->Open(
+            CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                session->account_id())),
+            {.sub_page = kBluetoothDevicesSubpagePath});
       }),
       WaitForShow(kOsSettingsElementId),
 

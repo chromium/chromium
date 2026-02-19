@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/ash/user_image",
   "+chrome/browser/ui/webui/metrics_handler.h",

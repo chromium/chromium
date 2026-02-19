@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]

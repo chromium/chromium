@@ -94,6 +94,7 @@ if (is_chromeos_device) {
       "//chrome/test:ash_integration_test_support",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive/bluetooth:test_support",
+      "//chromeos/ash/experiences/settings_ui",
       "//dbus",
       "//device/bluetooth",
       "//testing/gtest",
