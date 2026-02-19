@@ -21,6 +21,25 @@ export interface SlimWebViewElement {
 
 const GUEST_INSTANCE_ID_PENDING: number = 0;
 
+export class ExitEvent extends Event {
+  readonly reason: string;
+  readonly processId: number;
+
+  static factory(args: EventDict) {
+    return new ExitEvent(args);
+  }
+
+  private constructor(args: EventDict) {
+    super('exit', {
+      bubbles: true,
+      cancelable: false,
+    });
+    this.reason = args.getString('reason');
+    this.processId = args.getInt('processId');
+  }
+}
+
+
 export class LoadCommitEvent extends Event {
   readonly url: string;
   readonly isTopLevel: boolean;
@@ -109,6 +128,12 @@ class SizeChangedEvent extends Event {
 const eventDescriptors: EventMap = new Map([
   ['contentload', {}],
   [
+    'exit',
+    {
+      factory: ExitEvent.factory,
+    },
+  ],
+  [
     'loadabort',
     {
       factory: LoadAbortEvent.factory,
@@ -132,6 +157,7 @@ const eventDescriptors: EventMap = new Map([
       factory: SizeChangedEvent.factory,
     },
   ],
+  ['unresponsive', {}],
 ]);
 
 export class SlimWebViewElement extends CrLitElement {

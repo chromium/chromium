@@ -53,6 +53,10 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) final;
+  void RendererUnresponsive(
+      content::WebContents* source,
+      content::RenderWidgetHost* render_widget_host,
+      base::RepeatingClosure hang_monitor_restarter) final;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
@@ -63,6 +67,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   void GuestViewDocumentOnLoadCompleted() final;
   void GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                      const gfx::Size& new_size) final;
+  void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
