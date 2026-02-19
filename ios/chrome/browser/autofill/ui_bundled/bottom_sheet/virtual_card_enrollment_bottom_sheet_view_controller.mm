@@ -68,9 +68,6 @@ CGFloat const kCreditCardCellHeight = 64;
   // Set the spacing between the two stack views.
   self.customSpacing = kVerticalSpacingMedium;
 
-  // Remove extra space between the scroll view bottom and last legal message.
-  self.addsContentViewBottomInset = NO;
-
   self.aboveTitleView = [self createAboveTitleStackView];
 
   _customUnderTitleView = [self createUnderTitleView];
