@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_view.h"
-#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/coordinator/set_up_list_mediator.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_utils.h"
@@ -88,8 +88,9 @@
       return [self shopCardViewForConfig:item];
     }
     case ContentSuggestionsModuleType::kSendTabPromo: {
-      SendTabPromoItem* item = static_cast<SendTabPromoItem*>(config);
-      return [self sendTabPromoViewForConfig:item];
+      SendTabPromoConfig* sendTabPromoConfig =
+          static_cast<SendTabPromoConfig*>(config);
+      return [self sendTabPromoViewForConfig:sendTabPromoConfig];
     }
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
@@ -194,11 +195,11 @@
   return safetyCheckView;
 }
 
-- (UIView*)sendTabPromoViewForConfig:(SendTabPromoItem*)sendTabPromoItem {
+- (UIView*)sendTabPromoViewForConfig:(SendTabPromoConfig*)sendTabPromoConfig {
   StandaloneModuleView* view =
       [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
-  [view configureView:sendTabPromoItem];
-  view.tapDelegate = sendTabPromoItem;
+  [view configureView:sendTabPromoConfig];
+  view.tapDelegate = sendTabPromoConfig;
   return view;
 }
 

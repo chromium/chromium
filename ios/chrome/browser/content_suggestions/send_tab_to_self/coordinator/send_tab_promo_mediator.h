@@ -10,7 +10,7 @@
 class FaviconLoader;
 @protocol MagicStackModuleContainerDelegate;
 class PrefService;
-@class SendTabPromoItem;
+@class SendTabPromoConfig;
 @protocol SendTabPromoMediatorDelegate;
 
 // Mediator for managing the state of the Send Tab to Self Promo Magic Stack
@@ -41,7 +41,7 @@ class PrefService;
 
 // Data for send tab promo to show. Includes the image for the
 // latest sent tab to be displayed.
-- (SendTabPromoItem*)sendTabPromoItemToShow;
+- (SendTabPromoConfig*)sendTabPromoConfigToShow;
 
 @end
 

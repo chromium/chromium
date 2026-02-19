@@ -64,7 +64,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/coordinator/send_tab_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/coordinator/send_tab_promo_mediator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/coordinator/set_up_list_mediator.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_utils.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_config.h"
@@ -359,13 +359,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 #pragma mark - SendTabPromoMediatorDelegate
 
 - (void)sentTabReceived {
-  MagicStackModule* item = _sendTabPromoMediator.sendTabPromoItemToShow;
+  MagicStackModule* config = _sendTabPromoMediator.sendTabPromoConfigToShow;
   NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index = [rank indexOfObject:item];
+  NSUInteger index = [rank indexOfObject:config];
   if (index == NSNotFound) {
     return;
   }
-  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+  [self.delegate magicStackRankingModel:self
+                          didInsertItem:config
+                                atIndex:index];
 }
 
 - (void)removeSendTabPromoModule {
@@ -373,7 +375,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kSendTabPromo);
   [self.delegate
       magicStackRankingModel:self
-               didRemoveItem:_sendTabPromoMediator.sendTabPromoItemToShow
+               didRemoveItem:_sendTabPromoMediator.sendTabPromoConfigToShow
                      animate:YES
               withCompletion:nil];
 }
@@ -716,7 +718,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       if (send_tab_to_self::
               IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
-        card = _sendTabPromoMediator.sendTabPromoItemToShow;
+        card = _sendTabPromoMediator.sendTabPromoConfigToShow;
         break;
       }
     } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule) {
@@ -962,9 +964,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         if (send_tab_to_self::
                 IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() &&
             _sendTabPromoMediator &&
-            _sendTabPromoMediator.sendTabPromoItemToShow) {
+            _sendTabPromoMediator.sendTabPromoConfigToShow) {
           [magicStackOrder
-              addObject:_sendTabPromoMediator.sendTabPromoItemToShow];
+              addObject:_sendTabPromoMediator.sendTabPromoConfigToShow];
         }
         break;
       case ContentSuggestionsModuleType::kTips:

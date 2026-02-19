@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/coordinator/send_tab_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_audience.h"
-#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_config.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -23,7 +23,7 @@
 @end
 
 @implementation SendTabPromoMediator {
-  SendTabPromoItem* _sendTabPromoItem;
+  SendTabPromoConfig* _sendTabPromoConfig;
   raw_ptr<PrefService> _prefService;
   raw_ptr<FaviconLoader> _faviconLoader;
 }
@@ -41,11 +41,11 @@
 - (void)disconnect {
   _faviconLoader = nullptr;
   _prefService = nullptr;
-  _sendTabPromoItem = nullptr;
+  _sendTabPromoConfig = nullptr;
 }
 
-- (SendTabPromoItem*)sendTabPromoItemToShow {
-  return _sendTabPromoItem;
+- (SendTabPromoConfig*)sendTabPromoConfigToShow {
+  return _sendTabPromoConfig;
 }
 
 - (void)setDelegate:(id<SendTabPromoMediatorDelegate>)delegate {
@@ -81,7 +81,7 @@
 
 // Fetches the favicon for the page at `tabURL`.
 - (void)fetchFaviconForUrl:(GURL)tabURL {
-  _sendTabPromoItem = nullptr;
+  _sendTabPromoConfig = nullptr;
   __weak SendTabPromoMediator* weakSelf = self;
 
   _faviconLoader->FaviconForPageUrl(
@@ -94,19 +94,19 @@
 
 // Called when the favicon has been received.
 - (void)onFaviconReceived:(FaviconAttributes*)attributes cached:(BOOL)cached {
-  if (_sendTabPromoItem) {
+  if (_sendTabPromoConfig) {
     // Favicon callback has already been executed, update the image and return.
     if (!cached || attributes.faviconImage) {
-      _sendTabPromoItem.faviconImage = attributes.faviconImage;
+      _sendTabPromoConfig.faviconImage = attributes.faviconImage;
     }
     return;
   }
 
-  _sendTabPromoItem = [[SendTabPromoItem alloc] init];
+  _sendTabPromoConfig = [[SendTabPromoConfig alloc] init];
   if (!cached || attributes.faviconImage) {
-    _sendTabPromoItem.faviconImage = attributes.faviconImage;
+    _sendTabPromoConfig.faviconImage = attributes.faviconImage;
   }
-  _sendTabPromoItem.audience = self;
+  _sendTabPromoConfig.audience = self;
   [_delegate sentTabReceived];
 }
 

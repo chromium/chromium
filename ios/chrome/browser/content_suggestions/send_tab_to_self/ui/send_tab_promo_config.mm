@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_config.h"
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
@@ -23,7 +23,18 @@ NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
 
 }  // namespace
 
-@implementation SendTabPromoItem
+@implementation SendTabPromoConfig
+
+#pragma mark - NSCopying
+
+- (instancetype)copyWithZone:(NSZone*)zone {
+  SendTabPromoConfig* config = [[super copyWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
+  config.audience = self.audience;
+  // LINT.ThenChange(send_tab_promo_config.h:Copy)
+  return config;
+}
 
 #pragma mark - MagicStackModule
 
@@ -58,14 +69,6 @@ NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
 - (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {
   CHECK_EQ(self.type, moduleType);
   [self.audience didSelectSendTabPromo];
-}
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  SendTabPromoItem* copy = [super copyWithZone:zone];
-  copy.audience = self.audience;
-  return copy;
 }
 
 @end
