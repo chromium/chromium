@@ -986,14 +986,15 @@ void FormFiller::FillOrPreviewForm(
     } else if (!is_newly_autofilled_or_emptied) {
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
-    } else if (may_refill_in_future) {
-      refill_context->type_groups_originally_filled.insert_all(
-          autofill_field.Type().GetGroups());
-    }
-
-    if (filled_field_type) {
-      filled_field_types.emplace(result_fields[i].global_id(),
-                                 *filled_field_type);
+    } else {
+      if (filled_field_type) {
+        filled_field_types.emplace(result_fields[i].global_id(),
+                                   *filled_field_type);
+      }
+      if (may_refill_in_future) {
+        refill_context->type_groups_originally_filled.insert_all(
+            autofill_field.Type().GetGroups());
+      }
     }
 
     const bool has_value_before = !form.fields()[i].value().empty();
@@ -1088,26 +1089,31 @@ void FormFiller::FillOrPreviewForm(
   // cache with the information changed during the filling operation.
   if (action_persistence == mojom::ActionPersistence::kFill) {
     // This map will tell us if the field was modified or cleared by Autofill.
-    auto autofilled_field_map = base::MakeFlatMap<FieldGlobalId, bool>(
+    auto is_autofilled_field_map = base::MakeFlatMap<FieldGlobalId, bool>(
         result_fields, {}, [](const FormFieldData& field) {
           return std::pair(field.global_id(),
                            field.is_autofilled_according_to_renderer());
         });
     for (const std::unique_ptr<AutofillField>& field : form_structure) {
-      const FieldType* autofilled_type =
-          base::FindOrNull(filled_field_types, field->global_id());
-      if (!autofilled_type) {
+      if (base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)
+              ? !safe_filled_field_ids.contains(field->global_id())
+              : !filled_field_types.contains(field->global_id())) {
         continue;
       }
+      const FieldType& autofilled_type =
+          CHECK_DEREF(base::FindOrNull(filled_field_types, field->global_id()));
+      const bool& is_autofilled = CHECK_DEREF(
+          base::FindOrNull(is_autofilled_field_map, field->global_id()));
+
       const FillingProduct filling_product =
           augmented_filling_payload.filling_product();
-      if (autofilled_field_map[field->global_id()]) {
+      if (is_autofilled) {
         field->AddFieldModifier(FieldModifier::kAutofill);
       } else {
         field->RemoveFieldModifier(FieldModifier::kAutofill, /*pass_key=*/{});
       }
       field->set_filling_product(filling_product);
-      field->set_autofilled_type(*autofilled_type);
+      field->set_autofilled_type(autofilled_type);
       if (filling_product == FillingProduct::kAddress) {
         field->set_autofill_source_profile_guid(
             std::get<const AutofillProfile*>(augmented_filling_payload.variant)
