@@ -424,7 +424,7 @@ double Matrix44::MapVector2(base::span<double, 2> vec) const {
   return w;
 }
 
-void Matrix44::MapVector4(double vec[4]) const {
+void Matrix44::MapVector4(base::span<double, 4> vec) const {
   Double4 v = LoadDouble4(vec);
   Double4 r0{matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0]};
   Double4 r1{matrix_[0][1], matrix_[1][1], matrix_[2][1], matrix_[3][1]};

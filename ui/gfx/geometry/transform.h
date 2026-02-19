@@ -5,6 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_TRANSFORM_H_
 #define UI_GFX_GEOMETRY_TRANSFORM_H_
 
+#include <array>
 #include <iosfwd>
 #include <memory>
 #include <optional>
@@ -144,24 +145,22 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
   }
 
   // Gets a value at |row|, |col| from the matrix.
-  constexpr double rc(int row, int col) const {
-    DCHECK_LE(static_cast<unsigned>(row), 3u);
-    DCHECK_LE(static_cast<unsigned>(col), 3u);
+  constexpr double rc(unsigned row, unsigned col) const {
     if (!full_matrix_) [[likely]] {
-      float m[4][4] = {{axis_2d_.scale().x(), 0, 0, axis_2d_.translation().x()},
-                       {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
-                       {0, 0, 1, 0},
-                       {0, 0, 0, 1}};
-      return UNSAFE_TODO(m[row][col]);
+      std::array<std::array<float, 4>, 4> m = {{
+          {axis_2d_.scale().x(), 0, 0, axis_2d_.translation().x()},
+          {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
+          {0, 0, 1, 0},
+          {0, 0, 0, 1},
+      }};
+      return m[row][col];
     }
     return matrix_.rc(row, col);
   }
 
   // Sets a value in the matrix at |row|, |col|. It forces full double precision
   // 4x4 matrix.
-  void set_rc(int row, int col, double v) {
-    DCHECK_LE(static_cast<unsigned>(row), 3u);
-    DCHECK_LE(static_cast<unsigned>(col), 3u);
+  void set_rc(unsigned row, unsigned col, double v) {
     EnsureFullMatrix().set_rc(row, col, v);
   }
 
@@ -177,7 +176,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
   // Gets col-major data.
   void GetColMajor(base::span<double, 16> a) const;
   void GetColMajorF(base::span<float, 16> a) const;
-  double ColMajorData(int index) const { return rc(index % 4, index / 4); }
+  double ColMajorData(unsigned index) const { return rc(index % 4, index / 4); }
 
   // Applies a transformation on the current transformation,
   // i.e. this = this * transform.
