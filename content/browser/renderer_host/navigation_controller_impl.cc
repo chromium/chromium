@@ -2410,6 +2410,12 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   bool was_post_commit_error =
       request->browser_initiated_error_navigation_type() ==
       NavigationRequest::BrowserInitiatedErrorNavigationType::kPostCommit;
+  // Record if the new URL matches any existing BFCache entry. We pass the
+  // target index (current + 1 or current for replace) to check for an exact
+  // index match.
+  int target_index = last_committed_entry_index_ +
+                     ((replace_entry || was_post_commit_error) ? 0 : 1);
+  GetBackForwardCache().RecordEntryMatch(params.url, target_index);
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
                        was_post_commit_error, rfh->IsNestedWithinFencedFrame(),
@@ -2544,12 +2550,22 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     entry->GetFavicon() = FaviconStatus();
   }
 
+  int new_entry_index = GetIndexOfEntry(entry);
+  if (!request->IsServedFromBackForwardCache()) {
+    // Record if the new URL matches any existing BFCache entry.
+    GetBackForwardCache().RecordEntryMatch(params.url, new_entry_index);
+  }
+  if (new_entry_index != -1 && new_entry_index < last_committed_entry_index_) {
+    // Record the number of forward BFCache entries when we go back.
+    GetBackForwardCache().RecordForwardEntriesCount(new_entry_index);
+  }
+
   // Update the last committed index to reflect the committed entry. Do this
   // before calling DiscardNonCommittedEntriesInternal, so that the
   // delegate sees the correct committed index when notified of navigation
   // state changes. (Otherwise CanGoBack may incorrectly return true, as in
   // https://crbug.com/1439948.)
-  last_committed_entry_index_ = GetIndexOfEntry(entry);
+  last_committed_entry_index_ = new_entry_index;
 
   // We should also usually discard the pending entry if it corresponds to a
   // different navigation, since that one is now likely canceled.  In rare

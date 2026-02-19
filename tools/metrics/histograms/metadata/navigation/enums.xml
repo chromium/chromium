@@ -94,6 +94,17 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="WindowVisibilityChanged"/>
 </enum>
 
+<!-- LINT.IfChange(BackForwardCacheEntryMatchResult) -->
+
+<enum name="BackForwardCacheEntryMatchResult">
+  <int value="0" label="No entries in BackForwardCache"/>
+  <int value="1" label="No match found"/>
+  <int value="2" label="Match found but index mismatch"/>
+  <int value="3" label="Match found and index match"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/back_forward_cache_impl.h:BackForwardCacheEntryMatchResult) -->
+
 <enum name="BackForwardCacheEvictedAfterDocumentRestoredReason">
   <int value="0" label="Restored"/>
   <int value="1" label="By JavaScript"/>

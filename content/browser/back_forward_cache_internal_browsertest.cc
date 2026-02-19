@@ -4751,4 +4751,104 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestReloadHiddenTabsWithCrashedSub
   }
 }
 
+IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
+                       RecordForwardEntriesCountMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1. Setup: A -> B -> C.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+
+  // 2. Go back to B (C is forward).
+  // Count should be 1.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_b);
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.ForwardEntriesCount", 1, 1);
+  }
+
+  // 3. Go back to A (B and C are forward).
+  // Count should be 2.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.ForwardEntriesCount", 2, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
+                       RecordEntryMatchMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1. Navigate to A. No entries in BFCache.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), url_a));
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.EntryMatch",
+        BackForwardCacheImpl::BackForwardCacheEntryMatchResult::kNoEntries, 1);
+  }
+
+  // 2. Navigate A -> B.
+  // A(0) in BFCache. Target is B(1). URL mismatch.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), url_b));
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.EntryMatch",
+        BackForwardCacheImpl::BackForwardCacheEntryMatchResult::kNoMatch, 1);
+  }
+
+  // 3. Navigate B -> C.
+  // A(0) and B(1) in BFCache. Target is C(2). URL mismatch.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), url_c));
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.EntryMatch",
+        BackForwardCacheImpl::BackForwardCacheEntryMatchResult::kNoMatch, 1);
+  }
+
+  // 4. Go back to A (History Navigation).
+  // Metric is NOT recorded for BFCache restores.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(HistoryGoToOffset(web_contents(), -2));
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
+    histogram_tester.ExpectTotalCount("BackForwardCache.History.EntryMatch", 0);
+  }
+
+  // 5. Navigate to B (Exact Index Match).
+  // B(1) and C(2) in BFCache. Target is B(1). Exact match.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), url_b));
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.EntryMatch",
+        BackForwardCacheImpl::BackForwardCacheEntryMatchResult::kMatchIndex, 1);
+  }
+
+  // 6. Navigate to A (Index Mismatch).
+  // A(0) and B(1) in BFCache. Target is A(0). Index mismatch.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), url_a));
+    histogram_tester.ExpectUniqueSample(
+        "BackForwardCache.History.EntryMatch",
+        BackForwardCacheImpl::BackForwardCacheEntryMatchResult::kMatchNoIndex,
+        1);
+  }
+}
+
 }  // namespace content

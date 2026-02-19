@@ -1762,6 +1762,70 @@ void BackForwardCacheImpl::RenderViewHostNoLongerStored(
   RenderViewHostNoLongerStoredInternal(rvh);
 }
 
+bool BackForwardCacheImpl::IsForwardEntry(const std::unique_ptr<Entry>& entry,
+                                          NavigationControllerImpl& controller,
+                                          int current_nav_entry_index) {
+  int entry_index = controller.GetEntryIndexWithUniqueID(
+      entry->render_frame_host()->nav_entry_id());
+  return entry_index != -1 && entry_index > current_nav_entry_index;
+}
+
+void BackForwardCacheImpl::RecordForwardEntriesCount(
+    int current_nav_entry_index) {
+  int count = 0;
+  if (!entries_.empty()) {
+    auto& controller = entries_.front()
+                           ->render_frame_host()
+                           ->frame_tree_node()
+                           ->navigator()
+                           .controller();
+    count = std::ranges::count_if(entries_, [&](const auto& entry) {
+      return IsForwardEntry(entry, controller, current_nav_entry_index);
+    });
+  }
+  base::UmaHistogramExactLinear("BackForwardCache.History.ForwardEntriesCount",
+                                count, 10);
+}
+
+void BackForwardCacheImpl::RecordEntryMatch(const GURL& new_url,
+                                            int target_nav_entry_index) {
+  if (entries_.empty()) {
+    base::UmaHistogramEnumeration("BackForwardCache.History.EntryMatch",
+                                  BackForwardCacheEntryMatchResult::kNoEntries);
+    return;
+  }
+  auto& controller = entries_.front()
+                         ->render_frame_host()
+                         ->frame_tree_node()
+                         ->navigator()
+                         .controller();
+  bool match_found = false;
+  bool index_match_found = false;
+
+  // TODO(crbug.com/432396241): Support No-Vary-Search for URL matching.
+  for (const auto& entry : entries_) {
+    if (entry->render_frame_host()->GetLastCommittedURL() == new_url) {
+      match_found = true;
+      int entry_index = controller.GetEntryIndexWithUniqueID(
+          entry->render_frame_host()->nav_entry_id());
+      if (entry_index == target_nav_entry_index) {
+        index_match_found = true;
+        break;
+      }
+    }
+  }
+
+  BackForwardCacheEntryMatchResult result;
+  if (index_match_found) {
+    result = BackForwardCacheEntryMatchResult::kMatchIndex;
+  } else if (match_found) {
+    result = BackForwardCacheEntryMatchResult::kMatchNoIndex;
+  } else {
+    result = BackForwardCacheEntryMatchResult::kNoMatch;
+  }
+  base::UmaHistogramEnumeration("BackForwardCache.History.EntryMatch", result);
+}
+
 void BackForwardCacheImpl::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {

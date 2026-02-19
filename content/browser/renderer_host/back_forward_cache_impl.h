@@ -44,6 +44,7 @@ namespace content {
 
 class RenderFrameHostImpl;
 class SiteInstance;
+class NavigationControllerImpl;
 
 // This feature is used to limit the scope of back-forward cache experiment
 // without enabling it. To control the URLs list by using this feature by
@@ -394,6 +395,31 @@ class CONTENT_EXPORT BackForwardCacheImpl
   const std::list<std::unique_ptr<Entry>>& GetEntries();
   std::list<Entry*> GetEntriesForRenderViewHostImpl(
       const RenderViewHostImpl* rvhi) const;
+
+  // Returns true if the |entry| is forward of the |current_nav_entry_index| in
+  // the session history.
+  bool IsForwardEntry(const std::unique_ptr<Entry>& entry,
+                      NavigationControllerImpl& controller,
+                      int current_nav_entry_index);
+
+  // Called when a history back navigation commits. Records the number of
+  // BackForwardCache entries that are forward of the new committed entry.
+  void RecordForwardEntriesCount(int current_nav_entry_index);
+
+  // LINT.IfChange(BackForwardCacheEntryMatchResult)
+  enum class BackForwardCacheEntryMatchResult {
+    kNoEntries = 0,
+    kNoMatch = 1,
+    kMatchNoIndex = 2,
+    kMatchIndex = 3,
+    kMaxValue = kMatchIndex,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:BackForwardCacheEntryMatchResult)
+
+  // Called when a navigation commits that is not served from BackForwardCache.
+  // Records whether the |new_url| matches any existing BackForwardCache entry,
+  // and checks for an exact match at |target_nav_entry_index|.
+  void RecordEntryMatch(const GURL& new_url, int target_nav_entry_index);
 
   // BackForwardCache overrides:
   void Flush() override;

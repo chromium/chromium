@@ -394,6 +394,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BackForwardCache.History.EntryMatch"
+    enum="BackForwardCacheEntryMatchResult" expires_after="2026-08-01">
+  <owner>annasato@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the result of matching the committed navigation URL against existing
+    entries in BackForwardCache. Records whether the cache was empty, if no
+    match was found, if a URL match was found (but with a different history
+    index), or if an exact match (URL and history index) was found. Recorded
+    when a navigation commits (excluding BackForwardCache restores).
+  </summary>
+</histogram>
+
+<histogram name="BackForwardCache.History.ForwardEntriesCount" units="entries"
+    expires_after="2026-08-01">
+  <owner>annasato@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the number of BackForwardCache entries that are forward of the new
+    committed entry. Recorded when a history back navigation commits (including
+    navigations restored from BackForwardCache).
+  </summary>
+</histogram>
+
 <histogram name="BackForwardCache.HistoryNavHasPotentialMatch" enum="Boolean"
     expires_after="2026-05-17">
   <owner>rakina@chromium.org</owner>
