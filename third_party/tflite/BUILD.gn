@@ -307,6 +307,7 @@ source_set("mutable_schema") {
 
 source_set("tflite_public_headers") {
   public = [
+    "shims/tensorflow/lite/types/fp16.h",
     "src/tensorflow/compiler/mlir/lite/schema/schema_generated.h",
     "src/tensorflow/compiler/mlir/lite/schema/schema_utils.h",
     "src/tensorflow/lite/allocation.h",
@@ -344,6 +345,8 @@ source_set("tflite_public_headers") {
       "src/tensorflow/lite/delegates/gpu/delegate_options.h",
     ]
   }
+
+  deps = [ "//third_party/fp16" ]
 
   configs += [ ":tflite_flags" ]
 }
@@ -1458,6 +1461,7 @@ if (build_with_chromium) {
       ":tflite_builtin_op_resolver",
       ":tflite_tools_proto",
       "//third_party/abseil-cpp:absl",
+      "//third_party/fp16",
       "//third_party/ruy",
     ]
 
