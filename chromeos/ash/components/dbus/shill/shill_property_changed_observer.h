@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
+
 namespace base {
 class Value;
 }
@@ -15,13 +17,10 @@ namespace ash {
 
 // This is a base class for observers which handle the PropertyChanged signal
 // sent from Shill.
-class ShillPropertyChangedObserver {
+class ShillPropertyChangedObserver : public base::CheckedObserver {
  public:
   virtual void OnPropertyChanged(const std::string& name,
                                  const base::Value& value) = 0;
-
- protected:
-  virtual ~ShillPropertyChangedObserver() {}
 };
 
 }  // namespace ash

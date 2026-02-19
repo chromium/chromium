@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(ASH_DBUS_GNUBBY) FakeGnubbyClient : public GnubbyClient {
  private:
   int calls_ = 0;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<FakeGnubbyClient> weak_ptr_factory_{this};
 };

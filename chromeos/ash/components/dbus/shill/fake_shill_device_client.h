@@ -117,8 +117,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
     int retries_left = 0;
     bool lock_enabled = true;
   };
-  typedef base::ObserverList<ShillPropertyChangedObserver>::Unchecked
-      PropertyObserverList;
+  typedef base::ObserverList<ShillPropertyChangedObserver> PropertyObserverList;
 
   SimLockStatus GetSimLockStatus(const std::string& device_path);
   void SetSimLockStatus(const std::string& device_path,

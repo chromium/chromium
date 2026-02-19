@@ -64,7 +64,7 @@ class GnubbyClientImpl : public GnubbyClient {
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<GnubbyClientImpl> weak_ptr_factory_{this};
 };

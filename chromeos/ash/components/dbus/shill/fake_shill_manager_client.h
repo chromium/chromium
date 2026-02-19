@@ -245,7 +245,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   using DevicePropertyMap = std::map<std::string, ShillPropertyMap>;
   DevicePropertyMap shill_device_property_map_;
 
-  base::ObserverList<ShillPropertyChangedObserver>::Unchecked observer_list_;
+  base::ObserverList<ShillPropertyChangedObserver> observer_list_;
 
   // Track the default service for signaling Manager.DefaultService.
   std::string default_service_;

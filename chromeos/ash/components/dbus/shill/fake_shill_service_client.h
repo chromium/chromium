@@ -139,8 +139,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetTimeGetterForTest(base::RepeatingCallback<base::Time()>) override;
 
  private:
-  typedef base::ObserverList<ShillPropertyChangedObserver>::Unchecked
-      PropertyObserverList;
+  typedef base::ObserverList<ShillPropertyChangedObserver> PropertyObserverList;
 
   void NotifyObserversPropertyChanged(const dbus::ObjectPath& service_path,
                                       const std::string& property);

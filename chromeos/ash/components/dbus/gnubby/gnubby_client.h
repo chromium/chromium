@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_GNUBBY_CLIENT_H_
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -17,13 +18,10 @@ class COMPONENT_EXPORT(ASH_DBUS_GNUBBY) GnubbyClient
     : public chromeos::DBusClient {
  public:
   // Interface for observing changes in Gnubby Client
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when U2F service is requested
     virtual void PromptUserAuth() {}
-
-   protected:
-    virtual ~Observer() = default;
   };
 
   // Returns the global instance if initialized. May return null.
