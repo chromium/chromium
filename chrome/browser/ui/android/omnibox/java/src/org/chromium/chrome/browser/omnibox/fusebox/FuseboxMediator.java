@@ -512,10 +512,11 @@ public class FuseboxMediator {
             for (int id : newlySelectedTabIds) {
                 if (!currentAttachedIds.contains(id)) {
                     Tab tab = tabModelSelector.getTabById(id);
+                    if (tab == null) continue;
                     boolean addFailed =
                             !mModelList.add(
                                     FuseboxAttachment.forTab(
-                                            assumeNonNull(tab),
+                                            tab,
                                             mContext.getResources(),
                                             FuseboxAttachmentButtonType.TAB_PICKER));
                     if (addFailed) {
