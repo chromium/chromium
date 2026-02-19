@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/cfi_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -146,15 +145,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest,
   ASSERT_TRUE(FakeServerAppChecker({id0, id1}).Wait());
 }
 
-// TODO(crbug.com/480145614): Frequently flaky in Linux dbg, MSAN, and CFI bots.
-#if BUILDFLAG(IS_LINUX) && (defined(MEMORY_SANITIZER) || !defined(NDEBUG) || \
-                            BUILDFLAG(CFI_ICALL_CHECK))
-#define MAYBE_InstallSomePlatformApps DISABLED_InstallSomePlatformApps
-#else
-#define MAYBE_InstallSomePlatformApps InstallSomePlatformApps
-#endif
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest,
-                       MAYBE_InstallSomePlatformApps) {
+                       InstallSomePlatformApps) {
   ASSERT_TRUE(SetupSync());
 
   const std::string id0 = InstallPlatformApp(GetProfile(0), 0);
