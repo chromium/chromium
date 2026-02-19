@@ -2038,64 +2038,6 @@ TEST_P(SharedStorageDatabaseParamTest, PurgeStale) {
   EXPECT_THAT(origins, ElementsAre(kOrigin4));
 }
 
-TEST_P(SharedStorageDatabaseParamTest, TrimMemory) {
-  EXPECT_TRUE(db_->FetchOrigins().empty());
-
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value2"));
-  EXPECT_EQ(2L, db_->Length(kOrigin1));
-
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value1"));
-  EXPECT_EQ(1L, db_->Length(kOrigin2));
-
-  const url::Origin kOrigin3 =
-      url::Origin::Create(GURL("http://www.example3.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin3, u"key1", u"value1"));
-  EXPECT_EQ(1L, db_->Length(kOrigin3));
-
-  const url::Origin kOrigin4 =
-      url::Origin::Create(GURL("http://www.example4.test"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin4, u"key1", u"value1"));
-  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin4, u"key2", u"value2"));
-  EXPECT_EQ(2L, db_->Length(kOrigin4));
-
-  std::vector<url::Origin> origins;
-  for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
-
-  EXPECT_EQ(OperationResult::kSuccess, db_->Clear(kOrigin1));
-  EXPECT_EQ(0L, db_->Length(kOrigin1));
-
-  EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin2, u"key1"));
-  EXPECT_EQ(0L, db_->Length(kOrigin2));
-
-  origins.clear();
-  for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
-
-  // Release nonessential memory.
-  db_->TrimMemory();
-
-  // Check that the database is still intact.
-  origins.clear();
-  for (const auto& info : db_->FetchOrigins())
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
-
-  EXPECT_EQ(1L, db_->Length(kOrigin3));
-  EXPECT_EQ(2L, db_->Length(kOrigin4));
-
-  EXPECT_EQ(db_->Get(kOrigin3, u"key1").data, u"value1");
-  EXPECT_EQ(db_->Get(kOrigin4, u"key1").data, u"value1");
-  EXPECT_EQ(db_->Get(kOrigin4, u"key2").data, u"value2");
-}
-
 TEST_P(SharedStorageDatabaseParamTest, Set_MaxBytesPerOrigin) {
   // Note that key-value pairs of the form (u"key" + i, u"value" + i), where i
   // is a single digit cast as a std::ustring16, all have 8 + 12 bytes total.

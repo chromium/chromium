@@ -154,9 +154,6 @@ class HistoryDatabase : public DownloadDatabase,
   // unused space in the file. It can be VERY SLOW.
   void Vacuum();
 
-  // Release all non-essential memory associated with this database connection.
-  void TrimMemory();
-
   // Razes the database. Returns true if successful.
   bool Raze();
 

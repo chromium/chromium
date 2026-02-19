@@ -301,10 +301,6 @@ void FaviconDatabase::Vacuum() {
   std::ignore = db_.Execute("VACUUM");
 }
 
-void FaviconDatabase::TrimMemory() {
-  db_.TrimMemory();
-}
-
 std::map<favicon_base::FaviconID, IconMappingsForExpiry>
 FaviconDatabase::GetOldOnDemandFavicons(base::Time threshold) {
   // Restrict to on-demand bitmaps (i.e. with last_requested != 0).

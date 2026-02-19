@@ -79,7 +79,6 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
 
   // AsyncSharedStorageDatabase
   void Destroy(base::OnceCallback<void(bool)> callback) override;
-  void TrimMemory(base::OnceClosure callback) override;
   void Get(url::Origin context_origin,
            std::u16string key,
            base::OnceCallback<void(GetResult)> callback) override;

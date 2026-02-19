@@ -58,9 +58,6 @@ class FaviconDatabase {
   // unused space in the file. It can be VERY SLOW.
   void Vacuum();
 
-  // Release all non-essential memory associated with this database connection.
-  void TrimMemory();
-
   // Get all on-demand favicon bitmaps that have been last requested prior to
   // `threshold`.
   std::map<favicon_base::FaviconID, IconMappingsForExpiry>

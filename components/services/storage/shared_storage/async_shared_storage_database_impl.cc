@@ -55,13 +55,6 @@ void AsyncSharedStorageDatabaseImpl::Destroy(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabaseImpl::TrimMemory(base::OnceClosure callback) {
-  DCHECK(callback);
-  DCHECK(database_);
-  database_.AsyncCall(&SharedStorageDatabase::TrimMemory)
-      .Then(std::move(callback));
-}
-
 void AsyncSharedStorageDatabaseImpl::Get(
     url::Origin context_origin,
     std::u16string key,

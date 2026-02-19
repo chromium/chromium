@@ -268,9 +268,6 @@ class SharedStorageDatabase {
     return !db_path_.empty();
   }
 
-  // Releases all non-essential memory associated with this database connection.
-  void TrimMemory();
-
   // Retrieves the `value` for `context_origin` and `key`. Returns a
   // struct containing a `data` string if a `value` is found, with an
   // `OperationResult` indicating whether the value was found and the

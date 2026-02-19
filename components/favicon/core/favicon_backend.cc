@@ -93,10 +93,6 @@ void FaviconBackend::Commit() {
   db_->BeginTransaction();
 }
 
-void FaviconBackend::TrimMemory() {
-  db_->TrimMemory();
-}
-
 favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
     const GURL& page_url,
     const std::vector<favicon_base::IconTypeSet>& icon_types_list,

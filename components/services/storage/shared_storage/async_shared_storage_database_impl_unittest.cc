@@ -333,15 +333,6 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Get();
   }
 
-  void TrimMemory() {
-    DCHECK(async_database_);
-    DCHECK(receiver_);
-
-    auto callback =
-        receiver_->MakeOnceClosure(DBOperation(Type::DB_TRIM_MEMORY));
-    async_database_->TrimMemory(std::move(callback));
-  }
-
   void Get(url::Origin context_origin,
            std::u16string key,
            GetResult* out_value) {
@@ -1826,7 +1817,6 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
   operation_list.emplace(Type::DB_LENGTH, kOrigin3);
   operation_list.emplace(Type::DB_LENGTH, kOrigin4);
 
-  operation_list.emplace(Type::DB_TRIM_MEMORY);
   operation_list.emplace(Type::DB_FETCH_ORIGINS);
 
   TestSharedStorageEntriesListenerUtility listener_utility(
@@ -1942,8 +1932,6 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
   Length(kOrigin3, &length11);
   int length12 = -1;
   Length(kOrigin4, &length12);
-
-  TrimMemory();
 
   std::vector<mojom::StorageUsageInfoPtr> infos4;
   FetchOrigins(&infos4);

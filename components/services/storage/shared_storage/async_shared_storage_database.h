@@ -64,7 +64,7 @@ class AsyncSharedStorageDatabase {
   // was successful.
   virtual void Destroy(base::OnceCallback<void(bool)> callback) = 0;
 
-  // `TrimMemory()`, `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
+  // `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
   // `Length()`, `Keys()`, `Entries()`, `BytesUsed()`, `PurgeMatchingOrigins()`,
   // `PurgeStale()`, `FetchOrigins()`, `MakeBudgetWithdrawal()`,
   // `GetRemainingBudget()`, `GetCreationTime()`, `GetMetadata()`,
@@ -79,10 +79,6 @@ class AsyncSharedStorageDatabase {
   // skips accessing `database_` (as it will be null) and hence performing the
   // intending operation, logs the occurrence of the missing database to UMA,
   // and runs the callback with a trivial instance of its expected result type.
-
-  // Releases all non-essential memory associated with this database connection.
-  // `callback` runs once the operation is finished.
-  virtual void TrimMemory(base::OnceClosure callback) = 0;
 
   // Retrieves the `value` for `context_origin` and `key`. `callback` is called
   // with a struct bundling a string `value` in its data field if one is found,

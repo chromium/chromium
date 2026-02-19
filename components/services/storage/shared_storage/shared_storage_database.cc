@@ -286,11 +286,6 @@ bool SharedStorageDatabase::Destroy() {
   return sql::Database::Delete(db_path_);
 }
 
-void SharedStorageDatabase::TrimMemory() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  db_.TrimMemory();
-}
-
 SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
     const url::Origin& context_origin,
     std::u16string_view key) {

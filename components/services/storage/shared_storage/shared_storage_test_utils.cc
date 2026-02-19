@@ -32,8 +32,7 @@ namespace storage {
 TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type)
     : type(type) {
   DCHECK(type == Type::DB_IS_OPEN || type == Type::DB_STATUS ||
-         type == Type::DB_DESTROY || type == Type::DB_TRIM_MEMORY ||
-         type == Type::DB_GET_TOTAL_NUM_BUDGET ||
+         type == Type::DB_DESTROY || type == Type::DB_GET_TOTAL_NUM_BUDGET ||
          type == Type::DB_PURGE_STALE || type == Type::DB_FETCH_ORIGINS);
 }
 

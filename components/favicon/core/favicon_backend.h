@@ -64,7 +64,6 @@ class FaviconBackend {
   FaviconDatabase* db() { return db_.get(); }
 
   void Commit();
-  void TrimMemory();
 
   // Removes all favicons, except those referenced by `kept_page_urls`.
   // Returns true on success.

@@ -447,10 +447,6 @@ void HistoryDatabase::Vacuum() {
   std::ignore = db_.Execute("VACUUM");
 }
 
-void HistoryDatabase::TrimMemory() {
-  db_.TrimMemory();
-}
-
 bool HistoryDatabase::Raze() {
   return db_.Raze();
 }
