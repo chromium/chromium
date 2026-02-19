@@ -540,6 +540,12 @@ enum ActionResultCode {
   // The Chrome Actor UI could not be shown.
   kActorUiError = 1300,
 
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1400-1499: Errors for LoadAndExtractContentTool.
+
+  // Content extraction failed for a URL.
+  kLoadAndExtractContentExtractionFailed = 1400,
+
   // Please see the comment above about adding new values.
 };
 

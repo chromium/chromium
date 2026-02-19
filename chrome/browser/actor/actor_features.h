@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 
 namespace actor {
@@ -104,6 +105,8 @@ BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
 BASE_DECLARE_FEATURE(kActorSendBrowserSignalForAction);
 
 BASE_DECLARE_FEATURE(kGlicActorLoadAndExtractContentTool);
+extern const base::FeatureParam<base::TimeDelta>
+    kGlicActorLoadAndExtractContentToolTimeout;
 
 }  // namespace actor
 

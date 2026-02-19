@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace actor {
 
@@ -150,5 +151,9 @@ BASE_FEATURE(kActorSendBrowserSignalForAction,
 
 BASE_FEATURE(kGlicActorLoadAndExtractContentTool,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kGlicActorLoadAndExtractContentToolTimeout{
+        &kGlicActorLoadAndExtractContentTool, "timeout", base::Seconds(30)};
 
 }  // namespace actor
