@@ -58,6 +58,12 @@ int LLVMFuzzerRunDriverImpl(int* argc,
                             int (*UserCb)(const uint8_t* Data, size_t Size)) {
   // Allow blocking for the whole fuzzing session.
   base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Explicitly pull in the Fuzzilli coverage instrumentation. Otherwise the
+  // linker might decide not to link in `cov.o`, causing us to not record
+  // coverage and/or crash at runtime when the wrong sancov hooks are called.
+  fuzzilli_cov_enable();
+
   // Open files for communication with Fuzzilli.
   auto ctrl_read_file = base::File(base::ScopedPlatformFile(kControlReadFd));
   auto ctrl_write_file = base::File(base::ScopedPlatformFile(kControlWriteFd));
@@ -118,11 +124,6 @@ int LLVMFuzzerRunDriverImpl(int* argc,
     // Fuzzilli status is similar to the Linux return status. Lower 8 bits are
     // used for signals, and higher 8 bits for return code.
     ctrl_write_file.WriteAtCurrentPosAndCheck(base::byte_span_from_ref(status));
-
-    // After every iteration, we reset the coverage edges so that we can mark
-    // which edges are hit in the next iteration. This is needed by Fuzzilli
-    // instrumentation.
-    sanitizer_cov_reset_edgeguards();
   }
 }
 
