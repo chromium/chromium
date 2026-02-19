@@ -417,6 +417,11 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     return EmptyPromise();
   }
 
+  if (!language_detection_model_) {
+    ThrowSessionDestroyedException(exception_state);
+    return EmptyPromise();
+  }
+
   AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
   if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();

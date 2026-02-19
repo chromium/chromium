@@ -196,6 +196,11 @@ ScriptPromise<IDLString> Translator::translate(
     return EmptyPromise();
   }
 
+  if (!translator_remote_) {
+    ThrowSessionDestroyedException(exception_state);
+    return EmptyPromise();
+  }
+
   AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
   if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();
@@ -234,6 +239,11 @@ ReadableStream* Translator::translateStreaming(
   if (!ValidateScriptState(
           script_state, exception_state,
           RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
+    return nullptr;
+  }
+
+  if (!translator_remote_) {
+    ThrowSessionDestroyedException(exception_state);
     return nullptr;
   }
 
@@ -291,6 +301,11 @@ ScriptPromise<IDLDouble> Translator::measureInputUsage(
   if (!ValidateScriptState(
           script_state, exception_state,
           RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
+    return EmptyPromise();
+  }
+
+  if (!translator_remote_) {
+    ThrowSessionDestroyedException(exception_state);
     return EmptyPromise();
   }
 

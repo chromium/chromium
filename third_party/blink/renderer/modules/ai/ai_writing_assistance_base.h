@@ -235,16 +235,16 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<IDLString>();
     }
 
+    if (!remote_) {
+      ThrowSessionDestroyedException(exception_state);
+      return ScriptPromise<IDLString>();
+    }
+
     CHECK(options);
     AbortSignal* composite_signal =
         CreateCompositeSignal(script_state, options);
     if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
       return EmptyPromise();
-    }
-
-    if (!remote_) {
-      ThrowSessionDestroyedException(exception_state);
-      return ScriptPromise<IDLString>();
     }
 
     base::UmaHistogramCounts1M(
@@ -288,15 +288,15 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return nullptr;
     }
 
+    if (!remote_) {
+      ThrowSessionDestroyedException(exception_state);
+      return nullptr;
+    }
+
     CHECK(options);
     AbortSignal* composite_signal =
         CreateCompositeSignal(script_state, options);
     if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
-      return nullptr;
-    }
-
-    if (!remote_) {
-      ThrowSessionDestroyedException(exception_state);
       return nullptr;
     }
 
@@ -330,16 +330,16 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<IDLDouble>();
     }
 
+    if (!remote_) {
+      ThrowSessionDestroyedException(exception_state);
+      return ScriptPromise<IDLDouble>();
+    }
+
     CHECK(options);
     AbortSignal* composite_signal =
         CreateCompositeSignal(script_state, options);
     if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
       return EmptyPromise();
-    }
-
-    if (!remote_) {
-      ThrowSessionDestroyedException(exception_state);
-      return ScriptPromise<IDLDouble>();
     }
 
     auto* resolver =
