@@ -61,6 +61,13 @@ std::optional<SupportToolError> GetFirstError(
   return it == results.end() ? std::nullopt : *it;
 }
 
+// Returns whether a file captured by this collector can be redacted. JSON files
+// are not redacted as they must remain machine-readable (e.g. to be able to be
+// loaded by tools such as chrome://updater).
+bool isRedactable(const base::FilePath& filename) {
+  return !filename.AsUTF8Unsafe().contains(".json");
+}
+
 // Copies a file from the updater's install directory to the provided temporary
 // directory and detects PII in its content. Callback is posted on the calling
 // sequence with the result of PII detection.
@@ -108,10 +115,12 @@ void CollectAndDetectFile(
       base::BindOnce(
           [](scoped_refptr<redaction::RedactionToolContainer>
                  redaction_tool_container,
-             const std::string& contents) {
-            return redaction_tool_container->Get()->Detect(contents);
+             const std::string& contents, const base::FilePath& filename) {
+            return isRedactable(filename)
+                       ? redaction_tool_container->Get()->Detect(contents)
+                       : PIIMap{};
           },
-          redaction_tool_container, std::move(contents)),
+          redaction_tool_container, std::move(contents), filename),
       std::move(callback));
 }
 
@@ -215,11 +224,14 @@ void ExportAndRedactForScope(
             [](const std::set<redaction::PIIType>& pii_types_to_keep,
                scoped_refptr<redaction::RedactionToolContainer>
                    redaction_tool_container,
-               const std::string& contents) {
-              return redaction_tool_container->Get()->RedactAndKeepSelected(
-                  contents, pii_types_to_keep);
+               const std::string& contents, const base::FilePath& path) {
+              return isRedactable(path.BaseName())
+                         ? redaction_tool_container->Get()
+                               ->RedactAndKeepSelected(contents,
+                                                       pii_types_to_keep)
+                         : contents;
             },
-            pii_types_to_keep, redaction_tool_container, contents),
+            pii_types_to_keep, redaction_tool_container, contents, path),
         base::BindOnce(
             [](const base::FilePath& dest_path,
                const std::string& redacted_contents)

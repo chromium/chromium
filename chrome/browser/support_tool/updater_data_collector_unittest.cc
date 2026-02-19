@@ -36,7 +36,11 @@ constexpr char kRedactedLogFileContent[] =
     "This is a log file with an IP address: (192.168.0.0/16: 1) and a URL: "
     "(URL: 1)";
 
-constexpr char kPrefsFileContent[] = "{\"some_key\": \"some_value\"}";
+constexpr char kPrefsFileContent[] =
+    "{\"email\": \"test@example.com\", \"ip\": \"10.0.0.1\"}";
+constexpr char kHistoryFileContent[] =
+    "{\"event\": \"update\", \"user\": \"pii@example.com\"}\n"
+    "{\"event\": \"install\", \"ip\": \"1.2.3.4\"}";
 
 }  // namespace
 
@@ -57,6 +61,12 @@ class UpdaterDataCollectorTest : public ::testing::Test {
                                   kLogFileContent));
       EXPECT_TRUE(base::WriteFile(install_dir.AppendASCII("prefs.json"),
                                   kPrefsFileContent));
+      EXPECT_TRUE(
+          base::WriteFile(install_dir.AppendASCII("updater_history.jsonl"),
+                          kHistoryFileContent));
+      EXPECT_TRUE(
+          base::WriteFile(install_dir.AppendASCII("updater_history.jsonl.old"),
+                          kHistoryFileContent));
     }
     return install_dir;
   }
@@ -70,6 +80,10 @@ class UpdaterDataCollectorTest : public ::testing::Test {
 
     base::FilePath log_path = scope_dir.AppendASCII("updater.log");
     base::FilePath prefs_path = scope_dir.AppendASCII("prefs.json");
+    base::FilePath history_path =
+        scope_dir.AppendASCII("updater_history.jsonl");
+    base::FilePath old_history_path =
+        scope_dir.AppendASCII("updater_history.jsonl.old");
 
     if (expect_files) {
       std::string log_contents;
@@ -79,9 +93,19 @@ class UpdaterDataCollectorTest : public ::testing::Test {
       std::string prefs_contents;
       EXPECT_TRUE(base::ReadFileToString(prefs_path, &prefs_contents));
       EXPECT_EQ(prefs_contents, kPrefsFileContent);
+
+      std::string history_contents;
+      EXPECT_TRUE(base::ReadFileToString(history_path, &history_contents));
+      EXPECT_EQ(history_contents, kHistoryFileContent);
+
+      std::string old_history_contents;
+      EXPECT_TRUE(base::ReadFileToString(old_history_path, &history_contents));
+      EXPECT_EQ(history_contents, kHistoryFileContent);
     } else {
       EXPECT_FALSE(base::PathExists(log_path));
       EXPECT_FALSE(base::PathExists(prefs_path));
+      EXPECT_FALSE(base::PathExists(history_path));
+      EXPECT_FALSE(base::PathExists(old_history_path));
     }
   }
 
