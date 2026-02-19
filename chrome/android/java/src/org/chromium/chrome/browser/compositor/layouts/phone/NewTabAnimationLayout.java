@@ -24,7 +24,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -82,15 +81,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Layout for showing animations when new tabs are created. This is a drop-in replacement for the
- * {@link SimpleAnimationLayout} that uses Android animators rather than compositor animations and
- * uses modern UX designs.
+ * Layout for showing animations when new tabs are created. This layout uses Android animators
+ * rather than compositor animations and uses modern UX designs.
  */
 @NullMarked
 public class NewTabAnimationLayout extends Layout {
     private static final long ANIMATION_TIMEOUT_MS = 800L;
-    private static final String TAG = "NTAnimLayout";
-    private final boolean mLogsEnabled;
     private final LayoutStateProvider mLayoutStateProvider;
     private final ViewGroup mContentContainer;
     private final ViewGroup mAnimationHostView;
@@ -161,7 +157,6 @@ public class NewTabAnimationLayout extends Layout {
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
         mCustomTabCount = mToolbarManager.getCustomTabCount();
         mBrowserVisibilityDelegate = browserControlsManager.getBrowserVisibilityDelegate();
-        mLogsEnabled = ChromeFeatureList.sShowNewTabAnimationsLogs.getValue();
         mTopInsetProvider = topInsetProvider;
 
         // Set up observer to handle edge-to-edge changes.
@@ -247,23 +242,16 @@ public class NewTabAnimationLayout extends Layout {
     @Override
     protected void forceAnimationToFinish() {
         if (mSkipForceAnimationToFinish) {
-            if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: skipped");
             mSkipForceAnimationToFinish = false;
             return;
         }
         runQueuedRunnableIfExists();
         if (mForegroundHostView != null) {
-            if (mLogsEnabled) {
-                Log.i(TAG, "forceAnimationToFinish: mForegroundHostView#forceAnimationToFinish");
-            }
             mForegroundHostView.forceAnimationToFinish();
             mAnimationHostView.removeView(mForegroundHostView);
             mForegroundHostView = null;
         }
         if (mTabCreatedBackgroundAnimation != null) {
-            if (mLogsEnabled) {
-                Log.i(TAG, "forceAnimationToFinish: mTabCreatedBackgroundAnimation#end");
-            }
             mTabCreatedBackgroundAnimation.end();
         }
     }
@@ -303,7 +291,6 @@ public class NewTabAnimationLayout extends Layout {
         ensureSourceTabCreated(sourceId);
         updateAnimationHostViewSensitivity(sourceId);
         mSkipForceAnimationToFinish = false;
-        if (mLogsEnabled) Log.i(TAG, "onTabCreated: forceAnimationToFinish");
         forceAnimationToFinish();
         @Nullable Tab oldTab = mTabModelSelector.getTabById(sourceId);
 
@@ -389,12 +376,6 @@ public class NewTabAnimationLayout extends Layout {
         boolean isRunning =
                 mForegroundHostView != null && mForegroundHostView.isExpandAnimationRunning();
         return isRunning;
-    }
-
-    @Override
-    public void startHiding() {
-        if (mLogsEnabled) Log.i(TAG, "startHiding");
-        super.startHiding();
     }
 
     private void reset() {
@@ -508,12 +489,6 @@ public class NewTabAnimationLayout extends Layout {
         } else if (mAnimationRunnable != null) {
             if (mForegroundHostView != null) {
                 mForegroundHostView.runOnNextLayoutRunnables();
-                if (mLogsEnabled) {
-                    Log.i(
-                            TAG,
-                            "runQueuedRunnableIfExists:"
-                                    + " mForegroundHostView#runOnNextLayoutRunnables");
-                }
             }
             if (mBackgroundHostView != null) mBackgroundHostView.runOnNextLayoutRunnables();
         }
@@ -639,7 +614,6 @@ public class NewTabAnimationLayout extends Layout {
                 new NewForegroundTabAnimationHostView.Listener() {
                     @Override
                     public void onExpandAnimationFinished() {
-                        if (mLogsEnabled) Log.i(TAG, "Listener: onExpandAnimationFinished");
                         mSkipForceAnimationToFinish = true;
                         startHiding();
                         assumeNonNull(mTabModelSelector);
@@ -649,7 +623,6 @@ public class NewTabAnimationLayout extends Layout {
 
                     @Override
                     public void onForegroundAnimationFinished() {
-                        if (mLogsEnabled) Log.i(TAG, "Listener: onForegroundAnimationFinished");
                         assumeNonNull(mForegroundHostView);
                         mAnimationHostView.removeView(mForegroundHostView);
                         mForegroundHostView = null;
@@ -667,13 +640,7 @@ public class NewTabAnimationLayout extends Layout {
 
         mForegroundHostView =
                 new NewForegroundTabAnimationHostView(
-                        context,
-                        initialRect,
-                        startRadii,
-                        backgroundColor,
-                        isRtl,
-                        listener,
-                        mLogsEnabled);
+                        context, initialRect, startRadii, backgroundColor, isRtl, listener);
         mAnimationHostView.addView(mForegroundHostView);
         setRunOnNextLayout(mForegroundHostView, mAnimationRunnable);
     }
@@ -924,7 +891,7 @@ public class NewTabAnimationLayout extends Layout {
         mSystemTopInset = systemTopInset;
     }
 
-    protected void setRunOnNextLayoutImmediatelyForTesting(boolean runImmediately) {
+    public void setRunOnNextLayoutImmediatelyForTesting(boolean runImmediately) {
         mRunOnNextLayoutImmediatelyForTesting = runImmediately;
     }
 

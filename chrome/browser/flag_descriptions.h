@@ -157,10 +157,6 @@ inline constexpr char kTaskManagerClankName[] = "Task Manager on Clank";
 inline constexpr char kTaskManagerClankDescription[] =
     "Enables the Task Manager for Clank (Chrome on Android).";
 
-inline constexpr char kShowNewTabAnimationsName[] = "Show New Tab Animations";
-inline constexpr char kShowNewTabAnimationsDescription[] =
-    "Shows new animations for creating tabs.";
-
 inline constexpr char kNewTabPageCustomizationName[] =
     "Customize the new tab page";
 inline constexpr char kNewTabPageCustomizationDescription[] =

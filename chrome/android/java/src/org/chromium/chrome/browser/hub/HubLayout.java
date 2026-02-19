@@ -586,36 +586,23 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         getFinalRectForNewTabAnimation(containerView, newIsIncognito, finalRect);
         Rect initialRect;
         int cornerRadius;
-        if (NewTabAnimationUtils.isNewTabAnimationEnabled()) {
-            // Without this code, the upper corner shows a bit of blinking when running the
-            // animation. This ensures the {@link ShrinkExpandImageView} fully covers the origin
-            // corner.
-            if (isRtl) {
-                finalRect.right += 1;
-            } else {
-                finalRect.left -= 1;
-            }
-            finalRect.top -= 1;
-
-            initialRect = new Rect();
-            NewTabAnimationUtils.updateRects(
-                    NewTabAnimationUtils.RectStart.TOP, isRtl, initialRect, finalRect);
-            cornerRadius =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
+        // Without this code, the upper corner shows a bit of blinking when running the
+        // animation. This ensures the {@link ShrinkExpandImageView} fully covers the origin
+        // corner.
+        if (isRtl) {
+            finalRect.right += 1;
         } else {
-            cornerRadius = 0;
-            int y = finalRect.top;
-            int x;
-            if (isRtl) {
-                x = finalRect.right;
-                initialRect = new Rect(x - 1, y, x, y + 1);
-            } else {
-                x = finalRect.left;
-                initialRect = new Rect(x, y, x + 1, y + 1);
-            }
+            finalRect.left -= 1;
         }
+        finalRect.top -= 1;
+
+        initialRect = new Rect();
+        NewTabAnimationUtils.updateRects(
+                NewTabAnimationUtils.RectStart.TOP, isRtl, initialRect, finalRect);
+        cornerRadius =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
         animationDataSupplier.set(
                 ShrinkExpandAnimationData.createHubNewTabAnimationData(
                         initialRect, finalRect, cornerRadius, /* useFallbackAnimation= */ false));

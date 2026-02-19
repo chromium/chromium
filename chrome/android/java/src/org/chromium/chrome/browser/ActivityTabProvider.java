@@ -85,7 +85,7 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
                 new LayoutStateObserver() {
                     @Override
                     public void onStartedShowing(@LayoutType int layout) {
-                        // The {@link SimpleAnimationLayout} is a special case, the intent is not to
+                        // The {@link NewTabAnimationLayout} is a special case, the intent is not to
                         // switch tabs, but to merely run an animation. In this case, do nothing.
                         // If the animation layout does result in a new tab {@link
                         // TabModelObserver#didSelectTab} will trigger the event instead. If the

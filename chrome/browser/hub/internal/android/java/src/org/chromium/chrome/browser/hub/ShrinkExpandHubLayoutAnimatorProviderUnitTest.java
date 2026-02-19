@@ -53,10 +53,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimatorProvider.ImageViewWeakRefBitmapCallback;
 import org.chromium.ui.base.TestActivity;
 
@@ -262,62 +259,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SHOW_NEW_TAB_ANIMATIONS})
-    public void testNewTab_FeatureDisabled() {
-        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
-        HubLayoutAnimatorProvider animatorProvider =
-                new ShrinkExpandHubLayoutAnimatorProvider(
-                        HubLayoutAnimationType.EXPAND_NEW_TAB,
-                        /* needsBitmap= */ false,
-                        mHubContainerView,
-                        imageView,
-                        mAnimationDataSupplier,
-                        Color.RED,
-                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
-                        mOnAlphaChange);
-        assertEquals(
-                HubLayoutAnimationType.EXPAND_NEW_TAB, animatorProvider.getPlannedAnimationType());
-        assertNull(animatorProvider.getThumbnailCallback());
-
-        Rect initialRect = new Rect(100, 0, 101, 1);
-        Rect finalRect = new Rect(10, 15, WIDTH - 10, HEIGHT - 15);
-        ShrinkExpandAnimationData data =
-                ShrinkExpandAnimationData.createHubNewTabAnimationData(
-                        initialRect,
-                        finalRect,
-                        /* cornerRadius= */ 0,
-                        /* useFallbackAnimation= */ false);
-        mAnimationDataSupplier.set(data);
-
-        int[] cornerRadii = new int[] {0, 0, 0, 0};
-        assertArrayEquals(cornerRadii, data.getInitialCornerRadii());
-        assertArrayEquals(cornerRadii, data.getFinalCornerRadii());
-
-        HubLayoutAnimationRunner runner =
-                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
-
-        setUpShrinkExpandListener(
-                /* isShrink= */ false,
-                imageView,
-                initialRect,
-                finalRect,
-                /* hasBitmap= */ false,
-                /* toolbarFades= */ true);
-        runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
-
-        // No bitmap is required.
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(imageView, atLeastOnce()).setRoundedCorners(0, 0, 0, 0);
-
-        verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SHOW_NEW_TAB_ANIMATIONS})
-    public void testNewTab_FeatureEnabled() {
+    public void testNewTab() {
         ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
         HubLayoutAnimatorProvider animatorProvider =
                 new ShrinkExpandHubLayoutAnimatorProvider(
