@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("field_trial_settings") {
+  public = [ "field_trial_settings.h" ]
+  sources = [ "field_trial_settings.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}

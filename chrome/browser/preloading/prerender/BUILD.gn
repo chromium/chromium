@@ -16,6 +16,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading:test_support",
+    "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/page_load_metrics/browser",
