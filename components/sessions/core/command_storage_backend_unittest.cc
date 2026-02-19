@@ -730,26 +730,11 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
   // They were used in production prior to commit 223e5cd on 2021-05-25.
   ASSERT_TRUE(copyTestDataToSessionFile("Session-v1NoMarker"));
 
+  // V1 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  ASSERT_FALSE(backend->IsValidFileForTest(file_path()));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
-
-  ASSERT_EQ(13u, commands.size());
-  struct TestData expected_data[] = {
-      {1, "a"},
-      {2, "ab"},
-      {3, "abc"},
-      {4, "abcd"},
-      {5, "abcde"},
-      {6, "abcdef"},
-      {7, "abcdefg"},
-      {8, "abcdefgh"},
-      {9, "abcdefghi"},
-      {10, "abcdefghij"},
-      {11, "abcdefghijk"},
-      {12, "abcdefghijkl"},
-      {13, "abcdefghijklm"},
-  };
-  AssertCommandsEqualsData(expected_data, commands);
+  ASSERT_TRUE(commands.empty());
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
@@ -762,12 +747,11 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
   std::vector<uint8_t> key;
   ASSERT_TRUE(base::HexStringToBytes(key_hex, &key));
 
+  // V2 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
+  ASSERT_FALSE(backend->IsValidFileForTest(file_path()));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
-
-  ASSERT_EQ(1u, commands.size());
-  struct TestData expected_data = {1, "a"};
-  AssertCommandEqualsData(expected_data, commands[0].get());
+  ASSERT_TRUE(commands.empty());
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {

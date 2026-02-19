@@ -39,14 +39,14 @@ using SessionType = CommandStorageManager::SessionType;
 
 namespace {
 
-// File version number.
-// TODO(sky): remove these in ~1 year. They are no longer written as of
-// ~5/2021.
-constexpr int32_t kFileVersion1 = 1;
-constexpr int32_t kEncryptedFileVersion = 2;
-// The versions that are used if `use_marker` is true.
+// File version numbers:
+// kFileVersion1 = 1; No longer supported. Used in production prior to commit
+//   223e5cd on 2021-05-25.
+// kEncryptedFileVersion = 2; No longer supported. Never used in production, but
+//   possible prior to commit 223e5cd on 2021-05-25.
 constexpr int32_t kFileVersionWithMarker = 3;
 constexpr int32_t kEncryptedFileVersionWithMarker = 4;
+// NEXT_VERSION = 5
 
 // The signature at the beginning of the file = SSNS (Sessions).
 constexpr int32_t kFileSignature = 0x53534E53;
@@ -270,10 +270,8 @@ bool SessionFileReader::ReadHeader() {
   bytes_read_ += *read_count;
   version_ = header.version;
   const bool encrypt = aead_.get() != nullptr;
-  return (encrypt && (version_ == kEncryptedFileVersion ||
-                      version_ == kEncryptedFileVersionWithMarker)) ||
-         (!encrypt &&
-          (version_ == kFileVersion1 || version_ == kFileVersionWithMarker));
+  return (encrypt && (version_ == kEncryptedFileVersionWithMarker)) ||
+         (!encrypt && (version_ == kFileVersionWithMarker));
 }
 
 bool SessionFileReader::ReadToMarker() {
