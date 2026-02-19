@@ -1091,6 +1091,7 @@ public class ContextMenuTest {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444053
+    @DisabledTest(message = "https://crbug.com/443865720")
     public void testCopyImage() throws Throwable {
         doAnswer(sCopyIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
