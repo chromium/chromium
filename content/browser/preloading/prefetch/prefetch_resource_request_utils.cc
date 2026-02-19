@@ -5,10 +5,28 @@
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
 
 namespace content {
+
+void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
+                          const PrefetchRequest& prefetch_request) {
+  const auto& additional_headers = prefetch_request.additional_headers();
+  // Ignore "User-Agent" override by `additional_headers` if UA override fix are
+  // enabled.
+  // TODO(crbug.com/383779480): Add tests.
+  if (base::FeatureList::IsEnabled(
+          features::kPreloadingRespectUserAgentOverride)) {
+    net::HttpRequestHeaders additional_headers_without_ua = additional_headers;
+    additional_headers_without_ua.RemoveHeader(
+        net::HttpRequestHeaders::kUserAgent);
+    request_headers.MergeFrom(additional_headers_without_ua);
+  } else {
+    request_headers.MergeFrom(additional_headers);
+  }
+}
 
 // TODO(crbug.com/452392023): Currently this is for speculation rules
 // prefetch only, but it should be extended to other prefetch embedder

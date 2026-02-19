@@ -242,22 +242,6 @@ GetPrefetchResponseCompletedCallbackForTesting() {
   return *prefetch_response_completed_callback_for_testing;
 }
 
-void AddAwAdditionalHeaders(net::HttpRequestHeaders& request_headers,
-                            const net::HttpRequestHeaders& additional_headers) {
-  // Ignore "User-Agent" override by `additional_headers` if UA override fix are
-  // enabled.
-  // TODO(crbug.com/383779480): Add tests.
-  if (base::FeatureList::IsEnabled(
-          features::kPreloadingRespectUserAgentOverride)) {
-    net::HttpRequestHeaders additional_headers_without_ua = additional_headers;
-    additional_headers_without_ua.RemoveHeader(
-        net::HttpRequestHeaders::kUserAgent);
-    request_headers.MergeFrom(additional_headers_without_ua);
-  } else {
-    request_headers.MergeFrom(additional_headers);
-  }
-}
-
 }  // namespace
 
 // static
@@ -1621,8 +1605,7 @@ void PrefetchContainer::MakeInitialResourceRequest() {
 
   // ------------------------------------------------------------------------
   // [1] Additional headers:
-  AddAwAdditionalHeaders(resource_request->headers,
-                         request().additional_headers());
+  AddAdditionalHeaders(resource_request->headers, request());
 
   // ------------------------------------------------------------------------
   // [2] `Accept`, `Upgrade-Insecure-Requests` and `Purpose`:

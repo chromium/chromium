@@ -35,6 +35,11 @@ void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
                               const GURL& request_url,
                               const PrefetchRequest& prefetch_request);
 
+// TODO(crbug.com/483079815): We won't need to expose this once we
+// move the whole `MakeInitialResourceRequest` to here.
+void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
+                          const PrefetchRequest& prefetch_request);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_
