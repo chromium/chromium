@@ -3679,6 +3679,8 @@ extern "C" {
 
     pub fn gettid() -> crate::pid_t;
 
+    pub fn tgkill(tgid: crate::pid_t, tid: crate::pid_t, sig: c_int) -> c_int;
+
     pub fn getauxval(type_: c_ulong) -> c_ulong;
 
     /// Only available in API Version 28+

@@ -1233,6 +1233,8 @@ extern "C" {
     ) -> c_int;
 
     pub fn mempcpy(dest: *mut c_void, src: *const c_void, n: size_t) -> *mut c_void;
+
+    pub fn tgkill(tgid: crate::pid_t, tid: crate::pid_t, sig: c_int) -> c_int;
 }
 
 cfg_if! {

@@ -1,8 +1,18 @@
 # Changelog
 
+## [0.2.182](https://github.com/rust-lang/libc/compare/0.2.181...0.2.182) - 2026-02-13
+
+### Added
+
+- Android, Linux: Add `tgkill` ([#4970](https://github.com/rust-lang/libc/pull/4970))
+- Redox: Add `RENAME_NOREPLACE` ([#4968](https://github.com/rust-lang/libc/pull/4968))
+- Redox: Add `renameat2` ([#4968](https://github.com/rust-lang/libc/pull/4968))
+
+
 ## [0.2.181](https://github.com/rust-lang/libc/compare/0.2.180...0.2.181) - 2026-02-09
 
 ### Added
+
 - Apple: Add `MADV_ZERO` ([#4924](https://github.com/rust-lang/libc/pull/4924))
 - Redox: Add `makedev`, `major`, and `minor` ([#4928](https://github.com/rust-lang/libc/pull/4928))
 - GLibc: Add `PTRACE_SET_SYSCALL_INFO` ([#4933](https://github.com/rust-lang/libc/pull/4933))
@@ -15,6 +25,7 @@
 
 ### Fixed
 
+- **breaking**: Redox: Fix the type of dev_t ([#4928](https://github.com/rust-lang/libc/pull/4928))
 - AIX: Change 'tv_nsec' of 'struct timespec' to type 'c_long' ([#4931](https://github.com/rust-lang/libc/pull/4931))
 - AIX: Use 'struct st_timespec' in 'struct stat{,64}' ([#4931](https://github.com/rust-lang/libc/pull/4931))
 - Glibc: Link old version of `tc{g,s}etattr` ([#4938](https://github.com/rust-lang/libc/pull/4938))
@@ -22,7 +33,6 @@
 - OpenBSD: Fix constness of tm.tm_zone ([#4948](https://github.com/rust-lang/libc/pull/4948))
 - OpenBSD: Fix the definition of `ptrace_thread_state` ([#4947](https://github.com/rust-lang/libc/pull/4947))
 - QuRT: Fix type visibility and defs ([#4932](https://github.com/rust-lang/libc/pull/4932))
-- Redox: Fix dev_t ([#4928](https://github.com/rust-lang/libc/pull/4928))
 - Redox: Fix values for `PTHREAD_MUTEX_{NORMAL, RECURSIVE}` ([#4943](https://github.com/rust-lang/libc/pull/4943))
 - Various: Mark additional fields as private padding ([#4922](https://github.com/rust-lang/libc/pull/4922))
 
