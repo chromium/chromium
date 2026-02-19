@@ -1846,10 +1846,16 @@ void TabStrip::ToggleTabGroupCollapsedState(
 }
 
 void TabStrip::NotifyTabstripBubbleOpened() {
+  if (!tab_container_) {
+    return;
+  }
   tab_container_->NotifyTabstripBubbleOpened();
 }
 
 void TabStrip::NotifyTabstripBubbleClosed() {
+  if (!tab_container_) {
+    return;
+  }
   tab_container_->NotifyTabstripBubbleClosed();
 }
 
@@ -2449,6 +2455,10 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TabStrip::OnTouchUiChanged() {
+  if (!tab_container_) {
+    return;
+  }
+
   tab_container_->CompleteAnimationAndLayout();
   PreferredSizeChanged();
 }
