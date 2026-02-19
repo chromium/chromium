@@ -314,6 +314,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "manage_passwords_ui_controller_browsertest.cc",
       "password_change_ui_controller_browsertest.cc",
       "password_generation_popup_view_browsertest.cc",
       "ui_utils_browsertest.cc",
@@ -329,7 +330,9 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/passwords:test_support",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

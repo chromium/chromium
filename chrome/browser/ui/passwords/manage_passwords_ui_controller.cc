@@ -1237,7 +1237,12 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     return;
   }
   if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {
-    tabs::TabInterface* const tab_interface = browser->GetActiveTabInterface();
+    tabs::TabInterface* const tab_interface =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
+    // The tab interface can be null if the web contents is not a tab.
+    if (!tab_interface) {
+      return;
+    }
     auto* const tab_features = tab_interface->GetTabFeatures();
     CHECK(tab_features);
     // Retrieve the controller responsible for managing the page action's
