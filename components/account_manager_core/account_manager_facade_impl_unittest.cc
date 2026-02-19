@@ -134,14 +134,6 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   FakeAccountManager& operator=(const FakeAccountManager&) = delete;
   ~FakeAccountManager() override = default;
 
-  void IsInitialized(IsInitializedCallback cb) override {
-    std::move(cb).Run(is_initialized_);
-  }
-
-  void SetIsInitialized(bool is_initialized) {
-    is_initialized_ = is_initialized;
-  }
-
   void AddObserver(AddObserverCallback cb) override {
     mojo::Remote<crosapi::mojom::AccountManagerObserver> observer;
     std::move(cb).Run(observer.BindNewPipeAndPassReceiver());
@@ -274,7 +266,6 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
       show_add_account_dialog_options_;
   int show_reauth_account_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;
-  bool is_initialized_ = false;
   std::vector<Account> accounts_;
   std::map<AccountKey, GoogleServiceAuthError> persistent_errors_;
   std::unique_ptr<AccountUpsertionResult> upsertion_result_;
@@ -697,7 +688,6 @@ TEST_F(AccountManagerFacadeImplTest,
 
 TEST_F(AccountManagerFacadeImplTest,
        AccessTokenFetcherCanHandleMojoRemoteDisconnection) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -715,7 +705,6 @@ TEST_F(AccountManagerFacadeImplTest,
 }
 
 TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchSucceeds) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -738,7 +727,6 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchSucceeds) {
 }
 
 TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchErrorResponse) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -760,7 +748,6 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchErrorResponse) {
 
 TEST_F(AccountManagerFacadeImplTest,
        HistogramsForZeroAccountManagerRemoteDisconnections) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   // Expect 0 disconnections in the default state.
@@ -781,7 +768,6 @@ TEST_F(AccountManagerFacadeImplTest,
 
 TEST_F(AccountManagerFacadeImplTest,
        HistogramsForAccountManagerRemoteDisconnection) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   // Expect 0 disconnections in the default state.
@@ -804,7 +790,6 @@ TEST_F(AccountManagerFacadeImplTest,
 
 TEST_F(AccountManagerFacadeImplTest,
        HistogramsForZeroAccountManagerObserverReceiverDisconnections) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   // Expect 0 disconnections in the default state.
@@ -825,7 +810,6 @@ TEST_F(AccountManagerFacadeImplTest,
 
 TEST_F(AccountManagerFacadeImplTest,
        HistogramsForAccountManagerObserverReceiverDisconnections) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   // Expect 0 disconnections in the default state.
@@ -848,7 +832,6 @@ TEST_F(AccountManagerFacadeImplTest,
 
 TEST_F(AccountManagerFacadeImplTest,
        HistogramsForZeroAccountManagerAccessTokenFetcherRemoteDisconnections) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -886,7 +869,6 @@ TEST_F(AccountManagerFacadeImplTest,
 
 TEST_F(AccountManagerFacadeImplTest,
        HistogramsForAccountManagerAccessTokenFetcherRemoteDisconnections) {
-  account_manager().SetIsInitialized(true);
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);

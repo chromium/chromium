@@ -304,23 +304,6 @@ class AccountManagerMojoServiceTest : public ::testing::Test {
       account_manager_async_waiter_;
 };
 
-TEST_F(AccountManagerMojoServiceTest,
-       IsInitializedReturnsFalseForUninitializedAccountManager) {
-  bool is_initialized = true;
-  account_manager_async_waiter()->IsInitialized(&is_initialized);
-  EXPECT_FALSE(is_initialized);
-}
-
-TEST_F(AccountManagerMojoServiceTest,
-       IsInitializedReturnsTrueForInitializedAccountManager) {
-  bool is_initialized = true;
-  account_manager_async_waiter()->IsInitialized(&is_initialized);
-  EXPECT_FALSE(is_initialized);
-  ASSERT_TRUE(InitializeAccountManager());
-  account_manager_async_waiter()->IsInitialized(&is_initialized);
-  EXPECT_TRUE(is_initialized);
-}
-
 // Test that lacros remotes do not leak.
 TEST_F(AccountManagerMojoServiceTest,
        LacrosRemotesAreAutomaticallyRemovedOnConnectionClose) {

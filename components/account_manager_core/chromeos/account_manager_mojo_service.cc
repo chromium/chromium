@@ -80,10 +80,6 @@ void AccountManagerMojoService::OnAccountUpsertionFinishedForTesting(
   OnAccountUpsertionFinished(result);
 }
 
-void AccountManagerMojoService::IsInitialized(IsInitializedCallback callback) {
-  std::move(callback).Run(account_manager_->IsInitialized());
-}
-
 void AccountManagerMojoService::AddObserver(AddObserverCallback callback) {
   mojo::Remote<mojom::AccountManagerObserver> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();

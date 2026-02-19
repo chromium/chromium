@@ -49,7 +49,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
       const account_manager::AccountUpsertionResult& result);
 
   // crosapi::mojom::AccountManager:
-  void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
   void GetAccounts(GetAccountsCallback callback) override;
   void GetPersistentErrorForAccount(

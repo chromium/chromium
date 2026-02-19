@@ -219,9 +219,7 @@ interface AccountManagerObserver {
 // Next id: 9
 [Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
-  // Returns `true` if ChromeOS Account Manager has been fully initialized, and
-  // `false` otherwise.
-  IsInitialized@0() => (bool is_initialized);
+  // IsInitialized@0 was removed.
 
   // Creates and returns a new receiver for `AccountManagerObserver`.
   // This API is supposed to be called by lacros-chrome, fairly early during its
