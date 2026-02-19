@@ -92,11 +92,14 @@ class IOSPromoBubbleHeaderView : public views::View {
                           .SetMultiLine(true)
                           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
                           .SetTextStyle(views::style::STYLE_HEADLINE_4))
-            .AddChild(views::Builder<views::Label>()
-                          .SetText(subtitle)
-                          .SetMultiLine(true)
-                          .SetTextContext(views::style::CONTEXT_LABEL)
-                          .SetTextStyle(views::style::STYLE_SECONDARY))
+            .AddChild(
+                views::Builder<views::Label>()
+                    .SetText(subtitle)
+                    .SetMultiLine(true)
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                    .SetTextStyle(views::style::STYLE_SECONDARY)
+                    .SetHorizontalAlignment(
+                        gfx::HorizontalAlignment::ALIGN_TO_HEAD))
             .Build());
   }
   ~IOSPromoBubbleHeaderView() override = default;

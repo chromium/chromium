@@ -530,7 +530,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
           .SetID(IOSPromoConstants::kDescriptionLabelID)
           .SetText(
               l10n_util::GetStringUTF16(ios_promo_config.promo_description_id))
-          .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetEnabledColor(kColorDesktopToIOSPromoFooterSubtitleLabel)
           .SetMultiLine(true)
