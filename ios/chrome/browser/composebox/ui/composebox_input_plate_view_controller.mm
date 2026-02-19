@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -64,6 +65,8 @@ const CGFloat kCarouselItemSpacing = 6.0f;
 const CGFloat kCarouselHeight = 44.0f;
 /// The height of the AIM mode button.
 const CGFloat kAIMButtonHeight = 36.0f;
+/// The corner radius of the favicon in attach current tab action.
+const CGFloat kAttachCurrentTabIconRadius = 2.0f;
 /// The width of the AIM mode button.
 const CGFloat kAIMButtonBaseWidth = 108.0f;
 const CGFloat kXButtonWidthInButton = 14.0;
@@ -632,7 +635,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 }
 
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
-  _currentTabFavicon = favicon;
+  _currentTabFavicon =
+      favicon ? ImageWithCornerRadius(favicon, kAttachCurrentTabIconRadius)
+              : nil;
   [self updatePlusButtonItems];
 }
 
