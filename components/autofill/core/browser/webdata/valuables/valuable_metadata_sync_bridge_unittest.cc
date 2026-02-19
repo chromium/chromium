@@ -295,9 +295,9 @@ TEST_F(ValuableMetadataSyncBridgeTest,
 // Test that MergeFullSyncData() ignores the local data without a `PassType`.
 TEST_F(ValuableMetadataSyncBridgeTest,
        MergeFullSyncData_IgnoresLocalDataWithoutPassType) {
-  // Passports are not supported by the bridge.
+  // Orders are not supported by the bridge.
   entity_table().AddOrUpdateEntityInstance(
-      MaskEntityInstance(GetPassportEntityInstance(
+      MaskEntityInstance(test::GetOrderEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet})));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
@@ -465,13 +465,46 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetAllData) {
               UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
 }
 
+// Tests that GetAllData() supports metadata entries for private passes.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       GetAllData_SupportsMetadataForPrivatePasses) {
+  const EntityInstance passport =
+      MaskEntityInstance(test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  const EntityInstance driver_license =
+      MaskEntityInstance(test::GetDriversLicenseEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  const EntityInstance redress_numer =
+      MaskEntityInstance(test::GetRedressNumberEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  const EntityInstance ktn =
+      MaskEntityInstance(test::GetKnownTravelerNumberInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  const EntityInstance national_id =
+      MaskEntityInstance(test::GetNationalIdCardEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+
+  entity_table().AddOrUpdateEntityInstance(passport);
+  entity_table().AddOrUpdateEntityInstance(driver_license);
+  entity_table().AddOrUpdateEntityInstance(redress_numer);
+  entity_table().AddOrUpdateEntityInstance(ktn);
+  entity_table().AddOrUpdateEntityInstance(national_id);
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
+  ASSERT_TRUE(batch);
+  EXPECT_THAT(
+      ExtractEntitiesMetadataFromDataBatch(std::move(batch)),
+      UnorderedElementsAre(passport.metadata(), driver_license.metadata(),
+                           redress_numer.metadata(), ktn.metadata(),
+                           national_id.metadata()));
+}
+
 // Tests that GetAllData() ignores metadata entries without a `PassType`.
 TEST_F(ValuableMetadataSyncBridgeTest,
        GetAllData_IgnoresMetadataWithoutPassType) {
-  // Passports are not supported by the bridge.
-  entity_table().AddOrUpdateEntityInstance(
-      MaskEntityInstance(GetPassportEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet})));
+  // Orders are not supported by the bridge.
+  entity_table().AddOrUpdateEntityInstance(test::GetOrderEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
 
   std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
   ASSERT_TRUE(batch);
@@ -595,19 +628,21 @@ TEST_F(
     ValuableMetadataSyncBridgeTest,
     ServerEntityInstanceMetadataChanged_AddUpdate_IgnoresMetadataWithoutPassType) {
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
-  // Passports are not supported by the bridge.
-  const EntityInstance passport = MaskEntityInstance(GetPassportEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet}));
-  entity_table().AddOrUpdateEntityInstance(passport);
+  // Order are not supported by the bridge.
+  const EntityInstance order_number =
+      MaskEntityInstance(test::GetOrderEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  entity_table().AddOrUpdateEntityInstance(order_number);
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   bridge().ServerEntityInstanceMetadataChanged(EntityInstanceMetadataChange(
-      EntityInstanceMetadataChange::ADD, passport.guid(), passport.metadata()));
+      EntityInstanceMetadataChange::ADD, order_number.guid(),
+      order_number.metadata()));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  bridge().ServerEntityInstanceMetadataChanged(
-      EntityInstanceMetadataChange(EntityInstanceMetadataChange::UPDATE,
-                                   passport.guid(), passport.metadata()));
+  bridge().ServerEntityInstanceMetadataChanged(EntityInstanceMetadataChange(
+      EntityInstanceMetadataChange::UPDATE, order_number.guid(),
+      order_number.metadata()));
 }
 
 // Tests that `ServerEntityInstanceMetadataChanged()` includes unknown fields

@@ -816,11 +816,16 @@ EntityTypeToPassType(EntityType entity_type) {
     case EntityTypeName::kVehicle:
       return sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION;
     case EntityTypeName::kPassport:
+      return sync_pb::AutofillValuableMetadataSpecifics::PASSPORT;
     case EntityTypeName::kDriversLicense:
+      return sync_pb::AutofillValuableMetadataSpecifics::DRIVER_LICENSE;
     case EntityTypeName::kNationalIdCard:
-    case EntityTypeName::kOrder:
+      return sync_pb::AutofillValuableMetadataSpecifics::NATIONAL_ID_CARD;
     case EntityTypeName::kKnownTravelerNumber:
+      return sync_pb::AutofillValuableMetadataSpecifics::KNOWN_TRAVELER_NUMBER;
     case EntityTypeName::kRedressNumber:
+      return sync_pb::AutofillValuableMetadataSpecifics::REDRESS_NUMBER;
+    case EntityTypeName::kOrder:
       // Those entity types are not synced.
       return std::nullopt;
   }

@@ -343,6 +343,12 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
         switch (specifics.pass_type()) {
           case sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION:
           case sync_pb::AutofillValuableMetadataSpecifics::FLIGHT_RESERVATION:
+          case sync_pb::AutofillValuableMetadataSpecifics::PASSPORT:
+          case sync_pb::AutofillValuableMetadataSpecifics::DRIVER_LICENSE:
+          case sync_pb::AutofillValuableMetadataSpecifics::NATIONAL_ID_CARD:
+          case sync_pb::AutofillValuableMetadataSpecifics::REDRESS_NUMBER:
+          case sync_pb::AutofillValuableMetadataSpecifics::
+              KNOWN_TRAVELER_NUMBER:
           // Treat `PASS_TYPE_UNSPECIFIED` as `EntityMetadata` for backward
           // compatibility with entries created before the `pass_type` field was
           // introduced.

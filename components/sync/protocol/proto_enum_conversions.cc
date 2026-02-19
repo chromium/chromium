@@ -1110,13 +1110,19 @@ const char* ProtoEnumToString(sync_pb::SkillSource skill_source) {
 const char* ProtoEnumToString(
     sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AutofillValuableMetadataSpecifics, PassType,
-                     PASS_TYPE_UNSPECIFIED, FLIGHT_RESERVATION);
+                     PASS_TYPE_UNSPECIFIED, KNOWN_TRAVELER_NUMBER);
   switch (pass_type) {
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics,
               PASS_TYPE_UNSPECIFIED);
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, LOYALTY_CARD);
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, VEHICLE_REGISTRATION);
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, FLIGHT_RESERVATION);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, PASSPORT);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, DRIVER_LICENSE);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, NATIONAL_ID_CARD);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, REDRESS_NUMBER);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics,
+              KNOWN_TRAVELER_NUMBER);
   }
 }
 

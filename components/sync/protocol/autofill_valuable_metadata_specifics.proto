@@ -23,6 +23,11 @@ message AutofillValuableMetadataSpecifics {
     LOYALTY_CARD = 1;
     VEHICLE_REGISTRATION = 2;
     FLIGHT_RESERVATION = 3;
+    PASSPORT = 4;
+    DRIVER_LICENSE = 5;
+    NATIONAL_ID_CARD = 6;
+    REDRESS_NUMBER = 7;
+    KNOWN_TRAVELER_NUMBER = 8;
   }
 
   // The id of the Valuabe this metadata belongs to. Used as the client tag.

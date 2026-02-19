@@ -740,7 +740,17 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
             sync_pb::AutofillValuableMetadataSpecifics::FLIGHT_RESERVATION);
   EXPECT_EQ(EntityTypeToPassType(EntityType(kVehicle)),
             sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
-  EXPECT_FALSE(EntityTypeToPassType(EntityType(kPassport)).has_value());
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kPassport)),
+            sync_pb::AutofillValuableMetadataSpecifics::PASSPORT);
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kDriversLicense)),
+            sync_pb::AutofillValuableMetadataSpecifics::DRIVER_LICENSE);
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kNationalIdCard)),
+            sync_pb::AutofillValuableMetadataSpecifics::NATIONAL_ID_CARD);
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kRedressNumber)),
+            sync_pb::AutofillValuableMetadataSpecifics::REDRESS_NUMBER);
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kKnownTravelerNumber)),
+            sync_pb::AutofillValuableMetadataSpecifics::KNOWN_TRAVELER_NUMBER);
+  EXPECT_FALSE(EntityTypeToPassType(EntityType(kOrder)).has_value());
 }
 
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
