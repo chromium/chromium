@@ -3468,6 +3468,8 @@ bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
       gated_api =
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage;
       break;
+    default:
+      NOTREACHED();
   }
 
   return privacy_sandbox_settings->IsEventReportingDestinationAttested(
