@@ -17,7 +17,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
-#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -204,9 +203,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
   scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
 
-  // Origin to fetch passwords for.
-  GURL _URL;
-
   // The WebStateList observed by this mediator and the observer bridge.
   raw_ptr<WebStateList> _webStateList;
 
@@ -259,7 +255,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   BottomSheetFormSuggestionProviderWrapper* _suggestionsProviderWrapper;
 }
 
-@synthesize consumer = _consumer;
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
 
 - (instancetype)
@@ -268,7 +263,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
                prefService:(PrefService*)prefService
                     params:(const autofill::FormActivityParams&)params
               reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                       URL:(const GURL&)URL
       profilePasswordStore:
           (scoped_refptr<password_manager::PasswordStoreInterface>)
               profilePasswordStore
@@ -280,14 +274,15 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
                  presenter:
                      (id<CredentialSuggestionBottomSheetPresenter>)presenter {
-  if ((self = [super init])) {
+  self = [super
+      initWithURL:webStateList->GetActiveWebState()->GetLastCommittedURL()];
+  if (self) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
 
     _profilePasswordStore = profilePasswordStore;
     _accountPasswordStore = accountPasswordStore;
-    _URL = URL;
     _imageFetcher = std::make_unique<image_fetcher::ImageFetcherImpl>(
         image_fetcher::CreateIOSImageDecoder(), sharedURLLoaderFactory);
     _senderImages = [NSMutableArray array];
@@ -365,36 +360,30 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   _credentials = credentials;
 }
 
-#pragma mark - Accessors
+#pragma mark - CredentialSuggestionBottomSheetMediatorBase
 
 - (void)setConsumer:(id<CredentialSuggestionBottomSheetConsumer>)consumer {
-  _consumer = consumer;
-  if ([self hasSuggestions]) {
-    NSString* domain = @"";
-    if (!_URL.is_empty()) {
-      url::Origin origin = url::Origin::Create(_URL);
-      domain =
-          base::SysUTF8ToNSString(password_manager::GetShownOrigin(origin));
-    }
-    [consumer setSuggestions:self.suggestions andDomain:domain];
-    if ([self shouldDisplaySharingNotification]) {
-      [consumer setTitle:[self sharingNotificationTitle]
-                subtitle:[self sharingNotificationSubtitle:domain]];
-      [consumer setAvatarImage:CreateMultiAvatarImage(_senderImages,
-                                                      kProfileImageSize)];
-    }
+  [super setConsumer:consumer];
 
-    // Determine the primary action label only from the first suggestion, which
-    // is sufficient as all the suggestions should have the same metadata. There
-    // should be at least one suggestion at this point because the consumer is
-    // set when there is at least one suggestion.
-    [consumer setPrimaryActionString:l10n_util::GetNSString(
-                                         PrimaryActionStringIdFromSuggestion(
-                                             self.suggestions.firstObject))];
+  // The bottom sheet isn't presented when there are no suggestions to show, so
+  // there's no need to update the consumer.
+  if (![self hasSuggestions]) {
+    return;
   }
-}
 
-#pragma mark - CredentialSuggestionBottomSheetMediatorBase
+  if ([self shouldDisplaySharingNotification]) {
+    [self.consumer setTitle:[self sharingNotificationTitle]
+                   subtitle:[self sharingNotificationSubtitle:self.domain]];
+    [self.consumer setAvatarImage:CreateMultiAvatarImage(_senderImages,
+                                                         kProfileImageSize)];
+  }
+
+  // Determine the primary action label only from the first suggestion, which
+  // is sufficient as all the suggestions should have the same metadata.
+  [self.consumer setPrimaryActionString:l10n_util::GetNSString(
+                                            PrimaryActionStringIdFromSuggestion(
+                                                self.suggestions.firstObject))];
+}
 
 - (void)disconnect {
   _prefService = nullptr;
@@ -478,9 +467,9 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     // fetch for the favicon anymore.
     return;
   }
-  if (!_URL.is_empty()) {
+  if (!self.URL.is_empty()) {
     _faviconLoader->FaviconForPageUrl(
-        _URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+        self.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/NO, faviconLoadedBlock);
   } else {
     faviconLoadedBlock([self defaultGlobeIconAttributes], /*cached*/ true);
@@ -694,7 +683,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 // Stores the fetched `image` and passes it to the consumer.
 - (void)onSenderImageFetched:(UIImage*)image {
   [_senderImages addObject:image];
-  [_consumer
+  [self.consumer
       setAvatarImage:CreateMultiAvatarImage(_senderImages, kProfileImageSize)];
 }
 

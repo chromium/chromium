@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_delegate.h"
 
+class GURL;
 enum class PasswordSuggestionBottomSheetExitReason;
 
 @class FormSuggestion;
@@ -23,6 +24,12 @@ enum class PasswordSuggestionBottomSheetExitReason;
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<CredentialSuggestionBottomSheetConsumer> consumer;
+
+// Designated initializer. `URL` is the origin for which the credentials will be
+// fetched for.
+- (instancetype)initWithURL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.
 - (void)disconnect;

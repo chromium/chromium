@@ -357,7 +357,6 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
                    prefService:prefs_ptr_
                         params:params_
                   reauthModule:nil
-                           URL:URL()
           profilePasswordStore:store_
           accountPasswordStore:nullptr
         sharedURLLoaderFactory:nullptr
@@ -403,8 +402,6 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
                         isMainFrame:YES
                   forSecurityOrigin:main_frame_ptr_->GetSecurityOrigin()];
   }
-
-  GURL URL() { return GURL("http://foo.com"); }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;

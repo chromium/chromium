@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -22,6 +23,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using password_manager::PasskeyCredential;
 
@@ -100,7 +102,10 @@ TEST_F(PasskeySuggestionBottomSheetMediatorTest, InitializeSuggestions) {
                   autofill::SuggestionType::kWebauthnCredential);
         return YES;
       }]
-           andDomain:@""]);
+           andDomain:[OCMArg isNotNil]]);
+  OCMExpect([consumer_
+      setPrimaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)]);
 
   [mediator_ setConsumer:consumer_];
 

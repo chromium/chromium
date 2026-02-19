@@ -50,7 +50,6 @@ class GURL;
                prefService:(PrefService*)prefService
                     params:(const autofill::FormActivityParams&)params
               reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                       URL:(const GURL&)URL
       profilePasswordStore:
           (scoped_refptr<password_manager::PasswordStoreInterface>)
               profilePasswordStore
@@ -61,7 +60,12 @@ class GURL;
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
                  presenter:
-                     (id<CredentialSuggestionBottomSheetPresenter>)presenter;
+                     (id<CredentialSuggestionBottomSheetPresenter>)presenter
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithURL:(const GURL&)URL NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Returns the credential associated with the form suggestion. It is an
 // optional, in case the credential can't be found.

@@ -142,7 +142,6 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                    prefService:prefService
                         params:*_params
                   reauthModule:_reauthModule
-                           URL:URL
           profilePasswordStore:profilePasswordStore
           accountPasswordStore:accountPasswordStore
         sharedURLLoaderFactory:sharedURLLoaderFactory

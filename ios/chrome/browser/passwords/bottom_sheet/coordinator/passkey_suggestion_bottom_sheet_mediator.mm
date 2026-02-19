@@ -29,12 +29,12 @@
       _webAuthnCredentialsDelegate;
 }
 
-@synthesize consumer = _consumer;
-
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)
                                          requestInfo {
-  if ((self = [super init])) {
+  self = [super
+      initWithURL:webStateList->GetActiveWebState()->GetLastCommittedURL()];
+  if (self) {
     _webStateList = webStateList;
     _requestInfo = std::make_unique<webauthn::IOSPasskeyClient::RequestInfo>(
         std::move(requestInfo));
@@ -58,18 +58,21 @@
   return self;
 }
 
-- (void)setConsumer:(id<CredentialSuggestionBottomSheetConsumer>)consumer {
-  _consumer = consumer;
-  if ([self hasSuggestions]) {
-    // TODO(crbug.com/464290670): Pass actual domain.
-    [consumer setSuggestions:self.suggestions andDomain:@""];
-    [consumer
-        setPrimaryActionString:l10n_util::GetNSString(
-                                   IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)];
-  }
-}
-
 #pragma mark - CredentialSuggestionBottomSheetMediatorBase
+
+- (void)setConsumer:(id<CredentialSuggestionBottomSheetConsumer>)consumer {
+  [super setConsumer:consumer];
+
+  // The bottom sheet isn't presented when there are no suggestions to show, so
+  // there's no need to update the consumer.
+  if (![self hasSuggestions]) {
+    return;
+  }
+
+  [self.consumer
+      setPrimaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)];
+}
 
 - (void)disconnect {
   _webStateList = nullptr;

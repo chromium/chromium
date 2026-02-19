@@ -11,6 +11,12 @@
 
 @interface CredentialSuggestionBottomSheetMediatorBase (Subclassing)
 
+// Origin to fetch credentials for.
+@property(nonatomic, assign) GURL URL;
+
+// Domain of the URL to fetch credentials for.
+@property(nonatomic, readonly) NSString* domain;
+
 // List of suggestions to be shown in the bottom sheet.
 @property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
