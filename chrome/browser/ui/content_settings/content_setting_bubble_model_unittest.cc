@@ -1391,6 +1391,44 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
   }
 }
 
+TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItemsSpoofing) {
+  const GURL url("https://www.example.test/");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+  blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents());
+
+  // Malicious URL
+  GURL spoof_url("http://google.com:VeryLongString@evil.com");
+
+  BlockedWindowParams params(spoof_url, url::Origin(), nullptr,
+                             content::Referrer(), std::string(),
+                             WindowOpenDisposition::NEW_POPUP,
+                             blink::mojom::WindowFeatures(), false, true);
+
+  NavigateParams navigate_params =
+      params.CreateNavigateParams(process(), web_contents());
+  blocked_content::MaybeBlockPopup(
+      web_contents(), &url,
+      std::make_unique<ChromePopupNavigationDelegate>(
+          std::move(navigate_params)),
+      nullptr, params.features(),
+      HostContentSettingsMapFactory::GetForProfile(profile()));
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::POPUPS));
+
+  const auto& list_items =
+      content_setting_bubble_model->bubble_content().list_items;
+  ASSERT_EQ(1U, list_items.size());
+
+  // Check the title
+  std::u16string title = list_items[0].title;
+  // It should NOT contain "google.com" if it's formatted correctly for
+  // security.
+  EXPECT_EQ(std::u16string::npos, title.find(u"google.com"));
+  EXPECT_NE(std::u16string::npos, title.find(u"evil.com"));
+}
+
 TEST_F(ContentSettingBubbleModelTest, ValidUrl) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));

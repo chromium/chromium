@@ -68,6 +68,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
@@ -171,10 +172,12 @@ ContentSettingBubbleModel::ListItem CreateUrlListItem(int32_t id,
                                                       const GURL& url) {
   // Empty URLs should get a placeholder.
   // TODO(csharrison): See if we can DCHECK that the URL will be valid here.
-  std::u16string title = url.spec().empty()
-                             ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
-                             : base::UTF8ToUTF16(url.spec());
-
+  std::u16string title =
+      url.spec().empty()
+          ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
+          : url_formatter::FormatUrl(
+                url, url_formatter::kFormatUrlOmitUsernamePassword,
+                base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
   // Format the title to include the unicode single dot bullet code-point
   // \u2022 and two spaces.
   title = l10n_util::GetStringFUTF16(IDS_LIST_BULLET, title);
