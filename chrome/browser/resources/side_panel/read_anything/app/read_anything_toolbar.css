@@ -42,8 +42,8 @@
 
 .audio-background-immersive-enabled {
   --audio-controls-background: var(--audio-player-background-color);
-    --audio-controls-right-margin: 6px;
-      --audio-controls-right-padding: 4px;
+  --audio-controls-right-margin: 6px;
+  --audio-controls-right-padding: 4px;
 }
 
 #audio-controls {
@@ -55,6 +55,10 @@
   height: fit-content;
   margin-inline-end: var(--audio-controls-right-margin);
   padding: 4px var(--audio-controls-right-padding) 4px 4px;
+}
+
+#audio-controls.audio-background-immersive-enabled {
+  border-radius: 100px;
 }
 
 .audio-controls {
