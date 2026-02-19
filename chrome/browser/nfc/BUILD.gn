@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("nfc") {
+  sources = [
+    "chrome_nfc_permission_context_delegate.cc",
+    "chrome_nfc_permission_context_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/permissions",
+    "//content/public/browser",
+  ]
+}

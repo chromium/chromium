@@ -6,12 +6,9 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#endif
-
-ChromeNfcPermissionContextDelegate::ChromeNfcPermissionContextDelegate() =
-    default;
+ChromeNfcPermissionContextDelegate::ChromeNfcPermissionContextDelegate(
+    std::unique_ptr<InteractabilityChecker> interactability_checker)
+    : interactability_checker_(std::move(interactability_checker)) {}
 
 ChromeNfcPermissionContextDelegate::~ChromeNfcPermissionContextDelegate() =
     default;
@@ -19,7 +16,7 @@ ChromeNfcPermissionContextDelegate::~ChromeNfcPermissionContextDelegate() =
 #if BUILDFLAG(IS_ANDROID)
 bool ChromeNfcPermissionContextDelegate::IsInteractable(
     content::WebContents* web_contents) {
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  return tab && tab->IsUserInteractable();
+  return interactability_checker_ &&
+         interactability_checker_->IsInteractable(web_contents);
 }
 #endif
