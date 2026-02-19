@@ -16,7 +16,7 @@ from utils.command_error import AutotestError
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 # Helper to create a dummy test file content
-GTEST_CONTENT = '#include "testing/gtest/include/gtest/gtest.h"\n'
+GTEST_CONTENT = 'TEST(A, B) {}'
 
 class FindMatchingTestFilesTest(TestCase):
 

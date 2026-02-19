@@ -132,10 +132,14 @@ PREF_MAPPING_FILE_PATTERN: str = re.escape(
     str(Path('components') / 'policy' / 'test' / 'data' / 'pref_mapping') +
     r'/') + r'.*\.json'
 
+# `rg` always uses forward slashes for globs, even on Windows.
+PREF_MAPPING_FILE_NAME_GLOB: str = '*components/policy/test/data/pref_mapping/*.json'
+GTEST_FILE_NAME_GLOB: str = '*{test,tests}*.{cc,mm,java}'
+
+# Regex version of `(PREF_MAPPING_FILE_GLOB) | (GTEST_FILE_GLOB)`
 TEST_FILE_NAME_REGEX: re.Pattern[str] = re.compile(
-    r'(.*Test\.java)' +
-    r'|(.*_[a-z]*test(?:_win|_mac|_linux|_chromeos|_android)?\.(cc|mm))' +
-    r'|(' + PREF_MAPPING_FILE_PATTERN + r')')
+    r'(.*tests?.*\.(cc|mm|java)$)' + r'|(' + PREF_MAPPING_FILE_PATTERN + r')',
+    flags=re.IGNORECASE)
 
 _PREF_MAPPING_GTEST_FILTER: str = '*PolicyPrefsTest.PolicyToPrefsMapping*'
 
@@ -145,11 +149,14 @@ SPECIAL_TEST_FILTERS: list[tuple[re.Pattern[str], str]] = [
     (PREF_MAPPING_FILE_REGEX, _PREF_MAPPING_GTEST_FILTER)
 ]
 
-# Some tests don't directly include gtest.h and instead include it via gmock.h
-# or a test_utils.h file, so make sure these cases are captured. Also include
-# files that use <...> for #includes instead of quotes.
-GTEST_INCLUDE_REGEX: re.Pattern[str] = re.compile(
-    r'#include.*(gtest|gmock|_test_utils|browser_test)\.h("|>)')
+# If these test definition macros appear as the first thing on a line of a C++
+# file, we are certain that the file contains GTests.
+GTEST_TEST_DEFINITION_MACRO_REGEX = re.compile(
+    r'^(TEST|TEST_F|TEST_P|INSTANTIATE_TEST_SUITE_P|TYPED_TEST|TYPED_TEST_P|'
+    r'INSTANTIATE_TYPED_TEST_SUITE_P)\(',
+    flags=re.MULTILINE)
+
+JUNIT_TEST_ANNOTATION_REGEX = re.compile(r'^\s*@Test', flags=re.MULTILINE)
 
 ## ENUMS ##
 
