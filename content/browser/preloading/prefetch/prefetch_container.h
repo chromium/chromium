@@ -9,9 +9,12 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
@@ -21,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -296,6 +300,13 @@ class CONTENT_EXPORT PrefetchContainer {
     return resource_request_.get();
   }
 
+  // Returns the devtools request id that should be set to resource request
+  // during `MakeInitialResourceRequest()`.
+  // Note that this is also called via
+  // `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`, where resource
+  // request might not yet created.
+  const std::string& GetDevtoolsRequestId() const;
+
   // Equivalent to `request().no_vary_search_hint()`.
   // Exposed for `PrefetchMatchResolver`.
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const;
@@ -467,8 +478,10 @@ class CONTENT_EXPORT PrefetchContainer {
                                  serving_page_metrics_container);
   void UpdateServingPageMetrics();
 
-  // Returns request id to be used by DevTools and test utilities.
-  const std::string& RequestId() const { return request_id_; }
+  // Returns the container id used by test utilities.
+  const std::string& ContainerIdForTesting() const {
+    return container_id_for_testing_;
+  }
 
   // Simulates state transitions for:
   // - Passing eligibility check successfully (`LoadState::kEligible`),
@@ -808,8 +821,8 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtr<PrefetchServingPageMetricsContainer>
       serving_page_metrics_container_;
 
-  // Request identifier used by DevTools and test utilities.
-  std::string request_id_;
+  // Container id used by test utilities.
+  const std::string container_id_for_testing_;
 
   // Information of preload pipeline that this prefetch belongs/is related to.
   //

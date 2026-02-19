@@ -278,7 +278,7 @@ PrefetchContainer::PrefetchContainer(
     base::PassKey<PrefetchContainer>,
     std::unique_ptr<const PrefetchRequest> request)
     : request_(std::move(request)),
-      request_id_(base::UnguessableToken::Create().ToString()) {
+      container_id_for_testing_(base::UnguessableToken::Create().ToString()) {
   CHECK(request_);
 
   TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
@@ -543,7 +543,8 @@ void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
           FrameTreeNode::From(renderer_initiator_info->GetRenderFrameHost()),
           renderer_initiator_info->devtools_navigation_token().value(),
           GetURL(), request().preload_pipeline_info().id(),
-          preloading_trigger_outcome.value(), prefetch_status, RequestId());
+          preloading_trigger_outcome.value(), prefetch_status,
+          GetDevtoolsRequestId());
     }
   }
 }
@@ -1702,7 +1703,8 @@ void PrefetchContainer::MakeInitialResourceRequest() {
   // There are sometimes other headers that are set during navigation.  These
   // aren't yet supported for prefetch, including browsing topics.
 
-  resource_request->devtools_request_id = RequestId();
+  resource_request->devtools_request_id =
+      base::UnguessableToken::Create().ToString();
 
   // `URLLoaderNetworkServiceObserver`
   // (`resource_request->trusted_params->url_loader_network_observer`) is NOT
@@ -1719,6 +1721,14 @@ void PrefetchContainer::MakeInitialResourceRequest() {
   CHECK(!resource_request->skip_service_worker);
 
   resource_request_ = std::move(resource_request);
+}
+
+const std::string& PrefetchContainer::GetDevtoolsRequestId() const {
+  static const base::NoDestructor<std::string> invalid_request_id(
+      base::UnguessableToken::Create().ToString());
+  return GetResourceRequest()
+             ? GetResourceRequest()->devtools_request_id.value()
+             : *invalid_request_id;
 }
 
 const PrefetchKey& PrefetchContainer::key() const {
@@ -2109,12 +2119,12 @@ void PrefetchContainer::NotifyPrefetchRequestWillBeSent(
     std::pair<const GURL&, const network::mojom::URLResponseHeadDevToolsInfo&>
         redirect_info{url, *info.get()};
     devtools_instrumentation::OnPrefetchRequestWillBeSent(
-        *ftn, RequestId(), rfh->GetLastCommittedURL(), *GetResourceRequest(),
-        std::move(redirect_info));
+        *ftn, GetDevtoolsRequestId(), rfh->GetLastCommittedURL(),
+        *GetResourceRequest(), std::move(redirect_info));
   } else {
     devtools_instrumentation::OnPrefetchRequestWillBeSent(
-        *ftn, RequestId(), rfh->GetLastCommittedURL(), *GetResourceRequest(),
-        std::nullopt);
+        *ftn, GetDevtoolsRequestId(), rfh->GetLastCommittedURL(),
+        *GetResourceRequest(), std::nullopt);
   }
 }
 
@@ -2151,8 +2161,8 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
     return;
   }
 
-  devtools_instrumentation::OnPrefetchResponseReceived(ftn, RequestId(),
-                                                       GetCurrentURL(), head);
+  devtools_instrumentation::OnPrefetchResponseReceived(
+      ftn, GetDevtoolsRequestId(), GetCurrentURL(), head);
 }
 
 void PrefetchContainer::NotifyPrefetchRequestComplete(
@@ -2173,8 +2183,8 @@ void PrefetchContainer::NotifyPrefetchRequestComplete(
     return;
   }
 
-  devtools_instrumentation::OnPrefetchRequestComplete(ftn, RequestId(),
-                                                      completion_status);
+  devtools_instrumentation::OnPrefetchRequestComplete(
+      ftn, GetDevtoolsRequestId(), completion_status);
 }
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>

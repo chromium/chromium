@@ -116,9 +116,9 @@ TestPrefetchWatcherImpl::GetPrefetchContainerIdForTestingInLastNavigation() {
 
 PrefetchContainerIdForTesting TestPrefetchWatcherImpl::GetContainerIdForTesting(
     PrefetchContainer* prefetch_container) {
-  return prefetch_container
-             ? PrefetchContainerIdForTesting(prefetch_container->RequestId())
-             : InvalidPrefetchContainerIdForTesting;
+  return prefetch_container ? PrefetchContainerIdForTesting(
+                                  prefetch_container->ContainerIdForTesting())
+                            : InvalidPrefetchContainerIdForTesting;
 }
 
 TestPrefetchWatcher::TestPrefetchWatcher()
