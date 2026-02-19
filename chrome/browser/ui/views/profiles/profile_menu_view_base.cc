@@ -518,7 +518,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   }
 
   // Button.
-  identity_info_container_->AddChildView(
+  identity_button_ = identity_info_container_->AddChildView(
       views::Builder<views::MdTextButton>()
           .SetText(params.button_text)
           .SetCallback(base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,

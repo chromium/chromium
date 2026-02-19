@@ -275,6 +275,7 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
     return;
   }
 
+  std::move(state_.dialog_state_->dialog_shown_callback_).Run(true);
   delegate_->ShowBatchUploadDialog(
       state_.dialog_state_->browser_,
       GetOrderedListOfNonEmptyDataDescriptions(
@@ -283,7 +284,7 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
       /*complete_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUploadDialogResult,
                      base::Unretained(this)));
-  std::move(state_.dialog_state_->dialog_shown_callback_).Run(true);
+  // The dialog may be reset at this point: `state_.dialog_state_` may be null.
 }
 
 void BatchUploadService::OnBatchUploadDialogResult(

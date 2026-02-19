@@ -200,6 +200,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   }
   bool actionable_item_clicked() const { return actionable_item_clicked_; }
 
+  views::MdTextButton* GetIdentityButtonForTesting() {
+    return identity_button_;
+  }
+
  private:
   class AXMenuWidgetObserver;
 
@@ -245,7 +249,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   raw_ptr<views::View> profile_mgmt_features_container_ = nullptr;
 
   // Child components of `identity_info_container_`.
-  raw_ptr<views::FlexLayoutView> profile_background_container_ = nullptr;
+  raw_ptr<views::MdTextButton> identity_button_ = nullptr;
 
   // The first profile button that should be focused when the menu is opened
   // using a key accelerator.
