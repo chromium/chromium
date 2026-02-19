@@ -258,7 +258,7 @@ void SymphoniaAudioDecoder::Reset(base::OnceClosure closure) {
 // static
 bool SymphoniaAudioDecoder::IsCodecSupported(AudioCodec codec) {
   if (codec == AudioCodec::kFLAC) {
-    return true;
+    return base::FeatureList::IsEnabled(kSymphoniaAudioDecoding);
   }
   if (codec == AudioCodec::kMP3) {
     return base::FeatureList::IsEnabled(kSymphoniaMp3Decoding);

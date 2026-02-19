@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -24,6 +25,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_hash.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
@@ -180,6 +182,11 @@ class AudioDecoderTest
   }
 
   void SetUp() override {
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+    scoped_feature_list_.InitWithFeatures(
+        {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding},
+        {} /*disabled_features=*/);
+#endif
     if (!IsSupported())
       GTEST_SKIP() << "Unsupported platform.";
   }
@@ -417,6 +424,7 @@ class AudioDecoderTest
   const DecoderStatus& last_decode_status() const {
     return last_decode_status_;
   }
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   const AudioDecoderType decoder_type_;

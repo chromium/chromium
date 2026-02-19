@@ -79,7 +79,8 @@ void DefaultDecoderFactory::CreateAudioDecoders(
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-  if (base::FeatureList::IsEnabled(kSymphoniaAudioDecoding)) {
+  if (base::FeatureList::IsEnabled(kSymphoniaAudioDecoding) ||
+      base::FeatureList::IsEnabled(kSymphoniaMp3Decoding)) {
     audio_decoders->push_back(
         std::make_unique<SymphoniaAudioDecoder>(task_runner, media_log));
   }
