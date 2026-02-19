@@ -1,7 +1,7 @@
 Name: symphonia-adapter-libopus
 URL: https://crates.io/crates/symphonia-adapter-libopus
-Version: 0.2.5
-Revision: 29193dbf309d4ee5ac1adb3729a5531073b540bf
+Version: 0.2.6
+Revision: ac436ed5e3b63e510307eb90475965d19cd5d58c
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/symphonia-adapter-libopus-v0_2/LICENSE-APACHE

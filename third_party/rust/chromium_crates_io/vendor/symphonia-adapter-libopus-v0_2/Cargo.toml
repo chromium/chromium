@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.89"
 name = "symphonia-adapter-libopus"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["Austin Schey <aschey13@gmail.com>"]
 build = false
 include = [

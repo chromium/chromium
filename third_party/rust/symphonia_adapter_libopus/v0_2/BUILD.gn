@@ -25,7 +25,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "symphonia-adapter-libopus"
   cargo_pkg_description = "Adapter to use libopus with Symphonia"
   cargo_pkg_repository = "https://github.com/aschey/symphonia-adapters"
-  cargo_pkg_version = "0.2.5"
+  cargo_pkg_version = "0.2.6"
 
   allow_unsafe = true
 

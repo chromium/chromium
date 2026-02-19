@@ -58,9 +58,9 @@ impl Decoder {
             opusic_sys::opus_decode_float(
                 self.ptr,
                 ptr,
-                len(input),
+                len(input)?,
                 output.as_mut_ptr(),
-                len(output) / self.channels as c_int,
+                len(output)? / self.channels as c_int,
                 0 as c_int,
             )
         };
@@ -83,14 +83,14 @@ impl Decoder {
     }
 }
 
-fn check_len(val: usize) -> c_int {
-    match c_int::try_from(val) {
-        Ok(val2) => val2,
-        Err(_) => panic!("length out of range: {}", val),
-    }
+fn check_len(val: usize) -> Result<c_int> {
+    c_int::try_from(val).map_err(|_| {
+        error!("buffer length of out range: {val}");
+        Error::DecodeError("buffer length of out range")
+    })
 }
 
 #[inline]
-fn len<T>(slice: &[T]) -> c_int {
+fn len<T>(slice: &[T]) -> Result<c_int> {
     check_len(slice.len())
 }
