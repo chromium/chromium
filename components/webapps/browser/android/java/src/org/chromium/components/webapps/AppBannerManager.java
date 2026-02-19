@@ -62,6 +62,13 @@ public class AppBannerManager {
     /** Pointer to the native side AppBannerManager. */
     private long mNativePointer;
 
+    /**
+     * The AppData associated with last app details update. Retained as a ref so C++ can hold a weak
+     * reference to it.
+     */
+    @SuppressWarnings("unused")
+    private @Nullable AppData mNativeAppData;
+
     private static final CopyOnWriteArraySet<Observer> sObservers = new CopyOnWriteArraySet<>();
 
     /** Whether add to home screen is permitted by the system. */
@@ -160,6 +167,8 @@ public class AppBannerManager {
 
                 String imageUrl = data.imageUrl();
                 if (TextUtils.isEmpty(imageUrl)) return;
+
+                mNativeAppData = data;
 
                 AppBannerManagerJni.get()
                         .onAppDetailsRetrieved(

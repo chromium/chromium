@@ -64,8 +64,6 @@ struct AddToHomescreenParams {
   InstallableStatusCode installable_status;
   std::string native_app_package_name;
   base::android::ScopedJavaGlobalRef<jobject> native_app_data;
-
-
 };
 
 }  // namespace webapps
