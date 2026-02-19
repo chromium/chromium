@@ -766,16 +766,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
                 .contents_height_side_panel()
                 ->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);
-  // Toolbar height side panel should have the opposite alignment.
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .toolbar_height_side_panel()
-                   ->IsRightAligned());
+  // Toolbar height side panel should have the same alignment.
+  EXPECT_TRUE(browser()
+                  ->GetBrowserView()
+                  .toolbar_height_side_panel()
+                  ->IsRightAligned());
   EXPECT_EQ(browser()
                 ->GetBrowserView()
                 .toolbar_height_side_panel()
                 ->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kLeft);
+            SidePanel::HorizontalAlignment::kRight);
 
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
@@ -788,16 +788,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
                 .contents_height_side_panel()
                 ->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kLeft);
-  // Toolbar height side panel should have the opposite alignment.
-  EXPECT_TRUE(browser()
-                  ->GetBrowserView()
-                  .toolbar_height_side_panel()
-                  ->IsRightAligned());
+  // Toolbar height side panel should have the same alignment.
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .toolbar_height_side_panel()
+                   ->IsRightAligned());
   EXPECT_EQ(browser()
                 ->GetBrowserView()
                 .toolbar_height_side_panel()
                 ->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kRight);
+            SidePanel::HorizontalAlignment::kLeft);
 }
 
 // Verify that right and left alignment works the same as when in LTR mode.
@@ -817,16 +817,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
                 .contents_height_side_panel()
                 ->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);
-  // Toolbar height side panel should have the opposite alignment.
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .toolbar_height_side_panel()
-                   ->IsRightAligned());
+  // Toolbar height side panel should have the same alignment.
+  EXPECT_TRUE(browser()
+                  ->GetBrowserView()
+                  .toolbar_height_side_panel()
+                  ->IsRightAligned());
   EXPECT_EQ(browser()
                 ->GetBrowserView()
                 .toolbar_height_side_panel()
                 ->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kLeft);
+            SidePanel::HorizontalAlignment::kRight);
 
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
@@ -839,16 +839,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
                 .contents_height_side_panel()
                 ->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kLeft);
-  // Toolbar height side panel should have the opposite alignment.
-  EXPECT_TRUE(browser()
-                  ->GetBrowserView()
-                  .toolbar_height_side_panel()
-                  ->IsRightAligned());
+  // Toolbar height side panel should have the same alignment.
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .toolbar_height_side_panel()
+                   ->IsRightAligned());
   EXPECT_EQ(browser()
                 ->GetBrowserView()
                 .toolbar_height_side_panel()
                 ->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kRight);
+            SidePanel::HorizontalAlignment::kLeft);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -2877,7 +2877,7 @@ IN_PROC_BROWSER_TEST_F(
     ShowFromAnimationAnimatesContentViewInTheCorrectDirection_RightAligned) {
   // Set the toolbar height side panel to be right aligned.
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kSidePanelHorizontalAlignment, false);
+      prefs::kSidePanelHorizontalAlignment, true);
   ASSERT_TRUE(browser()
                   ->GetBrowserView()
                   .toolbar_height_side_panel()
@@ -2955,7 +2955,7 @@ IN_PROC_BROWSER_TEST_F(
     ShowFromAnimationAnimatesContentViewInTheCorrectDirection_LeftAligned) {
   // Set the toolbar height side panel to be left aligned.
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kSidePanelHorizontalAlignment, true);
+      prefs::kSidePanelHorizontalAlignment, false);
   ASSERT_FALSE(browser()
                    ->GetBrowserView()
                    .toolbar_height_side_panel()

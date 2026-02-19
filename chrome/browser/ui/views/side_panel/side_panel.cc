@@ -84,12 +84,10 @@ SidePanel::HorizontalAlignment GetHorizontalAlignment(
     bool use_default_horizontal_alignment) {
   bool is_right_aligned =
       pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-  is_right_aligned = type == SidePanelEntry::PanelType::kToolbar
-                         ? !is_right_aligned
-                         : is_right_aligned;
-  return is_right_aligned == use_default_horizontal_alignment
-             ? SidePanel::HorizontalAlignment::kRight
-             : SidePanel::HorizontalAlignment::kLeft;
+  is_right_aligned =
+      use_default_horizontal_alignment ? is_right_aligned : !is_right_aligned;
+  return is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                          : SidePanel::HorizontalAlignment::kLeft;
 }
 
 // This border paints the toolbar color around the side panel content and draws
