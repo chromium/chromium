@@ -2385,6 +2385,10 @@ are declared in tools/grit/grit_args.gni.
                desc="On the chrome://downloads page, the text for the toast shown when the user tried to copy a download's url but the operation failed.">
         Failed to copy link
       </message>
+      <message name="IDS_DOWNLOADS_TOAST_COPIED_LINK"
+               desc="On the chrome://downloads page, the text for the toast shown when the user copies a download's url.">
+        Link copied to clipboard
+      </message>
 
       <message name="IDS_EMAIL_VERIFIED" desc="Toast message to notify the user when their email is automatically verified by the browser.">
         Email automaticaly verified

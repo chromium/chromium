@@ -1206,10 +1206,19 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return;
     }
     if (copied) {
-      const pieces = loadTimeData.getSubstitutedStringPieces(
-                         loadTimeData.getString('toastCopiedDownloadLink'),
-                         this.data.url) as unknown as
-          Array<{collapsible: boolean, value: string, arg: string}>;
+      let pieces;
+      if (this.data.url.startsWith('data:')) {
+        pieces = [{
+          collapsible: false,
+          value: loadTimeData.getString('toastCopiedLink'),
+          arg: '',
+        }];
+      } else {
+        pieces = loadTimeData.getSubstitutedStringPieces(
+                     loadTimeData.getString('toastCopiedDownloadLink'),
+                     this.data.url) as unknown as
+            Array<{collapsible: boolean, value: string, arg: string}>;
+      }
       pieces.forEach(p => {
         p.collapsible = !!p.arg;
       });
