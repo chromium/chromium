@@ -12892,6 +12892,25 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="EnhancedAutofillSettingsBack">
+  <owner>sugoi@google.com</owner>
+  <owner>leozhao@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when user goes back from Enhanced Autofill Settings UI to root
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="EnhancedAutofillSettingsClose">
+  <owner>sugoi@google.com</owner>
+  <owner>leozhao@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when Enhanced Autofill Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="EnhancedBookmarks.AddingFailed">
   <owner>ianwen@chromium.org</owner>
   <description>
@@ -40637,6 +40656,15 @@ should be able to be added at any place in this file.
   <owner>olivierrobin@chromium.org</owner>
   <description>
     Reported when user navigates to Downloads Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.EnhancedAutofill">
+  <owner>sugoi@google.com</owner>
+  <owner>leozhao@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when user navigates to Enhanced Autofill Settings. iOS only.
   </description>
 </action>
 

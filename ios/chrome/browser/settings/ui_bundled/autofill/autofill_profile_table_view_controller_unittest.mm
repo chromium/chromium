@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -226,6 +227,25 @@ TEST_F(AutofillProfileTableViewControllerTest,
       GetTableViewItem(/*section=*/1, /*item=*/0));
 
   EXPECT_NSEQ(@"Canada", item.detailText);
+}
+
+// Checks that the enhanced autofill menu item is visible when the feature is
+// enabled.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestEnhancedAutofillMenuPresent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAiWithDataSchema);
+
+  CreateController();
+  CheckController();
+
+  TableViewDetailIconItem* item =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          GetTableViewItem(/*section=*/1, /*item=*/0));
+
+  NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  EXPECT_NSEQ(text, item.text);
 }
 
 }  // namespace

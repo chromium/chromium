@@ -107,4 +107,26 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
       ]);
 }
 
+bool IsEnhancedAutofillEnabled(ProfileIOS* profile) {
+  ProfileIOS* original_profile = profile->GetOriginalProfile();
+  return autofill::GetAutofillAiOptInStatus(
+      original_profile->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(original_profile));
+}
+
+void SetEnhancedAutofillEnabled(ProfileIOS* profile, bool enabled) {
+  ProfileIOS* original_profile = profile->GetOriginalProfile();
+  autofill::SetAutofillAiOptInStatus(
+      GoogleGroupsManagerFactory::GetForProfile(original_profile),
+      original_profile->GetPrefs(),
+      IOSAutofillEntityDataManagerFactory::GetForProfile(original_profile),
+      IdentityManagerFactory::GetForProfile(original_profile),
+      SyncServiceFactory::GetForProfile(original_profile),
+      IsWalletStorageEnabled(original_profile),
+      original_profile->IsOffTheRecord(),
+      GeoIpCountryCode(GetCountryCodeFromVariations()),
+      enabled ? autofill::AutofillAiOptInStatus::kOptedIn
+              : autofill::AutofillAiOptInStatus::kOptedOut);
+}
+
 }  // namespace autofill

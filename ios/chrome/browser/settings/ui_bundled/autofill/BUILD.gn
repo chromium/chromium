@@ -36,6 +36,8 @@ source_set("autofill") {
     "autofill_settings_profile_edit_table_view_controller.mm",
     "autofill_settings_util.h",
     "autofill_settings_util.mm",
+    "enhanced_autofill_table_view_controller.h",
+    "enhanced_autofill_table_view_controller.mm",
   ]
   deps = [
     ":constants",
@@ -49,6 +51,7 @@ source_set("autofill") {
     "//components/password_manager/core/common:features",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/prefs",
+    "//components/prefs/ios",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/form_input_accessory/public",

@@ -24,9 +24,12 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/core/common/features.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -37,6 +40,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_address_profile_record_type.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_profile_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/enhanced_autofill_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -48,6 +52,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -73,7 +78,8 @@ const CGFloat kPlusAddressSectionHeaderHeight = 24;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitches = kSectionIdentifierEnumZero,
   SectionIdentifierProfiles,
-  SectionIdentifierPlusAddress
+  SectionIdentifierPlusAddress,
+  SectionIdentifierEnhancedAutofill
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -83,7 +89,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader,
   ItemTypeFooter,
   ItemTypePlusAddress,
-  ItemTypePlusAddressFooter
+  ItemTypePlusAddressFooter,
+  ItemTypeEnhancedAutofill
 };
 
 // Returns the fallback detail text for a local profile when its detail text is
@@ -114,6 +121,7 @@ NSString* GetFallbackDetailTextForLocalProfile(
 @interface AutofillProfileTableViewController () <
     AutofillProfileEditCoordinatorDelegate,
     PersonalDataManagerObserver,
+    PrefObserverDelegate,
     IOSAutofillEntityDataManagerObserver,
     PopoverLabelViewControllerDelegate> {
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
@@ -130,6 +138,9 @@ NSString* GetFallbackDetailTextForLocalProfile(
   // such as inserting or removing items/sections. This boolean is used to
   // stop the observer callback from acting on user-initiated changes.
   BOOL _deletionInProgress;
+
+  // Item for the Enhanced Autofill settings menu.
+  TableViewDetailIconItem* _enhancedAutofillItem;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
@@ -155,6 +166,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
   // Coordinator to present and manage the bottom sheet for manually adding an
   // address.
   AutofillEditProfileCoordinator* _autofillAddProfileCoordinator;
+
+  // Pref observer to track changes to prefs.
+  std::optional<PrefObserverBridge> _prefObserverBridge;
+  // TODO(crbug.com/40492152): Refactor PrefObserverBridge so it owns the
+  // PrefChangeRegistrar.
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -184,6 +202,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
           autofill::IOSAutofillEntityDataManagerObserverBridge>(
           _entityDataManager, self);
     }
+
+    _prefChangeRegistrar.Init(_browser->GetProfile()->GetPrefs());
+    _prefObserverBridge.emplace(self);
+    // Register to observe any changes on Perf backed values displayed by the
+    // screen.
+    _prefObserverBridge->ObserveChangesForPreference(
+        autofill::prefs::kAutofillAiOptInStatus, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -228,6 +253,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
 
     [model setFooter:[self plusAddressFooter]
         forSectionWithIdentifier:SectionIdentifierPlusAddress];
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWithDataSchema)) {
+    [model addSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
+    [model addItem:[self enhancedAutofillItem]
+        toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
   }
 
   [self populateProfileSection];
@@ -289,6 +321,25 @@ NSString* GetFallbackDetailTextForLocalProfile(
       initWithType:ItemTypePlusAddressFooter];
   footer.text = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL);
   return footer;
+}
+
+- (TableViewItem*)enhancedAutofillItem {
+  NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  NSString* detailText =
+      autofill::IsEnhancedAutofillEnabled(_browser->GetProfile())
+          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+
+  _enhancedAutofillItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeEnhancedAutofill];
+  _enhancedAutofillItem.text = text;
+  _enhancedAutofillItem.detailText = detailText;
+  _enhancedAutofillItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _enhancedAutofillItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _enhancedAutofillItem.accessibilityIdentifier = kEnhancedAutofillTableViewId;
+
+  return _enhancedAutofillItem;
 }
 
 - (TableViewInfoButtonItem*)managedAddressItem {
@@ -410,7 +461,11 @@ NSString* GetFallbackDetailTextForLocalProfile(
   [self stopAutofillProfileEditCoordinator];
   [self dismissDeletionSheet];
 
+  // Remove pref changes registrations.
+  _prefChangeRegistrar.RemoveAll();
+
   // Remove observer bridges.
+  _prefObserverBridge.reset();
   _observer.reset();
   _entityDataManagerObserver.reset();
 
@@ -524,15 +579,30 @@ NSString* GetFallbackDetailTextForLocalProfile(
     return;
   }
 
-  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
-      ItemTypePlusAddress) {
-    base::RecordAction(
-        base::UserMetricsAction("Settings.ManageOptionOnSettingsSelected"));
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:
-            GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-    [self.sceneHandler closePresentedViewsAndOpenURL:command];
-    return;
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+
+  switch (itemType) {
+    case ItemTypePlusAddress: {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.ManageOptionOnSettingsSelected"));
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:
+              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+      [self.sceneHandler closePresentedViewsAndOpenURL:command];
+      return;
+    }
+    case ItemTypeEnhancedAutofill: {
+      CHECK(self.navigationController);
+      base::RecordAction(base::UserMetricsAction("Settings.EnhancedAutofill"));
+      EnhancedAutofillTableViewController* controller =
+          [[EnhancedAutofillTableViewController alloc]
+              initWithBrowser:_browser];
+      [self configureHandlersForRootViewController:controller];
+      [self.navigationController pushViewController:controller animated:YES];
+      return;
+    }
+    default:
+      break;
   }
 
   if (![self isItemTypeForIndexPathAddress:indexPath]) {
@@ -734,6 +804,25 @@ NSString* GetFallbackDetailTextForLocalProfile(
     _addButtonInToolbar.enabled = [self isAutofillProfileEnabled];
   }
   return _addButtonInToolbar;
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  // If the model hasn't been created yet, no need to update anything.
+  if (!self.tableViewModel) {
+    return;
+  }
+
+  if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
+    NSString* detailText =
+        autofill::IsEnhancedAutofillEnabled(_browser->GetProfile())
+            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    _enhancedAutofillItem.detailText = detailText;
+
+    [self reconfigureCellsForItems:@[ _enhancedAutofillItem ]];
+  }
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate

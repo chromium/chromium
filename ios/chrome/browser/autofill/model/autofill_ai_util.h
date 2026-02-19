@@ -27,6 +27,12 @@ bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action);
 UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
                                             CGFloat symbol_point_size);
 
+// Returns whether Enhanced Autofill is enabled.
+bool IsEnhancedAutofillEnabled(ProfileIOS* profile);
+
+// Enables or disables Enhanced Autofill.
+void SetEnhancedAutofillEnabled(ProfileIOS* profile, bool enabled);
+
 }  // namespace autofill
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_UTIL_H_
