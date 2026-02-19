@@ -789,6 +789,13 @@ external lists like the [HSTS preload list](https://hstspreload.org) or the
 If you believe Chrome's copies of these lists are notably out-of-date, we are
 happy to field bug reports but we do not consider this to be a vulnerability.
 
+### I can demonstrate memory corruption in a test binary!
+
+Test binaries (`unit_tests`, `browser_tests`, etc) do not have the same security
+scrutiny as `chrome` or `d8`. Memory corruption in these binaries does not harm
+Chrome's users, and are not valid reports. Please ensure all of your PoCs
+demonstrate an issue in `chrome` or `d8`.
+
 ## AI Features
 
 Chrome deeply integrates AI both in user-facing features like [Gemini Live
