@@ -497,6 +497,7 @@ chrome_java_resources = [
   "java/res/layout/custom_tile_edit_layout.xml",
   "java/res/layout/custom_view_menu_item.xml",
   "java/res/layout/date_view.xml",
+  "java/res/layout/default_browser_promo_fre_landscape_view.xml",
   "java/res/layout/default_browser_promo_fre_portrait_view.xml",
   "java/res/layout/default_search_engine_first_run_fragment.xml",
   "java/res/layout/distilled_page_font_family_spinner.xml",
