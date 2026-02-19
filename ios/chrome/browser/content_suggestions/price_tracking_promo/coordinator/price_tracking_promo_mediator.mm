@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_action_delegate.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/model/price_tracking_promo_prefs.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -77,7 +77,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 @implementation PriceTrackingPromoMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
-  PriceTrackingPromoItem* _priceTrackingPromoItem;
+  PriceTrackingPromoConfig* _priceTrackingPromoConfig;
   raw_ptr<PrefService> _prefService;
   raw_ptr<PushNotificationService> _pushNotificationService;
   raw_ptr<AuthenticationService> _authenticationService;
@@ -140,11 +140,11 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 - (void)reset {
   _faviconCallbackCalledOnce = false;
   _subscriptionDataFound = false;
-  _priceTrackingPromoItem = nil;
+  _priceTrackingPromoConfig = nil;
 }
 
 - (void)fetchLatestSubscription {
-  if (self->_priceTrackingPromoItem) {
+  if (self->_priceTrackingPromoConfig) {
     return;
   }
   _faviconCallbackCalledOnce = false;
@@ -162,8 +162,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
           }));
 }
 
-- (PriceTrackingPromoItem*)priceTrackingPromoItemToShow {
-  return _priceTrackingPromoItem;
+- (PriceTrackingPromoConfig*)priceTrackingPromoConfigToShow {
+  return _priceTrackingPromoConfig;
 }
 
 - (void)enablePriceTrackingSettingsAndShowSnackbar {
@@ -316,8 +316,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   // There is a subscription but no image url - the price tracking promo
   // will be displayed but with the fallback image.
   if (most_recent_subscription_product_image_url.is_empty()) {
-    _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
-    _priceTrackingPromoItem.priceTrackingPromoHandler = self;
+    _priceTrackingPromoConfig = [[PriceTrackingPromoConfig alloc] init];
+    _priceTrackingPromoConfig.priceTrackingPromoHandler = self;
     [self onNewSubscriptionAvailable];
   } else {
     // If we have an image, fetch it and display the price tracking promo
@@ -365,12 +365,12 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (void)onImageFetchedResult:(const std::string&)imageData
                   productUrl:(const GURL&)productUrl {
-  self->_priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
-  self->_priceTrackingPromoItem.priceTrackingPromoHandler = self;
+  self->_priceTrackingPromoConfig = [[PriceTrackingPromoConfig alloc] init];
+  self->_priceTrackingPromoConfig.priceTrackingPromoHandler = self;
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
   if (data) {
-    self->_priceTrackingPromoItem.productImageData = data;
+    self->_priceTrackingPromoConfig.productImageData = data;
 
     // Load favicon.
     // TODO(crbug.com/377599695) add timeout support
@@ -386,7 +386,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
   if (attributes.faviconImage) {
-    self->_priceTrackingPromoItem.faviconImage = attributes.faviconImage;
+    self->_priceTrackingPromoConfig.faviconImage = attributes.faviconImage;
     if (_faviconCallbackCalledOnce) {
       [self.delegate priceTrackingPromoMediatorDidReconfigureItem];
     }
@@ -438,8 +438,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   return self->_imageFetcher.get();
 }
 
-- (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting {
-  return self->_priceTrackingPromoItem;
+- (PriceTrackingPromoConfig*)priceTrackingPromoConfigForTesting {
+  return self->_priceTrackingPromoConfig;
 }
 
 - (SnackbarMessage*)snackbarMessageForTesting {
@@ -458,8 +458,9 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   [self enablePriceTrackingNotificationsSettings];
 }
 
-- (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item {
-  self->_priceTrackingPromoItem = item;
+- (void)setPriceTrackingPromoConfigForTesting:
+    (PriceTrackingPromoConfig*)config {
+  self->_priceTrackingPromoConfig = config;
 }
 
 - (void)requestPushNotificationDoneWithGrantedForTesting:(BOOL)granted

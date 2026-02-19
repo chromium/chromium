@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_stack_view.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_view.h"
@@ -79,9 +79,9 @@
                              contentViewDelegate:contentViewDelegate];
     }
     case ContentSuggestionsModuleType::kPriceTrackingPromo: {
-      PriceTrackingPromoItem* item =
-          static_cast<PriceTrackingPromoItem*>(config);
-      return [self priceTrackingPromoViewForConfig:item];
+      PriceTrackingPromoConfig* priceTrackingPromoConfig =
+          static_cast<PriceTrackingPromoConfig*>(config);
+      return [self priceTrackingPromoViewForConfig:priceTrackingPromoConfig];
     }
     case ContentSuggestionsModuleType::kShopCard: {
       ShopCardItem* item = static_cast<ShopCardItem*>(config);
@@ -168,11 +168,11 @@
 }
 
 - (UIView*)priceTrackingPromoViewForConfig:
-    (PriceTrackingPromoItem*)priceTrackingPromoItem {
+    (PriceTrackingPromoConfig*)priceTrackingPromoConfig {
   StandaloneModuleView* view =
       [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
-  [view configureView:priceTrackingPromoItem];
-  view.tapDelegate = priceTrackingPromoItem;
+  [view configureView:priceTrackingPromoConfig];
+  view.tapDelegate = priceTrackingPromoConfig;
   return view;
 }
 

@@ -10,7 +10,7 @@
 class AuthenticationService;
 class NotificationsSettingsObserver;
 class PrefService;
-@class PriceTrackingPromoItem;
+@class PriceTrackingPromoConfig;
 class PushNotificationService;
 @class SnackbarMessage;
 
@@ -41,7 +41,7 @@ class ImageDataFetcher;
 
 - (image_fetcher::ImageDataFetcher*)imageFetcherForTesting;
 
-- (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting;
+- (PriceTrackingPromoConfig*)priceTrackingPromoConfigForTesting;
 
 - (SnackbarMessage*)snackbarMessageForTesting;
 
@@ -51,7 +51,7 @@ class ImageDataFetcher;
 
 - (void)enablePriceTrackingNotificationsSettingsForTesting;
 
-- (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item;
+- (void)setPriceTrackingPromoConfigForTesting:(PriceTrackingPromoConfig*)item;
 
 - (void)requestPushNotificationDoneWithGrantedForTesting:(BOOL)granted
                                              promptShown:(BOOL)promptShown

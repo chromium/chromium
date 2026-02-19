@@ -5,8 +5,8 @@
 source_set("ui") {
   sources = [
     "price_tracking_promo_commands.h",
-    "price_tracking_promo_item.h",
-    "price_tracking_promo_item.mm",
+    "price_tracking_promo_config.h",
+    "price_tracking_promo_config.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/content_suggestions/ui/cells:standalone_module_view",

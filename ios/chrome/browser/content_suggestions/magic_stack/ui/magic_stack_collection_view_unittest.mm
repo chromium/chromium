@@ -9,7 +9,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view_audience.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container_delegate.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_config.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -77,7 +77,7 @@ TEST_F(MagicStackCollectionViewControllerTest, TestEphemeralCardAudienceCall) {
                                                       kPriceTrackingPromo]);
   // Test that populating the Magic Stack triggers audience call
   [view_controller_ populateItems:@[
-    [[PriceTrackingPromoItem alloc] init], [[ShortcutsConfig alloc] init]
+    [[PriceTrackingPromoConfig alloc] init], [[ShortcutsConfig alloc] init]
   ]];
   EXPECT_OCMOCK_VERIFY((id)audience_);
 
@@ -99,7 +99,7 @@ TEST_F(MagicStackCollectionViewControllerTest,
   // Test that populating the Magic Stack does not trigger audience call since
   // it is not top card.
   [view_controller_ populateItems:@[
-    [[ShortcutsConfig alloc] init], [[PriceTrackingPromoItem alloc] init]
+    [[ShortcutsConfig alloc] init], [[PriceTrackingPromoConfig alloc] init]
   ]];
   EXPECT_OCMOCK_VERIFY((id)audience_);
 

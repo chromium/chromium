@@ -23,7 +23,7 @@ class FaviconLoader;
 @protocol NewTabPageActionsDelegate;
 class PrefService;
 @protocol PriceTrackingPromoActionDelegate;
-@class PriceTrackingPromoItem;
+@class PriceTrackingPromoConfig;
 @protocol PriceTrackingPromoMediatorDelegate;
 class PushNotificationService;
 @protocol SceneCommands;
@@ -73,7 +73,7 @@ class PushNotificationService;
 
 // Data for price tracking promo to show. Includes the image for the
 // latest subscription to be displayed.
-- (PriceTrackingPromoItem*)priceTrackingPromoItemToShow;
+- (PriceTrackingPromoConfig*)priceTrackingPromoConfigToShow;
 
 // Enable price tracking notifications settings and show
 // snackbar giving user the option to manage these settings.

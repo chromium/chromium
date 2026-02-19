@@ -56,7 +56,7 @@
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/model/price_tracking_promo_prefs.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
@@ -477,20 +477,22 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   if (_prefService->GetBoolean(kPriceTrackingPromoDisabled)) {
     return;
   }
-  PriceTrackingPromoItem* item =
-      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
-  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
+  PriceTrackingPromoConfig* config =
+      _priceTrackingPromoMediator.priceTrackingPromoConfigToShow;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:config];
 }
 
 - (void)newSubscriptionAvailable {
-  MagicStackModule* item =
-      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+  MagicStackModule* config =
+      _priceTrackingPromoMediator.priceTrackingPromoConfigToShow;
   NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index = [rank indexOfObject:item];
+  NSUInteger index = [rank indexOfObject:config];
   if (index == NSNotFound) {
     return;
   }
-  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+  [self.delegate magicStackRankingModel:self
+                          didInsertItem:config
+                                atIndex:index];
 }
 
 - (void)promoWasTapped {
@@ -501,7 +503,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 - (void)removePriceTrackingPromo {
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_priceTrackingPromoMediator
-                                            .priceTrackingPromoItemToShow
+                                            .priceTrackingPromoConfigToShow
                                 animate:YES
                          withCompletion:nil];
 }
@@ -686,7 +688,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                           _prefService)) {
         _ephemeralCardToShow =
             ContentSuggestionsModuleType::kPriceTrackingPromo;
-        card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+        card = _priceTrackingPromoMediator.priceTrackingPromoConfigToShow;
         break;
       }
     } else if (segmentation_platform::home_modules::HomeModulesCardRegistry::
@@ -951,9 +953,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     switch (_ephemeralCardToShow) {
       case ContentSuggestionsModuleType::kPriceTrackingPromo:
         if (_priceTrackingPromoMediator &&
-            _priceTrackingPromoMediator.priceTrackingPromoItemToShow) {
+            _priceTrackingPromoMediator.priceTrackingPromoConfigToShow) {
           [magicStackOrder addObject:_priceTrackingPromoMediator
-                                         .priceTrackingPromoItemToShow];
+                                         .priceTrackingPromoConfigToShow];
         }
         break;
       case ContentSuggestionsModuleType::kSendTabPromo:

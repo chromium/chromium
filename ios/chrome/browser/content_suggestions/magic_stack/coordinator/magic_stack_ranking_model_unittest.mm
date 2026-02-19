@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator+testing.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
@@ -378,8 +378,8 @@ class MagicStackRankingModelTest : public PlatformTest {
           authenticationService:nil
                   faviconLoader:nil];
 
-    PriceTrackingPromoItem* item = [[PriceTrackingPromoItem alloc] init];
-    [_priceTrackingPromoMediator setPriceTrackingPromoItemForTesting:item];
+    PriceTrackingPromoConfig* config = [[PriceTrackingPromoConfig alloc] init];
+    [_priceTrackingPromoMediator setPriceTrackingPromoConfigForTesting:config];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
         initWithSegmentationService:segmentation_platform::

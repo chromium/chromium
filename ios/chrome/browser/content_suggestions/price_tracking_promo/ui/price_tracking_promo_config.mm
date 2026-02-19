@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_config.h"
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/public/price_tracking_promo_constants.h"
@@ -21,15 +21,18 @@ constexpr CGFloat kFallbackSymbolSize = 10;
 
 }  // namespace
 
-@implementation PriceTrackingPromoItem
+@implementation PriceTrackingPromoConfig
 
 #pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
-  PriceTrackingPromoItem* item = [[super copyWithZone:zone] init];
-  item.priceTrackingPromoHandler = self.priceTrackingPromoHandler;
-  item.productImageData = self.productImageData;
-  return item;
+  PriceTrackingPromoConfig* config = [[super copyWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
+  config.priceTrackingPromoHandler = self.priceTrackingPromoHandler;
+  config.productImageData = self.productImageData;
+  // LINT.ThenChange(price_tracking_promo_config.h:Copy)
+  return config;
 }
 
 #pragma mark - MagicStackModule
