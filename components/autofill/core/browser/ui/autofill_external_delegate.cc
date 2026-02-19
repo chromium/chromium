@@ -438,51 +438,6 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
       GetWeakPtr(), *session_id);
 }
 
-base::OnceCallback<void(SuggestionHidingReason)>
-AutofillExternalDelegate::CreateHideSuggestionsCallback() {
-  using SessionId = AutofillClient::SuggestionUiSessionId;
-  const std::optional<SessionId> session_id =
-      manager_->client().GetSessionIdForCurrentAutofillSuggestions();
-  if (!session_id) {
-    return base::DoNothing();
-  }
-  return base::BindOnce(
-      [](base::WeakPtr<AutofillExternalDelegate> self, SessionId session_id,
-         SuggestionHidingReason hiding_reason) {
-        if (!self) {
-          return;
-        }
-        if (self->manager_->client()
-                .GetSessionIdForCurrentAutofillSuggestions()
-                .value_or(SessionId()) != session_id) {
-          return;
-        }
-        self->manager_->client().HideAutofillSuggestions(hiding_reason);
-      },
-      GetWeakPtr(), *session_id);
-}
-
-base::RepeatingCallback<void(const std::u16string&)>
-AutofillExternalDelegate::CreateSingleFieldFillCallback(
-    SuggestionType suggestion_type,
-    std::optional<FieldType> field_type_used) {
-  return base::BindRepeating(
-      [](base::WeakPtr<AutofillExternalDelegate> self, const FormData& form,
-         const FormFieldData& field, SuggestionType suggestion_type,
-         std::optional<FieldType> field_type_used,
-         const std::u16string& value) {
-        if (!self) {
-          return;
-        }
-        self->manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                           mojom::FieldActionType::kReplaceAll,
-                                           form, field, value, suggestion_type,
-                                           field_type_used);
-      },
-      GetWeakPtr(), query_form_, query_field_, suggestion_type,
-      field_type_used);
-}
-
 bool AutofillExternalDelegate::HasActiveScreenReader() const {
 #if BUILDFLAG(IS_IOS)
   // ui::AXPlatform is not supported on iOS. The rendering engine handles

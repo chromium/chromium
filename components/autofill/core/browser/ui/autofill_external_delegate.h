@@ -169,20 +169,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
                                AutofillSuggestionTriggerSource)>
   CreateUpdateSuggestionsCallback();
 
-  // Returns a callback that, when run, attempts to close the currently shown
-  // suggestion UI. If the `SuggestionUiSessionId` of the currently showing UI
-  // surface has changed between when this callback is created and when it is
-  // run, running it is a no-op. The callback is also safe to call even if
-  // `this` is no longer alive.
-  base::OnceCallback<void(SuggestionHidingReason)>
-  CreateHideSuggestionsCallback();
-
-  // Creates a callback that, when run, fills the field that was last queried
-  // when the callback was created.
-  base::RepeatingCallback<void(const std::u16string&)>
-  CreateSingleFieldFillCallback(SuggestionType suggestion_type,
-                                std::optional<FieldType> field_type_used);
-
   // Private handler for DidAcceptSuggestions for address related suggestions.
   void DidAcceptAddressSuggestion(const Suggestion& suggestion,
                                   const SuggestionMetadata& metadata);
