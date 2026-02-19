@@ -51,7 +51,7 @@ constexpr CGFloat kAppBundleIconSize = 40;
   return ContentSuggestionsModuleType::kAppBundlePromo;
 }
 
-#pragma mark - IconDetailViewConfiguration
+#pragma mark - IconDetailViewConfig
 
 - (NSString*)titleText {
   return GetNSString(IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_TITLE);

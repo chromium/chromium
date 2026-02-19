@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIGURATION_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIGURATION_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIG_H_
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
 
@@ -49,7 +49,7 @@ enum class IconViewSourceType;
 @class NewTabPageColorPalette;
 
 // Configuration for the `IconDetailView`.
-@interface IconDetailViewConfiguration : MagicStackModule
+@interface IconDetailViewConfig : MagicStackModule
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
@@ -101,7 +101,7 @@ enum class IconViewSourceType;
 @property(nonatomic, assign) BOOL badgeUsesDefaultSymbol;
 
 @property(nonatomic, strong) NewTabPageColorPalette* ntpBackgroundColorPalette;
-// LINT.ThenChange(icon_detail_view_configuration.mm:Copy)
+// LINT.ThenChange(icon_detail_view_config.mm:Copy)
 
 // Returns the configuration for an `IconView` associated with this
 // `IconDetailView`.
@@ -109,4 +109,4 @@ enum class IconViewSourceType;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIGURATION_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIG_H_

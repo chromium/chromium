@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class IconDetailView;
-@class IconDetailViewConfiguration;
+@class IconDetailViewConfig;
 
 // A protocol for handling `IconDetailView` taps. `-didTapIconDetailView:view`
 // will be called when an `IconDetailView` is tapped.
@@ -31,8 +31,8 @@
 @property(nonatomic, copy) NSString* identifier;
 
 // Initializes this view with a `configuration`.
-- (instancetype)initWithConfiguration:
-    (IconDetailViewConfiguration*)configuration NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfig:(IconDetailViewConfig*)config
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;

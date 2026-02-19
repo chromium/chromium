@@ -6,13 +6,13 @@
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_APP_BUNDLE_PROMO_UI_APP_BUNDLE_PROMO_CONFIG_H_
 
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_config.h"
 
 @protocol AppBundlePromoAudience;
 
 // Config object for the App Bundle promo module.
 @interface AppBundlePromoConfig
-    : IconDetailViewConfiguration <IconDetailViewTapDelegate>
+    : IconDetailViewConfig <IconDetailViewTapDelegate>
 
 // The name of the image resource being used for the promo card's icon.
 @property(nonatomic, copy) NSString* imageName;

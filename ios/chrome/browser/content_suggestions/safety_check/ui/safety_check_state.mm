@@ -116,7 +116,7 @@ using l10n_util::GetNSStringF;
   return ContentSuggestionsModuleType::kSafetyCheck;
 }
 
-#pragma mark - IconDetailViewConfiguration
+#pragma mark - IconDetailViewConfig
 
 - (NSString*)titleText {
   switch (self.itemType) {

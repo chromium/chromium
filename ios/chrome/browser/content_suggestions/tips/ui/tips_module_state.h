@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_config.h"
 
 @protocol TipsModuleAudience;
 
@@ -17,8 +17,7 @@ enum class TipIdentifier;
 }  // namespace segmentation_platform
 
 // Helper class to contain the current Tips module state.
-@interface TipsModuleState
-    : IconDetailViewConfiguration <IconDetailViewTapDelegate>
+@interface TipsModuleState : IconDetailViewConfig <IconDetailViewTapDelegate>
 
 // Unique identifier for the given tip.
 @property(nonatomic, readonly) segmentation_platform::TipIdentifier identifier;

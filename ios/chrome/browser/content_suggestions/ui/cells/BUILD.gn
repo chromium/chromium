@@ -70,8 +70,8 @@ source_set("icon_detail_view") {
   sources = [
     "icon_detail_view.h",
     "icon_detail_view.mm",
-    "icon_detail_view_configuration.h",
-    "icon_detail_view_configuration.mm",
+    "icon_detail_view_config.h",
+    "icon_detail_view_config.mm",
     "icon_view.h",
     "icon_view.mm",
     "icon_view_configuration.h",

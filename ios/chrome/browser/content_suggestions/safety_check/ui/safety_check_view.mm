@@ -132,7 +132,7 @@
 // Creates and returns an `IconDetailView` configured for the given `itemType`.
 - (IconDetailView*)createIconDetailView:(SafetyCheckItemType)itemType {
   _state.itemType = itemType;
-  IconDetailView* view = [[IconDetailView alloc] initWithConfiguration:_state];
+  IconDetailView* view = [[IconDetailView alloc] initWithConfig:_state];
   view.identifier = NameForSafetyCheckItemType(_state.itemType);
   view.tapDelegate = _state;
   return view;

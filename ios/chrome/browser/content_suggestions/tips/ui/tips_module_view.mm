@@ -71,7 +71,7 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
 
 // Creates and returns an `IconDetailView` configured for the `tip`.
 - (IconDetailView*)createIconDetailView:(TipIdentifier)tip {
-  IconDetailView* view = [[IconDetailView alloc] initWithConfiguration:_state];
+  IconDetailView* view = [[IconDetailView alloc] initWithConfig:_state];
   view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
   view.tapDelegate = _state;
   return view;

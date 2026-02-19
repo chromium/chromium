@@ -9,7 +9,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_config.h"
 
 enum class PasswordSafetyCheckState;
 enum class RunningSafetyCheckState;
@@ -19,8 +19,7 @@ enum class SafetyCheckItemType;
 enum class UpdateChromeSafetyCheckState;
 
 // Helper class to contain the current Safety Check state.
-@interface SafetyCheckState
-    : IconDetailViewConfiguration <IconDetailViewTapDelegate>
+@interface SafetyCheckState : IconDetailViewConfig <IconDetailViewTapDelegate>
 
 // The current state of the Update Chrome check.
 @property(nonatomic, readwrite) UpdateChromeSafetyCheckState updateChromeState;

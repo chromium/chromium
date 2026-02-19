@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_config.h"
 
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view_configuration.h"
 
-@implementation IconDetailViewConfiguration {
+@implementation IconDetailViewConfig {
   IconViewConfiguration* _iconViewConfiguration;
 }
 
@@ -30,7 +30,7 @@
 #pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
-  IconDetailViewConfiguration* viewConfig = [[super copyWithZone:zone] init];
+  IconDetailViewConfig* viewConfig = [[super copyWithZone:zone] init];
   // The updates to properties must be reflected in the copy method.
   // LINT.IfChange(Copy)
   viewConfig.titleText = [self.titleText copy];
@@ -51,7 +51,7 @@
   viewConfig.badgeBackgroundColor = self.badgeBackgroundColor;
   viewConfig.badgeUsesDefaultSymbol = self.badgeUsesDefaultSymbol;
   viewConfig.accessibilityIdentifier = [self.accessibilityIdentifier copy];
-  // LINT.ThenChange(icon_detail_view_configuration.h:Copy)
+  // LINT.ThenChange(icon_detail_view_config.h:Copy)
   return viewConfig;
 }
 

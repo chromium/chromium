@@ -237,14 +237,14 @@
 
 // Returns a view for a given `AppBundlePromoConfig`.
 - (UIView*)appBundlePromoViewForConfig:(AppBundlePromoConfig*)config {
-  IconDetailView* view = [[IconDetailView alloc] initWithConfiguration:config];
+  IconDetailView* view = [[IconDetailView alloc] initWithConfig:config];
   view.tapDelegate = config;
   return view;
 }
 
 // Returns a view for a given `DefaultBrowserConfig`.
 - (UIView*)defaultBrowserViewForConfig:(DefaultBrowserConfig*)config {
-  IconDetailView* view = [[IconDetailView alloc] initWithConfiguration:config];
+  IconDetailView* view = [[IconDetailView alloc] initWithConfig:config];
   view.tapDelegate = config;
   return view;
 }

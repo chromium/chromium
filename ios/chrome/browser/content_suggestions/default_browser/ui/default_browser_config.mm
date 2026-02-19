@@ -40,7 +40,7 @@ constexpr CGFloat kIconSize = 40;
   return ContentSuggestionsModuleType::kDefaultBrowser;
 }
 
-#pragma mark - IconDetailViewConfiguration
+#pragma mark - IconDetailViewConfig
 
 - (NSString*)titleText {
   return GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE);

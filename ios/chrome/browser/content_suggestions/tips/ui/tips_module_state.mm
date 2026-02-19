@@ -179,7 +179,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   return ContentSuggestionsModuleType::kTips;
 }
 
-#pragma mark - IconDetailViewConfiguration
+#pragma mark - IconDetailViewConfig
 
 - (NSString*)titleText {
   switch (self.identifier) {
