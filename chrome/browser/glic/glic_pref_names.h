@@ -15,7 +15,7 @@ class PrefRegistrySyncable;
 namespace glic::prefs {
 
 // ************* LOCAL STATE PREFS ***************
-// These prefs are per-Chrome-installation
+// These prefs are per-Chrome-installation.
 
 // Boolean pref that enables or disables the launcher.
 inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
@@ -44,10 +44,10 @@ inline constexpr char kGlicGuestUrlPresetPreprod[] =
 inline constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
 
 // ************* PROFILE PREFS ***************
-// Prefs below are tied to a user profile
+// Prefs below are tied to a user profile.
 
-// Value enums for the browser.gemini_settings pref. Integer pref that
-// determines Glic enabling state for this user profile. This is controlled from
+// Values for the browser.gemini_settings pref. Integer pref that determines
+// the Glic enabling state for this user profile. This is controlled by
 // enterprise policy.
 // TODO(crbug.com/393537628): This should be moved to a less Glic-specific
 // place.
@@ -60,8 +60,7 @@ enum class SettingsPolicyState {
   kMaxValue = kDisabled
 };
 
-// Value enums for the glic.completed_fre pref. Integer pref that determines the
-// Fre status for user profile.
+// Values for the glic.completed_fre pref.
 enum class FreStatus {
   kMinValue = 0,
 
@@ -72,7 +71,17 @@ enum class FreStatus {
   kMaxValue = kIncomplete
 };
 
-// Boolean pref that determines if the glic button in tabstrip is pinned.
+// Values for the "glic.actuation_on_web" pref.
+enum class GlicActuationOnWebPolicyState {
+  kMinValue = 0,
+
+  kEnabled = kMinValue,
+  kDisabled = 1,
+
+  kMaxValue = kDisabled
+};
+
+// Boolean pref that determines if the Glic button in the tabstrip is pinned.
 inline constexpr char kGlicPinnedToTabstrip[] = "glic.pinned_to_tabstrip";
 
 // Boolean pref that enables or disables geolocation access for Glic.
@@ -93,8 +102,8 @@ inline constexpr char kGlicRolloutEligibility[] =
 // Dict pref that records user status.
 inline constexpr char kGlicUserStatus[] = "glic.user_status";
 
-// Integer pref that determines the Fre status for user profile. Values are from
-// the FreStatus enum.
+// Integer pref that determines the FRE status for the user profile. Values are
+// from the FreStatus enum.
 inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 
 // Time pref that records the last time a user dismissed the Glic window.
@@ -112,19 +121,9 @@ inline constexpr char kGlicClosedCaptioningEnabled[] =
 // Bool pref for the daisy chain new tabs setting.
 inline constexpr char kGlicKeepSidepanelOpenOnNewTabsEnabled[] =
     "glic.keep_sidepanel_open_on_new_tabs_enabled";
-
-// Value enums for the "glic.actuation_on_web" pref. Integer pref that
-// determines if glic actuation is enabled. This is controlled from the
-// enterprise policy.
-enum class GlicActuationOnWebPolicyState {
-  kMinValue = 0,
-
-  kEnabled = kMinValue,
-  kDisabled = 1,
-
-  kMaxValue = kDisabled
-};
-// This perf is only applicable to enterprise accounts.
+// Integer pref that determines if Glic actuation is enabled. This is
+// controlled from the enterprise policy. Only applicable to enterprise
+// accounts.
 inline constexpr char kGlicActuationOnWeb[] = "glic.actuation_on_web";
 
 // List prefs for allow/blocklists of URLs for more granular control than
@@ -134,7 +133,7 @@ inline constexpr char kGlicActuationOnWebAllowedForURLs[] =
 inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
     "glic.actuation_on_web_blocked_for_urls";
 
-// Boolean pref for the user enabled actuation on web setting.
+// Boolean pref for the user-enabled actuation on web setting.
 inline constexpr char kGlicUserEnabledActuationOnWeb[] =
     "glic.user_enabled_actuation_on_web";
 
