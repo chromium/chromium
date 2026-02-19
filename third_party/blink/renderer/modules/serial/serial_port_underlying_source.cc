@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_source.h"
 
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -19,6 +20,8 @@ namespace blink {
 
 namespace {
 using ::device::mojom::blink::SerialReceiveError;
+
+BASE_FEATURE(kSerialPortPullWaitToResolve, base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 SerialPortUnderlyingSource::SerialPortUnderlyingSource(
@@ -42,14 +45,26 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
   DCHECK(controller_ == nullptr || controller_ == controller);
   controller_ = controller;
 
+  ScriptPromise<IDLUndefined> promise;
+  if (base::FeatureList::IsEnabled(kSerialPortPullWaitToResolve)) {
+    CHECK(pending_pull_ == nullptr);
+    pending_pull_ = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+        script_state_);
+    promise = pending_pull_->Promise();
+  } else {
+    // Logic prior to https://github.com/WICG/serial/pull/222:
+    //
+    // pull() signals that the stream wants more data. By resolving immediately
+    // we allow the stream to be canceled before that data is received. pull()
+    // will not be called again until a chunk is enqueued or if an error has
+    // been signaled to the controller.
+    promise = ToResolvedUndefinedPromise(script_state_);
+  }
+
   DCHECK(data_pipe_);
   ReadDataOrArmWatcher();
 
-  // pull() signals that the stream wants more data. By resolving immediately
-  // we allow the stream to be canceled before that data is received. pull()
-  // will not be called again until a chunk is enqueued or if an error has been
-  // signaled to the controller.
-  return ToResolvedUndefinedPromise(script_state_.Get());
+  return promise;
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel() {
@@ -140,6 +155,7 @@ void SerialPortUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(serial_port_);
   visitor->Trace(controller_);
+  visitor->Trace(pending_pull_);
   UnderlyingByteSourceBase::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -150,11 +166,18 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
       data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   switch (result) {
     case MOJO_RESULT_OK: {
-      // respond() or enqueue() will only throw if their arguments are invalid
-      // or the stream is errored. The code below guarantees that the length is
-      // in range and the chunk is a valid view. If the stream becomes errored
-      // then this method cannot be called because the watcher is disarmed.
+      // `request->respond()` or `controller_->enqueue()` will only throw if
+      // their arguments are invalid or the stream is errored. The code below
+      // guarantees that the length is in range and the chunk is a valid view.
+      // If the stream becomes errored then this method cannot be called because
+      // the watcher is disarmed.
       NonThrowableExceptionState exception_state;
+
+      // This code needs to be careful about reentrancy. Since calling
+      // `pending_pull_->Resolve()`, `request->respond()` or
+      // `controller_->enqueue()` can trigger a call to `Pull()`.
+      ScriptPromiseResolver<IDLUndefined>* resolver = pending_pull_;
+      pending_pull_ = nullptr;
 
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
@@ -166,6 +189,10 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
         auto chunk = NotShared(DOMUint8Array::Create(buffer));
         result = data_pipe_->EndReadData(buffer.size());
         controller_->enqueue(script_state_, chunk, exception_state);
+      }
+
+      if (base::FeatureList::IsEnabled(kSerialPortPullWaitToResolve)) {
+        resolver->Resolve();
       }
       DCHECK_EQ(result, MOJO_RESULT_OK);
       break;

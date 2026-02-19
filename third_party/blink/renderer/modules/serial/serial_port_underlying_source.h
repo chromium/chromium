@@ -56,6 +56,7 @@ class SerialPortUnderlyingSource : public UnderlyingByteSourceBase,
   const Member<ScriptState> script_state_;
   const Member<SerialPort> serial_port_;
   Member<ReadableByteStreamController> controller_;
+  Member<ScriptPromiseResolver<IDLUndefined>> pending_pull_;
   ScriptValue pending_exception_;
 };
 
