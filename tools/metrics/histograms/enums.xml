@@ -11402,6 +11402,7 @@ from previous Chrome versions.
   <int value="-1035346097" label="SyncErrorInfoBarAndroid:enabled"/>
   <int value="-1035140982" label="ClientSideDetectionModelOnAndroid:enabled"/>
   <int value="-1034344165" label="V8NoTurbo:disabled"/>
+  <int value="-1034066446" label="MultiInstanceSharedPrefsMigration:disabled"/>
   <int value="-1033738911" label="enable-mac-views-dialogs"/>
   <int value="-1033128341"
       label="CrOSLateBootCrasProcessorDedicatedThread:enabled"/>
@@ -14281,6 +14282,7 @@ from previous Chrome versions.
   <int value="-45487487" label="NewTabPageCustomLinks:disabled"/>
   <int value="-45074716" label="SystemDownloadManager:disabled"/>
   <int value="-45067971" label="NewPrintPreview:disabled"/>
+  <int value="-44901743" label="MultiInstanceSharedPrefsMigration:enabled"/>
   <int value="-44632486" label="PrivacyGuide2:enabled"/>
   <int value="-44325492" label="PdfUnseasoned:enabled"/>
   <int value="-44192707" label="BakedGamutMapping:enabled"/>

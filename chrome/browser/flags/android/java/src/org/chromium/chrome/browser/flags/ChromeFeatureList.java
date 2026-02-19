@@ -492,6 +492,8 @@ public abstract class ChromeFeatureList {
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER =
             "MoveToFrontInLaunchIntentDispatcher";
+    public static final String MULTI_INSTANCE_SHARED_PREFS_MIGRATION =
+            "MultiInstanceSharedPrefsMigration";
     public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
     public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
@@ -973,6 +975,8 @@ public abstract class ChromeFeatureList {
                     MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sMultiInstanceSharedPrefsMigration =
+            newCachedFlag(MULTI_INSTANCE_SHARED_PREFS_MIGRATION, false);
     public static final CachedFlag sMvcUpdateViewWhenModelChanged =
             newCachedFlag(
                     MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED,
@@ -1219,6 +1223,7 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
                     sMoveToFrontInLaunchIntentDispatcher,
+                    sMultiInstanceSharedPrefsMigration,
                     sMvcUpdateViewWhenModelChanged,
                     sNavBarColorAnimation,
                     sNewTabPageCustomization,

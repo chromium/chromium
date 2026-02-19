@@ -6601,6 +6601,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "multi-instance-shared-prefs-migration",
+    "owners": [ "zheliooo@google.com", "aishwaryarj@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "multicast-in-direct-sockets",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 160

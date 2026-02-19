@@ -2857,6 +2857,16 @@ inline constexpr char kMulticastInDirectSocketsDescription[] =
     "multicast-explainer.md for "
     "details.";
 
+inline constexpr char kMultiInstanceSharedPrefsMigrationName[] =
+    "Multi-Instance Shared Prefs Migration";
+inline constexpr char kMultiInstanceSharedPrefsMigrationDescription[] =
+    "Separating Multi-Instance data into a new SharedPreferences file. When "
+    "enabled, it performs a read-fallback(first attempts to read from the new "
+    "file; if the data is missing, it falls back to the legacy file) and a "
+    "dual write(updating both files) to ensure data persistence during a "
+    "potential downgrade. When disabled, we perform all operations on the old "
+    "file and purges the new file.";
+
 inline constexpr char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 inline constexpr char kCanvas2DLayersDescription[] =

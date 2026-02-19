@@ -10159,6 +10159,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"multi-instance-shared-prefs-migration",
+     flag_descriptions::kMultiInstanceSharedPrefsMigrationName,
+     flag_descriptions::kMultiInstanceSharedPrefsMigrationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kMultiInstanceSharedPrefsMigration)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"enable-pix-account-linking",
      flag_descriptions::kEnablePixAccountLinkingName,
      flag_descriptions::kEnablePixAccountLinkingDescription, kOsAndroid,
