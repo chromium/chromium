@@ -12,7 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 using segmentation_platform::NameForTipIdentifier;
@@ -27,16 +27,16 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
 }  // namespace
 
 @implementation TipsModuleView {
-  // The current state of the Tips module.
-  TipsModuleState* _state;
+  // The current configuration of the Tips module.
+  TipsModuleConfig* _config;
 
   // The root view of the Tips module.
   UIView* _contentView;
 }
 
-- (instancetype)initWithState:(TipsModuleState*)state {
+- (instancetype)initWithConfig:(TipsModuleConfig*)config {
   if ((self = [super init])) {
-    _state = state;
+    _config = config;
   }
   return self;
 }
@@ -57,13 +57,13 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
   }
 
   // Determine whether the separator should be hidden.
-  BOOL hideSeparator = _state.productImageData.length > 0;
+  BOOL hideSeparator = _config.productImageData.length > 0;
   [_contentViewDelegate updateSeparatorVisibility:hideSeparator];
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
   self.accessibilityIdentifier = kTipsModuleViewID;
 
-  _contentView = [self createIconDetailView:_state.identifier];
+  _contentView = [self createIconDetailView:_config.identifier];
   [self addSubview:_contentView];
   AddSameConstraints(_contentView, self);
   return;
@@ -71,9 +71,9 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
 
 // Creates and returns an `IconDetailView` configured for the `tip`.
 - (IconDetailView*)createIconDetailView:(TipIdentifier)tip {
-  IconDetailView* view = [[IconDetailView alloc] initWithConfig:_state];
+  IconDetailView* view = [[IconDetailView alloc] initWithConfig:_config];
   view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
-  view.tapDelegate = _state;
+  view.tapDelegate = _config;
   return view;
 }
 

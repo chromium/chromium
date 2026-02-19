@@ -16,7 +16,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -70,14 +70,14 @@ class TipsMagicStackMediatorTest : public PlatformTest {
 // Tests that the mediator's initial state is configured correctly for an
 // unknown tip.
 TEST_F(TipsMagicStackMediatorTest, HasCorrectInitialStateForUnknownTip) {
-  EXPECT_EQ(TipIdentifier::kUnknown, mediator_.state.identifier);
+  EXPECT_EQ(TipIdentifier::kUnknown, mediator_.config.identifier);
 }
 
 // Tests that the mediator reconfigures its state to reflect a new tip.
 TEST_F(TipsMagicStackMediatorTest, ReconfiguresStateForNewTip) {
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kLensShop];
 
-  EXPECT_EQ(TipIdentifier::kLensShop, mediator_.state.identifier);
+  EXPECT_EQ(TipIdentifier::kLensShop, mediator_.config.identifier);
 }
 
 // Tests that the mediator calls `-removeTipsModule` on its delegate when

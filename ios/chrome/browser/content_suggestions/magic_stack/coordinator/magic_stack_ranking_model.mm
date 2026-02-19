@@ -80,7 +80,7 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
@@ -387,8 +387,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     return;
   }
 
-  TipsModuleState* state = _tipsMediator.state;
-  [self.delegate magicStackRankingModel:self didReconfigureItem:state];
+  TipsModuleConfig* config = _tipsMediator.config;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:config];
 }
 
 - (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion {
@@ -400,7 +400,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kTips);
 
   [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_tipsMediator.state
+                          didRemoveItem:_tipsMediator.config
                                 animate:YES
                          withCompletion:completion];
 }
@@ -701,7 +701,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       if (tipIdentifier != TipIdentifier::kUnknown) {
         BOOL shouldShowTipsWithProductImage =
             tipIdentifier == TipIdentifier::kLensShop &&
-            _tipsMediator.state.productImageData.length > 0;
+            _tipsMediator.config.productImageData.length > 0;
 
         _ephemeralCardToShow =
             shouldShowTipsWithProductImage
@@ -710,7 +710,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
         [_tipsMediator reconfigureWithTipIdentifier:tipIdentifier];
 
-        card = _tipsMediator.state;
+        card = _tipsMediator.config;
 
         break;
       }
@@ -971,8 +971,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       case ContentSuggestionsModuleType::kTips:
       case ContentSuggestionsModuleType::kTipsWithProductImage: {
-        if (_tipsMediator && _tipsMediator.state) {
-          [magicStackOrder addObject:_tipsMediator.state];
+        if (_tipsMediator && _tipsMediator.config) {
+          [magicStackOrder addObject:_tipsMediator.config];
         }
         break;
       }

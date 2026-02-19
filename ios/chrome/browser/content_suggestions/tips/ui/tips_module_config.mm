@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 
 #import <optional>
 #import <string>
@@ -129,7 +129,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
 }  // namespace
 
-@interface TipsModuleState ()
+@interface TipsModuleConfig ()
 
 // Config for the shape and size of the SF Symbol used for this Tips module.
 @property(nonatomic, readonly) SymbolConfig symbolConfig;
@@ -140,7 +140,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
 @end
 
-@implementation TipsModuleState
+@implementation TipsModuleConfig
 
 - (instancetype)initWithTipIdentifier:(TipIdentifier)identifier {
   if ((self = [super init])) {
@@ -162,11 +162,14 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 #pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
-  TipsModuleState* state =
+  TipsModuleConfig* config =
       [[super copyWithZone:zone] initWithTipIdentifier:self.identifier];
-  state.productImageData = self.productImageData;
-  state.audience = self.audience;
-  return state;
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
+  config.productImageData = self.productImageData;
+  config.audience = self.audience;
+  // LINT.ThenChange(tips_module_config.h:Copy)
+  return config;
 }
 
 #pragma mark - MagicStackModule

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_STATE_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_STATE_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_CONFIG_H_
 
 #import <Foundation/Foundation.h>
 
@@ -17,8 +17,10 @@ enum class TipIdentifier;
 }  // namespace segmentation_platform
 
 // Helper class to contain the current Tips module state.
-@interface TipsModuleState : IconDetailViewConfig <IconDetailViewTapDelegate>
+@interface TipsModuleConfig : IconDetailViewConfig <IconDetailViewTapDelegate>
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // Unique identifier for the given tip.
 @property(nonatomic, readonly) segmentation_platform::TipIdentifier identifier;
 
@@ -29,10 +31,11 @@ enum class TipIdentifier;
 // The object that should handle user events.
 @property(nonatomic, weak) id<TipsModuleAudience> audience;
 
-// Initializes a `TipsModuleState` with `identifier`.
+// Initializes a `TipsModuleConfig` with `identifier`.
 - (instancetype)initWithTipIdentifier:
     (segmentation_platform::TipIdentifier)identifier;
+// LINT.ThenChange(tips_module_config.mm:Copy)
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_STATE_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_CONFIG_H_

@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_view.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/multi_row_container_view.h"
@@ -102,7 +102,7 @@
     }
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips: {
-      TipsModuleState* tipsConfig = static_cast<TipsModuleState*>(config);
+      TipsModuleConfig* tipsConfig = static_cast<TipsModuleConfig*>(config);
       return [self tipsViewForConfig:tipsConfig
                  contentViewDelegate:contentViewDelegate];
     }
@@ -228,10 +228,10 @@
   return view;
 }
 
-- (UIView*)tipsViewForConfig:(TipsModuleState*)state
+- (UIView*)tipsViewForConfig:(TipsModuleConfig*)config
          contentViewDelegate:
              (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
-  TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+  TipsModuleView* view = [[TipsModuleView alloc] initWithConfig:config];
   view.contentViewDelegate = contentViewDelegate;
   return view;
 }

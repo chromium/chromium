@@ -14,7 +14,7 @@
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @protocol TipsMagicStackMediatorDelegate;
-@class TipsModuleState;
+@class TipsModuleConfig;
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
@@ -31,8 +31,8 @@ enum class TipIdentifier;
 // Mediator for managing the state of the Tips (Magic Stack) module.
 @interface TipsMagicStackMediator : NSObject
 
-// Used by the Tips module for the current module state.
-@property(nonatomic, strong, readonly) TipsModuleState* state;
+// Used by the Tips module for the current module configuration.
+@property(nonatomic, strong, readonly) TipsModuleConfig* config;
 
 // Delegate.
 @property(nonatomic, weak) id<TipsMagicStackMediatorDelegate> delegate;

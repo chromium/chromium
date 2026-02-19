@@ -23,7 +23,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
@@ -71,8 +71,8 @@ using segmentation_platform::TipIdentifier;
     CHECK(imageFetcher);
 
     _profilePrefService = profilePrefService;
-    _state = [[TipsModuleState alloc] initWithTipIdentifier:identifier];
-    _state.audience = self;
+    _config = [[TipsModuleConfig alloc] initWithTipIdentifier:identifier];
+    _config.audience = self;
     _shoppingService = shoppingService;
     _bookmarkModel = bookmarkModel;
     _imageFetcher = std::move(imageFetcher);
@@ -102,10 +102,10 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)reconfigureWithTipIdentifier:(TipIdentifier)identifier {
-  _state = [[TipsModuleState alloc] initWithTipIdentifier:identifier];
-  _state.audience = self;
+  _config = [[TipsModuleConfig alloc] initWithTipIdentifier:identifier];
+  _config.audience = self;
 
-  if (_state.identifier == TipIdentifier::kLensShop) {
+  if (_config.identifier == TipIdentifier::kLensShop) {
     [self fetchImage];
   }
 }
@@ -134,7 +134,7 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - Private
 
 // Fetches the product image for the most recently subscribed product from
-// the shopping service and stores it in `_state.productImageData`.
+// the shopping service and stores it in `_config.productImageData`.
 - (void)fetchImage {
   std::vector<const bookmarks::BookmarkNode*> nodes =
       _shoppingService->GetAllShoppingBookmarks();
@@ -184,7 +184,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 // Called when the image data has been fetched. Updates the
-// `_state.productImageData` with the fetched `imageData` and notifies the
+// `_config.productImageData` with the fetched `imageData` and notifies the
 // delegate of the state change.
 - (void)onImageFetchedResult:(const std::string&)imageData {
   NSData* data = [NSData dataWithBytes:imageData.data()
@@ -194,7 +194,7 @@ using segmentation_platform::TipIdentifier;
     return;
   }
 
-  _state.productImageData = data;
+  _config.productImageData = data;
   [self.delegate tipsMagicStackMediatorDidReconfigureItem];
 }
 

@@ -11,17 +11,17 @@
 
 @protocol MagicStackModuleContentViewDelegate;
 @protocol TipsModuleAudience;
-@class TipsModuleState;
+@class TipsModuleConfig;
 
 // A view displaying the Tips module in the Magic Stack.
 @interface TipsModuleView : UIView
 
-// Initializes the `TipsModuleView` with `state`.
-- (instancetype)initWithState:(TipsModuleState*)state;
-
 // The delegate for handling content view events.
 @property(nonatomic, weak) id<MagicStackModuleContentViewDelegate>
     contentViewDelegate;
+
+// Initializes the `TipsModuleView` with `config`.
+- (instancetype)initWithConfig:(TipsModuleConfig*)config;
 
 @end
 

@@ -84,7 +84,7 @@
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_image_data_source.h"
@@ -792,9 +792,9 @@ using segmentation_platform::TipIdentifier;
                                       : LensEntrypoint::NewTabPage;
 
       if (tip == TipIdentifier::kLensShop &&
-          _tipsMediator.state.productImageData.length > 0) {
+          _tipsMediator.config.productImageData.length > 0) {
         UIImage* productImage =
-            [UIImage imageWithData:_tipsMediator.state.productImageData];
+            [UIImage imageWithData:_tipsMediator.config.productImageData];
 
         if (productImage) {
           SearchImageWithLensCommand* command =
@@ -838,7 +838,7 @@ using segmentation_platform::TipIdentifier;
       _tipsPasswordsCoordinator = [[TipsPasswordsCoordinator alloc]
           initWithBaseViewController:self.magicStackCollectionView
                              browser:self.browser
-                          identifier:_tipsMediator.state.identifier];
+                          identifier:_tipsMediator.config.identifier];
 
       _tipsPasswordsCoordinator.delegate = self;
 
@@ -889,13 +889,13 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kTips: {
       CHECK(_tipsMediator);
       std::optional<std::string_view> name =
-          OutputLabelForTipIdentifier(_tipsMediator.state.identifier);
+          OutputLabelForTipIdentifier(_tipsMediator.config.identifier);
       if (name.has_value()) {
         registry->NotifyCardShown(std::string(name.value()).c_str());
         // Log the Tips (Magic Stack) Module that was displayed to the user.
         base::UmaHistogramEnumeration(
             kTipsMagicStackModuleDisplayedTypeHistogram,
-            _tipsMediator.state.identifier);
+            _tipsMediator.config.identifier);
         break;
       }
       [[fallthrough]];

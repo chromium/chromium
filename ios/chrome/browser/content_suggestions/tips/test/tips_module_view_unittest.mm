@@ -8,7 +8,7 @@
 
 #import "base/test/task_environment.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view.h"
 #import "testing/platform_test.h"
@@ -102,10 +102,10 @@ class TipsModuleViewTest : public PlatformTest {
 // Tests that the module can be initialized, create subviews, and that the
 // correct module state is displayed.
 TEST_F(TipsModuleViewTest, DisplaysModuleWithDefaultState) {
-  TipsModuleState* state = [[TipsModuleState alloc]
+  TipsModuleConfig* config = [[TipsModuleConfig alloc]
       initWithTipIdentifier:TipIdentifier::kLensTranslate];
 
-  TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+  TipsModuleView* view = [[TipsModuleView alloc] initWithConfig:config];
 
   [_superview addSubview:view];
 
@@ -141,10 +141,10 @@ TEST_F(TipsModuleViewTest, DisplaysCorrectAccessibilityIdentifier) {
   ASSERT_EQ(tips.size(), identifiers.size());
 
   for (size_t i = 0; i < tips.size(); ++i) {
-    TipsModuleState* state =
-        [[TipsModuleState alloc] initWithTipIdentifier:tips[i]];
+    TipsModuleConfig* config =
+        [[TipsModuleConfig alloc] initWithTipIdentifier:tips[i]];
 
-    TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+    TipsModuleView* view = [[TipsModuleView alloc] initWithConfig:config];
 
     [_superview addSubview:view];
 
@@ -166,10 +166,10 @@ TEST_F(TipsModuleViewTest, DisplaysCorrectNumberOfSubviews) {
   };
 
   for (TipIdentifier tip : tips) {
-    TipsModuleState* state =
-        [[TipsModuleState alloc] initWithTipIdentifier:tip];
+    TipsModuleConfig* config =
+        [[TipsModuleConfig alloc] initWithTipIdentifier:tip];
 
-    TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+    TipsModuleView* view = [[TipsModuleView alloc] initWithConfig:config];
 
     [_superview addSubview:view];
 
