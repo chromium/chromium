@@ -583,39 +583,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
-                       NavigateToPdfAfterHandlerCreated_NotifiesOfPdfChange) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  handler_ = CreateHandler();
-
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false)).Times(2);
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
-                       NavigateToPdfBeforeHandlerCreated_NotifiesOfPdfChange) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
-  handler_ = CreateHandler();
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
-                       OnActiveAXTreeIDChanged_NotifiesOfPdfChange) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(2);
-  handler_ = CreateHandler();
-  handler_->OnActiveAXTreeIDChanged();
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                        OnLineSpaceChange) {
   const read_anything::mojom::LineSpacing kSpacing1 =
       read_anything::mojom::LineSpacing::kLoose;

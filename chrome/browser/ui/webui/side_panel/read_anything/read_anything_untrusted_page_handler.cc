@@ -47,13 +47,11 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/language_detection/core/constants.h"
-#include "components/pdf/browser/pdf_frame_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_ui.h"
@@ -496,14 +494,22 @@ void ReadAnythingUntrustedPageHandler::DidStopLoading() {
 }
 
 bool ReadAnythingUntrustedPageHandler::CheckForPdfContentAfterLoad() {
-  // If this page was previously recognized as not a pdf from the original
-  // call to PrimaryPageChanged() but it's now recognized as a PDF after the
-  // page has finished loaded, notify the page of the new tree as a PDF.
-  if (!is_pdf_) {
-    SetUpPdfObserver();
-    CheckIfActiveAXTreeChangedToPdf();
+#if BUILDFLAG(ENABLE_PDF)
+  content::WebContents* main_contents = main_observer_->web_contents();
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    std::vector<content::WebContents*> inner_contents =
+        main_contents ? main_contents->GetInnerWebContents()
+                      : std::vector<content::WebContents*>();
+    // If this page was previously recognized as not a pdf from the original
+    // call to PrimaryPageChanged() but it's now recognized as a PDF after the
+    // page has finished loaded, call PrimaryPageChanged() again to redistill.
+    if (!is_pdf_ && AreInnerContentsPdfContent(inner_contents)) {
+      PrimaryPageChanged();
+      return true;
+    }
   }
-  return is_pdf_;
+#endif
+  return false;
 }
 
 void ReadAnythingUntrustedPageHandler::DidUpdateAudioMutingState(bool muted) {
@@ -1174,32 +1180,6 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 #endif  // BUILDFLAG(ENABLE_PDF)
 }
 
-void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
-#if BUILDFLAG(ENABLE_PDF)
-  content::WebContents* contents = !!pdf_observer_
-                                       ? pdf_observer_->web_contents()
-                                       : main_observer_->web_contents();
-  bool are_contents_pdf =
-      chrome_pdf::features::IsOopifPdfEnabled()
-          ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
-          : !!pdf_observer_;
-  if (!are_contents_pdf) {
-    return;
-  }
-
-  content::RenderFrameHost* pdf_rfh =
-      chrome_pdf::features::IsOopifPdfEnabled()
-          ? pdf_frame_util::FindFullPagePdfExtensionHost(contents)
-          : pdf_frame_util::FindPdfChildFrame(contents->GetPrimaryMainFrame());
-  if (pdf_rfh) {
-    is_pdf_ = true;
-    VLOG(1) << "Sending pdf tree with id " << pdf_rfh->GetAXTreeID();
-    page_->OnActiveAXTreeIDChanged(
-        pdf_rfh->GetAXTreeID(), pdf_rfh->GetPageUkmSourceId(), /*is_pdf=*/true);
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-}
-
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   is_pdf_ = false;
   // If the side panel is not active, we should not send the active tree id.
@@ -1250,8 +1230,20 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   }
 
 #if BUILDFLAG(ENABLE_PDF)
-  CheckIfActiveAXTreeChangedToPdf();
-  if (is_pdf_) {
+  bool is_pdf = chrome_pdf::features::IsOopifPdfEnabled()
+                    ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
+                    : !!pdf_observer_;
+  if (is_pdf) {
+    // What happens if there are multiple such `rfhs`?
+    contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
+      if (rfh->GetProcess()->IsPdf()) {
+        is_pdf_ = true;
+        VLOG(1) << "Sending pdf tree with id " << rfh->GetAXTreeID();
+        page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(),
+                                       rfh->GetPageUkmSourceId(),
+                                       /*is_pdf=*/true);
+      }
+    });
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
