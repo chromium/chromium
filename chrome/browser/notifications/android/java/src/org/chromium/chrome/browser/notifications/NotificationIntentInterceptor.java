@@ -218,10 +218,14 @@ public class NotificationIntentInterceptor {
             pendingIntent = pendingIntentProvider.getPendingIntent();
             flags = pendingIntentProvider.getFlags();
         }
-        // The delete intent needs to be handled by broadcast receiver from Q due to background
-        // activity start restriction.
+        // The delete intent, and "close incognito" content intent, need to be handled by broadcast
+        // receiver from Q due to background activity start restriction.
         boolean shouldUseBroadcast =
-                intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT
+                (intentType == IntentType.CONTENT_INTENT
+                                && metadata.type
+                                        == NotificationUmaTracker.SystemNotificationType
+                                                .CLOSE_INCOGNITO)
+                        || intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT
                         || actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE
                         || actionType == NotificationUmaTracker.ActionType.UNDO_UNSUBSCRIBE
                         || actionType
