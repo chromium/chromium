@@ -139,7 +139,7 @@ void GrantSyncConsent(Profile* profile, const std::string& email) {
       identity_manager->GetPrimaryAccountMutator();
   primary_account_mutator->SetPrimaryAccount(
       account.account_id, signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kSettings);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

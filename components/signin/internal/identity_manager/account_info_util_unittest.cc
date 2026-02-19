@@ -540,9 +540,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_Minimal) {
   EXPECT_FALSE(
       account_info->GetAccountCapabilities().AreAnyCapabilitiesKnown());
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(account_info->GetLastAuthenticationAccessPoint().value_or(
-                signin_metrics::AccessPoint::kUnknown),
-            signin_metrics::AccessPoint::kUnknown);
+  EXPECT_FALSE(account_info->GetLastAuthenticationAccessPoint().has_value());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
@@ -640,9 +638,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_InvalidAccessPoint) {
   EXPECT_EQ(account_info->account_id,
             CoreAccountId::FromString("test_account_id"));
   // Access point should be empty.
-  EXPECT_EQ(account_info->GetLastAuthenticationAccessPoint().value_or(
-                signin_metrics::AccessPoint::kUnknown),
-            signin_metrics::AccessPoint::kUnknown);
+  EXPECT_FALSE(account_info->GetLastAuthenticationAccessPoint().has_value());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

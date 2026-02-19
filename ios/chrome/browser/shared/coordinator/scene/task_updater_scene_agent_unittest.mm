@@ -220,7 +220,7 @@ TEST_F(TaskUpdaterSceneAgentTest, TestSigninForcedByPolicy_InProgress) {
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(identity);
-  auth_service()->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
+  auth_service()->SignIn(identity, signin_metrics::AccessPoint::kSettings);
 
   // Force signin by policy.
   GetApplicationContext()->GetLocalState()->SetInteger(
