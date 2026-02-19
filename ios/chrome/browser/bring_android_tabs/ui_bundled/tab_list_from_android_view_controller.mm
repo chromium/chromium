@@ -130,7 +130,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                         indexPath:(NSIndexPath*)indexPath {
   item.faviconAttributes = attributes;
   if (!cached && attributes.faviconImage) {
-    if ([self.tableViewModel itemAtIndexPath:indexPath] != item) {
+    if (![self.tableViewModel hasItemAtIndexPath:indexPath] ||
+        [self.tableViewModel itemAtIndexPath:indexPath] != item) {
       return;
     }
     LegacyTableViewCell* cell =
