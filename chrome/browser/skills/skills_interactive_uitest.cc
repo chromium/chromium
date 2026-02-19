@@ -7,6 +7,8 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
@@ -16,11 +18,38 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_window_test.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
+
+optimization_guide::OptimizationMetadata SkillVectorToOptimizationMetaData(
+    std::vector<glic::mojom::SkillPtr> skills) {
+  skills::proto::SkillsList skills_list;
+  for (const auto& glicSkill : skills) {
+    skills::proto::Skill* skill = skills_list.add_skills();
+    skill->set_id(glicSkill->preview->id);
+    skill->set_name(glicSkill->preview->name);
+    skill->set_icon(glicSkill->preview->icon);
+    skill->set_description(glicSkill->preview->description);
+    skill->set_prompt(glicSkill->prompt);
+  }
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/skills.proto.SkillsList");
+  skills_list.SerializeToString(any_metadata.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  return metadata;
+}
+
+}  // namespace
 
 class SkillsInteractiveUiTest : public glic::test::InteractiveGlicTest {
  public:
@@ -165,4 +194,30 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, InvokeSkill) {
       AddUserOwnedSkill(std::move(skill), &generated_skill_id),
       InvokeSkillDirectly(&generated_skill_id),
       VerifyInvocationInWebUI(kSkillPrompt));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, UpdateContextualSkill) {
+  std::vector<glic::mojom::SkillPtr> contextual_skills;
+  glic::mojom::SkillPtr skill = glic::mojom::Skill::New(
+      glic::mojom::SkillPreview::New(
+          "contextual_skill_id", "contextual_skill_name",
+          "contextual_skill_icon", glic::mojom::SkillSource::kFirstParty,
+          "contextual_skill_description"),
+      "test_prompt", std::optional<std::string>("contextual_skill_id"));
+  contextual_skills.push_back(std::move(skill));
+
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  optimization_guide_decider->AddHintForTesting(
+      GURL("https://enabled.com/"),
+      optimization_guide::proto::OptimizationType::SKILLS,
+      SkillVectorToOptimizationMetaData(std::move(contextual_skills)));
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabId), ToggleGlicWindow(GlicWindowMode::kAttached),
+      PollForAndAcceptFre(),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      NavigateWebContents(kFirstTabId, GURL("https://enabled.com/")),
+      WaitForWebContentsReady(kFirstTabId),
+      WaitForSkillPreviewShown("contextual_skill_name"));
 }
