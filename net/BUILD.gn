@@ -309,6 +309,7 @@ component("net") {
     "base/session_usage.h",
     "base/sockaddr_storage.cc",
     "base/sockaddr_storage.h",
+    "base/switches.h",
     "base/sys_addrinfo.h",
     "base/task/task_runner.cc",
     "base/task/task_runner.h",

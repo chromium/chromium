@@ -60,6 +60,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/switches.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_util.h"
@@ -564,7 +565,7 @@ uint64_t GetNetLogMaximumFileSizeFromCommandLineForTesting(  // IN-TEST
 class NetworkServiceInstancePrivate {
  public:
   // Opens the specified file, blocking until the file is open. Used to open
-  // files specified by network::switches::kLogNetLog or
+  // files specified by net::switches::kLogNetLog or
   // network::switches::kSSLKeyLogFile. Since these arguments can be used to
   // debug startup behavior, asynchronously opening the file on another thread
   // would result in losing data, hence the need for blocking open operations.
@@ -649,9 +650,9 @@ network::mojom::NetworkService* GetNetworkService() {
 
       const base::CommandLine* command_line =
           base::CommandLine::ForCurrentProcess();
-      if (command_line->HasSwitch(network::switches::kLogNetLog)) {
+      if (command_line->HasSwitch(net::switches::kLogNetLog)) {
         base::FilePath log_path =
-            command_line->GetSwitchValuePath(network::switches::kLogNetLog);
+            command_line->GetSwitchValuePath(net::switches::kLogNetLog);
         if (log_path.empty()) {
           log_path = GetContentClient()->browser()->GetNetLogDefaultDirectory();
           if (!log_path.empty())

@@ -39,6 +39,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "net/base/switches.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -77,7 +78,7 @@ const char* const kBadFlags[] = {
 
     // These flags, which can expose network data, are considered potentially
     // dangerous.
-    network::switches::kLogNetLog,
+    net::switches::kLogNetLog,
     network::switches::kNetLogCaptureMode,
 
     // These flags disable sandbox-related security.

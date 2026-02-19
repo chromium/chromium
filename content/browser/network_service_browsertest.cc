@@ -58,6 +58,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
+#include "net/base/switches.h"
 #include "net/cookies/cookie_util.h"
 #include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/disk_cache.h"
@@ -1642,7 +1643,7 @@ class NetworkServiceInvalidLogBrowserTest : public ContentBrowserTest {
       const NetworkServiceInvalidLogBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(network::switches::kLogNetLog, "/abc/def");
+    command_line->AppendSwitchASCII(net::switches::kLogNetLog, "/abc/def");
   }
 
   void SetUpOnMainThread() override {
@@ -1674,7 +1675,7 @@ class NetworkServiceNetLogBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchPath(network::switches::kLogNetLog, log_path_);
+    command_line->AppendSwitchPath(net::switches::kLogNetLog, log_path_);
   }
 
   void TearDownInProcessBrowserTestFixture() override {

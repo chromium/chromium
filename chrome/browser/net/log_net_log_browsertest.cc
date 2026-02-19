@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/switches.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,7 @@ class LogNetLogTest : public InProcessBrowserTest {
   LogNetLogTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(network::switches::kLogNetLog);
+    command_line->AppendSwitch(net::switches::kLogNetLog);
   }
 
   void TearDownInProcessBrowserTestFixture() override { VerifyNetLog(); }
@@ -83,8 +84,7 @@ class LogNetLogExplicitFileTest
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
     net_log_path_ = tmp_dir_.GetPath().AppendASCII("netlog.json");
 
-    command_line->AppendSwitchPath(network::switches::kLogNetLog,
-                                   net_log_path_);
+    command_line->AppendSwitchPath(net::switches::kLogNetLog, net_log_path_);
 
     if (GetParam()) {
       command_line->AppendSwitchASCII(network::switches::kNetLogCaptureMode,
@@ -175,8 +175,7 @@ class LogNetLogInvalidDurationTest
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("netlog.json"));
 
     // Add the NetLog path
-    command_line->AppendSwitchPath(network::switches::kLogNetLog,
-                                   net_log_path_);
+    command_line->AppendSwitchPath(net::switches::kLogNetLog, net_log_path_);
     command_line->AppendSwitchASCII(network::switches::kLogNetLogDuration,
                                     GetParam());
     command_line->AppendSwitchASCII(network::switches::kNetLogCaptureMode,
@@ -250,8 +249,7 @@ class LogNetLogValidDurationTest : public InProcessBrowserTest {
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("netlog_valid.json"));
 
     // Specify a 1-second NetLog duration.
-    command_line->AppendSwitchPath(network::switches::kLogNetLog,
-                                   net_log_path_);
+    command_line->AppendSwitchPath(net::switches::kLogNetLog, net_log_path_);
     command_line->AppendSwitchASCII(network::switches::kLogNetLogDuration, "1");
     command_line->AppendSwitchASCII(network::switches::kNetLogCaptureMode,
                                     "Default");

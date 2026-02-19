@@ -35,11 +35,6 @@ const char kHostRules[] = "host-rules";
 const char kIgnoreCertificateErrorsSPKIList[] =
     "ignore-certificate-errors-spki-list";
 
-// Enables saving net log events to a file. If a value is given, it used as the
-// path the the file, otherwise the file is named netlog.json and placed in the
-// user data directory.
-const char kLogNetLog[] = "log-net-log";
-
 // Specifies the duration (in seconds) for network logging. When this flag is
 // provided with a positive integer value X, Chrome will automatically stop
 // collecting NetLog events after X seconds and flush the log to disk.

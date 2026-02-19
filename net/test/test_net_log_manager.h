@@ -6,8 +6,8 @@
 #define NET_TEST_TEST_NET_LOG_MANAGER_H_
 
 #include <memory>
-#include <string_view>
 
+#include "net/base/switches.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 
@@ -21,10 +21,6 @@ class FileNetLogObserver;
 // FileNetLogObserver.
 class TestNetLogManager {
  public:
-  // TODO(crbug.com/336167322): Move network::switches::kLogNetLog so that we
-  // can use the switch here.
-  static constexpr const std::string_view kLogNetLogSwitch = "log-net-log";
-
   explicit TestNetLogManager(
       NetLog* net_log = NetLog::Get(),
       NetLogCaptureMode capture_mode = NetLogCaptureMode::kEverything);

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_SWITCHES_H_
 
 #include "base/component_export.h"
+#include "net/base/switches.h"
 
 namespace network {
 
@@ -21,7 +22,6 @@ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kHostRules[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIgnoreCertificateErrorsSPKIList[];
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES) extern const char kLogNetLog[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kNetLogCaptureMode[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)

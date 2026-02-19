@@ -15,10 +15,10 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_switches.h"
 
 // Base class for tests that want to record a net log. The subclass should
 // implement the VerifyNetLog method which will be called after the test body
@@ -28,8 +28,7 @@ class NetLogPlatformBrowserTestBase : public PlatformBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
     net_log_path_ = tmp_dir_.GetPath().AppendASCII("netlog.json");
-    command_line->AppendSwitchPath(network::switches::kLogNetLog,
-                                   net_log_path_);
+    command_line->AppendSwitchPath(net::switches::kLogNetLog, net_log_path_);
   }
 
   void TearDownInProcessBrowserTestFixture() override {
