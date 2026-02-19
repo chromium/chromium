@@ -12,6 +12,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -33,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -48,6 +50,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -98,15 +101,15 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock ClipboardManager mClipboardManager;
     private @Mock WebContents mWebContents;
-    private @Mock Supplier<Tab> mTabSupplier;
-    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock UrlBarEditingTextStateProvider mTextProvider;
     private @Mock BookmarkState mBookmarkState;
     private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     private @Mock AutocompleteInput mInput;
     private @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
 
-    // The original (real) ClipboardManager to be restored after a test run.
+    private final UserDataHost mTabUserData = new UserDataHost();
+    private final Supplier<Tab> mTabSupplier = () -> mTab;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier = () -> mShareDelegate;
     private Context mContext;
     private AutocompleteMatch mMatch;
     private AutocompleteMatch mChromeDistillerMatch;
@@ -152,10 +155,9 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mProcessor = new EditUrlSuggestionProcessor(uiContext);
         mModel = mProcessor.createModel();
 
-        doReturn(mTab).when(mTabSupplier).get();
-        doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
         doReturn(SEARCH_URL_1).when(mTab).getUrl();
         doReturn(TAB_TITLE).when(mTab).getTitle();
+        doReturn(mTabUserData).when(mTab).getUserDataHost();
         doReturn(true).when(mTab).isInitialized();
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
         when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
@@ -219,7 +221,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchWhenTabIsMissing() {
-        doReturn(null).when(mTabSupplier).get();
+        mTab = null;
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
@@ -233,6 +235,9 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchForSadTab() {
+        SadTab mockSadTab = mock(SadTab.class);
+        doReturn(true).when(mockSadTab).isShowing();
+        mTabUserData.setUserData(SadTab.class, mockSadTab);
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
