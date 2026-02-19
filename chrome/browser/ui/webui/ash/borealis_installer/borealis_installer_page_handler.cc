@@ -20,9 +20,10 @@
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -137,8 +138,15 @@ void BorealisInstallerPageHandler::OnInstallationEnded(
 }
 
 void BorealisInstallerPageHandler::OpenStoragePage() {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kStorageSubpagePath);
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
+  if (!user) {
+    // TODO(crbug.com/447287122): Revisit here to make sure this is always
+    // user profile.
+    return;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      *user, {.sub_page = chromeos::settings::mojom::kStorageSubpagePath});
 }
 
 void BorealisInstallerPageHandler::RequestClosePage() {

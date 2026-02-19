@@ -9,11 +9,15 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/window_backdrop.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -69,9 +73,15 @@ void KerberosInBrowserDialog::GetDialogSize(gfx::Size* size) const {
 
 void KerberosInBrowserDialog::OnDialogClosed(const std::string& json_retval) {
   if (json_retval == "openSettings") {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        ProfileManager::GetActiveUserProfile(),
-        /*sub_page=*/"kerberos/kerberosAccounts");
+    // TODO(crbug.com/447287122): Revisit to check what session user we should
+    // use here.
+    auto* session = session_manager::SessionManager::Get()->GetActiveSession();
+    if (session) {
+      ash::SettingsAppManager::Get()->Open(
+          CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+              session->account_id())),
+          {.sub_page = "kerberos/kerberosAccounts"});
+    }
   } else if (!json_retval.empty()) {
     NOTREACHED();
   }

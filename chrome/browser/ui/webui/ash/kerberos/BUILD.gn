@@ -28,6 +28,8 @@ static_library("kerberos") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/kerberos:resources",
+    "//chromeos/ash/experiences/settings_ui",
+    "//components/session_manager/core",
     "//content/public/browser",
     "//net",
     "//ui/aura",

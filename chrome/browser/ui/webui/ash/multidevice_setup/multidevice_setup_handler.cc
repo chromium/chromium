@@ -10,8 +10,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/user_image/user_image_source.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -89,9 +90,17 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue& args) {
   DCHECK(args.empty());
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      Profile::FromWebUI(web_ui()),
-      chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      Profile::FromWebUI(web_ui()));
+  if (!user) {
+    // TODO(crbug.com/447287122): Revisit here to make sure this is always
+    // user profile.
+    return;
+  }
+
+  ash::SettingsAppManager::Get()->Open(
+      *user,
+      {.sub_page = chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath});
 }
 
 }  // namespace ash::multidevice_setup

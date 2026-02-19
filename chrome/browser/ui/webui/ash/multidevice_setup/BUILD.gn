@@ -44,6 +44,8 @@ static_library("multidevice_setup") {
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/user_image",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/multidevice_setup",
     "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
     "//components/login",
