@@ -809,11 +809,6 @@ public class SettingsSearchCoordinator
             updateView(searchBox, 0, settingsMargin, width);
             updateView(query, 0, settingsMargin, width);
 
-            // |searchBox| loses android:layout_gravity attr after move. Sets it back.
-            var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
-            lp.gravity = Gravity.END;
-            searchBox.setLayoutParams(lp);
-
             showBackIcon = true;
         } else {
             updateSingleColumnSearchUiWidth();
