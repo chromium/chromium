@@ -61,6 +61,8 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
   void GuestViewDocumentOnLoadCompleted() final;
+  void GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
+                                     const gfx::Size& new_size) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,

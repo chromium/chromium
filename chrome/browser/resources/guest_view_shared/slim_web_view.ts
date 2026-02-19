@@ -84,6 +84,28 @@ export class NewWindowEvent extends Event {
   }
 }
 
+class SizeChangedEvent extends Event {
+  readonly oldHeight: number;
+  readonly oldWidth: number;
+  readonly newHeight: number;
+  readonly newWidth: number;
+
+  static factory(args: EventDict) {
+    return new SizeChangedEvent(args);
+  }
+
+  private constructor(args: EventDict) {
+    super('sizechanged', {
+      bubbles: true,
+      cancelable: false,
+    });
+    this.oldHeight = args.getInt('oldHeight');
+    this.oldWidth = args.getInt('oldWidth');
+    this.newHeight = args.getInt('newHeight');
+    this.newWidth = args.getInt('newWidth');
+  }
+}
+
 const eventDescriptors: EventMap = new Map([
   ['contentload', {}],
   [
@@ -102,6 +124,12 @@ const eventDescriptors: EventMap = new Map([
     'newwindow',
     {
       factory: NewWindowEvent.factory,
+    },
+  ],
+  [
+    'sizechanged',
+    {
+      factory: SizeChangedEvent.factory,
     },
   ],
 ]);

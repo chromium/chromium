@@ -11,10 +11,15 @@ const char kEventContentLoad[] = "contentload";
 const char kEventLoadAbort[] = "loadabort";
 const char kEventLoadCommit[] = "loadcommit";
 const char kEventNewWindow[] = "newwindow";
+const char kEventSizeChanged[] = "sizechanged";
 
 // Parameters on events.
 const char kInitialHeight[] = "initialHeight";
 const char kInitialWidth[] = "initialWidth";
+const char kNewHeight[] = "newHeight";
+const char kNewWidth[] = "newWidth";
+const char kOldHeight[] = "oldHeight";
+const char kOldWidth[] = "oldWidth";
 const char kRequestInfo[] = "requestInfo";
 const char kTargetURL[] = "targetUrl";
 const char kWindowOpenDisposition[] = "windowOpenDisposition";

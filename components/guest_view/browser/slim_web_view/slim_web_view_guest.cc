@@ -204,6 +204,18 @@ void SlimWebViewGuest::GuestViewDocumentOnLoadCompleted() {
       slim_web_view::kEventContentLoad, base::DictValue()));
 }
 
+void SlimWebViewGuest::GuestSizeChangedDueToAutoSize(
+    const gfx::Size& old_size,
+    const gfx::Size& new_size) {
+  base::DictValue args;
+  args.Set(slim_web_view::kOldHeight, old_size.height());
+  args.Set(slim_web_view::kOldWidth, old_size.width());
+  args.Set(slim_web_view::kNewHeight, new_size.height());
+  args.Set(slim_web_view::kNewWidth, new_size.width());
+  DispatchEventToView(std::make_unique<GuestViewEvent>(
+      slim_web_view::kEventSizeChanged, std::move(args)));
+}
+
 void SlimWebViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   NOTREACHED() << "new window creation is not supported in SlimWebView";

@@ -12,10 +12,15 @@ extern const char kEventContentLoad[];
 extern const char kEventLoadAbort[];
 extern const char kEventLoadCommit[];
 extern const char kEventNewWindow[];
+extern const char kEventSizeChanged[];
 
 // Parameters on events.
 extern const char kInitialHeight[];
 extern const char kInitialWidth[];
+extern const char kNewHeight[];
+extern const char kNewWidth[];
+extern const char kOldHeight[];
+extern const char kOldWidth[];
 extern const char kRequestInfo[];
 extern const char kTargetURL[];
 extern const char kWindowOpenDisposition[];
