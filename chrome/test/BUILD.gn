@@ -2699,6 +2699,7 @@ if (!is_android) {
       "//chrome/browser/ui/performance_controls:browser_tests",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/profiles:browser_tests",
+      "//chrome/browser/ui/promos:browser_tests",
       "//chrome/browser/ui/promos:controller",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator:browser_tests",

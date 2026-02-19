@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -17,12 +18,14 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -140,7 +143,7 @@ class IOSPromoControllerBrowserTest : public InProcessBrowserTest {
 // Verifies that the promo is shown when the "desktop to iOS promo" feature is
 // enabled on the user's iOS device.
 IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
-                       MAYBE_ShowPromo_ReceivingEnabled) {
+                       ShowPromo_ReceivingEnabled) {
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
       CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
@@ -176,5 +179,25 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
       .Times(0);
 
   // Trigger the promo.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is not shown when the "promotions enabled" policy is
+// disabled.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_PromotionsDisabled) {
+  g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
+                                               false);
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, true));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(0);
   promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
 }
