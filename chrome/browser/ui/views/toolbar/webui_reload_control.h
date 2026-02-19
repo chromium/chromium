@@ -54,9 +54,7 @@ class WebUIReloadControl : public ReloadControl {
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckReloadButtonColor);
 
-  void OnNavigationStatusChanged();
-  void OnDevToolsStatusChanged();
-  void OnContextMenuClosed();
+  void UpdateState();
 
   const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;

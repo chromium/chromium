@@ -22,23 +22,10 @@ enum ContextMenuType {
   kSplitTabsContext = 3,
 };
 
-// The state of a paritcular context menu.
-enum ContextMenuState {
-  kUnspecified = 0,
-  kVisible = 1,
-  kHidden = 2,
-};
-
-enum DevToolsState {
-  kUnspecified = 0,
-  kConnected = 1,
-  kDisconnected = 2,
-};
-
-enum NavigationState {
-  kUnspecified = 0,
-  kLoading = 1,
-  kNotLoading = 2,
+struct ReloadControlState {
+  bool is_devtools_connected;
+  bool is_navigation_loading;
+  bool is_context_menu_visible;
 };
 
 enum SplitTabActiveLocation {
@@ -55,4 +42,17 @@ enum ToolbarButtonType {
 struct LayoutConstants {
   int32 toolbar_button_height;
   int32 toolbar_button_icon_size;
+};
+
+struct SplitTabsControlState {
+  bool is_current_tab_split;
+  SplitTabActiveLocation location;
+  bool is_pinned;
+  bool is_context_menu_visible;
+};
+
+struct NavigationControlsState {
+  ReloadControlState reload_control_state;
+  SplitTabsControlState split_tabs_control_state;
+  LayoutConstants layout_constants;
 };

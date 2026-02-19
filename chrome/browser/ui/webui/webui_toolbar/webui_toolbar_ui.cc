@@ -126,25 +126,11 @@ void WebUIToolbarUI::BindInterface(
   }
 }
 
-void WebUIToolbarUI::OnDevToolsStatusChanged(
-    browser_controls_api::mojom::DevToolsState state) {
+void WebUIToolbarUI::OnNavigationControlsStateChanged(
+    browser_controls_api::mojom::NavigationControlsStatePtr state) {
   if (browser_controls_service_) {
-    browser_controls_service_->OnDevToolsStatusChanged(state);
-  }
-}
-
-void WebUIToolbarUI::OnNavigationStatusChanged(
-    browser_controls_api::mojom::NavigationState state) {
-  if (browser_controls_service_) {
-    browser_controls_service_->OnNavigationStatusChanged(state);
-  }
-}
-
-void WebUIToolbarUI::OnContextMenuStateChanged(
-    browser_controls_api::mojom::ContextMenuType menu_type,
-    browser_controls_api::mojom::ContextMenuState state) {
-  if (browser_controls_service_) {
-    browser_controls_service_->OnContextMenuStateChanged(menu_type, state);
+    browser_controls_service_->OnNavigationControlsStateChanged(
+        std::move(state));
   }
 }
 
@@ -188,22 +174,6 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(
 void WebUIToolbarUI::SetCommandUpdaterForTesting(
     CommandUpdater* command_updater) {
   command_updater_for_testing_ = command_updater;
-}
-
-void WebUIToolbarUI::OnTabSplitStatusChanged(
-    bool is_split,
-    browser_controls_api::mojom::SplitTabActiveLocation location) {
-  if (browser_controls_service_) {
-    browser_controls_service_->OnTabSplitStatusChanged(is_split, location);
-  }
-}
-
-void WebUIToolbarUI::OnButtonPinStateChanged(
-    browser_controls_api::mojom::ToolbarButtonType type,
-    bool is_pinned) {
-  if (browser_controls_service_) {
-    browser_controls_service_->OnButtonPinStateChanged(type, is_pinned);
-  }
 }
 
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(

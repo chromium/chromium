@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -55,21 +56,6 @@ constexpr char kInputToReloadMouseReleaseHistogram[] =
 constexpr char kInputToStopMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
-class MockWebWebUIToolbarDelegate
-    : public BrowserControlsService::BrowserControlsServiceDelegate {
- public:
-  MockWebWebUIToolbarDelegate() = default;
-
-  MOCK_METHOD(void,
-              HandleContextMenu,
-              (browser_controls_api::mojom::ContextMenuType,
-               gfx::Point,
-               ui::mojom::MenuSourceType),
-              (override));
-  MOCK_METHOD(void, OnPageInitialized, (), (override));
-  MOCK_METHOD(void, PermitLaunchUrl, (), (override));
-};
-
 }  // namespace
 
 // Test fixture for the BrowserControlsService class.
@@ -93,12 +79,25 @@ class BrowserControlsServiceTest : public testing::Test {
     ON_CALL(mock_browser_window_, GetTabStripModel())
         .WillByDefault(Return(nullptr));
 
+    ON_CALL(delegate_, GetNavigationControlsState()).WillByDefault([]() {
+      return CreateValidNavigationControlsState();
+    });
+
     handler_ = std::make_unique<BrowserControlsService>(
         mojo::PendingReceiver<
             browser_controls_api::mojom::BrowserControlsService>(),
         web_contents_.get(), mock_command_updater_.get(), &mock_browser_window_,
         /*delegate=*/&delegate_);
-    handler_->AddObserver(page().BindAndGetRemote());
+
+    base::RunLoop run_loop;
+    handler_->Bind(base::BindLambdaForTesting(
+        [&](base::expected<browser_controls_api::mojom::InitialStatePtr,
+                           mojo_base::mojom::ErrorPtr> result) {
+          ASSERT_TRUE(result.has_value());
+          page().Bind(std::move(result.value()->update_stream));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
 
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
@@ -296,109 +295,149 @@ TEST_F(BrowserControlsServiceTest, TestShowContextMenu) {
   web_contents().SetDelegate(nullptr);
 }
 
-// Tests that calling OnNavigationStatusChanged() calls the page with the
+// Tests that calling OnNavigationControlsStateChanged() calls the page with the
 // correct state and records metrics when loading.
 TEST_F(BrowserControlsServiceTest, TestOnNavigationStatusChangedLoading) {
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_navigation_loading = true;
+
   EXPECT_CALL(page(),
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kLoading))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_navigation_loading,
+                      true))))))
       .Times(1);
   EXPECT_CALL(mock_metrics_reporter(),
               Mark(kChangeVisibleModeToLoadingStartMark))
       .Times(1);
 
-  handler().OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState::kLoading);
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page().FlushForTesting();
 }
 
-// Tests that calling OnNavigationStatusChanged() calls the page with the
+// Tests that calling OnNavigationControlsStateChanged() calls the page with the
 // correct state and records metrics when not loading.
 TEST_F(BrowserControlsServiceTest, TestOnNavigationStatusChangedNotLoading) {
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_navigation_loading = false;
+
   EXPECT_CALL(page(),
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kNotLoading))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_navigation_loading,
+                      false))))))
       .Times(1);
   EXPECT_CALL(mock_metrics_reporter(),
               Mark(kChangeVisibleModeToNotLoadingStartMark))
       .Times(1);
-  handler().OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState::kNotLoading);
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page().FlushForTesting();
 }
 
-// Tests that calling OnDevToolsStatusChanged() calls the page with the correct
-// state.
+// Tests that calling OnNavigationControlsStateChanged() calls the page with the
+// correct state.
 TEST_F(BrowserControlsServiceTest, TestOnDevToolsStatusChangedToConnected) {
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_devtools_connected = true;
+
   EXPECT_CALL(page(),
-              OnDevToolsStatusChanged(
-                  browser_controls_api::mojom::DevToolsState::kConnected))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_devtools_connected,
+                      true))))))
       .Times(1);
 
-  handler().OnDevToolsStatusChanged(
-      browser_controls_api::mojom::DevToolsState::kConnected);
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page().FlushForTesting();
 }
 
-// Tests that calling OnDevToolsStatusChanged() calls the page with the correct
-// state.
+// Tests that calling OnNavigationControlsStateChanged() calls the page with the
+// correct state.
 TEST_F(BrowserControlsServiceTest, TestOnDevToolsStatusChangedToDisconnected) {
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_devtools_connected = false;
+
   EXPECT_CALL(page(),
-              OnDevToolsStatusChanged(
-                  browser_controls_api::mojom::DevToolsState::kDisconnected))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_devtools_connected,
+                      false))))))
       .Times(1);
 
-  handler().OnDevToolsStatusChanged(
-      browser_controls_api::mojom::DevToolsState::kDisconnected);
+  handler().OnNavigationControlsStateChanged(std::move(state));
   page().FlushForTesting();
 }
 
-// Tests that calling OnNavigationStatusChanged() does not crash if the metrics
-// reporter is null.
+// Tests that calling OnNavigationControlsStateChanged() does not crash if the
+// metrics reporter is null.
 TEST_F(BrowserControlsServiceTest,
        TestOnNavigationStatusChangedNoMetricsReporter) {
   ClearMetricsReporter();
+
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_navigation_loading = true;
+
   EXPECT_CALL(page(),
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kLoading))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_navigation_loading,
+                      true))))))
       .Times(1);
   // No EXPECT_CALLs for `mock_metrics_reporter()` as it is null.
 
-  handler().OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState::kLoading);
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page().FlushForTesting();
   // Expect no crash.
 }
 
-// Tests that adding a new observer resets the previous one.
-TEST_F(BrowserControlsServiceTest, AddObserverResetsPreviousObserver) {
+// Tests that multiple observers receive updates.
+TEST_F(BrowserControlsServiceTest, MultipleObserversReceiveUpdates) {
   testing::StrictMock<MockReloadButtonPage> page2;
 
-  // Add a new observer. This should unbind the previous observer (page_).
-  handler().AddObserver(page2.BindAndGetRemote());
+  // Bind a second observer.
+  base::RunLoop run_loop;
+  handler().Bind(base::BindLambdaForTesting(
+      [&](base::expected<browser_controls_api::mojom::InitialStatePtr,
+                         mojo_base::mojom::ErrorPtr> result) {
+        ASSERT_TRUE(result.has_value());
+        page2.Bind(std::move(result.value()->update_stream));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   // Trigger an event.
-  EXPECT_CALL(page2,
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kLoading))
-      .Times(1);
+  EXPECT_CALL(page2, OnNavigationControlsStateChanged(testing::_)).Times(1);
 
-  // The original page should NOT receive the event.
-  EXPECT_CALL(page(),
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kLoading))
-      .Times(0);
+  // The original page should also receive the event.
+  EXPECT_CALL(page(), OnNavigationControlsStateChanged(testing::_)).Times(1);
 
   EXPECT_CALL(mock_metrics_reporter(),
               Mark(kChangeVisibleModeToLoadingStartMark))
       .Times(1);
 
-  handler().OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState::kLoading);
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_navigation_loading = true;
+
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page2.FlushForTesting();
   page().FlushForTesting();
@@ -407,32 +446,52 @@ TEST_F(BrowserControlsServiceTest, AddObserverResetsPreviousObserver) {
 // Test suite for SplitTabs-related tests.
 using BrowserControlsServiceSplitTabsTest = BrowserControlsServiceTest;
 
-// Tests that OnTabSplitStatusChanged calls the page with the correct state.
+// Tests that OnNavigationControlsStateChanged calls the page with the correct
+// state.
 TEST_F(BrowserControlsServiceSplitTabsTest, TestOnTabSplitStatusChanged) {
+  auto state = CreateValidNavigationControlsState();
+  state->split_tabs_control_state->is_current_tab_split = true;
+  state->split_tabs_control_state->location =
+      browser_controls_api::mojom::SplitTabActiveLocation::kStart;
+
   EXPECT_CALL(
       page(),
-      OnTabSplitStatusChanged(
-          true, browser_controls_api::mojom::SplitTabActiveLocation::kStart))
+      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+          &browser_controls_api::mojom::NavigationControlsState::
+              split_tabs_control_state,
+          testing::Pointee(testing::AllOf(
+              testing::Field(&browser_controls_api::mojom::
+                                 SplitTabsControlState::is_current_tab_split,
+                             true),
+              testing::Field(
+                  &browser_controls_api::mojom::SplitTabsControlState::location,
+                  browser_controls_api::mojom::SplitTabActiveLocation::
+                      kStart)))))))
       .Times(1);
 
-  handler().OnTabSplitStatusChanged(
-      true, browser_controls_api::mojom::SplitTabActiveLocation::kStart);
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page().FlushForTesting();
 }
 
-// Tests that OnButtonPinStateChanged calls the page with the correct
+// Tests that OnNavigationControlsStateChanged calls the page with the correct
 // state.
 TEST_F(BrowserControlsServiceSplitTabsTest,
        TestOnSplitTabsButtonPinStateChanged) {
+  auto state = CreateValidNavigationControlsState();
+  state->split_tabs_control_state->is_pinned = true;
+
   EXPECT_CALL(
       page(),
-      OnButtonPinStateChanged(
-          browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true))
+      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+          &browser_controls_api::mojom::NavigationControlsState::
+              split_tabs_control_state,
+          testing::Pointee(testing::Field(
+              &browser_controls_api::mojom::SplitTabsControlState::is_pinned,
+              true))))))
       .Times(1);
 
-  handler().OnButtonPinStateChanged(
-      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true);
+  handler().OnNavigationControlsStateChanged(std::move(state));
 
   page().FlushForTesting();
 }

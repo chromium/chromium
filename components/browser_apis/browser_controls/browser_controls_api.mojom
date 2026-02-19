@@ -7,40 +7,30 @@ module browser_controls_api.mojom;
 import "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/error.mojom";
 
 // Called from C++ side of chrome://webui-toolbar.top-chrome
 // (Browser -> Renderer)
 interface BrowserControlsObserver {
-  // Sets the dev tools state in the renderer, the renderer is expected to
-  // make UI changes accordingly.
-  OnDevToolsStatusChanged(DevToolsState state);
+  // Observes events for navigation controls (e.g. back, forward, reload
+  // buttons).  |state| contains the state for all navigation controls
+  // so that they can update together to avoid visual flicker.
+  OnNavigationControlsStateChanged(NavigationControlsState state);
+};
 
-  // Sets the navigation loading state in the renderer, the renderer is
-  // expected to make UI changes accordingly.
-  OnNavigationStatusChanged(NavigationState state);
+struct InitialState {
+    NavigationControlsState state;
 
-  // Indicates the context menu of type |menu_type| changed to |state| state.
-  OnContextMenuStateChanged(ContextMenuType menu_type, ContextMenuState state);
-
-  // Sets the split status of the active tab in the renderer, the renderer is
-  // expected to make UI changes accordingly.
-  OnTabSplitStatusChanged(bool is_split, SplitTabActiveLocation location);
-
-  // Sets the pin state of the specified button in the renderer, the renderer
-  // is expected to make UI changes accordingly.
-  OnButtonPinStateChanged(ToolbarButtonType type, bool is_pinned);
-
-  // Sets the layout constants in the renderer, the renderer is expected to make
-  // UI changes accordingly.
-  OnLayoutChanged(LayoutConstants layout_constants);
+    pending_receiver<BrowserControlsObserver> update_stream;
 };
 
 // BrowserControlsService defines methods to be called from the WebUI to the
 // browser-side. This interface consolidates various browser control actions.
 interface BrowserControlsService {
-  // Registers an observer to receive status updates from the browser.
-  AddObserver(
-    pending_remote<BrowserControlsObserver> observer);
+  // Binds an observer to the service. This is a synchronization point between
+  // the client and the browser. All subsequent updates after the initial
+  // data will be associated receiver.
+  Bind() => result<InitialState, mojo_base.mojom.Error>;
 
   // Stops the current page from loading. If the page is not in a loading
   // state, it is a no-op.
@@ -68,15 +58,4 @@ interface BrowserControlsService {
 
   // Enters split view mode for the active tab. Only called when not in split.
   SplitActiveTab();
-
-  // Gets the split status of the active tab.
-  GetTabSplitState()
-      => (bool is_split, SplitTabActiveLocation location);
-
-  // Gets the pin state for the specified button.
-  GetButtonPinState(ToolbarButtonType type) => (bool is_pinned);
-
-  // Gets the current layout constants.
-  GetLayoutConstants()
-      => (LayoutConstants layout_constants);
 };

@@ -11,8 +11,10 @@ export function getHtml(this: SplitTabsButtonElement) {
 <cr-icon-button id="button" iron-icon="${this.getIcon()}"
     @click="${this.onClick}" @contextmenu="${this.onContextMenu}"
     title="${this.getLabel()}" aria-label="${this.getLabel()}"
-    aria-haspopup="${this.isSplit ? 'menu' : 'false'}">
+    aria-haspopup="${this.state.isCurrentTabSplit ? 'menu' : 'false'}"
+    is-menu-open="${this.state.isContextMenuVisible}"
+    is-split="${this.state.isCurrentTabSplit}">
 </cr-icon-button>
-<div class="status-indicator" ?hidden="${!this.isSplit}"></div>
+<div class="status-indicator" ?hidden="${!this.state.isCurrentTabSplit}"></div>
 <!--_html_template_end_-->`;
 }

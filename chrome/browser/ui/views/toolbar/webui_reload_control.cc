@@ -25,7 +25,7 @@ WebUIReloadControl::WebUIReloadControl(
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS,
-      base::BindRepeating(&WebUIReloadControl::OnContextMenuClosed,
+      base::BindRepeating(&WebUIReloadControl::UpdateState,
                           base::Unretained(this)));
 
   // The accessibility and tooltip attributes are handled by the WebUI.
@@ -36,12 +36,7 @@ WebUIReloadControl::~WebUIReloadControl() = default;
 void WebUIReloadControl::Init() {
   CHECK(!is_initialized_);
   is_initialized_ = true;
-
-  // TODO: These two mojo messages are likely unnecessary if `mode_` and
-  // `is_dev_tools_connected_` match the corresponding default values in
-  // TypeScript.
-  OnNavigationStatusChanged();
-  OnDevToolsStatusChanged();
+  UpdateState();
 }
 
 void WebUIReloadControl::ChangeMode(ReloadControl::Mode mode, bool force) {
@@ -50,7 +45,7 @@ void WebUIReloadControl::ChangeMode(ReloadControl::Mode mode, bool force) {
   // change accordingly. We may need to implement the timer/force updating logic
   // in the future.
   mode_ = mode;
-  OnNavigationStatusChanged();
+  UpdateState();
 }
 
 bool WebUIReloadControl::GetDevToolsStatusForTesting() const {
@@ -59,33 +54,20 @@ bool WebUIReloadControl::GetDevToolsStatusForTesting() const {
 
 void WebUIReloadControl::SetDevToolsStatus(bool is_dev_tools_connected) {
   is_dev_tools_connected_ = is_dev_tools_connected;
-  OnDevToolsStatusChanged();
+  UpdateState();
 }
 
 bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
                                            gfx::Point screen_location,
                                            ui::mojom::MenuSourceType source) {
   if (is_dev_tools_connected_) {
-    auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
-    CHECK(webui_toolbar_ui);
-    webui_toolbar_ui->OnContextMenuStateChanged(
-        browser_controls_api::mojom::ContextMenuType::kReload,
-        browser_controls_api::mojom::ContextMenuState::kVisible);
-
     menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
                             gfx::Rect(screen_location, gfx::Size()),
                             views::MenuAnchorPosition::kBubbleBottomRight,
                             source);
+    UpdateState();
   }
   return true;
-}
-
-void WebUIReloadControl::OnContextMenuClosed() {
-  auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
-  CHECK(webui_toolbar_ui);
-  webui_toolbar_ui->OnContextMenuStateChanged(
-      browser_controls_api::mojom::ContextMenuType::kReload,
-      browser_controls_api::mojom::ContextMenuState::kHidden);
 }
 
 bool WebUIReloadControl::IsCommandIdChecked(int command_id) const {
@@ -113,26 +95,10 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
       command_id, ui::DispositionFromEventFlags(event_flags));
 }
 
-void WebUIReloadControl::OnNavigationStatusChanged() {
-  auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
-
-  // If the WebUI toolbar is not ready yet, skip updating the UI state. It will
-  // be synchronized later on initialize.
-  if (!webui_toolbar_ui) {
-    return;
-  }
-
-  webui_toolbar_ui->OnNavigationStatusChanged(
-      (mode_ == ReloadControl::Mode::kStop)
-          ? browser_controls_api::mojom::NavigationState::kLoading
-          : browser_controls_api::mojom::NavigationState::kNotLoading);
-}
-
-void WebUIReloadControl::OnDevToolsStatusChanged() {
-  auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
-  CHECK(webui_toolbar_ui);
-  webui_toolbar_ui->OnDevToolsStatusChanged(
-      is_dev_tools_connected_
-          ? browser_controls_api::mojom::DevToolsState::kConnected
-          : browser_controls_api::mojom::DevToolsState::kDisconnected);
+void WebUIReloadControl::UpdateState() {
+  auto state = browser_controls_api::mojom::ReloadControlState::New();
+  state->is_devtools_connected = is_dev_tools_connected_;
+  state->is_navigation_loading = (mode_ == ReloadControl::Mode::kStop);
+  state->is_context_menu_visible = menu_runner_->IsRunning();
+  webui_toolbar_web_view_->OnReloadControlStateChanged(std::move(state));
 }

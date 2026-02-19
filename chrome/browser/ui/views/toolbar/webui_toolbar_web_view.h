@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
@@ -53,6 +54,8 @@ class WebUIToolbarWebView
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
   void PermitLaunchUrl() override;
+  browser_controls_api::mojom::NavigationControlsStatePtr
+  GetNavigationControlsState() override;
 
   // views::View:
   void AddedToWidget() override;
@@ -101,6 +104,18 @@ class WebUIToolbarWebView
   chrome::BrowserCommandController* controller() { return controller_; }
   WebUIToolbarUI* GetWebUIToolbarUI();
 
+  // Called by friended controls to push state.
+  void OnReloadControlStateChanged(
+      browser_controls_api::mojom::ReloadControlStatePtr state);
+  void OnSplitTabsControlStateChanged(
+      browser_controls_api::mojom::SplitTabsControlStatePtr state);
+
+  void OnTouchUiChanged();
+  void PostPushNavigationState();
+  void PushNavigationState(uint64_t state_generation);
+  browser_controls_api::mojom::NavigationControlsState last_queued_state_;
+  uint64_t current_state_generation_ = 0;
+
   InitializationState initialization_state_ =
       InitializationState::kUninitialized;
 
@@ -115,6 +130,7 @@ class WebUIToolbarWebView
   bool has_finished_first_non_empty_paint_ = false;
   uint32_t crash_count_ = 0;
   base::TimeTicks last_crash_time_;
+  base::CallbackListSubscription touch_ui_subscription_;
 
   base::WeakPtrFactory<WebUIToolbarWebView> weak_ptr_factory_{this};
 };

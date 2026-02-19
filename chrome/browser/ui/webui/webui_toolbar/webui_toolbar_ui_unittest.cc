@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -48,8 +49,14 @@ class MockBrowserControlsServiceConnection {
       const MockBrowserControlsServiceConnection&) = delete;
 
   void RegisterObserver() {
-    service_remote_->AddObserver(
-        mock_observer_.BindAndGetRemote());
+    service_remote_->Bind(base::BindOnce(
+        [](MockBrowserControlsServiceConnection* self,
+           base::expected<browser_controls_api::mojom::InitialStatePtr,
+                          mojo_base::mojom::ErrorPtr> result) {
+          ASSERT_TRUE(result.has_value());
+          self->mock_observer_.Bind(std::move(result.value()->update_stream));
+        },
+        base::Unretained(this)));
     service_remote_.FlushForTesting();
   }
 
@@ -93,6 +100,11 @@ class WebUIToolbarUITest : public ChromeViewsTestBase {
     web_ui_->set_web_contents(web_contents_.get());
 
     ui_ = std::make_unique<WebUIToolbarUI>(web_ui_.get());
+    ui_->SetDelegate(&delegate_);
+
+    ON_CALL(delegate_, GetNavigationControlsState()).WillByDefault([]() {
+      return CreateValidNavigationControlsState();
+    });
 
     mock_command_updater_ =
         std::make_unique<testing::NiceMock<MockCommandUpdater>>();
@@ -114,6 +126,7 @@ class WebUIToolbarUITest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  testing::NiceMock<MockWebWebUIToolbarDelegate> delegate_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
@@ -121,83 +134,136 @@ class WebUIToolbarUITest : public ChromeViewsTestBase {
   std::unique_ptr<testing::NiceMock<MockCommandUpdater>> mock_command_updater_;
 };
 
-// Tests that OnNavigationStatusChanged and OnDevToolsStatusChanged call the
-// browser controls observer with the correct parameters.
+// Tests that OnNavigationControlsStateChanged calls the browser controls
+// observer with the correct parameters.
 TEST_F(WebUIToolbarUITest, SetReloadButtonState) {
   MockBrowserControlsServiceConnection connection(ui());
   connection.RegisterObserver();
 
-  EXPECT_CALL(connection.mock_observer(),
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kLoading))
-      .Times(1);
-  ui()->OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState::kLoading);
-  connection.mock_observer().FlushForTesting();
+  auto state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_navigation_loading = true;
 
   EXPECT_CALL(connection.mock_observer(),
-              OnNavigationStatusChanged(
-                  browser_controls_api::mojom::NavigationState::kNotLoading))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_navigation_loading,
+                      true))))))
       .Times(1);
-  ui()->OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState::kNotLoading);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
   connection.mock_observer().FlushForTesting();
 
-  EXPECT_CALL(connection.mock_observer(),
-              OnDevToolsStatusChanged(
-                  browser_controls_api::mojom::DevToolsState::kConnected))
-      .Times(1);
-  ui()->OnDevToolsStatusChanged(
-      browser_controls_api::mojom::DevToolsState::kConnected);
-  connection.mock_observer().FlushForTesting();
+  state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_navigation_loading = false;
 
   EXPECT_CALL(connection.mock_observer(),
-              OnDevToolsStatusChanged(
-                  browser_controls_api::mojom::DevToolsState::kDisconnected))
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_navigation_loading,
+                      false))))))
       .Times(1);
-  ui()->OnDevToolsStatusChanged(
-      browser_controls_api::mojom::DevToolsState::kDisconnected);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
+  connection.mock_observer().FlushForTesting();
+
+  state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_devtools_connected = true;
+
+  EXPECT_CALL(connection.mock_observer(),
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_devtools_connected,
+                      true))))))
+      .Times(1);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
+  connection.mock_observer().FlushForTesting();
+
+  state = CreateValidNavigationControlsState();
+  state->reload_control_state->is_devtools_connected = false;
+
+  EXPECT_CALL(connection.mock_observer(),
+              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+                  &browser_controls_api::mojom::NavigationControlsState::
+                      reload_control_state,
+                  testing::Pointee(testing::Field(
+                      &browser_controls_api::mojom::ReloadControlState::
+                          is_devtools_connected,
+                      false))))))
+      .Times(1);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
   connection.mock_observer().FlushForTesting();
 }
 
-// Tests that OnTabSplitStatusChanged calls the browser controls observer with
-// the correct parameters.
+// Tests that OnNavigationControlsStateChanged calls the browser controls
+// observer with the correct parameters.
 TEST_F(WebUIToolbarUITest, OnTabSplitStatusChanged) {
   MockBrowserControlsServiceConnection connection(ui());
   connection.RegisterObserver();
 
+  auto state = CreateValidNavigationControlsState();
+  state->split_tabs_control_state->is_current_tab_split = true;
+  state->split_tabs_control_state->location =
+      browser_controls_api::mojom::SplitTabActiveLocation::kStart;
+
   EXPECT_CALL(
       connection.mock_observer(),
-      OnTabSplitStatusChanged(
-          true, browser_controls_api::mojom::SplitTabActiveLocation::kStart))
+      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+          &browser_controls_api::mojom::NavigationControlsState::
+              split_tabs_control_state,
+          testing::Pointee(testing::AllOf(
+              testing::Field(&browser_controls_api::mojom::
+                                 SplitTabsControlState::is_current_tab_split,
+                             true),
+              testing::Field(
+                  &browser_controls_api::mojom::SplitTabsControlState::location,
+                  browser_controls_api::mojom::SplitTabActiveLocation::
+                      kStart)))))))
       .Times(1);
-  ui()->OnTabSplitStatusChanged(
-      true, browser_controls_api::mojom::SplitTabActiveLocation::kStart);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
   connection.mock_observer().FlushForTesting();
 }
 
-// Tests that OnButtonPinStateChanged calls the browser controls observer with
-// the correct parameters.
+// Tests that OnNavigationControlsStateChanged calls the browser controls
+// observer with the correct parameters.
 TEST_F(WebUIToolbarUITest, OnButtonPinStateChanged) {
   MockBrowserControlsServiceConnection connection(ui());
   connection.RegisterObserver();
 
-  EXPECT_CALL(
-      connection.mock_observer(),
-      OnButtonPinStateChanged(
-          browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true))
-      .Times(1);
-  ui()->OnButtonPinStateChanged(
-      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true);
-  connection.mock_observer().FlushForTesting();
+  auto state = CreateValidNavigationControlsState();
+  state->split_tabs_control_state->is_pinned = true;
 
   EXPECT_CALL(
       connection.mock_observer(),
-      OnButtonPinStateChanged(
-          browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, false))
+      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+          &browser_controls_api::mojom::NavigationControlsState::
+              split_tabs_control_state,
+          testing::Pointee(testing::Field(
+              &browser_controls_api::mojom::SplitTabsControlState::is_pinned,
+              true))))))
       .Times(1);
-  ui()->OnButtonPinStateChanged(
-      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, false);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
+  connection.mock_observer().FlushForTesting();
+
+  state = CreateValidNavigationControlsState();
+  state->split_tabs_control_state->is_pinned = false;
+
+  EXPECT_CALL(
+      connection.mock_observer(),
+      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+          &browser_controls_api::mojom::NavigationControlsState::
+              split_tabs_control_state,
+          testing::Pointee(testing::Field(
+              &browser_controls_api::mojom::SplitTabsControlState::is_pinned,
+              false))))))
+      .Times(1);
+  ui()->OnNavigationControlsStateChanged(std::move(state));
   connection.mock_observer().FlushForTesting();
 }
 

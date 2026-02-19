@@ -8,10 +8,12 @@ import type {ReloadButtonAppElement} from './reload_button.js';
 
 export function getHtml(this: ReloadButtonAppElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button class="${this.isLoading_ ? 'icon-clear' : 'icon-refresh'}"
-    title="${this.tooltip_}"
+<cr-icon-button class="${
+      this.state.isNavigationLoading ? 'icon-clear' : 'icon-refresh'}"
+    title="${this.tooltip}"
     aria-label="${this.accName_}"
-    aria-haspopup="${this.isMenuEnabled_}"
+    aria-haspopup="${this.state.isDevtoolsConnected}"
+    is-menu-open="${this.state.isContextMenuVisible}"
     @pointerdown="${this.onReloadButtonPointerDown_}"
     @pointerup="${this.onReloadButtonPointerUp_}"
     @contextmenu="${this.onContextMenu_}">

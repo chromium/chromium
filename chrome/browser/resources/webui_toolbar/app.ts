@@ -14,7 +14,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {LayoutConstants} from './browser_controls_api_data_model.mojom-webui.js';
-import {type BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {SplitTabActiveLocation} from './browser_controls_api_data_model.mojom-webui.js';
+import {BrowserProxyImpl, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} from './browser_proxy.js';
+import type {BrowserProxy, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 
 export class ToolbarAppElement extends CrLitElement {
@@ -35,6 +37,7 @@ export class ToolbarAppElement extends CrLitElement {
       isReloadButtonEnabled_: {type: Boolean},
       isSplitTabsButtonEnabled_: {type: Boolean},
       isLocationBarEnabled_: {type: Boolean},
+      navigationControlsState_: {type: Object},
     };
   }
 
@@ -44,11 +47,30 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableSplitTabsButton');
   protected accessor isLocationBarEnabled_: boolean =
       loadTimeData.getBoolean('enableLocationBar');
+  protected accessor navigationControlsState_: NavigationControlsState = {
+    reloadControlState: {
+      isDevtoolsConnected: false,
+      isNavigationLoading: false,
+      isContextMenuVisible: false,
+    },
+    splitTabsControlState: {
+      isCurrentTabSplit: false,
+      location: SplitTabActiveLocation.kStart,
+      isPinned: false,
+      isContextMenuVisible: false,
+    },
+    layoutConstants: {
+      toolbarButtonHeight: 34,
+      toolbarButtonIconSize: 20,
+    },
+  };
 
   private browserProxy_: BrowserProxy;
   private metricsRecorder_: MetricsRecorder;
   private trackedElementManager_: TrackedElementManager;
-  private listenerIds_: number[] = [];
+  private navigationStateListenerHandle_:
+      NavigationControlsStateListenerHandle =
+          INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
 
   constructor() {
     super();
@@ -84,15 +106,12 @@ export class ToolbarAppElement extends CrLitElement {
         '--split-tabs-indicator-spacing',
         `${loadTimeData.getInteger('splitTabsIndicatorSpacing')}px`);
 
-    this.listenerIds_.push(
-        this.browserProxy_.callbackRouter.onLayoutChanged.addListener(
-            (layoutConstants: LayoutConstants) =>
-                this.onLayoutChanged_(layoutConstants)));
-
-    this.browserProxy_.handler.getLayoutConstants().then(
-        ({layoutConstants}) => {
-          this.onLayoutChanged_(layoutConstants);
-        });
+    this.navigationStateListenerHandle_ =
+        this.browserProxy_.addNavigationStateListener(
+            (state: NavigationControlsState) => {
+              this.navigationControlsState_ = state;
+              this.onLayoutChanged_(state.layoutConstants);
+            });
 
     this.metricsRecorder_.startObserving();
     const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
@@ -115,9 +134,8 @@ export class ToolbarAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.listenerIds_.forEach(
-        id => this.browserProxy_.callbackRouter.removeListener(id));
-    this.listenerIds_ = [];
+    this.browserProxy_.removeNavigationStateListener(
+        this.navigationStateListenerHandle_);
 
     this.metricsRecorder_.stopObserving();
     const reload = this.shadowRoot.querySelector<HTMLElement>('#reload');

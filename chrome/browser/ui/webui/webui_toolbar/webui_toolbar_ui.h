@@ -37,25 +37,8 @@ class WebUIToolbarUI : public TopChromeWebUIController {
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
           receiver);
 
-  void OnDevToolsStatusChanged(
-      browser_controls_api::mojom::DevToolsState state);
-
-  void OnNavigationStatusChanged(
-      browser_controls_api::mojom::NavigationState state);
-
-  void OnContextMenuStateChanged(
-      browser_controls_api::mojom::ContextMenuType menu_type,
-      browser_controls_api::mojom::ContextMenuState state);
-
-  // Updates the split status of the active tab in the renderer.
-  void OnTabSplitStatusChanged(
-      bool is_split,
-      browser_controls_api::mojom::SplitTabActiveLocation location);
-
-  // Updates the pin state of the specified button in the renderer.
-  void OnButtonPinStateChanged(
-      browser_controls_api::mojom::ToolbarButtonType type,
-      bool is_pinned);
+  void OnNavigationControlsStateChanged(
+      browser_controls_api::mojom::NavigationControlsStatePtr state);
 
   void SetDelegate(
       BrowserControlsService::BrowserControlsServiceDelegate* delegate);

@@ -129,7 +129,18 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       reload_control_(this),
       split_tabs_control_(this),
       location_bar_(std::move(location_bar)),
-      clock_(base::DefaultTickClock::GetInstance()) {
+      clock_(base::DefaultTickClock::GetInstance()),
+      touch_ui_subscription_(ui::TouchUiController::Get()->RegisterCallback(
+          base::BindRepeating(&WebUIToolbarWebView::OnTouchUiChanged,
+                              base::Unretained(this)))) {
+  last_queued_state_.split_tabs_control_state =
+      browser_controls_api::mojom::SplitTabsControlState::New();
+  last_queued_state_.reload_control_state =
+      browser_controls_api::mojom::ReloadControlState::New();
+  last_queued_state_.layout_constants =
+      browser_controls_api::mojom::LayoutConstants::New(
+          GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
+          GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
   }
@@ -245,6 +256,11 @@ void WebUIToolbarWebView::OnPageInitialized() {
   }
 
   InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
+}
+
+browser_controls_api::mojom::NavigationControlsStatePtr
+WebUIToolbarWebView::GetNavigationControlsState() {
+  return last_queued_state_.Clone();
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
@@ -387,6 +403,47 @@ WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
 
 void WebUIToolbarWebView::PermitLaunchUrl() {
   ExternalProtocolHandler::PermitLaunchUrl();
+}
+
+void WebUIToolbarWebView::OnReloadControlStateChanged(
+    browser_controls_api::mojom::ReloadControlStatePtr state) {
+  if (*state != *last_queued_state_.reload_control_state) {
+    last_queued_state_.reload_control_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnSplitTabsControlStateChanged(
+    browser_controls_api::mojom::SplitTabsControlStatePtr state) {
+  if (*state != *last_queued_state_.split_tabs_control_state) {
+    last_queued_state_.split_tabs_control_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnTouchUiChanged() {
+  auto state = browser_controls_api::mojom::LayoutConstants::New(
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
+      GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
+  if (*state != *last_queued_state_.layout_constants) {
+    last_queued_state_.layout_constants = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::PostPushNavigationState() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&WebUIToolbarWebView::PushNavigationState,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                ++current_state_generation_));
+}
+
+void WebUIToolbarWebView::PushNavigationState(uint64_t state_generation) {
+  if (state_generation == current_state_generation_) {
+    if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
+      web_ui->OnNavigationControlsStateChanged(last_queued_state_.Clone());
+    }
+  }
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)

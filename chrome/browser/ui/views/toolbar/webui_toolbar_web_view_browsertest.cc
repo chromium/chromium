@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -381,6 +382,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   gfx::Rect control_rect = element->GetScreenBounds();
   gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+  // Wait for the reload button to finish laying out, which should
+  // push the split tabs button over by at least one button width.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    control_rect = element->GetScreenBounds();
+    return (control_rect.x() - view_rect.x()) >
+           GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  }));
+
   control_rect.Offset(-view_rect.OffsetFromOrigin());
 
   // Sample a point in the background area (e.g. 5,5 from top-left).

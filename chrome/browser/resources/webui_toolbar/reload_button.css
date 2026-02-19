@@ -18,6 +18,6 @@ cr-icon-button {
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
-:host([is-menu-open]) cr-icon-button {
+cr-icon-button[is-menu-open=true] {
   background-color: var(--cr-active-background-color);
 }

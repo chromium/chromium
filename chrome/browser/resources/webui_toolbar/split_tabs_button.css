@@ -48,11 +48,11 @@ cr-icon-button {
   z-index: 1; /* Renders above the button background */
 }
 
-:host([is-split]) cr-icon-button {
+cr-icon-button[is-split=true] {
   --cr-icon-button-fill-color: var(--color-toolbar-action-item-engaged,
       var(--google-blue-600));
 }
 
-:host([is-menu-open]) cr-icon-button {
+cr-icon-button[is-menu-open=true] {
   background-color: var(--cr-active-background-color);
 }

@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -86,12 +85,6 @@ int ToUIEventFlags(
   return event_flags;
 }
 
-browser_controls_api::mojom::LayoutConstantsPtr GetLayoutConstantsStruct() {
-  return browser_controls_api::mojom::LayoutConstants::New(
-      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
-      GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
-}
-
 }  // namespace
 
 BrowserControlsService::BrowserControlsService(
@@ -108,10 +101,6 @@ BrowserControlsService::BrowserControlsService(
       delegate_(delegate) {
   CHECK(web_contents_);
   CHECK(command_updater_);
-
-  touch_ui_subscription_ =
-      ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(
-          &BrowserControlsService::OnTouchUiChanged, base::Unretained(this)));
 }
 
 BrowserControlsService::~BrowserControlsService() = default;
@@ -122,13 +111,24 @@ MetricsReporter* BrowserControlsService::GetMetricsReporter() {
   return service ? service->metrics_reporter() : nullptr;
 }
 
-void BrowserControlsService::AddObserver(
-    mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
-        observer) {
-  if (observer_.is_bound()) {
-    observer_.reset();
+void BrowserControlsService::Bind(BindCallback callback) {
+  auto result = browser_controls_api::mojom::InitialState::New();
+  if (delegate_) {
+    result->state = delegate_->GetNavigationControlsState();
+  } else {
+    // This is only used by one unit-test.  Potentially consider removing.
+    result->state = browser_controls_api::mojom::NavigationControlsState::New(
+        browser_controls_api::mojom::ReloadControlState::New(),
+        browser_controls_api::mojom::SplitTabsControlState::New(),
+        browser_controls_api::mojom::LayoutConstants::New());
   }
-  observer_.Bind(std::move(observer));
+
+  mojo::Remote<browser_controls_api::mojom::BrowserControlsObserver> observer;
+  result->update_stream = observer.BindNewPipeAndPassReceiver();
+
+  observers_.Add(std::move(observer));
+
+  std::move(callback).Run(std::move(result));
 }
 
 void BrowserControlsService::ReloadFromClick(
@@ -205,32 +205,17 @@ void BrowserControlsService::OnPageInitialized() {
   }
 }
 
-void BrowserControlsService::OnDevToolsStatusChanged(
-    browser_controls_api::mojom::DevToolsState state) {
-  if (observer_) {
-    observer_->OnDevToolsStatusChanged(state);
-  }
-}
-
-void BrowserControlsService::OnNavigationStatusChanged(
-    browser_controls_api::mojom::NavigationState state) {
+void BrowserControlsService::OnNavigationControlsStateChanged(
+    browser_controls_api::mojom::NavigationControlsStatePtr state) {
   if (auto* metrics_reporter = GetMetricsReporter()) {
-    auto* mark = state == browser_controls_api::mojom::NavigationState::kLoading
+    auto* mark = state->reload_control_state->is_navigation_loading
                      ? kChangeVisibleModeToLoadingStartMark
                      : kChangeVisibleModeToNotLoadingStartMark;
     metrics_reporter->Mark(mark);
   }
 
-  if (observer_) {
-    observer_->OnNavigationStatusChanged(state);
-  }
-}
-
-void BrowserControlsService::OnContextMenuStateChanged(
-    browser_controls_api::mojom::ContextMenuType menu_type,
-    browser_controls_api::mojom::ContextMenuState state) {
-  if (observer_) {
-    observer_->OnContextMenuStateChanged(menu_type, state);
+  for (auto& observer : observers_) {
+    observer->OnNavigationControlsStateChanged(state.Clone());
   }
 }
 
@@ -239,47 +224,6 @@ void BrowserControlsService::SplitActiveTab() {
   // We don't need to check IsActiveTabInSplit() or handle the menu here.
   chrome::NewSplitTab(browser_,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
-}
-
-void BrowserControlsService::GetTabSplitState(
-    GetTabSplitStateCallback callback) {
-  webui_toolbar::TabSplitStatus status =
-      webui_toolbar::ComputeTabSplitStatus(browser_);
-  std::move(callback).Run(status.is_split, status.location);
-}
-
-void BrowserControlsService::GetButtonPinState(
-    browser_controls_api::mojom::ToolbarButtonType type,
-    GetButtonPinStateCallback callback) {
-  bool is_pinned = webui_toolbar::IsButtonPinned(browser_, type);
-  std::move(callback).Run(is_pinned);
-}
-
-void BrowserControlsService::GetLayoutConstants(
-    GetLayoutConstantsCallback callback) {
-  std::move(callback).Run(GetLayoutConstantsStruct());
-}
-
-void BrowserControlsService::OnTabSplitStatusChanged(
-    bool is_split,
-    browser_controls_api::mojom::SplitTabActiveLocation location) {
-  if (observer_) {
-    observer_->OnTabSplitStatusChanged(is_split, location);
-  }
-}
-
-void BrowserControlsService::OnButtonPinStateChanged(
-    browser_controls_api::mojom::ToolbarButtonType type,
-    bool is_pinned) {
-  if (observer_) {
-    observer_->OnButtonPinStateChanged(type, is_pinned);
-  }
-}
-
-void BrowserControlsService::OnTouchUiChanged() {
-  if (observer_) {
-    observer_->OnLayoutChanged(GetLayoutConstantsStruct());
-  }
 }
 
 void BrowserControlsService::SetDelegate(

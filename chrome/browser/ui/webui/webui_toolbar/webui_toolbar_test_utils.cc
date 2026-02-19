@@ -12,8 +12,25 @@ MockReloadButtonPage::BindAndGetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
+void MockReloadButtonPage::Bind(
+    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsObserver>
+        receiver) {
+  receiver_.Bind(std::move(receiver));
+}
+
 void MockReloadButtonPage::FlushForTesting() {
   receiver_.FlushForTesting();
+}
+
+MockWebWebUIToolbarDelegate::MockWebWebUIToolbarDelegate() = default;
+MockWebWebUIToolbarDelegate::~MockWebWebUIToolbarDelegate() = default;
+
+browser_controls_api::mojom::NavigationControlsStatePtr
+CreateValidNavigationControlsState() {
+  return browser_controls_api::mojom::NavigationControlsState::New(
+      browser_controls_api::mojom::ReloadControlState::New(),
+      browser_controls_api::mojom::SplitTabsControlState::New(),
+      browser_controls_api::mojom::LayoutConstants::New());
 }
 
 MockCommandUpdater::MockCommandUpdater() = default;
