@@ -784,10 +784,6 @@ String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
       not_encoded_string, UnencodableHandling::kNoUnencodables);
 
   url::RawCanonOutputT<char> buffer;
-  size_t input_length = utf8.length();
-  if (buffer.capacity() < input_length * 3)
-    buffer.Resize(input_length * 3);
-
   url::EncodeURIComponent(utf8, &buffer);
   String escaped(base::span(buffer.view()));
   // Unescape '/'; it's safe and much prettier.

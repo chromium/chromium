@@ -899,6 +899,13 @@ void DecodeURLEscapeSequences(std::string_view input,
 }
 
 void EncodeURIComponent(std::string_view input, CanonOutput* output) {
+  if (output->capacity() - output->length() < input.length() * 3) {
+    size_t required_size = 0;
+    for (unsigned char c : input) {
+      required_size += IsComponentChar(c) ? 1 : 3;
+    }
+    output->ReserveSizeIfNeeded(output->length() + required_size);
+  }
   for (unsigned char c : input) {
     if (IsComponentChar(c)) {
       output->push_back(c);
