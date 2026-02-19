@@ -41,6 +41,30 @@ Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
   return action;
 }
 
+Actions MakeClickForTaskId(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    ::optimization_guide::proto::ClickAction::ClickType click_type,
+    ::optimization_guide::proto::ClickAction::ClickCount click_count,
+    TaskId task_id) {
+  Actions action =
+      ::actor::MakeClick(rfh, content_node_id, click_type, click_count);
+  action.set_task_id(task_id.value());
+  return action;
+}
+
+Actions MakeClickForTaskId(
+    tabs::TabHandle tab_handle,
+    const gfx::Point& click_point,
+    ::optimization_guide::proto::ClickAction::ClickType click_type,
+    ::optimization_guide::proto::ClickAction::ClickCount click_count,
+    TaskId task_id) {
+  Actions action =
+      ::actor::MakeClick(tab_handle, click_point, click_type, click_count);
+  action.set_task_id(task_id.value());
+  return action;
+}
+
 AsyncActionWaiter::AsyncActionWaiter(content::RenderFrameHost* rfh,
                                      std::string request_id)
     : queue_(rfh), request_id_(std::move(request_id)) {}
@@ -101,6 +125,11 @@ GlicActorFunctionalBrowserTestBase::~GlicActorFunctionalBrowserTestBase() =
 ::actor::ActorKeyedService*
 GlicActorFunctionalBrowserTestBase::actor_keyed_service() {
   return ::actor::ActorKeyedService::Get(browser()->profile());
+}
+
+void GlicActorFunctionalBrowserTestBase::SetUpOnMainThread() {
+  GlicFunctionalBrowserTestBase::SetUpOnMainThread();
+  RunTestSequence(OpenGlic());
 }
 
 base::CallbackListSubscription

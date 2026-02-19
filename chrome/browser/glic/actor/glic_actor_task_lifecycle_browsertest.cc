@@ -84,12 +84,6 @@ class GlicActorTaskLifecycleFunctionalBrowserTest
  public:
   GlicActorTaskLifecycleFunctionalBrowserTest() = default;
   ~GlicActorTaskLifecycleFunctionalBrowserTest() override = default;
-
- protected:
-  void SetUpOnMainThread() override {
-    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
-    RunTestSequence(OpenGlic());
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,

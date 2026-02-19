@@ -22,12 +22,6 @@ class GlicActorMetricsFunctionalBrowserTest
  public:
   GlicActorMetricsFunctionalBrowserTest() = default;
   ~GlicActorMetricsFunctionalBrowserTest() override = default;
-
- protected:
-  void SetUpOnMainThread() override {
-    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
-    RunTestSequence(OpenGlic());
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
@@ -74,10 +68,6 @@ IN_PROC_BROWSER_TEST_F(
 class GlicActorPageContextMetricsFunctionalBrowserTest
     : public GlicActorFunctionalBrowserTestBase {
  public:
-  void SetUpOnMainThread() override {
-    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
-    RunTestSequence(OpenGlic());
-  }
   using ResultCallback =
       base::RepeatingCallback<void(size_t /*fetch_num*/,
                                    TabObservation*,

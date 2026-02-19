@@ -24,12 +24,6 @@ class GlicActorActionExecutionFunctionalBrowserTest
  public:
   GlicActorActionExecutionFunctionalBrowserTest() = default;
   ~GlicActorActionExecutionFunctionalBrowserTest() override = default;
-
- protected:
-  void SetUpOnMainThread() override {
-    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
-    RunTestSequence(OpenGlic());
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
@@ -76,10 +70,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   // Click link to navigate to target page.
   std::optional<int> link_node_id =
       content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
-  Actions action = ::actor::MakeClick(*web_contents()->GetPrimaryMainFrame(),
+  Actions action = MakeClickForTaskId(*web_contents()->GetPrimaryMainFrame(),
                                       link_node_id.value(), ClickAction::LEFT,
-                                      ClickAction::SINGLE);
-  action.set_task_id(task_id.value());
+                                      ClickAction::SINGLE, task_id);
 
   EXPECT_THAT(PerformActions(action),
               ValueIs(HasResultCode(::actor::mojom::ActionResultCode::kOk)));
@@ -190,9 +183,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 
   // Perform a click action on the crashed tab.
   Actions action =
-      ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
-                         ClickAction::LEFT, ClickAction::SINGLE);
-  action.set_task_id(task_id.value());
+      MakeClickForTaskId(active_tab()->GetHandle(), gfx::Point(1, 1),
+                         ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
   content::TestNavigationManager reload_observer(web_contents(), initial_url);
   EXPECT_THAT(PerformActions(action),

@@ -18,12 +18,6 @@ class GlicActorTabFunctionalBrowserTest
   ~GlicActorTabFunctionalBrowserTest() override = default;
 
   GURL GetInitiatorTabUrl() { return GetParam(); }
-
- protected:
-  void SetUpOnMainThread() override {
-    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
-    RunTestSequence(OpenGlic());
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(GlicActorTabFunctionalBrowserTest, CreateActorTab) {

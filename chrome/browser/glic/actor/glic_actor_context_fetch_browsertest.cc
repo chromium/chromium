@@ -12,6 +12,8 @@ namespace glic::actor {
 namespace {
 
 using ::base::test::ValueIs;
+using ::optimization_guide::proto::Actions;
+using ::optimization_guide::proto::ActionsResult;
 using ::optimization_guide::proto::ClickAction;
 
 class GlicActorContextFetchFunctionalBrowserTest
@@ -19,12 +21,6 @@ class GlicActorContextFetchFunctionalBrowserTest
  public:
   GlicActorContextFetchFunctionalBrowserTest() = default;
   ~GlicActorContextFetchFunctionalBrowserTest() override = default;
-
- protected:
-  void SetUpOnMainThread() override {
-    GlicFunctionalBrowserTestBase::SetUpOnMainThread();
-    RunTestSequence(OpenGlic());
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
@@ -33,10 +29,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
   ASSERT_NE(task_id, TaskId());
 
   // Perform a click action.
-  ::optimization_guide::proto::Actions action =
-      ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
-                         ClickAction::LEFT, ClickAction::SINGLE);
-  action.set_task_id(task_id.value());
+  Actions action =
+      MakeClickForTaskId(active_tab()->GetHandle(), gfx::Point(1, 1),
+                         ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
   // Mock the context fetch so that the first time the TabObservationResult is a
   // failure. This should result in a retry which then succeeds.
@@ -66,10 +61,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
   ASSERT_NE(task_id, TaskId());
 
   // Perform a click action.
-  ::optimization_guide::proto::Actions action =
-      ::actor::MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
-                         ClickAction::LEFT, ClickAction::SINGLE);
-  action.set_task_id(task_id.value());
+  Actions action =
+      MakeClickForTaskId(active_tab()->GetHandle(), gfx::Point(1, 1),
+                         ClickAction::LEFT, ClickAction::SINGLE, task_id);
 
   int num_calls = 0;
   ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting(
@@ -79,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
             TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
       }));
 
-  optimization_guide::proto::ActionsResult result =
-      PerformActions(action).value();
+  ActionsResult result = PerformActions(action).value();
   EXPECT_THAT(result, HasResultCode(::actor::mojom::ActionResultCode::kOk));
   ASSERT_EQ(result.tabs_size(), 1);
   ASSERT_TRUE(result.tabs().at(0).has_result());
