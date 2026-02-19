@@ -939,6 +939,21 @@ public class UrlBar extends AutocompleteEditText {
         scrollTo((int) scrollPos, getScrollY());
     }
 
+    @Override
+    public void setSelection(int start, int end) {
+        // TODO(crbug.com/483451424): This is needed to address a regression in M146 that has since
+        // been addressed in M147. The change resolving the regression may not meet the quality bar
+        // to be cherrypicked to M146.
+        // The problem is linked to `setSelection` being still exposed in M146 via
+        // UrlBarCoordinator. Anyone calling setSelection makes certain assumptions about the
+        // contents of the Omnibox (specifically - the length of the text) which may or may not
+        // hold true. The logic below ensures that bounds passed by caller are not exceeded.
+        int textLength = getText().length();
+        if (start > textLength) start = textLength;
+        if (end > textLength) end = textLength;
+        super.setSelection(start, end);
+    }
+
     /**
      * The visible hint contains the visible portion of the text in the url bar. It is used to
      * reduce toolbar captures. For example, in the case of same document navigations, some prefix
