@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
@@ -52,6 +56,7 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
     @Mock private TabCreator mTabCreator;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private View mRequestAccessButton;
+    @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
 
     private Activity mContext;
     private ExtensionsMenuAndAccessControlButtonCoordinator mCoordinator;
@@ -62,6 +67,19 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
                 Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mContext = activity;
+
+        ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
+        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong())).thenReturn(1L);
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        "toggle_text",
+                        "accessible_name",
+                        "tooltip",
+                        true);
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
+                new ExtensionsMenuTypes.SiteSettingsState("label", false, toggleState);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong())).thenReturn(siteSettingsState);
 
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
                 .thenReturn(new RequestAccessButtonParams(new String[0], ""));

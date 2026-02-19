@@ -27,11 +27,30 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener>
             MANAGE_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
+    /**
+     * Properties for the site settings toggle that allows users to block or allow all extensions
+     * for the current site.
+     */
+    public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_CHECKED =
+            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<
+                    android.widget.CompoundButton.OnCheckedChangeListener>
+            SITE_SETTINGS_TOGGLE_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 CLOSE_CLICK_LISTENER,
                 DISCOVER_EXTENSIONS_CLICK_LISTENER,
                 IS_ZERO_STATE,
-                MANAGE_EXTENSIONS_CLICK_LISTENER
+                MANAGE_EXTENSIONS_CLICK_LISTENER,
+                SITE_SETTINGS_LABEL,
+                SITE_SETTINGS_TOGGLE_VISIBLE,
+                SITE_SETTINGS_TOGGLE_CHECKED,
+                SITE_SETTINGS_TOGGLE_CLICK_LISTENER
             };
 }

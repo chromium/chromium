@@ -96,6 +96,8 @@ public class ExtensionsMenuMediatorTest {
 
     private ExtensionsMenuMediator mMenuMediator;
 
+    private ExtensionsMenuTypes.SiteSettingsState mSiteSettingsState;
+
     @Before
     public void setUp() {
         // Mock AndroidChromeTask.
@@ -111,6 +113,11 @@ public class ExtensionsMenuMediatorTest {
 
         // Mock {@link ExtensionsMenuBridge}.
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
+
+        // Mock site settings state.
+        mSiteSettingsState = createSiteSettingsState("label", true);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
+                .thenReturn(mSiteSettingsState);
         when(mExtensionsMenuBridgeJniMock.init(any(), anyLong()))
                 .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
 
@@ -259,5 +266,45 @@ public class ExtensionsMenuMediatorTest {
         ListItem item = mActionModels.get(index);
         assertEquals(0, item.type);
         assertEquals(title, item.model.get(ExtensionsMenuItemProperties.TITLE));
+    }
+
+    @Test
+    public void testUpdateSiteSettingsToggle() {
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
+                createSiteSettingsState("test_label", true);
+
+        mMenuMediator.updateSiteSettingsToggle(siteSettingsState);
+
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label");
+    }
+
+    @Test
+    public void testSiteSettingsToggle_ClickCallsBridge() {
+        ArgumentCaptor<android.widget.CompoundButton.OnCheckedChangeListener> captor =
+                ArgumentCaptor.forClass(
+                        android.widget.CompoundButton.OnCheckedChangeListener.class);
+        verify(mMenuPropertyModel)
+                .set(
+                        eq(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER),
+                        captor.capture());
+
+        captor.getValue().onCheckedChanged(null, true);
+        verify(mExtensionsMenuBridgeJniMock)
+                .onSiteSettingsToggleChanged(EXTENSIONS_MENU_BRIDGE_POINTER, true);
+    }
+
+    private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
+            String label, boolean isOn) {
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        "toggle_text",
+                        "accessible_name",
+                        "tooltip",
+                        isOn);
+        return new ExtensionsMenuTypes.SiteSettingsState(
+                label, /* hasTooltip= */ false, toggleState);
     }
 }

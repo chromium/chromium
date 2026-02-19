@@ -23,6 +23,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
@@ -68,8 +69,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         mRootView = rootView;
         mTask = task;
         mProfile = profile;
-
         mMenuBridge = new ExtensionsMenuBridge(mTask, mProfile, /* observer= */ this);
+
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER,
+                (buttonView, isChecked) -> mMenuBridge.onSiteSettingsToggleChanged(isChecked));
+
         if (mMenuBridge.isReady()) {
             onReady();
         }
@@ -137,6 +142,22 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 mRootView);
     }
 
+    /**
+     * Updates the site settings toggle.
+     *
+     * @param siteSettingsState The site settings state to update to.
+     */
+    void updateSiteSettingsToggle(ExtensionsMenuTypes.SiteSettingsState siteSettingsState) {
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE,
+                siteSettingsState.toggle.status != ExtensionsMenuTypes.ControlState.Status.HIDDEN);
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED,
+                siteSettingsState.toggle.isOn);
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_LABEL, siteSettingsState.label);
+    }
+
     /** Destroys the mediator. */
     @Override
     public void destroy() {
@@ -144,12 +165,31 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     }
 
     /**
-     * Called when the native side is ready with the menu data, which can happen on mediator
-     * construction or by an observer called originated from the native side. Populates the action
-     * models and updates the zero state visibility.
+     * Called when the native extensions menu model has changed. This method checks which page is
+     * currently visible and pulls the relevant data from native to update the UI.
      */
     @Override
-    public void onReady() {
+    public void onModelChanged() {
+        // TODO(crbug.com/473213114): Implement data pull for site permissions page.
+        // This will need to consider the event source (e.g., page navigation vs. action update)
+        // to fetch and update the UI correctly, as their effects differ on the site permissions
+        // page
+        // and they will need to have different JNI observers.
+        if (isMainPageVisible()) {
+            ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
+                    mMenuBridge.getSiteSettingsState();
+            updateSiteSettingsToggle(siteSettingsState);
+
+            updateMenuEntries();
+            return;
+        }
+    }
+
+    /**
+     * Pulls the list of menu entries from native and updates the action models list. Also updates
+     * the zero state visibility.
+     */
+    private void updateMenuEntries() {
         mActionModels.clear();
         List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
 
@@ -168,6 +208,23 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         boolean isZeroState = entries.isEmpty();
         mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
+    }
+
+    private boolean isMainPageVisible() {
+        // TODO(crbug.com/473213114): Update this method when site permissions page is implemented.
+
+        // For now, since there is only one page in Coordinator, always return true.
+        return true;
+    }
+
+    /**
+     * Called when the native side is ready with the menu data, which can happen on mediator
+     * construction or by an observer called originated from the native side. Populates the action
+     * models and updates the zero state visibility.
+     */
+    @Override
+    public void onReady() {
+        onModelChanged();
         mOnReady.run();
     }
 }

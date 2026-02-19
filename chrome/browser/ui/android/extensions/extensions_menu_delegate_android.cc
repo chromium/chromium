@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -29,6 +30,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaControlState(
 }  // namespace
 
 namespace extensions {
+
+using base::android::ScopedJavaLocalRef;
+using PermissionsManager = extensions::PermissionsManager;
 
 ExtensionsMenuDelegateAndroid::ExtensionsMenuDelegateAndroid(
     BrowserWindowInterface* browser,
@@ -67,6 +71,19 @@ ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
   return java_entries;
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsMenuDelegateAndroid::GetSiteSettings(JNIEnv* env) {
+  ExtensionsMenuViewModel::SiteSettingsState site_settings_state =
+      menu_model_->GetSiteSettingsState();
+
+  base::android::ScopedJavaLocalRef<jobject> j_toggle_state =
+      CreateJavaControlState(env, site_settings_state.toggle);
+
+  return extensions::Java_SiteSettingsState_Constructor(
+      env, site_settings_state.label, site_settings_state.has_tooltip,
+      j_toggle_state);
+}
+
 bool ExtensionsMenuDelegateAndroid::IsReady(JNIEnv* env) {
   return menu_model_->is_populated();
 }
@@ -82,7 +99,8 @@ ExtensionsMenuDelegateAndroid::CreateActionViewModel(
 }
 
 void ExtensionsMenuDelegateAndroid::OnPageNavigation() {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onModelChanged(env, java_object_);
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionAdded(
@@ -99,7 +117,8 @@ void ExtensionsMenuDelegateAndroid::OnActionRemoved(
 
 void ExtensionsMenuDelegateAndroid::OnActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onModelChanged(env, java_object_);
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionIconUpdated(
@@ -187,7 +206,10 @@ void ExtensionsMenuDelegateAndroid::OnSiteAccessSelected(
 
 void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleButtonPressed(
     bool is_on) {
-  // TODO(crbug.com/473213115)
+  PermissionsManager::UserSiteSetting site_setting =
+      is_on ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
+            : PermissionsManager::UserSiteSetting::kBlockAllExtensions;
+  menu_model_->UpdateSiteSetting(site_setting);
 }
 
 void ExtensionsMenuDelegateAndroid::OnReloadPageButtonClicked() {
@@ -201,6 +223,12 @@ void ExtensionsMenuDelegateAndroid::OpenMainPage() {
 void ExtensionsMenuDelegateAndroid::OpenSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
   // TODO(crbug.com/473213115)
+}
+
+void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleChanged(
+    JNIEnv* env,
+    bool is_checked) {
+  OnSiteSettingsToggleButtonPressed(is_checked);
 }
 
 static int64_t JNI_ExtensionsMenuBridge_Init(

@@ -23,6 +23,7 @@ import java.util.List;
 @JNINamespace("extensions")
 public class ExtensionsMenuBridge implements Destroyable {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+
     private long mNativeExtensionsMenuDelegateAndroid;
     private final Observer mObserver;
 
@@ -46,6 +47,21 @@ public class ExtensionsMenuBridge implements Destroyable {
         return ExtensionsMenuBridgeJni.get().getMenuEntries(mNativeExtensionsMenuDelegateAndroid);
     }
 
+    /** Returns the site settings state from native. */
+    public ExtensionsMenuTypes.SiteSettingsState getSiteSettingsState() {
+        return ExtensionsMenuBridgeJni.get().getSiteSettings(mNativeExtensionsMenuDelegateAndroid);
+    }
+
+    /**
+     * Called when the site settings toggle is changed in the UI.
+     *
+     * @param isChecked Whether the toggle is checked.
+     */
+    public void onSiteSettingsToggleChanged(boolean isChecked) {
+        ExtensionsMenuBridgeJni.get()
+                .onSiteSettingsToggleChanged(mNativeExtensionsMenuDelegateAndroid, isChecked);
+    }
+
     /** Returns whether the native menu model is ready. */
     public boolean isReady() {
         return ExtensionsMenuBridgeJni.get().isReady(mNativeExtensionsMenuDelegateAndroid);
@@ -60,9 +76,23 @@ public class ExtensionsMenuBridge implements Destroyable {
         mObserver.onReady();
     }
 
+    @CalledByNative
+    private void onModelChanged() {
+        if (mObserver != null) {
+            mObserver.onModelChanged();
+        }
+    }
+
     public interface Observer {
         /** Called when the menu data is ready to be consumed. */
         void onReady();
+
+        /**
+         * Called when a major event in the native model has occurred, potentially affecting
+         * multiple UI properties. The Mediator should pull the necessary data to refresh the
+         * current view.
+         */
+        void onModelChanged();
     }
 
     @NativeMethods
@@ -85,5 +115,13 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Returns whether the native menu model is ready. */
         boolean isReady(long nativeExtensionsMenuDelegateAndroid);
+
+        /** Returns the site settings state from native. */
+        ExtensionsMenuTypes.SiteSettingsState getSiteSettings(
+                long nativeExtensionsMenuDelegateAndroid);
+
+        /** Called when the site settings toggle is changed in the UI. */
+        void onSiteSettingsToggleChanged(
+                long nativeExtensionsMenuDelegateAndroid, boolean isChecked);
     }
 }

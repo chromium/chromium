@@ -71,4 +71,19 @@ public class ExtensionsMenuTypes {
             this.actionButton = actionButton;
         }
     }
+
+    /** Mirrors {@code ExtensionsMenuViewModel::SiteSettingsState} */
+    public static class SiteSettingsState {
+        public final String label;
+        public final boolean hasTooltip;
+        public final ControlState toggle;
+
+        @CalledByNative("SiteSettingsState")
+        public SiteSettingsState(
+                @JniType("std::u16string") String label, boolean hasTooltip, ControlState toggle) {
+            this.label = label;
+            this.hasTooltip = hasTooltip;
+            this.toggle = toggle;
+        }
+    }
 }

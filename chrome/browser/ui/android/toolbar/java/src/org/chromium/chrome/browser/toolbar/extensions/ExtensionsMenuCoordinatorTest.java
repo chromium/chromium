@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -77,8 +79,13 @@ public class ExtensionsMenuCoordinatorTest {
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
     private ExtensionsMenuBridge mCapturedMenuBridge;
 
+    private ExtensionsMenuTypes.SiteSettingsState mSiteSettingsState;
+
     @Before
     public void setUp() {
+        ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
+        when(mExtensionsMenuBridgeJniMock.init(Mockito.any(), Mockito.anyLong())).thenReturn(1L);
+
         AppCompatActivity activity =
                 Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -118,6 +125,9 @@ public class ExtensionsMenuCoordinatorTest {
                         mProfile,
                         mCurrentTabSupplier,
                         mTabCreator);
+
+        // Clear invocations from initialization to ensure tests start fresh.
+        Mockito.clearInvocations(mExtensionsMenuBridgeJniMock);
     }
 
     @After
@@ -248,15 +258,76 @@ public class ExtensionsMenuCoordinatorTest {
      * ready. This is required because the menu only shows itself after this data is received.
      */
     private void triggerOnMediatorReady() {
-        // We must mock a non-null return value for getMenuEntries() because the Mediator will
-        // immediately call this method upon receiving the onReady signal.
+        // We must mock a non-null return value for getMenuEntries() and getSiteSettings() because
+        // the Mediator will immediately call this method upon receiving the onReady signal.
         List<ExtensionsMenuTypes.MenuEntryState> mockEntries = new ArrayList<>();
         mockEntries.add(ExtensionTestUtils.createSimpleMenuEntry("id_a", "Extension A"));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(mockEntries);
+        mSiteSettingsState = createSiteSettingsState("label", true);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
+                .thenReturn(mSiteSettingsState);
 
         // This simulates the actual C++ -> Java call (Observer.onReady) that happens when
         // the native model is initialized.
         assertNotNull("Bridge should have been initialized by the click", mCapturedMenuBridge);
         mCapturedMenuBridge.onReady();
+    }
+
+    @Test
+    public void testUpdateSiteSettingsToggle() {
+        mExtensionsMenuButton.performClick();
+        MaterialSwitchWithText toggle =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_site_settings_toggle);
+
+        mExtensionsMenuCoordinator.mMediator.updateSiteSettingsToggle(
+                createSiteSettingsState("label", true));
+        assertEquals(View.VISIBLE, toggle.getVisibility());
+        assertEquals(true, toggle.isChecked());
+        assertEquals("label", toggle.getText());
+
+        mExtensionsMenuCoordinator.mMediator.updateSiteSettingsToggle(
+                createSiteSettingsState(
+                        "label_2", false, ExtensionsMenuTypes.ControlState.Status.HIDDEN));
+        assertEquals(View.GONE, toggle.getVisibility());
+        assertEquals(false, toggle.isChecked());
+        assertEquals("label_2", toggle.getText());
+    }
+
+    @Test
+    public void testSiteSettingsToggle_ClickCallsBridge() {
+        mCurrentTabSupplier.set(mTab);
+        mExtensionsMenuButton.performClick();
+
+        MaterialSwitchWithText toggle =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_site_settings_toggle);
+
+        // Click to toggle from checked (default) to unchecked.
+        toggle.performClick();
+        verify(mExtensionsMenuBridgeJniMock, Mockito.times(1))
+                .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(false));
+
+        // Click again to toggle back to checked.
+        toggle.performClick();
+        verify(mExtensionsMenuBridgeJniMock, Mockito.times(1))
+                .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(true));
+    }
+
+    private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
+            String label, boolean isOn) {
+        return createSiteSettingsState(
+                label, isOn, ExtensionsMenuTypes.ControlState.Status.ENABLED);
+    }
+
+    private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
+            String label, boolean isOn, @ExtensionsMenuTypes.ControlState.Status int status) {
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        status, "toggle_text", "accessible_name", "tooltip", isOn);
+        return new ExtensionsMenuTypes.SiteSettingsState(
+                label, /* hasTooltip= */ false, toggleState);
     }
 }

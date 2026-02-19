@@ -231,6 +231,9 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                 .with(
                         ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER,
                         (view) -> openUrlFromMenu(UrlConstants.CHROME_EXTENSIONS_URL))
+                .with(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true)
+                .with(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true)
+                .with(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "")
                 .build();
     }
 

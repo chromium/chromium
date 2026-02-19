@@ -31,7 +31,9 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   void Destroy(JNIEnv* env);
   std::vector<base::android::ScopedJavaLocalRef<jobject>> GetMenuEntries(
       JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetSiteSettings(JNIEnv* env);
   bool IsReady(JNIEnv* env);
+  void OnSiteSettingsToggleChanged(JNIEnv* env, bool is_checked);
 
   // ExtensionsMenuViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(

@@ -25,11 +25,22 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+       <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+        android:id="@+id/extensions_menu_site_settings_toggle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
     <View
         android:id="@+id/extensions_menu_header_divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header"
+        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_site_settings_toggle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="?android:attr/listDivider"
@@ -40,7 +51,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="320dp"
-        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
+        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_site_settings_toggle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="8dp"
