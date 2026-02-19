@@ -1,10 +1,10 @@
 [
     {
-        "duration": "36.0",
+        "duration": "35.0",
         "name": "rendering.mobile/aquarium_20k"
     },
     {
-        "duration": "59.0",
+        "duration": "60.0",
         "name": "rendering.mobile/background_color_animation"
     },
     {
@@ -12,27 +12,23 @@
         "name": "rendering.mobile/balls_css_key_frame_animations_composited_transform"
     },
     {
-        "duration": "69.0",
+        "duration": "71.0",
         "name": "rendering.mobile/canvas_10000_pixels_per_second"
-    },
-    {
-        "duration": "69.0",
-        "name": "rendering.mobile/canvas_60000_pixels_per_second"
     },
     {
         "duration": "54.0",
         "name": "rendering.mobile/css_animations_many_keyframes"
     },
     {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/famo_us_twitter_demo"
     },
     {
-        "duration": "36.0",
+        "duration": "35.0",
         "name": "rendering.mobile/google_docs_mobile_2022"
     },
     {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/google_news_ios"
     },
     {
@@ -40,11 +36,11 @@
         "name": "rendering.mobile/idle_power_animated_gif"
     },
     {
-        "duration": "31.0",
+        "duration": "35.0",
         "name": "rendering.mobile/idle_power_css_animation"
     },
     {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/idle_power_request_animation_frame"
     },
     {
@@ -56,19 +52,15 @@
         "name": "rendering.mobile/idle_power_set_timetout"
     },
     {
-        "duration": "53.0",
-        "name": "rendering.mobile/main_30fps_impl_60fps"
-    },
-    {
-        "duration": "57.0",
-        "name": "rendering.mobile/main_60fps_impl_60fps"
+        "duration": "54.0",
+        "name": "rendering.mobile/main_30fps_impl_0fps"
     },
     {
         "duration": "30.0",
         "name": "rendering.mobile/microsoft_fireflies"
     },
     {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/mobile_news_sandbox"
     },
     {
@@ -104,43 +96,35 @@
         "name": "rendering.mobile/motionmark_fixed_2_seconds_suits"
     },
     {
-        "duration": "53.0",
-        "name": "rendering.mobile/no_op_touch_handler"
+        "duration": "66.0",
+        "name": "rendering.mobile/non_opaque_background_compositor_thread_scrolling_00050_pixels_per_second"
     },
     {
         "duration": "80.0",
         "name": "rendering.mobile/static_canvas_to_hw_accelerated_canvas.html"
     },
     {
-        "duration": "69.0",
-        "name": "rendering.mobile/text_fling_05000_pixels_per_second"
+        "duration": "66.0",
+        "name": "rendering.mobile/text_fling_20000_pixels_per_second"
     },
     {
-        "duration": "65.0",
-        "name": "rendering.mobile/text_fling_10000_pixels_per_second"
-    },
-    {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/text_scrollbar_100_pixels_per_second"
     },
     {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/text_scrollbar_1200_pixels_per_second"
     },
     {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "rendering.mobile/text_scrollbar_200_pixels_per_second"
     },
     {
-        "duration": "33.0",
+        "duration": "30.0",
         "name": "rendering.mobile/text_scrollbar_2300_pixels_per_second"
     },
     {
-        "duration": "33.0",
+        "duration": "30.0",
         "name": "rendering.mobile/text_scrollbar_700_pixels_per_second"
-    },
-    {
-        "duration": "78.0",
-        "name": "rendering.mobile/throughput_scrolling_composited"
     }
 ]

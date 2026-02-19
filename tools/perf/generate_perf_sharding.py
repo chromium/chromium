@@ -119,9 +119,7 @@ def _AddBuilderPlatformSelectionArgs(parser):
 
 
 def _DumpJson(data, output_path):
-  with open(output_path, 'w',
-            newline='') if sys.version_info.major == 3 else open(
-                output_path, 'wb') as output_file:
+  with open(output_path, 'w', newline='') as output_file:
     json.dump(data, output_file, indent=4, separators=(',', ': '))
     output_file.write('\n')
 

@@ -116,6 +116,9 @@ def _run_query(query):
       loc = story['name'].find(_TEST_ID_MARKER)
       if loc != -1:
         story['name'] = story['name'][loc + len(_TEST_ID_MARKER):]
+        # The raw story name may contain escaped colons.
+        # E.g.: v8.browsing_desktop/browse\:media\:youtubetv\:2019
+        story['name'] = story['name'].replace(r'\:', ':')
     return timing_data
   raise RuntimeError(
       'Error generating authentication token.\nStdout: %s\nStder:%s' %
