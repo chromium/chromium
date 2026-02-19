@@ -62,6 +62,19 @@ bool ShouldMoveIntersectionStartForward(
     const Vector<GapIntersection>& intersections) {
   const bool is_rule_segment_visible = IsRuleSegmentVisible(
       track_direction, gap_index, start_index, rule_visibility, gap_geometry);
+
+  // For flex containers, `start_index` cannot land on an open overlap state
+  // i.e. the beginning of an overlap window, because that would start the
+  // segment inside the overlapping region within the gap. It can land on a
+  // close overlap state i.e. the end of an overlap window, because the overlap
+  // has ended and it's a valid starting point for a new segment.
+  if (gap_geometry.GetContainerType() == GapGeometry::ContainerType::kFlex) {
+    if (intersections[start_index].IsOverlapWindowOpen()) {
+      return true;
+    } else if (intersections[start_index].IsOverlapWindowClose()) {
+      return false;
+    }
+  }
   if (rule_break == RuleBreak::kNone) {
     // Even with no breaks at intersections, skip segments that are not visible
     // based on `rule-visibility-items`.
@@ -123,6 +136,16 @@ bool ShouldMoveIntersectionEndForward(
   DCHECK_EQ(rule_break, RuleBreak::kIntersection);
 
   if (gap_geometry.GetContainerType() == GapGeometry::ContainerType::kFlex) {
+    // For flex, `end_index` cannot land on a close overlap state i.e. the end
+    // of an overlap window, because the segment would extend across the
+    // overlapping region within the gap. It can land on an open overlap state
+    // i.e. the beginning of an overlap window, because it ends the segment
+    // before the overlap starts.
+    if (intersections[end_index].IsOverlapWindowClose()) {
+      return true;
+    } else if (intersections[end_index].IsOverlapWindowOpen()) {
+      return false;
+    }
     // For flex, intersections will never be blocked before or after by
     // other items, due to the absence of spanners. Therefore, we can
     // break at each intersection point.

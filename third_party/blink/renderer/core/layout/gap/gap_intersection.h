@@ -79,6 +79,12 @@ class CORE_EXPORT GapIntersection {
             *overlap_state_ == OverlapWindowState::kWindowCloseBelow);
   }
 
+  void SetOffset(LayoutUnit offset) { offset_ = offset; }
+
+  void SetOverlapState(OverlapWindowState state) { overlap_state_ = state; }
+
+  void ResetOverlapState() { overlap_state_.reset(); }
+
  private:
   LayoutUnit offset_;
   // Absent (std::nullopt) in layout modes where gaps align uniformly, such as

@@ -199,31 +199,12 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
     wtf_size_t gap_index,
     Vector<GapIntersection>& intersections) const {
   MainGap main_gap = GetMainGaps()[gap_index];
-  // For a flex main gap:
-  // - We need to include all cross gaps that intersect this main gap.
-  // - Flex main gaps have two disjoint sets of cross gaps:
-  // 1. Cross gaps that appear before the main gap
-  // 2. Cross gaps that appear after the main gap
-  // - We gather both sets and then sort them along the main axis to
-  // maintain a monotonic order.
-  //
-  // See third_party/blink/renderer/core/layout/gap/README.md for more.
-  CrossGaps cross_gaps;
-  // TODO(samomekarajr): Can do merge two sorted lists here instead. This
-  // will be be more efficient and avoid the extra copy loop below since we
-  // would be merging directly into `intersections`.
-  if (main_gap.HasCrossGapsBefore()) {
-    for (wtf_size_t i = main_gap.GetCrossGapBeforeStart();
-         i <= main_gap.GetCrossGapBeforeEnd(); ++i) {
-      cross_gaps.push_back(GetCrossGaps()[i]);
-    }
-  }
 
-  if (main_gap.HasCrossGapsAfter()) {
-    for (wtf_size_t i = main_gap.GetCrossGapAfterStart();
-         i <= main_gap.GetCrossGapAfterEnd(); ++i) {
-      cross_gaps.push_back(GetCrossGaps()[i]);
-    }
+  const bool has_cross_gaps_before = main_gap.HasCrossGapsBefore();
+  const bool has_cross_gaps_after = main_gap.HasCrossGapsAfter();
+
+  if (!has_cross_gaps_before && !has_cross_gaps_after) {
+    return;
   }
 
   // TODO(samomekarajr): Consider having a util method for
@@ -231,22 +212,147 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   // scenario.
   GridTrackSizingDirection cross_direction =
       direction == kForRows ? kForColumns : kForRows;
-  std::sort(cross_gaps.begin(), cross_gaps.end(),
-            [cross_direction](const CrossGap& a, const CrossGap& b) {
-              return cross_direction == kForColumns
-                         ? a.GetGapOffset().inline_offset <
-                               b.GetGapOffset().inline_offset
-                         : a.GetGapOffset().block_offset <
-                               b.GetGapOffset().block_offset;
-            });
 
-  // Copy merged and sorted values into `intersections`.
-  for (const auto& cross_gap : cross_gaps) {
-    LogicalOffset cross_gap_start = cross_gap.GetGapOffset();
-    LayoutUnit offset = cross_direction == kForColumns
-                            ? cross_gap_start.inline_offset
-                            : cross_gap_start.block_offset;
-    intersections.push_back(GapIntersection(offset));
+  const LayoutUnit cross_gap_size =
+      direction == kForRows ? inline_gap_size_ : block_gap_size_;
+
+  // In flexbox, cross gaps from adjacent flex lines can overlap in a
+  // non-uniform fashion along the main axis. To determine where to paint gap
+  // decorations, we merge the cross-gap intersection points from the lines
+  // above and below the main gap into a single sorted list, tracking where
+  // overlapping regions ("overlap windows") start and end.
+  //
+  // Each intersection is initially pushed as a preemptive open
+  // (`kWindowOpen*`). If the next intersection overlaps, the open state is
+  // confirmed and the new intersection is added as an initial preemptive close
+  // edge. If it does not overlap, the preemptive open is cleared back to a
+  // regular intersection. Interior points of the window are added as close
+  // edges and updated in-place as subsequent interior points arrive until we
+  // find the actual end point of the overlap window.
+  //
+  // Find more details about "overlap windows" in the definition of
+  // `OverlapWindowState` in gap_intersection.h.
+  auto ProcessCrossGapIntersection = [&](LayoutUnit intersection_offset,
+                                         bool is_above_main_gap) {
+    CHECK(!intersections.empty());
+    // Two consecutive intersections produce overlapping decorations when their
+    // distance is less than `cross_gap_size`.
+    //
+    // TODO(samomekarajr): This needs to factor in different sized gaps when
+    // that is implemented. For now, the implementation only supports uniform
+    // gaps in flexbox, so this is sufficient.
+    const bool overlaps_with_intersection =
+        intersections.size() > 1 &&
+        (intersection_offset - intersections.back().GetOffset() <
+         cross_gap_size);
+
+    if (overlaps_with_intersection) {
+      if (intersections.back().IsOverlapWindowOpen()) {
+        // Have entered a window: The open window state on the previous
+        // intersection is confirmed. Add the current intersection as the
+        // initial potential closing edge. Note that we will continue to
+        // augment this intersection in place until we find the actual closing
+        // edge, which can only be known when we hit an intersection that does
+        // not overlap the current open window.
+        intersections.push_back(GapIntersection(
+            intersection_offset, is_above_main_gap
+                                     ? OverlapWindowState::kWindowCloseAbove
+                                     : OverlapWindowState::kWindowCloseBelow));
+      } else {
+        CHECK(intersections.back().IsOverlapWindowClose());
+        // Interiors and possible closing edge of a window: If the current
+        // intersection point overlaps the previous point(s), this means that
+        // the last intersection wasn't the end of the overlap window. Update
+        // the end point to the current intersection point, instead.
+        intersections.back().SetOffset(intersection_offset);
+        intersections.back().SetOverlapState(
+            is_above_main_gap ? OverlapWindowState::kWindowCloseAbove
+                              : OverlapWindowState::kWindowCloseBelow);
+      }
+    } else {
+      if (intersections.back().IsOverlapWindowOpen()) {
+        // The previous intersection point actually wasn't the start of an
+        // overlap window. Reset it back to a regular intersection.
+        intersections.back().ResetOverlapState();
+      }
+
+      // Add the current intersection as a potential overlap window opening. If
+      // the next intersection overlaps, this will be confirmed as the open edge
+      // of a new overlap window. Otherwise, it will be cleared.
+      intersections.push_back(GapIntersection(
+          intersection_offset, is_above_main_gap
+                                   ? OverlapWindowState::kWindowOpenAbove
+                                   : OverlapWindowState::kWindowOpenBelow));
+    }
+  };
+
+  wtf_size_t cross_gaps_before_current_idx =
+      has_cross_gaps_before ? main_gap.GetCrossGapBeforeStart() : kNotFound;
+  wtf_size_t cross_gaps_before_end_idx =
+      has_cross_gaps_before ? main_gap.GetCrossGapBeforeEnd() : 0;
+  wtf_size_t cross_gaps_after_current_idx =
+      has_cross_gaps_after ? main_gap.GetCrossGapAfterStart() : kNotFound;
+  wtf_size_t cross_gaps_after_end_idx =
+      has_cross_gaps_after ? main_gap.GetCrossGapAfterEnd() : 0;
+
+  // Merge the cross gaps before and after the main gap into `intersections`,
+  // ordered by offset. Intersections that don't overlap or overlap uniformly
+  // are represented by a single `GapIntersection` with no overlap state.
+  // Non-uniform overlaps produce an overlap window bounded by two
+  // `GapIntersection`s: one with an `kWindowOpen*` state and one with a
+  // `kWindowClose*` state. See `OverlapWindowState` for details on each value.
+  while (cross_gaps_before_current_idx <= cross_gaps_before_end_idx &&
+         cross_gaps_after_current_idx <= cross_gaps_after_end_idx) {
+    LayoutUnit cross_gap_before_offset =
+        GetCrossGaps()[cross_gaps_before_current_idx].GetGapOffset(
+            cross_direction);
+    LayoutUnit cross_gap_after_offset =
+        GetCrossGaps()[cross_gaps_after_current_idx].GetGapOffset(
+            cross_direction);
+
+    // "before"/"after" indicates which side of the main gap the cross gap
+    // belongs to, not its position along the main axis. A cross gap from
+    // the "before" list can occur after one from the "after" list along
+    // the main axis, which is why we compare offsets to merge them in a sorted
+    // manner.
+    if (cross_gap_before_offset <= cross_gap_after_offset) {
+      ProcessCrossGapIntersection(cross_gap_before_offset,
+                                  /*is_above_main_gap=*/true);
+      ++cross_gaps_before_current_idx;
+
+      // If both lists have the same offset, advance both pointers.
+      if (cross_gap_before_offset == cross_gap_after_offset) {
+        ++cross_gaps_after_current_idx;
+      }
+    } else {
+      ProcessCrossGapIntersection(cross_gap_after_offset,
+                                  /*is_above_main_gap=*/false);
+      ++cross_gaps_after_current_idx;
+    }
+  }
+
+  // Process intersections for whichever list still has remaining elements.
+  while (cross_gaps_before_current_idx <= cross_gaps_before_end_idx) {
+    ProcessCrossGapIntersection(
+        GetCrossGaps()[cross_gaps_before_current_idx].GetGapOffset(
+            cross_direction),
+        /*is_above_main_gap=*/true);
+    ++cross_gaps_before_current_idx;
+  }
+  while (cross_gaps_after_current_idx <= cross_gaps_after_end_idx) {
+    ProcessCrossGapIntersection(
+        GetCrossGaps()[cross_gaps_after_current_idx].GetGapOffset(
+            cross_direction),
+        /*is_above_main_gap=*/false);
+    ++cross_gaps_after_current_idx;
+  }
+
+  // If the last intersection was marked as a potential open window, reset it
+  // back to a regular intersection because it didn't overlap with any other
+  // intersection point. If it is a close edge, the overlap window is already
+  // properly ended.
+  if (intersections.back().IsOverlapWindowOpen()) {
+    intersections.back().ResetOverlapState();
   }
 }
 

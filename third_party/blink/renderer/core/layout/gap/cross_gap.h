@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
+#include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -77,6 +78,11 @@ class CORE_EXPORT CrossGap {
       : gap_logical_offset_(offset), edge_state_(state) {}
 
   LogicalOffset GetGapOffset() const { return gap_logical_offset_; }
+
+  LayoutUnit GetGapOffset(GridTrackSizingDirection direction) const {
+    return direction == kForColumns ? gap_logical_offset_.inline_offset
+                                    : gap_logical_offset_.block_offset;
+  }
 
   String ToString(bool verbose = false) const;
 
