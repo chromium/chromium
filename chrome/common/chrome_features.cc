@@ -988,6 +988,16 @@ BASE_FEATURE(kGlicLiveModeOnlyGlow, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicMITabContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicWebContinuity, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicWebContinuityUrl{
+    &kGlicWebContinuity, "glic-web-continuity-url", ""};
+const base::FeatureParam<std::string> kGlicWebContinuityOriginatingHost{
+    &kGlicWebContinuity, "glic-web-continuity-originating-host", ""};
+const base::FeatureParam<int> kGlicWebContinuityMaxCIDLength{
+    &kGlicWebContinuity, "glic-web-continuity-max-cid-length", 32};
+const base::FeatureParam<int> kGlicWebContinuityMaxTargetUrlLength{
+    &kGlicWebContinuity, "glic-web-continuity-max-target-url-length", 1024};
+
 BASE_FEATURE(kGlicUseToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicButtonPressedState, base::FEATURE_DISABLED_BY_DEFAULT);

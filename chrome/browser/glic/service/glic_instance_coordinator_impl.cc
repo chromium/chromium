@@ -247,14 +247,17 @@ void GlicInstanceCoordinatorImpl::Toggle(
     BrowserWindowInterface* browser,
     bool prevent_close,
     mojom::InvocationSource source,
-    std::optional<std::string> prompt_suggestion,
-    bool auto_send) {
+    std::optional<std::string> deprecated_prompt_suggestion,
+    bool deprecated_auto_send,
+    std::optional<std::string> deprecated_conversation_id) {
   if (!browser) {
-    ToggleFloaty(prevent_close, source, prompt_suggestion);
+    CHECK(!deprecated_conversation_id || deprecated_conversation_id->empty());
+    ToggleFloaty(prevent_close, source, deprecated_prompt_suggestion);
     return;
   }
 
-  ToggleSidePanel(browser, prevent_close, source, prompt_suggestion, auto_send);
+  ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion,
+                  deprecated_auto_send, deprecated_conversation_id);
 }
 
 void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
@@ -438,6 +441,16 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetActiveInstance() {
   return active_instance_;
 }
 
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForConversationId(
+    const std::string& conversation_id) {
+  for (const auto& [id, instance] : instances_) {
+    if (instance->conversation_id() == conversation_id) {
+      return instance.get();
+    }
+  }
+  return nullptr;
+}
+
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     tabs::TabInterface* tab) {
@@ -601,13 +614,23 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     bool prevent_close,
     glic::mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion,
-    bool auto_send) {
+    bool auto_send,
+    std::optional<std::string> conversation_id) {
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
     return;
   }
   GlicInstanceImpl* instance = nullptr;
-  if (source == glic::mojom::InvocationSource::kSharedImage) {
+  if (base::FeatureList::IsEnabled(features::kGlicWebContinuity) &&
+      conversation_id && !conversation_id->empty()) {
+    instance = GetInstanceImplForConversationId(*conversation_id);
+    if (!instance) {
+      instance = CreateGlicInstance();
+      auto info = mojom::ConversationInfo::New();
+      info->conversation_id = *conversation_id;
+      instance->RegisterConversation(std::move(info), base::DoNothing());
+    }
+  } else if (source == glic::mojom::InvocationSource::kSharedImage) {
     // kSharedImage currently requires a new instance.
     instance = CreateGlicInstance();
   } else {
@@ -650,13 +673,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
 
   GlicInstanceImpl* target_instance = nullptr;
   if (!info->conversation_id.empty()) {
-    for (const auto& [id, instance] : instances_) {
-      if (instance->conversation_id().has_value() &&
-          instance->conversation_id().value() == info->conversation_id) {
-        target_instance = instance.get();
-        break;
-      }
-    }
+    target_instance = GetInstanceImplForConversationId(info->conversation_id);
   }
 
   if (!target_instance) {
@@ -968,13 +985,10 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrRestoreInstanceImpl(
 
   // Prioritize finding an existing instance by conversation ID, then by
   // instance ID.
-  if (!instance_info.conversation_id.empty()) {
-    for (const auto& [id, instance] : instances_) {
-      if (instance->conversation_id() == instance_info.conversation_id) {
-        return instance.get();
-      }
-    }
-  } else if (auto* instance = GetInstanceImplFor(instance_id)) {
+  if (auto* instance =
+          !instance_info.conversation_id.empty()
+              ? GetInstanceImplForConversationId(instance_info.conversation_id)
+              : GetInstanceImplFor(instance_id)) {
     return instance;
   }
 

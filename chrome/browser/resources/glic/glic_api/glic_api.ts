@@ -2716,6 +2716,8 @@ export enum InvocationSource {
   AUTO_OPENED_BY_CONTEXTUAL_CUE = 16,
   // User clicked the summarize button in the PDF viewer.
   PDF_SUMMARIZE_BUTTON = 17,
+  // From a navigation capture.
+  NAVIGATION_CAPTURE = 18,
 }
 
 ///////////////////////////////////////////////

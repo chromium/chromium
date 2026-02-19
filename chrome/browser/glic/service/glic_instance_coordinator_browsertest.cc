@@ -768,4 +768,58 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorHibernationTest,
   EXPECT_FALSE(instance5->IsHibernated());
 }
 
+class GlicInstanceCoordinatorToggleWithConversationTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorToggleWithConversationTest() {
+    feature_list_.InitAndEnableFeature(features::kGlicWebContinuity);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
+                       ToggleWithConversationId) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  const std::string cid1 = "conv_1";
+  const std::string cid2 = "conv_2";
+
+  // Toggle with cid1.
+  coordinator().Toggle(tab1->GetBrowserWindowInterface(),
+                       /*prevent_close=*/false,
+                       mojom::InvocationSource::kTopChromeButton,
+                       /*deprecated_prompt_suggestion=*/std::nullopt,
+                       /*deprecated_auto_send=*/false, cid1);
+
+  auto* instance1 = WaitForGlicOpen(tab1);
+  ASSERT_TRUE(instance1);
+  EXPECT_EQ(instance1->conversation_id(), cid1);
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+
+  // Toggle again with SAME cid1 on a second tab. Should reuse instance1.
+  auto* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  coordinator().Toggle(tab2->GetBrowserWindowInterface(),
+                       /*prevent_close=*/false,
+                       mojom::InvocationSource::kTopChromeButton,
+                       /*deprecated_prompt_suggestion=*/std::nullopt,
+                       /*deprecated_auto_send=*/false, cid1);
+
+  ASSERT_TRUE(WaitForActiveEmbedderToMatchTab(instance1, tab2));
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+
+  // Toggle with DIFFERENT cid2 on a third tab. Should create a new instance.
+  auto* tab3 = CreateAndActivateTab(GURL("about:blank"));
+  coordinator().Toggle(tab3->GetBrowserWindowInterface(),
+                       /*prevent_close=*/false,
+                       mojom::InvocationSource::kTopChromeButton,
+                       /*deprecated_prompt_suggestion=*/std::nullopt,
+                       /*deprecated_auto_send=*/false, cid2);
+
+  auto* instance2 = WaitForGlicInstanceBoundToTab(tab3);
+  ASSERT_TRUE(instance2);
+  EXPECT_EQ(instance2->conversation_id(), cid2);
+  EXPECT_EQ(coordinator().GetInstances().size(), 2u);
+}
+
 }  // namespace glic

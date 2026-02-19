@@ -684,6 +684,16 @@ extern const base::FeatureParam<int> kGlicButtonAltLabelVariant;
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicDaisyChainNewTabs);
 
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicWebContinuity);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicWebContinuityUrl;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicWebContinuityOriginatingHost;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicWebContinuityMaxCIDLength;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicWebContinuityMaxTargetUrlLength;
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicUseToolbarHeightSidePanel);
 
