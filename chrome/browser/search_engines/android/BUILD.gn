@@ -29,6 +29,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineProperties.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineRecyclerView.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineViewBinder.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/EditSearchEngineDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchListPreference.java",
@@ -101,6 +102,7 @@ android_resources("java_resources") {
     "java/res/layout/custom_site_search_list_preference.xml",
     "java/res/layout/custom_site_search_more_item.xml",
     "java/res/layout/default_search_engine_dialog_view.xml",
+    "java/res/layout/edit_site_search_dialog.xml",
     "java/res/layout/search_engine_choice_header.xml",
     "java/res/layout/search_engine_recent_title.xml",
     "java/res/layout/search_engine_site_search_link.xml",
@@ -114,6 +116,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
     "//components/strings:components_strings_grd",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -126,6 +129,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettingsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineListMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/EditSearchEngineDialogCoordinatorUnitTest.java",
   ]
   deps = [
     ":java",

@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
@@ -57,6 +58,7 @@ public class CustomSearchEngineListMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
+    @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
 
     private CustomSearchEngineListMediator mMediator;
 
@@ -82,7 +84,9 @@ public class CustomSearchEngineListMediatorUnitTest {
                 .when(mTemplateUrlService)
                 .runWhenLoaded(any());
 
-        mMediator = new CustomSearchEngineListMediator(mContext, mModelList, mProfile);
+        mMediator =
+                new CustomSearchEngineListMediator(
+                        mContext, mModelList, mProfile, mOnEditSearchEngine);
     }
 
     @Test

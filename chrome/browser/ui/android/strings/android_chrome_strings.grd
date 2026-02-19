@@ -513,6 +513,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Additional sites
       </message>
 
+      <message name="IDS_SITE_SEARCH_DIALOG_HINT_NAME" desc="Hint for the name field in the Edit Site Search dialog.">
+        Name
+      </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_HINT_SHORTCUT" desc="Hint for the shortcut field in the Edit Site Search dialog.">
+        Shortcut
+      </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_HINT_URL" desc="Hint for the URL field in the Edit Site Search dialog.">
+        URL with <ph name="QUERY">%s</ph> in place of query
+      </message>
 
 
       <!-- Add Message -->

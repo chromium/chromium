@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.search_engines.settings.custom_site_search.Cu
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * Fragment for the "Manage search engines and site search" settings page. Displays lists of
@@ -45,7 +46,10 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
             if (mSearchEngineCoordinator == null) {
                 mSearchEngineCoordinator =
                         new CustomSearchEngineListCoordinator(
-                                getContext(), getProfile(), customSearchEnginePref);
+                                getContext(),
+                                getProfile(),
+                                customSearchEnginePref,
+                                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
         }
 
