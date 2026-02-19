@@ -152,8 +152,8 @@ TEST_F(CanvasResourceProviderTest, BeginExternalWrite) {
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, shared_image_usage_flags);
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper_,
+      shared_image_usage_flags);
 
   gpu::SyncToken sync_token;
 
@@ -224,7 +224,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
-      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kNo,
       context_provider_wrapper_, shared_image_usage_flags);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -254,7 +254,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
-      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      kSize, color_params, CanvasResourceProvider::ShouldInitialize::kNo,
       context_provider_wrapper_, gpu::SharedImageUsageSet());
 
   EXPECT_EQ(provider->Size(), kSize);
