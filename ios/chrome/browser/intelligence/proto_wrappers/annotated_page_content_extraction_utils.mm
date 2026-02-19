@@ -41,6 +41,14 @@ constexpr char kSourceURLKey[] = "sourceUrl";
 constexpr char kTitleKey[] = "title";
 constexpr char kChildrenNodesKey[] = "childrenNodes";
 constexpr char kDomNodeIdKey[] = "domNodeId";
+constexpr char kFrameInteractionInfoKey[] = "frameInteractionInfo";
+constexpr char kSelectionKey[] = "selection";
+constexpr char kStartDomNodeIdKey[] = "startDomNodeId";
+constexpr char kStartOffsetKey[] = "startOffset";
+constexpr char kEndDomNodeIdKey[] = "endDomNodeId";
+constexpr char kEndOffsetKey[] = "endOffset";
+constexpr char kSelectedTextKey[] = "selectedText";
+constexpr char kFocusedDomNodeIdKey[] = "focusedDomNodeId";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -146,6 +154,43 @@ void PopulateFrameData(
 
   if (const std::string* title_ptr = local_frame_data.FindString(kTitleKey)) {
     destination_frame_data->set_title(*title_ptr);
+  }
+
+  const base::DictValue* interaction_info_dict =
+      local_frame_data.FindDict(kFrameInteractionInfoKey);
+  if (interaction_info_dict) {
+    const base::DictValue* selection_dict =
+        interaction_info_dict->FindDict(kSelectionKey);
+    if (selection_dict) {
+      optimization_guide::proto::Selection* selection =
+          destination_frame_data->mutable_frame_interaction_info()
+              ->mutable_selection();
+
+      if (std::optional<int> start_node_id =
+              ReadJsNumber(*selection_dict, kStartDomNodeIdKey)) {
+        selection->set_start_node_id(*start_node_id);
+      }
+
+      if (std::optional<int> start_offset =
+              ReadJsNumber(*selection_dict, kStartOffsetKey)) {
+        selection->set_start_offset(*start_offset);
+      }
+
+      if (std::optional<int> end_node_id =
+              ReadJsNumber(*selection_dict, kEndDomNodeIdKey)) {
+        selection->set_end_node_id(*end_node_id);
+      }
+
+      if (std::optional<int> end_offset =
+              ReadJsNumber(*selection_dict, kEndOffsetKey)) {
+        selection->set_end_offset(*end_offset);
+      }
+
+      if (const std::string* selected_text =
+              selection_dict->FindString(kSelectedTextKey)) {
+        selection->set_selected_text(*selected_text);
+      }
+    }
   }
 }
 
@@ -300,4 +345,18 @@ void PopulateFrameDataNode(
     optimization_guide::proto::FrameData* destination_frame_data_node) {
   CHECK(destination_frame_data_node);
   PopulateFrameData(frame_data_content, destination_frame_data_node, origin);
+}
+
+// Populates `page_interaction_info_node` from the
+// `page_interaction_info_content` content.
+void PopulatePageInteractionInfoNode(
+    const base::DictValue& page_interaction_info_content,
+    optimization_guide::proto::PageInteractionInfo*
+        destination_page_interaction_info_node) {
+  CHECK_EQ(destination_page_interaction_info_node->ByteSizeLong(), 0u);
+  if (std::optional<int> focused_node_id =
+          ReadJsNumber(page_interaction_info_content, kFocusedDomNodeIdKey)) {
+    destination_page_interaction_info_node->set_focused_node_id(
+        *focused_node_id);
+  }
 }

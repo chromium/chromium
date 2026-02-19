@@ -290,6 +290,9 @@ class PageContextWrapperTest : public PlatformTest,
   std::unique_ptr<PageContext> page_helper_;
 };
 
+// TODO(crbug.com/485298671): Remove PopulatePageContext prefixes from test
+// names.
+
 // Tests that the page context is correctly populated with the page URL, title,
 // inner text, and annotated page content (including iframes).
 //
@@ -2997,6 +3000,243 @@ TEST_P(PageContextWrapperTest,
   const auto& frame5_p_text = frame5_p.children_nodes(0);
   EXPECT_EQ(frame5_p_text.content_attributes().common_ancestor_dom_node_id(),
             3);
+}
+
+// Tests that frame selections are correctly extracted from multiple frames
+// simultaneously (Main frame, Same-origin iframe, Cross-origin iframe).
+//
+// The page layout is as follows:
+//      +-----------------------------------------+
+//      | Main page (Origin M)                    |
+//      | - Selection: "Main frame text"          |
+//      |                                         |
+//      |   +--------------------------+          |
+//      |   | Iframe 1 (Origin M)      |          |
+//      |   | - Selection:             |          |
+//      |   |   "Same origin text"     |          |
+//      |   +--------------------------+          |
+//      |                                         |
+//      |   +--------------------------+          |
+//      |   | Iframe 2 (Origin A)      |          |
+//      |   | - Selection:             |          |
+//      |   |   "Cross origin text"    |          |
+//      |   +--------------------------+          |
+//      +-----------------------------------------+
+TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Main", Paragraph("Main frame text"),
+      Iframe(TestOrigin::kMain,
+             HtmlPage("Child Same Origin", Paragraph("Same origin text")),
+             "iframe_same"),
+      Iframe(TestOrigin::kCrossA,
+             HtmlPage("Child Cross Origin", Paragraph("Cross origin text")),
+             "iframe_cross"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Wait for all 3 frames to load (Main, Same, Cross)
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 3;
+  }));
+
+  // Helper to select text in a frame
+  auto select_text = [](web::WebFrame* frame, const std::string& text) {
+    NSString* script =
+        [NSString stringWithFormat:
+                      @"(() => {"
+                      @"  const p = Array.from(document.querySelectorAll('p'))"
+                      @"    .find(p => p.innerText.includes('%s'));"
+                      @"  if (!p) return;"
+                      @"  const range = document.createRange();"
+                      @"  const node = p.firstChild;"
+                      @"  range.selectNode(node);"
+                      @"  const selection = window.getSelection();"
+                      @"  selection.removeAllRanges();"
+                      @"  selection.addRange(range);"
+                      @"})()",
+                      text.c_str()];
+    frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+  };
+
+  web::WebFramesManager* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+
+  GURL iframe_same_url = page_helper_->GetUrlForId("iframe_same");
+  GURL iframe_cross_url = page_helper_->GetUrlForId("iframe_cross");
+
+  // Do selection in each frame by URL
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    if (frame->IsMainFrame()) {
+      select_text(frame, "Main frame text");
+    } else if (frame->GetUrl() == iframe_same_url) {
+      select_text(frame, "Same origin text");
+    } else if (frame->GetUrl() == iframe_cross_url) {
+      select_text(frame, "Cross origin text");
+    }
+  }
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  // 1. Verify Main Frame Selection
+  const auto& main_frame_data = annotated_page_content.main_frame_data();
+  EXPECT_TRUE(main_frame_data.frame_interaction_info().has_selection());
+  EXPECT_EQ(
+      main_frame_data.frame_interaction_info().selection().selected_text(),
+      "Main frame text");
+
+  const optimization_guide::proto::ContentNode* same_origin_iframe_node =
+      &root_node.children_nodes(1);
+  const optimization_guide::proto::ContentNode* cross_iframe_node =
+      &root_node.children_nodes(2);
+
+  ASSERT_TRUE(cross_iframe_node);
+  EXPECT_TRUE(cross_iframe_node->content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .frame_interaction_info()
+                  .has_selection());
+  EXPECT_EQ(cross_iframe_node->content_attributes()
+                .iframe_data()
+                .frame_data()
+                .frame_interaction_info()
+                .selection()
+                .selected_text(),
+            "Cross origin text");
+
+  ASSERT_TRUE(same_origin_iframe_node);
+  EXPECT_TRUE(same_origin_iframe_node->content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .frame_interaction_info()
+                  .has_selection());
+  EXPECT_EQ(same_origin_iframe_node->content_attributes()
+                .iframe_data()
+                .frame_data()
+                .frame_interaction_info()
+                .selection()
+                .selected_text(),
+            "Same origin text");
+}
+
+// Tests that the page interaction info is correctly populated for the main
+// frame.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_PageInteractionInfo) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("Main", RawHtml("<input id='myInput' type='text'>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Focus the input.
+  CallJavascript("document.getElementById('myInput').focus();");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& page_interaction_info =
+      annotated_page_content.page_interaction_info();
+
+  EXPECT_TRUE(page_interaction_info.has_focused_node_id());
+  // Verify that there is a valid node ID assigned to the focused node.
+  EXPECT_GT(page_interaction_info.focused_node_id(), 0);
+}
+
+// Tests that interactive nodes (focused) are forced into the APC tree even if
+// they are generic containers that would normally be flattened.
+TEST_P(
+    PageContextWrapperTest,
+    PopulatePageContext_RichExtraction_GenericContainer_IncludeInteractiveNodes) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // A generic div is usually skipped (flattened) by the extraction logic.
+  // Giving it tabindex='-1' makes it focusable.
+  // We focus it, so it SHOULD be included in the tree as a CONTAINER with the
+  // new logic.
+  auto page_structure =
+      HtmlPage("Main", RawHtml("<div id='target' tabindex='-1'>Target</div>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  CallJavascript("document.getElementById('target').focus();");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& apc = response.value()->annotated_page_content();
+  const auto& interaction = apc.page_interaction_info();
+
+  ASSERT_TRUE(interaction.has_focused_node_id());
+  int focused_id = interaction.focused_node_id();
+  EXPECT_GT(focused_id, 0);
+
+  // Traverse tree to find the focused node.
+  const auto& root_node = apc.root_node();
+  const optimization_guide::proto::ContentNode* target_node = nullptr;
+  for (const auto& child : root_node.children_nodes()) {
+    if (child.content_attributes().common_ancestor_dom_node_id() ==
+        focused_id) {
+      target_node = &child;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(target_node) << "Focused node with ID " << focused_id
+                           << " not found in APC tree";
+  EXPECT_EQ(target_node->content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+
+  ASSERT_EQ(target_node->children_nodes_size(), 1);
+  const auto& text_node = target_node->children_nodes(0);
+  EXPECT_EQ(text_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(),
+            "Target");
 }
 
 INSTANTIATE_TEST_SUITE_P(,
