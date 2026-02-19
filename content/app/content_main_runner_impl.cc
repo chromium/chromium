@@ -895,8 +895,10 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   if (basic_startup_exit_code.has_value())
     return basic_startup_exit_code.value();
 
-  base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish(
-      process_type);
+  if (!delegate_->IsInitFeatureListEarly()) {
+    base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish(
+        process_type);
+  }
 
 #if BUILDFLAG(IS_WIN)
   if (command_line.HasSwitch(switches::kDeviceScaleFactor)) {
@@ -1294,11 +1296,14 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 #endif
   }
 
-  // No specified process type means this is the Browser process.
-  base::allocator::PartitionAllocSupport::Get()
-      ->ReconfigureAfterFeatureListInit("");
-  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
-      "");
+  if (!delegate_->IsInitFeatureListEarly()) {
+    // No specified process type means this is the Browser process.
+    base::allocator::PartitionAllocSupport::Get()
+        ->ReconfigureAfterFeatureListInit("");
+    base::allocator::PartitionAllocSupport::Get()
+        ->ReconfigureAfterTaskRunnerInit("");
+  }
+
   BrowserTaskExecutor::GetIOThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE, base::BindOnce([] {
                    base::allocator::ReconfigureSchedulerLoopQuarantineBranch(
