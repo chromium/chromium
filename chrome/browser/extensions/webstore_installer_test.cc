@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/switches.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -51,8 +52,8 @@ void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
   test_gallery_url_ =
       base::StringPrintf("http://%s:%d/%s", webstore_domain_.c_str(),
                          host_port.port(), test_data_path_.c_str());
-  command_line->AppendSwitchASCII(
-      switches::kAppsGalleryURL, test_gallery_url_);
+  command_line->AppendSwitchASCII(extensions::switches::kAppsGalleryURL,
+                                  test_gallery_url_);
 
   GURL crx_url = GenerateTestServerUrl(webstore_domain_, crx_filename_);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

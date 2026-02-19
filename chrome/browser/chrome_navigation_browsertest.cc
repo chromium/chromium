@@ -69,6 +69,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -1722,7 +1723,7 @@ class WebstoreOverrideIsolationBrowserTest
     // Override the webstore URL. Note: although this specifies a path, in
     // reality we just look at the scheme, host and port when using the
     // override.
-    command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+    command_line->AppendSwitchASCII(extensions::switches::kAppsGalleryURL,
                                     "https://chrome.foo.com/frame_tree");
 
     WebstoreIsolationBrowserTest::SetUpCommandLine(command_line);

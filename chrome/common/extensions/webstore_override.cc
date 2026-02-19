@@ -15,11 +15,11 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -61,7 +61,7 @@ bool AreWebstoreFeaturesAvailable(const std::string& api_full_name,
   static base::NoDestructor<GURL> override_url([]() {
     std::string override_url_str =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kAppsGalleryURL);
+            extensions::switches::kAppsGalleryURL);
 
     // Empty string means the command line switch was not used.
     if (override_url_str.empty()) {

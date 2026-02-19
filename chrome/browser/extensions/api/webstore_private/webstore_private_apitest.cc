@@ -200,7 +200,7 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+    command_line->AppendSwitchASCII(switches::kAppsGalleryURL,
                                     "http://www.example.com/");
     command_line->AppendSwitch(switches::kExtensionTestApiOnWebPages);
   }

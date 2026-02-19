@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/management.h"
+#include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -66,7 +67,7 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
 
     // Only override the webstore URL if this test case is testing the override.
     if (GetParam().spec() == kWebstoreOverrideURL) {
-      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+      command_line->AppendSwitchASCII(switches::kAppsGalleryURL,
                                       kWebstoreOverrideURL);
     }
 

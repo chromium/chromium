@@ -52,7 +52,6 @@ extern const char kAppRunOnOsLoginMode[];
 extern const char kAppShim[];
 extern const char kAppsGalleryDownloadURL[];
 extern const char kAppsGalleryUpdateURL[];
-extern const char kAppsGalleryURL[];
 extern const char kAuthServerAllowlist[];
 extern const char kAutoOpenDevToolsForTabs[];
 extern const char kAutoSelectDesktopCaptureSource[];

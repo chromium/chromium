@@ -358,6 +358,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
 #include "gpu/config/gpu_switches.h"
@@ -2961,9 +2962,9 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                                                 // only.
         extensions::switches::kAllowlistedExtensionID,
         extensions::switches::kExtensionTestApiOnWebPages,  // For tests only.
+        extensions::switches::kAppsGalleryURL,
 #endif
         switches::kAllowInsecureLocalhost,
-        switches::kAppsGalleryURL,
         switches::kDisableJavaScriptHarmonyShipping,
         variations::switches::kEnableBenchmarking,
         variations::switches::kEnableBenchmarkingApi,

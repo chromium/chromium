@@ -20,7 +20,6 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,6 +29,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -392,7 +392,7 @@ class BackgroundFetchWebstoreTest : public BackgroundFetchPolicyTest,
         "MAP * " + embedded_test_server()->host_port_pair().ToString());
     // Only override the webstore URL if this test case is testing the override.
     if (GetParam().spec() == kWebstoreOverrideURL) {
-      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+      command_line->AppendSwitchASCII(switches::kAppsGalleryURL,
                                       kWebstoreOverrideURL);
     }
   }

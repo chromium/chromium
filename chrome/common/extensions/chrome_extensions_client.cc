@@ -34,6 +34,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
@@ -81,9 +82,9 @@ void ChromeExtensionsClient::InitializeWebStoreUrls(
     webstore_base_url_ = GURL(extension_urls::kChromeWebstoreBaseURL);
     new_webstore_base_url_ = GURL(extension_urls::kNewChromeWebstoreBaseURL);
   }
-  if (command_line->HasSwitch(switches::kAppsGalleryUpdateURL)) {
+  if (command_line->HasSwitch(::switches::kAppsGalleryUpdateURL)) {
     webstore_update_url_ = GURL(
-        command_line->GetSwitchValueASCII(switches::kAppsGalleryUpdateURL));
+        command_line->GetSwitchValueASCII(::switches::kAppsGalleryUpdateURL));
   } else {
     webstore_update_url_ = GURL(extension_urls::GetDefaultWebstoreUpdateUrl());
   }

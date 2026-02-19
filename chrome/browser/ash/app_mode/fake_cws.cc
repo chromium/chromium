@@ -37,6 +37,7 @@
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/switches.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -421,7 +422,7 @@ void FakeCWS::OverrideGalleryCommandlineSwitches() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   command_line->AppendSwitchASCII(
-      ::switches::kAppsGalleryURL,
+      extensions::switches::kAppsGalleryURL,
       web_store_url_.Resolve("/chromeos/app_mode/webstore").spec());
 
   GURL downloads_url =

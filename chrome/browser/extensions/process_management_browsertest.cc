@@ -106,7 +106,7 @@ class ChromeWebStoreProcessTest
 
     // Only use the override if this test case is testing the override URL.
     if (GetParam() == kWebstoreURLOverride) {
-      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+      command_line->AppendSwitchASCII(switches::kAppsGalleryURL,
                                       webstore_url().spec());
     }
   }

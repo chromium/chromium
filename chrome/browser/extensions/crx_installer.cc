@@ -29,7 +29,6 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -80,6 +79,7 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/verifier_formats.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -235,7 +235,7 @@ void CrxInstaller::InstallCrx(const base::FilePath& source_file) {
       off_store_install_allow_reason_ == OffStoreInstallDisallowed
           ? GetWebstoreVerifierFormat(
                 base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    ::switches::kAppsGalleryURL))
+                    switches::kAppsGalleryURL))
           : GetExternalVerifierFormat();
   InstallCrxFile(CRXFileInfo(source_file, format));
 }

@@ -58,6 +58,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/switches.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -556,7 +557,7 @@ class ContentScriptCssInjectionTest : public ExtensionApiTest {
     // can't use the real Webstore's URL. If this changes, we could clean this
     // up.
     command_line->AppendSwitchASCII(
-        ::switches::kAppsGalleryURL,
+        extensions::switches::kAppsGalleryURL,
         base::StringPrintf("http://%s", kWebstoreDomain));
   }
 
@@ -2538,7 +2539,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
 
 class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    command_line->AppendSwitch(::switches::kEnableExtensionActivityLogging);
     ContentScriptApiTest::SetUpCommandLine(command_line);
   }
 };

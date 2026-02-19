@@ -85,10 +85,6 @@ const char kAppsGalleryDownloadURL[] = "apps-gallery-download-url";
 // Overrides the update url used by webstore extensions.
 const char kAppsGalleryUpdateURL[] = "apps-gallery-update-url";
 
-// Overrides the url that the browser treats as the webstore, granting it the
-// webstore APIs and giving it some special protections.
-const char kAppsGalleryURL[] = "apps-gallery-url";
-
 // Allowlist for Negotiate Auth servers
 const char kAuthServerAllowlist[] = "auth-server-allowlist";
 

@@ -149,6 +149,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -6489,7 +6490,7 @@ class WebstoreWebViewTest
         "MAP * " + https_server_.host_port_pair().ToString());
     // Only override the webstore URL if this test case is testing the override.
     if (webstore_url().spec() == kWebstoreURLOverride) {
-      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+      command_line->AppendSwitchASCII(extensions::switches::kAppsGalleryURL,
                                       kWebstoreURLOverride);
     }
     mock_cert_verifier_.SetUpCommandLine(command_line);

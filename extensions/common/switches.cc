@@ -59,6 +59,8 @@ const char kZeroStatePromoCustomUiPlainLinkIph[] = "custom-ui-plain-link-iph";
 const char kExtensionsInstallVerification[] = "extensions-install-verification";
 const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 
+const char kAppsGalleryURL[] = "apps-gallery-url";
+
 bool AreExtensionsOnChromeURLsAllowed() {
   if (base::FeatureList::IsEnabled(
           extensions_features::kDisableExtensionsOnChromeUrlsSwitch)) {

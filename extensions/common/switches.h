@@ -141,6 +141,10 @@ extern const char kExtensionsInstallVerification[];
 // be treated as not from the webstore when doing install verification.
 extern const char kExtensionsNotWebstore[];
 
+// Overrides the url that the browser treats as the webstore, granting it the
+// webstore APIs and giving it some special protections.
+extern const char kAppsGalleryURL[];
+
 // Checks if extensions are allowed to run on chrome:// URLs.
 bool AreExtensionsOnChromeURLsAllowed();
 
