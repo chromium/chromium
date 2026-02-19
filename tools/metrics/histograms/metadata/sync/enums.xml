@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
   <int value="100327" label="PinSplitTabButton"/>
   <int value="100328" label="GlicRolloutEligibility"/>
   <int value="100329" label="ShelfNotebookLmAppPinRolls"/>
-  <int value="100330" label="VerticalTabsEnabled"/>
+  <int value="100330" label="(obsolete, no longer synced) VerticalTabsEnabled"/>
   <int value="100331" label="SplitViewDragAndDropEnabled"/>
   <int value="100332" label="iOSEnhancedBrowsingPromoLastImpressionTimestamp"/>
   <int value="100333" label="iOSEnhancedBrowsingPromoImpressionsCounter"/>
