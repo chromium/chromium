@@ -198,7 +198,10 @@ void PressInfoButtonForCell(NSString* cellId) {
 }
 
 // Tests UI and preference value updates between multiple windows.
-- (void)testPrivacySafeBrowsingMultiWindow {
+//
+//  TODO(crbug.com/485866589): The test is failign on all iOS versions,
+//  including iOS 26. Re-enable it once fixed.
+- (void)DISABLED_testPrivacySafeBrowsingMultiWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
