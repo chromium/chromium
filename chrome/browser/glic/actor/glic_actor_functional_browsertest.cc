@@ -7,9 +7,23 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/test/bind.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 
 namespace glic::actor {
+
+ScopedMockTabObservationResult::ScopedMockTabObservationResult(
+    base::RepeatingCallback<void(TabObservation*,
+                                 const FetchPageContextResult&)> callback) {
+  ::actor::SetTabObservationResultOverrideForTesting(callback);
+}
+
+ScopedMockTabObservationResult::~ScopedMockTabObservationResult() {
+  ::actor::SetTabObservationResultOverrideForTesting(
+      base::RepeatingCallback<void(TabObservation*,
+                                   const FetchPageContextResult&)>());
+}
 
 Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
                           std::optional<tabs::TabHandle> observe_tab_handle,

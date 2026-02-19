@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/test_support/glic_functional_browsertest.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor_webui.mojom.h"
 
 namespace glic::actor {
@@ -17,10 +18,23 @@ using ::actor::TaskId;
 using ::base::test::TestFuture;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ActionsResult;
+using ::optimization_guide::proto::TabObservation;
+using ::page_content_annotations::FetchPageContextResult;
 
 MATCHER_P(HasResultCode, expected_code, "") {
   return arg.action_result() == static_cast<int32_t>(expected_code);
 }
+
+// Helper to mock the result returned on a TabObservation built using
+// actor::BuildActionsResultWithObservations. While live, use the provided
+// function to set TabObservationResults. Unset on destruction.
+class ScopedMockTabObservationResult {
+ public:
+  explicit ScopedMockTabObservationResult(
+      base::RepeatingCallback<void(TabObservation*,
+                                   const FetchPageContextResult&)> callback);
+  ~ScopedMockTabObservationResult();
+};
 
 Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
                           std::optional<tabs::TabHandle> observe_tab_handle,
