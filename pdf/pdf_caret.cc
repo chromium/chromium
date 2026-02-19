@@ -328,10 +328,16 @@ AccessibilityTextDirection PdfCaret::GetTextDirectionAfterRotationAt(
 }
 
 void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
-  int l = rect.x();
-  int t = rect.y();
-  int w = rect.width();
-  int h = rect.height();
+  gfx::Rect addressable_rect = rect;
+  // See crbug.com/483907177. `rect` is occasionally seen to be outside
+  // `region`, so clip it. Taking `row_pixels == region.stride/4` works because
+  // the bitmap format is always some form of BGRx.
+  addressable_rect.Intersect(
+      gfx::Rect(region.stride / 4, region.buffer.size() / region.stride));
+  int l = addressable_rect.x();
+  int t = addressable_rect.y();
+  int w = addressable_rect.width();
+  int h = addressable_rect.height();
   for (int y = t; y < t + h; ++y) {
     base::span<uint8_t> row =
         region.buffer.subspan(y * region.stride, region.stride);
