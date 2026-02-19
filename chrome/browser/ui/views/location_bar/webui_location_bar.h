@@ -7,18 +7,23 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
-namespace chrome {
-class BrowserCommandController;
-}  // namespace chrome
+class Browser;
+class OmniboxController;
+class PermissionDashboardController;
+class PermissionDashboardView;
 class WebUIToolbarWebView;
 
 // A LocationBar implementation using WebUI.
-class WebUILocationBar : public LocationBar {
+class WebUILocationBar : public LocationBar,
+                         public ContentSettingImageViewDelegate {
  public:
-  WebUILocationBar(chrome::BrowserCommandController* command_controller,
-                   WebUIToolbarWebView* toolbar_view);
+  WebUILocationBar(Browser* browser, LocationBarView::Delegate* delegate);
   ~WebUILocationBar() override;
+
+  void Init(WebUIToolbarWebView* toolbar_view);
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,
@@ -53,8 +58,22 @@ class WebUILocationBar : public LocationBar {
   bool HasSecurityStateChanged() override;
   LocationBarTesting* GetLocationBarForTesting() override;
 
+  // ContentSettingImageViewDelegate:
+  bool ShouldHideContentSettingImage() override;
+  content::WebContents* GetContentSettingWebContents() override;
+  ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
+      override;
+
  private:
-  const raw_ptr<WebUIToolbarWebView> toolbar_view_;
+  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
+  raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
+
+  std::unique_ptr<PermissionDashboardController>
+      permission_dashboard_controller_;
+  raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
+
+  std::unique_ptr<OmniboxController> omnibox_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_LOCATION_BAR_H_

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -706,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
                        NoRedundantNavigationOnReparenting) {
   // 1. Setup: Create the view.
   auto webui_toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      browser(), browser()->command_controller());
+      browser(), browser()->command_controller(), /*location_bar=*/nullptr);
 
   content::WebContents* web_contents =
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();

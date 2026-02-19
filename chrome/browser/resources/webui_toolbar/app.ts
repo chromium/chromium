@@ -34,6 +34,7 @@ export class ToolbarAppElement extends CrLitElement {
     return {
       isReloadButtonEnabled_: {type: Boolean},
       isSplitTabsButtonEnabled_: {type: Boolean},
+      isLocationBarEnabled_: {type: Boolean},
     };
   }
 
@@ -41,6 +42,8 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableReloadButton');
   protected accessor isSplitTabsButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableSplitTabsButton');
+  protected accessor isLocationBarEnabled_: boolean =
+      loadTimeData.getBoolean('enableLocationBar');
 
   private browserProxy_: BrowserProxy;
   private metricsRecorder_: MetricsRecorder;

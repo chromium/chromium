@@ -13,6 +13,11 @@ ${this.isReloadButtonEnabled_ ?
   html`<reload-button-app id="reload"></reload-button-app>` : ''}
 ${this.isSplitTabsButtonEnabled_ ?
   html`<split-tabs-button-app id="split-tabs"></split-tabs-button-app>` : ''}
+${this.isLocationBarEnabled_ ? html`<div id="kLocationBarElementId">
+            <div id="WebUILocationBar::kWebUIDashboardElementId"></div>
+            <div id="WebUILocationBar::kWebUILocationIconElementId"></div>
+            <div id="WebUILocationBar::kWebUIOmniboxElementId"></div>
+          </div>` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

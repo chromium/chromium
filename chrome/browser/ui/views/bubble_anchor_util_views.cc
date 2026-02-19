@@ -91,12 +91,12 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
-      browser_view->GetLocationBarView()
+  if (browser_view && browser_view->GetLocationBar()->GetChipController() &&
+      browser_view->GetLocationBar()
           ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
-    return {browser_view->GetLocationBarView(),
-            browser_view->GetLocationBarView()->GetChipController()->chip(),
+    return {browser_view->GetLocationBar()->GetAnchorOrNull(),
+            browser_view->GetLocationBar()->GetChipController()->chip(),
             views::BubbleBorder::TOP_LEFT};
   }
   return GetPageInfoAnchorConfiguration(browser);

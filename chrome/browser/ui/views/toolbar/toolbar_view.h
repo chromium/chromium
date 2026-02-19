@@ -313,6 +313,8 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<SplitTabsToolbarButton> split_tabs_ = nullptr;
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+
+  // An alias for `location_bar_view_` or `toolbar_webview_->GetLocationBar()`.
   raw_ptr<LocationBar> location_bar_ = nullptr;
   raw_ptr<ExtensionsToolbarDesktop> extensions_container_ = nullptr;
   raw_ptr<ToolbarDivider> toolbar_divider_ = nullptr;

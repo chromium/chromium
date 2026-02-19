@@ -73,6 +73,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   source->AddBoolean("enableReloadButton",
                      features::IsWebUIReloadButtonEnabled());
+  source->AddBoolean("enableLocationBar",
+                     features::IsWebUILocationBarEnabled());
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui->GetWebContents());

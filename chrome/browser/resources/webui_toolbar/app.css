@@ -18,3 +18,39 @@ reload-button-app {
   margin: 0;
   overflow: hidden;
 }
+
+/* TODO(crbug.com/474060468): This is roughly sketching the location bar
+ * structure to illustrate where things ought to go. Proper implementation
+ * would not be using hardcoded values, but likely variables derived from
+ * appropriate GetLayoutConstant() values, nor would it have garish borders
+ * everywhere. */
+#kLocationBarElementId {
+  display: flex;
+  width: 400px;
+  height: 34px;
+  border-radius: 17px;
+  border: 1px solid blue;
+  flex: 1;
+  align-items: center;
+}
+
+[id='WebUILocationBar::kWebUIDashboardElementId'] {
+  display: none;
+  border: 1px solid red;
+  height: 32px;
+  width: 40px;
+}
+
+[id='WebUILocationBar::kWebUILocationIconElementId'] {
+  border: 1px solid red;
+  height: 32px;
+  width: 24px;
+  margin: 4px;
+}
+
+[id='WebUILocationBar::kWebUIOmniboxElementId'] {
+  border: 1px solid red;
+  height: 32px;
+  flex: 1;
+}
+

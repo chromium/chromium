@@ -69,7 +69,9 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   location_bar->GetOmniboxController()->StopAutocomplete(
       /*clear_result=*/true);
   // Reset focus ring for the AIM button if it was set.
-  location_bar->GetOmniboxView()->ApplyFocusRingToAimButton(false);
+  if (auto* omnibox_view = location_bar->GetOmniboxView()) {
+    omnibox_view->ApplyFocusRingToAimButton(false);
+  }
 }
 
 }  // namespace omnibox

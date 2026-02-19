@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -121,11 +122,13 @@ END_METADATA
 
 WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
-    chrome::BrowserCommandController* controller)
+    chrome::BrowserCommandController* controller,
+    std::unique_ptr<WebUILocationBar> location_bar)
     : browser_(browser),
       controller_(controller),
       reload_control_(this),
       split_tabs_control_(this),
+      location_bar_(std::move(location_bar)),
       clock_(base::DefaultTickClock::GetInstance()) {
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
@@ -195,6 +198,11 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
   if (button_count > 0) {
     width += (button_count - 1) *
              GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  }
+
+  if (location_bar_) {
+    // TODO(http://crbug.com/470042732): Where is the 4px margin from?
+    width += 4 + location_bar_->PreferredSize().width();
   }
   return gfx::Size(width, size);
 }

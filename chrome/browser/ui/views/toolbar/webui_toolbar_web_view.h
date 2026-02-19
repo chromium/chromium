@@ -18,8 +18,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class WebUIToolbarUI;
 class BrowserWindowInterface;
+class WebUILocationBar;
+class WebUIToolbarUI;
 
 namespace views {
 class WebView;
@@ -33,13 +34,18 @@ class WebUIToolbarWebView
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
+  // `location_bar` may be null.
   WebUIToolbarWebView(BrowserWindowInterface* browser,
-                      chrome::BrowserCommandController* controller);
+                      chrome::BrowserCommandController* controller,
+                      std::unique_ptr<WebUILocationBar> location_bar);
   WebUIToolbarWebView(const WebUIToolbarWebView&) = delete;
   WebUIToolbarWebView& operator=(const WebUIToolbarWebView&) = delete;
   ~WebUIToolbarWebView() override;
 
   ReloadControl* GetReloadControl();
+
+  // May be nullptr.
+  WebUILocationBar* GetLocationBar() { return location_bar_.get(); }
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void HandleContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
@@ -103,6 +109,7 @@ class WebUIToolbarWebView
   const raw_ptr<chrome::BrowserCommandController> controller_;
   WebUIReloadControl reload_control_;
   WebUISplitTabsControl split_tabs_control_;
+  std::unique_ptr<WebUILocationBar> location_bar_;
   raw_ptr<const base::TickClock> clock_;
   base::OnceClosure did_first_non_empty_paint_callback_;
   bool has_finished_first_non_empty_paint_ = false;
