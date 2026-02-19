@@ -6425,6 +6425,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5788" label="AudioContextPlaybackStats"/>
   <int value="5789" label="ParseFromStringXML"/>
   <int value="5790" label="NonParentOriginInitiatedNavigationOfSubframe"/>
+  <int value="5791" label="ModelContextRegisterTool"/>
+  <int value="5792" label="ModelContextRegisterDeclarativeTool"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -469,6 +469,7 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
 
   tool_map_.insert(params->name(), std::move(tool_data));
   OnToolsChanged();
+  UseCounter::Count(document_, WebFeature::kModelContextRegisterTool);
   return true;
 }
 
@@ -485,6 +486,8 @@ void ModelContext::RegisterDeclarativeTool(String name,
 
   tool_map_.insert(name, std::move(tool_data));
   OnToolsChanged();
+  UseCounter::Count(document_,
+                    WebFeature::kModelContextRegisterDeclarativeTool);
 }
 
 void ModelContext::OnToolExecuted(uint32_t execution_id,

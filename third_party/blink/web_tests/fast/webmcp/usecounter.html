@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<form>
+    <input type="text" name="dummy">
+</form>
+<script>
+// Use counter IDs from web_feature.mojom
+const kModelContextRegisterTool = 5791;
+const kModelContextRegisterDeclarativeTool = 5792;
+
+test(() => {
+    assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
+    assert_false(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
+
+    navigator.modelContext.registerTool({
+        execute: () => {},
+        name: "dummy",
+        description: "dummy",
+        inputSchema: { type: "object", properties: {} },
+    });
+    assert_true(internals.isUseCounted(document, kModelContextRegisterTool));
+    assert_false(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
+
+    internals.clearUseCounter(document, kModelContextRegisterTool);
+    internals.clearUseCounter(document, kModelContextRegisterDeclarativeTool);
+
+    document.querySelector("form").setAttribute("toolname", "dummy");
+    document.querySelector("form").setAttribute("tooldescription", "dummy");
+    assert_true(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
+    assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
+});
+</script>
