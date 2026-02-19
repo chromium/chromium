@@ -26,6 +26,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -157,10 +158,23 @@ class TestContextualTasksComposeboxHandler
       mock_contextual_tasks_service_ = nullptr;
 };
 
+class MockLensQueryFlowRouter : public lens::LensQueryFlowRouter {
+ public:
+  explicit MockLensQueryFlowRouter(LensSearchController* controller)
+      : lens::LensQueryFlowRouter(controller) {}
+  MOCK_METHOD(std::optional<base::UnguessableToken>,
+              overlay_tab_context_file_token,
+              (),
+              (const, override));
+};
+
 class MockLensSearchController : public LensSearchController {
  public:
   explicit MockLensSearchController(tabs::TabInterface* tab)
-      : LensSearchController(tab) {}
+      : LensSearchController(tab) {
+    mock_router_ =
+        std::make_unique<testing::NiceMock<MockLensQueryFlowRouter>>(this);
+  }
   ~MockLensSearchController() override = default;
 
   MOCK_METHOD(void,
@@ -172,6 +186,15 @@ class MockLensSearchController : public LensSearchController {
               CloseLensSync,
               (lens::LensOverlayDismissalSource dismissal_source),
               (override));
+
+  lens::LensQueryFlowRouter* query_router() override {
+    return mock_router_.get();
+  }
+
+  MockLensQueryFlowRouter* mock_router() { return mock_router_.get(); }
+
+ private:
+  std::unique_ptr<MockLensQueryFlowRouter> mock_router_;
 };
 
 class ContextualTasksComposeboxHandlerTest
@@ -2350,4 +2373,30 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
                           callback.Get());
 
   EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       OnFileUploadStatusChanged_LensOverlayToken_Ignored) {
+  base::UnguessableToken lens_token = base::UnguessableToken::Create();
+
+  EXPECT_CALL(*mock_lens_controller_->mock_router(),
+              overlay_tab_context_file_token())
+      .WillRepeatedly(testing::Return(lens_token));
+  EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged(
+                                        testing::_, testing::_, testing::_))
+      .Times(0);
+
+  handler_->OnFileUploadStatusChanged(
+      lens_token, lens::MimeType::kUnknown,
+      contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
+
+  // Verify that for a different token, it IS called.
+  base::UnguessableToken other_token = base::UnguessableToken::Create();
+  EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged(
+                                        testing::_, testing::_, testing::_))
+      .Times(1);
+
+  handler_->OnFileUploadStatusChanged(
+      other_token, lens::MimeType::kUnknown,
+      contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
 }
