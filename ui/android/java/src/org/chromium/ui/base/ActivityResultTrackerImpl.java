@@ -55,7 +55,10 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
         }
     }
 
-    private static final String REGISTERED_ACTIVITY_RESULT_KEYS = "REGISTERED_ACTIVITY_RESULT_KEYS";
+    private static final String REGISTERED_ACTIVITY_RESULT_KEYS_KEYS =
+            "REGISTERED_ACTIVITY_RESULT_KEYS_KEYS";
+    private static final String REGISTERED_ACTIVITY_RESULT_KEYS_VALUES =
+            "REGISTERED_ACTIVITY_RESULT_KEYS_VALUES";
     private static final String REGISTERED_ACTIVITY_RESULT_CONFIGS =
             "REGISTERED_ACTIVITY_RESULT_CONFIGS";
 
@@ -129,8 +132,17 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
                 }
             }
         }
-        bundle.putSerializable(
-                REGISTERED_ACTIVITY_RESULT_KEYS, startedActivityKeysInRegistrationOrder);
+
+        // The ordered property of a LinkedHasMap can be lost on some Android version when using
+        // Bundle#getSerializable which deserializes the map to a HashMap, reason why keys and
+        // values are serialized as ArrayLists here.
+        // See http://b/31607484.
+        ArrayList<String> keysList =
+                new ArrayList<>(startedActivityKeysInRegistrationOrder.keySet());
+        ArrayList<String> valuesList =
+                new ArrayList<>(startedActivityKeysInRegistrationOrder.values());
+        bundle.putStringArrayList(REGISTERED_ACTIVITY_RESULT_KEYS_KEYS, keysList);
+        bundle.putStringArrayList(REGISTERED_ACTIVITY_RESULT_KEYS_VALUES, valuesList);
         bundle.putBundle(REGISTERED_ACTIVITY_RESULT_CONFIGS, configs);
     }
 
@@ -144,17 +156,24 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
             return;
         }
 
-        LinkedHashMap<String, String> keys =
-                (LinkedHashMap<String, String>)
-                        bundle.getSerializable(REGISTERED_ACTIVITY_RESULT_KEYS);
+        ArrayList<String> keysList =
+                bundle.getStringArrayList(REGISTERED_ACTIVITY_RESULT_KEYS_KEYS);
+        ArrayList<String> valuesList =
+                bundle.getStringArrayList(REGISTERED_ACTIVITY_RESULT_KEYS_VALUES);
         Bundle configs = bundle.getBundle(REGISTERED_ACTIVITY_RESULT_CONFIGS);
-        if (keys == null || configs == null) {
+
+        if (keysList == null
+                || valuesList == null
+                || keysList.size() != valuesList.size()
+                || configs == null) {
             return;
         }
 
-        mStartedActivityKeysToRestorationKey.putAll(keys);
+        for (int i = 0; i < keysList.size(); i++) {
+            mStartedActivityKeysToRestorationKey.put(keysList.get(i), valuesList.get(i));
+        }
 
-        for (String key : keys.keySet()) {
+        for (String key : mStartedActivityKeysToRestorationKey.keySet()) {
             if (configs.containsKey(key)) {
                 mKeysToSavedInstanceData.put(key, assumeNonNull(configs.getBundle(key)));
             }
