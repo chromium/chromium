@@ -478,8 +478,7 @@ void CrxUpdateService::OnUpdateComplete(Callback callback,
 
   UMA_HISTOGRAM_BOOLEAN("ComponentUpdater.UpdateCompleteResult",
                         error != update_client::Error::NONE);
-  UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.UpdateCompleteError", error,
-                            update_client::Error::MAX_VALUE);
+  UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.UpdateCompleteError", error);
   UMA_HISTOGRAM_LONG_TIMES_100("ComponentUpdater.UpdateCompleteTime",
                                base::TimeTicks::Now() - start_time);
 

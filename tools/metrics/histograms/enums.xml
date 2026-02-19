@@ -26621,6 +26621,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Update-check error"/>
   <int value="6" label="CRX not found"/>
   <int value="7" label="Invalid argument"/>
+  <int value="8" label="Bad CRX data callback"/>
 </enum>
 
 <enum name="UpdateClientUpdateCheckResult">

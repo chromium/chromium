@@ -9,6 +9,12 @@ namespace update_client {
 
 // Errors generated as a result of calling UpdateClient member functions.
 // These errors are not sent in pings.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with the
+// UpdateClientError UMA enum defined in
+// //tools/metrics/histograms/enums.xml.
+//
+// LINT.IfChange(UpdateClientError)
 enum class Error {
   NONE = 0,
   UPDATE_IN_PROGRESS = 1,
@@ -19,8 +25,9 @@ enum class Error {
   CRX_NOT_FOUND = 6,
   INVALID_ARGUMENT = 7,
   BAD_CRX_DATA_CALLBACK = 8,
-  MAX_VALUE,
+  kMaxValue = BAD_CRX_DATA_CALLBACK,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:UpdateClientError)
 
 // These errors are sent in pings. Add new values only to the bottom of
 // the enums below; the order must be kept stable.

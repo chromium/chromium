@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
@@ -140,9 +141,8 @@ void TranslateKitLanguagePackComponentInstallerPolicy::UpdateComponentOnDemand(
       base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
             error != update_client::Error::UPDATE_IN_PROGRESS) {
-          // TODO(crbug.com/358030919): Add UMA.
-          LOG(ERROR) << "Failed to update TranslateKit language pack:"
-                     << static_cast<int>(error);
+          base::UmaHistogramEnumeration(
+              "ComponentUpdater.TranslateKit.LanguagePack.UpdateError", error);
         }
       }));
 }

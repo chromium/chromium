@@ -112,8 +112,6 @@ UpdateService::Result ToResult(update_client::Error error) {
     case update_client::Error::INVALID_ARGUMENT:
     case update_client::Error::BAD_CRX_DATA_CALLBACK:
       return UpdateService::Result::kInvalidArgument;
-    case update_client::Error::MAX_VALUE:
-      NOTREACHED();
   }
 }
 

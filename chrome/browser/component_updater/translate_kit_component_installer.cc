@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -149,8 +150,8 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
 void TranslateKitComponentInstallerPolicy::OnImageLoaderComponentLoaded(
     std::optional<base::FilePath> mount_path) {
   if (!mount_path.has_value() || mount_path->empty()) {
-    LOG(ERROR) << "Failed to load TranslateKit component via "
-                  "ImageLoaderClient. Mount path invalid.";
+    base::UmaHistogramEnumeration("ComponentUpdater.TranslateKit.MountError",
+                                  update_client::Error::INVALID_ARGUMENT);
     return;
   }
   SetBinaryPathInPrefs(pref_service_, *mount_path);
@@ -191,8 +192,8 @@ void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand(
       base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
             error != update_client::Error::UPDATE_IN_PROGRESS) {
-          LOG(ERROR) << "Failed to uppdate TranslateKit:"
-                     << static_cast<int>(error);
+          base::UmaHistogramEnumeration(
+              "ComponentUpdater.TranslateKit.UpdateError", error);
         }
       }));
 }

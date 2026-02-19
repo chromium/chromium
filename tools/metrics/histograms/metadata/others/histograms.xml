@@ -3160,6 +3160,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ComponentUpdater.TranslateKit.LanguagePack.UpdateError"
+    enum="UpdateClientErrors" expires_after="2026-12-31">
+  <owner>paugomez@chromium.org</owner>
+  <owner>danft@chromium.org</owner>
+  <owner>mardelpi@chromium.org</owner>
+  <summary>
+    The error code for a failed on-demand update of a Translate Kit language
+    pack component. Recorded when a user action requires an on-device
+    translation for a language pair for which the language pack is not yet
+    installed.
+  </summary>
+</histogram>
+
+<histogram name="ComponentUpdater.TranslateKit.MountError"
+    enum="UpdateClientErrors" expires_after="2026-12-31">
+  <owner>paugomez@chromium.org</owner>
+  <owner>danft@chromium.org</owner>
+  <owner>mardelpi@chromium.org</owner>
+  <summary>
+    Chrome OS only. The error code for a failed mount of the Translate Kit
+    component. This is recorded when the component is installed but mounting it
+    via the ImageLoaderClient fails. Can occur as part of the component
+    installation process the first time a user needs on device translation and
+    the component is not yet installed.
+  </summary>
+</histogram>
+
+<histogram name="ComponentUpdater.TranslateKit.UpdateError"
+    enum="UpdateClientErrors" expires_after="2026-12-31">
+  <owner>paugomez@chromium.org</owner>
+  <owner>danft@chromium.org</owner>
+  <owner>mardelpi@chromium.org</owner>
+  <summary>
+    The error code for a failed on-demand update of the Translate Kit component.
+    Recorded when an on-demand update of the main TranslateKit component fails.
+    This is a one time event indirectly triggered by a user action. (not
+    periodic or on startup)
+  </summary>
+</histogram>
+
 <histogram name="ComponentUpdater.UpdateCompleteError"
     enum="UpdateClientErrors" expires_after="2026-05-31">
   <owner>sorin@chromium.org</owner>
