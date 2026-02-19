@@ -85,6 +85,7 @@ struct TestResult {
   HistoryEntry::EntryType type;
   std::string remote_icon_url_for_uma;
   VisitSource visit_source = VisitSource::SOURCE_BROWSED;
+  bool is_actor_visit = false;
 };
 
 void PrintTo(const TestResult& result, std::ostream* os) {
@@ -285,9 +286,10 @@ class BrowsingHistoryServiceTest : public ::testing::TestWithParam<bool> {
                   TestWebHistoryService* web_history) {
     for (const TestResult& entry : data) {
       if (entry.type == kLocal) {
+        VisitSource source =
+            entry.is_actor_visit ? SOURCE_ACTOR : entry.visit_source;
         local_history()->AddPage(GURL(entry.url),
-                                 OffsetToTime(entry.hour_offset),
-                                 entry.visit_source);
+                                 OffsetToTime(entry.hour_offset), source);
       } else if (entry.type == kRemote) {
         web_history->AddSyncedVisit(entry.url, OffsetToTime(entry.hour_offset),
                                     entry.remote_icon_url_for_uma);
@@ -1189,6 +1191,34 @@ TEST_P(BrowsingHistoryServiceTest, GroupSimilarVisits) {
                              {"http://www.b.com/1", 3, kLocal},
                              {"http://www.a.com/3", 1, kLocal},
                          }));
+}
+
+TEST_P(BrowsingHistoryServiceTest, ShouldQueryActorVisitsOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      history::kBrowsingHistoryActorIntegrationM3);
+
+  AddHistory({{kUrl1, 1, kRemote, ""},
+              {kUrl2, 2, kLocal, "", VisitSource::SOURCE_BROWSED,
+               true /*is_actor_visit*/}});
+
+  QueryOptions options;
+  options.include_user_visits = false;
+  options.include_actor_visits = true;
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistory(options);
+
+  ASSERT_EQ(1u, result.first.size());
+
+  EXPECT_EQ(GURL(kUrl2), result.first[0].url);
+  EXPECT_TRUE(result.first[0].is_actor_visit);
+
+  for (const auto& entry : result.first) {
+    EXPECT_NE(entry.entry_type, HistoryEntry::REMOTE_ENTRY);
+    EXPECT_NE(entry.entry_type, HistoryEntry::COMBINED_ENTRY);
+  }
+
+  EXPECT_FALSE(result.second.sync_timed_out);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -388,6 +388,24 @@ TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
   RunQueryHistory("test");
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      history::kBrowsingHistoryActorIntegrationM3);
+
+  EXPECT_CALL(
+      *handler()->mock_service(),
+      QueryHistory(
+          testing::Eq(u"query"),
+          testing::Field(&history::QueryOptions::include_user_visits, false)))
+      .Times(1);
+
+  handler()->QueryHistory("query", 150, std::nullopt, /*user=*/false,
+                          /*actor=*/true, base::DoNothing());
+}
+#endif
+
 class BrowsingHistoryHandlerHistorySyncPromoTest
     : public BrowsingHistoryHandlerTest,
       public testing::WithParamInterface<bool> {

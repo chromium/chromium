@@ -503,6 +503,14 @@ bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
     return false;
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Actor visits are local-only and user visits should not be queried.
+  if (history::IsBrowsingHistoryActorIntegrationM3Enabled() &&
+      !state.original_options.include_user_visits) {
+    return false;
+  }
+#endif
+
   const size_t desired_count =
       static_cast<size_t>(state.original_options.EffectiveMaxCount());
   if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
