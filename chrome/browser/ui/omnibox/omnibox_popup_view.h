@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 
 class OmniboxController;
-class OmniboxPopupViewWebUI;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
 namespace ui {
@@ -56,8 +55,6 @@ class OmniboxPopupView {
   // unit test and it would be better to eliminate it than to increase usage.
   virtual std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const;
-
-  virtual raw_ptr<OmniboxPopupViewWebUI> GetOmniboxPopupViewWebUI() = 0;
 
  protected:
   friend class OmniboxResultView;

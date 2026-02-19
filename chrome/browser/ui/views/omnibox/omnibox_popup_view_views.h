@@ -26,7 +26,6 @@
 class LocationBarView;
 class OmniboxController;
 class OmniboxHeaderView;
-class OmniboxPopupViewWebUI;
 class OmniboxResultView;
 class OmniboxRowGroupedView;
 class OmniboxRowView;
@@ -74,7 +73,6 @@ class OmniboxPopupViewViews : public views::View,
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
   std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const override;
-  raw_ptr<OmniboxPopupViewWebUI> GetOmniboxPopupViewWebUI() override;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
