@@ -288,6 +288,7 @@ const char kEnhancedSafeBrowsing[] = "EnhancedSafeBrowsing";
 const char kQuickDelete[] = "QuickDelete";
 const char kGoogleLens[] = "GoogleLens";
 const char kBottomOmnibox[] = "BottomOmnibox";
+const char kPasswordAutofill[] = "PasswordAutofill";
 
 // Input Context keys for tips notifications ranker.
 const char kEnhancedSafeBrowsingStatus[] = "enhanced_safe_browsing_status";
@@ -298,6 +299,7 @@ const char kEnhancedSafeBrowsingTipShown[] = "enhanced_safe_browsing_tip_shown";
 const char kQuickDeleteTipShown[] = "quick_delete_tip_shown";
 const char kGoogleLensTipShown[] = "google_lens_tip_shown";
 const char kBottomOmniboxTipShown[] = "bottom_omnibox_tip_shown";
+const char kPasswordAutofillTipShown[] = "password_autofill_tip_shown";
 
 }  // namespace segmentation_platform
 

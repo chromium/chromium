@@ -36,11 +36,13 @@ NewTabPage.TimeSpent
 Notifications.Scheduler.NotificationLifeCycleEvent.Tips
 Omnibox.SuggestionUsed.ClientSummarizedResultType
 Omnibox.SuggestionUsed.SearchVsUrl
+PasswordManager.AccountStore.TotalAccountsHiRes3.ByType.Overall
 PasswordManager.AccountStore.TotalAccountsHiRes3.ByType.Overall.
 PasswordManager.BulkCheck.UserAction
 PasswordManager.FillingAssistance
 PasswordManager.FillingSource
 PasswordManager.ManagePasswordsReferrer
+PasswordManager.ProfileStore.TotalAccountsHiRes3.ByType.Overall
 PasswordManager.ProfileStore.TotalAccountsHiRes3.ByType.Overall.
 PasswordManager.ProfileStore.TotalAccountsHiRes3.WithScheme.Https
 PasswordManager.SaveUIDismissalReason

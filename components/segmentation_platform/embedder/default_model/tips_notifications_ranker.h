@@ -22,6 +22,7 @@ class TipsNotificationsRanker : public DefaultModelProvider {
     kQuickDeleteTipIdx,
     kGoogleLensTipIdx,
     kBottomOmniboxTipIdx,
+    kPasswordAutofillTipIdx,
     kLabelCount
   };
 
@@ -41,6 +42,9 @@ class TipsNotificationsRanker : public DefaultModelProvider {
     kQuickDeleteTipShownIdx,
     kGoogleLensTipShownIdx,
     kBottomOmniboxTipShownIdx,
+    kPasswordAutofillAccountPasswordsCountIdx,
+    kPasswordAutofillLocalPasswordsCountIdx,
+    kPasswordAutofillTipShownIdx,
     kFeatureCount
   };
 

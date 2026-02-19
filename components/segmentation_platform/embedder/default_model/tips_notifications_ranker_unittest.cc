@@ -185,4 +185,42 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
   ExpectClassifierResults(input6, {kBottomOmnibox});
 }
 
+TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForV2Features) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Assume the Essential arm as the default one.
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kAndroidTipsNotifications,
+        {{
+            {"essential", "true"},
+        }}},
+       {features::kAndroidTipsNotificationsV2, {}}},
+      /*disabled_features=*/{});
+
+  ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
+
+  EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
+
+  // Test PasswordAutofill with all features not being used.
+  std::vector<float> input1(TipsFeature::kFeatureCount, 0);
+  ExpectClassifierResults(input1, {kPasswordAutofill});
+
+  // Test QuickDelete from V1 with password autofill being used.
+  std::vector<float> input2(TipsFeature::kFeatureCount, 0);
+  input2[TipsFeature::kPasswordAutofillAccountPasswordsCountIdx] = 1;
+  input2[TipsFeature::kPasswordAutofillLocalPasswordsCountIdx] = 1;
+  ExpectClassifierResults(input2, {kQuickDelete});
+
+  // Test AllFeatureTipsShownCount blocks scheduling notifications.
+  std::vector<float> input3(TipsFeature::kFeatureCount, 0);
+  input3[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
+  ExpectClassifierResults(input3, {});
+
+  // Test TipShown blocks scheduling PasswordAutofill as first eligible.
+  std::vector<float> input4(TipsFeature::kFeatureCount, 0);
+  input4[TipsFeature::kPasswordAutofillTipShownIdx] = 1;
+  ExpectClassifierResults(input4, {kQuickDelete});
+}
+
 }  // namespace segmentation_platform

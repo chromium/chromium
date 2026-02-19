@@ -42,6 +42,8 @@ notifications::TipsNotificationsFeatureType GetFeatureType(
     return notifications::TipsNotificationsFeatureType::kGoogleLens;
   } else if (label == segmentation_platform::kBottomOmnibox) {
     return notifications::TipsNotificationsFeatureType::kBottomOmnibox;
+  } else if (label == segmentation_platform::kPasswordAutofill) {
+    return notifications::TipsNotificationsFeatureType::kPasswordAutofill;
   } else {
     NOTREACHED();
   }
@@ -169,6 +171,13 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
       segmentation_platform::kBottomOmniboxTipShown,
       segmentation_platform::processing::ProcessedValue(
           bottom_omnibox_tip_shown));
+
+  bool password_autofill_tip_shown = pref_service->GetBoolean(
+      prefs::kAndroidTipNotificationShownPasswordAutofill);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kPasswordAutofillTipShown,
+      segmentation_platform::processing::ProcessedValue(
+          password_autofill_tip_shown));
 
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
