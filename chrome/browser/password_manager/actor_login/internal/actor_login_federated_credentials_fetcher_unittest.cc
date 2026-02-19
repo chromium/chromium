@@ -37,6 +37,10 @@ class MockIdentityCredentialSource
               (const std::vector<GURL>&,
                GetIdentityCredentialSuggestionsCallback),
               (override));
+  MOCK_METHOD(bool,
+              SelectAccount,
+              (const url::Origin&, const std::string&),
+              (override));
 };
 
 scoped_refptr<content::IdentityRequestAccount> CreateTestIdentityRequestAccount(

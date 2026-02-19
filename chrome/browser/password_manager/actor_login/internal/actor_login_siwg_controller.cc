@@ -63,6 +63,7 @@ ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 void ActorLoginSiwgController::StartFederatedLogin(
     const Credential& credential) {
   CHECK(credential.federation_detail);
+
   FederatedActorLoginRequest::Set(
       web_contents(), credential.federation_detail->idp_origin,
       credential.federation_detail->account_id,
@@ -70,7 +71,14 @@ void ActorLoginSiwgController::StartFederatedLogin(
           &ActorLoginSiwgController::OnFederatedLoginResultReceived,
           weak_ptr_factory_.GetWeakPtr()));
 
-  ClickSiwgButton();
+  // There may be an existing FedCM dialog; if so, select an account in that
+  // dialog instead of clicking the signin button.
+  auto* source = content::webid::IdentityCredentialSource::FromPage(
+      web_contents()->GetPrimaryPage());
+  if (!source->SelectAccount(credential.federation_detail->idp_origin,
+                             credential.federation_detail->account_id)) {
+    ClickSiwgButton();
+  }
 }
 
 void ActorLoginSiwgController::ClickSiwgButton() {

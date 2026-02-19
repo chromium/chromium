@@ -6,6 +6,8 @@
 
 #include "base/functional/callback.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/request_page_data.h"
+#include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page.h"
@@ -35,6 +37,33 @@ void IdentityCredentialSourceImpl::GetIdentityCredentialSuggestions(
   metrics_.reset();
 
   callback_ = std::move(callback);
+
+  // TODO(crbug.com/485628241): should we check that embedder_requested_idps is
+  // the same as the currently requested IDPs?
+  RequestPageData* page_data = GetPageData(render_frame_host().GetPage());
+  // Note that the pending FedCM request may come from an iframe. For now, we
+  // assume these will login the user to the top-level page, and return these
+  // options.
+  if (page_data && page_data->PendingWebIdentityRequest()) {
+    RequestService* request_service = page_data->PendingWebIdentityRequest();
+    // These are the accounts that would be displayed in the UI, so filters such
+    // as login hint have been applied already.
+    const std::vector<IdentityRequestAccountPtr>& request_accounts =
+        request_service->GetAccounts();
+    std::vector<IdentityRequestAccountPtr> signin_accounts;
+    for (const auto& account : request_accounts) {
+      if (account->idp_claimed_login_state.value_or(
+              account->browser_trusted_login_state) ==
+          IdentityRequestAccount::LoginState::kSignIn) {
+        signin_accounts.push_back(account);
+      }
+    }
+
+    if (!signin_accounts.empty()) {
+      std::move(callback_).Run(signin_accounts);
+      return;
+    }
+  }
 
   std::vector<ConfigFetcher::FetchRequest> fetch_requests;
   base::flat_map<GURL, AccountsFetcher::IdentityProviderGetInfo>
@@ -94,6 +123,35 @@ void IdentityCredentialSourceImpl::GetIdentityCredentialSuggestions(
       fetch_requests, token_request_get_infos, metrics_.get(),
       render_frame_host().GetLastCommittedOrigin(),
       /*filter_accounts_callback=*/base::DoNothing());
+}
+
+bool IdentityCredentialSourceImpl::SelectAccount(
+    const url::Origin& idp_origin,
+    const std::string& account_id) {
+  RequestPageData* page_data = GetPageData(render_frame_host().GetPage());
+  if (!page_data) {
+    return false;
+  }
+  RequestService* request_service = page_data->PendingWebIdentityRequest();
+  if (!request_service) {
+    return false;
+  }
+  const auto& accounts = request_service->GetAccounts();
+  for (const auto& account : accounts) {
+    const GURL& idp_config_url =
+        account->identity_provider->idp_metadata.config_url;
+    if (account->id == account_id &&
+        idp_origin == url::Origin::Create(idp_config_url)) {
+      CHECK_EQ(account->idp_claimed_login_state.value_or(
+                   account->browser_trusted_login_state),
+               IdentityRequestAccount::LoginState::kSignIn);
+      request_service->OnAccountSelected(idp_config_url, account->id,
+                                         /*is_sign_in=*/true);
+      return true;
+    }
+  }
+  // Account not found
+  return false;
 }
 
 void IdentityCredentialSourceImpl::SetNetworkManagerForTests(

@@ -33,6 +33,7 @@
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -832,7 +833,7 @@ class TestDialogController
 
   AccountsDialogAction accounts_dialog_action_{AccountsDialogAction::kNone};
 
- private:
+ protected:
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action_{
       IdpSigninStatusMismatchDialogAction::kNone};
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
@@ -8508,6 +8509,160 @@ TEST_F(RequestServiceTest, SuppressedBySegmentationPlatformButMultipleIdps) {
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", true, 1);
   ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
+}
+
+class TestDialogControllerWithIdentityCredentialSource
+    : public TestDialogController {
+ public:
+  enum class SelectionMode {
+    kValid,
+    kInvalidAccountId,
+    kInvalidOrigin,
+  };
+
+  explicit TestDialogControllerWithIdentityCredentialSource(
+      MockConfiguration configuration,
+      WebContents* web_contents,
+      SelectionMode selection_mode = SelectionMode::kValid)
+      : TestDialogController(configuration),
+        web_contents_(web_contents),
+        selection_mode_(selection_mode) {}
+
+  ~TestDialogControllerWithIdentityCredentialSource() override = default;
+
+  TestDialogControllerWithIdentityCredentialSource(
+      const TestDialogControllerWithIdentityCredentialSource&) = delete;
+  TestDialogControllerWithIdentityCredentialSource& operator=(
+      TestDialogControllerWithIdentityCredentialSource&) = delete;
+
+  bool ShowAccountsDialog(
+      content::RelyingPartyData rp_data,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      blink::mojom::RpMode rp_mode,
+      IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::LoginToIdPCallback on_add_account,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
+    state_->all_accounts_for_display = accounts;
+    IdentityCredentialSource* source =
+        IdentityCredentialSource::FromPage(web_contents_->GetPrimaryPage());
+    // Check that we can get the correct account list, immediately.
+    source->GetIdentityCredentialSuggestions(
+        {GURL(kProviderUrlFull)},
+        base::BindOnce(
+            [](const std::vector<IdentityRequestAccountPtr>& all_accounts,
+               const std::optional<
+                   std::vector<scoped_refptr<content::IdentityRequestAccount>>>&
+                   actual_accounts) {
+              ASSERT_TRUE(actual_accounts.has_value());
+              std::vector<IdentityRequestAccountPtr> expected_signin_accounts;
+              for (const auto& account : all_accounts) {
+                if (account->idp_claimed_login_state.value_or(
+                        account->browser_trusted_login_state) ==
+                    LoginState::kSignIn) {
+                  expected_signin_accounts.push_back(account);
+                }
+              }
+              EXPECT_EQ(expected_signin_accounts.size(),
+                        actual_accounts->size());
+              for (size_t i = 0; i < expected_signin_accounts.size(); ++i) {
+                EXPECT_EQ(expected_signin_accounts[i]->id,
+                          (*actual_accounts)[i]->id);
+              }
+            },
+            accounts));
+    // Now, check that selecting the account works. Find the first sign-in
+    // account.
+    std::string signin_account_id;
+    for (const auto& account : accounts) {
+      if (account->idp_claimed_login_state.value_or(
+              account->browser_trusted_login_state) == LoginState::kSignIn) {
+        signin_account_id = account->id;
+        break;
+      }
+    }
+
+    url::Origin origin = url::Origin::Create(GURL(kProviderUrlFull));
+    if (selection_mode_ == SelectionMode::kInvalidAccountId) {
+      signin_account_id = "invalid_account_id";
+    } else if (selection_mode_ == SelectionMode::kInvalidOrigin) {
+      origin = url::Origin::Create(GURL("https://invalid.example"));
+    }
+
+    if (!signin_account_id.empty() &&
+        source->SelectAccount(origin, signin_account_id)) {
+      // No need to call a callback here; SelectAccount took care of that.
+      return false;
+    }
+    // Something went wrong, dismiss dialog.
+    std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
+  }
+
+ private:
+  raw_ptr<WebContents> web_contents_;
+  SelectionMode selection_mode_;
+};
+
+TEST_F(
+    RequestServiceTest,
+    IdentityCredentialSourceReturnsReturningAccountsAndResolvesFedCmRequest) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  SetDialogController(
+      std::make_unique<TestDialogControllerWithIdentityCredentialSource>(
+          configuration, web_contents()));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+
+  // Check that GetIdentityCredentialSuggestions did not fetch new accounts.
+  EXPECT_EQ(1u, NumFetched(FetchedEndpoint::ACCOUNTS));
+  EXPECT_EQ(1u, NumFetched(FetchedEndpoint::TOKEN));
+}
+
+TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidAccountId) {
+  RenderFrameHostTester::For(main_rfh())->ClearConsoleMessages();
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  SetDialogController(
+      std::make_unique<TestDialogControllerWithIdentityCredentialSource>(
+          configuration, web_contents(),
+          TestDialogControllerWithIdentityCredentialSource::SelectionMode::
+              kInvalidAccountId));
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidOrigin) {
+  RenderFrameHostTester::For(main_rfh())->ClearConsoleMessages();
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  SetDialogController(
+      std::make_unique<TestDialogControllerWithIdentityCredentialSource>(
+          configuration, web_contents(),
+          TestDialogControllerWithIdentityCredentialSource::SelectionMode::
+              kInvalidOrigin));
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
 }  // namespace content::webid

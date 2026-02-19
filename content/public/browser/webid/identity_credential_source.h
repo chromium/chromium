@@ -8,11 +8,16 @@
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "url/gurl.h"
 
 namespace content {
 class Page;
 }
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content::webid {
 
@@ -45,6 +50,11 @@ class CONTENT_EXPORT IdentityCredentialSource {
   virtual void GetIdentityCredentialSuggestions(
       const std::vector<GURL>& embedder_requested_idps,
       GetIdentityCredentialSuggestionsCallback callback) = 0;
+
+  // Selects the account with the given `account_id` from `idp_origin`.
+  // Returns false if such an account is not found or there is no dialog.
+  virtual bool SelectAccount(const url::Origin& idp_origin,
+                             const std::string& account_id) = 0;
 
   // Returns the a data source for embedder initiated login.
   static IdentityCredentialSource* FromPage(content::Page& page);
