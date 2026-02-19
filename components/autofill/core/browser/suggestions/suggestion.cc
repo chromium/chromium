@@ -302,6 +302,23 @@ Suggestion::IdentityCredentialPayload::operator=(IdentityCredentialPayload&&) =
 
 Suggestion::IdentityCredentialPayload::~IdentityCredentialPayload() = default;
 
+Suggestion::AtMemoryPayload::AtMemoryPayload() = default;
+
+Suggestion::AtMemoryPayload::AtMemoryPayload(std::u16string value)
+    : value(std::move(value)) {}
+
+Suggestion::AtMemoryPayload::AtMemoryPayload(const AtMemoryPayload&) = default;
+
+Suggestion::AtMemoryPayload::AtMemoryPayload(AtMemoryPayload&&) = default;
+
+Suggestion::AtMemoryPayload& Suggestion::AtMemoryPayload::operator=(
+    const AtMemoryPayload&) = default;
+
+Suggestion::AtMemoryPayload& Suggestion::AtMemoryPayload::operator=(
+    AtMemoryPayload&&) = default;
+
+Suggestion::AtMemoryPayload::~AtMemoryPayload() = default;
+
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(

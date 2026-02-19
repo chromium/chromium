@@ -192,6 +192,22 @@ struct Suggestion {
     std::map<FieldType, std::u16string> fields;
   };
 
+  struct AtMemoryPayload final {
+    AtMemoryPayload();
+    explicit AtMemoryPayload(std::u16string value);
+    AtMemoryPayload(const AtMemoryPayload&);
+    AtMemoryPayload(AtMemoryPayload&&);
+    AtMemoryPayload& operator=(const AtMemoryPayload&);
+    AtMemoryPayload& operator=(AtMemoryPayload&&);
+    ~AtMemoryPayload();
+
+    friend bool operator==(const AtMemoryPayload&,
+                           const AtMemoryPayload&) = default;
+
+    // Text to fill in the trigger field upon accepting the suggestion.
+    std::u16string value;
+  };
+
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using BnplIssuer = base::StrongAlias<class BnplIssuerTag, BnplIssuer>;
@@ -205,7 +221,8 @@ struct Suggestion {
                                PaymentsPayload,
                                IdentityCredentialPayload,
                                AutocompleteEntry,
-                               BnplIssuer>;
+                               BnplIssuer,
+                               AtMemoryPayload>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -454,6 +471,8 @@ struct Suggestion {
       case SuggestionType::kBnplEntry:
         return std::holds_alternative<PaymentsPayload>(payload) ||
                std::holds_alternative<BnplIssuer>(payload);
+      case SuggestionType::kAtMemorySearchResult:
+        return std::holds_alternative<AtMemoryPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
         return std::holds_alternative<Guid>(payload) ||
