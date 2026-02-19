@@ -60,6 +60,12 @@
 - (void)webViewScrollViewDidScroll:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   if (!web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+    // When the broadcaster is disabled, the model's top inset must be manually
+    // updated to ensure that it correctly identifies the top of the page when
+    // calculating overscroll and scroll boundaries.
+    self.model->SetTopContentInset(webViewScrollViewProxy.contentInset.top);
+    self.model->SetContentHeight(webViewScrollViewProxy.contentSize.height);
+    self.model->SetScrollViewHeight(webViewScrollViewProxy.frame.size.height);
     self.model->SetYContentOffset(webViewScrollViewProxy.contentOffset.y);
   }
 }
@@ -67,6 +73,11 @@
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   if (!web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+    // Manually relay dimensions on drag start to ensure the model has
+    // up-to-date state before processing the scroll.
+    self.model->SetTopContentInset(webViewScrollViewProxy.contentInset.top);
+    self.model->SetContentHeight(webViewScrollViewProxy.contentSize.height);
+    self.model->SetScrollViewHeight(webViewScrollViewProxy.frame.size.height);
     self.model->SetYContentOffset(webViewScrollViewProxy.contentOffset.y);
     self.model->SetScrollViewIsScrolling(true);
     self.model->SetScrollViewIsDragging(true);

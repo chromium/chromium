@@ -313,22 +313,21 @@ static int gAnyContext = 0;
 #pragma mark -
 
 + (NSArray*)scrollViewObserverKeyPaths {
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    return @[ @"frame", @"contentSize", @"contentInset" ];
-  } else {
-    return @[ @"contentSize" ];
-  }
+  CHECK(web::features::ShouldUseBroadcasterForSmoothScrolling());
+  return @[ @"frame", @"contentSize", @"contentInset" ];
 }
 
 + (void)startObservingScrollView:(UIScrollView*)scrollView
                            proxy:(CRWWebViewScrollViewProxy*)proxy {
   // Add observations by `proxy`.
-  for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
-    [scrollView
-        addObserver:proxy
-         forKeyPath:keyPath
-            options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-            context:nil];
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+    for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
+      [scrollView addObserver:proxy
+                   forKeyPath:keyPath
+                      options:NSKeyValueObservingOptionNew |
+                              NSKeyValueObservingOptionOld
+                      context:nil];
+    }
   }
 
   // Restore observers which were added to the past underlying scroll views.
@@ -351,8 +350,10 @@ static int gAnyContext = 0;
 + (void)stopObservingScrollView:(UIScrollView*)scrollView
                           proxy:(CRWWebViewScrollViewProxy*)proxy {
   // Remove observations by `self`.
-  for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
-    [scrollView removeObserver:proxy forKeyPath:keyPath];
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+    for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
+      [scrollView removeObserver:proxy forKeyPath:keyPath];
+    }
   }
 
   // Remove observations added externally.
@@ -376,26 +377,15 @@ static int gAnyContext = 0;
                         change:(NSDictionary*)change
                        context:(void*)context {
   DCHECK_EQ(object, self.underlyingScrollView);
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    if ([keyPath isEqualToString:@"frame"]) {
-      [_observers webViewScrollViewFrameDidChange:self];
-    }
-    if ([keyPath isEqualToString:@"contentInset"]) {
-      [_observers webViewScrollViewDidResetContentInset:self];
-    }
+  CHECK(web::features::ShouldUseBroadcasterForSmoothScrolling());
+
+  if ([keyPath isEqualToString:@"frame"]) {
+    [_observers webViewScrollViewFrameDidChange:self];
+  }
+  if ([keyPath isEqualToString:@"contentInset"]) {
+    [_observers webViewScrollViewDidResetContentInset:self];
   }
   if ([keyPath isEqualToString:@"contentSize"]) {
-    if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-      NSValue* oldValue =
-          base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
-      NSValue* newValue =
-          base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeNewKey]);
-      // If the value is unchanged -- if the old and new values are equal --
-      // then return without notifying observers.
-      if (oldValue && newValue && [newValue isEqualToValue:oldValue]) {
-        return;
-      }
-    }
     [_observers webViewScrollViewDidResetContentSize:self];
   }
 }
