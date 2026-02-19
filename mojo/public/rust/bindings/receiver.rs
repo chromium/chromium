@@ -70,11 +70,22 @@ impl<T> PendingReceiver<T>
 where
     T: DynMojomInterface + ?Sized,
 {
-    /// Create a new PendingReceiver from a raw pipe endpoint
-    // This function isn't `pub` because users should always get their
-    // `PendingReceiver`s from API functions, or by `unbind`ing a `Receiver`.
-    pub(crate) fn new(endpoint: MessageEndpoint) -> Self {
+    /// Create a new PendingReceiver from a raw pipe endpoint.
+    ///
+    /// If you want to create a new remote/receiver pair, use
+    /// `PendingRemote::new_pipe` instead. This function is mostly useful
+    /// for creating a new `Receiver` from an endpoint received via mojo or FFI.
+    ///
+    /// Note that the caller is responsible for ensuring that `Self` has the
+    /// same instantiation of `T` as the other endpoint, or else incoming
+    /// messages will be incomprehensible.
+    pub fn new(endpoint: MessageEndpoint) -> Self {
         Self { endpoint, _phantom: PhantomData }
+    }
+
+    /// Consume this PendingReceiver and return the underlying endpoint.
+    pub fn into_endpoint(self) -> MessageEndpoint {
+        self.endpoint
     }
 
     /// Bind this `PendingReceiver` to the provided state object and the
