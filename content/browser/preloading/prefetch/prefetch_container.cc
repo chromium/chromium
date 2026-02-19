@@ -939,14 +939,11 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 }
 
 bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
-  return request().referring_origin().has_value() &&
-         !net::SchemefulSite::IsSameSite(request().referring_origin().value(),
-                                         origin);
+  return request().IsCrossSiteRequest(origin);
 }
 
 bool PrefetchContainer::IsCrossOriginRequest(const url::Origin& origin) const {
-  return request().referring_origin().has_value() &&
-         !request().referring_origin().value().IsSameOriginWith(origin);
+  return request().IsCrossOriginRequest(origin);
 }
 
 void PrefetchContainer::MarkCrossSiteContaminated() {
@@ -1545,8 +1542,7 @@ PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
 }
 
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
-  return IsCrossOriginRequest(url::Origin::Create(url)) &&
-         request().prefetch_type().IsProxyRequiredWhenCrossOrigin();
+  return request().IsProxyRequiredForURL(url);
 }
 
 void PrefetchContainer::MakeInitialResourceRequest() {

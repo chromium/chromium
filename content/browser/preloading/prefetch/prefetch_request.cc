@@ -235,4 +235,19 @@ const PrefetchBrowserInitiatorInfo* PrefetchRequest::GetBrowserInitiatorInfo()
   return std::get_if<PrefetchBrowserInitiatorInfo>(&initiator_info_);
 }
 
+bool PrefetchRequest::IsProxyRequiredForURL(const GURL& url) const {
+  return IsCrossOriginRequest(url::Origin::Create(url)) &&
+         prefetch_type().IsProxyRequiredWhenCrossOrigin();
+}
+
+bool PrefetchRequest::IsCrossSiteRequest(const url::Origin& origin) const {
+  return referring_origin().has_value() &&
+         !net::SchemefulSite::IsSameSite(referring_origin().value(), origin);
+}
+
+bool PrefetchRequest::IsCrossOriginRequest(const url::Origin& origin) const {
+  return referring_origin().has_value() &&
+         !referring_origin().value().IsSameOriginWith(origin);
+}
+
 }  // namespace content

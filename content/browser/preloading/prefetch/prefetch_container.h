@@ -289,7 +289,7 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
 
   // Whether or not the prefetch proxy would be required to fetch the given url
-  // based on |prefetch_type_|.
+  // based on `prefetch_type_`.
   bool IsProxyRequiredForURL(const GURL& url) const;
 
   // Creates the initial resource request based on `PrefetchRequest`.
