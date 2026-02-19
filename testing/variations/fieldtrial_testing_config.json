@@ -13671,9 +13671,7 @@
     "HttpCacheNoVarySearch": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia"
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -13685,36 +13683,12 @@
                         "DsePreload2",
                         "PrefetchPrerenderIntegration"
                     ]
-                },
-                {
-                    "name": "Enabled_NVS_Omnibox_Prefetch",
-                    "enable_features": [
-                        "HttpCacheNoVarySearch",
-                        "SearchPrefetchWithNoVarySearchDiskCache"
-                    ],
-                    "disable_features": [
-                        "DsePreload2",
-                        "PrefetchPrerenderIntegration"
-                    ]
-                },
-                {
-                    "name": "Enabled_DsePreload2",
-                    "params": {
-                        "kDsePreload2UsePreloadServingMetrics": "true"
-                    },
-                    "enable_features": [
-                        "DsePreload2",
-                        "HttpCacheNoVarySearch",
-                        "PrefetchPrerenderIntegration"
-                    ],
-                    "disable_features": [
-                        "SearchPrefetchWithNoVarySearchDiskCache"
-                    ]
                 }
             ]
         },
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",

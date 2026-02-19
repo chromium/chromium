@@ -320,4 +320,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // As WebSettings.setAllowContentAccess() allows this to be controlled by
   // the WebView's host, we keep the old behavior for content:// URLs.
   aw_feature_overrides.DisableFeature(blink::features::kContentSchemeIsLocal);
+
+  // Disable No-Vary-Search in disk cache on WebView.
+  // See https://crbug.com/382394774.
+  aw_feature_overrides.DisableFeature(net::features::kHttpCacheNoVarySearch);
 }
