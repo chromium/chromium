@@ -25,7 +25,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "hmac-sha256"
   cargo_pkg_description = "A small, self-contained SHA256, HMAC-SHA256, and HKDF-SHA256 implementation"
   cargo_pkg_repository = "https://github.com/jedisct1/rust-hmac-sha256"
-  cargo_pkg_version = "1.1.13"
+  cargo_pkg_version = "1.1.14"
 
   allow_unsafe = true
 
