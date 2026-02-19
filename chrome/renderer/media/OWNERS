@@ -3,3 +3,6 @@ tommi@chromium.org
 
 # ChromeSpeechRecognitionClient
 per-file chrome_speech_recognition_client*=evliu@google.com
+
+# EME changes
+per-file chrome_key_system*=file://media/cdm/OWNERS

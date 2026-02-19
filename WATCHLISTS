@@ -1213,7 +1213,7 @@
       'filepath': 'chrome/renderer/media/.*key_system|' \
                   'chrome/browser/media/.*(cdm|encrypted)|' \
                   'components/cdm/|' \
-                  'content/browser/media/.*(cdm|key_system|media_license|encrypted)|' \
+                  'content/browser/media/.*(cdm|key_system|encrypted)|' \
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
                   'media/mojo/services/.*(cdm|drm|media_foundation)|' \

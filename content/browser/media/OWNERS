@@ -11,3 +11,5 @@ per-file midi_*=mjwilson@chromium.org
 per-file active_media_session_controller*=file://services/media_session/OWNERS
 per-file media_internals_audio_focus_helper*=file://services/media_session/OWNERS
 per-file media_keys_listener_manager*=file://services/media_session/OWNERS
+
+per-file *cdm*, key_system*, encrypted*=file://media/cdm/OWNERS
