@@ -8,6 +8,7 @@
 
 #include "base/byte_size.h"
 #include "base/callback_list.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -60,6 +61,10 @@ DEFINE_USER_DATA(TabUIHelper);
 TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
     : ContentsObservingTabFeature(tab_interface),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+  // Register for tab pin state change because pin state affects whether the
+  // favicon should show or not.
+  pin_tab_subscription_ = tab().RegisterPinnedStateChanged(base::BindRepeating(
+      &TabUIHelper::OnTabPinnedStatusChange, base::Unretained(this)));
 }
 
 TabUIHelper::~TabUIHelper() = default;
@@ -255,6 +260,15 @@ void TabUIHelper::PrimaryPageChanged(content::Page& page) {
 }
 #endif
 
+void TabUIHelper::SetNeedsAttention(bool needs_attention) {
+  if (needs_attention == needs_attention_) {
+    return;
+  }
+
+  needs_attention_ = needs_attention;
+  tab_ui_change_callbacks_.Notify();
+}
+
 bool TabUIHelper::ShouldShowDiscardStatus() {
   content::WebContents* const web_contents = tab().GetContents();
   std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
@@ -278,4 +292,10 @@ std::optional<base::ByteSize> TabUIHelper::GetDiscardedMemorySavings() {
              ? std::make_optional(
                    memory_saver::GetDiscardedMemorySavings(web_contents))
              : std::nullopt;
+}
+
+void TabUIHelper::OnTabPinnedStatusChange(tabs::TabInterface* tab_interface,
+                                          bool new_pinned_state) {
+  CHECK_EQ(&tab(), tab_interface);
+  tab_ui_change_callbacks_.Notify();
 }

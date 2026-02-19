@@ -1245,8 +1245,8 @@ void TabStripModel::UpdateWebContentsStateAt(int index,
 }
 
 void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
-  tabs::TabInterface* tab = GetTabAtIndex(index);
-  TabUIHelper::From(tab)->set_needs_attention(attention);
+  tabs::TabInterface* const tab = GetTabAtIndex(index);
+  TabUIHelper::From(tab)->SetNeedsAttention(attention);
 
   for (auto& observer : observers_) {
     observer.OnTabChangedAt(tab, index, TabChangeType::kAttentionOnly);
