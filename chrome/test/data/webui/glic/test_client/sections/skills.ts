@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {SkillPreview, SkillSource} from '/glic/glic_api/glic_api.js';
+import type {Skill, SkillPreview, SkillSource} from '/glic/glic_api/glic_api.js';
 
 import {client, getBrowser, logMessage} from '../client.js';
 import {$} from '../page_element_types.js';
@@ -97,4 +97,31 @@ function initSkillPreviews() {
   }
 }
 
-client.getInitialized().then(initSkillPreviews);
+function initSkillInvocationListener() {
+  const browser = getBrowser()!;
+  if (browser.getSkillToInvoke) {
+    const observableSkill = browser.getSkillToInvoke()!;
+    observableSkill.subscribeObserver!({
+      next: (skill: Skill) => {
+        if (!skill) {
+          return;
+        }
+        logMessage(`Skill invoked via Observable: ${skill.prompt}`);
+        const input = $.skillPromptInput as HTMLInputElement;
+        if (input) {
+          input.value = skill.prompt;
+        }
+      },
+      error: (err: any) => {
+        logMessage(`Skill invocation observer error: ${err}`);
+      },
+    });
+  } else {
+    logMessage('getSkillToInvoke API is not supported by the browser');
+  }
+}
+
+client.getInitialized().then(() => {
+  initSkillPreviews();
+  initSkillInvocationListener();
+});

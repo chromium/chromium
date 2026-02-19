@@ -7,12 +7,17 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_window_controller.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_window_test.h"
 #include "components/skills/features.h"
+#include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -57,14 +62,43 @@ class SkillsInteractiveUiTest : public glic::test::InteractiveGlicTest {
     }));
   }
 
-  auto AddUserOwnedSkill(glic::mojom::SkillPtr skill) {
-    return Steps(Do([this, skill = std::move(skill)]() mutable {
+  auto AddUserOwnedSkill(glic::mojom::SkillPtr skill,
+                         std::string* out_skill_id = nullptr) {
+    return Do([this, skill = std::move(skill), out_skill_id]() mutable {
       skills::SkillsService* skills_service =
           skills::SkillsServiceFactory::GetForProfile(browser()->profile());
 
-      skills_service->AddSkill(skill->preview->id, skill->preview->name,
-                               skill->preview->icon, skill->prompt);
-    }));
+      auto* added_skill =
+          skills_service->AddSkill(skill->preview->id, skill->preview->name,
+                                   skill->preview->icon, skill->prompt);
+
+      if (out_skill_id && added_skill) {
+        *out_skill_id = added_skill->id;
+      }
+    });
+  }
+
+  auto InvokeSkillDirectly(std::string* skill_id_ptr) {
+    return Do([this, skill_id_ptr]() {
+      skills::SkillsUiWindowController::From(browser())->InvokeSkill(
+          *skill_id_ptr);
+    });
+  }
+
+  auto VerifyInvocationInWebUI(const std::string& expected_prompt) {
+    return Steps(
+        Log("Verifying Glic Panel Opened via Toast Interaction"),
+        WaitForShow(glic::test::kGlicHostElementId),
+
+        // This will now pass because test_client.js updates the value!
+        WaitForJsResult(
+            glic::test::kGlicContentsElementId,
+            base::StringPrintf(
+                "() => {"
+                "  const input = document.getElementById('skillPromptInput');"
+                "  return !!input && input.value === '%s';"
+                "}",
+                expected_prompt.c_str())));
   }
 
   auto WaitForSkillPreviewShown(std::string_view skill_name) {
@@ -113,4 +147,22 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, UpdateSkillPreviews) {
       WaitForSkillPreviewShown("contextual_skill_name"),
       AddUserOwnedSkill(std::move(skill)),
       WaitForSkillPreviewShown("test_skill_name"));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, InvokeSkill) {
+  const std::string kSkillPrompt = "Prompt from direct invocation";
+  std::string generated_skill_id;
+
+  glic::mojom::SkillPtr skill = glic::mojom::Skill::New(
+      glic::mojom::SkillPreview::New("temp_id", "Direct Skill", "http://icon",
+                                     glic::mojom::SkillSource::kFirstParty,
+                                     "Description"),
+      kSkillPrompt, std::nullopt);
+
+  RunTestSequence(
+      ToggleGlicWindow(GlicWindowMode::kAttached), PollForAndAcceptFre(),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      AddUserOwnedSkill(std::move(skill), &generated_skill_id),
+      InvokeSkillDirectly(&generated_skill_id),
+      VerifyInvocationInWebUI(kSkillPrompt));
 }
