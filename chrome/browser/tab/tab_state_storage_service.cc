@@ -177,6 +177,13 @@ void TabStateStorageService::Remove(const TabCollection* collection) {
   });
 }
 
+void TabStateStorageService::Remove(StorageId id) {
+  DCHECK(packager_);
+
+  ApplyUpdate(
+      [&](TabStateStorageUpdaterBuilder& builder) { builder.RemoveNode(id); });
+}
+
 void TabStateStorageService::CommitCurrentBatch() {
   if (!open_batches_) {
     return;

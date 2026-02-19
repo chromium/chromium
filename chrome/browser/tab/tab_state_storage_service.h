@@ -93,6 +93,7 @@ class TabStateStorageService : public KeyedService,
 
   void Remove(const TabInterface* tab);
   void Remove(const TabCollection* collection);
+  void Remove(StorageId id);
 
   void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,

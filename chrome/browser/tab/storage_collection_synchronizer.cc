@@ -21,8 +21,8 @@
 
 namespace tabs {
 
-// Recursively crawls the entire tree and saves all children to the service. The
-// traversal order is determined by DirectChildWalker.
+// Recursively crawls the entire tree and saves all descendants to the service.
+// The traversal order is determined by DirectChildWalker.
 class CollectionSaveCrawler : public DirectChildWalker::Processor {
  public:
   explicit CollectionSaveCrawler(TabStateStorageService* service)
@@ -32,6 +32,7 @@ class CollectionSaveCrawler : public DirectChildWalker::Processor {
 
   void ProcessCollection(const TabCollection* collection) override {
     service_->Save(collection);
+    service_->SaveChildren(collection);
     DirectChildWalker walker(collection, this);
     walker.Walk();
   }

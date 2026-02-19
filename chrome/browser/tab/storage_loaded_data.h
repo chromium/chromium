@@ -57,9 +57,9 @@ class StorageLoadedData {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the child of a node is rejected. This occurs when the child
-    // is declared invalid or unneeded after loading it.
-    virtual void OnChildRejected(StorageId parent) = 0;
+    // Called when a node is rejected. This occurs when the node is declared
+    // invalid or unneeded after loading it.
+    virtual void OnNodeRejected(StorageId node) = 0;
 
     // Called when the StorageLoadedData is destroyed.
     virtual void OnDestroyed() = 0;
@@ -109,9 +109,9 @@ class StorageLoadedData {
 
   const StorageLoadingContext& GetLoadingContext() const;
 
-  // Alerts observers that a child node has been rejected during the restoration
+  // Alerts observers that a node has been rejected during the restoration
   // process.
-  void NotifyChildRejected(StorageId parent);
+  void NotifyNodeRejected(StorageId node);
 
   void RegisterObserver(Observer* observer);
   void UnregisterObserver(Observer* observer);

@@ -98,10 +98,10 @@ void StorageLoadedDataAndroid::Destroy(JNIEnv* env) {
 void StorageLoadedDataAndroid::OnTabRejected(JNIEnv* env, int tab_android_id) {
   RestoreEntityTrackerAndroid* tracker =
       static_cast<RestoreEntityTrackerAndroid*>(data_->GetTracker());
-  std::optional<StorageId> parent_id =
-      tracker->GetParentIdForTab(tab_android_id);
-  if (parent_id.has_value()) {
-    GetData()->NotifyChildRejected(*parent_id);
+  std::optional<StorageId> node_id =
+      tracker->GetStorageIdForTab(tab_android_id);
+  if (node_id.has_value()) {
+    GetData()->NotifyNodeRejected(*node_id);
   }
 }
 

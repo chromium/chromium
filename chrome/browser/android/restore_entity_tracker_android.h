@@ -50,7 +50,7 @@ class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
   bool HasCollectionBeenAssociated(TabCollection::Handle handle) override;
 
   bool HasNothingToAssociate() override;
-  std::optional<StorageId> GetParentIdForTab(int tab_android_id);
+  std::optional<StorageId> GetStorageIdForTab(int tab_android_id);
 
  private:
   bool AssociateTabStripCollection(const TabStripCollection* collection);

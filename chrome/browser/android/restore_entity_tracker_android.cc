@@ -214,10 +214,13 @@ bool RestoreEntityTrackerAndroid::HasNothingToAssociate() {
   return !tab_strip_collection_id_.has_value();
 }
 
-std::optional<StorageId> RestoreEntityTrackerAndroid::GetParentIdForTab(
+std::optional<StorageId> RestoreEntityTrackerAndroid::GetStorageIdForTab(
     int tab_android_id) {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  auto it = tab_android_id_to_storage_id_.find(tab_android_id);
+  if (it == tab_android_id_to_storage_id_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace tabs

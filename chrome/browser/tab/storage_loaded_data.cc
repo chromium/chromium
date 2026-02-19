@@ -272,8 +272,8 @@ StorageLoadedData::GetLoadingContext() const {
   return context_;
 }
 
-void StorageLoadedData::NotifyChildRejected(StorageId parent) {
-  observers_.Notify(&Observer::OnChildRejected, parent);
+void StorageLoadedData::NotifyNodeRejected(StorageId node) {
+  observers_.Notify(&Observer::OnNodeRejected, node);
 }
 
 void StorageLoadedData::RegisterObserver(Observer* observer) {
