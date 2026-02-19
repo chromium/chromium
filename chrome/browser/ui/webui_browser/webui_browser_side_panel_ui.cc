@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -86,7 +87,7 @@ content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForId(
 
 void WebUIBrowserSidePanelUI::Show(
     const UniqueKey& input,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
   // Side panel is not supported for non-normal browsers.
   if (!browser()->is_type_normal()) {
@@ -119,7 +120,7 @@ void WebUIBrowserSidePanelUI::Show(
 void WebUIBrowserSidePanelUI::PopulateSidePanel(
     bool suppress_animations,
     const UniqueKey& unique_key,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
   if (IsSidePanelShowing(entry->type())) {
@@ -178,7 +179,7 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
   }
 
   if (unique_key.has_value()) {
-    Show(*unique_key, SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+    Show(*unique_key, SidePanelOpenTrigger::kTabChanged,
          /*suppress_animations=*/true);
     return;
   }

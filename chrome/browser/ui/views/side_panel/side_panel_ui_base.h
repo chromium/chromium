@@ -13,9 +13,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
 class Browser;
 class SidePanelEntry;
@@ -50,10 +50,10 @@ class SidePanelUIBase : public SidePanelUI {
   using SidePanelUI::Close;
   using SidePanelUI::Show;
   void Show(SidePanelEntry::Id entry_id,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+            std::optional<SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
   void Show(SidePanelEntry::Key entry_key,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+            std::optional<SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
   std::optional<SidePanelEntry::Id> GetCurrentEntryId(
       SidePanelEntry::PanelType panel_type) const override;
@@ -106,10 +106,9 @@ class SidePanelUIBase : public SidePanelUI {
   // This method does not show the side panel. Instead, it queues the side panel
   // to be shown once the contents have been loaded. This process may be either
   // synchronous or asynchronous.
-  virtual void Show(
-      const UniqueKey& entry,
-      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
-      bool suppress_animations) = 0;
+  virtual void Show(const UniqueKey& entry,
+                    std::optional<SidePanelOpenTrigger> open_trigger,
+                    bool suppress_animations) = 0;
 
   // Removes existing SidePanelEntry contents from the side panel if any exist
   // and populates the side panel with the provided SidePanelEntry and
@@ -118,7 +117,7 @@ class SidePanelUIBase : public SidePanelUI {
   virtual void PopulateSidePanel(
       bool suppress_animations,
       const UniqueKey& unique_key,
-      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+      std::optional<SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view) = 0;
 

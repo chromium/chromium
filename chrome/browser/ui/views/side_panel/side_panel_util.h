@@ -29,7 +29,6 @@ class View;
 
 class SidePanelUtil {
  public:
-  using SidePanelOpenTrigger = ::SidePanelOpenTrigger;
   using SidePanelContentState = ::SidePanelContentState;
 
   static void PopulateGlobalEntries(Browser* browser,

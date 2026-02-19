@@ -58,14 +58,14 @@ class SidePanelCoordinator final : public SidePanelUIBase,
              SidePanelEntryHideReason reason,
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
-              SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
+              SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
                 gfx::Rect starting_bounds_in_browser_coordinates) override;
 
   // SidePanelUIBase:
   using SidePanelUIBase::Show;
   void Show(const UniqueKey& entry,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+            std::optional<SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
 
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
@@ -86,7 +86,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void PopulateSidePanel(
       bool suppress_animations,
       const UniqueKey& unique_key,
-      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+      std::optional<SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view) override;
   void MaybeShowEntryOnTabStripModelChanged(

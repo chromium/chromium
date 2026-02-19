@@ -72,9 +72,8 @@ void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
   side_panel_toolbar_pinning_controller_.reset();
 }
 
-void SidePanelCoordinator::Toggle(
-    SidePanelEntryKey key,
-    SidePanelUtil::SidePanelOpenTrigger open_trigger) {
+void SidePanelCoordinator::Toggle(SidePanelEntryKey key,
+                                  SidePanelOpenTrigger open_trigger) {
   // If an entry is already showing in the sidepanel, the sidepanel
   // should be closed.
   SidePanelEntry* const entry = GetEntryForKey(key);
@@ -139,7 +138,7 @@ SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting(
 
 void SidePanelCoordinator::Show(
     const UniqueKey& input,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
   // Side panel is not supported for non-normal browsers.
   if (!browser_view_->browser()->is_type_normal()) {
@@ -270,7 +269,7 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
 void SidePanelCoordinator::PopulateSidePanel(
     bool suppress_animations,
     const UniqueKey& unique_key,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
   SidePanel* side_panel = GetSidePanelFor(entry->type());
@@ -313,8 +312,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   if (content_wrapper->children().size()) {
     if (previous_entry) {
       if (open_trigger.has_value() &&
-          open_trigger.value() ==
-              SidePanelUtil::SidePanelOpenTrigger::kTabChanged) {
+          open_trigger.value() == SidePanelOpenTrigger::kTabChanged) {
         previous_entry->OnEntryWillHide(
             SidePanelEntryHideReason::kBackgrounded);
       } else {
@@ -385,8 +383,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
       // if one is found, show it.
       if (std::optional<UniqueKey> unique_key =
               GetNewActiveKeyOnTabChanged(type)) {
-        Show(unique_key.value(),
-             SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+        Show(unique_key.value(), SidePanelOpenTrigger::kTabChanged,
              /*suppress_animations=*/true);
       } else {
         // If there is no suitable entry to be shown after the tab switch, cache
@@ -415,7 +412,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
                active_entry.has_value()) {
       Show({browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
             (*active_entry)->key()},
-           SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+           SidePanelOpenTrigger::kTabChanged,
            /*suppress_animations=*/true);
     }
   }
