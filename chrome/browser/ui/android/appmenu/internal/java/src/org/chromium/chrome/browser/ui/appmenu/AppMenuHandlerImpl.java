@@ -186,7 +186,7 @@ class AppMenuHandlerImpl
                                 /* withAssertions= */ false);
                         PopupWindow mainPopup = mAppMenu.getPopup();
                         if (mainPopup != null && mainPopup.isShowing()) {
-                            mAppMenu.updateMenuHeight();
+                            mAppMenu.updateMenuHeightWithAnimation();
                         }
                     }
 
@@ -201,7 +201,7 @@ class AppMenuHandlerImpl
                                 /* withAssertions= */ false);
                         PopupWindow mainPopup = mAppMenu.getPopup();
                         if (mainPopup != null && mainPopup.isShowing()) {
-                            mAppMenu.updateMenuHeight();
+                            mAppMenu.updateMenuHeightWithAnimation();
                         }
                     }
                 };
