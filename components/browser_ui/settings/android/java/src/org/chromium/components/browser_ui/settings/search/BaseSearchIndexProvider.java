@@ -45,11 +45,6 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
         mXmlRes = xmlRes;
     }
 
-    /** Returns the Preference XML resource. */
-    public @XmlRes int getXmlRes() {
-        return mXmlRes;
-    }
-
     /**
      * Returns the unique id for a child pref.
      *
@@ -64,6 +59,12 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
     @Override
     public String getPrefFragmentName() {
         return mPrefFragment;
+    }
+
+    /** Returns the Preference XML resource. */
+    @Override
+    public @XmlRes int getXmlRes() {
+        return mXmlRes;
     }
 
     @Override

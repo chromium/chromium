@@ -7,6 +7,8 @@ package org.chromium.components.browser_ui.settings.search;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.XmlRes;
+
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.Map;
@@ -17,6 +19,10 @@ import java.util.Set;
 public interface SearchIndexProvider {
     /** Returns the name of the associated {@link PreferenceFragment}. */
     String getPrefFragmentName();
+
+    /** Returns the Preference XML resource. */
+    @XmlRes
+    int getXmlRes();
 
     /**
      * Registers the fragment headers of the indexed search prefs by setting headers for ones that

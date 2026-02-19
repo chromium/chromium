@@ -24,6 +24,7 @@ import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DimenRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.SearchView;
@@ -531,8 +532,15 @@ public class SettingsSearchCoordinator
             if (!mIndexData.needsIndexing()) return;
         }
 
+        buildIndexInternal(mActivity, mProfile, mIndexData);
+
+        mIndexData.resetNeedsIndexing();
+    }
+
+    @VisibleForTesting
+    static void buildIndexInternal(Context context, Profile profile, SettingsIndexData indexData) {
         // This is done to avoid duplicate entries when parsing XML.
-        mIndexData.clear();
+        indexData.clear();
 
         List<SearchIndexProvider> providers = SearchIndexProviderRegistry.ALL_PROVIDERS;
         Map<String, SearchIndexProvider> providerMap = createProviderMap(providers);
@@ -544,14 +552,13 @@ public class SettingsSearchCoordinator
         // The root provider needs to be registered.
         assert rootProvider != null;
 
-        rootProvider.registerFragmentHeaders(
-                mActivity, mIndexData, providerMap, processedFragments);
+        rootProvider.registerFragmentHeaders(context, indexData, providerMap, processedFragments);
 
         for (SearchIndexProvider provider : providers) {
             if (provider instanceof ChromeBaseSearchIndexProvider chromeProvider) {
-                chromeProvider.initPreferenceXml(mActivity, mProfile, mIndexData, providerMap);
+                chromeProvider.initPreferenceXml(context, profile, indexData, providerMap);
             } else {
-                provider.initPreferenceXml(mActivity, mIndexData, providerMap);
+                provider.initPreferenceXml(context, indexData, providerMap);
             }
         }
 
@@ -559,23 +566,21 @@ public class SettingsSearchCoordinator
         // need to update the title of a pref.
         for (SearchIndexProvider provider : providers) {
             if (provider instanceof ChromeSearchIndexProvider chromeProvider) {
-                chromeProvider.updateDynamicPreferences(mActivity, mIndexData, mProfile);
+                chromeProvider.updateDynamicPreferences(context, indexData, profile);
             } else {
-                provider.updateDynamicPreferences(mActivity, mIndexData);
+                provider.updateDynamicPreferences(context, indexData);
             }
         }
 
         // Some exceptions whose dynamic preferences cannot be updated via SearchIndexProvider
         // #updateDynamicPreferences.
         SiteSettings.updateDynamicPreferences(
-                mActivity, new ChromeSiteSettingsDelegate(mActivity, mProfile), mIndexData);
+                context, new ChromeSiteSettingsDelegate(context, profile), indexData);
         AccessibilitySettings.updateDynamicPreferences(
-                mActivity, new ChromeAccessibilitySettingsDelegate(mProfile), mIndexData);
+                context, new ChromeAccessibilitySettingsDelegate(profile), indexData);
 
         // Resolve headers and remove any orphaned entries.
-        mIndexData.resolveIndex(mainSettingsClassName);
-
-        mIndexData.resetNeedsIndexing();
+        indexData.resolveIndex(mainSettingsClassName);
     }
 
     /**
@@ -585,7 +590,7 @@ public class SettingsSearchCoordinator
      * @param providers A list of {@link SearchIndexProvider}s.
      * @return A map where keys are fragment class names and values are the providers.
      */
-    private Map<String, SearchIndexProvider> createProviderMap(
+    private static Map<String, SearchIndexProvider> createProviderMap(
             List<SearchIndexProvider> providers) {
         Map<String, SearchIndexProvider> providerMap = new HashMap<>();
         for (SearchIndexProvider provider : providers) {
