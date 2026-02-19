@@ -88,6 +88,16 @@ const char kInfobarAutofillAddressModalEventHistogram[] =
 const char kInfobarAutofillAddressBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeAutofillAddressProfile";
 
+// Histogram names for InfobarTypeAutofillAiSaveEntity.
+// Banner.
+const char kInfobarAutofillAiSaveEntityBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeAutofillAiSaveEntity";
+const char kInfobarAutofillAiSaveEntityBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeAutofillAiSaveEntity";
+// Modal.
+const char kInfobarAutofillAiSaveEntityModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeAutofillAiSaveEntity";
+
 // Histogram names for InfobarTypePermissions.
 // Banner.
 const char kInfobarPermissionsBannerEventHistogram[] =
@@ -245,6 +255,10 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarAutofillAiSaveEntityBannerEventHistogram, event);
+      break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support banners.
       NOTREACHED();
@@ -311,6 +325,10 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBannerDismissTypeHistogram,
                                 dismissType);
       break;
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarAutofillAiSaveEntityBannerDismissTypeHistogram, dismissType);
+      break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support banners.
       NOTREACHED();
@@ -373,6 +391,10 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcModalEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      base::UmaHistogramEnumeration(
+          kInfobarAutofillAiSaveEntityModalEventHistogram, event);
+      break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support modals.
       NOTREACHED();
@@ -430,6 +452,9 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBadgeTappedHistogram, state);
       break;
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      // Autofill Ai infobar does not support badges.
+      NOTREACHED();
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar badge is not interactive.
       NOTREACHED();

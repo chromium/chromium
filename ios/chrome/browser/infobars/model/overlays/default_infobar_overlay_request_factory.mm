@@ -33,6 +33,7 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
           DefaultInfobarOverlayRequestConfig>(infobar_ios, overlay_type);
 
     case InfobarType::kInfobarTypeConfirm:
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
       switch (overlay_type) {
         case InfobarOverlayType::kBanner:
           return OverlayRequest::CreateWithConfig<

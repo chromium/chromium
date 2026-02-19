@@ -41,6 +41,8 @@ enum class InfobarType {
   kInfobarTypeSaveCvc = 16,
   // Message Infobar for Reader Mode.
   kInfobarTypeReaderMode = 17,
+  // Message Infobar for Saving or Updating an Autofill AI entity.
+  kInfobarTypeAutofillAiSaveEntity = 18,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

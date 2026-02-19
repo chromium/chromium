@@ -80,6 +80,9 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
     case InfobarType::kInfobarTypeCollaborationOutOfDate:
     case InfobarType::kInfobarTypeSaveCvc:
       return IsProactiveSuggestionsFrameworkEnabled();
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      // This infobar does not support badges.
+      return false;
   }
 }
 
@@ -478,6 +481,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
       case InfobarType::kInfobarTypePasswordUpdate:
       case InfobarType::kInfobarTypeSaveCard:
       case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+      case InfobarType::kInfobarTypeAutofillAiSaveEntity:
         // Special case where we dynamically want to exclude the badge for
         // certain infobars while still keeping a badge type for the infobar
         // in BadgeTypeForInfobarType(). This ad hoc logic is temporary the

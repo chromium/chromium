@@ -364,6 +364,7 @@ chromium-metrics-reviews@google.com.
   <int value="129" label="ROLL_BACK_MODE_B_INFOBAR_DELEGATE"/>
   <int value="130" label="DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE"/>
   <int value="131" label="STARTUP_LAUNCH_INFOBAR_DELEGATE"/>
+  <int value="132" label="AUTOFILL_AI_SAVE_ENTITY_INFOBAR_DELEGATE_IOS"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/infobars/core/infobar_delegate.h:InfoBarIdentifier) -->
