@@ -64,6 +64,14 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
     registrar->NotifyWebAppLastBadgingTimeChanged(app_id, base::Time());
   }
   lock.visited_manifest_manager().ClearSeenScopes(begin_time, end_time);
+
+  WebAppCommandScheduler* scheduler = &lock.scheduler();
+  for (const WebApp& web_app :
+       registrar->GetApps(WebAppFilter::IsAppSuggestedForMigration())) {
+    scheduler->RemoveUserUninstallableManagements(
+        web_app.app_id(), webapps::WebappUninstallSource::kMigration,
+        base::DoNothing());
+  }
 }
 
 }  // namespace web_app

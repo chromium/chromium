@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/locks/partitioned_lock_holder.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -88,6 +89,11 @@ WebAppOriginAssociationManager& Lock::origin_association_manager() {
 base::Clock& Lock::clock() {
   CHECK(lock_manager_);
   return lock_manager_->provider().clock();
+}
+
+WebAppCommandScheduler& Lock::scheduler() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().scheduler();
 }
 
 Lock::Lock() = default;

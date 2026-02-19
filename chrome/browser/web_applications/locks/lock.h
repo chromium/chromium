@@ -25,6 +25,7 @@ class WebAppLockManager;
 class WebContentsManager;
 class WebAppOriginAssociationManager;
 class PartitionedLockHolder;
+class WebAppCommandScheduler;
 
 // Represents a lock in the WebAppProvider system. Locks can be acquired by
 // creating one of the subclasses of this class, and using the
@@ -93,6 +94,8 @@ class Lock {
   VisitedManifestManager& visited_manifest_manager();
   // Will CHECK-fail if accessed before the lock is granted.
   WebAppOriginAssociationManager& origin_association_manager();
+
+  WebAppCommandScheduler& scheduler();
 
   // Convenience method for accessing the clock on the WebAppProvider.
   base::Clock& clock();
