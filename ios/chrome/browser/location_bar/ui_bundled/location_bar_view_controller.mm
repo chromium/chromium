@@ -825,7 +825,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof__(self) weakSelf = self;
 
-  if (base::FeatureList::IsEnabled(kShareInOmniboxLongPress)) {
+  if (base::FeatureList::IsEnabled(kShareInOmniboxLongPress) &&
+      self.shareButtonEnabled) {
     base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
                                   ShareThisPageLocation::kOmniboxLongPress);
     UIImage* image =
