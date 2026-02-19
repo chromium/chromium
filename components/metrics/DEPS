@@ -7,6 +7,7 @@ include_rules = [
   "+components/regional_capabilities",
   "+components/component_updater",
   "+components/keep_alive_registry",
+  "+components/keyed_service",
   "+components/metrics",
   "+components/network_time",
   "+components/prefs",

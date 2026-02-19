@@ -293,6 +293,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 
     // This service is needed to handle navigations in the Profile Picker.
     "ChromePolicyBlocklistService",
+
+    "ProfileMetricsService",
   };
   // clang-format on
 
@@ -349,6 +351,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 
     // This service is needed to handle navigations in the Profile Picker.
     "ChromePolicyBlocklistService",
+
+    "ProfileMetricsService",
   };
   // clang-format on
 

@@ -667,6 +667,8 @@ static_library("browser") {
     "metrics/network_quality_estimator_provider_impl.h",
     "metrics/process_memory_metrics_emitter.cc",
     "metrics/process_memory_metrics_emitter.h",
+    "metrics/profile_metrics_service_factory.cc",
+    "metrics/profile_metrics_service_factory.h",
     "metrics/shutdown_watcher_helper.cc",
     "metrics/shutdown_watcher_helper.h",
     "metrics/tab_footprint_aggregator.cc",

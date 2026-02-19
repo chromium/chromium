@@ -32,6 +32,34 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/profile_metrics/counts.cc:ProfileActivityThreshold) -->
 
+<!-- LINT.IfChange(ProfileIndex) -->
+
+<variants name="ProfileIndex">
+  <variant name="" summary="aggregated across all Profiles"/>
+  <variant name=".Profile0" summary="Profile 0"/>
+  <variant name=".Profile1" summary="Profile 1"/>
+  <variant name=".Profile2" summary="Profile 2"/>
+  <variant name=".Profile3" summary="Profile 3"/>
+  <variant name=".Profile4" summary="Profile 4"/>
+  <variant name=".Profile5" summary="Profile 5"/>
+  <variant name=".Profile6" summary="Profile 6"/>
+  <variant name=".Profile7" summary="Profile 7"/>
+  <variant name=".Profile8" summary="Profile 8"/>
+  <variant name=".Profile9" summary="Profile 9"/>
+  <variant name=".Profile10" summary="Profile 10"/>
+  <variant name=".Profile11" summary="Profile 11"/>
+  <variant name=".Profile12" summary="Profile 12"/>
+  <variant name=".Profile13" summary="Profile 13"/>
+  <variant name=".Profile14" summary="Profile 14"/>
+  <variant name=".Profile15" summary="Profile 15"/>
+  <variant name=".Profile16" summary="Profile 16"/>
+  <variant name=".Profile17" summary="Profile 17"/>
+  <variant name=".Profile18" summary="Profile 18"/>
+  <variant name=".Profile19" summary="Profile 19"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/metrics/profile_metrics_service.cc:histogram_suffix) -->
+
 <variants name="ProfilePickerFlowType">
   <variant name="FREFlow" summary="Recorded for the FRE flow."/>
   <variant name="GlicFlow" summary="Recorded for the Glic flow."/>

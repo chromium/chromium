@@ -70,6 +70,20 @@ source_set("bookmark_model_metrics") {
   ]
 }
 
+source_set("profile_metrics_service_factory") {
+  sources = [
+    "ios_profile_metrics_service_factory.h",
+    "ios_profile_metrics_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
 source_set("model") {
   sources = [
     "incognito_usage_app_state_agent.h",
