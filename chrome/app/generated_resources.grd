@@ -10616,7 +10616,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           No thanks
         </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
-          You can access it on Google Password Manager.
+          You can access it on Google Password Manager
         </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Password promo notification.">
           Save and autofill your passwords to easily sign in to sites and apps
