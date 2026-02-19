@@ -46,7 +46,7 @@ pub enum ValueHint {
     /// A single string containing a command and its arguments.
     CommandString,
     /// Capture the remaining arguments as a command name and arguments for that command. This is
-    /// common when writing shell wrappers that execute anther command, for example `sudo` or `env`.
+    /// common when writing shell wrappers that execute another command, for example `sudo` or `env`.
     ///
     /// This hint is special, the argument must be a positional argument and have
     /// [`.num_args(1..)`] and Command must use [`Command::trailing_var_arg(true)`]. The result is that the

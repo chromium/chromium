@@ -744,7 +744,7 @@ impl<'cmd> Parser<'cmd> {
                     p.flag_subcmd_skip = self.flag_subcmd_skip;
                 }
                 if let Err(error) = p.get_matches_with(&mut sc_matcher, raw_args, args_cursor) {
-                    if partial_parsing_enabled {
+                    if partial_parsing_enabled && error.use_stderr() {
                         debug!("Parser::parse_subcommand: ignored error in subcommand {sc_name}: {error:?}");
                     } else {
                         return Err(error);
