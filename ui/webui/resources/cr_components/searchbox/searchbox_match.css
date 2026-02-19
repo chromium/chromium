@@ -203,6 +203,12 @@
   white-space: normal;
 }
 
+:host([is-lens-searchbox_]) #suggestion {
+  /* The above "display: -webkit-box" doesn't get inherited properly, so
+     force to display inline to ensure the text clamps correctly. */
+  display: inline;
+}
+
 :host([has-action]) #text-container {
   padding-inline-end: 4px;
 }

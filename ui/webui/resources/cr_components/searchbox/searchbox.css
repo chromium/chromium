@@ -106,6 +106,7 @@
 
 :host([is-lens-searchbox_]) #inputWrapper {
   box-shadow: none;
+  overflow: hidden;
 }
 
 :host([multi-line-enabled]) textarea {
