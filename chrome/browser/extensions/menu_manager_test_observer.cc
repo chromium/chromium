@@ -5,6 +5,9 @@
 #include "chrome/browser/extensions/menu_manager_test_observer.h"
 
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -88,6 +88,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   // Searches for an menu item with |command_id|. If it's found, the return
   // value is true and the model and index where it appears in that model are
   // returned in |found_model| and |found_index|. Otherwise returns false.
+  // TODO(crbug.com/484409663): Fix to not take a raw_ptr<>.
   bool GetMenuModelAndItemIndex(int command_id,
                                 raw_ptr<ui::MenuModel>* found_model,
                                 size_t* found_index);

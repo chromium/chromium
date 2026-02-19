@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MENU_MANAGER_TEST_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_MENU_MANAGER_TEST_OBSERVER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/menu_manager.h"
-
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/menu_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

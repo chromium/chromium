@@ -43,6 +43,8 @@ class ExtensionMenuModel : public ui::SimpleMenuModel,
   ContextMenuMatcher& matcher_for_test() { return matcher_; }
 
  private:
+  friend class TestExtensionMenuModel;
+
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<content::WebContents> web_contents_;
   // Store the RenderFrameHost; assumes this delegate is relatively short-lived

@@ -210,6 +210,8 @@ static_library("test_support") {
     "../browser/profiles/keep_alive/profile_keep_alive_waiter.h",
     "../browser/profiles/profile_test_util.cc",
     "../browser/profiles/profile_test_util.h",
+    "../browser/renderer_context_menu/context_menu_test_util.cc",
+    "../browser/renderer_context_menu/context_menu_test_util.h",
     "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
     "../browser/safe_browsing/test_safe_browsing_database_helper.h",
     "../browser/search_engines/template_url_service_factory_test_util.cc",
@@ -491,6 +493,11 @@ static_library("test_support") {
   # support pieces into here and eventually merge this with the
   # `enable_extensions` block above.
   if (enable_desktop_android_extensions) {
+    sources += [
+      "../browser/extensions/test_extension_menu_model_android.cc",
+      "../browser/extensions/test_extension_menu_model_android.h",
+    ]
+
     deps += [ "//chrome/renderer/extensions" ]
 
     public_deps += [
@@ -1590,6 +1597,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/bookmarks/bookmarks_apitest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_test.cc",
       "../browser/extensions/api/context_menus/context_menu_apitest.cc",
+      "../browser/extensions/api/context_menus/extension_context_menu_browsertest.cc",
       "../browser/extensions/api/cookies/cookies_apitest.cc",
       "../browser/extensions/api/debugger/debugger_apitest.cc",
       "../browser/extensions/api/debugger/debugger_extension_apitest.cc",
@@ -1755,6 +1763,7 @@ source_set("platform_browser_tests") {
       "//ui/base:ozone_buildflags",
       "//ui/base/idle",
       "//ui/base/idle:test_support",
+      "//ui/menus",
       "//ui/webui:test_support",
     ]
 
@@ -1781,6 +1790,7 @@ source_set("platform_browser_tests") {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/test:test_support",
         "//chrome/browser/ui/webui/ash/parent_access:test_support",
@@ -4815,7 +4825,6 @@ if (!is_android) {
         "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc",
         "../browser/extensions/api/command_line_private/command_line_private_apitest.cc",
         "../browser/extensions/api/content_settings/content_settings_apitest.cc",
-        "../browser/extensions/api/context_menus/extension_context_menu_browsertest.cc",
         "../browser/extensions/api/declarative/declarative_apitest.cc",
         "../browser/extensions/api/extension_action/browser_action_apitest.cc",
         "../browser/extensions/api/extension_action/browser_action_browsertest.cc",
