@@ -1189,8 +1189,8 @@
   </if>
 
 
-  <message name="IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION" desc="A message that appears when an attempt to update or migrate data to Google Wallet fails." translateable="false">
-    Couldn't save this info to your Google Wallet. Check your connection.
+  <message name="IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION" desc="A message that appears when an attempt to update or migrate data to Google Wallet fails.">
+    Couldn't save to Google Wallet
   </message>
 
   <message name="IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION" desc="A snackbar (toast) message appearing at the top of the screen. The user sees this error if they attempt to autofill information but the request fails due to network connectivity issues." translateable="false">
