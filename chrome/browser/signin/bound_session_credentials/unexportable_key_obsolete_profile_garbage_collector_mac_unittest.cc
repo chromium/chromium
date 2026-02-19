@@ -57,8 +57,9 @@ class UnexportableKeyObsoleteProfileGarbageCollectorMacTest : public Test {
                 CreateMockService,
             base::Unretained(this)));
 
-    CHECK(profile_manager_.SetUp());
-    collector_.emplace(profile_manager_.profile_manager());
+    profile_manager_.emplace(TestingBrowserProcess::GetGlobal());
+    CHECK(profile_manager_->SetUp());
+    collector_.emplace(profile_manager_->profile_manager());
   }
 
   ~UnexportableKeyObsoleteProfileGarbageCollectorMacTest() override {
@@ -71,7 +72,7 @@ class UnexportableKeyObsoleteProfileGarbageCollectorMacTest : public Test {
     auto service = std::make_unique<StrictMock<MockUnexportableKeyService>>();
     if (config.application_tag ==
         GetConfigForUserDataDir(
-            profile_manager_.profile_manager()->user_data_dir())
+            profile_manager_->profile_manager()->user_data_dir())
             .application_tag) {
       user_data_dir_service_ = service.get();
     } else if (config.application_tag.ends_with(kProfileName)) {
@@ -92,7 +93,7 @@ class UnexportableKeyObsoleteProfileGarbageCollectorMacTest : public Test {
     on_profile_service_created_ = std::move(callback);
   }
 
-  TestingProfileManager& profile_manager() { return profile_manager_; }
+  TestingProfileManager& profile_manager() { return *profile_manager_; }
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -101,12 +102,14 @@ class UnexportableKeyObsoleteProfileGarbageCollectorMacTest : public Test {
     return *collector_;
   }
 
+  void DestroyProfileManager() { profile_manager_.reset(); }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  std::optional<TestingProfileManager> profile_manager_;
   std::optional<UnexportableKeyObsoleteProfileGarbageCollector> collector_;
   base::HistogramTester histogram_tester_;
   raw_ptr<MockUnexportableKeyService> user_data_dir_service_ = nullptr;
@@ -310,6 +313,45 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
       "Crypto.UnexportableKeys.GarbageCollection.DestroyedProfiles."
       "ObsoleteKeyDeletionCount",
       3, 1);
+}
+
+TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
+       ProfileManagerDestroyedBeforeGarbageCollection) {
+  ASSERT_TRUE(user_data_dir_service());
+
+  UnexportableKeyId key_id;
+  EXPECT_CALL(*user_data_dir_service(),
+              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+      .WillOnce([&](auto priority, auto callback) {
+        // Destroy the profile manager before the garbage collection callback is
+        // run.
+        DestroyProfileManager();
+        std::move(callback).Run(std::vector{key_id});
+      });
+
+  // Trigger the scheduled garbage collection task.
+  task_environment().FastForwardBy(kGarbageCollectionDelay);
+
+  // GetKeyTag etc. shouldn't be called because the ProfileManager was
+  // destroyed.
+  EXPECT_CALL(*user_data_dir_service(), GetKeyTag).Times(0);
+
+  histogram_tester().ExpectTotalCount(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "TotalKeyCount",
+      0);
+  histogram_tester().ExpectTotalCount(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "UsedKeyCount",
+      0);
+  histogram_tester().ExpectTotalCount(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyCount",
+      0);
+  histogram_tester().ExpectTotalCount(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyDeletionCount",
+      0);
 }
 
 }  // namespace

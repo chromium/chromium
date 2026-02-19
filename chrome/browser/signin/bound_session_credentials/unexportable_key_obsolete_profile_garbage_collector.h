@@ -30,6 +30,7 @@ class UnexportableKeyObsoleteProfileGarbageCollector
 
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
  private:
   void StartGarbageCollection();
