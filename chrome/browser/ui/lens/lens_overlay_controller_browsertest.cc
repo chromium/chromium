@@ -6585,8 +6585,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                         content_data[0].data().end()));
 }
 
+// TODO(crbug.com/485686159): Reenable this test.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       UpdateScreenshotOnSearchboxFocus) {
+                       DISABLED_UpdateScreenshotOnSearchboxFocus) {
   base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
