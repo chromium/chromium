@@ -8823,7 +8823,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="414" label="TextJustify"/>
   <int value="415" label="Summarizer"/>
   <int value="416" label="OBSOLETE_TranslationApi"/>
-  <int value="417" label="DRAFT_MetaTextScale"/>
+  <int value="417" label="MetaTextScale"/>
   <int value="418" label="Jpegxl"/>
   <int value="419" label="PartitionedCookies"/>
   <int value="420" label="Prompt"/>

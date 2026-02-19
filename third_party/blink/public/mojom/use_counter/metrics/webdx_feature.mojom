@@ -476,7 +476,7 @@ enum WebDXFeature {
   kTextJustify = 414,
   kSummarizer = 415,
   kOBSOLETE_TranslationApi = 416,
-  kDRAFT_MetaTextScale = 417,
+  kMetaTextScale = 417,
   kJpegxl = 418,
   kPartitionedCookies = 419,
   kPrompt = 420,
