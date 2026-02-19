@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("util") {
+  public = [ "cert_utils.h" ]
+
+  sources = [
+    "browser_context_delegate_ios.h",
+    "browser_context_delegate_ios.mm",
+    "cert_utils.mm",
+  ]
+
+  public_deps = [ "//components/enterprise/client_certificates/ios" ]
+
+  deps = [
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/client_certificates/core:management_delegate",
+    "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
+  ]
+
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "browser_context_delegate_ios_unittest.mm" ]
+
+  deps = [
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/client_certificates/core:test_support",
+    "//components/enterprise/client_certificates/ios",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

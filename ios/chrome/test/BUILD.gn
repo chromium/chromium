@@ -299,6 +299,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/download/ui/download_list:unit_tests",
     "//ios/chrome/browser/drive/model:unit_tests",
     "//ios/chrome/browser/drive_file_picker/coordinator:unit_tests",
+    "//ios/chrome/browser/enterprise/client_certificates:unit_tests",
     "//ios/chrome/browser/enterprise/cloud_content_scanning/model:unit_tests",
     "//ios/chrome/browser/enterprise/connectors:unit_tests",
     "//ios/chrome/browser/enterprise/connectors/reporting:unit_tests",
