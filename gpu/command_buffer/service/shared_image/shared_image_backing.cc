@@ -488,4 +488,15 @@ bool SharedImageBacking::IsImportedFromExo() {
   return false;
 }
 
+AccessParams::AccessParams() = default;
+AccessParams::~AccessParams() = default;
+
+bool SharedImageBacking::SupportsAccess(SharedImageAccessStream stream,
+                                        const AccessParams& params) const {
+  // The default implementation allows access, assuming the backing is
+  // compatible. Subclasses with specific context requirements (like GL vs.
+  // Vulkan) should override this method.
+  return true;
+}
+
 }  // namespace gpu

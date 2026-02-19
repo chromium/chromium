@@ -76,6 +76,22 @@ class VideoImageRepresentation;
 class MemoryTypeTracker;
 class WebNNTensorRepresentation;
 
+// Forward declaration for SharedImageAccessStream, which is defined in
+// gpu/command_buffer/common/shared_image_usage.h.
+enum class SharedImageAccessStream;
+
+// A struct to hold parameters for shared image access. This allows passing
+// context-specific information to backings so they can determine if they
+// can support a given access request.
+struct AccessParams {
+  AccessParams();
+  ~AccessParams();
+
+  scoped_refptr<SharedContextState> context_state = nullptr;
+  wgpu::Device wgpu_device = nullptr;
+  // Other context types can be added here in the future.
+};
+
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanImageRepresentation;
 #endif
@@ -261,6 +277,12 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   // Marks the entire image as cleared.
   void SetCleared() { SetClearedRect(gfx::Rect(size())); }
+
+  // New virtual method to check for access support based on stream and context.
+  // Backings can override this to implement context-aware selection logic.
+  // The default implementation returns true for backward compatibility.
+  virtual bool SupportsAccess(SharedImageAccessStream stream,
+                              const AccessParams& params) const;
 
  protected:
   // Used by SharedImageManager.
