@@ -76,6 +76,7 @@ public class BookmarkBarIphControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
@@ -118,8 +119,6 @@ public class BookmarkBarIphControllerTest {
      */
     @Test
     public void testTrigger1_OnModelLoaded_WithBookmark() {
-        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-
         // Create a fake bookmark and set up the model to return it.
         List<BookmarkId> children = new ArrayList<>();
         children.add(mChildBookmarkId);
@@ -136,8 +135,6 @@ public class BookmarkBarIphControllerTest {
     /** Tests Trigger 2: Iph shows when a new bookmark is added in the current device. */
     @Test
     public void testTrigger2_OnBookmarkNodeAdded() {
-        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-
         when(mDesktopFolderItem.getId()).thenReturn(mDesktopFolderId);
         List<BookmarkId> children = new ArrayList<>();
         children.add(mChildBookmarkId);
@@ -156,8 +153,6 @@ public class BookmarkBarIphControllerTest {
      */
     @Test
     public void testTrigger2_OnBookmarkNodeAdded_FromSync() {
-        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-
         when(mDesktopFolderItem.getId()).thenReturn(mDesktopFolderId);
         List<BookmarkId> children = new ArrayList<>();
         children.add(mChildBookmarkId);

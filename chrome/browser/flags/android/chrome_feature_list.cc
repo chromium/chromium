@@ -540,8 +540,8 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2, base::FEATURE_ENABLED_B
 BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAlwaysDrawCompositedToolbarHairline, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidAppIntegrationMultiDataSource, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidAppearanceSettings, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidBookmarkBar, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidAppearanceSettings, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidBookmarkBar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBookmarkBarFastFollow, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomToolbarV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidComposeplate, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -780,8 +780,8 @@ BASE_FEATURE(kToolbarPhoneAnimationRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarSnapshotRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarStaleCaptureBugFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarTabletResizeRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTopControlsRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTopControlsRefactorV2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTopControlsRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTopControlsRefactorV2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTouchToSearchCallout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTrustedWebActivityContactsDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.

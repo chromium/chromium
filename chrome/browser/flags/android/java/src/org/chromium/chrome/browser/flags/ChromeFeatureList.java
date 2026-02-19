@@ -1084,12 +1084,12 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTopControlsRefactor =
             newCachedFlag(
                     TOP_CONTROLS_REFACTOR,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTopControlsRefactorV2 =
             newCachedFlag(
                     TOP_CONTROLS_REFACTOR_V2,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTouchToSearchCallout =
             newCachedFlag(
@@ -1291,9 +1291,9 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAlwaysDrawCompositedToolbarHairline =
             newMutableFlagWithSafeDefault(ALWAYS_DRAW_COMPOSITED_TOOLBAR_HAIRLINE, true);
     public static final MutableFlagWithSafeDefault sAndroidAppearanceSettings =
-            newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, false);
+            newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, true);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
-            newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
+            newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, true);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBarFastFollow =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR_FAST_FOLLOW, false);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDuplicateTabs =
