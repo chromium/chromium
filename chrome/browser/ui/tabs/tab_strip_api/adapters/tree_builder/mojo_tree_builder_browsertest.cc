@@ -48,10 +48,15 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceMojoTreeBuilderBrowserTest,
       MojoTreeBuilder(GetTabStripModel())
           .Build(GetTabStripModel()->GetRootForTesting()->GetHandle());
 
-  // First layer is just pinned/unpinned.
-  // Pinned is idx 0, unpinned is idx1.
-  ASSERT_EQ(2ul, result->children.size());
-  const auto& unpinned = result->children.at(1);
+  // First layer is just the root collection (TabStrip).
+  ASSERT_EQ(1ul, result->children.size());
+  const auto& tab_strip = result->children.at(0);
+  ASSERT_TRUE(tab_strip->data->is_tab_strip());
+
+  // Second layer is pinned/unpinned.
+  // Pinned is idx 0, unpinned is idx 1.
+  ASSERT_EQ(2ul, tab_strip->children.size());
+  const auto& unpinned = tab_strip->children.at(1);
   ASSERT_TRUE(unpinned->data->is_unpinned_tabs());
   ASSERT_EQ(3ul, unpinned->children.size());
 

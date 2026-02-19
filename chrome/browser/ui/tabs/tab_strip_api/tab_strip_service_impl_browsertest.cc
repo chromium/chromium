@@ -94,6 +94,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
       case tabs_api::mojom::Data::Tag::kTabStrip:
       case tabs_api::mojom::Data::Tag::kPinnedTabs:
       case tabs_api::mojom::Data::Tag::kUnpinnedTabs:
+      case tabs_api::mojom::Data::Tag::kRoot:
         NOTIMPLEMENTED();
         break;
     }
@@ -212,6 +213,8 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
           return data->get_tab_group()->id;
         case tabs_api::mojom::Data::Tag::kSplitTab:
           return data->get_split_tab()->id;
+        case tabs_api::mojom::Data::Tag::kRoot:
+          return data->get_root()->id;
       }
     }
 
@@ -219,6 +222,47 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
       if (auto found_id = FindContainer(*child, target_tag);
           found_id.has_value()) {
         return found_id;
+      }
+    }
+    return std::nullopt;
+  }
+
+  tabs_api::NodeId GetIdFromContainer(
+      const tabs_api::mojom::Container& container) {
+    const auto& data = container.data;
+    switch (data->which()) {
+      case tabs_api::mojom::Data::Tag::kTab:
+        return data->get_tab()->id;
+      case tabs_api::mojom::Data::Tag::kTabStrip:
+        return data->get_tab_strip()->id;
+      case tabs_api::mojom::Data::Tag::kPinnedTabs:
+        return data->get_pinned_tabs()->id;
+      case tabs_api::mojom::Data::Tag::kUnpinnedTabs:
+        return data->get_unpinned_tabs()->id;
+      case tabs_api::mojom::Data::Tag::kTabGroup:
+        return data->get_tab_group()->id;
+      case tabs_api::mojom::Data::Tag::kSplitTab:
+        return data->get_split_tab()->id;
+      case tabs_api::mojom::Data::Tag::kRoot:
+        return data->get_root()->id;
+    }
+  }
+
+  std::optional<std::vector<tabs_api::NodeId>> FindPathToContainer(
+      const tabs_api::mojom::Container& container,
+      tabs_api::mojom::Data::Tag target_tag,
+      std::vector<tabs_api::NodeId> current_path = {}) {
+    current_path.push_back(GetIdFromContainer(container));
+
+    if (container.data->which() == target_tag) {
+      return current_path;
+    }
+
+    for (const auto& child : container.children) {
+      if (auto found_path =
+              FindPathToContainer(*child, target_tag, current_path);
+          found_path.has_value()) {
+        return found_path;
       }
     }
     return std::nullopt;
@@ -309,33 +353,33 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   auto observation = SetUpObservation();
   TabStripModel* model = GetTabStripModel();
 
-  auto get_snapshot_collection_ids = [&]() {
-    tabs_api::NodeId pinned_id;
-    tabs_api::NodeId unpinned_id;
+  auto get_snapshot_collection_paths = [&]() {
+    std::vector<tabs_api::NodeId> pinned_path;
+    std::vector<tabs_api::NodeId> unpinned_path;
     base::RunLoop run_loop;
     observation->remote->GetTabs(
         base::BindLambdaForTesting([&](TabStripService::GetTabsResult result) {
           auto root_container = std::move(result.value()->tab_strip);
 
-          auto maybe_pinned = FindContainer(
+          auto maybe_pinned = FindPathToContainer(
               *root_container, tabs_api::mojom::Data::Tag::kPinnedTabs);
-          pinned_id = maybe_pinned.value();
+          pinned_path = maybe_pinned.value();
 
-          auto maybe_unpinned = FindContainer(
+          auto maybe_unpinned = FindPathToContainer(
               *root_container, tabs_api::mojom::Data::Tag::kUnpinnedTabs);
-          unpinned_id = maybe_unpinned.value();
+          unpinned_path = maybe_unpinned.value();
 
           run_loop.Quit();
         }));
     run_loop.Run();
-    return std::make_pair(pinned_id, unpinned_id);
+    return std::make_pair(pinned_path, unpinned_path);
   };
   std::optional<GURL> url("http://example.com/");
-  auto [pinned_node_id, unpinned_node_id] = get_snapshot_collection_ids();
+  auto [pinned_path, unpinned_path] = get_snapshot_collection_paths();
   // Test creating a tab in the pinned collection
   base::RunLoop pinned_create_loop;
   observation->remote->CreateTabAt(
-      tabs_api::Position(0, tabs_api::Path({pinned_node_id})), url,
+      tabs_api::Position(0, tabs_api::Path(pinned_path)), url,
       base::BindLambdaForTesting(
           [&](TabStripService::CreateTabAtResult result) {
             ASSERT_TRUE(result.has_value());
@@ -349,14 +393,14 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
 
   const auto& pinned_event = observation->client.tab_created_events.back();
   ASSERT_EQ(1u, pinned_event->tabs.size());
-  EXPECT_EQ(pinned_node_id,
+  EXPECT_EQ(pinned_path.back(),
             pinned_event->tabs[0]->position.path().components().back());
   EXPECT_EQ(0u, pinned_event->tabs[0]->position.index());
 
   // Test creating the tab in an unpinned collection.
   base::RunLoop unpinned_create_loop;
   observation->remote->CreateTabAt(
-      tabs_api::Position(0, tabs_api::Path({unpinned_node_id})), url,
+      tabs_api::Position(0, tabs_api::Path(unpinned_path)), url,
       base::BindLambdaForTesting(
           [&](TabStripService::CreateTabAtResult result) {
             ASSERT_TRUE(result.has_value());
@@ -369,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   ASSERT_EQ(2u, observation->client.tab_created_events.size());
   const auto& unpinned_event = observation->client.tab_created_events.back();
   ASSERT_EQ(1u, unpinned_event->tabs.size());
-  EXPECT_EQ(unpinned_node_id,
+  EXPECT_EQ(unpinned_path.back(),
             unpinned_event->tabs[0]->position.path().components().back());
   EXPECT_EQ(0u, unpinned_event->tabs[0]->position.index());
 
@@ -379,9 +423,13 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   const tabs_api::NodeId group_node_id(
       tabs_api::NodeId::Type::kCollection,
       base::NumberToString(group->GetCollectionHandle().raw_value()));
+
+  std::vector<tabs_api::NodeId> group_path = unpinned_path;
+  group_path.push_back(group_node_id);
+
   base::RunLoop group_create_loop;
   observation->remote->CreateTabAt(
-      tabs_api::Position(0, tabs_api::Path({group_node_id})), url,
+      tabs_api::Position(0, tabs_api::Path(group_path)), url,
       base::BindLambdaForTesting(
           [&](TabStripService::CreateTabAtResult result) {
             ASSERT_TRUE(result.has_value());
@@ -676,8 +724,20 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   const tabs_api::NodeId to_group_collection_id(
       tabs_api::NodeId::Type::kCollection,
       base::NumberToString(group->GetCollectionHandle().raw_value()));
-  auto position =
-      tabs_api::Position(1, tabs_api::Path({to_group_collection_id}));
+
+  std::vector<tabs_api::NodeId> group_path;
+  base::RunLoop get_tabs_loop;
+  observation->remote->GetTabs(
+      base::BindLambdaForTesting([&](TabStripService::GetTabsResult result) {
+        auto root_container = std::move(result.value()->tab_strip);
+        auto maybe_group_path = FindPathToContainer(
+            *root_container, tabs_api::mojom::Data::Tag::kTabGroup);
+        group_path = maybe_group_path.value();
+        get_tabs_loop.Quit();
+      }));
+  get_tabs_loop.Run();
+
+  auto position = tabs_api::Position(1, tabs_api::Path(group_path));
   auto* tab_to_move = GetTabStripModel()->GetTabAtIndex(2);
 
   auto to_move_id = tabs_api::NodeId(

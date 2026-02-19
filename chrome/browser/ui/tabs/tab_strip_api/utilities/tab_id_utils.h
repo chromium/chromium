@@ -7,9 +7,14 @@
 
 #include "base/types/expected.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/browser_apis/tab_strip/types/path.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 
 namespace tabs_api::utils {
+
+base::expected<void, mojo_base::mojom::ErrorPtr> CheckPath(
+    const Path& path,
+    const NodeId& tab_strip);
 
 base::expected<void, mojo_base::mojom::ErrorPtr> CheckIsContentType(
     const NodeId& node_id);

@@ -160,6 +160,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
       case DataFieldTags.UNPINNED_TABS:
       case DataFieldTags.TAB_GROUP:
       case DataFieldTags.SPLIT_TAB:
+      case DataFieldTags.ROOT:
         throw new Error(`unimplemented type: ${data}`);
       default:
         assertNotReachedCase(tag);

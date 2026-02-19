@@ -9,6 +9,47 @@
 
 namespace tabs_api::utils {
 
+TEST(TabStripApiUtilsTest, CheckPath_Empty) {
+  auto result = CheckPath(Path(), NodeId(NodeId::Type::kCollection, "123"));
+  ASSERT_TRUE(result.has_value());
+}
+
+TEST(TabStripApiUtilsTest, CheckPath_Valid) {
+  NodeId root_id(NodeId::Type::kCollection, "123");
+  std::vector<NodeId> components;
+  components.emplace_back(NodeId::Root());
+  components.emplace_back(root_id);
+  Path path(std::move(components));
+
+  auto result = CheckPath(path, root_id);
+  ASSERT_TRUE(result.has_value());
+}
+
+TEST(TabStripApiUtilsTest, CheckPath_WrongTabStrip) {
+  NodeId root_id(NodeId::Type::kCollection, "123");
+  NodeId other_root_id(NodeId::Type::kCollection, "456");
+  std::vector<NodeId> components;
+  components.emplace_back(NodeId::Root());
+  components.emplace_back(other_root_id);
+  Path path(std::move(components));
+
+  auto result = CheckPath(path, root_id);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+}
+
+TEST(TabStripApiUtilsTest, CheckPath_WrongRoot) {
+  NodeId root_id(NodeId::Type::kCollection, "123");
+  std::vector<NodeId> components;
+  components.emplace_back(NodeId::Type::kCollection, "root");
+  components.emplace_back(root_id);
+  Path path(std::move(components));
+
+  auto result = CheckPath(path, root_id);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+}
+
 TEST(TabStripApiUtilsTest, CheckIsContentType) {
   auto result = CheckIsContentType(NodeId(NodeId::Type::kContent, "123"));
   ASSERT_TRUE(result.has_value());

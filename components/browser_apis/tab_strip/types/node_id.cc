@@ -12,6 +12,10 @@ bool operator==(const NodeId& a, const NodeId& b) {
   return a.Type() == b.Type() && a.Id() == b.Id();
 }
 
+NodeId NodeId::Root() {
+  return NodeId(Type::kRoot, "root");
+}
+
 NodeId NodeId::FromTabHandle(const tabs::TabHandle& handle) {
   return NodeId(Type::kContent, base::NumberToString(handle.raw_value()));
 }

@@ -151,6 +151,12 @@ mojom::TabStripService::CreateTabAtResult TabStripServiceImpl::CreateTabAt(
     const std::optional<GURL>& url) {
   auto session = session_controller_->CreateSession();
 
+  if (pos.has_value()) {
+    RETURN_IF_ERROR(utils::CheckPath(
+        pos->path(), NodeId::FromTabCollectionHandle(
+                         tab_strip_model_adapter_->GetRoot()->GetHandle())));
+  }
+
   GURL target_url;
   if (url.has_value()) {
     target_url = url.value();
@@ -276,6 +282,10 @@ mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
     const tabs_api::NodeId& id,
     const tabs_api::Position& position) {
   auto session = session_controller_->CreateSession();
+
+  RETURN_IF_ERROR(utils::CheckPath(
+      position.path(), NodeId::FromTabCollectionHandle(
+                           tab_strip_model_adapter_->GetRoot()->GetHandle())));
 
   if (position.index() >= tab_strip_model_adapter_->GetTabs().size()) {
     return base::unexpected(

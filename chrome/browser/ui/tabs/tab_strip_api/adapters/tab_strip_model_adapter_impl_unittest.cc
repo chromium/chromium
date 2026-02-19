@@ -104,8 +104,12 @@ TEST_F(TabStripModelAdapterImplTest, GetPathForCollection) {
       model_->group_model()->GetTabGroup(group_id)->GetCollectionHandle();
 
   Path path = adapter_->GetPathForCollection(group_handle);
-  ASSERT_GE(path.components().size(), 2u);
-  // Path is: Root -> Unpinned -> Group
+  // Path is: Root -> TabStrip -> Unpinned -> Group
+  ASSERT_GE(path.components().size(), 4u);
+  EXPECT_EQ(path.components()[0], NodeId::Root());
+  EXPECT_EQ(path.components()[1],
+            NodeId::FromTabCollectionHandle(
+                model_->GetRootForTesting()->GetHandle()));
   EXPECT_EQ(path.components().back(),
             NodeId::FromTabCollectionHandle(group_handle));
 }

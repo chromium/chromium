@@ -20,6 +20,8 @@ const tabs_api::NodeId& GetNodeId(const mojom::Data& data) {
       return data.get_tab_group()->id;
     case mojom::Data::Tag::kTab:
       return data.get_tab()->id;
+    case mojom::Data::Tag::kRoot:
+      return data.get_root()->id;
   }
 }
 

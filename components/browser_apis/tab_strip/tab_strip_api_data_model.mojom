@@ -61,8 +61,14 @@ struct Tab {
   bool is_blocked;
 };
 
-// Tabstrip is a TabCollection that represents the top-level collection of
-// a browser.
+// Root is a virtual top-level singleton node that serves as the parent for all
+// tab strips per profile.
+struct Root {
+  NodeId id;
+};
+
+// Tabstrip represents the primary collection of tabs for an individual browser
+// window.
 struct TabStrip {
   NodeId id;
 };
@@ -121,6 +127,7 @@ union Data {
   UnpinnedTabs unpinned_tabs;
   TabGroup tab_group;
   SplitTab split_tab;
+  Root root;
 };
 
 // Container represents a node in the tree hierarchy.

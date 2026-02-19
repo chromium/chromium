@@ -12,6 +12,8 @@ struct NodeId {
     // An unknown type. This will never be returned by the service and usually
     // indicates an invalid argument from the client.
     kUnknown,
+    // A virtual node representing the top-level state of the tree per profile.
+    kRoot,
     // A content tab.
     kContent,
     // A collection of tabs.

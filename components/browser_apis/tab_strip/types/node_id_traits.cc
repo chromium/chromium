@@ -7,6 +7,8 @@
 MojoNodeIdType mojo::EnumTraits<MojoNodeIdType, NativeNodeType>::ToMojom(
     NativeNodeType input) {
   switch (input) {
+    case NativeNodeType::kRoot:
+      return MojoNodeIdType::kRoot;
     case NativeNodeType::kContent:
       return MojoNodeIdType::kContent;
     case NativeNodeType::kCollection:
@@ -22,6 +24,9 @@ bool mojo::EnumTraits<MojoNodeIdType, NativeNodeType>::FromMojom(
     MojoNodeIdType in,
     NativeNodeType* out) {
   switch (in) {
+    case MojoNodeIdType::kRoot:
+      *out = NativeNodeType::kRoot;
+      return true;
     case MojoNodeIdType::kContent:
       *out = NativeNodeType::kContent;
       return true;

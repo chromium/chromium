@@ -75,7 +75,10 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
 
   auto result = service_->GetTabs();
 
-  const auto& tab_strip = result.value();
+  const auto& root = result.value();
+  ASSERT_TRUE(root->data->is_root());
+  ASSERT_EQ(1u, root->children.size());
+  const auto& tab_strip = root->children[0];
   ASSERT_TRUE(tab_strip->data->is_tab_strip());
   ASSERT_EQ(1u, tab_strip->children.size());
   ASSERT_TRUE(tab_strip->children[0]->data->is_tab());
