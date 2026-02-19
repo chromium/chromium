@@ -254,6 +254,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void IterateEventTimingsByAnimationFrame(uint64_t frame_index,
                                            Callback callback);
 
+  void ApplyContextMenuFallbackToPendingEvents(base::TimeTicks fallback_time);
+
   void SchedulePendingRenderCoarsenedEntries(base::TimeTicks target_time);
   void FlushPendingRenderCoarsenedEntries();
 

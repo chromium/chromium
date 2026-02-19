@@ -2148,6 +2148,74 @@ TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
   CheckUKMValues({{40, UserInteractionType::kTapOrClick}});
 }
 
+TEST_P(InteractionIdTest, ContextMenu) {
+  PointerId pointer_id = 4;
+
+  // 1. Pointerdown
+  base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
+  base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
+  base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
+  PerformanceEventTiming* pointerdown_entry = RegisterPointerEvent(
+      event_type_names::kPointerdown, pointerdown_timestamp,
+      processing_start_pointerdown, processing_end_pointerdown, pointer_id);
+
+  // pointerdown is pending and should not have an interactionId yet.
+  EXPECT_FALSE(pointerdown_entry->HasKnownInteractionID());
+  EXPECT_FALSE(pointerdown_entry->HasKnownEndTime());
+
+  // 2. Contextmenu
+  base::TimeTicks contextmenu_timestamp = GetTimeStamp(3);
+  base::TimeTicks processing_start_contextmenu = GetTimeStamp(4);
+  base::TimeTicks processing_end_contextmenu = GetTimeStamp(5);
+  PerformanceEventTiming* contextmenu_entry = RegisterPointerEvent(
+      event_type_names::kContextmenu, contextmenu_timestamp,
+      processing_start_contextmenu, processing_end_contextmenu, pointer_id);
+
+  // Now pointerdown should have a fallback time.
+  EXPECT_TRUE(pointerdown_entry->HasKnownEndTime());
+  EXPECT_EQ(pointerdown_entry->GetEventTimingReportingInfo()->fallback_reason,
+            FallbackReason::kInteractionInterruptedByContextMenu);
+  EXPECT_EQ(pointerdown_entry->GetEndTime(), processing_end_contextmenu);
+
+  SimulateAllRenderingStages(GetTimeStamp(6));
+
+  // ...And finally, after presentation time arrives, we should have an
+  // interactionId.
+  EXPECT_TRUE(pointerdown_entry->HasKnownInteractionID());
+  EXPECT_GT(pointerdown_entry->interactionId(), 0u);
+
+  // Contextmenu itself should not have an interactionId, but should have a
+  // duration and fallback.
+  EXPECT_TRUE(contextmenu_entry->HasKnownInteractionID());
+  EXPECT_EQ(contextmenu_entry->interactionId(), 0u);
+  EXPECT_TRUE(contextmenu_entry->HasKnownEndTime());
+  EXPECT_EQ(contextmenu_entry->GetEventTimingReportingInfo()->fallback_reason,
+            FallbackReason::kInteractionInterruptedByContextMenu);
+  EXPECT_EQ(contextmenu_entry->GetEndTime(), processing_end_contextmenu);
+
+  // 3. Pointerup
+  base::TimeTicks pointerup_timestamp = GetTimeStamp(6);
+  base::TimeTicks processing_start_pointerup = GetTimeStamp(7);
+  base::TimeTicks processing_end_pointerup = GetTimeStamp(8);
+  base::TimeTicks presentation_pointerup = GetTimeStamp(9);
+  PerformanceEventTiming* pointerup_entry = RegisterPointerEvent(
+      event_type_names::kPointerup, pointerup_timestamp,
+      processing_start_pointerup, processing_end_pointerup, pointer_id);
+
+  SimulateAllRenderingStages(presentation_pointerup);
+
+  // pointerup should have the same interactionId as pointerdown and a good end
+  // time.
+  EXPECT_EQ(pointerup_entry->interactionId(),
+            pointerdown_entry->interactionId());
+  EXPECT_TRUE(pointerup_entry->HasKnownEndTime());
+  EXPECT_EQ(pointerup_entry->GetEndTime(), presentation_pointerup);
+
+  // After a wait, we should see the UKM.
+  test::RunDelayedTasks(base::Seconds(1));
+  CheckUKMValues({{5, UserInteractionType::kTapOrClick}});
+}
+
 INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());
 
 class WindowPerformanceNavigationIdTest : public testing::Test {

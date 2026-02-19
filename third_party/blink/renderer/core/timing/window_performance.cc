@@ -638,8 +638,8 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, reporting_info, event.cancelable(), hit_test_target,
       DomWindow(), NavigationId());
-
   event_timing_entries_.push_back(entry);
+
   current_event_ = &event;
   event_nesting_level_++;
   return entry;
@@ -697,8 +697,20 @@ void WindowPerformance::EventTimingProcessingEnd(
     entry->SetTarget(event.RawTarget());
   }
 
-  if (entry->NeedsNextPaintMeasurement() &&
-      last_presentation_requested_for_frame_index_ < current_frame_index_) {
+  // A context menu can prevent next paint.
+  if (event.type() == event_type_names::kContextmenu) {
+    ApplyContextMenuFallbackToPendingEvents(processing_end);
+  }
+
+  // Check if we need to request presentation time feedback for this frame.
+  // Ideally, we would only request if `entry->NeedsNextPaintMeasurement()`,
+  // However, we currently rely on the presentation promise to mark the task
+  // end time for cases when ALL events in this animation frame do not need
+  // next paint (e.g. when the last event triggers a fallback to apply to all
+  // events, like contextmenu or js prompt).
+  // TODO(crbug.com/40821329): PaintTimingMixin and TaskTimeObserver will
+  // obviate the need for this.
+  if (last_presentation_requested_for_frame_index_ < current_frame_index_) {
     DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
         *DomWindow()->GetFrame(),
         BindOnce(&WindowPerformance::OnPresentationPromiseResolved,
@@ -1271,6 +1283,28 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     TRACE_EVENT_END("devtools.timeline", perfetto::Track::Global(hash),
                     entry->GetEndTime());
   }
+}
+
+void WindowPerformance::ApplyContextMenuFallbackToPendingEvents(
+    base::TimeTicks fallback_time) {
+  // A context menu interruption can prevent the subsequent "Next Paint" from
+  // occurring (or being reported), especially on platforms like Mac.
+  // We use this fallback as an alternative to the presentation time because:
+  // 1. The context menu itself is a form of visual feedback to the user.
+  // 2. Pending interactions should not have an artificially large end time
+  //    just because a modal context menu is shown.
+  // Note: Interaction ID assignment for the contextmenu event itself is
+  // handled separately in ResponsivenessMetrics. This logic is strictly
+  // about resolving the performance end time for preceding events.
+
+  IterateEventTimingsByAnimationFrame(
+      current_frame_index_, [&](auto& pending_entry) {
+        if (!pending_entry->HasKnownEndTime()) {
+          pending_entry->UpdateFallbackTime(
+              fallback_time,
+              FallbackReason::kInteractionInterruptedByContextMenu);
+        }
+      });
 }
 
 void WindowPerformance::SetHasContainerTimingChanges() {

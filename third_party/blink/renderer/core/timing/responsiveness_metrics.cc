@@ -105,10 +105,6 @@ ResponsivenessMetrics::ResponsivenessMetrics(
       pointer_flush_timer_(window_performance_->task_runner_,
                            this,
                            &ResponsivenessMetrics::FlushPointerTimerFired),
-      contextmenu_flush_timer_(
-          window_performance_->task_runner_,
-          this,
-          &ResponsivenessMetrics::ContextmenuFlushTimerFired),
       composition_end_flush_timer_(
           window_performance_->task_runner_,
           this,
@@ -220,19 +216,18 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     EventTimestamps event_timestamps) {
   const AtomicString& event_type = entry->name();
   auto pointer_id = entry->GetEventTimingReportingInfo()->pointer_id.value();
-  auto* pointer_info = pointer_id_entry_map_.Contains(pointer_id)
-                           ? pointer_id_entry_map_.at(pointer_id)
-                           : nullptr;
-  if (pointer_info) {
-    CHECK(pointer_info->GetEntry()->name() == event_type_names::kPointerdown);
-  }
+  auto* pending_pointer_down = pointer_id_entry_map_.Contains(pointer_id)
+                                   ? pointer_id_entry_map_.at(pointer_id)
+                                   : nullptr;
+  CHECK(!pending_pointer_down || pending_pointer_down->GetEntry()->name() ==
+                                     event_type_names::kPointerdown);
   LocalDOMWindow* window = window_performance_->DomWindow();
   if (event_type == event_type_names::kPointercancel) {
-    if (pointer_info) {
+    if (pending_pointer_down) {
       // Set interaction id to 0 for buffered Pointerdown.
-      pointer_info->GetEntry()->SetInteractionIdInfo(
+      pending_pointer_down->GetEntry()->SetInteractionIdInfo(
           PerformanceTimelineEntryIdInfo::kNone);
-      NotifyPointerdown(pointer_info->GetEntry());
+      FlushPointerdownAndNotifyObservers(pending_pointer_down);
       // The pointer id of the pointerdown is no longer needed.
       pointer_id_entry_map_.erase(
           entry->GetEventTimingReportingInfo()->pointer_id.value());
@@ -240,121 +235,114 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // Set interaction id to 0 for Pointercancel.
     entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
   } else if (event_type == event_type_names::kContextmenu) {
-    // Start a timer to flush event timing entries when times up. On receiving a
-    // new pointerup or pointerdown, the timer will be canceled and entries will
-    // be flushed immediately.
-    contextmenu_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
+    // A pointerdown followed by contextmenu is assigned an interactionId right
+    // away.  We leave the pointerdown in the map of pointer interactions so
+    // subsequent pointerup can still be matched.
+    if (pending_pointer_down) {
+      if (!pending_pointer_down->GetEntry()->HasKnownInteractionID()) {
+        pending_pointer_down->GetEntry()->SetInteractionIdInfo(
+            interaction_id_generator_.IncrementId());
+      }
+      FlushPointerdownAndNotifyObservers(pending_pointer_down);
+    }
     // Set interaction id to 0 for Contextmenu.
     entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
   } else if (event_type == event_type_names::kPointerdown) {
-    // If we were waiting for matching pointerup/keyup after a contextmenu, they
-    // won't show up at this point.
-    if (contextmenu_flush_timer_.IsActive()) {
-      contextmenu_flush_timer_.Stop();
-      FlushAllPointerdown();
-      FlushKeydown();
-    } else {
-      if (pointer_info) {
-        // Set interaction id to 0 for buffered Pointerdown if it's not already
-        // set.
-        if (!pointer_info->GetEntry()->HasKnownInteractionID()) {
-          pointer_info->GetEntry()->SetInteractionIdInfo(
-              PerformanceTimelineEntryIdInfo::kNone);
-        } else {
-          // Flush the existing entry with non 0 interaction id. We are starting
-          // a new interaction.
-          RecordTapOrClickUKM(window, *pointer_info);
-        }
-
-        NotifyPointerdown(pointer_info->GetEntry());
-        pointer_id_entry_map_.erase(pointer_id);
-        pointer_info = nullptr;
+    if (pending_pointer_down) {
+      // Set interaction id to 0 for buffered Pointerdown if it's not already
+      // set.
+      if (!pending_pointer_down->GetEntry()->HasKnownInteractionID()) {
+        pending_pointer_down->GetEntry()->SetInteractionIdInfo(
+            PerformanceTimelineEntryIdInfo::kNone);
+      } else {
+        // Flush the existing entry with non 0 interaction id. We are starting
+        // a new interaction.
+        RecordTapOrClickUKM(window, *pending_pointer_down);
       }
 
-      FlushAllPointerdownWithMeasuredPointerup();
+      FlushPointerdownAndNotifyObservers(pending_pointer_down);
+      pointer_id_entry_map_.erase(pointer_id);
+      pending_pointer_down = nullptr;
     }
+
+    FlushAllPointerdownWithMeasuredPointerup();
 
     pointer_id_entry_map_.Set(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
 
     return false;
   } else if (event_type == event_type_names::kPointerup) {
-    if (contextmenu_flush_timer_.IsActive()) {
-      contextmenu_flush_timer_.Stop();
-    }
-
     FlushAllPointerdownWithMeasuredPointerup();
 
     // Check if this is an orphan pointerup.  If we didn't see a pointerdown we
-    // will not have pointer_info. If we do have a pointer_info, it might be
-    // from a previous interaction if it already has multiple timestamps
-    // reported.
+    // will not have pending_pointer_down. If we do have a
+    // pending_pointer_down, it might be from a previous interaction if it
+    // already has multiple timestamps reported.
     // Early exit if it's an orphan pointerup, not treating it as an
     // interaction. crbug.com/40935137.
-    if (!pointer_info || pointer_info->GetTimeStamps().size() > 1) {
+    if (!pending_pointer_down ||
+        pending_pointer_down->GetTimeStamps().size() > 1) {
       entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
       return true;
     }
 
-    PerformanceEventTiming* pointer_down_entry = pointer_info->GetEntry();
-
     // Generate a new interaction id.
-    if (!pointer_down_entry->HasKnownInteractionID()) {
-      pointer_down_entry->SetInteractionIdInfo(
+    if (!pending_pointer_down->GetEntry()->HasKnownInteractionID()) {
+      pending_pointer_down->GetEntry()->SetInteractionIdInfo(
           interaction_id_generator_.IncrementId());
     }
 
-    entry->SetInteractionIdInfo(pointer_down_entry->GetInteractionIdInfo());
+    entry->SetInteractionIdInfo(
+        pending_pointer_down->GetEntry()->GetInteractionIdInfo());
 
     if (entry->GetEventTimingReportingInfo()->prevent_counting_as_interaction) {
-      pointer_down_entry->GetEventTimingReportingInfo()
+      pending_pointer_down->GetEntry()
+          ->GetEventTimingReportingInfo()
           ->prevent_counting_as_interaction = true;
     }
 
-    NotifyPointerdown(pointer_down_entry);
-    pointer_info->GetTimeStamps().push_back(event_timestamps);
-
+    FlushPointerdownAndNotifyObservers(pending_pointer_down);
+    pending_pointer_down->GetTimeStamps().push_back(event_timestamps);
     // Start the timer to flush the entry just created later, if needed.
     pointer_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
 
   } else if (event_type == event_type_names::kClick) {
-      // Try handle keyboard event simulated click.
-      if (TryHandleKeyboardEventSimulatedClick(entry, pointer_id)) {
-        return true;
+    // Try handle keyboard event simulated click.
+    if (TryHandleKeyboardEventSimulatedClick(entry, pointer_id)) {
+      return true;
+    }
+
+    // We now trust |pointer_id| for all click sources, including pointer,
+    // keyboard, and other (accessibility) events.
+    if (pending_pointer_down) {
+      // There is a previous pointerdown or pointerup entry. Use its
+      // interactionId.
+      // There are cases where we only see pointerdown and click, for instance
+      // with contextmenu.
+      if (!pending_pointer_down->GetEntry()->HasKnownInteractionID()) {
+        pending_pointer_down->GetEntry()->SetInteractionIdInfo(
+            interaction_id_generator_.IncrementId());
       }
+      // Click event would always have its interaction id set.
+      entry->SetInteractionIdInfo(
+          pending_pointer_down->GetEntry()->GetInteractionIdInfo());
+      pending_pointer_down->GetTimeStamps().push_back(event_timestamps);
 
-      // We now trust |pointer_id| for all click sources, including pointer,
-      // keyboard, and other (accessibility) events.
-      if (pointer_info) {
-        // There is a previous pointerdown or pointerup entry. Use its
-        // interactionId.
-        PerformanceEventTiming* previous_entry = pointer_info->GetEntry();
+      RecordTapOrClickUKM(window, *pending_pointer_down);
 
-        // There are cases where we only see pointerdown and click, for instance
-        // with contextmenu.
-        if (!previous_entry->HasKnownInteractionID()) {
-          previous_entry->SetInteractionIdInfo(
-              interaction_id_generator_.IncrementId());
-        }
-        // Click event would always have its interaction id set.
-        entry->SetInteractionIdInfo(previous_entry->GetInteractionIdInfo());
-        pointer_info->GetTimeStamps().push_back(event_timestamps);
+      // The pointer id of the pointerdown is no longer needed.
+      pointer_id_entry_map_.erase(pointer_id);
 
-        RecordTapOrClickUKM(window, *pointer_info);
-
-        // The pointer id of the pointerdown is no longer needed.
-        pointer_id_entry_map_.erase(pointer_id);
-
-      } else {
-        // There is no previous pointerdown or pointerup entry. This can happen
-        // when the user clicks using a non-pointer device. Generate a new
-        // interactionId. No need to add to the map since this is the last event
-        // in the interaction.
-        // Click event would always have its interaction id set.
-        entry->SetInteractionIdInfo(interaction_id_generator_.IncrementId());
-        RecordTapOrClickUKM(
-            window, *PointerEntryAndInfo::Create(entry, event_timestamps));
-      }
+    } else {
+      // There is no previous pointerdown or pointerup entry. This can happen
+      // when the user clicks using a non-pointer device. Generate a new
+      // interactionId. No need to add to the map since this is the last event
+      // in the interaction.
+      // Click event would always have its interaction id set.
+      entry->SetInteractionIdInfo(interaction_id_generator_.IncrementId());
+      RecordTapOrClickUKM(
+          window, *PointerEntryAndInfo::Create(entry, event_timestamps));
+    }
     // Any existing pointerup in the map cannot fire a click.
     FlushAllPointerdownWithMeasuredPointerup();
   }
@@ -380,14 +368,6 @@ void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     EventTimestamps event_timestamps) {
   auto event_type = entry->name();
   if (event_type == event_type_names::kKeydown) {
-    // If we were waiting for matching pointerup/keyup after a contextmenu, they
-    // won't show up at this point.
-    if (contextmenu_flush_timer_.IsActive()) {
-      contextmenu_flush_timer_.Stop();
-      FlushAllPointerdown();
-      FlushKeydown();
-    }
-
     CHECK(entry->GetEventTimingReportingInfo()->key_code.has_value());
     auto key_code = entry->GetEventTimingReportingInfo()->key_code.value();
     if (composition_state_ == kNonComposition) {
@@ -605,16 +585,6 @@ void ResponsivenessMetrics::FlushAllPointerdownWithMeasuredPointerup() {
   pointer_id_entry_map_.RemoveAll(pointer_ids_to_remove);
 }
 
-void ResponsivenessMetrics::ContextmenuFlushTimerFired(TimerBase*) {
-  // Pointerdown could be followed by a contextmenu without pointerup, in this
-  // case we need to treat contextmenu as if pointerup and flush the previous
-  // pointerdown with a valid interactionId. (crbug.com/1413096)
-  FlushAllPointerdown();
-  // Windows keyboard could have a contextmenu key and trigger keydown
-  // followed by contextmenu when pressed. (crbug.com/1428603)
-  FlushKeydown();
-}
-
 void ResponsivenessMetrics::FlushAllPointerdown() {
   LocalDOMWindow* window = window_performance_->DomWindow();
   if (!window) {
@@ -633,7 +603,7 @@ void ResponsivenessMetrics::FlushAllPointerdown() {
     // Pointerdown without pointerup nor click need to notify performance
     // observer since they haven't.
     if (item.value->GetTimeStamps().size() == 1u) {
-      NotifyPointerdown(entry);
+      FlushPointerdownAndNotifyObservers(item.value.Get());
     }
     RecordTapOrClickUKM(window, *item.value);
   }
@@ -642,12 +612,21 @@ void ResponsivenessMetrics::FlushAllPointerdown() {
   pointer_id_entry_map_.clear();
 }
 
-void ResponsivenessMetrics::NotifyPointerdown(
-    PerformanceEventTiming* entry) const {
+void ResponsivenessMetrics::FlushPointerdownAndNotifyObservers(
+    PointerEntryAndInfo* pointer_info) const {
+  // A pointerdown may be "flushed" to performance timeline when any number of
+  // stop criteria are met, but we need to keep it in the map of pointer
+  // interactions in order to have an interaction id for "all parts" of the
+  // interaction.  So, we guard against subsequent reports.
+  if (pointer_info->WasEntryEmitted()) {
+    return;
+  }
+  PerformanceEventTiming* entry = pointer_info->GetEntry();
   // We only delay dispatching entries when they are pointerdown.
   CHECK(entry->name() == event_type_names::kPointerdown);
   CHECK(entry->HasKnownInteractionID());
   window_performance_->NotifyAndAddEventTimingBuffer(entry);
+  pointer_info->SetEntryEmitted();
 }
 
 // Flush UKM timestamps of composition events for testing.
@@ -663,7 +642,6 @@ void ResponsivenessMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
   visitor->Trace(pointer_id_entry_map_);
   visitor->Trace(pointer_flush_timer_);
-  visitor->Trace(contextmenu_flush_timer_);
   visitor->Trace(composition_end_flush_timer_);
 }
 

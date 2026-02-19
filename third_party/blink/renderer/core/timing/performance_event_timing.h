@@ -30,6 +30,7 @@ enum class FallbackReason {
   kMacOSArtificialEvent,
   kDoesNotNeedNextPaint,
   kWindowDestroyed,
+  kInteractionInterruptedByContextMenu,
 };
 
 class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {

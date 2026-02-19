@@ -93,6 +93,14 @@ class CORE_EXPORT ResponsivenessMetrics
     PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
     Vector<EventTimestamps>& GetTimeStamps() { return timestamps_; }
 
+    // A pointerdown may be "flushed" to performance timeline when any number of
+    // stop criteria are met (e.g. contextmenu or pointerup/click arrives).
+    // However, we keep the entry in the map of pointer interactions so that the
+    // same interactionId can be shared by all related events. This flag ensures
+    // the pointerdown is only notified to observers once.
+    bool WasEntryEmitted() const { return was_entry_emitted_; }
+    void SetEntryEmitted() { was_entry_emitted_ = true; }
+
    private:
     // The PerformanceEventTiming entry that has not been sent to observers
     // yet: the event dispatch has been completed but the presentation promise
@@ -103,6 +111,7 @@ class CORE_EXPORT ResponsivenessMetrics
     // for a pointerdown, the second for a pointerup, and optionally the third
     // for a click.
     Vector<EventTimestamps> timestamps_;
+    bool was_entry_emitted_ = false;
   };
 
   explicit ResponsivenessMetrics(WindowPerformance*);
@@ -168,11 +177,6 @@ class CORE_EXPORT ResponsivenessMetrics
   // a click.
   void FlushPointerTimerFired(TimerBase*);
 
-  // Method called when |contextmenu_flush_timer_| fires. Ensures that the last
-  // pointerdown or keydown is reported, even if it does not receive a pointerup
-  // nor keyup.
-  void ContextmenuFlushTimerFired(TimerBase*);
-
   // Used to flush any entries in |pointer_id_entry_map_| which already have
   // pointerup. We either know there is no click happening or waited long enough
   // for a click to occur.
@@ -189,7 +193,12 @@ class CORE_EXPORT ResponsivenessMetrics
   // Used to flush any entries in |keyboard_sequence_based_timestamps_to_UKM_|
   void FlushSequenceBasedKeyboardEvents();
 
-  void NotifyPointerdown(PerformanceEventTiming* entry) const;
+  // This method is called to finalize a pointerdown entry and notify
+  // PerformanceObservers that it is ready to be reported (usually with a
+  // fallback time if a real paint hasn't happened yet). This can be triggered
+  // by a contextmenu event or by the arrival of a subsequent pointerup/click.
+  void FlushPointerdownAndNotifyObservers(
+      PointerEntryAndInfo* pointer_info) const;
 
   // Indicates if a key is being held for a sustained period of time
   bool IsHoldingKey(std::optional<int> key_code);
@@ -229,7 +238,6 @@ class CORE_EXPORT ResponsivenessMetrics
               IntWithZeroKeyHashTraits<PointerId>>
       pointer_id_entry_map_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> pointer_flush_timer_;
-  HeapTaskRunnerTimer<ResponsivenessMetrics> contextmenu_flush_timer_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> composition_end_flush_timer_;
 
   // Queued timestamp of current event being dispatched.
