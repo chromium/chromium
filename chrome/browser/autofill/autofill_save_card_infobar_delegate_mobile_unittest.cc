@@ -204,7 +204,8 @@ AutofillSaveCardInfoBarDelegateMobileTest::
 
   credit_card_to_save_ = credit_card;
   std::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-               payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+               payments::PaymentsAutofillClient::UploadSaveCardPromptCallback,
+               payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
       save_card_callback;
   AutofillSaveCardUiInfo ui_info;
   if (is_uploading) {

@@ -178,6 +178,7 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       break;
     }
     case CardSaveAndFillDialogUserDecision::kDeclined:
+    case CardSaveAndFillDialogUserDecision::kIgnored:
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         strike_database->AddStrike();
       }
@@ -371,6 +372,7 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       }
       break;
     case CardSaveAndFillDialogUserDecision::kDeclined:
+    case CardSaveAndFillDialogUserDecision::kIgnored:
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         strike_database->AddStrike();
       }

@@ -239,6 +239,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
     // The user explicitly declined credit card Save and Fill dialog.
     kDeclined,
+
+    // Handles cases where the iOS 'Save and Fill' dialog was ignored.
+    // Because the dialog is modal, this typically indicates the user either
+    // closed the tab/browser or tapped outside the dialog, triggering an
+    // implicit dismissal.
+    kIgnored,
   };
 
   // Used to hold the data entered by the user in the Save and Fill dialog,

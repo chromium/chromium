@@ -27,7 +27,9 @@ class MockAutofillSaveCardInfoBarDelegateMobile
       std::variant<autofill::payments::PaymentsAutofillClient::
                        LocalSaveCardPromptCallback,
                    autofill::payments::PaymentsAutofillClient::
-                       UploadSaveCardPromptCallback> callback,
+                       UploadSaveCardPromptCallback,
+                   autofill::payments::PaymentsAutofillClient::
+                       CardSaveAndFillDialogCallback> callback,
       const autofill::LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;

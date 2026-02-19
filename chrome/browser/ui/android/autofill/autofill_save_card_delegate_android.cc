@@ -14,8 +14,10 @@
 namespace autofill {
 
 AutofillSaveCardDelegateAndroid::AutofillSaveCardDelegateAndroid(
-    std::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                 payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+    std::variant<
+        payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+        payments::PaymentsAutofillClient::UploadSaveCardPromptCallback,
+        payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
         callback,
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     content::WebContents* web_contents)

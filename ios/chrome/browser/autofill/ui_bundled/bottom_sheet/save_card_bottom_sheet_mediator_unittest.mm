@@ -138,7 +138,9 @@ class MockSaveCardBottomSheetModel : public autofill::SaveCardBottomSheetModel {
       std::variant<autofill::payments::PaymentsAutofillClient::
                        LocalSaveCardPromptCallback,
                    autofill::payments::PaymentsAutofillClient::
-                       UploadSaveCardPromptCallback> save_card_callback,
+                       UploadSaveCardPromptCallback,
+                   autofill::payments::PaymentsAutofillClient::
+                       CardSaveAndFillDialogCallback> save_card_callback,
       autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options)
       : SaveCardBottomSheetModel(
             std::move(ui_info),
@@ -160,7 +162,9 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
     using Variant = std::variant<
         autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
         autofill::payments::PaymentsAutofillClient::
-            UploadSaveCardPromptCallback>;
+            UploadSaveCardPromptCallback,
+        autofill::payments::PaymentsAutofillClient::
+            CardSaveAndFillDialogCallback>;
     std::unique_ptr<MockSaveCardBottomSheetModel> model =
         std::make_unique<MockSaveCardBottomSheetModel>(
             CreateAutofillSaveCardUiInfo(for_upload),

@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -402,6 +404,95 @@ TEST_P(AutofillSaveCardDelegateTest, MetricsOnUiCanceledWhenSaveWithCvc) {
                                : kUserActionMetricNameLocal,
                     kSaveWithCvcSuffix}),
       InfoBarMetric::INFOBAR_DENIED, 1);
+}
+
+using CardSaveAndFillDialogUserDecision =
+    payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision;
+using UserProvidedCardSaveAndFillDetails =
+    payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails;
+using SaveAndFillCallbackArgs = std::pair<CardSaveAndFillDialogUserDecision,
+                                          UserProvidedCardSaveAndFillDetails>;
+
+// Matcher of UserProvidedCardDetails matching equal fields.
+MATCHER_P(EqualToUserProvidedCardSaveAndFillDetails, details, "") {
+  return details.card_number == arg.card_number &&
+         details.security_code == arg.security_code &&
+         details.expiration_date_month == arg.expiration_date_month &&
+         details.expiration_date_year == arg.expiration_date_year;
+}
+
+// Matches a the UploadSaveCardPromptCallback arguments to an
+// UploadCallbackArgs.
+testing::Matcher<SaveAndFillCallbackArgs> EqualToSaveAndFillCallbackArgs(
+    CardSaveAndFillDialogUserDecision decision,
+    UserProvidedCardSaveAndFillDetails details) {
+  return testing::AllOf(
+      testing::Field(&SaveAndFillCallbackArgs::first, decision),
+      testing::Field(&SaveAndFillCallbackArgs::second,
+                     EqualToUserProvidedCardSaveAndFillDetails(details)));
+}
+
+class AutofillSaveCardDelegateForSaveAndFillTest : public ::testing::Test {
+ protected:
+  void SaveAndFillCallback(
+      CardSaveAndFillDialogUserDecision decision,
+      const UserProvidedCardSaveAndFillDetails& user_card_details);
+  payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+  MakeSaveAndFillCallback();
+  AutofillSaveCardDelegate CreateDelegate();
+
+  std::vector<SaveAndFillCallbackArgs> save_and_fill_offer_decisions_;
+};
+
+void AutofillSaveCardDelegateForSaveAndFillTest::SaveAndFillCallback(
+    CardSaveAndFillDialogUserDecision decision,
+    const UserProvidedCardSaveAndFillDetails& user_card_details) {
+  save_and_fill_offer_decisions_.emplace_back(decision, user_card_details);
+}
+
+payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+AutofillSaveCardDelegateForSaveAndFillTest::MakeSaveAndFillCallback() {
+  return base::BindOnce(
+      &AutofillSaveCardDelegateForSaveAndFillTest::SaveAndFillCallback,
+      base::Unretained(this));
+}
+
+AutofillSaveCardDelegate
+AutofillSaveCardDelegateForSaveAndFillTest::CreateDelegate() {
+  return AutofillSaveCardDelegate(MakeSaveAndFillCallback(), /*options=*/{});
+}
+
+TEST_F(AutofillSaveCardDelegateForSaveAndFillTest,
+       OnUiUpdatedAndAcceptedForSaveAndFill) {
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.card_number = u"5555555555554444";
+  details.security_code = u"123";
+  details.expiration_date_month = u"12";
+  details.expiration_date_year = base::UTF8ToUTF16(test::NextYear());
+
+  CreateDelegate().OnUiUpdatedAndAcceptedForSaveAndFill(details);
+
+  ASSERT_EQ(save_and_fill_offer_decisions_.size(), 1u);
+  EXPECT_EQ(save_and_fill_offer_decisions_[0].first,
+            CardSaveAndFillDialogUserDecision::kAccepted);
+  EXPECT_EQ(save_and_fill_offer_decisions_[0].second.card_number,
+            details.card_number);
+}
+
+TEST_F(AutofillSaveCardDelegateForSaveAndFillTest, OnUiIgnoredRunsCallback) {
+  CreateDelegate().OnUiIgnored();
+
+  EXPECT_THAT(save_and_fill_offer_decisions_,
+              testing::Contains(EqualToSaveAndFillCallbackArgs(
+                  CardSaveAndFillDialogUserDecision::kIgnored, {})));
+}
+
+TEST_F(AutofillSaveCardDelegateForSaveAndFillTest, OnUiCanceledRunsCallback) {
+  CreateDelegate().OnUiCanceled();
+
+  EXPECT_THAT(save_and_fill_offer_decisions_,
+              testing::Contains(EqualToSaveAndFillCallbackArgs(
+                  CardSaveAndFillDialogUserDecision::kDeclined, {})));
 }
 
 }  // namespace autofill

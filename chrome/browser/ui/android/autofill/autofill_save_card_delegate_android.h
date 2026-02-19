@@ -26,7 +26,8 @@ class AutofillSaveCardDelegateAndroid : public AutofillSaveCardDelegate {
   AutofillSaveCardDelegateAndroid(
       std::variant<
           payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-          payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+          payments::PaymentsAutofillClient::UploadSaveCardPromptCallback,
+          payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
           callback,
       payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       content::WebContents* web_contents);

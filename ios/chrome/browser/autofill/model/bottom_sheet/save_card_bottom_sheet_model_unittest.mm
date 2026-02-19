@@ -77,7 +77,9 @@ class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {
       std::variant<autofill::payments::PaymentsAutofillClient::
                        LocalSaveCardPromptCallback,
                    autofill::payments::PaymentsAutofillClient::
-                       UploadSaveCardPromptCallback> save_card_callback)
+                       UploadSaveCardPromptCallback,
+                   autofill::payments::PaymentsAutofillClient::
+                       CardSaveAndFillDialogCallback> save_card_callback)
       : AutofillSaveCardDelegate(
             std::move(save_card_callback),
             payments::PaymentsAutofillClient::SaveCreditCardOptions()) {}
@@ -100,7 +102,9 @@ class SaveCardBottomSheetModelTest : public PlatformTest {
     using Variant = std::variant<
         autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
         autofill::payments::PaymentsAutofillClient::
-            UploadSaveCardPromptCallback>;
+            UploadSaveCardPromptCallback,
+        autofill::payments::PaymentsAutofillClient::
+            CardSaveAndFillDialogCallback>;
     std::unique_ptr<MockAutofillSaveCardDelegate> delegate =
         std::make_unique<MockAutofillSaveCardDelegate>(
             for_upload
