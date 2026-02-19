@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
@@ -70,7 +71,7 @@ public class NtpCustomizationConfigManager {
          */
         default void onBackgroundImageChanged(
                 Bitmap originalBitmap,
-                @Nullable BackgroundImageInfo backgroundImageInfo,
+                BackgroundImageInfo backgroundImageInfo,
                 boolean fromInitialization,
                 @NtpBackgroundType int oldType,
                 @NtpBackgroundType int newType) {}
@@ -219,9 +220,15 @@ public class NtpCustomizationConfigManager {
                 if (mOriginalBitmap != null) {
                     // It is possible that when addListener() is called, the background image hasn't
                     // been loaded, skip notifying the listener now.
+                    BackgroundImageInfo backgroundImageInfo = mBackgroundImageInfo;
+                    if (backgroundImageInfo == null) {
+                        backgroundImageInfo =
+                                NtpCustomizationUtils.getDefaultBackgroundImageInfo(
+                                        ContextUtils.getApplicationContext(), mOriginalBitmap);
+                    }
                     listener.onBackgroundImageChanged(
                             mOriginalBitmap,
-                            mBackgroundImageInfo,
+                            backgroundImageInfo,
                             /* fromInitialization= */ true,
                             NtpBackgroundType.DEFAULT,
                             mBackgroundType);
@@ -313,12 +320,16 @@ public class NtpCustomizationConfigManager {
             @NtpBackgroundType int oldBackgroundType,
             boolean fromInitialization) {
         mOriginalBitmap = bitmap;
-        mBackgroundImageInfo = backgroundImageInfo;
+        mBackgroundImageInfo =
+                backgroundImageInfo == null
+                        ? NtpCustomizationUtils.getDefaultBackgroundImageInfo(
+                                ContextUtils.getApplicationContext(), bitmap)
+                        : backgroundImageInfo;
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(mBackgroundType);
         cleanupChromeColors();
 
         notifyBackgroundImageChanged(
-                bitmap, backgroundImageInfo, fromInitialization, oldBackgroundType);
+                bitmap, mBackgroundImageInfo, fromInitialization, oldBackgroundType);
     }
 
     /**
@@ -382,7 +393,7 @@ public class NtpCustomizationConfigManager {
     @VisibleForTesting
     public void notifyBackgroundImageChanged(
             Bitmap originalBitmap,
-            @Nullable BackgroundImageInfo backgroundImageInfo,
+            BackgroundImageInfo backgroundImageInfo,
             boolean fromInitialization,
             @NtpBackgroundType int oldType) {
         for (HomepageStateListener listener : mHomepageStateListeners) {

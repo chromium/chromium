@@ -970,11 +970,10 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testCalculateInitialThemeCollectionImageMatrices() {
+    public void testCalculateDefaultBackgroundImageInfo() {
         Bitmap bitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo info =
-                NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
-                        mContext, bitmap);
+                NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
         assertNotNull(info);
         assertNotNull(info.getPortraitMatrix());
         assertNotNull(info.getLandscapeMatrix());

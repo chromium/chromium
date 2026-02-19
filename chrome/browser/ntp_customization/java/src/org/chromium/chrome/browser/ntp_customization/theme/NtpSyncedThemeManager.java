@@ -88,7 +88,7 @@ public class NtpSyncedThemeManager {
                 (bitmap) -> {
                     if (bitmap != null) {
                         BackgroundImageInfo backgroundImageInfo =
-                                NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
+                                NtpCustomizationUtils.getDefaultBackgroundImageInfo(
                                         mContext, bitmap);
                         NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(
                                 info, bitmap, backgroundImageInfo);

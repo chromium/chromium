@@ -531,7 +531,7 @@ public class FeedSurfaceCoordinator
                         @Override
                         public void onBackgroundImageChanged(
                                 Bitmap originalBitmap,
-                                @Nullable BackgroundImageInfo backgroundImageInfo,
+                                BackgroundImageInfo backgroundImageInfo,
                                 boolean fromInitialization,
                                 @NtpBackgroundType int oldType,
                                 @NtpBackgroundType int newType) {
@@ -705,7 +705,7 @@ public class FeedSurfaceCoordinator
     // Sets the background image for the embedder NTP.
     private void setBackground(
             Bitmap originalBitmap,
-            @Nullable BackgroundImageInfo backgroundImageInfo,
+            BackgroundImageInfo backgroundImageInfo,
             @NtpBackgroundType int backgroundType) {
         if (mNtpHeader != null) {
             mNtpHeader.setBackgroundColor(Color.TRANSPARENT);

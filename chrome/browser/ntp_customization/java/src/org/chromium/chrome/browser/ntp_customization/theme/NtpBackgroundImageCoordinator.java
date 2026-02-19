@@ -87,7 +87,7 @@ public class NtpBackgroundImageCoordinator {
      */
     public void setBackground(
             Bitmap originalBitmap,
-            @Nullable BackgroundImageInfo backgroundImageInfo,
+            BackgroundImageInfo backgroundImageInfo,
             @NtpBackgroundType int backgroundType) {
         mOriginalBitmap = originalBitmap;
         mBackgroundImageType = backgroundType;
