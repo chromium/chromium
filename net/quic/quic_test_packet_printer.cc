@@ -33,6 +33,14 @@ auto QuicFrameDataAsByteSpan(const QuicCryptoFrame& frame) {
       base::as_bytes(base::span(frame.data_buffer, frame.data_length)));
 }
 
+auto QuicFrameDataAsByteSpan(const QuicDatagramFrame& frame) {
+  // SAFETY: In a test context, `frame.data` should always be set. `frame.data`
+  // points to a valid, contiguous memory region of size `frame.datagram_length`
+  // bytes.
+  return UNSAFE_BUFFERS(
+      base::as_bytes(base::span(frame.data, frame.datagram_length)));
+}
+
 class QuicPacketPrinter : public QuicFramerVisitorInterface {
  public:
   explicit QuicPacketPrinter(QuicFramer* framer, std::ostream* output)
@@ -217,7 +225,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     // In a test context, `frame.data` should always be set.
     CHECK(frame.data);
     *output_ << "         data: { "
-             << base::HexEncode(frame.data, frame.datagram_length) << " }\n";
+             << base::HexEncode(QuicFrameDataAsByteSpan(frame)) << " }\n";
     return true;
   }
   bool OnHandshakeDoneFrame(const QuicHandshakeDoneFrame& frame) override {
