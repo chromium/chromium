@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
@@ -677,8 +678,20 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Project Panel Container.
   if (IsParentedToAndVisible(views().projects_panel_container,
                              views().browser_view)) {
-    const int target_width =
-        views().projects_panel_container->GetPreferredSize().width();
+    int target_width = projects_panel::kProjectsPanelMinWidth;
+    bool elevated = true;
+    if (tab_strip_type == TabStripType::kVertical) {
+      elevated = horizontal_layout.vertical_tab_strip_width <
+                 projects_panel::kProjectsPanelMinWidth;
+      if (!elevated) {
+        target_width = std::max(target_width - views::Separator::kThickness,
+                                horizontal_layout.vertical_tab_strip_width -
+                                    views::Separator::kThickness);
+      }
+    }
+    views().projects_panel_container->SetTargetWidth(target_width);
+    views().projects_panel_container->SetIsElevated(elevated);
+
     const double reveal_amount =
         views().projects_panel_container->GetResizeAnimationValue();
     const int visible_width = base::ClampFloor(target_width * reveal_amount);

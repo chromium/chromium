@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "ui/events/event_observer.h"
@@ -59,6 +60,12 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   double GetResizeAnimationValue() const;
 
+  // Set the width of the panel when it is fully expanded.
+  void SetTargetWidth(int target_width);
+
+  // Set whether the panel should appear elevated with rounded borders.
+  void SetIsElevated(bool elevated);
+
   // views::View:
   void Layout(PassKey) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -66,6 +73,8 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  views::View* content_container_for_testing() { return content_container_; }
 
   static void disable_animations_for_testing();
 
@@ -115,6 +124,15 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   std::unique_ptr<tab_groups::STGTabsMenuModel> tab_group_menu_model_;
   std::unique_ptr<views::MenuRunner> tab_group_menu_runner_;
+
+  // The target width of the panel when expanded. Used when vertical tabs is
+  // enabled since the panel width needs to match when expanded.
+  int target_width_ = projects_panel::kProjectsPanelMinWidth;
+
+  // Whether the panel should show with an elevation shadow and rounded borders.
+  // The default appearance of the panel is elevated, but this must be false
+  // for the SetIsElevated call in the constructor to be effective.
+  bool elevated_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_

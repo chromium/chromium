@@ -59,6 +59,7 @@ source_set("impl") {
     "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//ui/actions",
+    "//ui/compositor_extra",
   ]
 }
 
@@ -89,7 +90,10 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "projects_panel_tab_groups_interactive_uitest.cc" ]
+  sources = [
+    "projects_panel_tab_groups_interactive_uitest.cc",
+    "projects_panel_view_interactive_uitest.cc",
+  ]
   deps = [
     ":projects",
     "//chrome/browser/tab_group_sync:factories",
@@ -103,6 +107,7 @@ source_set("interactive_ui_tests") {
     "//components/saved_tab_groups/test_support",
     "//content/test:test_support",
     "//ui/base",
+    "//ui/compositor_extra",
     "//ui/views",
   ]
 }

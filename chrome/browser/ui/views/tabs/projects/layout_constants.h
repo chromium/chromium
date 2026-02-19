@@ -31,6 +31,9 @@ inline constexpr gfx::Insets kListItemTitlePadding =
 // The padding around a list.
 inline constexpr gfx::Insets kListPadding = gfx::Insets::VH(0, 4);
 
+// Minimum width of the projects panel.
+inline constexpr int kProjectsPanelMinWidth = 240;
+
 }  // namespace projects_panel
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_LAYOUT_CONSTANTS_H_

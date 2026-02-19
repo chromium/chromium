@@ -286,6 +286,10 @@ class BrowserView : public BrowserWindow,
     return vertical_tab_strip_region_view_.get();
   }
 
+  ProjectsPanelView* projects_panel_container_for_testing() const {
+    return projects_panel_container_;
+  }
+
   // Accessor for the TabStrip.
   TabStrip* horizontal_tab_strip_for_testing() {
     return horizontal_tab_strip_region_view_->tab_strip();

@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
@@ -46,7 +47,6 @@ namespace {
 constexpr int kClipRectRightMarginForShadow = 32;
 constexpr ui::ColorId kProjectPanelBackgroundColor = ui::kColorSysSurface2;
 constexpr int kProjectPanelRightCornerRadius = 16;
-constexpr int kProjectPanelWidth = 240;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 constexpr int kShadowElevation = 2;
 // The padding around a list header.
@@ -109,10 +109,6 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   content_container_ = AddChildView(std::make_unique<views::View>());
   content_container_->SetPaintToLayer();
   content_container_->layer()->SetFillsBoundsOpaquely(false);
-  content_container_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
-      /*upper_left=*/0, kProjectPanelRightCornerRadius,
-      kProjectPanelRightCornerRadius, /*lower_left=*/0));
-
   content_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
@@ -121,14 +117,12 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
-  content_container_->SetBackground(views::CreateRoundedRectBackground(
-      kProjectPanelBackgroundColor,
-      gfx::RoundedCornersF(/*upper_left=*/0, kProjectPanelRightCornerRadius,
-                           kProjectPanelRightCornerRadius, /*lower_left=*/0)));
-
   content_shadow_ =
       std::make_unique<views::ViewShadow>(content_container_, kShadowElevation);
   content_shadow_->SetRoundedCornerRadius(kProjectPanelRightCornerRadius);
+
+  // Apply the elevated state by default.
+  SetIsElevated(true);
 
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -181,7 +175,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   SetVisible(false);
-  SetPreferredSize(gfx::Size(kProjectPanelWidth, 0));
+  SetPreferredSize(gfx::Size(projects_panel::kProjectsPanelMinWidth, 0));
   SetProperty(views::kElementIdentifierKey, kProjectsPanelViewElementId);
 }
 
@@ -236,18 +230,45 @@ double ProjectsPanelView::GetResizeAnimationValue() const {
   return resize_animation_.GetCurrentValue();
 }
 
+void ProjectsPanelView::SetTargetWidth(int target_width) {
+  if (target_width_ == target_width) {
+    return;
+  }
+  target_width_ = target_width;
+
+  InvalidateLayout();
+}
+
+void ProjectsPanelView::SetIsElevated(bool elevated) {
+  if (elevated_ == elevated) {
+    return;
+  }
+  elevated_ = elevated;
+
+  const int elevation = elevated_ ? kShadowElevation : 0;
+  content_shadow_->shadow()->SetElevation(elevation);
+
+  const int corner_radius = elevated_ ? kProjectPanelRightCornerRadius : 0;
+  content_container_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(0, corner_radius, corner_radius, 0));
+  content_container_->SetBackground(views::CreateRoundedRectBackground(
+      kProjectPanelBackgroundColor,
+      gfx::RoundedCornersF(0, corner_radius, corner_radius, 0)));
+
+  InvalidateLayout();
+}
+
 void ProjectsPanelView::Layout(PassKey) {
-  const int target_width = kProjectPanelWidth;
   const int visible_width = width();
-  content_container_->SetBounds(-(target_width - visible_width), 0,
-                                target_width, height());
+  content_container_->SetBounds(-(target_width_ - visible_width), 0,
+                                target_width_, height());
 
   // The content_container_ slides in from the left and should be clipped to the
   // left edge of the panel. However, we still want the shadow to be visible on
   // the right, so we set a clip rect that starts at x=0 but extends slightly
   // beyond the right edge.
-  layer()->SetClipRect(gfx::Rect(
-      0, 0, kProjectPanelWidth + kClipRectRightMarginForShadow, height()));
+  layer()->SetClipRect(
+      gfx::Rect(0, 0, target_width_ + kClipRectRightMarginForShadow, height()));
 }
 
 bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {

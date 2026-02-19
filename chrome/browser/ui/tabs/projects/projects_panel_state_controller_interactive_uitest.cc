@@ -3,33 +3,32 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
 namespace base::test {
 
-class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
+class ProjectsPanelStateControllerInteractiveUiTest
+    : public InteractiveBrowserTest {
  public:
-  ProjectsPanelInteractiveUiTest() {
+  ProjectsPanelStateControllerInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(/* enabled_features */
                                           {tabs::kVerticalTabs,
                                            tab_groups::kProjectsPanel},
                                           /* disabled_features */ {});
     ProjectsPanelView::disable_animations_for_testing();
   }
-  ~ProjectsPanelInteractiveUiTest() override = default;
+  ~ProjectsPanelStateControllerInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -49,7 +48,7 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // This test checks that we can click the projects panel button.
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(ProjectsPanelStateControllerInteractiveUiTest,
                        VerifyProjectsPanelButton) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
@@ -80,107 +79,6 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
       Do([this]() { RunScheduledLayouts(); }),
       WaitForHide(kProjectsPanelViewElementId),
       WaitForHide(kProjectsPanelButtonElementId));
-}
-
-// This test checks that the projects panel closes when clicking outside.
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CloseOnClickOutside) {
-  RunTestSequence(
-      // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripTopContainerElementId),
-      // Verify Initial State for Projects Panel.
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false),
-      // Click Projects Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
-      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kProjectsPanelViewElementId),
-      // Click on the Omnibox (outside the panel).
-      MoveMouseTo(kOmniboxElementId), ClickMouse(),
-      // Verify Projects Panel is hidden.
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kProjectsPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false));
-}
-
-// This is a regression test that checks that the panel stays open when clicking
-// inside (but not on a button or other interactive element).
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, StaysOpenOnClickInside) {
-  RunTestSequence(
-      // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripTopContainerElementId),
-      // Verify Initial State for Projects Panel.
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false),
-      // Click Projects Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
-      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kProjectsPanelViewElementId),
-      // Click on the Tab groups list title (inside the panel).
-      MoveMouseTo(kProjectsPanelTabGroupsListTitleElementId), ClickMouse(),
-      // Verify Projects Panel is still shown.
-      Do([this]() { RunScheduledLayouts(); }),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          true));
-}
-
-// This test checks that the projects panel closes when pressing Esc.
-// TODO(crbug.com/479270567): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, DISABLED_CloseOnEsc) {
-  RunTestSequence(
-      // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripTopContainerElementId),
-      // Verify Initial State for Projects Panel.
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false),
-      // Click Projects Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
-      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kProjectsPanelViewElementId),
-      // Press Esc.
-      Do([this]() { RunScheduledLayouts(); }),
-      SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE),
-      // Verify Projects Panel is hidden.
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kProjectsPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false));
 }
 
 }  // namespace base::test
