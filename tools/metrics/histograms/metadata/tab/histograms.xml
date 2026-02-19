@@ -84,12 +84,15 @@ chromium-metrics-reviews@google.com.
   <variant name="OrganizeTabs" summary="the Organize tabs command"/>
   <variant name="Reload" summary="the Reload command"/>
   <variant name="RemoveFromGroup" summary="the Remove from Group command"/>
+  <variant name="SendTabStripFeedback"
+      summary="the Send Tab Strip Feedback for VT command"/>
   <variant name="SendTabToSelf" summary="the Send to Your Devices command"/>
   <variant name="SwapWithActiveSplit"
       summary="the Swap with Active Split command"/>
   <variant name="ToggleGrouped" summary="the Toggle group command"/>
   <variant name="ToggleMuted" summary="the Toggle muted command"/>
   <variant name="TogglePinned" summary="the Toggle Pinned command"/>
+  <variant name="ToggleVertical" summary="the Toggle Vertical tabs command"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_strip_model.h:TabContextMenuCommand) -->

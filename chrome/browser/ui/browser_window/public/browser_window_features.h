@@ -255,7 +255,7 @@ class BrowserWindowFeatures {
 
   BrowserActions* browser_actions() { return browser_actions_.get(); }
 
-  chrome::BrowserCommandController* browser_command_controller() {
+  chrome::BrowserCommandController* browser_command_controller() const {
     return browser_command_controller_.get();
   }
 
@@ -266,6 +266,10 @@ class BrowserWindowFeatures {
 
   ChromeLabsCoordinator* chrome_labs_coordinator() {
     return chrome_labs_coordinator_.get();
+  }
+
+  ImmersiveModeController* immersive_mode_controller() {
+    return immersive_mode_controller_.get();
   }
 
   media_router::CastBrowserController* cast_browser_controller() {

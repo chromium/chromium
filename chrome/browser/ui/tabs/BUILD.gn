@@ -113,6 +113,7 @@ if (!is_android) {
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs/organization",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/user_education",
       "//components/commerce/core:commerce_constants",

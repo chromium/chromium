@@ -14,6 +14,7 @@
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -74,18 +75,21 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1028,6 +1032,35 @@ void ToolsMenuModel::Build(Browser* browser) {
 
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
+
+  if (auto* controller = tabs::VerticalTabStripStateController::From(browser)) {
+    // TODO(crbug.com/475222200): When in immersive, swapping between tab
+    // strip types create duplicate tab strips. Until that is resolved,
+    // disable the ability to swap between tab strips while in immersive.
+    if (!ImmersiveModeController::From(browser)->IsEnabled()) {
+      if (controller->ShouldDisplayVerticalTabs()) {
+        AddItemWithStringIdAndVectorIcon(this, IDC_TOGGLE_VERTICAL_TABS,
+                                         IDS_SWITCH_TO_HORIZONTAL_TAB,
+                                         kToolbarIcon);
+      } else {
+        AddItemWithStringIdAndVectorIcon(
+            this, IDC_TOGGLE_VERTICAL_TABS, IDS_SWITCH_TO_VERTICAL_TAB,
+            base::i18n::IsRTL() ? kDockToRightIcon : kDockToLeftIcon);
+        const bool use_preview_badge =
+            base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
+        const ui::NewBadgeType badge_type = use_preview_badge
+                                                ? ui::NewBadgeType::kPreview
+                                                : ui::NewBadgeType::kNew;
+        const user_education::DisplayNewBadge show_badge =
+            UserEducationService::MaybeShowNewBadge(
+                browser->GetProfile(), use_preview_badge
+                                           ? tabs::kVerticalTabsPreviewBadge
+                                           : tabs::kVerticalTabsNewBadge);
+        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
+                          show_badge, badge_type);
+      }
+    }
+  }
 
   if (CustomizeChromePageHandler::IsSupported(
           NtpCustomBackgroundServiceFactory::GetForProfile(browser->profile()),

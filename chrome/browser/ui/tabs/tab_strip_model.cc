@@ -48,9 +48,11 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -2558,6 +2560,12 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       DCHECK(web_app::HasPinnedHomeTab(this));
       return true;
 
+    case CommandToggleVertical:
+      return true;
+
+    case CommandSendTabStripFeedback:
+      return true;
+
     default:
       NOTREACHED();
   }
@@ -3026,6 +3034,26 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       // the groups are also deleted.
       ExecuteCloseTabsCommand(get_all_except_pinned_home_tab,
                               /*delete_groups=*/true);
+      break;
+    }
+    case CommandToggleVertical: {
+      base::UmaHistogramCounts1000(
+          "Tab.ContextMenu.ToggleVertical.SelectedTabsCount",
+          selection_model_.size());
+      const Browser* const browser =
+          chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
+      browser->GetFeatures().browser_command_controller()->ExecuteCommand(
+          IDC_TOGGLE_VERTICAL_TABS);
+      break;
+    }
+    case CommandSendTabStripFeedback: {
+      base::UmaHistogramCounts1000(
+          "Tab.ContextMenu.SendTabStripFeedback.SelectedTabsCount",
+          selection_model_.size());
+      const Browser* const browser =
+          chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
+      browser->GetFeatures().browser_command_controller()->ExecuteCommand(
+          IDC_VERTICAL_TABS_SEND_FEEDBACK);
       break;
     }
     case CommandAddToNewGroupFromMenuItem: {

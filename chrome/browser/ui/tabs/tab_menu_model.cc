@@ -11,6 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
@@ -345,19 +347,45 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
   AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
                       IDS_TAB_CXMENU_CLOSEOTHERTABS);
-  {
-    if (showing_vertical_tabs) {
-      AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                          IDS_TAB_CXMENU_CLOSETABSBELOW);
-    } else {
-      AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                          base::i18n::IsRTL()
-                              ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
-                              : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+
+  if (showing_vertical_tabs) {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        IDS_TAB_CXMENU_CLOSETABSBELOW);
+  } else {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+  }
+  SetEnabledAt(GetItemCount() - 1,
+               tab_strip->IsContextMenuCommandEnabled(
+                   index, TabStripModel::CommandCloseTabsToRight));
+
+  if (controller) {
+    // TODO(crbug.com/475222200): When in immersive, swapping between tab
+    // strip types create duplicate tab strips. Until that is resolved,
+    // disable the ability to swap between tab strips while in immersive.
+    BrowserWindowInterface* bwi =
+        tab_strip->delegate()->GetBrowserWindowInterface();
+    if (bwi && !bwi->GetFeatures().immersive_mode_controller()->IsEnabled()) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+      if (controller->ShouldDisplayVerticalTabs()) {
+        AddItemWithStringId(TabStripModel::CommandToggleVertical,
+                            IDS_SWITCH_TO_HORIZONTAL_TAB);
+      } else {
+        AddItemWithStringId(TabStripModel::CommandToggleVertical,
+                            IDS_SWITCH_TO_VERTICAL_TAB);
+        const bool use_preview_badge =
+            base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
+        const user_education::DisplayNewBadge show_badge =
+            UserEducationService::MaybeShowNewBadge(
+                tab_strip->profile(), use_preview_badge
+                                          ? tabs::kVerticalTabsPreviewBadge
+                                          : tabs::kVerticalTabsNewBadge);
+        SetIsNewFeatureAt(GetItemCount() - 1, show_badge);
+      }
+      AddItemWithStringId(TabStripModel::CommandSendTabStripFeedback,
+                          IDS_VERTICAL_TABS_SEND_FEEDBACK);
     }
-    SetEnabledAt(GetItemCount() - 1,
-                 tab_strip->IsContextMenuCommandEnabled(
-                     index, TabStripModel::CommandCloseTabsToRight));
   }
 }
 
