@@ -297,9 +297,9 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
   EXPECT_EQ(kMargin,
             actual_margins_custom.FindInt(::printing::kSettingMarginBottom));
   EXPECT_EQ(kMargin,
-            actual_margins_custom.FindInt(::printing::kSettingMarginTop));
+            actual_margins_custom.FindInt(::printing::kSettingMarginLeft));
   EXPECT_EQ(kMargin,
-            actual_margins_custom.FindInt(::printing::kSettingMarginTop));
+            actual_margins_custom.FindInt(::printing::kSettingMarginRight));
 
   const base::DictValue actual_media_size =
       (*serialized_settings.FindDict(::printing::kSettingMediaSize)).Clone();
