@@ -45,6 +45,11 @@ class DesktopCapturerProxy : public DesktopCapturer {
   base::WeakPtr<DesktopCapturerProxy> GetWeakPtr();
   void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
+  // Returns a callback that can be used to safely set the capturer from any
+  // thread.
+  base::OnceCallback<void(std::unique_ptr<webrtc::DesktopCapturer>)>
+  GetSetCapturerCallback();
+
   // webrtc::DesktopCapturer interface.
   void Start(Callback* callback) override;
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
@@ -72,7 +77,9 @@ class DesktopCapturerProxy : public DesktopCapturer {
                        std::unique_ptr<webrtc::DesktopFrame> frame);
 
 #if defined(WEBRTC_USE_GIO)
-  void OnMetadata(webrtc::DesktopCaptureMetadata metadata);
+  void OnMetadata(
+      base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback,
+      webrtc::DesktopCaptureMetadata metadata);
 #endif
 
   bool supports_frame_callbacks_ = false;
@@ -81,10 +88,6 @@ class DesktopCapturerProxy : public DesktopCapturer {
   scoped_refptr<base::SequencedTaskRunner> capture_task_runner_;
 
   raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
-
-#if defined(WEBRTC_USE_GIO)
-  base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> metadata_callback_;
-#endif
 
   THREAD_CHECKER(thread_checker_);
 

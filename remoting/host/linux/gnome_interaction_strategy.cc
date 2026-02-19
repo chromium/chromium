@@ -114,7 +114,8 @@ std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
   } else {
     HOST_LOG << "Video capturer for screen ID " << id
              << " will be initialized after the stream is ready.";
-    pending_desktop_capturer_proxies_[id] = proxy->GetWeakPtr();
+    pending_set_desktop_capturer_callbacks_.emplace(
+        id, proxy->GetSetCapturerCallback());
   }
   return proxy;
 }
@@ -193,14 +194,15 @@ void GnomeInteractionStrategy::OnPipewireCaptureStreamAdded(
   if (!stream) {
     return;
   }
-  auto it = pending_desktop_capturer_proxies_.find(stream->screen_id());
-  if (it == pending_desktop_capturer_proxies_.end()) {
+  auto it = pending_set_desktop_capturer_callbacks_.find(stream->screen_id());
+  if (it == pending_set_desktop_capturer_callbacks_.end()) {
     return;
   }
   if (it->second) {
-    it->second->set_capturer(std::make_unique<PipewireDesktopCapturer>(stream));
+    std::move(it->second)
+        .Run(std::make_unique<PipewireDesktopCapturer>(stream));
   }
-  pending_desktop_capturer_proxies_.erase(it);
+  pending_set_desktop_capturer_callbacks_.erase(it);
 }
 
 GnomeInteractionStrategyFactory::GnomeInteractionStrategyFactory(
