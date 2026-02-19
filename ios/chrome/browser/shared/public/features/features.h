@@ -942,4 +942,10 @@ BASE_DECLARE_FEATURE(kRecordRecentActiveDays);
 // Returns true if kRecordRecentActiveDays is enabled.
 bool IsRecordRecentActiveDaysEnabled();
 
+// Enables the AimCobrowse feature.
+BASE_DECLARE_FEATURE(kAimCobrowse);
+
+// Returns true if the AimCobrowse feature is enabled.
+bool IsAimCobrowseEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

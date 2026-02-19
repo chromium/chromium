@@ -66,6 +66,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "aim-cobrowse",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "aim-cobrowse-debug-entrypoint",
     "owners": [ "alionadangla@google.com", "bling-search@google.com" ],
     "expiry_milestone": 160

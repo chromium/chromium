@@ -1061,3 +1061,9 @@ BASE_FEATURE(kRecordRecentActiveDays, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsRecordRecentActiveDaysEnabled() {
   return base::FeatureList::IsEnabled(kRecordRecentActiveDays);
 }
+
+BASE_FEATURE(kAimCobrowse, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAimCobrowseEnabled() {
+  return base::FeatureList::IsEnabled(kAimCobrowse);
+}

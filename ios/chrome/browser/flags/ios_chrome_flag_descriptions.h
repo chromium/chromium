@@ -35,6 +35,9 @@ extern const char kAIMEligibilityServiceStartWithProfileDescription[];
 extern const char kAIMNTPEntrypointTabletName[];
 extern const char kAIMNTPEntrypointTabletDescription[];
 
+extern const char kAimCobrowseName[];
+extern const char kAimCobrowseDescription[];
+
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 

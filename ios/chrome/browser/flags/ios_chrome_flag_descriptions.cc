@@ -33,6 +33,9 @@ const char kAIMNTPEntrypointTabletName[] = "AIMNTPEntrypointTablet";
 const char kAIMNTPEntrypointTabletDescription[] =
     "Enables the AIMNTPEntrypointTablet feature.";
 
+const char kAimCobrowseName[] = "AimCobrowse";
+const char kAimCobrowseDescription[] = "Enables the AimCobrowse feature.";
+
 const char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 const char kAnimatedDefaultBrowserPromoInFREDescription[] =
