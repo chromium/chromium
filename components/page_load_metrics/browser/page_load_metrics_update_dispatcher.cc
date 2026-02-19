@@ -458,7 +458,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSoftNavigationIntervalInteractionToNextPaint(render_frame_host,
                                                        event_timings);
     UpdateSoftNavigationIntervalLayoutShift(*render_data);
-    UpdateSoftNavigation(std::move(*soft_navigation_metrics));
+    UpdateSoftNavigation(*soft_navigation_metrics);
+    UpdateSoftNavigationLargestContentfulPaint(
+        *soft_navigation_metrics->largest_contentful_paint);
   } else {
     if (!render_frame_host->GetParentOrOuterDocument()) {
       // TODO(crbug.com/40065854): This can be removed once
@@ -542,6 +544,24 @@ void PageLoadMetricsUpdateDispatcher::
         largest_contentful_paint.resource_load_timings->load_start,
         largest_contentful_paint.resource_load_timings->load_end);
   }
+}
+
+void PageLoadMetricsUpdateDispatcher::
+    ClearSoftNavigationLargestContentfulPaint() {
+  soft_navigation_contentful_paint_candidate_.Text().Reset(
+      std::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
+      /*image_bpp=*/0.0,
+      /*image_request_priority=*/std::nullopt,
+      /*image_discovery_time=*/std::nullopt,
+      /*image_load_start=*/std::nullopt,
+      /*image_load_end=*/std::nullopt);
+  soft_navigation_contentful_paint_candidate_.Image().Reset(
+      std::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
+      /*image_bpp=*/0.0,
+      /*image_request_priority=*/std::nullopt,
+      /*image_discovery_time=*/std::nullopt,
+      /*image_load_start=*/std::nullopt,
+      /*image_load_end=*/std::nullopt);
 }
 
 void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForDroppedFrames(

@@ -246,6 +246,7 @@ class PageLoadMetricsUpdateDispatcher {
 
   void UpdateSoftNavigationLargestContentfulPaint(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&);
+  void ClearSoftNavigationLargestContentfulPaint();
 
   const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
       const {

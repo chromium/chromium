@@ -1116,32 +1116,23 @@ void PageLoadTracker::OnSubframeMetadataChanged(
 
 void PageLoadTracker::OnSoftNavigationChanged(
     const mojom::SoftNavigationMetrics& new_soft_navigation_metrics) {
-  if (new_soft_navigation_metrics.Equals(*soft_navigation_metrics_)) {
+  if (new_soft_navigation_metrics.count <= soft_navigation_metrics_->count) {
     return;
   }
-
-  // TODO(crbug.com/40065440): For soft navigation detections, the count and
-  // start time should be monotonically increasing and navigation id different
-  // each time. But we do see check failures on
-  // soft_navigation_metrics.count >= soft_navigation_metrics_->count when this
-  // OnSoftNavigationChanged is only invoked by soft navigation detection.
-  // we should investigate this issue.
-
+  // Notify the observers - including and in particular, this will notify
+  // UkmPageLoadMetricsObserver. Usually, these observers will then process the
+  // previous soft navigation, and access the previous soft navigation data
+  // including LCP, CLS, and INP via the PageLoadMetricsObserverDelegate
+  // interface, which the PageLoadTracker implements.
   for (const auto& observer : observers_) {
     observer->OnSoftNavigationUpdated(new_soft_navigation_metrics);
   }
-
-  metrics_update_dispatcher_.UpdateSoftNavigationLargestContentfulPaint(
-      *new_soft_navigation_metrics.largest_contentful_paint);
-
-  // Reset the soft_navigation_interval_interaction_to_next_paint_calculator_
-  // when a new soft nav comes in.
-  if (new_soft_navigation_metrics.count > soft_navigation_metrics_->count) {
-    metrics_update_dispatcher_
-        .ResetSoftNavigationIntervalInteractionToNextPaintCalculator();
-    metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
-  }
-
+  // Now that the previous soft navigation is consumed by the observers, reset
+  // the CLS, INP, and LCP calculators, and remember the new soft navigation.
+  metrics_update_dispatcher_
+      .ResetSoftNavigationIntervalInteractionToNextPaintCalculator();
+  metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
+  metrics_update_dispatcher_.ClearSoftNavigationLargestContentfulPaint();
   soft_navigation_metrics_ = new_soft_navigation_metrics.Clone();
 }
 
