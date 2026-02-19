@@ -1,9 +1,3 @@
-# crbug.com/343335591
--FormControlsBrowserTest.Button
--FormControlsBrowserTest.Checkbox
--FormControlsBrowserTest.MultiSelect
--FormControlsBrowserTest.Select
-
 # crbug.com/343343035
 -ZoomScrollIntoViewBrowserTest.DesktopViewportMustZoom/LocalFrame
 -ZoomScrollIntoViewBrowserTest.DesktopViewportMustZoom/RemoteFrame
