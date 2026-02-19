@@ -90,8 +90,10 @@ bool IsUserEnterpriseManaged() {
 }
 
 bool IsPinProhibitedAsMainFactorByPolicy(AccountId account) {
-  return !AuthPolicyConnector::Get()->AllowedLocalAuthFactors(account)->Has(
-      ash::AshAuthFactor::kCryptohomePin);
+  auto allowed_auth_factors =
+      AuthPolicyConnector::Get()->AllowedLocalAuthFactors(account);
+  return allowed_auth_factors.has_value() &&
+         !allowed_auth_factors->Has(ash::AshAuthFactor::kCryptohomePin);
 }
 
 }  // namespace
