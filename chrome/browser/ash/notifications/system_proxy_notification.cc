@@ -72,7 +72,7 @@ void SystemProxyNotification::Show() {
       std::move(notification));
 }
 
-void SystemProxyNotification::SystemProxyNotification::OnClick() {
+void SystemProxyNotification::OnClick() {
   DCHECK(!on_click_callback_.is_null());
   std::move(on_click_callback_).Run(protection_space_, show_error_);
 }
