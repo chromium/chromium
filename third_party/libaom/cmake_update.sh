@@ -129,7 +129,8 @@ all_platforms+=" -DCONFIG_SVT_AV1=0"
 all_platforms+=" -DCONFIG_AV1_HIGHBITDEPTH=0"
 # Use real-time only build.
 all_platforms+=" -DCONFIG_REALTIME_ONLY=1"
-all_platforms+=" -DCONFIG_AV1_TEMPORAL_DENOISING=1"
+all_platforms+=" -DCONFIG_AV1_TEMPORAL_DENOISING=0"
+all_platforms+=" -DCONFIG_DENOISE=0"
 # Disable Quantization Matrix.
 all_platforms+=" -DCONFIG_QUANT_MATRIX=0"
 # avx2 optimizations account for ~0.3mb of the decoder.
