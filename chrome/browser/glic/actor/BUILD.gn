@@ -33,6 +33,7 @@ source_set("browser_tests") {
 
   if (!is_android) {
     sources = [
+      "glic_actor_action_execution_browsertest.cc",
       "glic_actor_functional_browsertest.cc",
       "glic_actor_functional_browsertest.h",
       "glic_actor_task_lifecycle_browsertest.cc",

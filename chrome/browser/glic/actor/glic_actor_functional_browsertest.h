@@ -9,7 +9,6 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/test_support/glic_functional_browsertest.h"
 #include "chrome/common/actor_webui.mojom.h"
-#include "content/public/test/browser_test_utils.h"
 
 namespace glic::actor {
 
