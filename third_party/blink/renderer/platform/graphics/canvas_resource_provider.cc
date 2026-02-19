@@ -1354,12 +1354,11 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    ShouldInitialize initialize_provider,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
   return CreateSharedImageProviderForSoftwareCompositorBase<
       CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, initialize_provider,
+      size, format, alpha_type, color_space, ShouldInitialize::kNo,
       shared_image_interface_provider, delegate);
 }
 
@@ -1383,10 +1382,10 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     const Canvas2DColorParams& color_params,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
-  return CreateForSoftwareCompositor(
-      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), ShouldInitialize::kNo,
-      shared_image_interface_provider, delegate);
+  return CreateForSoftwareCompositor(size, color_params.GetSharedImageFormat(),
+                                     color_params.GetAlphaType(),
+                                     color_params.GetGfxColorSpace(),
+                                     shared_image_interface_provider, delegate);
 }
 
 CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(

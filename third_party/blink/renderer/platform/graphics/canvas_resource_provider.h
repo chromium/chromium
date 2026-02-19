@@ -655,7 +655,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate = nullptr);
 

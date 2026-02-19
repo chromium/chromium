@@ -2003,7 +2003,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   } else {
     resource_provider_ =
         CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-            Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+            Host()->Size(), format, alpha_type, color_space,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
   Host()->UpdateMemoryUsage();

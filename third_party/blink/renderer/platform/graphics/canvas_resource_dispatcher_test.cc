@@ -133,7 +133,6 @@ class CanvasResourceDispatcherTest
         CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
             gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
             kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-            CanvasResourceProvider::ShouldInitialize::kCallClear,
             test_web_shared_image_interface_provider_.get());
   }
 
