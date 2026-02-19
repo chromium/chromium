@@ -229,7 +229,7 @@ class PerfSuite(object):
       configs = configs.Frozenset()
     for config in configs:
       if isinstance(config, str):
-        config = _GetBenchmarkConfig(config)
+        config = _TelemetryConfig(config)
       if config.name in self._configs:
         raise ValueError('Cannot have duplicate benchmarks/executables.')
       self._configs[config.name] = config
@@ -246,25 +246,24 @@ class PerfSuite(object):
   def Abridge(self, config_names):
     for name in config_names:
       del self._configs[name]
-      self._configs[name] = _GetBenchmarkConfig(
-          name, abridged=True)
+      self._configs[name] = _TelemetryConfig(name, abridged=True)
     return self
 
   def Repeat(self, config_names, pageset_repeat):
     for name in config_names:
-      self._configs[name] = _GetBenchmarkConfig(
+      self._configs[name] = _TelemetryConfig(
           name,
           abridged=self._configs[name].abridged,
           pageset_repeat=pageset_repeat)
     return self
 
 
-def _GetBenchmarkConfig(benchmark_name, abridged=False, pageset_repeat=None):
+def _TelemetryConfig(benchmark_name, abridged=False, pageset_repeat=None):
   benchmark = _ALL_BENCHMARKS_BY_NAMES[benchmark_name]
   return BenchmarkConfig(benchmark, abridged, pageset_repeat)
 
 OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
+    [_TelemetryConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'blink_perf.svg',
     'blink_perf.paint',
@@ -648,7 +647,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
 # pylint: enable=line-too-long
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
-    [_GetBenchmarkConfig('system_health.common_desktop')])
+    [_TelemetryConfig('system_health.common_desktop')])
 
 FUCHSIA_EXEC_ARGS = {
     'astro': None,
@@ -695,9 +694,9 @@ _LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(_LINUX_BENCHMARK_CONFIGS).Remove([
 ])
 # For linux-perf, which runs benchmarks that are skipped on linux-r350-perf.
 _LINUX_GPU_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('rendering.desktop'),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
-    _GetBenchmarkConfig('system_health.common_desktop'),
+    _TelemetryConfig('rendering.desktop'),
+    _TelemetryConfig('rendering.desktop.notracing'),
+    _TelemetryConfig('system_health.common_desktop'),
 ])
 _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
@@ -726,19 +725,19 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'jetstream2-no-field-trials',
     ], 11)
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2', pageset_repeat=11),
-    _GetBenchmarkConfig('speedometer3', pageset_repeat=22),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
+    _TelemetryConfig('jetstream2', pageset_repeat=11),
+    _TelemetryConfig('speedometer3', pageset_repeat=22),
+    _TelemetryConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('speedometer3', pageset_repeat=2),
-    _GetBenchmarkConfig('rendering.desktop.notracing', pageset_repeat=2),
+    _TelemetryConfig('speedometer3', pageset_repeat=2),
+    _TelemetryConfig('rendering.desktop.notracing', pageset_repeat=2),
 ])
 _MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
+    _TelemetryConfig('jetstream2'),
+    _TelemetryConfig('speedometer2'),
+    _TelemetryConfig('speedometer3'),
+    _TelemetryConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
@@ -763,13 +762,13 @@ _WIN_10_EXECUTABLE_CONFIGS = frozenset([
 ])
 _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS)
 _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('v8.browsing_desktop'),
-    _GetBenchmarkConfig('rendering.desktop', abridged=True),
+    _TelemetryConfig('v8.browsing_desktop'),
+    _TelemetryConfig('rendering.desktop', abridged=True),
 ])
 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
+    _TelemetryConfig('jetstream2'),
+    _TelemetryConfig('speedometer2'),
+    _TelemetryConfig('speedometer3'),
 ])
 _WIN_11_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'rendering.desktop',
@@ -785,14 +784,14 @@ _WIN_11_EXECUTABLE_CONFIGS = frozenset([
     _views_perftests(),
 ])
 _WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('blink_perf.dom'),
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('media.desktop'),
-    _GetBenchmarkConfig('rendering.desktop', abridged=True),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
-    _GetBenchmarkConfig('speedometer3'),
-    _GetBenchmarkConfig('system_health.common_desktop'),
-    _GetBenchmarkConfig('v8.browsing_desktop'),
+    _TelemetryConfig('blink_perf.dom'),
+    _TelemetryConfig('jetstream2'),
+    _TelemetryConfig('media.desktop'),
+    _TelemetryConfig('rendering.desktop', abridged=True),
+    _TelemetryConfig('rendering.desktop.notracing'),
+    _TelemetryConfig('speedometer3'),
+    _TelemetryConfig('system_health.common_desktop'),
+    _TelemetryConfig('v8.browsing_desktop'),
 ])
 _WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(200),
@@ -800,14 +799,14 @@ _WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
     _views_perftests(),
 ])
 _FALCON_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('blink_perf.dom'),
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('media.desktop'),
-    _GetBenchmarkConfig('rendering.desktop', abridged=True),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
-    _GetBenchmarkConfig('speedometer3'),
-    _GetBenchmarkConfig('system_health.common_desktop'),
-    _GetBenchmarkConfig('v8.browsing_desktop'),
+    _TelemetryConfig('blink_perf.dom'),
+    _TelemetryConfig('jetstream2'),
+    _TelemetryConfig('media.desktop'),
+    _TelemetryConfig('rendering.desktop', abridged=True),
+    _TelemetryConfig('rendering.desktop.notracing'),
+    _TelemetryConfig('speedometer3'),
+    _TelemetryConfig('system_health.common_desktop'),
+    _TelemetryConfig('v8.browsing_desktop'),
 ])
 _FALCON_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(200),
@@ -817,12 +816,12 @@ _FALCON_EXECUTABLE_CONFIGS = frozenset([
     _views_perftests(),
 ])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.memory_mobile'),
-    _GetBenchmarkConfig('system_health.common_mobile'),
-    _GetBenchmarkConfig('startup.mobile'),
-    _GetBenchmarkConfig('system_health.webview_startup'),
-    _GetBenchmarkConfig('v8.browsing_mobile'),
-    _GetBenchmarkConfig('speedometer3'),
+    _TelemetryConfig('system_health.memory_mobile'),
+    _TelemetryConfig('system_health.common_mobile'),
+    _TelemetryConfig('startup.mobile'),
+    _TelemetryConfig('system_health.webview_startup'),
+    _TelemetryConfig('v8.browsing_mobile'),
+    _TelemetryConfig('speedometer3'),
 ])
 _ANDROID_DEFAULT_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
@@ -835,25 +834,25 @@ _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'v8.browsing_mobile-future',
     ])
 _ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Add(
-    [_GetBenchmarkConfig('system_health.scroll_jank_mobile')]).Repeat([
+    [_TelemetryConfig('system_health.scroll_jank_mobile')]).Repeat([
         'speedometer3',
     ], 4)
 _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.common_mobile'),
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('rendering.mobile'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3', pageset_repeat=16),
+    _TelemetryConfig('system_health.common_mobile'),
+    _TelemetryConfig('jetstream2'),
+    _TelemetryConfig('rendering.mobile'),
+    _TelemetryConfig('speedometer2'),
+    _TelemetryConfig('speedometer3', pageset_repeat=16),
 ])
 # TODO(crbug.com/409326154): Remove these for the crossbench variants when
 # supported.
 _ANDROID_PIXEL9_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
+    _TelemetryConfig('jetstream2'),
 ])
 # Android Desktop (AL)
 _ANDROID_AL_BRYA_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('speedometer2'),
+    _TelemetryConfig('jetstream2'),
+    _TelemetryConfig('speedometer2'),
 ])
 _ANDROID_AL_BRYA_EXECUTABLE_CONFIGS = frozenset([
     ExecutableConfig('web_tests_cuj',
@@ -861,19 +860,19 @@ _ANDROID_AL_BRYA_EXECUTABLE_CONFIGS = frozenset([
                      estimated_runtime=10),
 ])
 _ANDROID_AL_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('rendering.mobile'),
+    _TelemetryConfig('rendering.mobile'),
 ])
 
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig('rendering.desktop')])
+    [_TelemetryConfig('rendering.desktop')])
 _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('media.mobile'),
-    _GetBenchmarkConfig('v8.browsing_mobile'),
+    _TelemetryConfig('speedometer2'),
+    _TelemetryConfig('media.mobile'),
+    _TelemetryConfig('v8.browsing_mobile'),
 ])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
+    _TelemetryConfig('speedometer2'),
+    _TelemetryConfig('speedometer3'),
 ])
 
 
