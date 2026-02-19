@@ -189,10 +189,12 @@ class AutofillBottomSheetTabHelper
   // This value is moved and should only be retrieved once per bottom sheet.
   autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
 
-  // Attaches the listeners for the payments form corresponding to `form_id`.
-  // Only attaches the listeners on newly discovered renderer ids if `only_new`
-  // is true.
-  void AttachListenersForPaymentsForm(autofill::AutofillManager& manager,
+  // Updates the listeners for the payments form corresponding to `form_id`.
+  // Only attaches the listeners on newly discovered payment fields when
+  // `only_new` is true, or attaches the listeners on all payment fields
+  // otherwise. In V3, it also detaches the listeners for the fields that are no
+  // longer related to payments (from later discovery).
+  void UpdateListenersForPaymentsForm(autofill::AutofillManager& manager,
                                       autofill::FormGlobalId form_id,
                                       bool only_new);
 
@@ -234,9 +236,6 @@ class AutofillBottomSheetTabHelper
   // Send command to show the scan save and fill Bottom Sheet.
   void ShowScanCardSaveAndFillBottomSheet(
       const autofill::FormActivityParams& params);
-
-  // Maybe shows the Payments Bottom Sheet if the conditions are met.
-  void MaybeShowPaymentsBottomSheet(autofill::FormActivityParams params);
 
   // Called when the suggestions are retrieved for the payments bottom sheet.
   void OnSuggestionsRetrievedForPaymentsBottomSheet(
