@@ -665,36 +665,44 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
   // For unpinned groups, `pinned_index` should be std::nullopt since its
   // position doesn't matter.
   const int index = GetIndexOf(guid).value();
-  const std::optional<size_t> pinned_index =
+  const std::optional<size_t> old_pinned_index =
       saved_tab_groups_[index].is_pinned() ? std::optional<size_t>(index)
                                            : std::nullopt;
 
-  // Merge group and get `preferred_pinned_index`.
   saved_tab_groups_[index].MergeRemoteGroupMetadata(
       title, color, position, creator_cache_guid, last_updater_cache_guid,
       update_time);
   if (saved_tab_groups_[index].is_shared_tab_group()) {
     saved_tab_groups_[index].SetUpdatedByAttribution(updated_by);
   }
-  std::optional<size_t> preferred_pinned_index =
-      saved_tab_groups_[index].position();
 
-  if (pinned_index != preferred_pinned_index) {
-    int new_index = 0;
-    if (preferred_pinned_index.has_value()) {
-      // If the group is pinned, find the pinned position to insert.
-      new_index = preferred_pinned_index.value();
-    } else {
-      // If the group is unpinned, find the first unpinned group index to
-      // insert.
-      for (const SavedTabGroup& group : saved_tab_groups_) {
-        if (group.is_pinned()) {
-          ++new_index;
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+    if (position.has_value()) {
+      int new_index = position.value();
+      ReorderGroupFromSync(guid, std::clamp(new_index, 0, Count() - 1));
+    }
+  } else {
+    // Get `preferred_pinned_index` after merging the group.
+    std::optional<size_t> preferred_pinned_index =
+        saved_tab_groups_[index].position();
+
+    if (old_pinned_index != preferred_pinned_index) {
+      int new_index = 0;
+      if (preferred_pinned_index.has_value()) {
+        // If the group is pinned, find the pinned position to insert.
+        new_index = preferred_pinned_index.value();
+      } else {
+        // If the group is unpinned, find the first unpinned group index to
+        // insert.
+        for (const SavedTabGroup& group : saved_tab_groups_) {
+          if (group.is_pinned()) {
+            ++new_index;
+          }
         }
       }
-    }
 
-    ReorderGroupFromSync(guid, std::min(std::max(new_index, 0), Count() - 1));
+      ReorderGroupFromSync(guid, std::clamp(new_index, 0, Count() - 1));
+    }
   }
 
   for (SavedTabGroupModelObserver& observer : observers_) {
@@ -732,6 +740,15 @@ const SavedTabGroupTab* SavedTabGroupModel::MergeRemoteTab(
   }
 
   return group->GetTab(tab_guid);
+}
+
+void SavedTabGroupModel::UpdateGroupPinnedPositionForMigration(
+    const base::Uuid& guid,
+    std::optional<size_t> pinned_position) {
+  CHECK(Contains(guid));
+
+  auto* group = GetMutableGroup(guid);
+  group->SetPinnedPositionForMigration(pinned_position);
 }
 
 void SavedTabGroupModel::ReorderGroupLocally(const base::Uuid& id,

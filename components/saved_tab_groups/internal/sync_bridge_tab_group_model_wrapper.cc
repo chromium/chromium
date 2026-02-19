@@ -103,6 +103,12 @@ const SavedTabGroupTab* SyncBridgeTabGroupModelWrapper::MergeRemoteTab(
   return model_->MergeRemoteTab(remote_tab);
 }
 
+void SyncBridgeTabGroupModelWrapper::UpdateGroupPinnedPositionForMigration(
+    const base::Uuid& group_id,
+    std::optional<size_t> pinned_position) {
+  model_->UpdateGroupPinnedPositionForMigration(group_id, pinned_position);
+}
+
 void SyncBridgeTabGroupModelWrapper::AddGroup(SavedTabGroup group) {
   CHECK_EQ(group.is_shared_tab_group(), IsSharedTabGroupData());
 

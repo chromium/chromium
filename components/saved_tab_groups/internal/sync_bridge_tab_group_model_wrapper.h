@@ -81,6 +81,12 @@ class SyncBridgeTabGroupModelWrapper {
   // Updates the tab with the given remote data.
   const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
+  // Updates the pinned position for a group. Only used when the projects panel
+  // is enabled to avoid overwriting the pinned position when updating sync.
+  void UpdateGroupPinnedPositionForMigration(
+      const base::Uuid& group_id,
+      std::optional<size_t> pinned_position);
+
   // Adds a group created remotely.
   void AddGroup(SavedTabGroup group);
 

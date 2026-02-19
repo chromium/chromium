@@ -2186,6 +2186,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDetails& proto) {
   VISIT(pinned_position);
+  VISIT(projects_position);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupAccountDataSpecifics& proto) {

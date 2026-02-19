@@ -704,6 +704,49 @@ TEST_F(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
               testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
 }
 
+TEST_F(SavedTabGroupModelTest, MergeRemoteGroupMetadata_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  RemoveTestData();
+
+  base::Uuid guid1 = base::Uuid::GenerateRandomV4();
+  base::Uuid guid2 = base::Uuid::GenerateRandomV4();
+  base::Uuid guid3 = base::Uuid::GenerateRandomV4();
+
+  // Add 3 groups.
+  saved_tab_group_model_->AddedLocally(SavedTabGroup(
+      u"Title 1", tab_groups::TabGroupColorId::kPink, {}, 0, guid1));
+  saved_tab_group_model_->AddedLocally(SavedTabGroup(
+      u"Title 2", tab_groups::TabGroupColorId::kPink, {}, 1, guid2));
+  saved_tab_group_model_->AddedLocally(SavedTabGroup(
+      u"Title 3", tab_groups::TabGroupColorId::kPink, {}, 2, guid3));
+
+  ASSERT_THAT(GetSavedTabGroupIds(), testing::ElementsAre(guid1, guid2, guid3));
+
+  // Merge group 1 and move it to position 2.
+  const SavedTabGroup* group1 = saved_tab_group_model_->Get(guid1);
+  saved_tab_group_model_->MergeRemoteGroupMetadata(
+      guid1, u"Updated Title 1", group1->color(), 2,
+      group1->creator_cache_guid(), group1->last_updater_cache_guid(),
+      group1->update_time(), /*updated_by=*/GaiaId());
+
+  // Verify group 1 is now at the end.
+  EXPECT_EQ(2, saved_tab_group_model_->Get(guid1)->position());
+  EXPECT_THAT(GetSavedTabGroupIds(), testing::ElementsAre(guid2, guid3, guid1));
+
+  // Merge group 3 and move it to position 0.
+  const SavedTabGroup* group3 = saved_tab_group_model_->Get(guid3);
+  saved_tab_group_model_->MergeRemoteGroupMetadata(
+      guid3, group3->title(), group3->color(), 0, group3->creator_cache_guid(),
+      group3->last_updater_cache_guid(), group3->update_time(),
+      /*updated_by=*/GaiaId());
+
+  // Verify group 3 is now at the front.
+  EXPECT_EQ(0, saved_tab_group_model_->Get(guid3)->position());
+  EXPECT_THAT(GetSavedTabGroupIds(), testing::ElementsAre(guid3, guid2, guid1));
+}
+
 TEST_F(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
   const GaiaId kCreator("123");
   const GaiaId kUpdater("456");
@@ -1462,6 +1505,24 @@ TEST_F(SavedTabGroupModelTest, UpdatePositionForSharedGroupFromSyncFromSync) {
     EXPECT_EQ(groups[i].saved_guid(),
               saved_tab_group_model_->saved_tab_groups()[i].saved_guid());
   }
+}
+
+TEST_F(SavedTabGroupModelTest, UpdateGroupPinnedPositionForMigration) {
+  SavedTabGroup group = test::CreateTestSavedTabGroup();
+  base::Uuid guid = group.saved_guid();
+  saved_tab_group_model_->AddedLocally(group);
+
+  EXPECT_EQ(std::nullopt,
+            saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
+
+  saved_tab_group_model_->UpdateGroupPinnedPositionForMigration(guid, 10);
+  EXPECT_EQ(10u,
+            saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
+
+  saved_tab_group_model_->UpdateGroupPinnedPositionForMigration(guid,
+                                                                std::nullopt);
+  EXPECT_EQ(std::nullopt,
+            saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
 }
 
 }  // namespace

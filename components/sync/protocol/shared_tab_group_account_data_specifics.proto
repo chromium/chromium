@@ -52,10 +52,15 @@ message SharedTabDetails {
   optional int64 last_seen_timestamp_windows_epoch = 2;
 }
 
+// The fields in this message are equivalent to and compared against the fields
+// of the same name in message SavedTabGroup in saved_tab_group_specifics.proto.
 message SharedTabGroupDetails {
-  // Position of the pinned tab group in bookmark bar on Desktop.
-  // This is equivalent to and compared against the pinned_position
-  // of message SavedTabGroup in saved_tab_group_specifics.proto.
+  // Position of the pinned tab group in bookmark bar on Desktop. This will be
+  // replaced by the projects_position when the projects panel is launched.
   optional int64 pinned_position = 1;
+
+  // Position of the tab group in the projects panel on Desktop. This will
+  // replace the pinned_position when the projects panel is launched.
+  optional int64 projects_position = 2;
 }
 // LINT.ThenChange(//components/saved_tab_groups/internal/shared_tab_group_account_data_sync_bridge.cc:TrimSpecifics)

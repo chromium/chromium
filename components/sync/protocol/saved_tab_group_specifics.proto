@@ -51,8 +51,9 @@ message SavedTabGroup {
   // The color of the group, mapped to tab_groups::TabGroupColorId.
   optional SavedTabGroupColor color = 3;
 
-  // Position of the pinned tab group in bookmark bar on Desktop. This will
-  // replace the position field in Tab Group V2.
+  // Position of the pinned tab group in bookmark bar on Desktop. This replaced
+  // the position field in Tab Groups V2 and will be replaced by the
+  // projects_position field when the projects panel is launched.
   optional int64 pinned_position = 4;
 
   reserved 5;
@@ -60,6 +61,10 @@ message SavedTabGroup {
   // The guid of a bookmark node. This is used for associating a bookmark
   // folder with a tab group by bookmarks tab group conversion.
   optional string bookmark_node_id = 6;
+
+  // Position of the tab group in the projects panel on Desktop. This will
+  // replace the pinned_position field when the projects panel is launched.
+  optional int64 projects_position = 7;
 }
 
 // Sync protocol datatype extension for saved tab group tabs. SavedTabGroupTab

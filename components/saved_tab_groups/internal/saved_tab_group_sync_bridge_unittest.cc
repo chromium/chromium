@@ -1852,4 +1852,47 @@ TEST_F(SavedTabGroupSyncBridgeTest, ShouldPopulateUnknownFieldsOnLocalChanges) {
   model()->UpdateVisualDataLocally(local_tab_group_id, &visual_data);
 }
 
+TEST_F(SavedTabGroupSyncBridgeTest,
+       PinnedPositionStoredWhenProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kProjectsPanel);
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroup group(u"Title", tab_groups::TabGroupColorId::kBlue, {}, 0,
+                      group_guid);
+  model()->AddedLocally(group);
+
+  // Initially pinned_position_for_migration is empty.
+  EXPECT_FALSE(
+      model()->Get(group_guid)->pinned_position_for_migration().has_value());
+
+  // Create a sync update for the same group with a pinned_position.
+  sync_pb::SavedTabGroupSpecifics specifics;
+  specifics.set_guid(group_guid.AsLowercaseString());
+  // Set update time to be in the future to ensure it's merged.
+  specifics.set_update_time_windows_epoch_micros(
+      (base::Time::Now() + base::Minutes(1))
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  specifics.mutable_group()->set_title("New Title");
+  specifics.mutable_group()->set_color(
+      sync_pb::SavedTabGroup_SavedTabGroupColor_SAVED_TAB_GROUP_COLOR_CYAN);
+  specifics.mutable_group()->set_pinned_position(10u);
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateEntityChange(
+      specifics, syncer::EntityChange::ChangeType::ACTION_UPDATE));
+
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  // Verify that pinned_position_for_migration is now 10.
+  EXPECT_EQ(10u, model()->Get(group_guid)->pinned_position_for_migration());
+
+  // Also verify other fields were merged.
+  EXPECT_EQ(u"New Title", model()->Get(group_guid)->title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kCyan,
+            model()->Get(group_guid)->color());
+}
+
 }  // namespace tab_groups

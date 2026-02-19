@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/data_sharing/test_support/extended_shared_tab_group_account_data_specifics.pb.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/features.h"
@@ -136,6 +137,22 @@ CreateTabGroupAccountSpecificsForGroup(const CollaborationId& collaboration_id,
       specifics.mutable_shared_tab_group_details();
   if (position.has_value()) {
     shared_tab_group_details->set_pinned_position(position.value());
+  }
+  return specifics;
+}
+
+sync_pb::SharedTabGroupAccountDataSpecifics
+CreateTabGroupAccountSpecificsForGroupV2(
+    const CollaborationId& collaboration_id,
+    const SavedTabGroup& group,
+    std::optional<size_t> position) {
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics;
+  specifics.set_guid(group.saved_guid().AsLowercaseString());
+  specifics.set_collaboration_id(collaboration_id.value());
+  sync_pb::SharedTabGroupDetails* shared_tab_group_details =
+      specifics.mutable_shared_tab_group_details();
+  if (position.has_value()) {
+    shared_tab_group_details->set_projects_position(position.value());
   }
   return specifics;
 }
@@ -337,6 +354,8 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
   SavedTabGroupModel& model() { return *model_; }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
   // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
@@ -344,7 +363,6 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   std::unique_ptr<SharedTabGroupAccountDataSyncBridge> bridge_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SharedTabGroupAccountDataSyncBridgeTest, ShouldReturnClientTag) {
@@ -998,6 +1016,8 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   account_data_specifics2->set_update_time_windows_epoch_micros(1234567890);
   account_data_specifics2->mutable_shared_tab_group_details()
       ->set_pinned_position(11);
+  account_data_specifics2->mutable_shared_tab_group_details()
+      ->set_projects_position(12);
   account_data_specifics2->set_version(999);
 
   EXPECT_THAT(bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
@@ -1309,6 +1329,176 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   model().AddedLocally(created_group);
   model().UpdateArchivalStatus(guid, true);
   model().UpdateArchivalStatus(guid, false);
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       TabGroupAddedLocallyShouldSavePosition_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  const CollaborationId kCollaborationId("collaboration");
+  const int kPosition = 5;
+  SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  created_group.SetPosition(kPosition);
+  std::string client_tag = CreateClientTagForSharedGroup(created_group);
+
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  // Verify the position is updated in the position field.
+  EXPECT_EQ(GetNumTabGroupDetailsInStore(), 1u);
+  auto entries = GetEntriesInStore(/*is_tab_details=*/false);
+  ASSERT_TRUE(entries.contains(client_tag));
+  EXPECT_EQ(kPosition,
+            entries[client_tag].shared_tab_group_details().projects_position());
+  EXPECT_FALSE(
+      entries[client_tag].shared_tab_group_details().has_pinned_position());
+}
+
+TEST_F(
+    SharedTabGroupAccountDataSyncBridgeTest,
+    TabGroupAddedLocallyShouldSavePinnedPositionForMigration_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  const CollaborationId kCollaborationId("collaboration");
+  const int kPosition = 5;
+  const int kPinnedPosition = 10;
+  SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  created_group.SetPosition(kPosition);
+  created_group.SetPinnedPositionForMigration(kPinnedPosition);
+  std::string client_tag = CreateClientTagForSharedGroup(created_group);
+
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  // Verify both positions are updated in the store.
+  EXPECT_EQ(GetNumTabGroupDetailsInStore(), 1u);
+  auto entries = GetEntriesInStore(/*is_tab_details=*/false);
+  ASSERT_TRUE(entries.contains(client_tag));
+  EXPECT_EQ(kPosition,
+            entries[client_tag].shared_tab_group_details().projects_position());
+  EXPECT_EQ(kPinnedPosition,
+            entries[client_tag].shared_tab_group_details().pinned_position());
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       TabGroupAddedLocallyShouldSavePosition_ProjectsPanelDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(tab_groups::kProjectsPanel);
+
+  const CollaborationId kCollaborationId("collaboration");
+  const int kPosition = 5;
+  SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  created_group.SetPosition(kPosition);
+  std::string client_tag = CreateClientTagForSharedGroup(created_group);
+
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  // Verify the position is updated in the pinned_position field.
+  EXPECT_EQ(GetNumTabGroupDetailsInStore(), 1u);
+  auto entries = GetEntriesInStore(/*is_tab_details=*/false);
+  ASSERT_TRUE(entries.contains(client_tag));
+  EXPECT_FALSE(
+      entries[client_tag].shared_tab_group_details().has_projects_position());
+  EXPECT_EQ(kPosition,
+            entries[client_tag].shared_tab_group_details().pinned_position());
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       IncrementalUpdateShouldSetPosition_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  const CollaborationId kCollaborationId("collaboration");
+  const SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  const base::Uuid& created_group_id = created_group.saved_guid();
+
+  // Add group locally.
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  // Receive update from sync with both position and pinned_position.
+  syncer::EntityChangeList change_list;
+  std::optional<size_t> position = 5;
+  std::optional<size_t> pinned_position = 10;
+  auto specifics = CreateTabGroupAccountSpecificsForGroupV2(
+      kCollaborationId, created_group, position);
+  specifics.mutable_shared_tab_group_details()->set_pinned_position(
+      pinned_position.value());
+  change_list.push_back(CreateAddEntityChange(specifics));
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  // Verify position is preferred when the feature is enabled.
+  const SavedTabGroup* group = model().Get(created_group_id);
+  EXPECT_EQ(position, group->position());
+  EXPECT_EQ(pinned_position, group->pinned_position_for_migration());
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       IncrementalUpdateShouldSetPosition_ProjectsPanelDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(tab_groups::kProjectsPanel);
+
+  const CollaborationId kCollaborationId("collaboration");
+  const SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  const base::Uuid& created_group_id = created_group.saved_guid();
+
+  // Add group locally.
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  // Receive update from sync with both position and pinned_position.
+  syncer::EntityChangeList change_list;
+  std::optional<size_t> position = 5;
+  std::optional<size_t> pinned_position = 10;
+  auto specifics = CreateTabGroupAccountSpecificsForGroupV2(
+      kCollaborationId, created_group, position);
+  specifics.mutable_shared_tab_group_details()->set_pinned_position(
+      pinned_position.value());
+  change_list.push_back(CreateAddEntityChange(specifics));
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  // Verify pinned_position is preferred when the feature is disabled.
+  const SavedTabGroup* group = model().Get(created_group_id);
+  EXPECT_EQ(pinned_position, group->position());
+}
+
+TEST_F(
+    SharedTabGroupAccountDataSyncBridgeTest,
+    IncrementalUpdateShouldSetPinnedPositionForMigration_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  const CollaborationId kCollaborationId("collaboration");
+  const SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  const base::Uuid& created_group_id = created_group.saved_guid();
+
+  // Add group locally.
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  // Receive update from sync with only pinned_position (no projects_position).
+  syncer::EntityChangeList change_list;
+  std::optional<size_t> pinned_position = 10;
+  // Create a group with only a pinned_position.
+  auto specifics = CreateTabGroupAccountSpecificsForGroup(
+      kCollaborationId, created_group, pinned_position);
+  change_list.push_back(CreateAddEntityChange(specifics));
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  // Verify position is not updated, since projects_position was missing, but
+  // pinned_position_for_migration is updated.
+  const SavedTabGroup* group = model().Get(created_group_id);
+  EXPECT_EQ(std::nullopt, group->position());
+  EXPECT_EQ(pinned_position, group->pinned_position_for_migration());
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/internal/personal_collaboration_data_conversion_utils.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
@@ -57,6 +58,7 @@ sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
     sync_pb::SharedTabGroupDetails* tab_group =
         trimmed_account_specifics.mutable_shared_tab_group_details();
     tab_group->clear_pinned_position();
+    tab_group->clear_projects_position();
 
     if (tab_group->ByteSizeLong() == 0) {
       trimmed_account_specifics.clear_shared_tab_group_details();
@@ -639,7 +641,20 @@ void SharedTabGroupAccountDataSyncBridge::UpdateTabGroupDetailsModel(
 
   // If the group is in the model, update its position based on the specifics.
   std::optional<size_t> position;
-  if (specifics.shared_tab_group_details().has_pinned_position()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+    if (specifics.shared_tab_group_details().has_projects_position()) {
+      position = specifics.shared_tab_group_details().projects_position();
+    }
+
+    // Copy over the pinned_position to avoid overwriting it when performing
+    // a sync update.
+    std::optional<size_t> pinned_position = std::nullopt;
+    if (specifics.shared_tab_group_details().has_pinned_position()) {
+      pinned_position = specifics.shared_tab_group_details().pinned_position();
+    }
+    model_->UpdateGroupPinnedPositionForMigration(tab_group_id,
+                                                  pinned_position);
+  } else if (specifics.shared_tab_group_details().has_pinned_position()) {
     position = specifics.shared_tab_group_details().pinned_position();
   }
   model_->UpdatePositionForSharedGroupFromSync(tab_group_id, position);
@@ -805,14 +820,21 @@ void SharedTabGroupAccountDataSyncBridge::
       GetSpecificsForStorageKey(client_tag);
   bool has_changed = false;
   if (specifics.has_value()) {
-    std::optional<size_t> specifics_pinned_position;
+    std::optional<size_t> specifics_position;
     if (specifics->has_shared_tab_group_details()) {
-      if (specifics->shared_tab_group_details().has_pinned_position()) {
-        specifics_pinned_position =
-            specifics->shared_tab_group_details().pinned_position();
+      if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+        if (specifics->shared_tab_group_details().has_projects_position()) {
+          specifics_position =
+              specifics->shared_tab_group_details().projects_position();
+        }
+      } else {
+        if (specifics->shared_tab_group_details().has_pinned_position()) {
+          specifics_position =
+              specifics->shared_tab_group_details().pinned_position();
+        }
       }
     }
-    if (group.position() != specifics_pinned_position) {
+    if (group.position() != specifics_position) {
       has_changed = true;
     }
   } else {

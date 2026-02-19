@@ -215,6 +215,12 @@ SavedTabGroup& SavedTabGroup::SetPosition(size_t position) {
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetPinnedPositionForMigration(
+    std::optional<size_t> pinned_position) {
+  pinned_position_for_migration_ = pinned_position;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
   if (pinned && position_ != 0) {
     position_ = 0;

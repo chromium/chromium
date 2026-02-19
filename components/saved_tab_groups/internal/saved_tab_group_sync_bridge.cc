@@ -439,6 +439,7 @@ SavedTabGroupSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     tab_group->clear_color();
     tab_group->clear_pinned_position();
     tab_group->clear_bookmark_node_id();
+    tab_group->clear_projects_position();
 
     if (tab_group->ByteSizeLong() == 0) {
       trimmed_specifics.clear_group();
@@ -796,6 +797,16 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
           TimeFromWindowsEpochMicros(
               specifics.update_time_windows_epoch_micros()),
           /*updated_by=*/GaiaId());
+      // Copy over the pinned_position to avoid overwriting it when performing
+      // a sync update.
+      if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+        std::optional<size_t> pinned_position = std::nullopt;
+        if (specifics.group().has_pinned_position()) {
+          pinned_position = specifics.group().pinned_position();
+        }
+        model_wrapper_->UpdateGroupPinnedPositionForMigration(group_guid,
+                                                              pinned_position);
+      }
       proto::SavedTabGroupData updated_data =
           SavedTabGroupToData(*existing_group);
 

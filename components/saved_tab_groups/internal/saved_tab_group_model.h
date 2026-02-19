@@ -186,6 +186,12 @@ class SavedTabGroupModel {
       const GaiaId& updated_by);
   const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
+  // Updates the pinned position for a group. Only used when the projects panel
+  // is enabled to avoid overwriting the pinned position when updating sync.
+  void UpdateGroupPinnedPositionForMigration(
+      const base::Uuid& guid,
+      std::optional<size_t> pinned_position);
+
   // Changes the index of a given tab group by id. The new index provided is the
   // expected index after the group is removed. Notify local observers if the
   // group was reordered locally, and sync observers if the group was reordered

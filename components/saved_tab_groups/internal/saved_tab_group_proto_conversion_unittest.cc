@@ -5,10 +5,12 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/utils.h"
@@ -76,6 +78,8 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(group1.color(), group2.color());
     EXPECT_EQ(group1.saved_guid(), group2.saved_guid());
     EXPECT_EQ(group1.position(), group2.position());
+    EXPECT_EQ(group1.pinned_position_for_migration(),
+              group2.pinned_position_for_migration());
     EXPECT_EQ(group1.creation_time(), group2.creation_time());
     EXPECT_EQ(group1.update_time(), group2.update_time());
     EXPECT_EQ(group1.last_user_interaction_time(),
@@ -305,6 +309,71 @@ TEST_F(SavedTabGroupConversionTest, MergedTabWithUnsupportedURL) {
   EXPECT_EQ(tab1.title(), title);
   EXPECT_EQ(tab1.creator_cache_guid(), "creator_cache_guid");
   EXPECT_EQ(tab1.last_updater_cache_guid(), "last_updater_cache_guid");
+}
+
+TEST_F(SavedTabGroupConversionTest, GroupToData_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroup group(u"Title", tab_groups::TabGroupColorId::kBlue, {}, 10,
+                      guid);
+  group.SetPinnedPositionForMigration(20);
+  proto::SavedTabGroupData proto =
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
+
+  EXPECT_TRUE(proto.specifics().group().has_projects_position());
+  EXPECT_TRUE(proto.specifics().group().has_pinned_position());
+  EXPECT_EQ(10u, proto.specifics().group().projects_position());
+  EXPECT_EQ(20u, proto.specifics().group().pinned_position());
+  EXPECT_EQ(guid.AsLowercaseString(), proto.specifics().guid());
+}
+
+TEST_F(SavedTabGroupConversionTest, GroupToData_ProjectsPanelDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(tab_groups::kProjectsPanel);
+
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroup group(u"Title", tab_groups::TabGroupColorId::kBlue, {}, 10,
+                      guid);
+  proto::SavedTabGroupData proto =
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
+
+  EXPECT_FALSE(proto.specifics().group().has_projects_position());
+  EXPECT_TRUE(proto.specifics().group().has_pinned_position());
+  EXPECT_EQ(10u, proto.specifics().group().pinned_position());
+  EXPECT_EQ(guid.AsLowercaseString(), proto.specifics().guid());
+}
+
+TEST_F(SavedTabGroupConversionTest, DataToGroup_ProjectsPanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  proto::SavedTabGroupData pb_data;
+  pb_data.mutable_specifics()->set_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  pb_data.mutable_specifics()->mutable_group()->set_projects_position(10);
+  pb_data.mutable_specifics()->mutable_group()->set_pinned_position(20);
+
+  SavedTabGroup group =
+      SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(pb_data);
+  EXPECT_EQ(10u, group.position());
+  EXPECT_EQ(20u, group.pinned_position_for_migration());
+}
+
+TEST_F(SavedTabGroupConversionTest, DataToGroup_ProjectsPanelDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(tab_groups::kProjectsPanel);
+
+  proto::SavedTabGroupData pb_data;
+  pb_data.mutable_specifics()->set_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  pb_data.mutable_specifics()->mutable_group()->set_projects_position(10);
+  pb_data.mutable_specifics()->mutable_group()->set_pinned_position(20);
+
+  SavedTabGroup group =
+      SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(pb_data);
+  EXPECT_EQ(20u, group.position());
 }
 
 }  // namespace tab_groups

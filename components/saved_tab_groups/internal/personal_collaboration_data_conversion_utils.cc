@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/internal/personal_collaboration_data_conversion_utils.h"
 
 #include "base/uuid.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/sync/base/collaboration_id.h"
@@ -58,7 +59,15 @@ void PopulatePersonalCollaborationSpecificsFromSharedTabGroup(
   sync_pb::SharedTabGroupDetails* tab_group_details =
       trimmed_specifics->mutable_shared_tab_group_details();
   if (tab_group.position().has_value()) {
-    tab_group_details->set_pinned_position(tab_group.position().value());
+    if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+      tab_group_details->set_projects_position(tab_group.position().value());
+      if (tab_group.pinned_position_for_migration().has_value()) {
+        tab_group_details->set_pinned_position(
+            tab_group.pinned_position_for_migration().value());
+      }
+    } else {
+      tab_group_details->set_pinned_position(tab_group.position().value());
+    }
   }
 }
 
