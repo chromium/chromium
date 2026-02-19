@@ -158,11 +158,7 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
   pointer_event->SetTrusted(true);
-  std::optional<EventTiming> event_timing;
-  if (frame_ && frame_->DomWindow()) {
-    event_timing =
-        EventTiming::TryCreate(frame_->DomWindow(), *pointer_event, target);
-  }
+  EventTiming event_timing(frame_, *pointer_event, target);
 
   if (event_type == event_type_names::kPointerdown ||
       event_type == event_type_names::kPointerover ||

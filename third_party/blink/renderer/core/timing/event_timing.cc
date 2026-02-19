@@ -36,21 +36,9 @@ bool ShouldLogEvent(const Event& event) {
          event.type() == event_type_names::kMouseup;
 }
 
-}  // namespace
-
-EventTiming::EventTiming(base::TimeTicks processing_start,
-                         WindowPerformance* performance,
-                         const Event& event,
-                         EventTarget* hit_test_target)
-    : performance_(performance), event_(&event) {
-  entry_ = performance_->EventTimingProcessingStart(event, processing_start,
-                                                    hit_test_target);
-}
-
-// static
-void EventTiming::HandleInputDelay(LocalDOMWindow* window,
-                                   const Event& event,
-                                   base::TimeTicks processing_start) {
+void HandleInputDelay(LocalDOMWindow* window,
+                      const Event& event,
+                      base::TimeTicks processing_start) {
   auto* pointer_event = DynamicTo<PointerEvent>(&event);
   base::TimeTicks event_timestamp =
       pointer_event ? pointer_event->OldestPlatformTimeStamp()
@@ -66,8 +54,8 @@ void EventTiming::HandleInputDelay(LocalDOMWindow* window,
   }
 }
 
-// static
-bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
+// Returns true when the type of the event is included in the EventTiming.
+bool IsEventTypeForEventTiming(const Event& event) {
   // Include only trusted events of certain kinds. Explicitly excluding input
   // events that are considered continuous: event types for which the user agent
   // may have timer-based dispatch under certain conditions. These are excluded
@@ -88,15 +76,22 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
          event.type() != event_type_names::kWheel &&
          event.type() != event_type_names::kDrag;
 }
+}  // namespace
 
-// static
-std::optional<EventTiming> EventTiming::TryCreate(
-    LocalDOMWindow* window,
-    const Event& event,
-    EventTarget* hit_test_target) {
-  auto* performance = DOMWindowPerformance::performance(*window);
+EventTiming::EventTiming(LocalFrame* frame,
+                         const Event& event,
+                         EventTarget* hit_test_target) {
+  if (!frame) {
+    return;
+  }
+  LocalDOMWindow* window = frame->DomWindow();
+  // The context is needed for performance->EventTimingProcessingStart.
+  if (!window || window->IsContextDestroyed()) {
+    return;
+  }
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
   if (!performance || !IsEventTypeForEventTiming(event)) {
-    return std::nullopt;
+    return;
   }
 
   // Most events track their performance in EventDispatcher::Dispatch but
@@ -104,28 +99,31 @@ std::optional<EventTiming> EventTiming::TryCreate(
   // where they may be filtered. This condition check ensures we don't create
   // two EventTiming objects for the same Event.
   if (performance->GetCurrentEventTimingEvent() == &event) {
-    return std::nullopt;
+    return;
   }
-
   base::TimeTicks processing_start = Now();
 
-  // TODO(mmocny): Move this out of ::TryCreate and into the Constructor,
-  // or even further in window_performance / responsiveness_metrics
+  // TODO(mmocny): Move into window_performance / responsiveness_metrics?
   HandleInputDelay(window, event, processing_start);
 
-  return EventTiming(processing_start, performance, event, hit_test_target);
+  performance_ = performance;
+  event_ = &event;
+  entry_ = performance->EventTimingProcessingStart(event, processing_start,
+                                                   hit_test_target);
+  CHECK(entry_);
+}
+
+EventTiming::~EventTiming() {
+  if (entry_) {
+    CHECK(event_);
+    CHECK(performance_);
+    performance_->EventTimingProcessingEnd(entry_, *event_, Now());
+  }
 }
 
 // static
 void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
   g_clock_for_testing = clock;
-}
-
-EventTiming::~EventTiming() {
-  // performance_ might be null if this is std::move()-ed.
-  if (event_ && performance_) {
-    performance_->EventTimingProcessingEnd(entry_, *event_, Now());
-  }
 }
 
 }  // namespace blink

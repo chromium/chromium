@@ -575,9 +575,8 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
     const Event& event,
     base::TimeTicks processing_start,
     EventTarget* hit_test_target) {
-  if (!DomWindow() || !DomWindow()->GetFrame()) {
-    return nullptr;
-  }
+  CHECK(DomWindow());
+  CHECK(DomWindow()->GetFrame());
   CHECK(!processing_start.is_null());
 
   const AtomicString& event_type = event.type();
@@ -652,10 +651,7 @@ void WindowPerformance::EventTimingProcessingEnd(
   current_event_ = nullptr;
   CHECK(!processing_end.is_null());
 
-  if (!entry) {
-    return;
-  }
-
+  CHECK(entry);
   CHECK_GT(event_nesting_level_, 0u);
   event_nesting_level_--;
 

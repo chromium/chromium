@@ -108,6 +108,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   //
   // Will create a `PerformanceEventTiming`, and if needed, requests the next
   // presentation time to calculate the full |duration| to next paint.
+  //
+  // This method requires a DomWindow, a Frame, and an execution context; the
+  // caller must check for that.
+  // It will always return an instance of PerformanceEventTiming.
   PerformanceEventTiming* EventTimingProcessingStart(
       const Event& event,
       base::TimeTicks processing_start,
