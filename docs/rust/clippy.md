@@ -19,6 +19,37 @@ Chromium engineers primarily working with C, C++, or Java.
 > - Encourage everyone working with Rust sources to "shift left"
 >   and set `enable_rust_clippy = true`.
 
+## Chromium policy
+
+Chromium has a relaxed, non-strict Clippy policy.
+Clippy is a tool that hopefully helps to improve the quality of Chromium code,
+but ultimately we trust the judgement of Chromium engineers.
+
+* We hope that *most* Clippy violations
+  point out actual opportunities for improving the code
+  (e.g. catching common mistakes, teaching idiomatic Rust patterns, etc.).
+* If a Clippy lint doesn’t seem useful in a certain scenario,
+  then use your best judgement
+  and feel free to suppress the lint using the `#[allow(...)]` macro.
+    - We recommend leaving a short comment
+      that will help future readers understand
+      why the lint was suppressed.
+    - We recommend consulting with the
+      [@security team](https://groups.google.com/u/1/a/chromium.org/g/security)
+      before suppressing `unsafe`-related lints like
+      [`clippy::missing_safety_doc`](https://rust-lang.github.io/rust-clippy/master/index.html?search=safe#missing_safety_doc)
+      or
+      [`clippy::clippy::undocumented_unsafe_blocks`](https://rust-lang.github.io/rust-clippy/master/index.html?search=safe#undocumented_unsafe_blocks).
+    - We recommend applying suppression to a single item,
+      but it is okay to suppress at a module, or crate level if it makes sense
+      (e.g. if all functions in a given test module
+      have to violate a certain lint)
+* If a Clippy lint is frequently suppressed, then
+  one option on the table is
+  disabling the lint globally in Chromium - please talk with
+  [@chrome-rust](https://groups.google.com/a/google.com/g/chrome-rust)
+  if you find yourself oftentimes disabling a particular lint.
+
 ## Known issues
 
 * https://crbug.com/472338477: Can't invoke Clippy on a proc-macro crate
@@ -30,10 +61,15 @@ Chromium engineers primarily working with C, C++, or Java.
 
 Next steps:
 
-* Add a very brief section documenting the Chromium policy for Clippy.
-  Initial draft: https://docs.google.com/document/d/1S3gs-PV_lrS6Sshw7x-We0WkQN28cskL02F9ZS6L6oo/edit?usp=sharing
-* Enable Clippy on `linux-rel` (CI + CQ)
-* Enable Clippy on `mac-rel` and `win-rel` and `android-arm64-rel` (CI + CQ)
+* Fix preexisting Clippy violations: https://crbug.com/472355480
+* Enable Clippy on `linux-rel-compilator` (CI + CQ)
+  for initial enforcement
+* Enable Clippy on `android-arm64-rel-compilator` (CI + CQ)
+  to cover `ui/android/texture_compressor`
+* Consider enabling Clippy on
+  `ios-simulator-compilator`, `linux-chromeos-rel-compilator`,
+  `mac-rel-compilator`, and `win-rel-compilator` (CI + CQ)
+  to cover remaining target platforms in their basic configurations
 * Figure out how Chromium-specific lints can be added
 * Consider opting into additional lints.  Examples:
     - [`undocumented_unsafe_blocks`](https://rust-lang.github.io/rust-clippy/master/index.html#undocumented_unsafe_blocks)
