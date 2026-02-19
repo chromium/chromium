@@ -62,8 +62,8 @@
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "components/private_ai/client.h"
+#include "components/private_ai/error_code.h"
 #include "components/private_ai/features.h"
-#include "components/private_ai/legion_common.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
