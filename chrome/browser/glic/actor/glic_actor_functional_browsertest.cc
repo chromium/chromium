@@ -11,6 +11,22 @@
 
 namespace glic::actor {
 
+Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
+                          std::optional<tabs::TabHandle> observe_tab_handle,
+                          TaskId task_id) {
+  Actions action = ::actor::MakeWait(duration, observe_tab_handle);
+  action.set_task_id(task_id.value());
+  return action;
+}
+
+Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
+                              std::string_view target_url_spec,
+                              TaskId task_id) {
+  Actions action = ::actor::MakeNavigate(tab_handle, target_url_spec);
+  action.set_task_id(task_id.value());
+  return action;
+}
+
 AsyncActionWaiter::AsyncActionWaiter(content::RenderFrameHost* rfh,
                                      std::string request_id)
     : queue_(rfh), request_id_(std::move(request_id)) {}

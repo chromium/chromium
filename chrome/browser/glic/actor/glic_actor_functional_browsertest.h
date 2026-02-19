@@ -19,6 +19,18 @@ using ::base::test::TestFuture;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ActionsResult;
 
+MATCHER_P(HasResultCode, expected_code, "") {
+  return arg.action_result() == static_cast<int32_t>(expected_code);
+}
+
+Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
+                          std::optional<tabs::TabHandle> observe_tab_handle,
+                          TaskId task_id);
+
+Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
+                              std::string_view target_url_spec,
+                              TaskId task_id);
+
 // Helper class that utilizes content::DOMMessageQueue to capture the result of
 // an asynchronous PerformActions call. It listens for messages sent via
 // domAutomationController and filters by request ID to ensure the correct
