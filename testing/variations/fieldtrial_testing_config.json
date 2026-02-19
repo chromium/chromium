@@ -21757,6 +21757,7 @@
     "ReadAnythingOmnibox": [
         {
             "platforms": [
+                "chromeos",
                 "linux",
                 "mac",
                 "windows"
