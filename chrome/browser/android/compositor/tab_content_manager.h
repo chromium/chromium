@@ -110,7 +110,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   // these layer maps are small.
   using ThumbnailLayerMap = std::map<int, scoped_refptr<ThumbnailLayer>>;
   using TabReadbackRequestMap =
-      base::flat_map<int, std::unique_ptr<TabReadbackRequest>>;
+      absl::flat_hash_map<int, std::unique_ptr<TabReadbackRequest>>;
 
   content::RenderWidgetHostView* GetRwhvForTab(
       JNIEnv* env,
@@ -134,10 +134,10 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       bool result,
       const SkBitmap& bitmap);
 
-  base::flat_map<thumbnail::TabId,
-                 base::WeakPtr<thumbnail::ThumbnailCaptureTracker>>
+  absl::flat_hash_map<thumbnail::TabId,
+                      base::WeakPtr<thumbnail::ThumbnailCaptureTracker>>
       in_flight_captures_;
-  std::unique_ptr<thumbnail::ThumbnailCache> thumbnail_cache_;
+  thumbnail::ThumbnailCache thumbnail_cache_;
   ThumbnailLayerMap static_layer_cache_;
   TabReadbackRequestMap pending_tab_readbacks_;
 
