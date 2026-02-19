@@ -384,8 +384,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     bool intercepted_account_management_accepted_ = false;
     std::optional<WebSigninInterceptor::SigninInterceptionType>
         interception_type_;
-    signin_metrics::AccessPoint access_point_ =
-        signin_metrics::AccessPoint::kUnknown;
+    std::optional<signin_metrics::AccessPoint> access_point_;
 
     // Timeout for waiting for full information to be available (see
     // `ProcessInterceptionOrWait()`).

@@ -827,7 +827,7 @@ bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
     const std::string& email) const {
   // If the access point is not set, we cannot accurately know if we have to
   // show the bubble or not, so we will not show it.
-  if (state_->access_point_ == signin_metrics::AccessPoint::kUnknown) {
+  if (!state_->access_point_.has_value()) {
     return false;
   }
 
