@@ -2157,8 +2157,7 @@ class CapturedSurfaceControlTest : public WebRtcTestBase {
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{media::kShareThisTabInsteadButtonGetDisplayMedia,
-                              blink::features::kCapturedSurfaceControl},
+        /*enabled_features=*/{media::kShareThisTabInsteadButtonGetDisplayMedia},
         /*disabled_features=*/{});
 
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();

@@ -639,7 +639,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     }
 
     if (base::FeatureList::IsEnabled(
-            features::kCapturedSurfaceControlKillswitch)) {
+            blink::features::kCapturedSurfaceControl)) {
       base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
     }
 

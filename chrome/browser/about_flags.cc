@@ -9064,10 +9064,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // ENABLE_EXTENSIONS
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"captured-surface-control", flag_descriptions::kCapturedSurfaceControlName,
-     flag_descriptions::kCapturedSurfaceControlDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kCapturedSurfaceControl)},
-
     {"region-capture-cross-tab", flag_descriptions::kCrossTabRegionCaptureName,
      flag_descriptions::kCrossTabRegionCaptureDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRegionCaptureOfOtherTabs)},

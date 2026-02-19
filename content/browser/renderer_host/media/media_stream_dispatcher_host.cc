@@ -312,8 +312,7 @@ void MediaStreamDispatcherHost::OnZoomLevelChange(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(device.display_media_info);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlKillswitch)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
     return;
   }
 
@@ -676,8 +675,7 @@ void MediaStreamDispatcherHost::SendWheel(
     blink::mojom::CapturedWheelActionPtr action) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlKillswitch)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
     return;
   }
 
@@ -698,9 +696,9 @@ void MediaStreamDispatcherHost::UpdateZoomLevel(
     UpdateZoomLevelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlKillswitch)) {
-    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
+    std::move(callback).Run(
+        blink::mojom::CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
@@ -713,9 +711,9 @@ void MediaStreamDispatcherHost::RequestCapturedSurfaceControlPermission(
     RequestCapturedSurfaceControlPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlKillswitch)) {
-    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
+    std::move(callback).Run(
+        blink::mojom::CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 

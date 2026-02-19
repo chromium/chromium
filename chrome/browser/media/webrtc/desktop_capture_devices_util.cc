@@ -164,7 +164,7 @@ DesktopMediaIDToDisplayMediaInformation(
       cursor = media::mojom::CursorCaptureType::MOTION;
       capture_handle = CreateCaptureHandle(capturer, capturer_origin, media_id);
       if (base::FeatureList::IsEnabled(
-              features::kCapturedSurfaceControlKillswitch)) {
+              blink::features::kCapturedSurfaceControl)) {
         zoom_level = GetZoomLevel(capturer, media_id).value_or(zoom_level);
       }
       break;

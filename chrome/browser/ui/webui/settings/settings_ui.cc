@@ -517,9 +517,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 
-  html_source->AddBoolean("enableCapturedSurfaceControl",
-                          base::FeatureList::IsEnabled(
-                              features::kCapturedSurfaceControlKillswitch));
+  html_source->AddBoolean(
+      "enableCapturedSurfaceControl",
+      base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl));
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
