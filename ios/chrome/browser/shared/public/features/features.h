@@ -814,6 +814,13 @@ extern const char kDisableKeyboardAccessoryOnlySymbols[];
 extern const char kDisableKeyboardAccessoryOnlyFeatures[];
 extern const char kDisableKeyboardAccessoryCompletely[];
 
+// Enables the keyboard accessory in the Fusebox.
+BASE_DECLARE_FEATURE(kEnableFuseboxKeyboardAccessory);
+extern const char kEnableFuseboxKeyboardAccessoryParam[];
+extern const char kEnableFuseboxKeyboardAccessoryOnlySymbols[];
+extern const char kEnableFuseboxKeyboardAccessoryOnlyFeatures[];
+extern const char kEnableFuseboxKeyboardAccessoryBoth[];
+
 // Returns true if keyboard accessory is enabled.
 bool ShouldShowKeyboardAccessory();
 // Returns true if the symbols :/- and .com in the keyboard accessory are

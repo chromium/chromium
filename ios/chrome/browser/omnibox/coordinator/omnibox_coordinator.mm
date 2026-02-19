@@ -406,9 +406,14 @@
 #pragma mark - Private
 
 - (void)updateInputAccessoryView {
-  BOOL showKeyboardAccessory =
-      !self.searchOnlyUI &&
-      _presentationContext != OmniboxPresentationContext::kComposebox;
+  BOOL showKeyboardAccessory = YES;
+  if (self.searchOnlyUI) {
+    showKeyboardAccessory = NO;
+  }
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+    showKeyboardAccessory =
+        base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory);
+  }
 
   if (!self.keyboardAccessoryView && showKeyboardAccessory) {
     TemplateURLService* templateURLService =
@@ -416,6 +421,12 @@
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
         self.viewController.textInput, kDotComTLD, _keyboardMediator,
         templateURLService);
+
+    if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self.viewController.textInput reloadInputViews];
+      });
+    }
   }
 }
 

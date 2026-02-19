@@ -875,16 +875,45 @@ const char kDisableKeyboardAccessoryOnlyFeatures[] =
 const char kDisableKeyboardAccessoryCompletely[] =
     "kDisableKeyboardAccessoryCompletely";
 
+BASE_FEATURE(kEnableFuseboxKeyboardAccessory,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kEnableFuseboxKeyboardAccessoryParam[] =
+    "kEnableFuseboxKeyboardAccessoryParam";
+const char kEnableFuseboxKeyboardAccessoryOnlySymbols[] =
+    "kEnableFuseboxKeyboardAccessoryOnlySymbols";
+const char kEnableFuseboxKeyboardAccessoryOnlyFeatures[] =
+    "kEnableFuseboxKeyboardAccessoryOnlyFeatures";
+const char kEnableFuseboxKeyboardAccessoryBoth[] =
+    "kEnableFuseboxKeyboardAccessoryBoth";
+
 bool ShouldShowKeyboardAccessory() {
-  if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
-    return true;
+  if (!base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    // Keyboard accessory is enabled by default.
+    if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
+      return true;
+    }
+    std::string feature_param = base::GetFieldTrialParamValueByFeature(
+        kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
+    return feature_param != kDisableKeyboardAccessoryCompletely;
   }
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
-  return feature_param != kDisableKeyboardAccessoryCompletely;
+
+  // Fusebox:
+  // Keyboard accessory is disabled by default but can be forced with a flag.
+  return base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory);
 }
 
 bool ShouldShowKeyboardAccessorySymbols() {
+  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
+      std::string feature_param = base::GetFieldTrialParamValueByFeature(
+          kEnableFuseboxKeyboardAccessory,
+          kEnableFuseboxKeyboardAccessoryParam);
+      return feature_param != kEnableFuseboxKeyboardAccessoryOnlyFeatures;
+    }
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
     return true;
   }
@@ -894,6 +923,16 @@ bool ShouldShowKeyboardAccessorySymbols() {
 }
 
 bool ShouldShowKeyboardAccessoryFeatures() {
+  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
+      std::string feature_param = base::GetFieldTrialParamValueByFeature(
+          kEnableFuseboxKeyboardAccessory,
+          kEnableFuseboxKeyboardAccessoryParam);
+      return feature_param != kEnableFuseboxKeyboardAccessoryOnlySymbols;
+    }
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
     return true;
   }

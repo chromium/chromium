@@ -143,6 +143,9 @@
 // placeholder.
 - (void)setCustomPlaceholderText:(NSString*)customPlaceholderText;
 
+// UIResponder method. Reloads inputView, inputAccessoryView, and textInputMode.
+- (void)reloadInputViews;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_OMNIBOX_TEXT_INPUT_H_

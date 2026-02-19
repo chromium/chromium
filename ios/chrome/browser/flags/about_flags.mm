@@ -205,6 +205,28 @@ const FeatureEntry::FeatureVariation kDisableKeyboardAccessoryVariations[] = {
      nullptr}};
 
 const FeatureEntry::FeatureParam
+    kEnableFuseboxKeyboardAccessoryOnlySymbolsParam[] = {
+        {kEnableFuseboxKeyboardAccessoryParam,
+         kEnableFuseboxKeyboardAccessoryOnlySymbols}};
+
+const FeatureEntry::FeatureParam
+    kEnableFuseboxKeyboardAccessoryOnlyFeaturesParam[] = {
+        {kEnableFuseboxKeyboardAccessoryParam,
+         kEnableFuseboxKeyboardAccessoryOnlyFeatures}};
+
+const FeatureEntry::FeatureParam kEnableFuseboxKeyboardAccessoryBothParam[] = {
+    {kEnableFuseboxKeyboardAccessoryParam,
+     kEnableFuseboxKeyboardAccessoryBoth}};
+
+const FeatureEntry::FeatureVariation
+    kEnableFuseboxKeyboardAccessoryVariations[] = {
+        {"A) only show symbols",
+         kEnableFuseboxKeyboardAccessoryOnlySymbolsParam, nullptr},
+        {"B) only show lens and voice search",
+         kEnableFuseboxKeyboardAccessoryOnlyFeaturesParam, nullptr},
+        {"C) enable both", kEnableFuseboxKeyboardAccessoryBothParam, nullptr}};
+
+const FeatureEntry::FeatureParam
     kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon[] = {
         {kIOSKeyboardAccessoryTwoBubbleKeyboardIconParamName, "true"}};
 
@@ -2497,6 +2519,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDisableKeyboardAccessory,
                                     kDisableKeyboardAccessoryVariations,
                                     "DisableKeyboardAccessoryVariations")},
+    {"enable-fusebox-keyboard-accessory",
+     flag_descriptions::kEnableFuseboxKeyboardAccessoryName,
+     flag_descriptions::kEnableFuseboxKeyboardAccessoryDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableFuseboxKeyboardAccessory,
+         kEnableFuseboxKeyboardAccessoryVariations,
+         "EnableFuseboxKeyboardAccessoryVariations")},
     {"mdm-errors-for-dasher-accounts-handling",
      flag_descriptions::kHandleMdmErrorsForDasherAccountsName,
      flag_descriptions::kHandleMdmErrorsForDasherAccountsDescription,

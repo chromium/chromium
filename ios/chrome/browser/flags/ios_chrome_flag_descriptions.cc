@@ -558,6 +558,11 @@ const char kEnableFileDownloadConnectorIOSDescription[] =
     "When enabled, the enterprise DLP file download featured is available on "
     "iOS. ";
 
+const char kEnableFuseboxKeyboardAccessoryName[] =
+    "Enable Omnibox Keyboard Accessory in Fusebox";
+extern const char kEnableFuseboxKeyboardAccessoryDescription[] =
+    "Enables parts or all of omnibox keyboard accessory.";
+
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

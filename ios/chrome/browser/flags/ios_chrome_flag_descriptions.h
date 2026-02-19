@@ -339,6 +339,9 @@ extern const char kEnableFeedHeaderSettingsDescription[];
 extern const char kEnableFileDownloadConnectorIOSName[];
 extern const char kEnableFileDownloadConnectorIOSDescription[];
 
+extern const char kEnableFuseboxKeyboardAccessoryName[];
+extern const char kEnableFuseboxKeyboardAccessoryDescription[];
+
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
