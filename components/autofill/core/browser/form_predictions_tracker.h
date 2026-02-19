@@ -15,8 +15,6 @@ namespace autofill {
 
 // Detects if all forms on the given tab were parsed by the local heuristics and
 // the server in the actor mode.
-// TODO(crbug.com/479794574): Implement this class and delay APC if not all
-// forms were parsed yet.
 // TODO(crbug.com/485547157): Make this class more generic and wait for
 // non-actor mode predictions too.
 class FormPredictionsTracker : public AutofillManager::Observer {
