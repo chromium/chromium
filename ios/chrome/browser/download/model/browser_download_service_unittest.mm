@@ -115,7 +115,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
 
   StubTabHelper<PassKitTabHelper>* pass_kit_tab_helper() {
     return static_cast<StubTabHelper<PassKitTabHelper>*>(
-        PassKitTabHelper::GetOrCreateForWebState(&web_state_));
+        PassKitTabHelper::FromWebState(&web_state_));
   }
 
   StubTabHelper<ARQuickLookTabHelper>* ar_quick_look_tab_helper() {

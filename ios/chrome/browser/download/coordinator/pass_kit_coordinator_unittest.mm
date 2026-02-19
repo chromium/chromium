@@ -55,8 +55,8 @@ class PassKitCoordinatorTest : public PlatformTest {
     web_state_ = browser_->GetWebStateList()->GetActiveWebState();
     handler_ = [[FakeWebContentHandler alloc] init];
 
-    PassKitTabHelper::GetOrCreateForWebState(web_state_)
-        ->SetWebContentsHandler(handler_);
+    PassKitTabHelper::CreateForWebState(web_state_);
+    PassKitTabHelper::FromWebState(web_state_)->SetWebContentsHandler(handler_);
     InfoBarManagerImpl::CreateForWebState(web_state_);
 
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
@@ -65,7 +65,7 @@ class PassKitCoordinatorTest : public PlatformTest {
   ~PassKitCoordinatorTest() override { [coordinator_ stop]; }
 
   PassKitTabHelper* tab_helper() {
-    return PassKitTabHelper::GetOrCreateForWebState(web_state_);
+    return PassKitTabHelper::FromWebState(web_state_);
   }
 
   web::WebTaskEnvironment task_environment_;

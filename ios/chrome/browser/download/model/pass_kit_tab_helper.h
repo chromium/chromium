@@ -15,7 +15,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/utils/rust_unzipper.h"
 #import "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/lazy_web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @class RustUnzipper;
 @protocol WebContentCommands;
@@ -54,7 +54,7 @@ enum class DownloadPassKitResult {
 
 // TabHelper which downloads pkpass file, constructs PKPass object and passes
 // that PKPass to the delegate.
-class PassKitTabHelper : public web::LazyWebStateUserData<PassKitTabHelper>,
+class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
                          public web::DownloadTaskObserver {
  public:
   PassKitTabHelper(const PassKitTabHelper&) = delete;
@@ -74,7 +74,7 @@ class PassKitTabHelper : public web::LazyWebStateUserData<PassKitTabHelper>,
   explicit PassKitTabHelper(web::WebState* web_state);
 
  private:
-  friend class web::LazyWebStateUserData<PassKitTabHelper>;
+  friend class web::WebStateUserData<PassKitTabHelper>;
 
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;

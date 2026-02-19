@@ -35,12 +35,13 @@ char kUrl[] = "https://test.test/";
 class PassKitTabHelperTest : public PlatformTest {
  protected:
   PassKitTabHelperTest() : handler_([[FakeWebContentHandler alloc] init]) {
-    PassKitTabHelper::GetOrCreateForWebState(&web_state_)
+    PassKitTabHelper::CreateForWebState(&web_state_);
+    PassKitTabHelper::FromWebState(&web_state_)
         ->SetWebContentsHandler(handler_);
   }
 
   PassKitTabHelper* tab_helper() {
-    return PassKitTabHelper::GetOrCreateForWebState(&web_state_);
+    return PassKitTabHelper::FromWebState(&web_state_);
   }
 
   web::WebTaskEnvironment task_environment_;

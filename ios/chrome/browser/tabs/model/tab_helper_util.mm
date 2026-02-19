@@ -370,6 +370,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<VcardTabHelper>();
   attacher.Create<DocumentDownloadTabHelper>();
   attacher.Create<ARQuickLookTabHelper>();
+  attacher.Create<PassKitTabHelper>();
 
   attacher.Create<PageloadForegroundDurationTabHelper>();
 
