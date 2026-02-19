@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -305,6 +306,22 @@ void TabLifecycleUnitSource::TabLifecycleUnit::
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     LifecycleUnitDiscardReason reason,
     uint64_t tab_memory_footprint_estimate) {
+  // When the "Disable Tab Discarding" experiment is active, prevent proactive
+  // discards for Finch testing.
+  //
+  // However, allow the discard if:
+  // 1. |reason| is EXTERNAL: The discard was explicitly requested by an
+  //    extension or user. Blocking this would break functionality.
+  // 2. |reason| is FROZEN_WITH_GROWING_MEMORY: The tab is leaking memory
+  //    while frozen (likely unprocessed Mojo messages) and must be discarded
+  //    to prevent OOM.
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kDisableTabDiscarding) &&
+      reason != LifecycleUnitDiscardReason::EXTERNAL &&
+      reason != LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY) {
+    return false;
+  }
+
   const base::TimeTicks discard_start_time = NowTicks();
 
   last_discard_time_ = discard_start_time;

@@ -238,6 +238,8 @@ BASE_DECLARE_FEATURE(kExtensionServiceWorkerVoter);
 BASE_DECLARE_FEATURE(kBrowserProcessAboveNormalPriority);
 #endif
 
+BASE_DECLARE_FEATURE(kDisableTabDiscarding);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
