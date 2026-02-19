@@ -534,16 +534,14 @@ void OnListFamilyMembersResponse(
 - (void)stopSettingsAnimated:(BOOL)animated
                   completion:(ProceduralBlock)completion {
   if (_settingsNavigationController) {
-    // Dismiss the view controller if it is presented.
+    // Clean-up and then dismiss the view controller if it is presented.
+    [_settingsNavigationController cleanUpSettings];
     UIViewController* presentingViewController =
         _settingsNavigationController.presentingViewController;
 
     __weak __typeof(self) weakSelf = self;
     ProceduralBlock cleanup = ^{
-      [weakSelf cleanUpSettings];
-      if (completion) {
-        completion();
-      }
+      [weakSelf stopSettingsCallbackWithCompletion:completion];
     };
 
     if (presentingViewController) {
@@ -1453,17 +1451,20 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)settingsWasDismissed {
-  [self cleanUpSettings];
+  [_settingsNavigationController cleanUpSettings];
+  _settingsNavigationController = nil;
   [self stopPasswordCheckupCoordinator];
 }
 
 #pragma mark - Private
 
-// Calls `cleanUpSettings` on the SettingsNavigationController before setting
-// it to nil.
-- (void)cleanUpSettings {
-  [_settingsNavigationController cleanUpSettings];
+// Callbacks for `stopSettingsAnimated:completion:`. It releases the navigation
+// controller and call the completion if it is non nil.
+- (void)stopSettingsCallbackWithCompletion:(ProceduralBlock)completion {
   _settingsNavigationController = nil;
+  if (completion) {
+    completion();
+  }
 }
 
 // Returns YES if incognito mode is disabled.
