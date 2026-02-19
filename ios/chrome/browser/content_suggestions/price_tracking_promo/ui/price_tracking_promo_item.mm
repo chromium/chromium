@@ -38,7 +38,7 @@ constexpr CGFloat kFallbackSymbolSize = 10;
   return ContentSuggestionsModuleType::kPriceTrackingPromo;
 }
 
-#pragma mark - StandaloneModuleViewConfiguration
+#pragma mark - StandaloneModuleViewConfig
 
 - (UIImage*)productImage {
   return [UIImage imageWithData:self.productImageData

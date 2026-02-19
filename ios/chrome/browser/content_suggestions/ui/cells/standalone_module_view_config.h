@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_STANDALONE_MODULE_VIEW_CONFIGURATION_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_STANDALONE_MODULE_VIEW_CONFIGURATION_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_STANDALONE_MODULE_VIEW_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_STANDALONE_MODULE_VIEW_CONFIG_H_
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
 
 // Item containing the configurations for standalone-type Magic Stack Module
 // view.
-@interface StandaloneModuleViewConfiguration : MagicStackModule
+@interface StandaloneModuleViewConfig : MagicStackModule
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
@@ -35,8 +35,8 @@
 
 // Accessibility identifier for the module.
 @property(nonatomic, copy) NSString* accessibilityIdentifier;
-// LINT.ThenChange(standalone_module_view_configuration.mm:Copy)
+// LINT.ThenChange(standalone_module_view_config.mm:Copy)
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_STANDALONE_MODULE_VIEW_CONFIGURATION_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_STANDALONE_MODULE_VIEW_CONFIG_H_

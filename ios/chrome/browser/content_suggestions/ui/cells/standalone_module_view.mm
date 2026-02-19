@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/standalone_module_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/standalone_module_view_config.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
@@ -65,7 +65,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 @implementation StandaloneModuleView {
   ContentSuggestionsModuleType _moduleType;
-  StandaloneModuleViewConfiguration* _config;
+  StandaloneModuleViewConfig* _config;
   UILabel* _titleLabel;
   UILabel* _descriptionLabel;
   UIButton* _button;
@@ -81,7 +81,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 #pragma mark - Public
 
-- (void)configureView:(StandaloneModuleViewConfiguration*)config {
+- (void)configureView:(StandaloneModuleViewConfig*)config {
   CHECK(config);
   CHECK(self.subviews.count == 0);
   _moduleType = config.type;

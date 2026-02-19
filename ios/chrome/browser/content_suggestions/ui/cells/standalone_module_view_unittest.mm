@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/ui/cells/standalone_module_view.h"
 
-#import "ios/chrome/browser/content_suggestions/ui/cells/standalone_module_view_configuration.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/standalone_module_view_config.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -26,8 +26,8 @@ NSString* const kStandaloneModuleViewButtonText =
 StandaloneModuleView* GetConfiguredStandaloneModuleView() {
   StandaloneModuleView* view =
       [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
-  StandaloneModuleViewConfiguration* config =
-      [[StandaloneModuleViewConfiguration alloc] init];
+  StandaloneModuleViewConfig* config =
+      [[StandaloneModuleViewConfig alloc] init];
   config.titleText = kStandaloneModuleViewTitleText;
   config.bodyText = kStandaloneModuleViewBodyText;
   config.buttonText = kStandaloneModuleViewButtonText;
