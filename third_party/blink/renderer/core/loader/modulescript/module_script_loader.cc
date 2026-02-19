@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/core/script/wasm_module_script.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -335,8 +336,13 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // <spec step="13.7.3"> If mimeType is "text/css" and moduleType is "css",
       // then set moduleScript to the result of creating a CSS module script
       // given sourceText and settingsObject.</spec>
-      module_script_ = ValueWrapperSyntheticModuleScript::
-          CreateCSSWrapperSyntheticModuleScript(params, modulator_);
+      {
+        // This can be reached via the parser via modulepreload (which disallows
+        // script), so we need to allow user agent script.
+        ScriptForbiddenScope::AllowUserAgentScript allow_script;
+        module_script_ = ValueWrapperSyntheticModuleScript::
+            CreateCSSWrapperSyntheticModuleScript(params, modulator_);
+      }
       break;
     case ResolvedModuleType::kJavaScript:
       // <spec step="13.7.2">If mimeType is a JavaScript MIME type and
