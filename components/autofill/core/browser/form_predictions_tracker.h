@@ -19,7 +19,7 @@ namespace autofill {
 // forms were parsed yet.
 // TODO(crbug.com/485547157): Make this class more generic and wait for
 // non-actor mode predictions too.
-class FormPredictionsTracker final : public AutofillManager::Observer {
+class FormPredictionsTracker : public AutofillManager::Observer {
  public:
   explicit FormPredictionsTracker(AutofillClient* client);
   ~FormPredictionsTracker() override;
@@ -32,8 +32,7 @@ class FormPredictionsTracker final : public AutofillManager::Observer {
   // Inserts `callback` to `callbacks_`. It will be executed once all forms on
   // the current tab are parsed in the actor mode, or more than `timeout` passed
   // since starting to wait.
-  void Wait(base::OnceClosure callback,
-            base::TimeDelta timeout = base::Seconds(1));
+  virtual void Wait(base::OnceClosure callback, base::TimeDelta timeout);
 
  private:
   friend class FormPredictionsTrackerTestApi;

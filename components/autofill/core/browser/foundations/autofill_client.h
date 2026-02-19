@@ -114,6 +114,7 @@ class FormFieldData;
 class LogManager;
 class OtpFieldDetector;
 class OtpPhishGuardDelegate;
+class FormPredictionsTracker;
 struct PasswordFormClassification;
 class PasswordManagerDelegate;
 class PersonalDataManager;
@@ -714,6 +715,10 @@ class AutofillClient {
   // Returns the delegate for OTP phish guard, which can be used to perform
   // security checks before offering an OTP. May return nullptr.
   virtual OtpPhishGuardDelegate* GetOtpPhishGuardDelegate();
+
+  // Returns the `FormPredictionsTracker` for the current tab. May return null
+  // on platforms where it is not supported.
+  virtual FormPredictionsTracker* GetFormPredictionsTracker();
 
   // May return null on platforms where no OneTimeTokenService is supported.
   virtual one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const;

@@ -220,6 +220,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/autofill/glic",
       "//chrome/browser/glic",
+      "//components/autofill/core/browser",
     ]
   }
 
@@ -485,6 +486,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/autofill/glic:test_support",
       "//chrome/browser/ui/views:file_system_access_test_support",
+      "//components/autofill/core/browser:test_support",
     ]
   }
 }

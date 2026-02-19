@@ -385,6 +385,15 @@ const base::FeatureParam<base::TimeDelta> kActorObservationDelayTimeout{
 const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp{
     &kGlicActor, "actor-observation-delay-lcp", base::Seconds(1)};
 
+// The time for Autofill to parse and classify form fields.
+// Autofill is expected to return within this timeout (having successfully
+// parsed the form fields or not).
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kActorObservationDelayAutofillPredictionsTimeout,
+                   &kGlicActor,
+                   "actor-observation-delay-autofill-predictions-timeout",
+                   base::Seconds(1));
+
 // If enabled, observation for page load excludes load in ad frames.
 BASE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading,
              base::FEATURE_DISABLED_BY_DEFAULT);

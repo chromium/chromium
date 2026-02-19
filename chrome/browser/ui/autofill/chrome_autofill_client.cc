@@ -94,6 +94,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
@@ -1265,7 +1266,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                                 base::Unretained(this)));
   }
 
-  form_parsing_tracker_ = std::make_unique<FormPredictionsTracker>(this);
+  form_predictions_tracker_ = std::make_unique<FormPredictionsTracker>(this);
 #endif
 }
 
@@ -1351,6 +1352,14 @@ OtpPhishGuardDelegate* ChromeAutofillClient::GetOtpPhishGuardDelegate() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return nullptr;
+}
+
+FormPredictionsTracker* ChromeAutofillClient::GetFormPredictionsTracker() {
+#if !BUILDFLAG(IS_ANDROID)
+  return form_predictions_tracker_.get();
+#else
+  return nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 one_time_tokens::OneTimeTokenService*

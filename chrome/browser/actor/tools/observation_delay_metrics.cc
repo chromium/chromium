@@ -61,6 +61,9 @@ void ObservationDelayMetrics::WillMoveToState(
     case ObservationDelayController::State::kWaitForVisualStateUpdate:
       wait_for_visual_state_update_.start_time = now;
       break;
+    case ObservationDelayController::State::kWaitForAutofillPredictions:
+      // TODO(crbug.com/483281982): Measure how long the parsing takes.
+      break;
     case ObservationDelayController::State::kMaybeDelayForLcp:
       delay_for_lcp_ = false;
       break;

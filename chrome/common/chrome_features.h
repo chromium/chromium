@@ -279,6 +279,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayTimeout);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayLcp);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kActorObservationDelayAutofillPredictionsTimeout);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading);

@@ -96,6 +96,7 @@ class ObservationDelayController : public content::WebContentsObserver {
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
     kDelayForLcp,
+    kWaitForAutofillPredictions,
     kDidTimeout,
     kPageNavigated,
     kDone
@@ -116,6 +117,7 @@ class ObservationDelayController : public content::WebContentsObserver {
   void OnPageStable();
   void OnVisualStateUpdated(bool);
   void OnMonitorDisconnected();
+  void OnAutofillPredictionsFinished();
   void DCheckStateTransition(State old_state, State new_state);
   void MoveToState(State state);
   base::OnceClosure MoveToStateClosure(State new_state);

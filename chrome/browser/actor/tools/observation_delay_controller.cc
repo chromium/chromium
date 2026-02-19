@@ -25,6 +25,8 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
@@ -53,6 +55,13 @@ base::TimeDelta GetCompletionTimeout() {
 // loading.
 base::TimeDelta GetLcpDelay() {
   return features::kActorObservationDelayLcp.Get();
+}
+
+// The timeout to wait for Autofill to parse and classify form fields.
+// It's autofill's `FormPredictionsTracker`'s responsibility to respect this
+// timeout.
+base::TimeDelta GetAutofillPredictionsTimeout() {
+  return features::kActorObservationDelayAutofillPredictionsTimeout.Get();
 }
 
 // This should be similar to the number of redirects.
@@ -150,6 +159,15 @@ void ObservationDelayController::OnMonitorDisconnected() {
   MoveToState(State::kPageStabilityMonitorDisconnected);
 }
 
+void ObservationDelayController::OnAutofillPredictionsFinished() {
+  if (state_ != State::kWaitForAutofillPredictions) {
+    return;
+  }
+
+  // TODO(crbug.com/483281982): Measure how long the parsing takes.
+  MoveToState(State::kDone);
+}
+
 void ObservationDelayController::MoveToState(State new_state) {
   if (state_ == State::kDone) {
     return;
@@ -238,7 +256,7 @@ void ObservationDelayController::MoveToState(State new_state) {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "MaybeDelayForLcp", {});
-      State next_state = State::kDone;
+      State next_state = State::kWaitForAutofillPredictions;
       if (GetLcpDelay().is_positive()) {
         // Conservatively, only apply delay if we get a clear signal that LCP
         // has not yet occurred on a trackable webpage. This avoids adding
@@ -264,7 +282,33 @@ void ObservationDelayController::MoveToState(State new_state) {
       break;
     }
     case State::kDelayForLcp: {
-      PostMoveToStateClosure(State::kDone, GetLcpDelay()).Run();
+      PostMoveToStateClosure(State::kWaitForAutofillPredictions, GetLcpDelay())
+          .Run();
+      break;
+    }
+    case State::kWaitForAutofillPredictions: {
+      inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
+          GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
+          "WaitForAutofillPredictions", {});
+
+      autofill::ContentAutofillClient* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents());
+      if (!autofill_client) {
+        PostMoveToStateClosure(State::kDone).Run();
+        break;
+      }
+      autofill::FormPredictionsTracker* tracker =
+          autofill_client->GetFormPredictionsTracker();
+      if (!tracker) {
+        PostMoveToStateClosure(State::kDone).Run();
+        break;
+      }
+      tracker->Wait(
+          base::BindOnce(
+              &ObservationDelayController::OnAutofillPredictionsFinished,
+              weak_ptr_factory_.GetWeakPtr()),
+          GetAutofillPredictionsTimeout());
+      // `OnAutofillPredictionsFinished()` will advance to the next state.
       break;
     }
     case State::kPageNavigated: {
@@ -321,7 +365,7 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
               {State::kWaitForLoadCompletion,
                State::kPageStabilityMonitorDisconnected,
                State::kDidTimeout,
-              State::kPageNavigated}},
+               State::kPageNavigated}},
           {State::kPageStabilityMonitorDisconnected,
               {State::kWaitForLoadCompletion}},
           {State::kWaitForLoadCompletion,
@@ -336,8 +380,12 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
               {State::kDidTimeout,
                State::kPageNavigated,
                State::kDelayForLcp,
-               State::kDone}},
+               State::kWaitForAutofillPredictions}},
           {State::kDelayForLcp,
+              {State::kDidTimeout,
+               State::kPageNavigated,
+               State::kWaitForAutofillPredictions}},
+          {State::kWaitForAutofillPredictions,
               {State::kDidTimeout,
                State::kPageNavigated,
                State::kDone}},
@@ -399,6 +447,8 @@ std::string_view ObservationDelayController::StateToString(State state) {
       return "MaybeDelayForLcp";
     case State::kDelayForLcp:
       return "DelayForLcp";
+    case State::kWaitForAutofillPredictions:
+      return "WaitForAutofillPredictions";
     case State::kDidTimeout:
       return "DidTimeout";
     case State::kPageNavigated:

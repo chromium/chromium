@@ -1291,6 +1291,8 @@ static_library("test_support") {
     "ml_model/autofill_ai/mock_autofill_ai_model_executor.cc",
     "ml_model/autofill_ai/mock_autofill_ai_model_executor.h",
     "ml_model/field_classification_model_encoder_test_api.h",
+    "mock_form_predictions_tracker.cc",
+    "mock_form_predictions_tracker.h",
     "network/autofill_ai/mock_wallet_pass_access_manager.cc",
     "network/autofill_ai/mock_wallet_pass_access_manager.h",
     "payments/amount_extraction_manager_test_api.h",

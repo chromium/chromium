@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
@@ -683,6 +684,15 @@ class TestAutofillClientTemplate : public T {
     injected_one_time_token_service_ = std::move(one_time_token_service);
   }
 
+  FormPredictionsTracker* GetFormPredictionsTracker() override {
+    return form_predictions_tracker_.get();
+  }
+
+  void set_form_predictions_tracker(
+      std::unique_ptr<FormPredictionsTracker> form_predictions_tracker) {
+    form_predictions_tracker_ = std::move(form_predictions_tracker);
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -802,6 +812,8 @@ class TestAutofillClientTemplate : public T {
 
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::unique_ptr<TestVotesUploader> votes_uploader_;
+
+  std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };

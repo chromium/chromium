@@ -6,20 +6,30 @@
 
 #include <string>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
+#include "components/autofill/core/browser/form_predictions_tracker_test_api.h"
+#include "components/autofill/core/browser/mock_form_predictions_tracker.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
@@ -409,6 +419,102 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerExcludeAdRequestsTest,
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     ObservationDelayControllerExcludeAdRequestsTest);
 
+class ObservationAutofillClient : public autofill::TestContentAutofillClient {
+ public:
+  explicit ObservationAutofillClient(content::WebContents* web_contents)
+      : autofill::TestContentAutofillClient(web_contents) {
+    auto tracker = std::make_unique<
+        testing::StrictMock<autofill::MockFormPredictionsTracker>>(this);
+    mock_tracker_ptr_ = tracker.get();
+    set_form_predictions_tracker(std::move(tracker));
+  }
+
+  autofill::MockFormPredictionsTracker& mock_tracker() {
+    return *mock_tracker_ptr_;
+  }
+
+ private:
+  // Owned by the base class.
+  raw_ptr<autofill::MockFormPredictionsTracker> mock_tracker_ptr_ = nullptr;
+};
+
+class ObservationDelayControllerAutofillTest
+    : public ObservationDelayControllerTest,
+      public testing::WithParamInterface<int> {
+ public:
+  static constexpr int kAutofillParsingTimeoutInMs = 3000;
+  ObservationDelayControllerAutofillTest() {
+    std::string autofill_parsing_timeout =
+        absl::StrFormat("%dms", kAutofillParsingTimeoutInMs);
+    int lcp_delay_in_ms = GetParam();
+    std::string lcp_delay = absl::StrFormat("%dms", lcp_delay_in_ms);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{autofill::features::kAutofillDelayApcForPredictions, {}},
+         {features::kGlicActor,
+          {// Effectively disable stability timeout to prevent flakes.
+           {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
+           // Do not use min wait for stability so that it happens immediately.
+           {features::kGlicActorPageStabilityMinWait.name, "0ms"},
+           // wait for LCP quickly so that it happens immediately.
+           {features::kActorObservationDelayLcp.name, lcp_delay},
+           {features::kActorObservationDelayAutofillPredictionsTimeout.name,
+            autofill_parsing_timeout},
+           // Timeout the overall process after 15 seconds.
+           {features::kActorObservationDelayTimeout.name, "15000ms"}}}},
+        {});
+  }
+
+  ObservationAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  autofill::TestAutofillClientInjector<ObservationAutofillClient>
+      autofill_client_injector_;
+};
+
+// Tests that if there is a `FormPredictionsTracker`, state is moved to
+// `kWaitForAutofillPredictions` and then to `kDone` once the tracker completes.
+IN_PROC_BROWSER_TEST_P(ObservationDelayControllerAutofillTest,
+                       FormPredictionsTrackerCallsBack) {
+  autofill::MockFormPredictionsTracker& tracker =
+      autofill_client()->mock_tracker();
+  EXPECT_CALL(tracker, Wait)
+      .WillOnce(testing::WithArgs<0, 1>(
+          [](base::OnceClosure callback, base::TimeDelta timeout) {
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                FROM_HERE, std::move(callback), timeout);
+          }));
+
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  base::ElapsedTimer timer;
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForAutofillPredictions));
+  // The state machine advances to done once the callback from the tracker is
+  // executed.
+  ASSERT_TRUE(controller.WaitForState(State::kDone));
+  ASSERT_TRUE(result.Wait());
+  EXPECT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  EXPECT_GE(timer.Elapsed(), base::Milliseconds(kAutofillParsingTimeoutInMs));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ObservationDelayControllerAutofillTest,
+                         testing::Values(0, 50),
+                         [](const testing::TestParamInfo<int>& info) {
+                           return info.param == 0
+                                      ? "NoLcpDelay"
+                                      : base::StringPrintf("LcpDelay_%dms",
+                                                           info.param);
+                         });
 }  // namespace
 
 }  // namespace actor

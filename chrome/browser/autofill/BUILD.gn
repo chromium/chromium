@@ -216,7 +216,10 @@ static_library("test_support") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/autofill/glic:test_support" ]
+    deps += [
+      "//chrome/browser/autofill/glic:test_support",
+      "//components/autofill/core/browser:test_support",
+    ]
   }
 }
 

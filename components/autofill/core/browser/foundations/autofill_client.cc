@@ -329,6 +329,10 @@ OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
   return nullptr;
 }
 
+FormPredictionsTracker* AutofillClient::GetFormPredictionsTracker() {
+  return nullptr;
+}
+
 one_time_tokens::OneTimeTokenService* AutofillClient::GetOneTimeTokenService()
     const {
   return nullptr;
