@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_glic)
+
 source_set("selection") {
   sources = [
     "selection_overlay_controller.cc",
@@ -9,11 +14,23 @@ source_set("selection") {
   ]
 
   deps = [
+    ":mojo_bindings",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/webui:webui_util",
+    "//mojo/public/mojom/base",
   ]
+}
+
+mojom("mojo_bindings") {
+  disable_variants = true
+  sources = [ "selection_overlay.mojom" ]
+  public_deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
+  webui_module_path = "/"
 }
