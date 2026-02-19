@@ -375,6 +375,12 @@ public class StripLayoutHelperManager
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
+            if (mGlicButton != null && mGlicButton.click(x, y, 0)) {
+                return;
+            }
+            if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, 0)) {
+                return;
+            }
             getActiveStripLayoutHelper().onLongPress(x, y);
         }
 
