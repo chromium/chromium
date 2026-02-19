@@ -830,8 +830,8 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.payment_request_enabled;
   }
 
-  static bool ai_prompt_api_enabled(const blink::web_pref::WebPreferences& r) {
-    return r.ai_prompt_api_enabled;
+  static bool ai_ot_apis_enabled(const blink::web_pref::WebPreferences& r) {
+    return r.ai_ot_apis_enabled;
   }
 
 #if BUILDFLAG(IS_MAC)

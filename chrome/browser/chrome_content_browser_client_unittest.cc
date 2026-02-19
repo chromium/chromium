@@ -34,6 +34,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
@@ -98,6 +99,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1945,6 +1947,82 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
   ASSERT_FALSE(client.IsFullCookieAccessAllowed(
       profile(), web_contents(), url, FirstPartyStorageKey(top_level_url2),
       /*overrides=*/{}));
+}
+
+class ChromeContentBrowserClientAIPrefsTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  ChromeContentBrowserClientAIPrefsTest() = default;
+
+ protected:
+  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
+
+  void RunOverrideWebPreferences(
+      content::WebContents* web_contents,
+      blink::web_pref::WebPreferences* web_preferences) {
+    content::SiteInstance* site_instance = web_contents->GetSiteInstance();
+    client_.OverrideWebPreferences(web_contents, *site_instance,
+                                   web_preferences);
+  }
+
+  ChromeContentBrowserClient client_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies the web preference is enabled in DevTools when
+// kDevToolsAiOriginTrialsApis is enabled.
+TEST_F(ChromeContentBrowserClientAIPrefsTest, DevToolsScheme_BothFlagsEnabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kDevToolsAiOriginTrialsApis},
+      /*disabled_features=*/{});
+
+  const GURL devtools_url(
+      base::StrCat({content::kChromeDevToolsScheme, "://foo"}));
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(devtools_url);
+
+  blink::web_pref::WebPreferences web_preferences;
+  RunOverrideWebPreferences(web_contents.get(), &web_preferences);
+
+  EXPECT_TRUE(web_preferences.ai_ot_apis_enabled);
+}
+
+// Verifies the web preference is set to false in DevTools when
+// kDevToolsAiOriginTrialsApis is disabled.
+TEST_F(ChromeContentBrowserClientAIPrefsTest, DevToolsScheme_OTFlagEnabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kDevToolsAiOriginTrialsApis});
+
+  const GURL devtools_url(
+      base::StrCat({content::kChromeDevToolsScheme, "://foo"}));
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(devtools_url);
+
+  blink::web_pref::WebPreferences web_preferences;
+  RunOverrideWebPreferences(web_contents.get(), &web_preferences);
+
+  EXPECT_FALSE(web_preferences.ai_ot_apis_enabled);
+}
+
+// Verifies the web preference is set to false for non-DevTools schemes.
+TEST_F(ChromeContentBrowserClientAIPrefsTest, NonDevToolsScheme) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kDevToolsAiOriginTrialsApis},
+      /*disabled_features=*/{});
+
+  const GURL normal_url("https://www.example.com");
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(normal_url);
+
+  blink::web_pref::WebPreferences web_preferences;
+
+  RunOverrideWebPreferences(web_contents.get(), &web_preferences);
+
+  EXPECT_FALSE(web_preferences.ai_ot_apis_enabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

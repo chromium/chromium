@@ -4826,9 +4826,9 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       base::FeatureList::IsEnabled(::features::kContextMenuEmptySpace);
 #endif
 
-  if (base::FeatureList::IsEnabled(::features::kDevToolsAiPromptApi) &&
-      web_contents->GetVisibleURL().SchemeIs(content::kChromeDevToolsScheme)) {
-    web_prefs->ai_prompt_api_enabled = true;
+  if (web_contents->GetVisibleURL().SchemeIs(content::kChromeDevToolsScheme) &&
+      base::FeatureList::IsEnabled(::features::kDevToolsAiOriginTrialsApis)) {
+    web_prefs->ai_ot_apis_enabled = true;
   }
 }
 

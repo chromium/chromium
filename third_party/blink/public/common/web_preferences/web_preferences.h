@@ -449,7 +449,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // WebView and by `kWebPayments` feature flag everywhere.
   bool payment_request_enabled = false;
 
-  bool ai_prompt_api_enabled = false;
+  // Enables the origin trial Built-in AI APIs, for use within DevTools and
+  // devtools extension panels.
+  bool ai_ot_apis_enabled = false;
 
 #if BUILDFLAG(IS_MAC)
   bool should_disable_external_popups = false;

@@ -241,7 +241,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->subapps_apis_require_user_gesture_and_authorization =
       data.require_transient_activation_and_user_confirmation_for_subapps_api();
   out->payment_request_enabled = data.payment_request_enabled();
-  out->ai_prompt_api_enabled = data.ai_prompt_api_enabled();
+  out->ai_ot_apis_enabled = data.ai_ot_apis_enabled();
 
 #if BUILDFLAG(IS_MAC)
   out->should_disable_external_popups = data.should_disable_external_popups();

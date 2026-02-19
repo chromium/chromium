@@ -2109,13 +2109,6 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
   response_dict.Set("deviceBoundSessionsDebugging",
                     std::move(device_bound_sessions_debugging));
 
-  base::DictValue prompt_api_dict;
-  prompt_api_dict.Set("enabled", base::FeatureList::IsEnabled(
-                                     ::features::kDevToolsAiPromptApi));
-  prompt_api_dict.Set("allowWithoutGpu",
-                      features::kDevToolsAiPromptApiAllowWithoutGpu.Get());
-  response_dict.Set("devToolsAiPromptApi", std::move(prompt_api_dict));
-
   if (base::FeatureList::IsEnabled(
           ::features::kDevToolsAiAssistanceContextSelectionAgent)) {
     base::DictValue devtools_context_selection_agent;

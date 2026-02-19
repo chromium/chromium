@@ -127,6 +127,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
@@ -4499,6 +4500,66 @@ IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
   EXPECT_EQ(window_, DevToolsWindow::FindDevToolsWindow(agent_host.get()));
   CloseDevToolsWindow();
 }
+
+class DevToolsOriginTrialsApiBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DevToolsOriginTrialsApiBrowserTest() {
+    if (IsFeatureEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kDevToolsAiOriginTrialsApis},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kDevToolsAiOriginTrialsApis});
+    }
+  }
+
+ protected:
+  bool IsFeatureEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DevToolsOriginTrialsApiBrowserTest,
+                       AIOriginTrialAPIInDevTools) {
+  // Open DevTools on a tab
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(
+          browser()->tab_strip_model()->GetActiveWebContents(), false);
+  ASSERT_TRUE(devtools_window);
+
+  // Get the WebContents of the DevTools frontend
+  content::WebContents* devtools_contents =
+      DevToolsWindowTesting::Get(devtools_window)->main_web_contents();
+  ASSERT_TRUE(devtools_contents);
+
+  // Execute JavaScript in the DevTools frontend context to check for the APIs.
+  bool expected_defined = IsFeatureEnabled();
+  EXPECT_EQ(
+      expected_defined,
+      content::EvalJs(devtools_contents, "typeof Proofreader !== 'undefined'"));
+  EXPECT_EQ(expected_defined, content::EvalJs(devtools_contents,
+                                              "typeof Writer !== 'undefined'"));
+  EXPECT_EQ(
+      expected_defined,
+      content::EvalJs(devtools_contents, "typeof Rewriter !== 'undefined'"));
+  EXPECT_EQ(expected_defined,
+            content::EvalJs(devtools_contents,
+                            "typeof LanguageModel !== 'undefined'"));
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DevToolsOriginTrialsApiBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Enabled" : "Disabled";
+                         });
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

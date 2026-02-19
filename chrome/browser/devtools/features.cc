@@ -195,14 +195,6 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",
     /*default_value=*/true};
 
-// Whether the AI Prompt API (https://developer.chrome.com/docs/ai/prompt-api)
-// is available in DevTools.
-BASE_FEATURE(kDevToolsAiPromptApi, base::FEATURE_DISABLED_BY_DEFAULT);
-// Whether the Prompt API is allowed to run on devices without a dedicated GPU.
-const base::FeatureParam<bool> kDevToolsAiPromptApiAllowWithoutGpu{
-    &kDevToolsAiPromptApi, "allow_without_gpu",
-    /*default_value=*/false};
-
 // Whether Network panel should use Durable Messages to preserve network bodies.
 BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -234,5 +226,7 @@ BASE_FEATURE(kDevToolsProtocolMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to display the Gemini rebranding for AI Assistance.
 BASE_FEATURE(kDevToolsGeminiRebranding, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDevToolsAiOriginTrialsApis, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

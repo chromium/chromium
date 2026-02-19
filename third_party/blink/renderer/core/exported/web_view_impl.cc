@@ -1934,8 +1934,12 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   RuntimeEnabledFeatures::SetPaymentRequestEnabled(
       prefs.payment_request_enabled);
 
-  if (prefs.ai_prompt_api_enabled) {
+  if (prefs.ai_ot_apis_enabled) {
     RuntimeEnabledFeatures::SetAIPromptAPIEnabled(true);
+    RuntimeEnabledFeatures::SetAIPromptAPIMultimodalInputEnabled(true);
+    RuntimeEnabledFeatures::SetAIProofreadingAPIEnabled(true);
+    RuntimeEnabledFeatures::SetAIRewriterAPIEnabled(true);
+    RuntimeEnabledFeatures::SetAIWriterAPIEnabled(true);
   }
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
