@@ -291,8 +291,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      */
     @Initializer
     public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
-        // TODO(https://crbug.com/437039516): trigger error UI when sign-in can't be
-        // launched from the sign-in coordinator.
         assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
 
         // Assert that the previous flow finished properly.
@@ -303,9 +301,16 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mConfig = config;
         assumeNonNull(mProfileSupplier)
                 .runSyncOrOnAvailable(
-                        profile ->
-                                onProfileAvailable(
-                                        profile, this::finishLoadingAndSelectSigninFlow));
+                        profile -> {
+                            validateProfile(profile);
+                            if (canStartSigninAndHistorySyncOrShowError(
+                                    mActivity,
+                                    profile,
+                                    config.historyOptInMode,
+                                    mSigninAccessPoint)) {
+                                onProfileAvailable(profile, this::finishLoadingAndSelectSigninFlow);
+                            }
+                        });
     }
 
     /**

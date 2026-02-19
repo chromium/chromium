@@ -8,11 +8,14 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -20,11 +23,15 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.widget.Toast;
 
 import java.util.Objects;
 
@@ -188,5 +195,40 @@ public abstract class SigninAndHistorySyncCoordinator {
                     throw new IllegalArgumentException(
                             "Unexpected value for historyOptInMode :" + historyOptInMode);
         };
+    }
+
+    /**
+     * Checks whether the sign-in and history sync flow can be started (at least the sign-in UI or
+     * the history sync UI will be shown if the flow starts) according to the given configuration
+     * and other parameters. It shows an error toast if the flow can't start.
+     *
+     * @return true if the flow can start, false otherwise.
+     */
+    public static boolean canStartSigninAndHistorySyncOrShowError(
+            Context context,
+            Profile profile,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
+            @SigninAccessPoint int accessPoint) {
+        if (SigninAndHistorySyncCoordinator.willShowSigninUi(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUi(
+                        profile, historyOptInMode)) {
+            return true;
+        }
+        // TODO(crbug.com/354912290): Update the UI related to sign-in errors.
+        if (UserPrefs.get(profile).isManagedPreference(Pref.SIGNIN_ALLOWED)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Signin.SigninDisabledNotificationShown",
+                    accessPoint,
+                    SigninAccessPoint.MAX_VALUE);
+            ManagedPreferencesUtils.showManagedByAdministratorToast(context);
+        } else {
+            Toast.makeText(
+                            context,
+                            context.getString(
+                                    R.string.signin_account_picker_bottom_sheet_error_title),
+                            Toast.LENGTH_LONG)
+                    .show();
+        }
+        return false;
     }
 }
