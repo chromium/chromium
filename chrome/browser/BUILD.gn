@@ -6962,6 +6962,8 @@ static_library("browser") {
       "enterprise/reporting/saas_usage/saas_usage_navigation_observer.h",
       "enterprise/reporting/saas_usage/saas_usage_report_factory_desktop.cc",
       "enterprise/reporting/saas_usage/saas_usage_report_factory_desktop.h",
+      "enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.cc",
+      "enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.h",
       "enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop.cc",
       "enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop.h",
       "enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.cc",

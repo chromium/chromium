@@ -6882,6 +6882,7 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/reporting/saas_usage/navigation_handle_data_delegate_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer_unittest.cc",
+      "../browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop_unittest.cc",
     ]
   }
