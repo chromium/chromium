@@ -51,9 +51,7 @@ public class DefaultBrowserPromoCoordinator
     // EducationalTipCardProvider implementation.
     @Override
     public String getCardTitle() {
-        return mActionDelegate
-                .getContext()
-                .getString(R.string.educational_tip_default_browser_title);
+        return mActionDelegate.getContext().getString(R.string.use_chrome_by_default);
     }
 
     @Override

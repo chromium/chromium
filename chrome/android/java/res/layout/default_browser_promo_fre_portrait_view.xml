@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.firstrun.DefaultBrowserPromoFirstRunView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ScrollView
+      android:id="@+id/default_browser_fre_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_alignParentTop="true"
+      android:layout_above="@id/default_browser_fre_button_group"
+      android:fadeScrollbars="false"
+      android:fillViewport="true"
+      android:scrollIndicators="bottom">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+      <View
+          android:id="@+id/fre_space_above_logo"
+          android:layout_width="match_parent"
+          android:layout_height="24dp"
+          android:layout_weight="3"
+          android:visibility="invisible" />
+
+      <ImageView
+          android:id="@+id/fre_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="@dimen/fullscreen_signin_logo_default_height"
+          android:layout_gravity="center"
+          android:layout_marginBottom="24dp"
+          android:scaleType="fitCenter"
+          android:adjustViewBounds="true"
+          android:src="@drawable/fre_product_logo"
+          android:importantForAccessibility="no" />
+
+      <TextView
+          android:id="@+id/title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:lineSpacingMultiplier="1.2"
+          android:gravity="center"
+          android:paddingHorizontal="24dp"
+          android:text="@string/use_chrome_by_default"
+          android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/subtitle"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:paddingHorizontal="24dp"
+          android:paddingTop="8dp"
+          android:text="@string/educational_tip_default_browser_bottom_sheet_description"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          app:leading="@dimen/text_size_medium_leading" />
+
+      <View
+          android:id="@+id/fre_space_between_header_and_bottom_group"
+          android:layout_width="match_parent"
+          android:layout_height="24dp"
+          android:layout_weight="5"
+          android:visibility="invisible" />
+    </LinearLayout>
+  </ScrollView>
+
+  <LinearLayout
+      android:id="@+id/default_browser_fre_button_group"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_marginBottom="44dp"
+      android:orientation="vertical">
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/fre_continue_button"
+        style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:text="@string/default_browser_promo_message_title" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/fre_dismiss_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/history_sync_secondary_action" />
+  </LinearLayout>
+</org.chromium.chrome.browser.firstrun.DefaultBrowserPromoFirstRunView>

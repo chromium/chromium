@@ -289,6 +289,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
         mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
 
+        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+            // TODO(https://crbug.com/483539670): This is just a placeholder to see the primer.
+            // Actual logic will be added in a follow-up CL.
+            mPages.add(new FirstRunPage<>(DefaultBrowserPromoFirstRunFragment.class, () -> true));
+            mFreProgressStates.add(MobileFreProgress.DEFAULT_BROWSER_PROMO_SHOWN);
+        }
+
         if (mPagerAdapter != null) {
             mPagerAdapter.notifyDataSetChanged();
         }

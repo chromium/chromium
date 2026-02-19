@@ -73,6 +73,9 @@ public @interface MobileFreProgress {
     /** The user clicked on the |No thanks| button to decline history sync. */
     int HISTORY_SYNC_DISMISSED = 14;
 
-    int MAX = 15;
+    /** The default browser promo primer was shown to the user. */
+    int DEFAULT_BROWSER_PROMO_SHOWN = 15;
+
+    int MAX = 16;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:MobileFreProgress)

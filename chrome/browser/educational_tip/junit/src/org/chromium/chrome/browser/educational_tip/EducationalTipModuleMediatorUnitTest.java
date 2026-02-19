@@ -119,7 +119,7 @@ public class EducationalTipModuleMediatorUnitTest {
         // Test showing default browser promo card.
         testShowModuleImpl(
                 ModuleType.DEFAULT_BROWSER_PROMO,
-                R.string.educational_tip_default_browser_title,
+                R.string.use_chrome_by_default,
                 R.string.educational_tip_default_browser_description,
                 R.drawable.default_browser_promo_logo);
 

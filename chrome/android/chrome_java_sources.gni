@@ -643,6 +643,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/findinpage/FindToolbarObserver.java",
   "java/src/org/chromium/chrome/browser/findinpage/FindToolbarPhone.java",
   "java/src/org/chromium/chrome/browser/findinpage/FindToolbarTablet.java",
+  "java/src/org/chromium/chrome/browser/firstrun/DefaultBrowserPromoFirstRunFragment.java",
+  "java/src/org/chromium/chrome/browser/firstrun/DefaultBrowserPromoFirstRunView.java",
   "java/src/org/chromium/chrome/browser/firstrun/DefaultSearchEngineFirstRunFragment.java",
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java",
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunActivityBase.java",

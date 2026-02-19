@@ -85,8 +85,7 @@ public final class EducationalTipModuleViewBinderUnitTest {
 
         String expectedTitle =
                 mActivity.getString(
-                        org.chromium.chrome.browser.educational_tip.R.string
-                                .educational_tip_default_browser_title);
+                        org.chromium.chrome.browser.educational_tip.R.string.use_chrome_by_default);
         mModel.set(MODULE_CONTENT_TITLE_STRING, expectedTitle);
         Assert.assertEquals(expectedTitle, contentTitleView.getText());
     }

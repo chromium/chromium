@@ -63,7 +63,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.Headline.Primary"
-            android:text="@string/educational_tip_default_browser_bottom_sheet_title"/>
+            android:text="@string/use_chrome_by_default"/>
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"

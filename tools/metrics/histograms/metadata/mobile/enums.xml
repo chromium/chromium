@@ -401,6 +401,7 @@ chromium-metrics-reviews@google.com.
   <int value="14"
       label="The user clicked on the |No thanks| button to decline history
              sync"/>
+  <int value="15" label="Default browser promo shown"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/first_run/android/java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java:MobileFreProgress) -->

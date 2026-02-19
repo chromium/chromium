@@ -1261,7 +1261,7 @@
       <message name="IDS_EDUCATIONAL_TIP_SEE_MORE" desc="Text for a link to view all Educational tip items in two cell mode.">
         See more
       </message>
-      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_TITLE" desc="Title of the default browser section in the educational tip module on NTP.">
+      <message name="IDS_USE_CHROME_BY_DEFAULT" desc="Generic title prompting the user to set Chrome as their default browser.">
         Use Chrome by default
       </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser section in the educational tip module on NTP.">
@@ -1284,9 +1284,6 @@
       </message>
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_DESCRIPTION" desc="Description of the quick delete promo in the educational tip module on NTP.">
         You can delete some or all of your history, cookies, site data and more
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_TITLE" desc="Title of the default browser section's bottom sheet in the educational tip module on NTP.">
-        Use Chrome By Default
       </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_DESCRIPTION" desc="Description of the default browser section's bottom sheet in the educational tip module on NTP.">
         You can now use Chrome anytime you browse or tap links in messages, documents, and other apps.
