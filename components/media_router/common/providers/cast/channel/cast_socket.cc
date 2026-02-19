@@ -25,7 +25,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_framer.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_transport.h"
-#include "components/media_router/common/providers/cast/channel/keep_alive_delegate.h"
 #include "components/media_router/common/providers/cast/channel/logger.h"
 #include "components/media_router/common/providers/cast/channel/mojo_data_pump.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -158,10 +157,6 @@ void CastSocketImpl::set_id(int id) {
   channel_id_ = id;
 }
 
-bool CastSocketImpl::keep_alive() const {
-  return open_params_.liveness_timeout.is_positive();
-}
-
 bool CastSocketImpl::audio_only() const {
   return audio_only_;
 }
@@ -279,7 +274,6 @@ CastSocketImpl::GetNetworkTrafficAnnotationTag() {
             "A serialized Cast protocol or application-level protobuf message. "
             "A non-exhaustive list of Cast protocol messages:\n"
             "- nonce challenge,\n"
-            "- ping/pong data,\n"
             "- Virtual connection requests,\n"
             "- App availability / media status / receiver status requests,\n"
             "- Launch / stop Cast session requests,\n"
@@ -370,7 +364,8 @@ void CastSocketImpl::DoConnectLoop(int result) {
         DCHECK(IsTerminalState(connect_state_));
         break;
       default:
-        NOTREACHED() << "Unknown state in connect flow: " << AsInteger(state);
+        NOTREACHED() << "Unknown state in connect flow: "
+                     << std::to_underlying(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalState(connect_state_));
   // Exit the state machine if an asynchronous network operation is pending
@@ -593,12 +588,6 @@ void CastSocketImpl::DoConnectCallback() {
 
   if (error_state_ == ChannelError::NONE) {
     SetReadyState(ReadyState::OPEN);
-    if (keep_alive()) {
-      auto* keep_alive_delegate = new KeepAliveDelegate(
-          this, logger_, std::move(delegate_), open_params_.ping_interval,
-          open_params_.liveness_timeout);
-      delegate_.reset(keep_alive_delegate);
-    }
     transport_->SetReadDelegate(std::move(delegate_));
   } else {
     CloseInternal();
@@ -705,14 +694,13 @@ CastSocketOpenParams::CastSocketOpenParams(const net::IPEndPoint& ip_endpoint,
 CastSocketOpenParams::CastSocketOpenParams(
     const net::IPEndPoint& ip_endpoint,
     base::TimeDelta connect_timeout,
-    base::TimeDelta liveness_timeout,
-    base::TimeDelta ping_interval,
     CastDeviceCapabilitySet device_capabilities)
     : ip_endpoint(ip_endpoint),
       connect_timeout(connect_timeout),
-      liveness_timeout(liveness_timeout),
-      ping_interval(ping_interval),
       device_capabilities(device_capabilities) {}
 
 }  // namespace cast_channel
+
+#undef CONNECTION_INFO
 #undef VLOG_WITH_CONNECTION
+#undef LOG_WITH_CONNECTION

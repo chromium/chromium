@@ -34,10 +34,6 @@ static_library("channel") {
     "cast_transport.h",
     "enum_table.cc",
     "enum_table.h",
-    "keep_alive_delegate.cc",
-    "keep_alive_delegate.h",
-    "keep_alive_handler.cc",
-    "keep_alive_handler.h",
     "logger.cc",
     "logger.h",
     "mojo_data_pump.cc",
@@ -96,7 +92,6 @@ source_set("unit_tests") {
     "cast_socket_unittest.cc",
     "cast_transport_unittest.cc",
     "enum_table_unittest.cc",
-    "keep_alive_delegate_unittest.cc",
     "logger_unittest.cc",
   ]
   deps = [

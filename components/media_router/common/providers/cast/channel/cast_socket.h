@@ -110,9 +110,6 @@ class CastSocket {
   // Flag values are defined by the CastChannelFlag enum.
   virtual CastChannelFlags flags() const = 0;
 
-  // True when keep-alive signaling is handled for this socket.
-  virtual bool keep_alive() const = 0;
-
   // Whether the channel is audio only as identified by the device
   // certificate during channel authentication.
   virtual bool audio_only() const = 0;
@@ -145,19 +142,6 @@ struct CastSocketOpenParams {
   // report CONNECT_TIMEOUT error and may hang when connecting to a Cast device.
   base::TimeDelta connect_timeout;
 
-  // Amount of idle time to wait before disconnecting. Cast socket will ping
-  // Cast device periodically at |ping_interval| to check liveness. If it does
-  // not receive response in |liveness_timeout|, it reports PING_TIMEOUT error.
-  // |liveness_timeout| should always be larger than or equal to
-  // |ping_interval|.
-  // If this value is not set, there is not periodic ping and Cast socket is
-  // always assumed alive.
-  base::TimeDelta liveness_timeout;
-
-  // Amount of idle time to wait before pinging the Cast device. See comments
-  // for |liveness_timeout|.
-  base::TimeDelta ping_interval;
-
   // An EnumSet representing the capabilities of the sink.
   CastDeviceCapabilitySet device_capabilities;
 
@@ -165,8 +149,6 @@ struct CastSocketOpenParams {
                        base::TimeDelta connect_timeout);
   CastSocketOpenParams(const net::IPEndPoint& ip_endpoint,
                        base::TimeDelta connect_timeout,
-                       base::TimeDelta liveness_timeout,
-                       base::TimeDelta ping_interval,
                        CastDeviceCapabilitySet device_capabilities);
 };
 
@@ -203,7 +185,6 @@ class CastSocketImpl : public CastSocket {
   ReadyState ready_state() const override;
   ChannelError error_state() const override;
   CastChannelFlags flags() const override;
-  bool keep_alive() const override;
   bool audio_only() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

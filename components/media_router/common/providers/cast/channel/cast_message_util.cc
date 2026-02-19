@@ -30,8 +30,6 @@ template <>
 const EnumTable<CastMessageType>& EnumTable<CastMessageType>::GetInstance() {
   static const EnumTable<CastMessageType> kInstance(
       {
-          {CastMessageType::kPing, "PING"},
-          {CastMessageType::kPong, "PONG"},
           {CastMessageType::kRpc, "RPC"},
           {CastMessageType::kGetAppAvailability, "GET_APP_AVAILABILITY"},
           {CastMessageType::kGetStatus, "GET_STATUS"},
@@ -115,7 +113,6 @@ constexpr std::string_view kCastReservedNamespacePrefix =
 
 constexpr const char* kReservedNamespaces[] = {
     kAuthNamespace,
-    kHeartbeatNamespace,
     kConnectionNamespace,
     kReceiverNamespace,
     kMediaNamespace,
@@ -147,14 +144,6 @@ void FillCommonCastMessageFields(CastMessage* message,
   message->set_source_id(source_id);
   message->set_destination_id(destination_id);
   message->set_namespace_(message_namespace);
-}
-
-CastMessage CreateKeepAliveMessage(std::string_view keep_alive_type) {
-  base::DictValue type_dict;
-  type_dict.Set("type", keep_alive_type);
-  return CreateCastMessage(kHeartbeatNamespace,
-                           base::Value(std::move(type_dict)), kPlatformSenderId,
-                           kPlatformReceiverId);
 }
 
 // Returns the value to be set as the "platform" value in a virtual connect
@@ -348,16 +337,6 @@ bool IsReceiverMessage(const CastMessage& message) {
 
 bool IsPlatformSenderMessage(const CastMessage& message) {
   return message.destination_id() != cast_channel::kPlatformSenderId;
-}
-
-CastMessage CreateKeepAlivePingMessage() {
-  return CreateKeepAliveMessage(
-      EnumToString<CastMessageType, CastMessageType::kPing>());
-}
-
-CastMessage CreateKeepAlivePongMessage() {
-  return CreateKeepAliveMessage(
-      EnumToString<CastMessageType, CastMessageType::kPong>());
 }
 
 CastMessage CreateVirtualConnectionRequest(

@@ -11,13 +11,6 @@
 
 namespace cast_channel {
 
-// Helper function to convert scoped enums to their underlying type, for use
-// with ostreams.
-template <typename Enumeration>
-auto AsInteger(Enumeration const value) {
-  return std::to_underlying(value);
-}
-
 enum class ReadyState {
   NONE,
   CONNECTING,
@@ -36,7 +29,6 @@ enum class ChannelError {
   INVALID_MESSAGE,
   INVALID_CHANNEL_ID,
   CONNECT_TIMEOUT,
-  PING_TIMEOUT,
   UNKNOWN,
 };
 
@@ -72,7 +64,6 @@ enum class ChannelEvent {
   SSL_SOCKET_CONNECT_FAILED,    // Logged with RV.
   SEND_AUTH_CHALLENGE_FAILED,   // Logged with RV.
   AUTH_CHALLENGE_REPLY_INVALID,
-  PING_WRITE_ERROR,  // Logged with RV.
 };
 
 enum class ChallengeReplyError {
