@@ -11,7 +11,7 @@ import subprocess
 
 CIPD_ROOT = pathlib.Path(__file__).resolve().parent / 'cipd' / 'promptfoo'
 CIPD_PACKAGES = [
-    ('infra/3pp/tools/nodejs/linux-${arch}', 'version:3@25.0.0'),
+    ('infra/3pp/tools/nodejs/linux-${arch}', 'version:3@25.6.1'),
     ('infra/3pp/npm/promptfoo/linux-${arch}', 'version:3@0.118.17'),
 ]
 

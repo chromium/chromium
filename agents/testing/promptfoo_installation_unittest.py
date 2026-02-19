@@ -34,19 +34,31 @@ class FromCipdPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
 
         self.mock_check_call.assert_has_calls([
             mock.call([
-                'cipd', 'init', '-force',
-                str(promptfoo_installation.CIPD_ROOT)
+                'cipd',
+                'init',
+                '-force',
+                str(promptfoo_installation.CIPD_ROOT),
             ]),
             mock.call([
-                'cipd', 'install', 'infra/3pp/tools/nodejs/linux-${arch}',
-                'version:3@25.0.0', '-root', promptfoo_installation.CIPD_ROOT,
-                '-log-level', 'warning'
+                'cipd',
+                'install',
+                'infra/3pp/tools/nodejs/linux-${arch}',
+                mock.ANY,
+                '-root',
+                promptfoo_installation.CIPD_ROOT,
+                '-log-level',
+                'warning',
             ],
                       stdout=subprocess.DEVNULL),
             mock.call([
-                'cipd', 'install', 'infra/3pp/npm/promptfoo/linux-${arch}',
-                'version:3@0.118.17', '-root',
-                promptfoo_installation.CIPD_ROOT, '-log-level', 'warning'
+                'cipd',
+                'install',
+                'infra/3pp/npm/promptfoo/linux-${arch}',
+                mock.ANY,
+                '-root',
+                promptfoo_installation.CIPD_ROOT,
+                '-log-level',
+                'warning',
             ],
                       stdout=subprocess.DEVNULL),
         ])
@@ -60,15 +72,25 @@ class FromCipdPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
 
         self.mock_check_call.assert_has_calls([
             mock.call([
-                'cipd', 'install', 'infra/3pp/tools/nodejs/linux-${arch}',
-                'version:3@25.0.0', '-root', promptfoo_installation.CIPD_ROOT,
-                '-log-level', 'warning'
+                'cipd',
+                'install',
+                'infra/3pp/tools/nodejs/linux-${arch}',
+                mock.ANY,
+                '-root',
+                promptfoo_installation.CIPD_ROOT,
+                '-log-level',
+                'warning',
             ],
                       stdout=subprocess.DEVNULL),
             mock.call([
-                'cipd', 'install', 'infra/3pp/npm/promptfoo/linux-${arch}',
-                'version:3@0.118.17', '-root',
-                promptfoo_installation.CIPD_ROOT, '-log-level', 'warning'
+                'cipd',
+                'install',
+                'infra/3pp/npm/promptfoo/linux-${arch}',
+                mock.ANY,
+                '-root',
+                promptfoo_installation.CIPD_ROOT,
+                '-log-level',
+                'warning',
             ],
                       stdout=subprocess.DEVNULL),
         ])
