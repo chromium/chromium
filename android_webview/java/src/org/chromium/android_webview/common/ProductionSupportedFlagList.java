@@ -1086,9 +1086,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.WEBVIEW_ASYNC_DRAW_ONLY,
                 "Disable synchronous draw. Experiment to reduce ANRs."),
         Flag.baseFeature(
-                BlinkFeatures.AUTOFILL_ENABLE_SYNTHETIC_SELECT_METRICS_LOGGING,
-                "Enable counting of synthetic select elements in DOM."),
-        Flag.baseFeature(
                 VizFeatures.NO_LATE_BEGIN_FRAMES,
                 "Enables not sending BeginFrameArgs late when a client begins observing them."),
         Flag.baseFeature(

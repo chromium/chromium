@@ -2043,12 +2043,7 @@ TEST_F(DocumentTest, LifecycleState_DirtyStyle_NoBody) {
             DocumentLifecycle::kVisualUpdatePending);
 }
 
-class SyntheticSelectTest : public DocumentTest {
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableSyntheticSelectMetricsLogging};
-};
-
-TEST_F(SyntheticSelectTest,
+TEST_F(DocumentTest,
        MetricsAreReported_WhenPotentialSyntheticSelectIsInNestedForm) {
   SetHtmlInnerHTML(R"HTML(
     <form id="f1">
@@ -2067,7 +2062,7 @@ TEST_F(SyntheticSelectTest,
       blink::mojom::WebFeature::kAutofillSyntheticSelect));
 }
 
-TEST_F(SyntheticSelectTest,
+TEST_F(DocumentTest,
        MetricsAreReported_WhenSyntheticSelectIsInNestedForm) {
   SetHtmlInnerHTML(R"HTML(
     <form id="f1">
@@ -2094,7 +2089,7 @@ struct SyntheticSelectTestCase {
 };
 
 class ParametrizedSyntheticSelectTest
-    : public SyntheticSelectTest,
+    : public DocumentTest,
       public testing::WithParamInterface<SyntheticSelectTestCase> {};
 
 TEST_P(ParametrizedSyntheticSelectTest, MetricsAreReported_WhenSelectIsInForm) {

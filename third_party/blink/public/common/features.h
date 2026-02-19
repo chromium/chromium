@@ -110,9 +110,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletThreadRealtimePeriodMac);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletThreadPool);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAutofillEnableSyntheticSelectMetricsLogging);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAutofillFixFieldsAssociatedWithNestedFormsByParser);
 
 BLINK_COMMON_EXPORT

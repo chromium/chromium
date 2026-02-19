@@ -816,10 +816,7 @@ const HeapVector<Member<HTMLFormElement>>& Document::TopLevelFormsList::Get(
         }
       }
     }
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSyntheticSelectMetricsLogging)) {
-      LogSyntheticSelectMetrics(owner);
-    }
+    LogSyntheticSelectMetrics(owner);
     dirty_ = false;
   }
   return list_;
