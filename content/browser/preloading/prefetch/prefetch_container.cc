@@ -1516,7 +1516,7 @@ bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
 }
 
 void PrefetchContainer::MakeInitialResourceRequest() {
-  const GURL& url = GetURL();
+  const GURL& url = request().key().url();
   url::Origin origin = url::Origin::Create(url);
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kMainFrame, origin, origin,
