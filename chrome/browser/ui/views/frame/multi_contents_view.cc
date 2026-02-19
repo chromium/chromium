@@ -336,29 +336,8 @@ void MultiContentsView::OnSwap() {
   delegate_->ReverseWebContents();
 }
 
-void MultiContentsView::TargetContentBounds::Outset(
-    const gfx::Outsets& outsets) {
-  actual_size.set_width(actual_size.width() + outsets.width());
-  actual_size.set_height(actual_size.height() + outsets.height());
-  clipped_area += -outsets.ToInsets();
-}
-
 void MultiContentsView::SetTargetContentBounds(
     std::optional<TargetContentBounds> target_content_bounds) {
-  // When not split, separators may be shown. In this case, adjust clip area as
-  // if there are no separators, as at the extent of the animation there will
-  // not be.
-  if (target_content_bounds && !IsInSplitView()) {
-    if (contents_separators_.should_show_leading) {
-      target_content_bounds->Outset(
-          gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));
-    }
-    if (contents_separators_.should_show_trailing) {
-      target_content_bounds->Outset(
-          gfx::Outsets::TLBR(0, 0, 0, views::Separator::kThickness));
-    }
-  }
-
   if (target_content_bounds_ == target_content_bounds) {
     return;
   }

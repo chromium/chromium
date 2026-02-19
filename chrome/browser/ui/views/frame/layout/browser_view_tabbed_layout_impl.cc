@@ -919,9 +919,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   const bool suppress_top_separator =
       horizontal_layout.has_toolbar_height_side_panel() &&
       horizontal_layout.force_top_container_to_top;
+  const auto top_separator_type = GetTopSeparatorType();
   views().multi_contents_view->SetShouldShowTopSeparator(
       !suppress_top_separator &&
-      GetTopSeparatorType() == TopSeparatorType::kMultiContents);
+      top_separator_type == TopSeparatorType::kMultiContents);
 
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
@@ -964,9 +965,29 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
             shadow_overlay_insets.top(), 0, shadow_overlay_insets.bottom(), 0));
       }
 
+      // Horizontal separators may be shown. In this case, adjust clip area as
+      // if there are no separators, as at the extent of the animation there
+      // will not be.
+      if (show_leading_separator) {
+        unclipped_contents_region.Outset(
+            gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));
+      }
+      if (show_trailing_separator) {
+        unclipped_contents_region.Outset(
+            gfx::Outsets::TLBR(0, 0, 0, views::Separator::kThickness));
+      }
+
+      // If the top separator is suppressed now, it won't be at the extent of
+      // the animation.
+      if (top_separator_type == TopSeparatorType::kMultiContents &&
+          suppress_top_separator) {
+        unclipped_contents_region.Inset(
+            gfx::Insets::TLBR(views::Separator::kThickness, 0, 0, 0));
+      }
+
       // Avoid cases where these areas are somehow misaligned (shouldn't happen,
       // but want to avoid visual artifacts if they are).
-      unclipped_contents_region.UnionEvenIfEmpty(contents_layout.bounds);
+      contents_layout.bounds.Intersect(unclipped_contents_region);
       auto clip_insets =
           unclipped_contents_region.InsetsFrom(contents_layout.bounds);
 
