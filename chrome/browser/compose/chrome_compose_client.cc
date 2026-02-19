@@ -184,7 +184,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   }
 
   autofill_managers_observation_.Observe(
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents),
+      autofill::ContentAutofillClient::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
           kObservePreexistingManagers);
   nudge_tracker_.StartObserving(web_contents);

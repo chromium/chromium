@@ -61,9 +61,6 @@ class ScopedAutofillManagersObservation final
   void Observe(AutofillClient* client,
                InitializationPolicy initialization_policy =
                    InitializationPolicy::kExpectNoPreexistingManagers);
-  void Observe(AutofillDriverFactory* factory,
-               InitializationPolicy initialization_policy =
-                   InitializationPolicy::kExpectNoPreexistingManagers);
 
   // Resets all observations.
   void Reset();
@@ -81,6 +78,10 @@ class ScopedAutofillManagersObservation final
       AutofillDriver& driver,
       AutofillDriver::LifecycleState old_state,
       AutofillDriver::LifecycleState new_state) override;
+
+  void Observe(AutofillDriverFactory* factory,
+               InitializationPolicy initialization_policy =
+                   InitializationPolicy::kExpectNoPreexistingManagers);
 
   // The observation used to track driver creation and destruction.
   base::ScopedObservation<AutofillDriverFactory,
