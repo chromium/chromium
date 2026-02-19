@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
+import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -27,6 +28,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.metrics.RecordHistogram;
@@ -179,6 +181,13 @@ class AudioManagerAndroid {
                 hasPermission(android.Manifest.permission.MODIFY_AUDIO_SETTINGS);
         if (DEBUG && !mHasModifyAudioSettingsPermission) {
             logd("MODIFY_AUDIO_SETTINGS permission is missing");
+        }
+
+        // Set the audio capture policy based on the device class.
+        // For non-desktop devices, allow capture only by the system.
+        // For desktop devices, use the default behavior to allow capture by all apps.
+        if (!DeviceInfo.isDesktop()) {
+            mAudioManager.setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_SYSTEM);
         }
 
         mCommunicationDeviceSelector.init();

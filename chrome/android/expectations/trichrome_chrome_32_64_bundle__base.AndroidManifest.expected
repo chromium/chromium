@@ -87,7 +87,6 @@
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <application
       android:name="org.chromium.chrome.browser.base.SplitChromeApplication"
-      android:allowAudioPlaybackCapture="false"
       android:allowBackup="false"
       android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
       android:enableOnBackInvokedCallback="true"
