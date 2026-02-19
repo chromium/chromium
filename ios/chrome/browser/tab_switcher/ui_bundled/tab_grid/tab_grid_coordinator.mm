@@ -535,6 +535,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   DCHECK(viewController || self.browserLayoutViewController);
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
+  BOOL wasTabGridVisible = sceneState.tabGridState.tabGridVisible;
   sceneState.tabGridState.tabGridVisible = NO;
 
   __weak TabGridCoordinator* weakSelf = self;
@@ -563,9 +564,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   sceneState.window.overrideUserInterfaceStyle =
       UIUserInterfaceStyleUnspecified;
 
-  BOOL wasTabGridVisible = sceneState.tabGridState.tabGridVisible;
-  sceneState.tabGridState.tabGridVisible = NO;
-
   // If another browserLayoutViewController is already being presented, swap
   // this one into the container.
   if (self.browserLayoutViewController && !wasTabGridVisible) {
@@ -581,6 +579,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
       [_viewController addChildViewController:viewController];
       viewController.view.frame = frame;
+      viewController.view.alpha = 1.0;
       [_viewController.view addSubview:viewController.view];
       [viewController didMoveToParentViewController:_viewController];
     }
