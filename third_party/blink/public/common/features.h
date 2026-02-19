@@ -51,6 +51,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvoidTrustedParamsCopies);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleAsyncTouchMoves);
+
+enum class AsyncTouchMoveThrottlingPolicy {
+  kThrottledAfterAnyGsuConsumed,
+  kUnthrottledWhenGsuUnconsumed
+};
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    AsyncTouchMoveThrottlingPolicy,
+    kAsyncTouchMoveThrottlingPolicyParam);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
 
 // Allows running DevTools main thread debugger even when a renderer process

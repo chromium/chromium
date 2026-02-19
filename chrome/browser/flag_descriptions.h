@@ -4152,6 +4152,12 @@ inline constexpr char kThrottleMainTo60HzName[] =
 inline constexpr char kThrottleMainTo60HzDescription[] =
     "Throttle main thread updates to 60fps, even when VSync rate is higher.";
 
+inline constexpr char kThrottleAsyncTouchMovesName[] =
+    "Throttle async touch moves";
+inline constexpr char kThrottleAsyncTouchMovesDescription[] =
+    "When enabled, touch move events to javascript handlers are throttled if "
+    "they are sent as async to Renderer.";
+
 inline constexpr char kTintCompositedContentName[] = "Tint composited content";
 inline constexpr char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "

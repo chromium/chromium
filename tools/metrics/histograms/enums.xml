@@ -12641,6 +12641,7 @@ from previous Chrome versions.
   <int value="-613596048" label="new-canvas-2d-api"/>
   <int value="-613595118" label="StarterPackIPH:enabled"/>
   <int value="-613433517" label="OmniboxZpsSuggestionLimit:disabled"/>
+  <int value="-613336486" label="ThrottleAsyncTouchMoves:disabled"/>
   <int value="-613072171" label="ElementCapture:enabled"/>
   <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
@@ -18053,6 +18054,7 @@ from previous Chrome versions.
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
   <int value="1243017558" label="QuickDeleteAndroidAnimation:disabled"/>
   <int value="1243036309" label="IgnoreHoverEventAnr:disabled"/>
+  <int value="1243055300" label="ThrottleAsyncTouchMoves:enabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
   <int value="1243704644" label="ArcFixupWindowFeature:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>

@@ -418,28 +418,26 @@ void MainThreadEventQueue::OnGestureScrollEventAck(
 void MainThreadEventQueue::OnGestureScrollStartAck(
     mojom::blink::InputEventResultState ack_state) {
   base::AutoLock lock(shared_state_lock_);
-  shared_state_.gsu_acked_as_consumed_ = false;
+  shared_state_.any_gsu_acked_as_consumed_ = false;
+  shared_state_.last_gsu_acked_as_consumed_ = false;
 }
 
 void MainThreadEventQueue::OnGestureScrollUpdateAck(
     mojom::blink::InputEventResultState ack_state) {
   base::AutoLock lock(shared_state_lock_);
-  if (!shared_state_.gsu_acked_as_consumed_.has_value()) {
+  if (!shared_state_.any_gsu_acked_as_consumed_.has_value()) {
     return;
   }
-  if (*shared_state_.gsu_acked_as_consumed_) {
-    return;
-  }
-  if (ack_state != mojom::blink::InputEventResultState::kConsumed) {
-    return;
-  }
-  shared_state_.gsu_acked_as_consumed_ = true;
+  bool consumed = ack_state == mojom::blink::InputEventResultState::kConsumed;
+  *shared_state_.any_gsu_acked_as_consumed_ |= consumed;
+  shared_state_.last_gsu_acked_as_consumed_ = consumed;
 }
 
 void MainThreadEventQueue::OnGestureScrollEndAck(
     mojom::blink::InputEventResultState ack_state) {
   base::AutoLock lock(shared_state_lock_);
-  shared_state_.gsu_acked_as_consumed_.reset();
+  shared_state_.any_gsu_acked_as_consumed_.reset();
+  shared_state_.last_gsu_acked_as_consumed_.reset();
 }
 
 void MainThreadEventQueue::HandleEvent(
@@ -738,8 +736,7 @@ void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
       if (IsRafAlignedEvent(shared_state_.events_.front())) {
         // Throttle touchmoves that are async.
         if (IsAsyncTouchMove(shared_state_.events_.front()) &&
-            ShouldThrottleAsyncTouchMoves(
-                shared_state_.gsu_acked_as_consumed_)) {
+            ShouldThrottleAsyncTouchMoves()) {
           if (shared_state_.events_.size() == 1 &&
               frame_time < shared_state_.last_async_touch_move_timestamp_ +
                                kAsyncTouchMoveInterval) {
@@ -1078,14 +1075,23 @@ MainThreadEventQueue::GetCompositorThreadOnly() {
   return compositor_thread_only_;
 }
 
-bool MainThreadEventQueue::ShouldThrottleAsyncTouchMoves(
-    std::optional<bool> gsu_acked_as_consumed) {
-  // TODO(441800312): Investigate updating touch moves throttling logic during
-  // scrolls.
-  if (gsu_acked_as_consumed.has_value()) {
-    // If a gsu is acked as consumed already, async touch moves should indeed be
-    // throttled.
-    return *gsu_acked_as_consumed;
+bool MainThreadEventQueue::ShouldThrottleAsyncTouchMoves() {
+  shared_state_lock_.AssertAcquired();
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kThrottleAsyncTouchMoves)) {
+    return false;
+  }
+  if (blink::features::kAsyncTouchMoveThrottlingPolicyParam.Get() ==
+          blink::features::AsyncTouchMoveThrottlingPolicy::
+              kThrottledAfterAnyGsuConsumed &&
+      shared_state_.any_gsu_acked_as_consumed_.has_value()) {
+    return *shared_state_.any_gsu_acked_as_consumed_;
+  }
+  if (blink::features::kAsyncTouchMoveThrottlingPolicyParam.Get() ==
+          blink::features::AsyncTouchMoveThrottlingPolicy::
+              kUnthrottledWhenGsuUnconsumed &&
+      shared_state_.last_gsu_acked_as_consumed_.has_value()) {
+    return *shared_state_.last_gsu_acked_as_consumed_;
   }
   return true;
 }

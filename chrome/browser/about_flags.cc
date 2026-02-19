@@ -430,6 +430,19 @@ const FeatureEntry::FeatureParam kLocalNetworkAccessChecksBlock[] = {
 const FeatureEntry::FeatureVariation kLocalNetworkAccessChecksVariations[] = {
     {"(Blocking)", kLocalNetworkAccessChecksBlock, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kThrottleAsyncTouchMoves_ThrottledAfterAnyGsuConsumed[] = {
+        {"policy", "throttled_after_any_gsu_consumed"}};
+const FeatureEntry::FeatureParam
+    kThrottleAsyncTouchMoves_UnthrottledWhenGsuUnconsumed[] = {
+        {"policy", "unthrottled_when_gsu_unconsumed"}};
+
+const FeatureEntry::FeatureVariation kThrottleAsyncTouchMovesVariations[] = {
+    {"throttled after any GSU consumed",
+     kThrottleAsyncTouchMoves_ThrottledAfterAnyGsuConsumed, nullptr},
+    {"unthrottled when GSU unconsumed",
+     kThrottleAsyncTouchMoves_UnthrottledWhenGsuUnconsumed, nullptr}};
+
 const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
     {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
     {flag_descriptions::kEnableBenchmarkingChoiceDefaultFeatureStates,
@@ -10996,6 +11009,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"throttle-main-thread-to-60hz", flag_descriptions::kThrottleMainTo60HzName,
      flag_descriptions::kThrottleMainTo60HzDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kThrottleMainFrameTo60Hz)},
+
+    {"throttle-async-touch-moves",
+     flag_descriptions::kThrottleAsyncTouchMovesName,
+     flag_descriptions::kThrottleAsyncTouchMovesDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kThrottleAsyncTouchMoves,
+                                    kThrottleAsyncTouchMovesVariations,
+                                    "ThrottleAsyncTouchMoves")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"client-side-detection-send-intelligent-scan-info-android",

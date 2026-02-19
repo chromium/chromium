@@ -222,8 +222,11 @@ class PLATFORM_EXPORT MainThreadEventQueue
     bool sent_main_frame_request_ = false;
     // A PostTask to the main thread has been sent but not executed yet.
     bool sent_post_task_ = false;
-    // The optional only has a value set during an active scroll.
-    std::optional<bool> gsu_acked_as_consumed_ = std::nullopt;
+
+    // The optionals only have a value set during an active scroll.
+    std::optional<bool> any_gsu_acked_as_consumed_ = std::nullopt;
+    std::optional<bool> last_gsu_acked_as_consumed_ = std::nullopt;
+
     base::TimeTicks last_async_touch_move_timestamp_;
     // The value of `enqueued_touch_sequence_start_count` for which the
     // compositor thread can unblock touch moves for.
@@ -247,7 +250,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   void OnGestureScrollStartAck(mojom::blink::InputEventResultState ack_state);
   void OnGestureScrollUpdateAck(mojom::blink::InputEventResultState ack_state);
   void OnGestureScrollEndAck(mojom::blink::InputEventResultState ack_state);
-  bool ShouldThrottleAsyncTouchMoves(std::optional<bool> gsu_acked_as_consumed);
+  bool ShouldThrottleAsyncTouchMoves();
   // Returns false if we are trying to send a gesture scroll event to the main
   // thread when we shouldn't be.  Used for DCHECK in HandleEvent.
   bool Allowed(const WebInputEvent& event, bool force_allow);

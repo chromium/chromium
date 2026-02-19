@@ -9207,6 +9207,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "throttle-async-touch-moves",
+    "owners": [ "woa-performance-team@google.com", "kartarsingh@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "throttle-main-thread-to-60hz",
     "owners": [ "lizeb@google.com", "clank-performance-team@google.com" ],
     "expiry_milestone": 150
