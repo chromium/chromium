@@ -1616,6 +1616,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_proxy_configurator.h",
     "preloading/prefetch/prefetch_request.cc",
     "preloading/prefetch/prefetch_request.h",
+    "preloading/prefetch/prefetch_resource_request_utils.cc",
+    "preloading/prefetch/prefetch_resource_request_utils.h",
     "preloading/prefetch/prefetch_response_reader.cc",
     "preloading/prefetch/prefetch_response_reader.h",
     "preloading/prefetch/prefetch_scheduler.cc",

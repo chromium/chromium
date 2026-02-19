@@ -33,6 +33,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -65,7 +66,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -1516,36 +1516,12 @@ void PrefetchService::SendPrefetchRequest(
   TRACE_EVENT("loading", "PrefetchService::SendPrefetchRequest",
               prefetch_container.request().preload_pipeline_info().GetFlow());
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("speculation_rules_prefetch",
-                                          R"(
-          semantics {
-            sender: "Speculation Rules Prefetch Loader"
-            description:
-              "Prefetches the mainframe HTML of a page specified via "
-              "speculation rules. This is done out-of-band of normal "
-              "prefetches to allow total isolation of this request from the "
-              "rest of browser traffic and user state like cookies and cache."
-            trigger:
-              "Used only when this feature and speculation rules feature are "
-              "enabled."
-            data: "None."
-            destination: WEBSITE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              "Users can control this via a setting specific to each content "
-              "embedder."
-            policy_exception_justification: "Not implemented."
-        })");
-
   base::WeakPtr<PrefetchContainer> weak_prefetch_container =
       prefetch_container.GetWeakPtr();
   auto streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
       GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
-      *prefetch_container.GetResourceRequest(), traffic_annotation,
-      PrefetchTimeoutDuration(),
+      *prefetch_container.GetResourceRequest(),
+      kNavigationalPrefetchTrafficAnnotation, PrefetchTimeoutDuration(),
       base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
                      base::Unretained(this), weak_prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
