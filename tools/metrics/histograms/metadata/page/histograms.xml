@@ -3476,6 +3476,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.DocumentTiming.ActualNavigationStartToDOMContentLoadedEventFired"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) the time the
+    DOMContentLoaded event is fired, excluding the time spent waiting for user
+    interaction in beforeunload dialogs. This includes the time spent running
+    beforeunload JavaScript handlers. This is recorded for each page load.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired"
     units="ms" expires_after="2026-07-05">
   <owner>bmcquade@chromium.org</owner>

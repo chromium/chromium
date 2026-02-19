@@ -39,6 +39,7 @@ extern const char kHistogramFirstInputTimestamp4[];
 extern const char kHistogramFirstPaint[];
 extern const char kHistogramFirstImagePaint[];
 extern const char kHistogramDomContentLoaded[];
+extern const char kHistogramActualNavigationStartToDOMContentLoaded[];
 extern const char kHistogramParseStartToDOMContentLoaded[];
 extern const char kHistogramLoad[];
 extern const char kHistogramFirstContentfulPaint[];

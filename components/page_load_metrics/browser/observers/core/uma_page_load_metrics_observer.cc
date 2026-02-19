@@ -106,6 +106,8 @@ const char kHistogramDomContentLoaded[] =
     "PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired";
 const char kBackgroundHistogramDomContentLoaded[] =
     "PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired.Background";
+const char kHistogramActualNavigationStartToDOMContentLoaded[] =
+    "PageLoad.DocumentTiming.ActualNavigationStartToDOMContentLoadedEventFired";
 const char kHistogramParseStartToDOMContentLoaded[] =
     "PageLoad.DocumentTiming.ParseStartToDOMContentLoadedEventFired";
 const char kHistogramLoad[] =
@@ -448,6 +450,14 @@ void UmaPageLoadMetricsObserver::OnDomContentLoadedEventStart(
           internal::kHistogramParseStartToDOMContentLoaded,
           timing.document_timing->dom_content_loaded_event_start.value() -
               timing.parse_timing->parse_start.value());
+    }
+    if (std::optional<base::TimeDelta> actual_navigation_offset =
+            CalculateActualNavigationOffset(GetDelegate(),
+                                            navigation_handle_timing_)) {
+      PAGE_LOAD_HISTOGRAM2(
+          internal::kHistogramActualNavigationStartToDOMContentLoaded,
+          *actual_navigation_offset +
+              timing.document_timing->dom_content_loaded_event_start.value());
     }
   } else {
     PAGE_LOAD_HISTOGRAM(

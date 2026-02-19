@@ -1522,11 +1522,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWrite) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstContentfulPaint,
                                       1);
   histogram_tester_->ExpectTotalCount(
-      internal::kHistogramActualNavigationStartToFirstContentfulPaint, 1);
-  histogram_tester_->ExpectTotalCount(
       internal::kHistogramActualNavigationStartToNavigationCommitSent, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramActualNavigationStartToParseStart, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramActualNavigationStartToDOMContentLoaded, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramActualNavigationStartToFirstContentfulPaint, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramNavigationCommitSentToParseStart, 1);
   histogram_tester_->ExpectTotalCount(
