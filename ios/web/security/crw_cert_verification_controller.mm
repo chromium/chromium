@@ -205,8 +205,13 @@ using web::WebThread;
             errSecSuccess) {
           trustResult = kSecTrustResultInvalid;
         }
-        DCHECK_EQ(isTrusted, (trustResult == kSecTrustResultProceed ||
-                              trustResult == kSecTrustResultUnspecified));
+
+        const bool expectedTrusted = trustResult == kSecTrustResultProceed ||
+                                     trustResult == kSecTrustResultUnspecified;
+        DCHECK(isTrusted == expectedTrusted)
+            << "Trust mismatch! isTrusted: " << (isTrusted ? "true" : "false")
+            << ", trustResult: " << trustResult;
+
         // TODO(crbug.com/40588591): This should use PostTask to post to
         // WebThread::UI with BLOCK_SHUTDOWN once shutdown behaviors are
         // supported on the UI thread. BLOCK_SHUTDOWN is necessary because
