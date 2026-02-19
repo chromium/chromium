@@ -90,8 +90,6 @@ void ParentAccessTabHelper::ShouldAllowRequest(
     case ParentAccessCallback::CallbackCase::kOnParentVerified:
       result = supervised_user::LocalApprovalResult::kApproved;
       break;
-      // TODO(crbug.com/384514294): Add support for the cancellation message
-      // once PACP returns it for the approval flow.
     default:
       result = supervised_user::LocalApprovalResult::kError;
       errorType =

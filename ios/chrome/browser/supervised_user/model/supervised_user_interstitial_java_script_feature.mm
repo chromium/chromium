@@ -18,9 +18,6 @@ const char kWebUIMessageHandlerName[] = "SupervisedUserInterstitialMessage";
 
 std::optional<security_interstitials::SecurityInterstitialCommand>
 GetEnumCommand(const std::string& command) {
-  // TODO(crbug.com/384517702): Check if it is possible to directly tie the
-  // command names to their respective callbacks rather than a
-  // `SecurityInterstitialCommand`.
   if (command == "requestUrlAccessLocal") {
     return security_interstitials::SecurityInterstitialCommand::CMD_PROCEED;
   } else if (command == "requestUrlAccessRemote") {
