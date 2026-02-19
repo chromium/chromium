@@ -39,7 +39,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
@@ -76,6 +75,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/win/app_icon.h"
 #endif
 
@@ -395,7 +395,9 @@ bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
   background_mode_data_.erase(it);
   // If there are no background mode profiles any longer, then turn off
   // background mode.
+#if BUILDFLAG(IS_WIN)
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
   if (!ShouldBeInBackgroundMode()) {
     EndBackgroundMode();
   }
@@ -472,7 +474,9 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
 }
 
 void BackgroundModeManager::OnBackgroundModeEnabledPrefChanged() {
+#if BUILDFLAG(IS_WIN)
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
   if (IsBackgroundModePrefEnabled()) {
     EnableBackgroundMode();
   } else {
@@ -701,7 +705,9 @@ void BackgroundModeManager::EnableBackgroundMode() {
   if (!in_background_mode_ && ShouldBeInBackgroundMode()) {
     StartBackgroundMode();
 
+#if BUILDFLAG(IS_WIN)
     startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
   }
 }
 
@@ -760,7 +766,9 @@ void BackgroundModeManager::OnClientsChanged(
         HasPersistentBackgroundClientForProfile(profile));
   }
 
+#if BUILDFLAG(IS_WIN)
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
   if (!ShouldBeInBackgroundMode()) {
     // We've uninstalled our last background client, make sure we exit
     // background mode and no longer launch on startup.

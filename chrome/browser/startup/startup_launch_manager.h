@@ -77,7 +77,6 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
   // released or 1 minute has passed, a registry commit will occur.
   void CommitLaunchOnStartupState();
 
-#if BUILDFLAG(IS_WIN)
   // Sets the infobar manager. This is injected at runtime rather than in the
   // constructor to resolve circular dependencies between StartupLaunchManager
   // and the UI components that implement the infobar manager.
@@ -90,7 +89,6 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
   // the preconditions (experiment state, not declined too many times) are met.
   // Requires a manager to be set via `SetInfoBarManager` beforehand.
   void MaybeShowInfoBars();
-#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // Methods to unregister/register individual reasons with the launch manager.
@@ -141,7 +139,6 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
 
   PrefMember<bool> foreground_launch_on_login_;
 
-#if BUILDFLAG(IS_WIN)
   std::optional<StartupLaunchInfoBarManager::InfoBarType> infobar_type_ =
       std::nullopt;
 
@@ -150,7 +147,6 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
   base::ScopedObservation<StartupLaunchInfoBarManager,
                           StartupLaunchInfoBarManager::Observer>
       infobar_manager_observation_{this};
-#endif
 
   ui::ScopedUnownedUserData<StartupLaunchManager> scoped_unowned_user_data_;
 };

@@ -34,7 +34,6 @@ class TestStartupLaunchManager : public StartupLaunchManager {
                void(std::optional<StartupLaunchMode> startup_mode));
 };
 
-#if BUILDFLAG(IS_WIN)
 class MockStartupLaunchInfoBarManager : public StartupLaunchInfoBarManager {
  public:
   MOCK_METHOD(void, ShowInfoBars, (InfoBarType infobar_type), (override));
@@ -42,7 +41,6 @@ class MockStartupLaunchInfoBarManager : public StartupLaunchInfoBarManager {
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };
-#endif
 
 }  // namespace
 
@@ -93,11 +91,9 @@ class StartupLaunchManagerTestBase : public testing::Test {
                   &browser_process);
             }));
 
-#if BUILDFLAG(IS_WIN)
     // Setup the test with this pref reset to default.
     g_browser_process->local_state()->ClearPref(
         prefs::kForegroundLaunchOnLogin);
-#endif  // BUILDFLAG(IS_WIN)
 
     // Construct StartupLaunchManager with mocked override.
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
@@ -289,7 +285,6 @@ TEST_F(StartupLaunchManagerTest, WaitForStartupLaunchManagerToInit) {
   extensions_startup_launch_client.SetLaunchOnStartup(false);
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
-#if BUILDFLAG(IS_WIN)
 class StartupLaunchManagerForegroundLaunchOptInTest
     : public StartupLaunchManagerTestBase {
  public:
@@ -641,5 +636,3 @@ TEST_F(StartupLaunchManagerForegroundLaunchOptOutTest,
   launch_manager->MaybeShowInfoBars();
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
-
-#endif  // BUILDFLAG(IS_WIN)

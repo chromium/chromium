@@ -8584,8 +8584,6 @@ test("unit_tests") {
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/send_tab_to_self:unit_tests",
       "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/startup",
-      "//chrome/browser/startup:unit_tests",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
@@ -8702,6 +8700,11 @@ test("unit_tests") {
     if (is_win) {
       sources +=
           [ "../browser/webauthn/local_credential_management_win_unittest.cc" ]
+
+      deps += [
+        "//chrome/browser/startup",
+        "//chrome/browser/startup:unit_tests",
+      ]
     }
 
     if (is_linux || is_mac || is_win) {

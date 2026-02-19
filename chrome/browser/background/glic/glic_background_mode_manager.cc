@@ -20,7 +20,6 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -30,6 +29,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
 namespace glic {
@@ -142,7 +145,9 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
     OnProfileAdded(profile);
   }
+#if BUILDFLAG(IS_WIN)
   startup_launch_client_.SetLaunchOnStartup(enabled_pref_);
+#endif
   UpdateState();
 }
 
@@ -161,7 +166,9 @@ void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
 
   enabled_pref_ = enabled;
   UpdateState();
+#if BUILDFLAG(IS_WIN)
   startup_launch_client_.SetLaunchOnStartup(enabled_pref_);
+#endif
 }
 
 void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {

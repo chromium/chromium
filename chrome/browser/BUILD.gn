@@ -2585,7 +2585,6 @@ static_library("browser") {
       "//chrome/browser/private_ai",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",
-      "//chrome/browser/startup",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
     ]
@@ -6473,6 +6472,7 @@ static_library("browser") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/platform_experience:prefs",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/startup",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/webnn",
       "//chrome/browser/win:cloud_synced_folder_checker",

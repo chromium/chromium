@@ -20,7 +20,6 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -46,9 +45,14 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"
+#endif
+
 using auto_launch_util::StartupLaunchMode;
 
 namespace {
+#if BUILDFLAG(IS_WIN)
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   explicit TestStartupLaunchManager(BrowserProcess* browser_process)
@@ -60,6 +64,7 @@ class TestStartupLaunchManager : public StartupLaunchManager {
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));
 };
+#endif
 }  // namespace
 
 namespace glic {
@@ -67,12 +72,14 @@ namespace glic {
 class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
+#if BUILDFLAG(IS_WIN)
     scoped_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
             base::BindRepeating([](BrowserProcess& browser_process) {
               return std::make_unique<TestStartupLaunchManager>(
                   &browser_process);
             }));
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     feature_list_.InitWithFeatures(
         {features::kGlicShowStatusTrayIcon,

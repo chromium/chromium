@@ -56,8 +56,11 @@ class ApplicationAdvancedProtectionStatusDetector;
 
 #if !BUILDFLAG(IS_ANDROID)
 class ProfileLaunchObserver;
-class StartupLaunchManager;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+class StartupLaunchManager;
+#endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 namespace unexportable_keys {
@@ -259,7 +262,7 @@ class GlobalFeatures {
 
   std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<StartupLaunchManager> startup_launch_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -1442,7 +1442,6 @@ static_library("ui") {
       "//chrome/browser/record_replay:impl",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/startup",
       "//chrome/browser/subscription_eligibility",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/contextual_search",
@@ -1865,6 +1864,10 @@ static_library("ui") {
 
     if (is_win && is_chrome_branded) {
       deps += [ "//chrome/browser/win/installer_downloader:controller" ]
+    }
+
+    if (is_win) {
+      deps += [ "//chrome/browser/startup" ]
     }
 
     if (enable_dice_support) {

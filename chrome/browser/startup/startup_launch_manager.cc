@@ -14,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/startup/startup_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -23,7 +22,6 @@
 
 using auto_launch_util::StartupLaunchMode;
 
-#if BUILDFLAG(IS_WIN)
 namespace {
 
 // This method sets the pref to trial group value if user has not explicitly set
@@ -80,7 +78,6 @@ bool ShouldShowInfoBars() {
 }
 
 }  // namespace
-#endif  // BUILDFLAG(IS_WIN)
 
 StartupLaunchManager::Client::Client(StartupLaunchReason launch_reason)
     : launch_reason_(launch_reason) {
@@ -133,7 +130,6 @@ StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
   // Acquire a lock so that any writes to registry are deferred until `Init()`
   // is called.
   AcquireSharedWriteLock();
-#if BUILDFLAG(IS_WIN)
   if (features::IsForegroundLaunchEnabled()) {
     PrefService* local_state = g_browser_process->local_state();
 
@@ -154,12 +150,10 @@ StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
     // paused anytime.
     UnregisterLaunchOnStartup(StartupLaunchReason::kForeground);
   }
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 StartupLaunchManager::~StartupLaunchManager() = default;
 
-#if BUILDFLAG(IS_WIN)
 void StartupLaunchManager::SetInfoBarManager(
     std::unique_ptr<StartupLaunchInfoBarManager> manager) {
   infobar_manager_observation_.Reset();
@@ -179,7 +173,6 @@ void StartupLaunchManager::MaybeShowInfoBars() {
     is_showing_infobar_ = true;
   }
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 void StartupLaunchManager::OnInfoBarDismissed() {
   is_showing_infobar_ = false;
@@ -246,12 +239,10 @@ void StartupLaunchManager::UpdateForegroundLaunchRegistration() {
     UnregisterLaunchOnStartup(StartupLaunchReason::kForeground);
   }
 
-#if BUILDFLAG(IS_WIN)
   if (is_showing_infobar_) {
     infobar_manager_->CloseAllInfoBars();
     is_showing_infobar_ = false;
   }
-#endif
 }
 
 std::optional<StartupLaunchMode> StartupLaunchManager::GetStartupLaunchMode()
@@ -300,7 +291,6 @@ void StartupLaunchManager::UnregisterLaunchOnStartup(
 
 void StartupLaunchManager::UpdateLaunchOnStartup(
     std::optional<StartupLaunchMode> startup_launch_mode) {
-#if BUILDFLAG(IS_WIN)
   // This functionality is only defined for default profile, currently.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUserDataDir)) {
@@ -311,5 +301,4 @@ void StartupLaunchManager::UpdateLaunchOnStartup(
                      ? base::BindOnce(auto_launch_util::EnableStartAtLogin,
                                       *startup_launch_mode)
                      : base::BindOnce(auto_launch_util::DisableStartAtLogin));
-#endif  // BUILDFLAG(IS_WIN)
 }

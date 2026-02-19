@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/474578313): Clean the `chrome/browser/startup` target to be
-# windows-only.
-assert(!is_android, "Startup launch manager is only for desktop platforms")
+assert(is_win, "Startup launch manager is only for Windows")
 
 source_set("startup") {
   public = [

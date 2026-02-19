@@ -15,7 +15,10 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/startup/startup_launch_manager.h"
+#endif
 
 class ScopedKeepAlive;
 class StatusTray;
@@ -104,9 +107,11 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   // mode is enabled.
   std::unique_ptr<GlicStatusIcon> status_icon_;
 
+#if BUILDFLAG(IS_WIN)
   // Handles interactions with StartupLaunchManager
   StartupLaunchManager::Client startup_launch_client_{
       StartupLaunchReason::kGlic};
+#endif
 
   // The current state of the launcher_enabled pref. Note that the pref is a
   // local state and is thus per-installation. Each profile also has a

@@ -27,7 +27,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -58,6 +57,10 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
 using auto_launch_util::StartupLaunchMode;
@@ -117,6 +120,7 @@ class TestStatusIcon : public StatusIcon {
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override {}
 };
 
+#if BUILDFLAG(IS_WIN)
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   explicit TestStartupLaunchManager(BrowserProcess* browser_process)
@@ -127,6 +131,7 @@ class TestStartupLaunchManager : public StartupLaunchManager {
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));
 };
+#endif
 
 void AssertBackgroundModeActive(const TestBackgroundModeManager& manager) {
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
@@ -226,7 +231,6 @@ class BackgroundModeManagerTest : public testing::Test {
     // Explicitly disable foreground launches.
     g_browser_process->local_state()->SetBoolean(
         prefs::kForegroundLaunchOnLogin, false);
-#endif  // BUILDFLAG(IS_WIN)
 
     startup_launch_manager_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
@@ -234,6 +238,7 @@ class BackgroundModeManagerTest : public testing::Test {
               return std::make_unique<TestStartupLaunchManager>(
                   &browser_process);
             }));
+#endif  // BUILDFLAG(IS_WIN)
 
     // Initialize StartupLaunchManager in GlobalFeatures.
     profile_manager_ =
@@ -252,9 +257,28 @@ class BackgroundModeManagerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
+#if BUILDFLAG(IS_WIN)
   TestStartupLaunchManager* startup_launch_manager() {
     return static_cast<TestStartupLaunchManager*>(
         StartupLaunchManager::From(g_browser_process));
+  }
+#endif
+
+  void ExpectStartupRegistration(bool launch_enabled, int count = 1) {
+#if BUILDFLAG(IS_WIN)
+    std::optional<StartupLaunchMode> launch_mode;
+    if (launch_enabled) {
+      launch_mode = StartupLaunchMode::kBackground;
+    }
+    EXPECT_CALL(*startup_launch_manager(), UpdateLaunchOnStartup(launch_mode))
+        .Times(count);
+#endif
+  }
+
+  void VerifyAndClearStartupRegistrationExpectations() {
+#if BUILDFLAG(IS_WIN)
+    Mock::VerifyAndClearExpectations(startup_launch_manager());
+#endif
   }
 
  protected:
@@ -281,12 +305,14 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
     command_line_ =
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
 
+#if BUILDFLAG(IS_WIN)
     startup_launch_manager_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
             base::BindRepeating([](BrowserProcess& browser_process) {
               return std::make_unique<TestStartupLaunchManager>(
                   &browser_process);
             }));
+#endif
 
     profile_manager_ =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
@@ -333,9 +359,28 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
     browser_shutdown::SetTryingToQuit(false);
   }
 
+#if BUILDFLAG(IS_WIN)
   TestStartupLaunchManager* startup_launch_manager() {
     return static_cast<TestStartupLaunchManager*>(
         StartupLaunchManager::From(g_browser_process));
+  }
+#endif
+
+  void ExpectStartupRegistration(bool launch_enabled) {
+#if BUILDFLAG(IS_WIN)
+    std::optional<StartupLaunchMode> launch_mode;
+    if (launch_enabled) {
+      launch_mode = StartupLaunchMode::kBackground;
+    }
+    EXPECT_CALL(*startup_launch_manager(), UpdateLaunchOnStartup(launch_mode))
+        .Times(1);
+#endif
+  }
+
+  void VerifyAndClearStartupRegistrationExpectations() {
+#if BUILDFLAG(IS_WIN)
+    Mock::VerifyAndClearExpectations(startup_launch_manager());
+#endif
   }
 
  protected:
@@ -382,17 +427,14 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
   // Mimic app load.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
 
   manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
 
   manager.SuspendBackgroundMode();
@@ -400,11 +442,11 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
   manager.ResumeBackgroundMode();
 
   // Mimic app unload.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeInactive(manager);
 
   manager.SuspendBackgroundMode();
@@ -412,13 +454,12 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
 
   // Mimic app load while suspended, e.g. from sync. This should enable and
   // resume background mode.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
 }
 
@@ -450,18 +491,17 @@ TEST_F(BackgroundModeManagerTest, DISABLED_BackgroundAppInstallWhileDisabled) {
 // Apps installed and uninstalled while background mode is disabled should do
 // nothing.
 TEST_F(BackgroundModeManagerTest, BackgroundAppInstallUninstallWhileDisabled) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
 
   // Turn off background mode (should explicitly disable launch-on-startup as
   // the app-count is zero and launch-on-startup hasn't been initialized yet).
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetEnabled(false);
   AssertBackgroundModeInactive(manager);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   // When a new client is installed, status tray icons will not be created,
   // launch on startup status will not be modified.
@@ -483,15 +523,13 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppInstallUninstallWhileDisabled) {
 // Apps installed before background mode is disabled cause the icon to show up
 // again when it is enabled.
 TEST_F(BackgroundModeManagerTest, EnableAfterBackgroundAppInstall) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
 
   // Install app, should show status tray icon.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.OnBackgroundClientInstalled(u"name");
   // OnBackgroundClientInstalled does not actually add an app to the
   // BackgroundApplicationListModel which would result in another
@@ -499,35 +537,33 @@ TEST_F(BackgroundModeManagerTest, EnableAfterBackgroundAppInstall) {
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   AssertBackgroundModeActive(manager);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   // Turn off background mode - should hide status tray icon.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetEnabled(false);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeInactive(manager);
 
   // Turn back on background mode, should show status tray icon again as there
   // was already an app installed before background mode was disabled.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.SetEnabled(true);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
 
   // Uninstall app, should hide status tray icon again.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeInactive(manager);
 }
 
 TEST_F(BackgroundModeManagerTest, MultiProfile) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
@@ -536,13 +572,12 @@ TEST_F(BackgroundModeManagerTest, MultiProfile) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 
   // Install app, should show status tray icon.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
 
   // Install app for other profile, should show other status tray icon.
@@ -552,18 +587,17 @@ TEST_F(BackgroundModeManagerTest, MultiProfile) {
   AssertBackgroundModeActive(manager);
 
   // Should hide both status tray icons.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetEnabled(false);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeInactive(manager);
 
   // Turn back on background mode - should show both status tray icons.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.SetEnabled(true);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
 
   manager.SetBackgroundClientCountForProfile(profile_, 0);
@@ -573,18 +607,17 @@ TEST_F(BackgroundModeManagerTest, MultiProfile) {
   // There is still one background app alive
   AssertBackgroundModeActive(manager);
   // Verify the implicit expectations of no calls on this StrictMock.
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile2, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeInactive(manager);
 }
 
 TEST_F(BackgroundModeManagerTest, ProfileAttributesStorage) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
   ProfileAttributesStorage* storage =
       profile_manager_->profile_attributes_storage();
@@ -605,13 +638,12 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorage) {
   EXPECT_FALSE(entry2->GetBackgroundStatus());
 
   // Install app, should show status tray icon.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   // Install app for other profile.
   manager.OnBackgroundClientInstalled(u"name");
@@ -626,11 +658,11 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorage) {
 
   EXPECT_FALSE(entry1->GetBackgroundStatus());
 
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile2, 0);
   manager.OnApplicationListChanged(profile2);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   EXPECT_FALSE(entry2->GetBackgroundStatus());
 
@@ -640,20 +672,18 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorage) {
 }
 
 TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 
   // Install app, should show status tray icon.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   // Background mode should remain active for the remainder of this test.
 
@@ -680,7 +710,6 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
 }
 
 TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   // Tests whether deleting the only profile when it is a BG profile works
   // or not (http://crbug.com/40352851).
   AdvancedTestBackgroundModeManager manager(
@@ -689,28 +718,26 @@ TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 
   // Install app, should show status tray icon.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   manager.OnProfileNameChanged(profile_->GetPath(),
                                manager.GetBackgroundModeData(profile_)->name());
 
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
   manager.SetBackgroundClientCountForProfile(profile_, 0);
   manager.OnProfileWillBeRemoved(profile_->GetPath());
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 }
 
 TEST_F(BackgroundModeManagerTest, DisableBackgroundModeUnderTestFlag) {
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   command_line_->AppendSwitch(switches::kKeepAliveForTest);
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
@@ -718,9 +745,9 @@ TEST_F(BackgroundModeManagerTest, DisableBackgroundModeUnderTestFlag) {
   EXPECT_TRUE(manager.ShouldBeInBackgroundMode());
 
   // No enable-launch-on-startup calls expected yet.
-  Mock::VerifyAndClearExpectations(launch_manager);
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  VerifyAndClearStartupRegistrationExpectations();
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetEnabled(false);
   EXPECT_FALSE(manager.ShouldBeInBackgroundMode());
 }
@@ -773,16 +800,14 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
   base::RunLoop().RunUntilIdle();
   extensions::ExtensionRegistrar* registrar =
       extensions::ExtensionRegistrar::Get(profile_);
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   registrar->AddComponentExtension(component_extension.get());
   registrar->AddComponentExtension(component_extension_with_options.get());
   registrar->AddExtension(regular_extension.get());
   registrar->AddExtension(regular_extension_with_options.get());
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   auto menu = std::make_unique<StatusIconMenuModel>(nullptr);
   auto submenu = std::make_unique<StatusIconMenuModel>(nullptr);
@@ -840,17 +865,15 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   base::RunLoop().RunUntilIdle();
   extensions::ExtensionRegistrar* registrar1 =
       extensions::ExtensionRegistrar::Get(profile_);
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   registrar1->AddComponentExtension(build_component_extension().get());
   registrar1->AddComponentExtension(
       build_component_extension_with_options().get());
   registrar1->AddExtension(build_regular_extension().get());
   registrar1->AddExtension(build_regular_extension_with_options().get());
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
   manager_->RegisterProfile(profile2);
@@ -998,12 +1021,11 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
 
   // Adding a background extension should show the balloon.
   EXPECT_FALSE(manager_->HasShownBalloon());
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(Exactly(1));
+
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   registrar->AddExtension(bg_ext.get());
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   EXPECT_TRUE(manager_->HasShownBalloon());
 
   // Adding an extension without background should not show the balloon.
@@ -1015,14 +1037,11 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
   {
     // TODO(crbug.com/41145854): Fix crbug.com/41145854 and remove these checks.
     InSequence expected_call_sequence;
-    EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-        .Times(Exactly(1));
-    EXPECT_CALL(*launch_manager,
-                UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-        .Times(Exactly(1));
+    ExpectStartupRegistration(/*launch_enabled=*/false);
+    ExpectStartupRegistration(/*launch_enabled=*/true);
   }
   registrar->AddExtension(upgraded_bg_ext.get());
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   EXPECT_FALSE(manager_->HasShownBalloon());
 
   // Upgrading an extension that didn't have background to one that does should
@@ -1046,19 +1065,18 @@ TEST_F(BackgroundModeManagerTest, TransientBackgroundApp) {
 
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
 
   // Mimic transient app launch.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(_)).Times(0);
+  ExpectStartupRegistration(/*launch_enabled=*/false, /*count=*/0);
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.SetPersistentBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 
@@ -1068,10 +1086,10 @@ TEST_F(BackgroundModeManagerTest, TransientBackgroundApp) {
   manager.ResumeBackgroundMode();
 
   // Mimic transient app shutdown.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(_)).Times(0);
+  ExpectStartupRegistration(/*launch_enabled=*/false, /*count=*/0);
   manager.SetBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeInactive(manager);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 }
@@ -1088,22 +1106,20 @@ TEST_F(BackgroundModeManagerTest, TransientBackgroundAppWithPersistent) {
 
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(1);
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_TRUE(entry->GetBackgroundStatus());
 
   // Mimic transient app launch.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(_)).Times(0);
+  ExpectStartupRegistration(/*launch_enabled=*/false, /*count=*/0);
   manager.SetBackgroundClientCountForProfile(profile_, 2);
   manager.SetPersistentBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_TRUE(entry->GetBackgroundStatus());
 
@@ -1113,10 +1129,10 @@ TEST_F(BackgroundModeManagerTest, TransientBackgroundAppWithPersistent) {
   manager.ResumeBackgroundMode();
 
   // Mimic transient app shutdown.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(_)).Times(0);
+  ExpectStartupRegistration(/*launch_enabled=*/false, /*count=*/0);
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_TRUE(entry->GetBackgroundStatus());
 }
@@ -1135,24 +1151,22 @@ TEST_F(BackgroundModeManagerTest,
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 
   // Mimic transient app launch.
-  TestStartupLaunchManager* const launch_manager = startup_launch_manager();
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.SetPersistentBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 
   // Mimic persistent app install.
-  EXPECT_CALL(*launch_manager,
-              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
-      .Times(1);
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
   manager.SetBackgroundClientCountForProfile(profile_, 2);
   manager.SetPersistentBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_TRUE(entry->GetBackgroundStatus());
 
@@ -1162,12 +1176,12 @@ TEST_F(BackgroundModeManagerTest,
   manager.ResumeBackgroundMode();
 
   // Mimic persistent app uninstall.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
-      .Times(Exactly(1));
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.SetPersistentBackgroundClientCountForProfile(profile_, 0);
   manager.OnApplicationListChanged(profile_);
-  Mock::VerifyAndClearExpectations(launch_manager);
+  VerifyAndClearStartupRegistrationExpectations();
   AssertBackgroundModeActive(manager);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 }

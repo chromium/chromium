@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -29,6 +28,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/common/extension_id.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"
+#endif
 
 class Browser;
 class PrefRegistrySimple;
@@ -398,9 +401,11 @@ class BackgroundModeManager : public BrowserListObserver,
   raw_ptr<ProfileAttributesStorage, AcrossTasksDanglingUntriaged>
       profile_storage_;
 
+#if BUILDFLAG(IS_WIN)
   // Handles interaction with StartupLaunchManager.
   StartupLaunchManager::Client startup_launch_client_{
       StartupLaunchReason::kExtensions};
+#endif
 
   // Registrars for managing our change observers.
   base::CallbackListSubscription on_app_terminating_subscription_;
