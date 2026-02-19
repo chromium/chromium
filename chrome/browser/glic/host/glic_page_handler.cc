@@ -110,6 +110,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
@@ -151,6 +152,22 @@ struct EqualsTraits<::SkBitmap> {
 namespace glic {
 
 namespace {
+
+mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor) {
+  switch (form_factor) {
+    case ui::DEVICE_FORM_FACTOR_DESKTOP:
+      return mojom::FormFactor::kDesktop;
+    case ui::DEVICE_FORM_FACTOR_PHONE:
+      return mojom::FormFactor::kPhone;
+    case ui::DEVICE_FORM_FACTOR_TABLET:
+      return mojom::FormFactor::kTablet;
+    case ui::DEVICE_FORM_FACTOR_TV:
+    case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
+    case ui::DEVICE_FORM_FACTOR_XR:
+      return mojom::FormFactor::kUnknown;
+  }
+}
 
 #if BUILDFLAG(IS_MAC)
 constexpr mojom::Platform kPlatform = mojom::Platform::kMacOS;
@@ -894,6 +911,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
     state->platform = kPlatform;
+    state->form_factor = GetGlicFormFactor(ui::GetDeviceFormFactor());
     state->microphone_permission_enabled =
         pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled);
     state->location_permission_enabled =
@@ -1669,9 +1687,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     journal_handler_.LogInstantEvent(task_id, event, details);
   }
 
-  void JournalClear() override {
-    journal_handler_.Clear();
-  }
+  void JournalClear() override { journal_handler_.Clear(); }
 
   void JournalSnapshot(bool clear_journal,
                        JournalSnapshotCallback callback) override {
@@ -1682,9 +1698,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     journal_handler_.Start(max_bytes, capture_screenshots);
   }
 
-  void JournalStop() override {
-    journal_handler_.Stop();
-  }
+  void JournalStop() override { journal_handler_.Stop(); }
 
   void JournalRecordFeedback(bool positive,
                              const std::string& reason) override {

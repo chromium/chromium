@@ -206,6 +206,9 @@ export declare interface GlicBrowserHost {
   /** Return the platform glic is running on. */
   getPlatform?(): Platform;
 
+  /** Return the form factor of the device glic is running on. */
+  getFormFactor?(): FormFactor;
+
   /**
    * Notifies the browser that the web client has switched modes. Note that this
    * call does not change any aspect of the panel itself (e.g. resize-ability).
@@ -2554,6 +2557,16 @@ export enum Platform {
   LINUX = 3,
   CHROME_OS = 4,
   ANDROID = 5,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The form factor of the device glic is running on.
+export enum FormFactor {
+  UNKNOWN = 0,
+  DESKTOP = 1,
+  PHONE = 2,
+  TABLET = 3,
 }
 
 ///////////////////////////////////////////////

@@ -260,9 +260,10 @@ interface PageHandler {
   GetInternalsDataPayload() => (InternalsDataPayload internals_data);
 
   // Sets the guest URL presets for the internals page.
-  SetGuestUrlPresets(
-      url.mojom.Url autopush, url.mojom.Url staging, url.mojom.Url preprod,
-      url.mojom.Url prod);
+  SetGuestUrlPresets(url.mojom.Url autopush,
+                     url.mojom.Url staging,
+                     url.mojom.Url preprod,
+                     url.mojom.Url prod);
 };
 
 // @generate glic_api
@@ -398,6 +399,15 @@ enum Platform {
   kAndroid = 5,
 };
 
+// @generate glic_api
+// The form factor of the device glic is running on.
+enum FormFactor {
+  kUnknown = 0,
+  kDesktop = 1,
+  kPhone = 2,
+  kTablet = 3,
+};
+
 // The result of `WebClientCreated()`. Contains information that needs to be
 // available before the web client is initialized.
 struct WebClientInitialState {
@@ -411,6 +421,7 @@ struct WebClientInitialState {
   string hotkey;
   mojo_base.mojom.Version chrome_version;
   Platform platform;
+  FormFactor form_factor;
   // Whether the glic panel can currently be attached to a browser window.
   bool can_attach;
   // Whether the panel is active. See `NotifyPanelActiveChange`.
@@ -620,6 +631,7 @@ enum SkillSource {
   // Skill derived from a first party skill.
   [MinVersion=1] kDerivedFromFirstParty = 3,
 };
+
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //components/sync/protocol/skill_specifics.proto:SkillSource)
 // clang-format on
@@ -649,6 +661,7 @@ struct Skill {
   // if the SkillSource is kDerivedFromFirstParty.
   string? source_skill_id;
 };
+
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:Skill, //components/skills/public/skill.h:Skill, //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
 // clang-format on
@@ -1351,7 +1364,6 @@ enum InvocationSource {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
-
 
 // @generate glic_api
 // Mode for specific feature behaviors.
