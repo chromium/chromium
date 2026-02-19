@@ -272,7 +272,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         gfx::Size(dest_size.width(), dest_size.height()), dest_format,
         dest_alpha_type, dest_color_space,
-        CanvasResourceProvider::ShouldInitialize::kNo,
         source->ContextProviderWrapper(), source->GetSharedImage()->usage());
 
     if (resource_provider) {

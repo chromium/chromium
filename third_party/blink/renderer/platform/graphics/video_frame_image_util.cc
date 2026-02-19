@@ -256,15 +256,13 @@ CanvasSnapshotProvider::Info CreateSnapshotProviderInfoForVideoFrame(
 std::unique_ptr<CanvasSnapshotProvider> CreateSnapshotProviderForVideo(
     const CanvasSnapshotProvider::Info& info,
     viz::RasterContextProvider* raster_context_provider) {
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasNon2DSnapshotProviderBitmap::Create(info);
   }
 
   return CanvasNon2DResourceProviderSharedImage::Create(
       info.size, info.format, info.alpha_type, info.color_space,
-      kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+      SharedGpuContext::ContextProviderWrapper(),
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 

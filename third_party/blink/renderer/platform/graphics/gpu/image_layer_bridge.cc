@@ -60,8 +60,8 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 #endif  // BUILDFLAG(IS_LINUX)
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
       source->Size(), source->GetSharedImageFormat(), source->GetAlphaType(),
-      source->GetColorSpace(), CanvasResourceProvider::ShouldInitialize::kNo,
-      context_provider_wrapper, kSharedImageUsageFlags);
+      source->GetColorSpace(), context_provider_wrapper,
+      kSharedImageUsageFlags);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 

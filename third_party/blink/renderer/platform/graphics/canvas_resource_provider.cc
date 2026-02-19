@@ -1156,12 +1156,11 @@ CanvasNon2DResourceProviderSharedImage::Create(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate) {
   return CreateSharedImageProviderBase<CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, should_initialize,
+      size, format, alpha_type, color_space, ShouldInitialize::kNo,
       context_provider_wrapper, RasterMode::kGPU, shared_image_usage_flags,
       delegate);
 }
@@ -1190,8 +1189,8 @@ CanvasNon2DResourceProviderSharedImage::Create(
     Delegate* delegate) {
   return Create(size, color_params.GetSharedImageFormat(),
                 color_params.GetAlphaType(), color_params.GetGfxColorSpace(),
-                ShouldInitialize::kNo, std::move(context_provider_wrapper),
-                shared_image_usage_flags, delegate);
+                std::move(context_provider_wrapper), shared_image_usage_flags,
+                delegate);
 }
 
 template <class T>
@@ -1341,7 +1340,6 @@ CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
   // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
   return CanvasNon2DResourceProviderSharedImage::Create(
       size, format, alpha_type, color_space,
-      CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper),
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,

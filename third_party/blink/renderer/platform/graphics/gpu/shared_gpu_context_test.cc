@@ -152,7 +152,6 @@ TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
       CanvasNon2DResourceProviderSharedImage::Create(
           gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(),
-          CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SharedImageUsageSet());
   EXPECT_FALSE(resource_provider);
@@ -179,7 +178,6 @@ TEST_F(SharedGpuContextTest, AccelerateImageBufferSurfaceAutoRecovery) {
       CanvasNon2DResourceProviderSharedImage::Create(
           gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(),
-          CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SharedImageUsageSet());
   EXPECT_TRUE(resource_provider && resource_provider->IsValid());

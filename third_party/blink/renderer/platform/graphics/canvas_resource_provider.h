@@ -620,7 +620,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);

@@ -844,15 +844,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // this snapshot for compositing.
   auto shared_image_usages = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
 
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-        kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
-        shared_image_usages);
+        SharedGpuContext::ContextProviderWrapper(), shared_image_usages);
 
     if (!resource_provider || !resource_provider->IsValid()) {
       return nullptr;
@@ -1982,12 +1979,10 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
-  // Do not initialize the CRP using Skia. The CRP can have bottom left
-  // origin in which case Skia Graphite won't be able to render into it, and
-  // WebGL is responsible for clearing the CRP when it renders anyway and we
-  // have clear rect tracking in the shared image system to enforce this.
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
+  // Note: We must not initialize the CRP using Skia. The CRP can have bottom
+  // left origin in which case Skia Graphite won't be able to render into it,
+  // and WebGL is responsible for clearing the CRP when it renders anyway and
+  // we have clear rect tracking in the shared image system to enforce this.
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -1997,7 +1992,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     resource_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
-        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        Host()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags,
         Host());
   } else {
