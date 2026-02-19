@@ -1535,13 +1535,16 @@ CreateInputDataFromAnnotatedPageContent(
   if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
     return NO;
   }
-  if (!_aimEligibilityService) {
-    return NO;
+
+  if (EnableComposeboxServerSideState()) {
+    return
+        [self toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
+  } else {
+    if (!_aimEligibilityService) {
+      return NO;
+    }
+    return _aimEligibilityService->IsCreateImagesEligible();
   }
-  BOOL generateImageAllowed =
-      [self toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
-  return generateImageAllowed &&
-         _aimEligibilityService->IsCreateImagesEligible();
 }
 
 // Whether upload is permitted when in image generation.
@@ -1565,12 +1568,15 @@ CreateInputDataFromAnnotatedPageContent(
   if (experimental_flags::ShouldForceDisableComposeboxCanvas()) {
     return NO;
   }
-  if (!_aimEligibilityService) {
-    return NO;
-  }
 
-  return [self toolAllowedInInputState:omnibox::TOOL_MODE_CANVAS] &&
-         _aimEligibilityService->IsCanvasEligible();
+  if (EnableComposeboxServerSideState()) {
+    return [self toolAllowedInInputState:omnibox::TOOL_MODE_CANVAS];
+  } else {
+    if (!_aimEligibilityService) {
+      return NO;
+    }
+    return _aimEligibilityService->IsCanvasEligible();
+  }
 }
 
 // Whether the client is allowed to access deep search mode.
@@ -1581,11 +1587,15 @@ CreateInputDataFromAnnotatedPageContent(
   if (experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
     return NO;
   }
-  if (!_aimEligibilityService) {
-    return NO;
+
+  if (EnableComposeboxServerSideState()) {
+    return [self toolAllowedInInputState:omnibox::TOOL_MODE_DEEP_SEARCH];
+  } else {
+    if (!_aimEligibilityService) {
+      return NO;
+    }
+    return _aimEligibilityService->IsDeepSearchEligible();
   }
-  return [self toolAllowedInInputState:omnibox::TOOL_MODE_DEEP_SEARCH] &&
-         _aimEligibilityService->IsDeepSearchEligible();
 }
 
 // Checks if the user is eligible to upload PDFs, taking into account
@@ -1749,16 +1759,15 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Whether the current state allows tab attachments.
 - (BOOL)fileAttachmentAllowed {
-  BOOL canUploadFiles = [self isEligibleToUploadPdf];
-  if (![self attachmentsAvailable] || !canUploadFiles) {
+  if (![self attachmentsAvailable]) {
     return NO;
   }
 
   if (EnableComposeboxServerSideState()) {
     return [self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_FILE];
+  } else {
+    return [self isEligibleToUploadPdf];
   }
-
-  return YES;
 }
 
 // Whether the current state allows image attachments.
