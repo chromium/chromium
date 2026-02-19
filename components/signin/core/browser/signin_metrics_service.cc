@@ -271,7 +271,7 @@ void SigninMetricsService::OnPrimaryAccountChanged(
           event_details.GetSetPrimaryAccountAccessPoint();
       CHECK(access_point.has_value());
 
-      MaybeRecordMetricsForSigninPromoLimitsExperiment(
+      MaybeRecordMetricsForPromoShowCountAtSignin(
           event_details.GetCurrentState().primary_account,
           access_point.value());
 
@@ -503,49 +503,54 @@ void SigninMetricsService::RecordExplicitSigninMigrationStatus() {
                                 explicit_signin_migration);
 }
 
-void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
+void SigninMetricsService::MaybeRecordMetricsForPromoShowCountAtSignin(
     const CoreAccountInfo& account_info,
     signin_metrics::AccessPoint access_point) {
   bool is_from_web_signin =
       GetTimeOfWebSignin(account_info.account_id).has_value();
   switch (access_point) {
     case signin_metrics::AccessPoint::kAddressBubble:
-      base::UmaHistogramBoolean(
+      base::UmaHistogramCustomCounts(
           "Signin.ShowCountAtSignin.AddressSigninPromo",
           is_from_web_signin
               ? SigninPrefs(pref_service_.get())
                     .GetAddressSigninPromoImpressionCount(account_info.gaia)
               : pref_service_->GetInteger(
                     prefs::
-                        kAddressSignInPromoShownCountPerProfileForLimitsExperiment));
+                        kAddressSignInPromoShownCountPerProfileForLimitsExperiment),
+          /*min=*/1, /*exclusive_max=*/10, /*buckets=*/10);
       break;
     case signin_metrics::AccessPoint::kPasswordBubble:
-      base::UmaHistogramBoolean(
+      base::UmaHistogramCustomCounts(
           "Signin.ShowCountAtSignin.PasswordSigninPromo",
           is_from_web_signin
               ? SigninPrefs(pref_service_.get())
                     .GetPasswordSigninPromoImpressionCount(account_info.gaia)
               : pref_service_->GetInteger(
                     prefs::
-                        kPasswordSignInPromoShownCountPerProfileForLimitsExperiment));
+                        kPasswordSignInPromoShownCountPerProfileForLimitsExperiment),
+          /*min=*/1, /*exclusive_max=*/10, /*buckets=*/10);
       break;
     case signin_metrics::AccessPoint::kBookmarkBubble:
-      base::UmaHistogramBoolean(
+      base::UmaHistogramCustomCounts(
           "Signin.ShowCountAtSignin.BookmarkSigninPromo",
           is_from_web_signin
               ? SigninPrefs(pref_service_.get())
                     .GetBookmarkSigninPromoImpressionCount(account_info.gaia)
               : pref_service_->GetInteger(
                     prefs::
-                        kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment));
+                        kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment),
+          /*min=*/1, /*exclusive_max=*/10, /*buckets=*/10);
       break;
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble: {
       const int uno_bubble_reprompt_count =
           SigninPrefs(pref_service_.get())
               .GetChromeSigninBubbleRepromptCount(account_info.gaia);
       if (uno_bubble_reprompt_count > 0) {
-        base::UmaHistogramBoolean("Signin.ShowCountAtSignin.UnoBubbleReprompt",
-                                  uno_bubble_reprompt_count);
+        base::UmaHistogramCustomCounts(
+            "Signin.ShowCountAtSignin.UnoBubbleReprompt",
+            uno_bubble_reprompt_count,
+            /*min=*/1, /*exclusive_max=*/10, /*buckets=*/10);
       }
       break;
     }

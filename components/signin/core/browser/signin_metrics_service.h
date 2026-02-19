@@ -89,7 +89,7 @@ class SigninMetricsService : public KeyedService,
   // `std::nullopt` if the `account_id` was not previously signed in on the web.
   std::optional<base::Time> GetTimeOfWebSignin(
       const CoreAccountId& account_id) const;
-  void MaybeRecordMetricsForSigninPromoLimitsExperiment(
+  void MaybeRecordMetricsForPromoShowCountAtSignin(
       const CoreAccountInfo& account_info,
       signin_metrics::AccessPoint access_point);
   void MaybeRecordWebSigninToChromeSigninMetrics(
