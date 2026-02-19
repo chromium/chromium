@@ -22,6 +22,9 @@
 // Called when "Copy Draft Link" is tapped.
 - (void)didTapCopyDraftLink;
 
+// Called when "Copy Response" is tapped.
+- (void)didTapCopyResponse:(NSString*)base64Response;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_DEBUGGER_UI_AIM_DEBUGGER_MUTATOR_H_

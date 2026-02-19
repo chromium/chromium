@@ -29,9 +29,10 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
   AimDebuggerItemSource,
   AimDebuggerItemResponse,
   AimDebuggerItemActionRequest,
+  AimDebuggerItemActionApply,
+  AimDebuggerItemActionCopy,
   AimDebuggerItemActionView,
   AimDebuggerItemActionDraft,
-  AimDebuggerItemActionApply,
 };
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
@@ -79,6 +80,10 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
 
 - (void)didTapApplyButton {
   [self.mutator didTapApplyResponse:_base64Response];
+}
+
+- (void)didTapCopyButton {
+  [self.mutator didTapCopyResponse:_base64Response];
 }
 
 - (void)didTapCopyViewLinkButton {
@@ -199,6 +204,14 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
       initWithType:AimDebuggerItemActionRequest];
   requestItem.buttonText = @"Request";
 
+  TableViewTextButtonItem* saveItem =
+      [[TableViewTextButtonItem alloc] initWithType:AimDebuggerItemActionApply];
+  saveItem.buttonText = @"Apply";
+
+  TableViewTextButtonItem* copyItem =
+      [[TableViewTextButtonItem alloc] initWithType:AimDebuggerItemActionCopy];
+  copyItem.buttonText = @"Copy Response";
+
   TableViewTextButtonItem* viewItem =
       [[TableViewTextButtonItem alloc] initWithType:AimDebuggerItemActionView];
   viewItem.buttonText = @"Copy View Link";
@@ -207,12 +220,9 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
       [[TableViewTextButtonItem alloc] initWithType:AimDebuggerItemActionDraft];
   draftItem.buttonText = @"Copy Draft Link";
 
-  TableViewTextButtonItem* saveItem =
-      [[TableViewTextButtonItem alloc] initWithType:AimDebuggerItemActionApply];
-  saveItem.buttonText = @"Apply";
-
   [snapshot appendItemsWithIdentifiers:@[
-    sourceItem, responseItem, requestItem, viewItem, draftItem, saveItem
+    sourceItem, responseItem, requestItem, saveItem, copyItem, viewItem,
+    draftItem
   ]
              intoSectionWithIdentifier:@(AimDebuggerSectionDetails)];
 
@@ -231,6 +241,7 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
       return cell;
     }
     case AimDebuggerItemActionRequest:
+    case AimDebuggerItemActionCopy:
     case AimDebuggerItemActionView:
     case AimDebuggerItemActionDraft:
     case AimDebuggerItemActionApply: {
@@ -263,6 +274,9 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
   switch (itemType) {
     case AimDebuggerItemActionRequest:
       [self didTapRequestButton];
+      break;
+    case AimDebuggerItemActionCopy:
+      [self didTapCopyButton];
       break;
     case AimDebuggerItemActionView:
       [self didTapCopyViewLinkButton];

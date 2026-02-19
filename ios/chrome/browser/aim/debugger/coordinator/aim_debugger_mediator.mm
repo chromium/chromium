@@ -97,6 +97,14 @@
   }
 }
 
+- (void)didTapCopyResponse:(NSString*)base64Response {
+  UIPasteboard.generalPasteboard.string = base64Response;
+  [self.snackbarHandler showSnackbarWithMessage:@"Response Copied"
+                                     buttonText:nil
+                                  messageAction:nil
+                               completionAction:nil];
+}
+
 - (void)didTapCopyViewLink:(NSString*)base64Response {
   NSString* url =
       [NSString stringWithFormat:@"http://protoshop/"
