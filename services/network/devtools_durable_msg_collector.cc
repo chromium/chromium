@@ -69,16 +69,21 @@ DevtoolsDurableMessageCollector::CreateDurableMessage(
 void DevtoolsDurableMessageCollector::WillAddBytes(
     DevtoolsDurableMessage& message,
     int64_t size) {
-  if (size > max_buffer_size_) {
+  if (size < 0 || size > max_buffer_size_) {
     // This body cannot be stored with the current set limits.
     // If the beginning of this body was already stored, evict it and bail.
     EvictMessage(message);
     return;
   }
 
-  // Evict prior items if we're short on storage buffer.
-  while (!message_queue_.empty() &&
-         cur_buffer_size_ + size > max_buffer_size_) {
+  // Evict prior items if we're short on storage buffer, locally or globally.
+  while (!message_queue_.empty()) {
+    bool local_ok = size <= max_buffer_size_ - cur_buffer_size_;
+    bool global_ok = manager_ ? manager_->CanAccommodate(size) : true;
+    if (local_ok && global_ok) {
+      break;
+    }
+
     auto evict_message = message_queue_.front();
     message_queue_.pop();
     if (evict_message) {
@@ -90,6 +95,16 @@ void DevtoolsDurableMessageCollector::WillAddBytes(
         return;
       }
     }
+  }
+
+  // Final check: if we're STILL out of global space (because our local queue
+  // is empty, but other collectors are hogging global space), we drop *this*
+  // message.
+  bool local_ok = size <= max_buffer_size_ - cur_buffer_size_;
+  bool global_ok = manager_ ? manager_->CanAccommodate(size) : true;
+  if (!local_ok || !global_ok) {
+    EvictMessage(message);
+    return;
   }
 
   cur_buffer_size_ += size;

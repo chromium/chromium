@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -16,6 +17,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -198,6 +200,82 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
   EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2))));
   MemoryAllocatorDump::Entry entry2_count("object_count", "objects", 0u);
   EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2_count))));
+}
+
+TEST_F(DevtoolsDurableMessageCollectorManagerTest, GlobalLimit) {
+  // Set a global limit of 15 MiB.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kDurableMessages,
+      {{network::features::kDurableMessagesGlobalBufferSize.name,
+        "15728640"}});  // 15 * 1024 * 1024
+
+  DevtoolsDurableMessageCollectorManager manager;
+
+  // Add first collector
+  mojo::Remote<mojom::DurableMessageCollector> collector_remote1;
+  manager.AddCollector(collector_remote1.BindNewPipeAndPassReceiver());
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+
+  auto collectors = manager.GetCollectorsForTesting();
+  ASSERT_EQ(collectors.size(), 1u);
+  auto collector1 = collectors.front();
+  manager.EnableForProfile(profile_id, *collector1);
+  collector1->Configure(
+      mojom::NetworkDurableMessageConfig::New(10 * 1024 * 1024),
+      base::DoNothing());
+
+  // Add 10 MiB to the first collector (should succeed as global limit is 15
+  // MiB)
+  auto durable_message1 = collector1->CreateDurableMessage("request_id1");
+  const std::string message_str1(10 * 1024 * 1024, 'a');
+  durable_message1->AddBytes(base::as_byte_span(message_str1),
+                             message_str1.size());
+  EXPECT_EQ(manager.total_memory_usage_for_testing(), 10 * 1024 * 1024u);
+
+  // Add second collector
+  mojo::Remote<mojom::DurableMessageCollector> collector_remote2;
+  manager.AddCollector(collector_remote2.BindNewPipeAndPassReceiver());
+
+  collectors = manager.GetCollectorsForTesting();
+  ASSERT_EQ(collectors.size(), 2u);
+  auto collector2 = *std::find_if(
+      collectors.begin(), collectors.end(),
+      [&collector1](const DevtoolsDurableMessageCollector* collector) {
+        return collector != collector1;
+      });
+  manager.EnableForProfile(profile_id, *collector2);
+  collector2->Configure(
+      mojom::NetworkDurableMessageConfig::New(10 * 1024 * 1024),
+      base::DoNothing());
+
+  // Add 4 MiB to the second collector (should succeed, total = 14 MiB <= 15
+  // MiB)
+  auto durable_message2 = collector2->CreateDurableMessage("request_id2");
+  const std::string message_str2(4 * 1024 * 1024, 'b');
+  durable_message2->AddBytes(base::as_byte_span(message_str2),
+                             message_str2.size());
+  EXPECT_EQ(manager.total_memory_usage_for_testing(), 14 * 1024 * 1024u);
+
+  // Add 6 MiB to the second collector
+  // The global limit is 15 MiB, current global usage is 14 MiB.
+  // Expected: collector2 tries to add 6 MiB. manager->CanAccommodate(6MB)
+  // returns false (14+6 > 15). collector2 evicts its 4MB message. Now total is
+  // 10MB. manager->CanAccommodate(6MB) returns false (10+6 > 15). collector2
+  // drops the 6MB addition because it still can't accommodate it globally.
+  auto durable_message3 = collector2->CreateDurableMessage("request_id3");
+  const std::string message_str3(6 * 1024 * 1024, 'c');
+  durable_message3->AddBytes(base::as_byte_span(message_str3),
+                             message_str3.size());
+
+  // The 4MB message was evicted. The 6MB message was dropped.
+  // Total usage should be 10MB (from the first collector).
+  EXPECT_EQ(manager.total_memory_usage_for_testing(), 10 * 1024 * 1024u);
+
+  collector_remote1.reset();
+  collector_remote2.reset();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager.GetCollectorsForTesting().empty(); }));
 }
 
 }  // namespace network

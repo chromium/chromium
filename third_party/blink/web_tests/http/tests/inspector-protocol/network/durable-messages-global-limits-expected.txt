@@ -1,0 +1,9 @@
+Tests that DurableMessages global limits can be configured across sessions.
+Request for abe.png
+Request for abe.png?v=2
+Closing page1 and page2
+Retrieving responses from Collector via page3
+Successfully retrieved first resource.
+Successfully retrieved second resource.
+YZslx8U4iXiIKe+P8bKX0Y22XRW/x0RGpRK4SuZOzRs=
+

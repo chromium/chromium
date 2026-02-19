@@ -6241,5 +6241,23 @@
     "owners": [
       "abotella@igalia.com"
     ]
+  },
+  {
+    "prefix": "durable-messages",
+    "owners": [
+      "alexnj@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/network/durable-messages-global-limits.js"
+    ],
+    "args": [
+      "--enable-features=DurableMessages:max_global_buffer_size/20000"
+    ],
+    "expires": "Dec 31, 2026"
   }
 ]
