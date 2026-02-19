@@ -320,6 +320,7 @@ int PictureLayerImpl::AppendQuadsSpecialization(
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
+    const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale) {
   // Ignore missing tiles outside of viewport for tile priority. This is
   // normally the same as draw viewport but can be independently overridden by
@@ -327,8 +328,6 @@ int PictureLayerImpl::AppendQuadsSpecialization(
   gfx::Rect scaled_viewport_for_tile_priority = gfx::ScaleToEnclosingRect(
       viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
 
-  std::optional<gfx::Rect> scaled_cull_rect =
-      CalculateScaledCullRect(max_contents_scale);
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
       raster_source_->recorded_bounds(), max_contents_scale);
 

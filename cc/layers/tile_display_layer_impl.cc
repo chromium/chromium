@@ -195,6 +195,7 @@ int TileDisplayLayerImpl::AppendQuadsSpecialization(
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
+    const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale) {
   const float ideal_scale_key = GetIdealContentsScaleKey();
 
