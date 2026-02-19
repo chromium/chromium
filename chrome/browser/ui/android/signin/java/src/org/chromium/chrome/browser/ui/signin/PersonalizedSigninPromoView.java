@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -102,6 +104,7 @@ public class PersonalizedSigninPromoView extends FrameLayout {
                 mImage = findViewById(R.id.signin_promo_image);
                 mSecondaryButton = findViewById(R.id.signin_promo_secondary_button);
             }
+            setupDismissButtonTouchDelegate();
         }
     }
 
@@ -174,5 +177,24 @@ public class PersonalizedSigninPromoView extends FrameLayout {
     /** Sets the card's background for R.id.signin_promo_view_wrapper. */
     public void setCardBackgroundResource(@DrawableRes int resId) {
         findViewById(R.id.signin_promo_view_wrapper).setBackgroundResource(resId);
+    }
+
+    private void setupDismissButtonTouchDelegate() {
+        View parent = (View) mDismissButton.getParent();
+        // The post() is needed because this has to run after the UI has been rendered, otherwise
+        // getHitRect() might return a wrong size.
+        parent.post(
+                () -> {
+                    Rect hitRect = new Rect();
+                    mDismissButton.getHitRect(hitRect);
+                    int touchAreaInset =
+                            getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen
+                                                    .signin_promo_dismiss_button_touch_target_increase);
+                    hitRect.inset(-touchAreaInset, -touchAreaInset);
+                    parent.setTouchDelegate(new TouchDelegate(hitRect, mDismissButton));
+                });
     }
 }
