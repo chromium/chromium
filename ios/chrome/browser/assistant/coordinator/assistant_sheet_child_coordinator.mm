@@ -13,11 +13,6 @@
 }
 
 // Returns nil to prevent autosynthesis of an unused instance variable.
-- (AssistantBarConfiguration*)barConfiguration {
-  return nil;
-}
-
-// Returns nil to prevent autosynthesis of an unused instance variable.
 - (UIViewController*)viewController {
   return nil;
 }

@@ -7,23 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
-@protocol AssistantCommands;
 
 // Base coordinator for child coordinators of the assistant sheet.
 @interface AssistantSheetChildCoordinator : ChromeCoordinator
 
 // The view controller managed by this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
-
-// The bar configuration for the child coordinator.
-@property(nonatomic, strong, readonly)
-    AssistantBarConfiguration* barConfiguration;
-
-// Handler for assistant commands.
-@property(nonatomic, weak) id<AssistantCommands> handler;
 
 @end
 

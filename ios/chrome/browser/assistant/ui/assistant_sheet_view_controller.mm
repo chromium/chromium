@@ -4,10 +4,7 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
 
-#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
-#import "ios/chrome/browser/assistant/ui/assistant_bar_item.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -30,7 +27,6 @@ constexpr CGFloat kSpringDamping = 0.85;
   AssistantSheetView* _assistantSheetView;
 
   // State storage for configuration before view load.
-  AssistantBarConfiguration* _barConfiguration;
   UIViewController* _childViewController;
 
   // Gesture recognizer for resizing the sheet.
@@ -52,17 +48,9 @@ constexpr CGFloat kSpringDamping = 0.85;
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // Set up target for the close button.
-  [_assistantSheetView.closeButton addTarget:self
-                                      action:@selector(didTapClose)
-                            forControlEvents:UIControlEventTouchUpInside];
-
   [self setUpGestures];
 
   // Apply pending configuration.
-  if (_barConfiguration) {
-    _assistantSheetView.configuration = _barConfiguration;
-  }
   if (_childViewController) {
     [self addChildViewController:_childViewController];
     _childViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -182,11 +170,6 @@ constexpr CGFloat kSpringDamping = 0.85;
   }
 }
 
-// Notifies the delegate that the close button was tapped.
-- (void)didTapClose {
-  [self.delegate assistantSheetViewControllerDidTapClose:self];
-}
-
 // Calculates the maximum allowable height for the sheet, respecting the safe
 // area.
 - (CGFloat)maxHeight {
@@ -302,16 +285,6 @@ constexpr CGFloat kSpringDamping = 0.85;
 }
 
 #pragma mark - AssistantSheetConsumer
-
-- (void)setBarConfiguration:(AssistantBarConfiguration*)configuration {
-  _barConfiguration = configuration;
-  if (self.isViewLoaded) {
-    _assistantSheetView.configuration = configuration;
-    // Update height in case title lines changed.
-    [self.view layoutIfNeeded];
-    [self updateHeightConstraint];
-  }
-}
 
 - (void)setChildViewController:(UIViewController*)viewController {
   if (viewController == _childViewController) {

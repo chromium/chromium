@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_consumer.h"
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller_delegate.h"
 
 // View Controller for the Assistant Sheet.
 @interface AssistantSheetViewController
@@ -16,9 +15,6 @@
 
 // Whether the sheet is currently being animated by an external animator.
 @property(nonatomic, assign) BOOL isAnimating;
-
-// Delegate for handling actions.
-@property(nonatomic, weak) id<AssistantSheetViewControllerDelegate> delegate;
 
 // The view to anchor to. If nil, falls back to the bottom of the parent view.
 @property(nonatomic, weak) UIView* anchorView;

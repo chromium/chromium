@@ -7,17 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class AssistantBarConfiguration;
-
 // View that contains the visual elements of the Assistant Sheet.
 //
 // The layout is structured as follows:
 //
 // +----------------------------------+
 // |            headerView            |
-// | +-------+   +------+  +--------+ |
-// | |Leading|   |Title |  |Trailing| |
-// | +-------+   +------+  +--------+ |
+// |         +-------------+          |
+// |         |   Grabber   |          |
+// |         +-------------+          |
 // +----------------------------------+
 // |           scrollView             |
 // |  +----------------------------+  |
@@ -27,17 +25,8 @@
 // +----------------------------------+
 @interface AssistantSheetView : UIView
 
-// The bar configuration.
-@property(nonatomic, strong) AssistantBarConfiguration* configuration;
-
-// The close button.
-@property(nonatomic, strong, readonly) UIButton* closeButton;
-
-// The header view (contains grabber, title and buttons).
+// The header view (contains grabber).
 @property(nonatomic, strong, readonly) UIView* headerView;
-
-// The title of the sheet.
-@property(nonatomic, copy) NSString* title;
 
 // The content view where subviews should be added.
 @property(nonatomic, strong, readonly) UIView* contentView;

@@ -5,21 +5,14 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 
 #import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
-#import "ios/chrome/browser/assistant/coordinator/assistant_commands.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_child_coordinator.h"
-#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-
-@interface AssistantSheetCoordinator () <AssistantCommands,
-                                         AssistantSheetViewControllerDelegate>
-@end
 
 @implementation AssistantSheetCoordinator {
   AssistantSheetViewController* _viewController;
@@ -33,7 +26,6 @@
   }
 
   _viewController = [[AssistantSheetViewController alloc] init];
-  _viewController.delegate = self;
 
   // Resolve layout guide.
   GuideName* guideName = kAppBarGuide;
@@ -49,7 +41,6 @@
       break;
   }
 
-  _childCoordinator.handler = self;
   [_childCoordinator start];
 
   // Add the view controller as a child view controller.
@@ -80,23 +71,6 @@
 
   _viewController = nil;
   _animator = nil;
-}
-
-#pragma mark - AssistantCommands
-
-- (void)updateBarConfiguration:(AssistantBarConfiguration*)configuration {
-  [_viewController setBarConfiguration:configuration];
-}
-
-#pragma mark - AssistantSheetViewControllerDelegate
-
-- (void)assistantSheetViewControllerDidTapClose:
-    (AssistantSheetViewController*)viewController {
-  __weak __typeof(self) weakSelf = self;
-  [_animator animateDismissal:_viewController
-                   completion:^{
-                     [weakSelf dismissalAnimationCompletion];
-                   }];
 }
 
 #pragma mark - Private

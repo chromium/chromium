@@ -4,12 +4,24 @@
 
 #import "ios/chrome/browser/assistant/aim/ui/assistant_aim_view_controller.h"
 
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
+namespace {
+
+constexpr CGFloat kContentMargin = 16.0;
+constexpr CGFloat kTitleVerticalMargin = 12.0;
+
+}  // namespace
+
 @implementation AssistantAIMViewController {
+  UILabel* _titleLabel;
   UILabel* _label;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  [self setUpHeader];
 
   // TODO(crbug.com/469050167): Replace with real UI.
   _label = [[UILabel alloc] init];
@@ -26,9 +38,8 @@
   _label.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_label];
 
-  const CGFloat kContentMargin = 16.0;
   [NSLayoutConstraint activateConstraints:@[
-    [_label.topAnchor constraintEqualToAnchor:self.view.topAnchor
+    [_label.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
                                      constant:kContentMargin],
     [_label.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
@@ -40,10 +51,23 @@
   ]];
 }
 
-#pragma mark - AssistantAIMConsumer
+#pragma mark - Private
 
-- (void)setContentText:(NSString*)text {
-  _label.text = text;
+// Sets up the title.
+- (void)setUpHeader {
+  _titleLabel = [[UILabel alloc] init];
+  _titleLabel.text = @"AI Assistant";
+  _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _titleLabel.adjustsFontForContentSizeCategory = YES;
+  _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_titleLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_titleLabel.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                          constant:kTitleVerticalMargin],
+    [_titleLabel.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+  ]];
 }
 
 @end

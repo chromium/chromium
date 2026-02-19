@@ -6,8 +6,6 @@ source_set("coordinator") {
   sources = [
     "assistant_aim_coordinator.h",
     "assistant_aim_coordinator.mm",
-    "assistant_aim_mediator.h",
-    "assistant_aim_mediator.mm",
   ]
   deps = [
     "//ios/chrome/browser/assistant/aim/ui",
