@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/url_constants.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
-#include "chrome/common/url_constants.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 namespace ash {
@@ -31,7 +31,7 @@ std::string GetGoogleEulaOnlineUrl(const std::string& application_locale) {
         switches::kOobeEulaUrlForTests);
   }
 
-  return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
+  return base::StringPrintf(ash::external_urls::kGoogleEulaOnlineURLPath,
                             application_locale.c_str());
 }
 
@@ -42,7 +42,7 @@ std::string GetCrosEulaOnlineUrl(const std::string& application_locale) {
         switches::kOobeEulaUrlForTests);
   }
 
-  return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
+  return base::StringPrintf(ash::external_urls::kCrosEulaOnlineURLPath,
                             application_locale.c_str());
 }
 

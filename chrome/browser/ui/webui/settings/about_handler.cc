@@ -57,6 +57,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
@@ -768,8 +769,9 @@ std::u16string AboutHandler::GetEndOfLifeMessage(base::Time eol_date) const {
   int eol_string_id = eol_passed
                           ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST
                           : IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE;
-  const char16_t* eol_url =
-      eol_passed ? chrome::kEolNotificationURL : chrome::kAutoUpdatePolicyURL;
+  const char16_t* eol_url = eol_passed
+                                ? ash::external_urls::kEolNotificationURL
+                                : ash::external_urls::kAutoUpdatePolicyURL;
   return l10n_util::GetStringFUTF16(eol_string_id,
                                     base::TimeFormatMonthAndYearForTimeZone(
                                         eol_date, icu::TimeZone::getGMT()),

@@ -14,6 +14,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
@@ -1558,7 +1559,7 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("a11yLearnMoreUrl",
-                         chrome::kChromeAccessibilityHelpURL);
+                         ash::external_urls::kAccessibilityHelpURL);
 
   html_source->AddString("selectToSpeakLearnMoreUrl",
                          chrome::kSelectToSpeakLearnMoreURL);

@@ -426,7 +426,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "endOfLifeMessage",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ABOUT_PAGE_LAST_UPDATE_MESSAGE,
                                  ui::GetChromeOSDeviceName(),
-                                 chrome::kEolNotificationURL));
+                                 ash::external_urls::kEolNotificationURL));
 
   html_source->AddString("eolIncentiveOfferTitle",
                          l10n_util::GetStringUTF16(
@@ -454,7 +454,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "extendedUpdatesSecondaryMessage",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_ABOUT_PAGE_EXTENDED_UPDATES_SECONDARY_MESSAGE,
-          chrome::kDeviceExtendedUpdatesLearnMoreURL));
+          ash::external_urls::kDeviceExtendedUpdatesLearnMoreURL));
 
   std::string safetyInfoLink = GetSafetyInfoLink();
   html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());

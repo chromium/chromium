@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 
+#include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/containers/span.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_page_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/extended_updates_resources.h"
 #include "chrome/grit/extended_updates_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -55,10 +55,11 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("dialogDescriptionP2",
-                    l10n_util::GetStringFUTF16(
-                        IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2,
-                        chrome::kDeviceExtendedUpdatesLearnMoreURL));
+  source->AddString(
+      "dialogDescriptionP2",
+      l10n_util::GetStringFUTF16(
+          IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2,
+          ash::external_urls::kDeviceExtendedUpdatesLearnMoreURL));
   source->AddString(
       "popupDescription",
       l10n_util::GetStringFUTF16(IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION,

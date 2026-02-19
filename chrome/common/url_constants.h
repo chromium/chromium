@@ -741,10 +741,7 @@ inline constexpr char kCrosBatterySaverLearnMoreURL[] =
 inline constexpr char16_t kBluetoothPairingLearnMoreUrl[] =
     u"https://support.google.com/chromebook?p=bluetooth_revamp_m100";
 
-// Accessibility help link for Chrome.
-inline constexpr char kChromeAccessibilityHelpURL[] =
-    "https://support.google.com/chromebook/topic/6323347";
-
+// TODO(crbug.com/485470549): move to ash/constants/webui_url_constants.h.
 inline constexpr char kChromeOSAssetHost[] = "chromeos-asset";
 inline constexpr char kChromeOSAssetPath[] = "/usr/share/chromeos-assets/";
 
@@ -780,14 +777,6 @@ inline constexpr char kEasyUnlockLearnMoreUrl[] =
 // The URL for the help center article about redeeming Chromebook offers.
 inline constexpr char kEchoLearnMoreURL[] =
     "chrome://help-app/help/sub/3399709/id/2703646";
-
-// The URL for EOL notification
-inline constexpr char16_t kEolNotificationURL[] =
-    u"https://www.google.com/chromebook/older/";
-
-// The URL for Auto Update Policy.
-inline constexpr char16_t kAutoUpdatePolicyURL[] =
-    u"https://support.google.com/chrome/a?p=auto-update-policy";
 
 // The URL for providing more information about Google nameservers.
 inline constexpr char kGoogleNameserversLearnMoreURL[] =
@@ -866,18 +855,6 @@ inline constexpr char kArcTermsURLPath[] = "arc/terms";
 // The URL path to offline ARC++ Privacy Policy.
 inline constexpr char kArcPrivacyPolicyURLPath[] = "arc/privacy_policy";
 
-// The URL path to Online Google EULA.
-inline constexpr char kGoogleEulaOnlineURLPath[] =
-    "https://policies.google.com/terms/embedded?hl=%s";
-
-// The URL path to Online Chrome and Chrome OS terms of service.
-inline constexpr char kCrosEulaOnlineURLPath[] =
-    "https://www.google.com/intl/%s/chrome/terms/";
-
-// The URL path to online ARC++ terms of service.
-inline constexpr char kArcTosOnlineURLPath[] =
-    "https://play.google/play-terms/embedded/";
-
 // The URL for the "learn more" link for TPM firmware update.
 inline constexpr char kTPMFirmwareUpdateLearnMoreURL[] =
     "https://support.google.com/chromebook?p=tpm_update";
@@ -911,11 +888,6 @@ inline constexpr char kSpeakOnMuteDetectionLearnMoreURL[] =
 // hub page.
 inline constexpr char kPrivacyHubGeolocationLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=manage_your_location";
-
-// The URL for the "Learn more" page for the Location Accuracy setting under the
-// privacy hub location subpage.
-inline constexpr char16_t kPrivacyHubGeolocationAccuracyLearnMoreURL[] =
-    u"https://support.google.com/android/?p=location_accuracy";
 
 // The URL for the "Learn more" page for Suggested Content in the privacy page.
 inline constexpr char kSuggestedContentLearnMoreURL[] =
@@ -958,11 +930,6 @@ inline constexpr char kFingerprintLearnMoreURL[] =
 // devices.
 inline constexpr char kRecoveryLearnMoreURL[] =
     "https://support.google.com/chromebook?p=local_data_recovery";
-
-// The URL for the learn more link about extended automatic updates for
-// ChromeOS devices.
-inline constexpr char16_t kDeviceExtendedUpdatesLearnMoreURL[] =
-    u"https://www.google.com/chromebook/autoupdates-opt-in/";
 
 // The URL for the YoutTube Music Premium signup page.
 inline constexpr char kYoutubeMusicPremiumURL[] =

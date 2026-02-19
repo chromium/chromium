@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -630,7 +630,7 @@ bool ArcSupportHost::Initialize() {
         l10n_util::GetStringFUTF16(
             is_child ? IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
                      : IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES,
-            chrome::kPrivacyHubGeolocationAccuracyLearnMoreURL));
+            ash::external_urls::kPrivacyHubGeolocationAccuracyLearnMoreURL));
   } else {
     loadtime_data.Set(
         "learnMoreLocationServices",

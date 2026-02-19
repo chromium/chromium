@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -195,8 +195,8 @@ void EolNotification::Click(const std::optional<int>& button_index,
     switch (*button_index) {
       case BUTTON_MORE_INFO: {
         const GURL url(dismiss_pref_ == prefs::kEolNotificationDismissed
-                           ? chrome::kEolNotificationURL
-                           : chrome::kAutoUpdatePolicyURL);
+                           ? ash::external_urls::kEolNotificationURL
+                           : ash::external_urls::kAutoUpdatePolicyURL);
         // Show eol link.
         NewWindowDelegate::GetInstance()->OpenUrl(
             url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,

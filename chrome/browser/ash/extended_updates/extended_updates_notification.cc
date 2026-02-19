@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -125,7 +125,7 @@ void ExtendedUpdatesNotification::ShowExtendedUpdatesDialog() {
 
 void ExtendedUpdatesNotification::OpenLearnMoreUrl() {
   NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(chrome::kDeviceExtendedUpdatesLearnMoreURL),
+      GURL(ash::external_urls::kDeviceExtendedUpdatesLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

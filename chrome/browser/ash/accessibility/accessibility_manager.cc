@@ -18,6 +18,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
@@ -66,7 +67,6 @@
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/audio/public/cpp/sounds/sounds_manager.h"
@@ -474,7 +474,7 @@ void AccessibilityManager::ShowAccessibilityHelp() {
   ShowSingletonTab(
       Profile::FromBrowserContext(
           BrowserContextHelper::Get()->GetBrowserContextByUser(user)),
-      GURL(chrome::kChromeAccessibilityHelpURL));
+      GURL(ash::external_urls::kAccessibilityHelpURL));
 }
 
 AccessibilityManager::AccessibilityManager(

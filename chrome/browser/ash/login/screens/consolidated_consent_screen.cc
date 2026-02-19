@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/url_constants.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -83,11 +84,14 @@ enum class ToS { GOOGLE_EULA, CROS_EULA, ARC, PRIVACY_POLICY };
 static constexpr auto kTermsTypeToUrlAndSwitch =
     base::MakeFixedFlatMap<ToS, std::pair<const char*, const char*>>(
         {{ToS::GOOGLE_EULA,
-          {chrome::kGoogleEulaOnlineURLPath, switches::kOobeEulaUrlForTests}},
+          {ash::external_urls::kGoogleEulaOnlineURLPath,
+           switches::kOobeEulaUrlForTests}},
          {ToS::CROS_EULA,
-          {chrome::kCrosEulaOnlineURLPath, switches::kOobeEulaUrlForTests}},
+          {ash::external_urls::kCrosEulaOnlineURLPath,
+           switches::kOobeEulaUrlForTests}},
          {ToS::ARC,
-          {chrome::kArcTosOnlineURLPath, switches::kArcTosHostForTests}},
+          {ash::external_urls::kArcTosOnlineURLPath,
+           switches::kArcTosHostForTests}},
          {ToS::PRIVACY_POLICY,
           {chrome::kPrivacyPolicyOnlineURLPath,
            switches::kPrivacyPolicyHostForTests}}});
@@ -100,11 +104,11 @@ std::string GetTosHost(const std::string& application_locale, ToS terms_type) {
   }
 
   if (terms_type == ToS::GOOGLE_EULA) {
-    return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
+    return base::StringPrintf(ash::external_urls::kGoogleEulaOnlineURLPath,
                               application_locale.c_str());
   }
   if (terms_type == ToS::CROS_EULA) {
-    return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
+    return base::StringPrintf(ash::external_urls::kCrosEulaOnlineURLPath,
                               application_locale.c_str());
   }
   return kTermsTypeToUrlAndSwitch.at(terms_type).first;

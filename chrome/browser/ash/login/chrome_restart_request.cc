@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -29,7 +30,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -397,7 +397,7 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
 
   // Override the home page.
   otr_switches.Set(::switches::kHomePage,
-                   GURL(chrome::kChromeUINewTabURL).spec());
+                   GURL(ash::chrome_urls::kChromeUINewTabURL).spec());
 
   DeriveCommandLine(start_url, base_command_line, otr_switches, command_line);
   DeriveFeatures(command_line);

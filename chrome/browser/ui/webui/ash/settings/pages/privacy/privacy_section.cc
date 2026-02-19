@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/url_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -648,8 +649,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("speakOnMuteDetectionLearnMoreURL",
                          chrome::kSpeakOnMuteDetectionLearnMoreURL);
 
-  html_source->AddString("geolocationAccuracyLearnMoreUrl",
-                         chrome::kPrivacyHubGeolocationAccuracyLearnMoreURL);
+  html_source->AddString(
+      "geolocationAccuracyLearnMoreUrl",
+      ash::external_urls::kPrivacyHubGeolocationAccuracyLearnMoreURL);
 
   html_source->AddString("osSettingsAppId", ash::kOsSettingsAppId);
 
