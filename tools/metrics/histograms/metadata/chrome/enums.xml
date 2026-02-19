@@ -187,24 +187,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="LOCK_ERROR"/>
 </enum>
 
-<enum name="PageBlockingUpdate">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="chrome://"/>
-  <int value="2" label="New Tab Page"/>
-  <int value="3" label="about:blank"/>
-  <int value="4" label="chrome://whats-new"/>
-  <int value="5" label="Error - No Browser Object"/>
-  <int value="6" label="Error - No Tabs"/>
-</enum>
-
-<enum name="PendingUpdateState">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="No update"/>
-  <int value="2" label="One window, one tab"/>
-  <int value="3" label="Multiple tabs or windows"/>
-  <int value="5" label="Backgrounded"/>
-</enum>
-
 <enum name="RemoteHungProcessTerminateReason">
   <int value="1" label="Terminate accepted by user"/>
   <int value="2" label="No visible windows found"/>

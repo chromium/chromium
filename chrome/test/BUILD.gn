@@ -6025,7 +6025,6 @@ if (!is_android) {
         "//chrome/browser/browser_switcher:browser_tests",
         "//chrome/browser/ui/startup/default_browser_prompt",
         "//chrome/browser/ui/webui/signin:browser_tests",
-        "//chrome/browser/updates:browser_tests",
       ]
     }
     if (is_linux || is_mac) {
