@@ -65,6 +65,7 @@ public class EventForwarder {
     private long mNativeEventForwarder;
 
     // Offset for the events that passes through.
+    private float mCurrentTouchOffsetX;
     private float mCurrentTouchOffsetY;
 
     // Offset for the drag events that's dispatching through other views.
@@ -156,7 +157,7 @@ public class EventForwarder {
     }
 
     private boolean hasTouchEventOffset() {
-        return mCurrentTouchOffsetY != 0.0f;
+        return mCurrentTouchOffsetX != 0.0f || mCurrentTouchOffsetY != 0.0f;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -356,7 +357,18 @@ public class EventForwarder {
     }
 
     /**
-     * Sets the current amount to offset incoming touch events by (including MotionEvent and
+     * Sets the current amount to X offset incoming touch events by (including MotionEvent and
+     * DragEvent). This is used to handle content moving and not lining up properly with the android
+     * input system.
+     *
+     * @param dx The X offset in pixels to shift touch events.
+     */
+    public void setCurrentTouchOffsetX(float dx) {
+        mCurrentTouchOffsetX = dx;
+    }
+
+    /**
+     * Sets the current amount to Y offset incoming touch events by (including MotionEvent and
      * DragEvent). This is used to handle content moving and not lining up properly with the android
      * input system.
      *
@@ -388,7 +400,7 @@ public class EventForwarder {
     public MotionEvent createOffsetMotionEventIfNeeded(MotionEvent src) {
         if (!hasTouchEventOffset()) return src;
         MotionEvent dst = MotionEvent.obtain(src);
-        dst.offsetLocation(/* deltaX= */ 0, mCurrentTouchOffsetY);
+        dst.offsetLocation(mCurrentTouchOffsetX, mCurrentTouchOffsetY);
         return dst;
     }
 
@@ -523,15 +535,15 @@ public class EventForwarder {
         float deltaY = 0;
         // Convert trackpad scroll to mouse wheel event.
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            mLastTrackpadScrollStartX = event.getX();
+            mLastTrackpadScrollStartX = event.getX() + mCurrentTouchOffsetX;
             mLastTrackpadScrollStartY = event.getY() + mCurrentTouchOffsetY;
-            mLastTrackpadScrollStartRawX = event.getRawX();
+            mLastTrackpadScrollStartRawX = event.getRawX() + mCurrentTouchOffsetX;
             mLastTrackpadScrollStartRawY = event.getRawY() + mCurrentTouchOffsetY;
         } else {
-            deltaX = event.getX() - mLastTrackpadScrollX;
+            deltaX = event.getX() + mCurrentTouchOffsetX - mLastTrackpadScrollX;
             deltaY = event.getY() + mCurrentTouchOffsetY - mLastTrackpadScrollY;
         }
-        mLastTrackpadScrollX = event.getX();
+        mLastTrackpadScrollX = event.getX() + mCurrentTouchOffsetX;
         mLastTrackpadScrollY = event.getY() + mCurrentTouchOffsetY;
 
         // Fling detection. Start fling at the end of scroll if the accumulated velocity is higher
@@ -698,7 +710,7 @@ public class EventForwarder {
         containerView.getLocationOnScreen(locationOnScreen);
 
         // All coordinates are in device pixel. Conversion to DIP happens in the native.
-        float x = event.getX() + mDragDispatchingOffsetX;
+        float x = event.getX() + mCurrentTouchOffsetX + mDragDispatchingOffsetX;
         float y = event.getY() + mCurrentTouchOffsetY + mDragDispatchingOffsetY;
         float screenX = x + locationOnScreen[0];
         float screenY = y + locationOnScreen[1];

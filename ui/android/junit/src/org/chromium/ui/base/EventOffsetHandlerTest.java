@@ -25,12 +25,18 @@ public class EventOffsetHandlerTest {
     private final EventOffsetHandler.EventOffsetHandlerDelegate mDelegate =
             new EventOffsetHandler.EventOffsetHandlerDelegate() {
                 @Override
+                public float getLeft() {
+                    return mViewport.left;
+                }
+
+                @Override
                 public float getTop() {
                     return mViewport.top;
                 }
 
                 @Override
-                public void setCurrentTouchEventOffsets(float top) {
+                public void setCurrentTouchEventOffsets(float left, float top) {
+                    mOffsetX = left;
                     mOffsetY = top;
                 }
 
@@ -39,9 +45,11 @@ public class EventOffsetHandlerTest {
             };
 
     private RectF mViewport;
+    private float mOffsetX;
     private float mOffsetY;
 
-    private void assertOffsets(float y) {
+    private void assertOffsets(float x, float y) {
+        assertEquals(x, mOffsetX, 0.0);
         assertEquals(y, mOffsetY, 0.0);
     }
 
@@ -49,7 +57,7 @@ public class EventOffsetHandlerTest {
     public void setUp() {
         mHandler = new EventOffsetHandler(mDelegate);
         mViewport = new RectF(100, 200, 600, 800);
-        assertOffsets(0);
+        assertOffsets(0, 0);
     }
 
     @Test
@@ -58,20 +66,20 @@ public class EventOffsetHandlerTest {
         mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_STARTED);
 
         // Viewport position has been negated.
-        assertOffsets(-200);
+        assertOffsets(-100, -200);
 
         MotionEvent motionStart = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 100, 0);
         mHandler.onInterceptTouchDownEvent(motionStart);
 
-        assertOffsets(-200);
+        assertOffsets(-100, -200);
 
         MotionEvent motionEnd = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 100, 100, 0);
         mHandler.onInterceptTouchDownEvent(motionStart);
 
-        assertOffsets(-200);
+        assertOffsets(-100, -200);
 
         mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED, 0.f, 0.f);
         mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED);
-        assertOffsets(0);
+        assertOffsets(0, 0);
     }
 }

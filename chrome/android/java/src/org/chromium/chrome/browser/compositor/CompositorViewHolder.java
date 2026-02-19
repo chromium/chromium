@@ -262,23 +262,36 @@ public class CompositorViewHolder extends FrameLayout
                         private final RectF mCacheViewport = new RectF();
 
                         @Override
+                        public float getLeft() {
+                            updateCacheViewport();
+                            return mCacheViewport.left;
+                        }
+
+                        @Override
                         public float getTop() {
-                            if (mLayoutManager != null) {
-                                mLayoutManager.getViewportPixel(mCacheViewport);
-                            }
+                            updateCacheViewport();
                             return mCacheViewport.top;
                         }
 
                         @Override
-                        public void setCurrentTouchEventOffsets(float top) {
+                        public void setCurrentTouchEventOffsets(float left, float top) {
                             EventForwarder forwarder = getEventForwarder();
-                            if (forwarder != null) forwarder.setCurrentTouchOffsetY(top);
+                            if (forwarder != null) {
+                                forwarder.setCurrentTouchOffsetX(left);
+                                forwarder.setCurrentTouchOffsetY(top);
+                            }
                         }
 
                         @Override
                         public void setCurrentDragEventOffsets(float dx, float dy) {
                             EventForwarder forwarder = getEventForwarder();
                             if (forwarder != null) forwarder.setDragDispatchingOffset(dx, dy);
+                        }
+
+                        private void updateCacheViewport() {
+                            if (mLayoutManager != null) {
+                                mLayoutManager.getViewportPixel(mCacheViewport);
+                            }
                         }
 
                         private @Nullable EventForwarder getEventForwarder() {

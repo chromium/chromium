@@ -19,9 +19,11 @@ import org.chromium.build.annotations.NullMarked;
 public class EventOffsetHandler {
     /** A delegate for EventOffsetHandler. */
     public interface EventOffsetHandlerDelegate {
+        float getLeft();
+
         float getTop();
 
-        void setCurrentTouchEventOffsets(float top);
+        void setCurrentTouchEventOffsets(float left, float top);
 
         void setCurrentDragEventOffsets(float dx, float dy);
     }
@@ -34,12 +36,13 @@ public class EventOffsetHandler {
 
     /**
      * Call this before handling onDispatchDragEvent.
+     *
      * @param action Drag event action.
      * @param dx The offset on x-axis for the current drag event.
      * @param dy The offset on y-axis for the current drag event.
      */
     public void onPreDispatchDragEvent(int action, float dx, float dy) {
-        setTouchEventOffsets(-mDelegate.getTop());
+        setTouchEventOffsets(-mDelegate.getLeft(), -mDelegate.getTop());
         setDragEventOffsets(dx, dy);
     }
 
@@ -51,7 +54,7 @@ public class EventOffsetHandler {
         if (action == DragEvent.ACTION_DRAG_EXITED
                 || action == DragEvent.ACTION_DRAG_ENDED
                 || action == DragEvent.ACTION_DROP) {
-            setTouchEventOffsets(0.f);
+            setTouchEventOffsets(0.f, 0.f);
             setDragEventOffsets(0.f, 0.f);
         }
     }
@@ -88,17 +91,17 @@ public class EventOffsetHandler {
         if (actionMasked == MotionEvent.ACTION_DOWN
                 || actionMasked == MotionEvent.ACTION_HOVER_ENTER
                 || actionMasked == MotionEvent.ACTION_HOVER_MOVE) {
-            setTouchEventOffsets(-mDelegate.getTop());
+            setTouchEventOffsets(-mDelegate.getLeft(), -mDelegate.getTop());
         } else if (canClear
                 && (actionMasked == MotionEvent.ACTION_UP
                         || actionMasked == MotionEvent.ACTION_CANCEL
                         || actionMasked == MotionEvent.ACTION_HOVER_EXIT)) {
-            setTouchEventOffsets(0.f);
+            setTouchEventOffsets(0.f, 0.f);
         }
     }
 
-    private void setTouchEventOffsets(float y) {
-        mDelegate.setCurrentTouchEventOffsets(y);
+    private void setTouchEventOffsets(float x, float y) {
+        mDelegate.setCurrentTouchEventOffsets(x, y);
     }
 
     private void setDragEventOffsets(float dx, float dy) {
