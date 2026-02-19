@@ -12664,10 +12664,20 @@ void WebkitTransformOriginX::ApplyInherit(StyleResolverState& state) const {
 
 const CSSValue* Overlay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const LayoutObject*,
+    const LayoutObject* object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.Overlay());
+  if (!RuntimeEnabledFeatures::OverlayGlobalRuleRemovalEnabled()) {
+    return CSSIdentifierValue::Create(style.Overlay());
+  }
+  if (object) {
+    if (auto* element = DynamicTo<Element>(object->GetNode())) {
+      if (element->IsInTopLayer()) {
+        return CSSIdentifierValue::Create(style.Overlay());
+      }
+    }
+  }
+  return CSSIdentifierValue::Create(EOverlay::kNone);
 }
 
 const CSSValue* WebkitTransformOriginY::ParseSingleValue(

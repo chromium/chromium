@@ -1686,6 +1686,13 @@ dialog:-internal-dialog-in-top-layer::backdrop {
 }
 
 @supports blink-feature(OverlayProperty) {
+  @supports blink-feature(OverlayGlobalRuleRemoval) {
+    /* This is needed as a replacement for the *{overlay:none!important} rule
+     * which is removed by the OverlayGlobalRuleRemoval flag. */
+    dialog, [popover] {
+      overlay: none !important;
+    }
+  }
   /* The `overlay:auto` UA rule goes away as soon as the modal is requested to
      close, or popover.hidePopover() is called. However, it can stay in the top
      layer after this point, if developer CSS animates the `overlay` property. */

@@ -3975,6 +3975,14 @@
       status: "stable",
     },
     {
+      // Improves the performance of the global overlay:none!important UA style
+      // rule by replacing the normal UA style rule with other things which
+      // result in the same behavior. Added in M147, should be safe to remove
+      // in M150.
+      name: "OverlayGlobalRuleRemoval",
+      status: "stable",
+    },
+    {
       // Enables the CSS overlay property. When this flag is disabled, top
       // layer exit animations will work without the need for using the overlay
       // property.

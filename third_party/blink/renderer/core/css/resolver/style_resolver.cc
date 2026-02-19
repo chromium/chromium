@@ -1753,7 +1753,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
           {.origin = CascadeOrigin::kUserAgent});
     }
 
-    if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
+    if (RuntimeEnabledFeatures::OverlayPropertyEnabled() &&
+        !RuntimeEnabledFeatures::OverlayGlobalRuleRemovalEnabled()) {
       // UA rule: * { overlay: none !important }
       // Implemented here because DCHECKs ensures we don't add universal rules
       // to the UA sheets. Note that this is a universal rule in any namespace.

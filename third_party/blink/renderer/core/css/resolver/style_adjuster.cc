@@ -1084,8 +1084,14 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       element && element->GetDocument().documentElement() == element;
   bool is_in_top_layer = false;
   if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
-    is_in_top_layer =
-        !is_document_element && builder.Overlay() == EOverlay::kAuto;
+    if (RuntimeEnabledFeatures::OverlayGlobalRuleRemovalEnabled()) {
+      is_in_top_layer = !is_document_element &&
+                        builder.Overlay() == EOverlay::kAuto && element &&
+                        element->IsInTopLayer();
+    } else {
+      is_in_top_layer =
+          !is_document_element && builder.Overlay() == EOverlay::kAuto;
+    }
   } else {
     is_in_top_layer =
         !is_document_element && (element && element->IsRenderedInTopLayer());
