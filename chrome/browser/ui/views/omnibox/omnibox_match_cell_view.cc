@@ -456,7 +456,7 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
           ? kToolbeltTextInsetRight
       : layout_style_ == LayoutStyle::IPH_SUGGESTION
           ? OmniboxMatchCellView::kMarginLeft + kIphTextIndent
-          : 7;
+          : kMarginRight;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, right_margin);
 }

@@ -28,11 +28,9 @@ class OmniboxMatchCellView : public views::View {
   // `OmniboxMatchCellView`.
   static constexpr int kMarginLeft = 4;
 
-  // Probably intended to be the gap between the popup's right edge (assuming no
-  // buttons) and the text cut off. But this isn't used by
-  // `OmniboxMatchCellView`. `OmniboxMatchCellView::GetInsets()` hardcodes 7; so
-  // 8 here is probably wrong.
-  static constexpr int kMarginRight = 8;
+  // The gap between the popup's right edge (assuming no buttons) and the text
+  // cut off.
+  static constexpr int kMarginRight = 7;
 
   // The height of the standard 1-line match row. Multiline & IPH matches have
   // larger heights.
