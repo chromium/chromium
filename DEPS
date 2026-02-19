@@ -3108,7 +3108,7 @@ deps = {
       'packages': [
           {
               'package': 'infra_internal/edit_monitor/linux-amd64',
-              'version': 'sE-qflD_YAk1sQecqSNkp3Yh6klQQbd2lR3-vCxwoJ4C',
+              'version': 'XK7IDuuFO0fkCRCvXemLOUZXoUo26i8PBEeS_kE0FBcC',
           },
       ],
       'condition': 'host_os == "linux" and (checkout_src_internal or checkout_src_internal_infra)',
