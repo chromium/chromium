@@ -26,17 +26,29 @@ class ThreadSafeReactorHandle
   explicit ThreadSafeReactorHandle(TReactor* reactor) : reactor_(reactor) {}
 
   void Write(const grpc::Status& status) {
-    base::AutoLock lock(lock_);
-    if (reactor_) {
-      reactor_->Write(status);
+    TReactor* reactor = nullptr;
+    {
+      base::AutoLock lock(lock_);
+      reactor = reactor_;
+      reactor_ = nullptr;
+    }
+
+    if (reactor) {
+      reactor->Write(status);
     }
   }
 
   template <typename TResponse>
   void Write(TResponse response) {
-    base::AutoLock lock(lock_);
-    if (reactor_) {
-      reactor_->Write(std::move(response));
+    TReactor* reactor = nullptr;
+    {
+      base::AutoLock lock(lock_);
+      reactor = reactor_;
+      reactor_ = nullptr;
+    }
+
+    if (reactor) {
+      reactor->Write(std::move(response));
     }
   }
 

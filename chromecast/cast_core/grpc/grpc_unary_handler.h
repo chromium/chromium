@@ -52,7 +52,11 @@ class GrpcUnaryHandler final : public GrpcHandler {
       ReadRequest();
     }
 
-    ~Reactor() override = default;
+    ~Reactor() override {
+      if (on_destroy_callback_) {
+        std::move(on_destroy_callback_).Run();
+      }
+    }
 
     void OnDone() override {
       if (on_destroy_callback_) {
@@ -94,7 +98,7 @@ class GrpcUnaryHandler final : public GrpcHandler {
       // This method may be called from the cancelled_reactor as a generic way
       // to signal reactor is done via OnResponseDone API. For unary reactor it
       // is a no-op.
-      CHECK(status.error_code() == grpc::StatusCode::ABORTED)
+      CHECK(status.ok() || status.error_code() == grpc::StatusCode::ABORTED)
           << "Unexpected status: " << GrpcStatusToString(status);
     }
 
