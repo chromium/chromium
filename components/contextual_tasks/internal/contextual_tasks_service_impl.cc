@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -155,6 +156,13 @@ void RecordNumberOfActiveTasks(int count) {
   base::UmaHistogramCounts100("ContextualTasks.ActiveTasksCount", count);
 }
 
+ContextualTask CreateTaskForThread(const Thread& thread, bool is_ephemeral) {
+  ContextualTask task(base::Uuid::GenerateRandomV4(), is_ephemeral);
+  task.AddThread(thread);
+  task.SetTitle(thread.title);
+  return task;
+}
+
 }  // namespace
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
@@ -180,6 +188,7 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
           syncer::AI_THREAD, dump_stack);
   ai_thread_sync_bridge_ = std::make_unique<AiThreadSyncBridge>(
       std::move(ai_thread_processor), data_type_store_factory);
+  ai_thread_observation_.Observe(ai_thread_sync_bridge_.get());
 
   auto gemini_thread_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -192,6 +201,7 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
           syncer::CONTEXTUAL_TASK, dump_stack);
   contextual_task_sync_bridge_ = std::make_unique<ContextualTaskSyncBridge>(
       std::move(contextual_task_processor), data_type_store_factory);
+  task_observation_.Observe(contextual_task_sync_bridge_.get());
 
   // Wait for both AiThreadSyncBridge and ContextualTaskSyncBridge to finish
   // loading their data store.
@@ -530,11 +540,17 @@ ContextualTasksServiceImpl::GetGeminiThreadControllerDelegate() {
 
 void ContextualTasksServiceImpl::SetAiThreadSyncBridgeForTesting(
     std::unique_ptr<AiThreadSyncBridge> bridge) {
+  // When provided a new service for testing, ensure observation of the old
+  // service is removed to avoid UAF when this service is destroyed.
+  ai_thread_observation_.Reset();
   ai_thread_sync_bridge_ = std::move(bridge);
 }
 
 void ContextualTasksServiceImpl::SetContextualTaskSyncBridgeForTesting(
     std::unique_ptr<ContextualTaskSyncBridge> bridge) {
+  // When provided a new service for testing, ensure observation of the old
+  // service is removed to avoid UAF when this service is destroyed.
+  task_observation_.Reset();
   contextual_task_sync_bridge_ = std::move(bridge);
 }
 
@@ -573,6 +589,27 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
                  new_thread_entity.specifics().conversation_turn_id()));
       NotifyTaskUpdated(task, TriggerSource::kRemote);
     }
+
+    // Remove the thread from the map. Any remaining threads will have tasks
+    // created for them at the end of this function.
+    thread_map.erase(it->first);
+  }
+
+  // Create tasks for any of the threads that were added or updated and didn't
+  // have an associated task.
+  for (const auto& [thread_id, thread_entity] : thread_map) {
+    Thread thread(ToThreadType(thread_entity.specifics().type()),
+                  thread_entity.specifics().server_id(),
+                  thread_entity.specifics().title(),
+                  thread_entity.specifics().conversation_turn_id());
+    ContextualTask new_task =
+        CreateTaskForThread(thread, supports_ephemeral_only_);
+    const auto it =
+        tasks_.emplace(new_task.GetTaskId(), std::move(new_task)).first;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                                  weak_ptr_factory_.GetWeakPtr(), it->second,
+                                  TriggerSource::kRemote));
   }
 }
 
@@ -743,6 +780,9 @@ void ContextualTasksServiceImpl::OnDataStoresLoaded() {
 }
 
 std::vector<ContextualTask> ContextualTasksServiceImpl::BuildTasks() const {
+  // First attempt to add threads to tasks that were persisted. Any threads that
+  // do not have a task will have one created.
+  base::flat_set<std::string> used_thread_ids;
   std::vector<ContextualTask> tasks = contextual_task_sync_bridge_->GetTasks();
   auto it = tasks.begin();
   while (it != tasks.end()) {
@@ -762,10 +802,25 @@ std::vector<ContextualTask> ContextualTasksServiceImpl::BuildTasks() const {
     if (!thread) {
       it = tasks.erase(it);
     } else {
+      used_thread_ids.insert(thread.value().server_id);
       it->AddThread(thread.value());
       ++it;
     }
   }
+
+  std::vector<Thread> threads = ai_thread_sync_bridge_->GetThreads();
+
+  for (const auto& thread : threads) {
+    if (used_thread_ids.contains(thread.server_id)) {
+      continue;
+    }
+    // While these tasks are not persisted, they're also not considered
+    // ephemeral since they are built using a user's threads.
+    // TODO(485520978): Use a UUIDv5 based on the thread ID here so the UUID
+    //                  is deterministic between restarts.
+    tasks.push_back(CreateTaskForThread(thread, supports_ephemeral_only_));
+  }
+
   return tasks;
 }
 

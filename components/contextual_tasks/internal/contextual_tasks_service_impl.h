@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "components/contextual_tasks/internal/ai_thread_sync_bridge.h"
@@ -188,6 +189,12 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   const raw_ptr<PrefService> pref_service_;
   // Whether the service only supports ephemeral tasks.
   const bool supports_ephemeral_only_;
+
+  base::ScopedObservation<AiThreadSyncBridge, AiThreadSyncBridge::Observer>
+      ai_thread_observation_{this};
+  base::ScopedObservation<ContextualTaskSyncBridge,
+                          ContextualTaskSyncBridge::Observer>
+      task_observation_{this};
 
   base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };
