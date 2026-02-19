@@ -337,13 +337,8 @@ inline constexpr double kProbabilityOfIncreasedDelay = 0.1;
 // reported in such a way that their range does not conflict with the range of
 // generic errors defined by the metainstaller, the `update_client` module, or
 // Windows.
-#if BUILDFLAG(IS_WIN)
 inline constexpr int kCustomInstallErrorBase =
     std::to_underlying(update_client::InstallError::CUSTOM_ERROR_BASE) + 74000;
-#else
-inline constexpr int kCustomInstallErrorBase =
-    std::to_underlying(update_client::InstallError::CUSTOM_ERROR_BASE);
-#endif
 
 // Running the application installer failed.
 inline constexpr int kErrorApplicationInstallerFailed =
