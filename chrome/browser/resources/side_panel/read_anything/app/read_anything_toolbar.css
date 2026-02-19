@@ -131,7 +131,7 @@
   align-items: center;
   justify-content: end;
   overflow: visible;
-  padding: 6px 8px;
+  padding: 16px;
   flex-wrap: var(--toolbar-flex-wrap);
   font-family: var(--immersive-menu-font);
   font-size: var(--immersive-menu-font-size);
