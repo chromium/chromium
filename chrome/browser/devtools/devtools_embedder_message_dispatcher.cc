@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_settings.h"
@@ -19,282 +20,208 @@ namespace {
 using DispatchCallback = DevToolsEmbedderMessageDispatcher::DispatchCallback;
 
 bool GetValue(const base::Value& value,
-              DevToolsDispatchHttpRequestParams* params) {
-  if (!value.is_dict()) {
+              DevToolsDispatchHttpRequestParams& params) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
-  auto parsed_params =
-      DevToolsDispatchHttpRequestParams::FromDict(value.GetDict());
+  auto parsed_params = DevToolsDispatchHttpRequestParams::FromDict(*dict);
   if (!parsed_params) {
     return false;
   }
-  *params = std::move(*parsed_params);
+  params = std::move(*parsed_params);
   return true;
 }
 
-bool GetValue(const base::Value& value, std::string* result) {
-  if (result && value.is_string()) {
-    *result = value.GetString();
-    return true;
-  }
-  return value.is_string();
-}
-
-bool GetValue(const base::Value& value, int* result) {
-  if (result && value.is_int()) {
-    *result = value.GetInt();
-    return true;
-  }
-  return value.is_int();
-}
-
-bool GetValue(const base::Value& value, double* result) {
-  if (result && (value.is_double() || value.is_int())) {
-    *result = value.GetDouble();
-    return true;
-  }
-  return value.is_double() || value.is_int();
-}
-
-bool GetValue(const base::Value& value, bool* result) {
-  if (result && value.is_bool()) {
-    *result = value.GetBool();
-    return true;
-  }
-  return value.is_bool();
-}
-
-bool GetValue(const base::Value& value, gfx::Rect* rect) {
-  if (!value.is_dict())
+bool GetValue(const base::Value& value, std::string& result) {
+  const std::string* str = value.GetIfString();
+  if (!str) {
     return false;
-  const base::DictValue& dict = value.GetDict();
-  std::optional<int> x = dict.FindInt("x");
-  std::optional<int> y = dict.FindInt("y");
-  std::optional<int> width = dict.FindInt("width");
-  std::optional<int> height = dict.FindInt("height");
+  }
+  result = *str;
+  return true;
+}
+
+bool GetValue(const base::Value& value, int& result) {
+  return base::OptionalUnwrapTo(value.GetIfInt(), result);
+}
+
+bool GetValue(const base::Value& value, double& result) {
+  return base::OptionalUnwrapTo(value.GetIfDouble(), result);
+}
+
+bool GetValue(const base::Value& value, bool& result) {
+  return base::OptionalUnwrapTo(value.GetIfBool(), result);
+}
+
+bool GetValue(const base::Value& value, gfx::Rect& rect) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
+    return false;
+  }
+  std::optional<int> x = dict->FindInt("x");
+  std::optional<int> y = dict->FindInt("y");
+  std::optional<int> width = dict->FindInt("width");
+  std::optional<int> height = dict->FindInt("height");
   if (!x.has_value() || !y.has_value() || !width.has_value() ||
       !height.has_value()) {
     return false;
   }
 
-  rect->SetRect(x.value(), y.value(), width.value(), height.value());
+  rect.SetRect(x.value(), y.value(), width.value(), height.value());
   return true;
 }
 
-bool GetValue(const base::Value& value, RegisterOptions* options) {
-  if (!value.is_dict())
-    return false;
-
-  const bool synced = value.GetDict().FindBool("synced").value_or(false);
-  options->sync_mode = synced ? RegisterOptions::SyncMode::kSync
-                              : RegisterOptions::SyncMode::kDontSync;
-  return true;
-}
-
-bool GetValue(const base::Value& value, ImpressionEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, RegisterOptions& options) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  const base::ListValue* impressions = value.GetDict().FindList("impressions");
+  const bool synced = dict->FindBool("synced").value_or(false);
+  options.sync_mode = synced ? RegisterOptions::SyncMode::kSync
+                             : RegisterOptions::SyncMode::kDontSync;
+  return true;
+}
+
+bool GetValue(const base::Value& value, ImpressionEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
+    return false;
+  }
+
+  const base::ListValue* impressions = dict->FindList("impressions");
   if (!impressions) {
     return false;
   }
   for (const auto& impression : *impressions) {
-    if (!impression.is_dict()) {
+    const base::DictValue* impression_dict = impression.GetIfDict();
+    if (!impression_dict) {
       return false;
     }
-    std::optional<double> id = impression.GetDict().FindDouble("id");
-    std::optional<int> type = impression.GetDict().FindInt("type");
+    std::optional<double> id = impression_dict->FindDouble("id");
+    std::optional<int> type = impression_dict->FindInt("type");
     if (!id || !type) {
       return false;
     }
-    event->impressions.emplace_back(
+
+    auto& back = event.impressions.emplace_back(
         VisualElementImpression{static_cast<int64_t>(*id), *type});
 
-    std::optional<double> parent = impression.GetDict().FindDouble("parent");
-    if (parent) {
-      event->impressions.back().parent = *parent;
-    }
-    std::optional<int> context = impression.GetDict().FindInt("context");
-    if (context) {
-      event->impressions.back().context = *context;
-    }
-    std::optional<int> width = impression.GetDict().FindInt("width");
-    if (width) {
-      event->impressions.back().width = *width;
-    }
-    std::optional<int> height = impression.GetDict().FindInt("height");
-    if (height) {
-      event->impressions.back().height = *height;
-    }
+    base::OptionalUnwrapTo(impression_dict->FindDouble("parent"), back.parent);
+    base::OptionalUnwrapTo(impression_dict->FindInt("context"), back.context);
+    base::OptionalUnwrapTo(impression_dict->FindInt("width"), back.width);
+    base::OptionalUnwrapTo(impression_dict->FindInt("height"), back.height);
   }
   return true;
 }
 
-bool GetValue(const base::Value& value, ResizeEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, ResizeEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<double> veid = value.GetDict().FindDouble("veid");
-  if (!veid) {
+  if (!base::OptionalUnwrapTo(dict->FindDouble("veid"), event.veid)) {
     return false;
   }
-  event->veid = *veid;
 
-  std::optional<int> width = value.GetDict().FindInt("width");
-  if (width) {
-    event->width = *width;
-  }
-  std::optional<int> height = value.GetDict().FindInt("height");
-  if (height) {
-    event->height = *height;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("width"), event.width);
+  base::OptionalUnwrapTo(dict->FindInt("height"), event.height);
   return true;
 }
 
-bool GetValue(const base::Value& value, ClickEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, ClickEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<double> veid = value.GetDict().FindDouble("veid");
-  if (!veid) {
+  if (!base::OptionalUnwrapTo(dict->FindDouble("veid"), event.veid)) {
     return false;
   }
-  event->veid = *veid;
 
-  std::optional<int> mouse_button = value.GetDict().FindInt("mouseButton");
-  if (mouse_button) {
-    event->mouse_button = *mouse_button;
-  }
-  std::optional<int> double_click = value.GetDict().FindInt("doubleClick");
-  if (double_click) {
-    event->double_click = *double_click;
-  }
-  std::optional<int> context = value.GetDict().FindInt("context");
-  if (context) {
-    event->context = *context;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("mouseButton"), event.mouse_button);
+  base::OptionalUnwrapTo(dict->FindInt("doubleClick"), event.double_click);
+  base::OptionalUnwrapTo(dict->FindInt("context"), event.context);
   return true;
 }
 
-bool GetValue(const base::Value& value, HoverEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, HoverEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<double> veid = value.GetDict().FindDouble("veid");
-  if (!veid) {
+  if (!base::OptionalUnwrapTo(dict->FindDouble("veid"), event.veid)) {
     return false;
   }
-  event->veid = *veid;
 
-  std::optional<int> time = value.GetDict().FindInt("time");
-  if (time) {
-    event->time = *time;
-  }
-  std::optional<int> context = value.GetDict().FindInt("context");
-  if (context) {
-    event->context = *context;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("time"), event.time);
+  base::OptionalUnwrapTo(dict->FindInt("context"), event.context);
   return true;
 }
 
-bool GetValue(const base::Value& value, DragEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, DragEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<double> veid = value.GetDict().FindDouble("veid");
-  if (!veid) {
+  if (!base::OptionalUnwrapTo(dict->FindDouble("veid"), event.veid)) {
     return false;
   }
-  event->veid = *veid;
 
-  std::optional<int> distance = value.GetDict().FindInt("distance");
-  if (distance) {
-    event->distance = *distance;
-  }
-  std::optional<int> context = value.GetDict().FindInt("context");
-  if (context) {
-    event->context = *context;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("distance"), event.distance);
+  base::OptionalUnwrapTo(dict->FindInt("context"), event.context);
   return true;
 }
 
-bool GetValue(const base::Value& value, ChangeEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, ChangeEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<double> veid = value.GetDict().FindDouble("veid");
-  if (!veid) {
+  if (!base::OptionalUnwrapTo(dict->FindDouble("veid"), event.veid)) {
     return false;
   }
-  event->veid = *veid;
 
-  std::optional<int> context = value.GetDict().FindInt("context");
-  if (context) {
-    event->context = *context;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("context"), event.context);
   return true;
 }
 
-bool GetValue(const base::Value& value, KeyDownEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, KeyDownEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<double> veid = value.GetDict().FindDouble("veid");
-  if (veid) {
-    event->veid = *veid;
-  }
-
-  std::optional<int> context = value.GetDict().FindInt("context");
-  if (context) {
-    event->context = *context;
-  }
+  base::OptionalUnwrapTo(dict->FindDouble("veid"), event.veid);
+  base::OptionalUnwrapTo(dict->FindInt("context"), event.context);
   return true;
 }
 
-bool GetValue(const base::Value& value, SettingAccessEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, SettingAccessEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<int> name = value.GetDict().FindInt("name");
-  if (name) {
-    event->name = *name;
-  }
-
-  std::optional<int> numeric_value = value.GetDict().FindInt("numeric_value");
-  if (numeric_value) {
-    event->numeric_value = *numeric_value;
-  }
-
-  std::optional<int> string_value = value.GetDict().FindInt("string_value");
-  if (string_value) {
-    event->string_value = *string_value;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("name"), event.name);
+  base::OptionalUnwrapTo(dict->FindInt("numeric_value"), event.numeric_value);
+  base::OptionalUnwrapTo(dict->FindInt("string_value"), event.string_value);
   return true;
 }
 
-bool GetValue(const base::Value& value, FunctionCallEvent* event) {
-  if (!value.is_dict()) {
+bool GetValue(const base::Value& value, FunctionCallEvent& event) {
+  const base::DictValue* dict = value.GetIfDict();
+  if (!dict) {
     return false;
   }
 
-  std::optional<int> name = value.GetDict().FindInt("name");
-  if (name) {
-    event->name = *name;
-  }
-
-  std::optional<int> context = value.GetDict().FindInt("context");
-  if (context) {
-    event->context = *context;
-  }
+  base::OptionalUnwrapTo(dict->FindInt("name"), event.name);
+  base::OptionalUnwrapTo(dict->FindInt("context"), event.context);
   return true;
 }
 
@@ -325,7 +252,7 @@ template <typename T, typename... Ts>
 struct ParamTuple<T, Ts...> {
   bool Parse(const base::ListValue& list,
              const base::ListValue::const_iterator& it) {
-    return it != list.end() && GetValue(*it, &head) && tail.Parse(list, it + 1);
+    return it != list.end() && GetValue(*it, head) && tail.Parse(list, it + 1);
   }
 
   template <typename H, typename... As>
