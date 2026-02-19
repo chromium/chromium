@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -72,8 +71,6 @@ class AccessorySheetView extends LinearLayout {
         mBarShadow = findViewById(R.id.sheet_header_shadow);
         mFrameLayout = findViewById(R.id.keyboard_accessory_sheet_frame);
         mKeyboardToggle = findViewById(R.id.show_keyboard);
-        mKeyboardToggle.setImageDrawable(
-                AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
         mSheetTitle = findViewById(R.id.sheet_title);
         findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
         findViewById(R.id.sheet_header_shadow).setVisibility(View.VISIBLE);

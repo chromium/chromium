@@ -16,7 +16,8 @@ found in the LICENSE file.
         android:paddingTop="@dimen/keyboard_accessory_image_top_padding"
         android:paddingBottom="@dimen/keyboard_accessory_image_top_padding"
         android:contentDescription="@string/keyboard_accessory_sheet_hide"
-        android:background="?attr/selectableItemBackground" />
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_arrow_back_24dp" />
 
     <TextView
         android:id="@+id/sheet_title"
