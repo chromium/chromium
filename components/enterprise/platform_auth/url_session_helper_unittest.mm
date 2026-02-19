@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/http/http_request_headers.h"
@@ -41,8 +42,11 @@ scoped_refptr<network::ResourceRequestBody> CreateBodyFromString(
 constexpr char kUrl[] = "https://example.com/";
 constexpr char kMethod[] = "POST";
 constexpr char kInitiator[] = "https://initiator.com";
+const NSString* kNsInitiator = base::SysUTF8ToNSString(kInitiator);
 constexpr char kContent[] = "payload";
 constexpr char kOrigin[] = "Origin";
+constexpr char kAllowHeaders[] = "Access-Control-Allow-Headers";
+constexpr char kAllowOrigin[] = "Access-Control-Allow-Origin";
 constexpr base::TimeDelta kTimeout = base::Seconds(2);
 constexpr char kInvalidString[] = "\x80";
 
@@ -54,7 +58,6 @@ constexpr char kBannedRequestHeader2[] = "x-content-type-options";
 constexpr char kAllowedResponseHeader1[] = "access-control-allow-credentials";
 constexpr char kAllowedResponseHeader2[] = "x-content-type-options";
 constexpr char kBannedResponseHeader1[] = "User-Agent";
-constexpr char kBannedResponseHeader2[] = "X-Random-Header";
 
 constexpr char kContentType[] = "Content-Type";
 constexpr char kContentLength[] = "Content-Length";
@@ -63,7 +66,12 @@ constexpr char kValidHeaderValue1[] = "value";
 constexpr char kValidHeaderValue2[] = "another_value";
 constexpr char kInvalidHeaderName[] = "Invalid@Name";
 
-constexpr size_t kFixedHeadersCount = 6;
+// This accounts for the size of kOktaSsoFixedRequestHeaders + 1 for the Origin.
+constexpr size_t kFixedHeadersCount = 7;
+
+url::Origin GetInitiator() {
+  return url::Origin::Create(GURL(kInitiator));
+}
 
 }  // namespace
 
@@ -71,6 +79,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_NullRequestBody) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   ASSERT_NE(nil, result);
 
@@ -82,6 +91,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_SimpleBytesBody) {
   request.url = GURL(kUrl);
   request.method = kMethod;
   request.request_body = CreateBodyFromString(kContent);
+  request.request_initiator = GetInitiator();
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   ASSERT_NE(nil, result);
 
@@ -95,6 +105,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_EmptyBody) {
   request.url = GURL(kUrl);
   request.method = kMethod;
   request.request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request.request_initiator = GetInitiator();
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   ASSERT_NE(nil, result);
 
@@ -105,6 +116,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_UnsupportedBodyType) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   auto body = base::MakeRefCounted<network::ResourceRequestBody>();
   body->AppendFileRange(base::FilePath(FILE_PATH_LITERAL("filename.txt")), 0,
                         10, base::Time());
@@ -119,6 +131,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_BasicHeaders) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   net::HttpRequestHeaders headers;
   headers.SetHeader(kAllowedRequestHeader1, kValidHeaderValue1);
   headers.SetHeader(kAllowedRequestHeader2, kValidHeaderValue2);
@@ -138,6 +151,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_SkipsInvalidHeaders) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   net::HttpRequestHeaders headers;
   headers.SetHeader(kAllowedRequestHeader1, kValidHeaderValue1);
   headers.SetHeader(kAllowedRequestHeader2, kInvalidString);
@@ -156,6 +170,7 @@ TEST(UrlSessionHelperTest,
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   net::HttpRequestHeaders headers;
   headers.SetHeader(kAllowedRequestHeader1, kValidHeaderValue1);
   headers.SetHeader(kAllowedRequestHeader2, kValidHeaderValue2);
@@ -179,6 +194,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_EmptyResult) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   net::HttpRequestHeaders headers;
   headers.SetHeader(kAllowedRequestHeader1, kInvalidString);
   request.headers = std::move(headers);
@@ -195,6 +211,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_BasicFields) {
   request.method = kMethod;
   request.headers.SetHeader(kAllowedRequestHeader1, kValidHeaderValue1);
   request.headers.SetHeader(kAllowedRequestHeader2, kValidHeaderValue2);
+  request.request_initiator = GetInitiator();
 
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   ASSERT_NE(nil, result);
@@ -206,20 +223,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_BasicFields) {
   NSDictionary* headers = result.allHTTPHeaderFields;
   EXPECT_NSEQ(@(kValidHeaderValue1), headers[@(kAllowedRequestHeader1)]);
   EXPECT_NSEQ(@(kValidHeaderValue2), headers[@(kAllowedRequestHeader2)]);
-  EXPECT_NSEQ(nil, headers[@(kOrigin)]);
-}
-
-TEST(UrlSessionHelperTest, ConvertResourceRequest_CannotOverwriteOrigin) {
-  network::ResourceRequest request;
-  request.url = GURL(kUrl);
-  request.headers.SetHeader(kOrigin, kInitiator);
-
-  url::Origin origin = url::Origin::Create(GURL("otherorigin.com"));
-  request.request_initiator = origin;
-
-  NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
-  NSDictionary* headers = result.allHTTPHeaderFields;
-  EXPECT_NSEQ(nil, headers[@(kOrigin)]);
+  EXPECT_NSEQ(@(kInitiator), headers[@(kOrigin)]);
 }
 
 TEST(UrlSessionHelperTest, ConvertResourceRequest_WithFieldsHeadersAndBody) {
@@ -227,7 +231,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_WithFieldsHeadersAndBody) {
   request.url = GURL(kUrl);
   request.method = kMethod;
   request.headers.SetHeader(kAllowedRequestHeader1, kValidHeaderValue1);
-  request.request_initiator = url::Origin::Create(GURL(kInitiator));
+  request.request_initiator = GetInitiator();
   request.request_body = CreateBodyFromString(kContent);
 
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
@@ -247,6 +251,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_WithFieldsHeadersAndBody) {
 TEST(UrlSessionHelperTest, ConvertResourceRequest_WithInvalidURL) {
   network::ResourceRequest request;
   request.url = GURL();
+  request.request_initiator = GetInitiator();
   request.method = kMethod;
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   EXPECT_EQ(nil, result);
@@ -256,6 +261,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_WithInvalidMethod) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kInvalidString;
+  request.request_initiator = GetInitiator();
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   EXPECT_EQ(nil, result);
 }
@@ -264,6 +270,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_AllowedHeadersAreNormalised) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
+  request.request_initiator = GetInitiator();
   request.headers.SetHeader("Content-Type", "text");
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   EXPECT_NSEQ(@("text"), result.allHTTPHeaderFields[@("Content-Type")]);
@@ -271,6 +278,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_AllowedHeadersAreNormalised) {
   network::ResourceRequest request_lower_case;
   request_lower_case.url = GURL(kUrl);
   request_lower_case.method = kMethod;
+  request_lower_case.request_initiator = GetInitiator();
   request_lower_case.headers.SetHeader("content-type", "text");
   NSURLRequest* result_lower_case =
       ConvertResourceRequest(request_lower_case, kTimeout);
@@ -280,7 +288,13 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_AllowedHeadersAreNormalised) {
 
 TEST(UrlSessionHelperTest, ConvertNSURLResponse_BasicHttp200) {
   NSURL* url = [NSURL URLWithString:@(kUrl)];
+  const std::string allowed_headers =
+      base::JoinString({kAllowedResponseHeader1, kAllowedResponseHeader2,
+                        kContentLength, kContentType},
+                       ",");
   NSDictionary* headers = @{
+    @(kAllowOrigin) : @(kInitiator),
+    @(kAllowHeaders) : base::SysUTF8ToNSString(allowed_headers),
     @(kAllowedResponseHeader1) : @(kValidHeaderValue1),
     @(kAllowedResponseHeader2) : @(kValidHeaderValue2),
     @(kContentLength) : @"42",
@@ -292,7 +306,8 @@ TEST(UrlSessionHelperTest, ConvertNSURLResponse_BasicHttp200) {
                                   statusCode:200
                                  HTTPVersion:@"HTTP/1.1"
                                 headerFields:headers];
-  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
 
   ASSERT_TRUE(head);
   EXPECT_EQ(head->mime_type, "text/json");
@@ -312,13 +327,17 @@ TEST(UrlSessionHelperTest, ConvertNSURLResponse_BasicHttp200) {
 
 TEST(UrlSessionHelperTest, ConvertNSURLResponse_Http404) {
   NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSDictionary* headers = @{
+    @(kAllowOrigin) : @(kInitiator),
+  };
   NSHTTPURLResponse* response =
       [[NSHTTPURLResponse alloc] initWithURL:url
                                   statusCode:404
                                  HTTPVersion:@"HTTP/1.1"
-                                headerFields:@{}];
+                                headerFields:headers];
 
-  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
 
   ASSERT_TRUE(head);
   ASSERT_TRUE(head->headers);
@@ -327,7 +346,11 @@ TEST(UrlSessionHelperTest, ConvertNSURLResponse_Http404) {
 
 TEST(UrlSessionHelperTest, ConvertNSURLResponse_FiltersInvalidHeaders) {
   NSURL* url = [NSURL URLWithString:@(kUrl)];
+  const std::string allowed_headers =
+      std::string(kAllowedResponseHeader1) + "," + kInvalidHeaderName;
   NSDictionary* headers = @{
+    @(kAllowOrigin) : @(kInitiator),
+    @(kAllowHeaders) : base::SysUTF8ToNSString(allowed_headers),
     @(kAllowedResponseHeader1) : @(kValidHeaderValue1),
     @(kInvalidHeaderName) : @(kValidHeaderValue2),
   };
@@ -337,19 +360,20 @@ TEST(UrlSessionHelperTest, ConvertNSURLResponse_FiltersInvalidHeaders) {
                                  HTTPVersion:@"HTTP/1.1"
                                 headerFields:headers];
 
-  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
   ASSERT_TRUE(head->headers);
   EXPECT_TRUE(head->headers->HasHeader(kAllowedResponseHeader1));
   EXPECT_FALSE(head->headers->HasHeader(kInvalidHeaderName));
 }
 
-TEST(UrlSessionHelperTest, ConvertNSURLResponse_FiltersNotAllowlistedHeaders) {
+TEST(UrlSessionHelperTest,
+     ConvertNSURLResponse_AccessControlAllowHeadersMissing) {
   NSURL* url = [NSURL URLWithString:@(kUrl)];
   NSDictionary* headers = @{
+    @(kAllowOrigin) : @(kInitiator),
     @(kAllowedResponseHeader1) : @(kValidHeaderValue1),
     @(kAllowedResponseHeader2) : @(kValidHeaderValue2),
-    @(kBannedResponseHeader1) : @(kValidHeaderValue1),
-    @(kBannedResponseHeader2) : @(kValidHeaderValue2),
   };
   NSHTTPURLResponse* response =
       [[NSHTTPURLResponse alloc] initWithURL:url
@@ -357,13 +381,68 @@ TEST(UrlSessionHelperTest, ConvertNSURLResponse_FiltersNotAllowlistedHeaders) {
                                  HTTPVersion:@"HTTP/1.1"
                                 headerFields:headers];
 
-  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
+
+  ASSERT_TRUE(head->headers);
+  EXPECT_FALSE(head->headers->HasHeader(kAllowedResponseHeader1));
+  EXPECT_FALSE(head->headers->HasHeader(kAllowedResponseHeader2));
+}
+
+TEST(UrlSessionHelperTest,
+     ConvertNSURLResponse_FiltersHeadersByAccessControlAllowHeaders) {
+  NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSDictionary* headers = @{
+    @(kAllowOrigin) : @(kInitiator),
+    @(kAllowHeaders) : @(kAllowedResponseHeader1),
+    @(kAllowedResponseHeader1) : @(kValidHeaderValue1),
+    @(kAllowedResponseHeader2) : @(kValidHeaderValue2),
+  };
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url
+                                  statusCode:200
+                                 HTTPVersion:@"HTTP/1.1"
+                                headerFields:headers];
+
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
 
   ASSERT_TRUE(head->headers);
   EXPECT_TRUE(head->headers->HasHeader(kAllowedResponseHeader1));
-  EXPECT_TRUE(head->headers->HasHeader(kAllowedResponseHeader2));
-  EXPECT_FALSE(head->headers->HasHeader(kBannedResponseHeader1));
-  EXPECT_FALSE(head->headers->HasHeader(kBannedResponseHeader2));
+  EXPECT_FALSE(head->headers->HasHeader(kAllowedResponseHeader2));
+}
+
+TEST(UrlSessionHelperTest, ConvertNSURLResponse_BlocksCrossOrigin) {
+  NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSDictionary* headers = @{
+    @(kAllowOrigin) : @("https://not.initiator.com"),
+    @(kAllowHeaders) : @(kAllowedResponseHeader1),
+    @(kAllowedResponseHeader1) : @(kValidHeaderValue1),
+  };
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url
+                                  statusCode:200
+                                 HTTPVersion:@"HTTP/1.1"
+                                headerFields:headers];
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
+  EXPECT_FALSE(head);
+}
+
+TEST(UrlSessionHelperTest, ConvertNSURLResponse_RequiresAllowOriginHeader) {
+  NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSDictionary* headers = @{
+    @(kAllowHeaders) : @(kAllowedResponseHeader1),
+    @(kAllowedResponseHeader1) : @(kValidHeaderValue1),
+  };
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url
+                                  statusCode:200
+                                 HTTPVersion:@"HTTP/1.1"
+                                headerFields:headers];
+  network::mojom::URLResponseHeadPtr head =
+      ConvertNSURLResponse(response, GetInitiator());
+  EXPECT_FALSE(head);
 }
 
 }  // namespace url_session_helper

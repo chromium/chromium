@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -19,6 +20,7 @@
 #include "net/http/http_version.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "url/origin.h"
 
 namespace enterprise_auth {
 
@@ -109,11 +111,13 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
 
   void RecordFailureMetrics(SSORequestFailReason reason);
 
-  inline void OverrideURLSessionForTesting(NSURLSession* new_session) {
+  inline void SetAttachProtocolCallbackForTesting(
+      base::OnceCallback<void(NSURLSessionConfiguration*)> callback) {
     CHECK_IS_TEST();
-    nsurl_session_override_for_testing_ = new_session;
+    attach_protocol_callback_for_testing_ = std::move(callback);
   }
-  NSURLSession* nsurl_session_override_for_testing_{nil};
+  base::OnceCallback<void(NSURLSessionConfiguration*)>
+      attach_protocol_callback_for_testing_;
   friend URLSessionURLLoaderTest;
 
   static constexpr base::TimeDelta kTimeout = base::Seconds(30);
@@ -122,6 +126,7 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   NSURLSessionTask* task_ = nil;
   base::TimeTicks request_start_;
+  url::Origin request_initiator_;
 
   base::WeakPtrFactory<URLSessionURLLoader> weak_ptr_factory_{this};
 };

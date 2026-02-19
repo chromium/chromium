@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) ResponseConfig {
   // server hang.
   bool hang = false;
 
+  // If set the URLSession server will return a redirect response to this url.
+  std::optional<std::string> redirect_url;
+
+  // Headers that will be attached to the response.
+  std::vector<std::pair<std::string, std::string>> headers;
+
   // Callback invoked immediately when the network task starts.
   base::OnceClosure on_started;
 
@@ -49,23 +55,35 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) ResponseConfig {
   base::OnceClosure on_stopped;
 };
 
-// Returns a mock `NSURLSession` configured via `ResponseConfig`.
+// Configures the provided `NSURLSessionConfiguration` to use a mock
+// `NSURLProtocol` based on the given `ResponseConfig`.
+//
+// This modifies the `session_config` in-place by registering a dynamic
+// protocol class. Any `NSURLSession` created with this configuration will
+// intercept requests and return the configured response.
 //
 // Example usage:
 //   NSURLRequest* ns_request = ...;
 //   ResponseConfig config;
 //   config.body = "success_result";
 //
-//   // Create the mock session
+//   // Create a configuration and attach the mock protocol
+//   NSURLSessionConfiguration* session_config =
+//       [NSURLSessionConfiguration ephemeralSessionConfiguration];
+//   url_session_test_util::AttachProtocolToSessionForTesting(
+//       std::move(config), session_config);
+//
+//   // Create the session using the modified configuration
 //   NSURLSession* session =
-//       url_session_test_util::GetTestURLSessionForConfig(std::move(config));
+//       [NSURLSession sessionWithConfiguration:session_config];
 //
 //   // This task will now return 200 OK with "success_result" without
 //   // reaching the actual network.
 //   NSURLSessionDataTask* task = [session dataTaskWithRequest:ns_request];
 //   [task resume];
 COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
-NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config);
+void AttachProtocolToSessionForTesting(ResponseConfig&& config,
+                                       NSURLSessionConfiguration* session);
 
 }  // namespace url_session_test_util
 

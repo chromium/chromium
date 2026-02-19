@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "url/origin.h"
 
 namespace base {
 class TimeDelta;
@@ -23,26 +24,36 @@ class TimeDelta;
 namespace url_session_helper {
 
 // This function only takes care of: URL, headers, method, body and timeout.
-// Additionally, if the request has request_initiator, then the Origin header
-// will be set to its value.
-// Returns nil if conversion of URL or method fails.
-// Will ignore headers where conversion between std::string and NSString failed.
-// Headers are allowlisted, see kRequestHeadersAllowlist in the .mm file for
-// details.
-// Only supports request body of type network::DataElementBytes, for
-// other types body will be set to nil.
+//
+// Sets the Origin header with |request.request_initiator|, which must be set
+// and verified beforehand.
+//
+// Returns nil if conversion of URL or method fails. Will ignore
+// headers where conversion between std::string and NSString failed. Headers are
+// allowlisted, see kRequestHeadersAllowlist in the .mm file for details.
+//
+// Only supports request body of type network::DataElementBytes, for other types
+// body will be set to nil.
 COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
                                      base::TimeDelta timeout);
 
 // Only converts: mime_type, content_length, network_accessed
-// and http headers.
-// Headers are allowlisted, see kResponseHeadersAllowlist in the .mm file for
-// details. When converting HTTP headers will use hard-coded HTTP 1.1 for
-// simplicity. Assumes response is not nil.
+// and HTTP headers.
+//
+// Filters headers by Access-Control-Allow-Headers.
+//
+// When converting HTTP headers will use hard-coded HTTP 1.1 for simplicity.
+//
+// Assumes |response| is not nil.
+//
+// Uses |request_initiator| to verify the Access-Control-Allow-Origin header.
+// If the header is missing or does not match the |request_initiator| returns
+// nullptr;
 COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
 network::mojom::URLResponseHeadPtr ConvertNSURLResponse(
-    NSURLResponse* response);
+    NSURLResponse* response,
+    const url::Origin& request_initiator);
 
 // Checks if request matches pattern of Okta's SSO URL request, which is:
 // POST
