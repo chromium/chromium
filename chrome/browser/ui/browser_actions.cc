@@ -652,14 +652,8 @@ void BrowserActions::InitializeBrowserActions() {
           kTabSearchTabStripIcon)
           .SetProperty(
               actions::kActionItemPinnableKey,
-              !base::FeatureList::IsEnabled(
-                  tabs::kHorizontalTabStripComboButton)
-                  ? static_cast<
-                        std::underlying_type_t<actions::ActionPinnableState>>(
-                        actions::ActionPinnableState::kPinnable)
-                  : static_cast<
-                        std::underlying_type_t<actions::ActionPinnableState>>(
-                        actions::ActionPinnableState::kNotPinnable))
+              static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+                  actions::ActionPinnableState::kNotPinnable))
           .Build());
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
