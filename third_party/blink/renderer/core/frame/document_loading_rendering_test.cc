@@ -117,6 +117,7 @@ TEST_F(DocumentLoadingRenderingTest,
   // TODO(https://crbug.com/441911594): Rust XML parser always issues a
   // StartDocument before any elements, also before PIs.
   EXPECT_TRUE(RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+              RuntimeEnabledFeatures::XMLRustForNonXsltEnabled() ||
               Compositor().DeferMainFrameUpdate());
 
   // Sheet finishes loading, but no documentElement yet so don't resume.
@@ -125,6 +126,7 @@ TEST_F(DocumentLoadingRenderingTest,
   // TODO(https://crbug.com/441911594): Rust XML parser always issues a
   // StartDocument before any elements, also before PIs.
   EXPECT_TRUE(RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+              RuntimeEnabledFeatures::XMLRustForNonXsltEnabled() ||
               Compositor().DeferMainFrameUpdate());
 
   // Root inserted so resume.

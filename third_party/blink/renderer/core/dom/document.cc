@@ -3578,9 +3578,9 @@ DocumentParser* Document::CreateParser() {
 
   data_->using_rust_xml_parser_ = false;
 
-  // Use the Rust XML parser for situations like XMLHttpRequests and
-  // JS DOMParser, where no dom_window_ is available.
-  if (!GetFrame()) {
+  // Use the Rust XML parser for situations non-XSLT situations: XMLHttpRequest,
+  // JS DOMParser API, where no dom_window_ is available, or for SVG images.
+  if (!GetFrame() || IsSVGDocument()) {
     // Measure this for now only in non-frame = non-XSLT situations, so that
     // when we compare the UMA metrics of Rust vs. non-Rust for
     // XMLRustForNonXsltEnabled(), we're looking at roughly the same type and
