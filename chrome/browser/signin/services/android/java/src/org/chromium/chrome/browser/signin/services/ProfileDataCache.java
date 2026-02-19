@@ -160,7 +160,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         mImageSize = imageSize;
         mDefaultBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        populateCache();
+        updateCache();
     }
 
     /**
@@ -307,8 +307,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         }
 
         mDefaultBadgeConfig = badgeConfig;
-        mAccountsCache.clear();
-        populateCache();
+        updateCache();
     }
 
     /**
@@ -358,11 +357,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
 
     @Override
     public void onCoreAccountInfosChanged() {
-        mAccountsCache.clear();
-        populateCache();
-        mAccountsCache
-                .getAll()
-                .then((Callback<List<DisplayableProfileData>>) this::notifyObservers);
+        updateCache();
     }
 
     /** Implements {@link IdentityManager.Observer}. */
@@ -375,7 +370,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                         || getBadgeConfigForAccount(accountInfo.getEmail()) != null)) {
             var displayableProfileData = toDisplayableProfileData(accountInfo);
             mAccountsCache.putAccount(displayableProfileData);
-            notifyObservers(accountInfo.getEmail());
+            fireOnProfileDataUpdated(displayableProfileData);
         }
     }
 
@@ -386,18 +381,16 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         return mAccountsCache.getByEmail(accountEmail) != null;
     }
 
-    private void populateCache() {
-        var accountsPromise = mAccountManagerFacade.getAccounts();
-        if (accountsPromise.isFulfilled()) {
-            populateCacheForAllAccounts(accountsPromise.getResult());
-        } else {
-            accountsPromise.then((Callback<List<AccountInfo>>) this::populateCacheForAllAccounts);
+    private void updateCache() {
+        var accounts = mAccountManagerFacade.getAccounts();
+        if (!accounts.isFulfilled()) {
+            // When the list of accounts is ready - onCoreAccountInfosChanged will call
+            // updateCache again.
+            return;
         }
-    }
 
-    private void populateCacheForAllAccounts(List<AccountInfo> accounts) {
         List<DisplayableProfileData> displayableAccounts = new ArrayList<>();
-        for (CoreAccountInfo account : accounts) {
+        for (CoreAccountInfo account : accounts.getResult()) {
             var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(account.getId());
             if (accountInfo != null
                     && (accountInfo.hasDisplayableInfo()
@@ -406,6 +399,15 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
             }
         }
         mAccountsCache.setAccounts(displayableAccounts);
+
+        mAccountsCache
+                .getAll()
+                .then((Callback<List<DisplayableProfileData>>) this::fireOnAccountsUpdated);
+        // TODO(crbug.com/485130949): Remove that callback after implementation of
+        // onAccountsUpdated() in all UIs. (Blocked by crbug.com/480239119)
+        mAccountsCache
+                .getAll()
+                .then((Callback<List<DisplayableProfileData>>) this::fireOnProfileDataUpdated);
     }
 
     /** TODO(crbug.com/476990153): Replace with email parameter with {@link #CoreAccountId}. */
@@ -433,15 +435,21 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                 accountInfo.canHaveEmailAddressDisplayed());
     }
 
-    private void notifyObservers(List<DisplayableProfileData> accounts) {
+    private void fireOnAccountsUpdated(List<DisplayableProfileData> accounts) {
         for (Observer observer : mObservers) {
             observer.onAccountsUpdated(accounts);
         }
     }
 
-    private void notifyObservers(String accountEmail) {
+    private void fireOnProfileDataUpdated(List<DisplayableProfileData> accounts) {
+        for (DisplayableProfileData profileData : accounts) {
+            fireOnProfileDataUpdated(profileData);
+        }
+    }
+
+    private void fireOnProfileDataUpdated(DisplayableProfileData profileData) {
         for (Observer observer : mObservers) {
-            observer.onProfileDataUpdated(accountEmail);
+            observer.onProfileDataUpdated(profileData.getAccountEmail());
         }
     }
 
@@ -549,12 +557,6 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                 }
             }
             return null;
-        }
-
-        private void clear() {
-            if (mAccounts.isFulfilled()) {
-                mAccounts = new Promise<>();
-            }
         }
     }
 }
