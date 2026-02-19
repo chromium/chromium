@@ -395,6 +395,9 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
 
+    /** Whether the Glic button is pinned in the tab strip. */
+    public static final String GLIC_BUTTON_PINNED = "Chrome.Glic.ButtonPinned";
+
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 
     /** Whether the app-specific history info text was already seen by users. */
@@ -1260,6 +1263,7 @@ public final class ChromePreferenceKeys {
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                GLIC_BUTTON_PINNED,
                 HISTORY_APP_SPECIFIC_INFO_SEEN,
                 HOME_MODULE_CARDS_ENABLED,
                 HOME_MODULES_MODULE_TYPE.pattern(),
