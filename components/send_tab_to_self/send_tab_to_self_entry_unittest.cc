@@ -13,54 +13,101 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace send_tab_to_self {
 
 namespace {
 
-bool IsEqualForTesting(const SendTabToSelfEntry& a,
-                       const SendTabToSelfEntry& b) {
-  return a.GetGUID() == b.GetGUID() && a.GetURL() == b.GetURL() &&
-         a.GetTitle() == b.GetTitle() &&
-         a.GetDeviceName() == b.GetDeviceName() &&
-         a.GetTargetDeviceSyncCacheGuid() == b.GetTargetDeviceSyncCacheGuid() &&
-         a.GetSharedTime() == b.GetSharedTime();
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::Pointee;
+using ::testing::Property;
+
+MATCHER_P5(MatchesFormField,
+           id_attribute,
+           name_attribute,
+           label,
+           form_control_type,
+           value,
+           "") {
+  return testing::ExplainMatchResult(
+             Field("id_attribute", &PageContext::FormField::id_attribute,
+                   id_attribute),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Field("name_attribute", &PageContext::FormField::name_attribute,
+                   name_attribute),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Field("label", &PageContext::FormField::label, label), arg,
+             result_listener) &&
+         testing::ExplainMatchResult(
+             Field("form_control_type",
+                   &PageContext::FormField::form_control_type,
+                   form_control_type),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Field("value", &PageContext::FormField::value, value), arg,
+             result_listener);
 }
 
-bool IsEqualForTesting(const SendTabToSelfEntry& entry,
-                       const sync_pb::SendTabToSelfSpecifics& specifics) {
-  return (
-      entry.GetGUID() == specifics.guid() &&
-      entry.GetURL() == specifics.url() &&
-      entry.GetTitle() == specifics.title() &&
-      entry.GetDeviceName() == specifics.device_name() &&
-      entry.GetTargetDeviceSyncCacheGuid() ==
-          specifics.target_device_sync_cache_guid() &&
-      specifics.shared_time_usec() ==
-          entry.GetSharedTime().ToDeltaSinceWindowsEpoch().InMicroseconds());
+MATCHER_P(MatchesPageContext, fields_matcher, "") {
+  return testing::ExplainMatchResult(
+      Field("fields", &PageContext::FormFieldInfo::fields, fields_matcher),
+      arg.form_field_info, result_listener);
 }
 
-TEST(SendTabToSelfEntry, CompareEntries) {
-  const SendTabToSelfEntry e1("1", GURL("http://example.com"), "bar",
-                              base::Time::FromTimeT(10), "device1", "device2",
-                              PageContext());
-  const SendTabToSelfEntry e2("1", GURL("http://example.com"), "bar",
-                              base::Time::FromTimeT(10), "device1", "device2",
-                              PageContext());
+MATCHER_P6(MatchesEntry,
+           guid,
+           url,
+           title,
+           device_name,
+           target_device_sync_cache_guid,
+           page_context_matcher,
+           "") {
+  return testing::ExplainMatchResult(
+             Property("GUID", &SendTabToSelfEntry::GetGUID, guid), arg,
+             result_listener) &&
+         testing::ExplainMatchResult(
+             Property("URL", &SendTabToSelfEntry::GetURL, url), arg,
+             result_listener) &&
+         testing::ExplainMatchResult(
+             Property("Title", &SendTabToSelfEntry::GetTitle, title), arg,
+             result_listener) &&
+         testing::ExplainMatchResult(
+             Property("DeviceName", &SendTabToSelfEntry::GetDeviceName,
+                      device_name),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Property("TargetDeviceSyncCacheGuid",
+                      &SendTabToSelfEntry::GetTargetDeviceSyncCacheGuid,
+                      target_device_sync_cache_guid),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Property("PageContext", &SendTabToSelfEntry::GetPageContext,
+                      page_context_matcher),
+             arg, result_listener);
+}
 
-  EXPECT_TRUE(IsEqualForTesting(e1, e2));
-  const SendTabToSelfEntry e3("2", GURL("http://example.org"), "bar",
-                              base::Time::FromTimeT(10), "device1", "device2",
-                              PageContext());
-
-  EXPECT_FALSE(IsEqualForTesting(e1, e3));
+PageContext::FormField MakeFormField(std::u16string id_attribute,
+                                     std::u16string value) {
+  PageContext::FormField field;
+  field.id_attribute = std::move(id_attribute);
+  field.form_control_type = "text";
+  field.value = std::move(value);
+  return field;
 }
 
 TEST(SendTabToSelfEntry, SharedTime) {
-  SendTabToSelfEntry e("1", GURL("http://example.com"), "bar",
-                       base::Time::FromTimeT(10), "device", "device2",
-                       PageContext());
+  const SendTabToSelfEntry e("1", GURL("http://example.com"), "bar",
+                             base::Time::FromTimeT(10), "device", "device2",
+                             PageContext());
   EXPECT_EQ("bar", e.GetTitle());
   // Getters return Base::Time values.
   EXPECT_EQ(e.GetSharedTime(), base::Time::FromTimeT(10));
@@ -69,47 +116,57 @@ TEST(SendTabToSelfEntry, SharedTime) {
 // Tests that the send tab to self entry is correctly encoded to
 // sync_pb::SendTabToSelfSpecifics.
 TEST(SendTabToSelfEntry, AsProto) {
-  SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
-                           base::Time::FromTimeT(10), "device", "device2",
-                           PageContext());
-  SendTabToSelfLocal pb_entry(entry.AsLocalProto());
-  EXPECT_TRUE(IsEqualForTesting(entry, pb_entry.specifics()));
+  const SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
+                                 base::Time::FromTimeT(10), "device", "device2",
+                                 PageContext());
+  const SendTabToSelfLocal pb_entry = entry.AsLocalProto();
+  const sync_pb::SendTabToSelfSpecifics& specifics = pb_entry.specifics();
+
+  EXPECT_EQ(entry.GetGUID(), specifics.guid());
+  EXPECT_EQ(entry.GetURL().spec(), specifics.url());
+  EXPECT_EQ(entry.GetTitle(), specifics.title());
+  EXPECT_EQ(entry.GetDeviceName(), specifics.device_name());
+  EXPECT_EQ(entry.GetTargetDeviceSyncCacheGuid(),
+            specifics.target_device_sync_cache_guid());
+  EXPECT_EQ(entry.GetSharedTime().ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            specifics.shared_time_usec());
+  EXPECT_FALSE(specifics.has_page_context());
 }
 
 // Tests that the send tab to self entry is correctly created from the required
 // fields
 TEST(SendTabToSelfEntry, FromRequiredFields) {
-  SendTabToSelfEntry expected("1", GURL("http://example.com"), "", base::Time(),
-                              "", "target_device", PageContext());
-  std::unique_ptr<SendTabToSelfEntry> actual =
+  EXPECT_THAT(
       SendTabToSelfEntry::FromRequiredFields("1", GURL("http://example.com"),
-                                             "target_device");
-  EXPECT_TRUE(IsEqualForTesting(expected, *actual));
+                                             "target_device"),
+      Pointee(MatchesEntry("1", GURL("http://example.com"), "", "",
+                           "target_device", MatchesPageContext(IsEmpty()))));
 }
 
 // Tests that the send tab to self entry is correctly parsed from
 // sync_pb::SendTabToSelfSpecifics.
 TEST(SendTabToSelfEntry, FromProto) {
-  std::unique_ptr<sync_pb::SendTabToSelfSpecifics> pb_entry =
-      std::make_unique<sync_pb::SendTabToSelfSpecifics>();
-  pb_entry->set_guid("1");
-  pb_entry->set_url("http://example.com/");
-  pb_entry->set_title("title");
-  pb_entry->set_device_name("device");
-  pb_entry->set_target_device_sync_cache_guid("device");
-  pb_entry->set_shared_time_usec(1);
+  sync_pb::SendTabToSelfSpecifics pb_entry;
+  pb_entry.set_guid("1");
+  pb_entry.set_url("http://example.com/");
+  pb_entry.set_title("title");
+  pb_entry.set_device_name("device");
+  pb_entry.set_target_device_sync_cache_guid("device");
+  pb_entry.set_shared_time_usec(1);
 
-  std::unique_ptr<SendTabToSelfEntry> entry(
-      SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
-
-  EXPECT_TRUE(IsEqualForTesting(*entry, *pb_entry));
+  EXPECT_THAT(
+      SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)),
+      Pointee(MatchesEntry(pb_entry.guid(), GURL(pb_entry.url()),
+                           pb_entry.title(), pb_entry.device_name(),
+                           pb_entry.target_device_sync_cache_guid(),
+                           MatchesPageContext(IsEmpty()))));
 }
 
 // Tests that the send tab to self entry expiry works as expected
 TEST(SendTabToSelfEntry, IsExpired) {
-  SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
-                           base::Time::FromTimeT(10), "device1", "device1",
-                           PageContext());
+  const SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
+                                 base::Time::FromTimeT(10), "device1",
+                                 "device1", PageContext());
 
   EXPECT_TRUE(entry.IsExpired(base::Time::FromTimeT(11) + base::Days(10)));
   EXPECT_FALSE(entry.IsExpired(base::Time::FromTimeT(11)));
@@ -121,43 +178,41 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
   std::string invalid_utf8;
   base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
 
-  SendTabToSelfEntry invalid1("1", GURL("http://example.com"), invalid_utf8,
-                              base::Time::FromTimeT(10), "device", "device",
-                              PageContext());
+  const SendTabToSelfEntry invalid1("1", GURL("http://example.com"),
+                                    invalid_utf8, base::Time::FromTimeT(10),
+                                    "device", "device", PageContext());
 
   EXPECT_EQ("1", invalid1.GetGUID());
 
-  SendTabToSelfEntry invalid2(invalid_utf8, GURL("http://example.com"), "title",
-                              base::Time::FromTimeT(10), "device", "device",
-                              PageContext());
+  const SendTabToSelfEntry invalid2(invalid_utf8, GURL("http://example.com"),
+                                    "title", base::Time::FromTimeT(10),
+                                    "device", "device", PageContext());
 
   EXPECT_EQ(invalid_utf8, invalid2.GetGUID());
 
-  SendTabToSelfEntry invalid3("1", GURL("http://example.com"), "title",
-                              base::Time::FromTimeT(10), invalid_utf8, "device",
-                              PageContext());
+  const SendTabToSelfEntry invalid3("1", GURL("http://example.com"), "title",
+                                    base::Time::FromTimeT(10), invalid_utf8,
+                                    "device", PageContext());
 
   EXPECT_EQ("1", invalid3.GetGUID());
 
-  SendTabToSelfEntry invalid4("1", GURL("http://example.com"), "title",
-                              base::Time::FromTimeT(10), "device", invalid_utf8,
-                              PageContext());
+  const SendTabToSelfEntry invalid4("1", GURL("http://example.com"), "title",
+                                    base::Time::FromTimeT(10), "device",
+                                    invalid_utf8, PageContext());
 
   EXPECT_EQ("1", invalid4.GetGUID());
 
-  std::unique_ptr<sync_pb::SendTabToSelfSpecifics> pb_entry =
-      std::make_unique<sync_pb::SendTabToSelfSpecifics>();
-  pb_entry->set_guid(invalid_utf8);
-  pb_entry->set_url("http://example.com/");
-  pb_entry->set_title(invalid_utf8);
-  pb_entry->set_device_name(invalid_utf8);
-  pb_entry->set_target_device_sync_cache_guid("device");
-  pb_entry->set_shared_time_usec(1);
+  sync_pb::SendTabToSelfSpecifics pb_entry;
+  pb_entry.set_guid(invalid_utf8);
+  pb_entry.set_url("http://example.com/");
+  pb_entry.set_title(invalid_utf8);
+  pb_entry.set_device_name(invalid_utf8);
+  pb_entry.set_target_device_sync_cache_guid("device");
+  pb_entry.set_shared_time_usec(1);
 
-  std::unique_ptr<SendTabToSelfEntry> invalid_entry(
-      SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
-
-  EXPECT_EQ(invalid_entry->GetGUID(), invalid_utf8);
+  EXPECT_THAT(
+      SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)),
+      Pointee(Property(&SendTabToSelfEntry::GetGUID, invalid_utf8)));
 }
 
 // Tests that the send tab to self entry is correctly encoded to
@@ -170,20 +225,51 @@ TEST(SendTabToSelfEntry, MarkAsOpened) {
   entry.MarkOpened();
   EXPECT_TRUE(entry.IsOpened());
 
-  std::unique_ptr<sync_pb::SendTabToSelfSpecifics> pb_entry =
-      std::make_unique<sync_pb::SendTabToSelfSpecifics>();
-  pb_entry->set_guid("1");
-  pb_entry->set_url("http://example.com/");
-  pb_entry->set_title("title");
-  pb_entry->set_device_name("device");
-  pb_entry->set_target_device_sync_cache_guid("device");
-  pb_entry->set_shared_time_usec(1);
-  pb_entry->set_opened(true);
+  sync_pb::SendTabToSelfSpecifics pb_entry;
+  pb_entry.set_guid("1");
+  pb_entry.set_url("http://example.com/");
+  pb_entry.set_title("title");
+  pb_entry.set_device_name("device");
+  pb_entry.set_target_device_sync_cache_guid("device");
+  pb_entry.set_shared_time_usec(1);
+  pb_entry.set_opened(true);
 
-  std::unique_ptr<SendTabToSelfEntry> entry2(
-      SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
+  EXPECT_THAT(
+      SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)),
+      Pointee(Property(&SendTabToSelfEntry::IsOpened, true)));
+}
 
-  EXPECT_TRUE(entry2->IsOpened());
+TEST(SendTabToSelfEntry, PageContextRoundTrip) {
+  PageContext context;
+  context.form_field_info.fields.push_back(MakeFormField(u"id1", u"value1"));
+
+  const SendTabToSelfEntry entry("1", GURL("http://example.com"), "title",
+                                 base::Time::FromTimeT(10), "device", "device2",
+                                 context);
+
+  const SendTabToSelfLocal local_proto = entry.AsLocalProto();
+
+  EXPECT_THAT(
+      SendTabToSelfEntry::FromProto(local_proto.specifics(),
+                                    base::Time::FromTimeT(10)),
+      Pointee(MatchesEntry(_, _, _, _, _,
+                           MatchesPageContext(ElementsAre(MatchesFormField(
+                               u"id1", _, _, _, u"value1"))))));
+}
+
+TEST(SendTabToSelfEntry, PageContextSizeLimit) {
+  PageContext context;
+  // Add a field with a very large value to exceed 6 KB.
+  context.form_field_info.fields.push_back(
+      MakeFormField(u"id1", std::u16string(kMaxPageContextSizeBytes, u'a')));
+
+  const SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
+                                 base::Time::FromTimeT(10), "device", "device2",
+                                 context);
+
+  const SendTabToSelfLocal pb_entry = entry.AsLocalProto();
+  // The page context should be cleared because it exceeds the limit.
+  EXPECT_FALSE(pb_entry.specifics().has_page_context());
 }
 
 }  // namespace

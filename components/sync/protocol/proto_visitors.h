@@ -1373,6 +1373,23 @@ VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
   VISIT(target_device_sync_cache_guid);
   VISIT(opened);
   VISIT(notification_dismissed);
+  VISIT(page_context);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PageContext& proto) {
+  VISIT(form_field_info);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::FormFieldInfo& proto) {
+  VISIT_REP(fields);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::FormField& proto) {
+  VISIT(id_attribute);
+  VISIT(name_attribute);
+  VISIT(label);
+  VISIT(form_control_type);
+  VISIT(value);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionHeader& proto) {

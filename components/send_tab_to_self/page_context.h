@@ -46,7 +46,7 @@ struct PageContext {
   PageContext& operator=(PageContext&&);
   ~PageContext();
 
-  // TODO(crbug.com/485145029): Add a member field with type `FormFieldInfo`.
+  FormFieldInfo form_field_info;
 };
 
 }  // namespace send_tab_to_self

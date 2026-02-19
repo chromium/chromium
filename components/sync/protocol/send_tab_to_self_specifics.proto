@@ -42,4 +42,22 @@ message SendTabToSelfSpecifics {
 
   reserved "navigation_time_usec";
   reserved 6;
+
+  optional PageContext page_context = 10;
+}
+
+message PageContext {
+  optional FormFieldInfo form_field_info = 1;
+}
+
+message FormFieldInfo {
+  repeated FormField fields = 1;
+}
+
+message FormField {
+  optional string id_attribute = 1;
+  optional string name_attribute = 2;
+  optional string label = 3;
+  optional string form_control_type = 4;
+  optional string value = 5;
 }

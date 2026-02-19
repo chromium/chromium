@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
@@ -26,6 +27,60 @@ int64_t TimeToProtoTime(const base::Time t) {
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_t) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_t));
+}
+
+sync_pb::FormField FormFieldToProto(const PageContext::FormField& field) {
+  sync_pb::FormField pb_field;
+  pb_field.set_id_attribute(base::UTF16ToUTF8(field.id_attribute));
+  pb_field.set_name_attribute(base::UTF16ToUTF8(field.name_attribute));
+  pb_field.set_label(base::UTF16ToUTF8(field.label));
+  pb_field.set_form_control_type(field.form_control_type);
+  pb_field.set_value(base::UTF16ToUTF8(field.value));
+  return pb_field;
+}
+
+PageContext::FormField FormFieldFromProto(const sync_pb::FormField& pb_field) {
+  PageContext::FormField field;
+  field.id_attribute = base::UTF8ToUTF16(pb_field.id_attribute());
+  field.name_attribute = base::UTF8ToUTF16(pb_field.name_attribute());
+  field.label = base::UTF8ToUTF16(pb_field.label());
+  field.form_control_type = pb_field.form_control_type();
+  field.value = base::UTF8ToUTF16(pb_field.value());
+  return field;
+}
+
+sync_pb::FormFieldInfo FormFieldInfoToProto(
+    const PageContext::FormFieldInfo& info) {
+  sync_pb::FormFieldInfo pb_info;
+  for (const auto& field : info.fields) {
+    *pb_info.add_fields() = FormFieldToProto(field);
+  }
+  return pb_info;
+}
+
+PageContext::FormFieldInfo FormFieldInfoFromProto(
+    const sync_pb::FormFieldInfo& pb_info) {
+  PageContext::FormFieldInfo info;
+  for (const auto& pb_field : pb_info.fields()) {
+    info.fields.push_back(FormFieldFromProto(pb_field));
+  }
+  return info;
+}
+
+sync_pb::PageContext PageContextToProto(const PageContext& context) {
+  sync_pb::PageContext pb_page_context;
+  if (!context.form_field_info.fields.empty()) {
+    *pb_page_context.mutable_form_field_info() =
+        FormFieldInfoToProto(context.form_field_info);
+  }
+  return pb_page_context;
+}
+
+PageContext PageContextFromProto(const sync_pb::PageContext& pb_page_context) {
+  PageContext page_context;
+  page_context.form_field_info =
+      FormFieldInfoFromProto(pb_page_context.form_field_info());
+  return page_context;
 }
 
 }  // namespace
@@ -112,6 +167,12 @@ SendTabToSelfLocal SendTabToSelfEntry::AsLocalProto() const {
   pb_entry->set_opened(IsOpened());
   pb_entry->set_notification_dismissed(GetNotificationDismissed());
 
+  sync_pb::PageContext pb_page_context = PageContextToProto(page_context_);
+  if (const size_t size = pb_page_context.ByteSizeLong();
+      size > 0 && size <= kMaxPageContextSizeBytes) {
+    *pb_entry->mutable_page_context() = std::move(pb_page_context);
+  }
+
   return local_entry;
 }
 
@@ -137,7 +198,8 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
   // Protobuf parsing enforces utf8 encoding for all strings.
   auto entry = std::make_unique<SendTabToSelfEntry>(
       guid, url, pb_entry.title(), shared_time, pb_entry.device_name(),
-      pb_entry.target_device_sync_cache_guid(), PageContext());
+      pb_entry.target_device_sync_cache_guid(),
+      PageContextFromProto(pb_entry.page_context()));
 
   if (pb_entry.opened()) {
     entry->MarkOpened();
