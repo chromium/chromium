@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `bumpalo-3.19.1` crate.
+# `bumpalo-3.20.0` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "bumpalo"
-version = "3.19.1"
+version = "3.20.0"
 
 [package.metadata.gnrt]
 is_placeholder = true
