@@ -193,13 +193,11 @@ docs/ios
 docs/linux
 docs/mac
 docs/media/capture
-docs/memory-infra
+docs/rust
 docs/security
 docs/security/research/graphics
 docs/security/takes
 docs/security/url_display_guidelines
-docs/speed
-docs/speed/benchmark/harnesses
 docs/speed/binary_size
 docs/speed_metrics
 docs/speed/metrics_changelog
@@ -709,8 +707,6 @@ third_party/rust/chromium_crates_io/vendor/num-traits-v0_2
 third_party/rust/chromium_crates_io/vendor/once_cell-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5
 third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/.github/workflows
-third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/opus/celt/x86
-third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/opus/m4
 third_party/rust/chromium_crates_io/vendor/parking_lot-v0_12/.github/workflows
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/.github/workflows
@@ -862,7 +858,6 @@ tools/nix/npins
 tools/perf
 tools/perf/cli_tools/update_wpr
 tools/perf/core
-tools/perf/core/results_processor/formatters
 tools/perf/core/services
 tools/perf/page_sets
 tools/perf/page_sets/rendering

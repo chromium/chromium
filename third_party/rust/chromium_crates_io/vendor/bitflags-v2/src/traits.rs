@@ -152,9 +152,19 @@ pub trait Flags: Sized + 'static {
         Self::from_bits_retain(truncated)
     }
 
+    /// Get the known bits from a flags value.
+    fn known_bits(&self) -> Self::Bits {
+        self.bits() & Self::all().bits()
+    }
+
+    /// Get the unknown bits from a flags value.
+    fn unknown_bits(&self) -> Self::Bits {
+        self.bits() & !Self::all().bits()
+    }
+
     /// This method will return `true` if any unknown bits are set.
     fn contains_unknown_bits(&self) -> bool {
-        Self::all().bits() & self.bits() != self.bits()
+        self.unknown_bits() != Self::Bits::EMPTY
     }
 
     /// Get the underlying bits value.

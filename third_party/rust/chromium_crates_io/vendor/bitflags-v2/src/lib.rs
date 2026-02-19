@@ -17,7 +17,7 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.10.0"
+version = "2.11.0"
 ```
 
 ## Crate features

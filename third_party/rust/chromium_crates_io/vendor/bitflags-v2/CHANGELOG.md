@@ -1,3 +1,15 @@
+# 2.11.0
+
+## What's Changed
+* Fix use of Result in macro output by @james7132 in https://github.com/bitflags/bitflags/pull/462
+* Add methods to get the known/unknown bits from a flags value by @WaterWhisperer in https://github.com/bitflags/bitflags/pull/473
+
+## New Contributors
+* @james7132 made their first contribution in https://github.com/bitflags/bitflags/pull/462
+* @WaterWhisperer made their first contribution in https://github.com/bitflags/bitflags/pull/473
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.10.0...2.11.0
+
 # 2.10.0
 
 ## What's Changed

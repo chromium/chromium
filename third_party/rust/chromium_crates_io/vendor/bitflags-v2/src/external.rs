@@ -155,7 +155,7 @@ macro_rules! __impl_external_bitflags_serde {
             ) -> $crate::__private::core::result::Result<Self, D::Error> {
                 let flags: $PublicBitFlags = $crate::serde::deserialize(deserializer)?;
 
-                Ok(flags.0)
+                $crate::__private::core::result::Result::Ok(flags.0)
             }
         }
     };

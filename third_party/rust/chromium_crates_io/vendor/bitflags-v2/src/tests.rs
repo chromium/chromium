@@ -20,12 +20,14 @@ mod intersects;
 mod is_all;
 mod is_empty;
 mod iter;
+mod known_bits;
 mod parser;
 mod remove;
 mod symmetric_difference;
 mod truncate;
 mod union;
 mod unknown;
+mod unknown_bits;
 
 bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
