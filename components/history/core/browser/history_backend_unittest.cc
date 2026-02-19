@@ -2332,6 +2332,7 @@ TEST_F(HistoryBackendTest, QueryHistoryWithEmptyQueryIncludesActorSource) {
   backend_->AddPage(request2);
 
   QueryOptions options;
+  options.include_actor_visits = true;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
 
@@ -2374,6 +2375,7 @@ TEST_F(HistoryBackendTest, QueryHistoryWithTextQueryIncludesActorSource) {
   backend_->AddPage(request2);
 
   QueryOptions options;
+  options.include_actor_visits = true;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   QueryResults results = backend_->QueryHistory(/*text_query=*/u"com", options);
 

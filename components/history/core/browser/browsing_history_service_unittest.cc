@@ -1090,14 +1090,17 @@ TEST_P(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
   }
 }
 
-TEST_P(BrowsingHistoryServiceTest, ActorVisitPropagated) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(BrowsingHistoryServiceTest, IncludeActorVisits) {
   AddHistory({
       {kUrl1, 1, kRemote},
       {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
   });
 
+  QueryOptions options;
+  options.include_actor_visits = true;
   EXPECT_THAT(
-      QueryHistory(),
+      QueryHistory(options),
       MatchesQueryResult(baseline_time_,
                          /*reached_beginning*/ true,
                          std::vector<TestResult>{
@@ -1106,7 +1109,19 @@ TEST_P(BrowsingHistoryServiceTest, ActorVisitPropagated) {
                          }));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(BrowsingHistoryServiceTest, ActorVisitsExcludedByDefault) {
+  AddHistory({
+      {kUrl1, 1, kRemote},
+      {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
+  });
+
+  EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,
+                                                 /*reached_beginning*/ true,
+                                                 std::vector<TestResult>{
+                                                     {kUrl1, 1, kRemote},
+                                                 }));
+}
+
 TEST_P(BrowsingHistoryServiceTest, ActorVisitDeduplication) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);

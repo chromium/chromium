@@ -4619,24 +4619,6 @@
             ]
         }
     ],
-    "BrowsingHistoryActorIntegrationM2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowsingHistoryActorIntegrationM2"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowsingHistoryActorIntegrationM3": [
         {
             "platforms": [
