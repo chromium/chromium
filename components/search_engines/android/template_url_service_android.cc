@@ -319,8 +319,7 @@ TemplateUrlServiceAndroid::GetComposeplateUrl(JNIEnv* env,
                    /*query_start_time=*/base::Time::Now(),
                    /*query_text=*/std::u16string(),
                    lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
-                   /*additional_params=*/{},
-                   omnibox::ModelMode::MODEL_MODE_UNSPECIFIED));
+                   /*additional_params=*/{}));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

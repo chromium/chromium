@@ -395,45 +395,75 @@ TEST_F(InputStateModelCompatibilityTest, SelectTabInput) {
 }
 
 TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
+  // Add tool and model configs.
+  auto* deep_search_config = config_.add_tool_configs();
+  deep_search_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  auto* ds_param = deep_search_config->add_aim_url_params();
+  ds_param->set_param_key("dr");
+  ds_param->set_param_value("1");
+
+  auto* canvas_config = config_.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  auto* image_gen_config = config_.add_tool_configs();
+  image_gen_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  auto* imgn_param = image_gen_config->add_aim_url_params();
+  imgn_param->set_param_key("imgn");
+  imgn_param->set_param_value("1");
+
+  auto* gemini_pro_config = config_.add_model_configs();
+  gemini_pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  auto* gp_param = gemini_pro_config->add_aim_url_params();
+  gp_param->set_param_key("nem");
+  gp_param->set_param_value("143");
+
+  // Recreate the model with the new config.
+  input_state_model_ =
+      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_->SetPrefService(&pref_service_);
+
   // No tool or model added.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
-  EXPECT_TRUE(input_state_model_->GetAdditionalQueryParams().empty());
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("udm", "50")));
 
   // Deep Search added.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("dr", "1")));
+              testing::UnorderedElementsAre(testing::Pair("dr", "1"),
+                                            testing::Pair("udm", "50")));
 
   // Canvas added.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("rc", "1")));
+              testing::UnorderedElementsAre(testing::Pair("rc", "1"),
+                                            testing::Pair("udm", "50")));
 
   // Image Gen added.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("imgn", "1")));
-
-  // Image Gen Upload added.
-  input_state_model_->setActiveTool(
-      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
-  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("imgn", "1")));
+              testing::UnorderedElementsAre(testing::Pair("imgn", "1"),
+                                            testing::Pair("udm", "50")));
 
   // Reset all tools.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 
-  // Set a model, should have no query params.
+  // Set a model, should have query params.
   input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  EXPECT_TRUE(input_state_model_->GetAdditionalQueryParams().empty());
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("nem", "143")));
 
-  // Deep Search and Gemini Pro added. Only tool should be in params.
+  // Deep Search and Gemini Pro added. Both tool and model should be in params.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("dr", "1")));
+              testing::UnorderedElementsAre(testing::Pair("dr", "1"),
+                                            testing::Pair("nem", "143")));
 }
 
 TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {

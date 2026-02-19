@@ -62,6 +62,8 @@ namespace {
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kQueryText[] = "query";
+constexpr char kUdmQueryParameter[] = "udm";
+constexpr char kUdmQueryParameterValue[] = "50";
 
 GURL StripTimestampsFromAimUrl(const GURL& url) {
   std::string qsubts_param;
@@ -513,6 +515,8 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = kQueryText;
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->additional_params = {
+      {kUdmQueryParameter, kUdmQueryParameterValue}};
   base::test::TestFuture<GURL> future;
   query_controller().CreateSearchUrl(std::move(search_url_request_info),
                                      future.GetCallback());
@@ -590,6 +594,8 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
   search_url_request_info->query_text = kQueryText;
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->file_tokens.push_back(token);
+  search_url_request_info->additional_params = {
+      {kUdmQueryParameter, kUdmQueryParameterValue}};
   base::test::TestFuture<GURL> future;
   query_controller().CreateSearchUrl(std::move(search_url_request_info),
                                      future.GetCallback());
@@ -647,27 +653,13 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
       composebox_query::mojom::ModelMode::kGeminiRegular, 1);
 }
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
-  // Set deep search tool.
-  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-
+  // Ensure udm param is always set as an additional param.
   SubmitQueryAndWaitForNavigation();
   GURL query_url =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-  std::string dr_param;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "dr", &dr_param));
-  EXPECT_EQ("1", dr_param);
-
-  // Set create images tool.
-  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-
-  SubmitQueryAndWaitForNavigation();
-  GURL query_url_imgn =
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-  std::string imgn_param;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url_imgn, "imgn", &imgn_param));
-  EXPECT_EQ("1", imgn_param);
-  // Ensure dr param is not present.
-  EXPECT_FALSE(net::GetValueForKeyInQuery(query_url_imgn, "dr", &dr_param));
+  std::string udm_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "udm", &udm_param));
+  EXPECT_EQ("50", udm_param);
 }
 
 class ContextualSearchboxHandlerTestTabsTest

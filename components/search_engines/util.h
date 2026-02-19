@@ -240,8 +240,7 @@ GURL GetUrlForAim(
     const base::Time& query_start_time,
     const std::u16string& query_text,
     const std::optional<lens::LensOverlayInvocationSource> invocation_source,
-    std::map<std::string, std::string> additional_params,
-    omnibox::ModelMode model_mode);
+    std::map<std::string, std::string> additional_params);
 
 // Retrieves the URL for the AIM web page if the a file was uploaded as part
 // of the input.

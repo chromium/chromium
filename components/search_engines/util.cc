@@ -89,7 +89,6 @@ WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
 GURL GetBaseSearchUrl(TemplateURLService* turl_service,
                       omnibox::ChromeAimEntryPoint aim_entrypoint,
                       bool is_aim_search,
-                      omnibox::ModelMode model_mode,
                       const base::Time& query_start_time,
                       const std::u16string& query_text,
                       std::map<std::string, std::string> additional_params) {
@@ -99,23 +98,23 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
       TemplateURLRef::SearchTermsArgs(query_text);
   GURL result_url = GURL(url_ref.ReplaceSearchTerms(
       search_term_args, turl_service->search_terms_data()));
+
+  if (is_aim_search) {
+    // For AIM queries, add udm=50 as a fallback if no udm or nem param is
+    // present.
+    if (additional_params.count("udm") == 0 &&
+        additional_params.count("nem") == 0) {
+      additional_params["udm"] = kAimUdmQueryParameterValue;
+    }
+  }
+
   // Append all additional params.
   for (auto const& param : additional_params) {
     result_url = net::AppendOrReplaceQueryParameter(result_url, param.first,
                                                     param.second);
   }
 
-  if (is_aim_search) {
-    if (model_mode == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
-      result_url = net::AppendOrReplaceQueryParameter(result_url, "nem", "143");
-    } else {
-      result_url = net::AppendOrReplaceQueryParameter(
-          result_url, "udm", kAimUdmQueryParameterValue);
-      if (model_mode == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI) {
-        result_url = net::AppendOrReplaceQueryParameter(result_url, "arv", "1");
-      }
-    }
-  } else {
+  if (!is_aim_search) {
     std::string udm_value = query_text.empty()
                                 ? kUnimodalUdmQueryParameterValue
                                 : kMultimodalUdmQueryParameterValue;
@@ -746,11 +745,10 @@ GURL GetUrlForAim(
     const base::Time& query_start_time,
     const std::u16string& query_text,
     const std::optional<lens::LensOverlayInvocationSource> invocation_source,
-    std::map<std::string, std::string> additional_params,
-    omnibox::ModelMode model_mode) {
-  GURL result_url = GetBaseSearchUrl(
-      turl_service, aim_entrypoint, /*is_aim_search=*/true, model_mode,
-      query_start_time, query_text, additional_params);
+    std::map<std::string, std::string> additional_params) {
+  GURL result_url = GetBaseSearchUrl(turl_service, aim_entrypoint,
+                                     /*is_aim_search=*/true, query_start_time,
+                                     query_text, additional_params);
   if (invocation_source.has_value()) {
     // If the invocation source is set, send the contextual tasks invocation
     // source, as only the unmigrated LensOverlay flow, which uses a different
@@ -775,10 +773,9 @@ GURL GetUrlForMultimodalSearch(
     const std::string& lns_surface,
     const std::u16string& query_text,
     std::map<std::string, std::string> additional_params) {
-  GURL result_url = GetBaseSearchUrl(
-      turl_service, aim_entrypoint, is_aim_search,
-      /*model_mode=*/omnibox::ModelMode::MODEL_MODE_UNSPECIFIED,
-      query_start_time, query_text, additional_params);
+  GURL result_url =
+      GetBaseSearchUrl(turl_service, aim_entrypoint, is_aim_search,
+                       query_start_time, query_text, additional_params);
   if (request_id) {
     std::string serialized_request_id;
     CHECK(request_id->SerializeToString(&serialized_request_id));
@@ -815,10 +812,9 @@ GURL GetUrlForMultimodalSearch(
     const std::string& lns_surface,
     const std::u16string& query_text,
     std::map<std::string, std::string> additional_params) {
-  GURL result_url = GetBaseSearchUrl(
-      turl_service, aim_entrypoint, is_aim_search,
-      /*model_mode=*/omnibox::ModelMode::MODEL_MODE_UNSPECIFIED,
-      query_start_time, query_text, additional_params);
+  GURL result_url =
+      GetBaseSearchUrl(turl_service, aim_entrypoint, is_aim_search,
+                       query_start_time, query_text, additional_params);
   std::string serialized_contextual_inputs;
   CHECK(contextual_inputs->SerializeToString(&serialized_contextual_inputs));
   std::string encoded_contextual_inputs;

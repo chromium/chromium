@@ -814,12 +814,12 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
     }
   }
 
-  GURL ai_mode_url = GetUrlForAim(
-      controller_->client()->GetTemplateURLService(),
-      omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
-      /*query_start_time=*/base::Time::Now(), query_text,
-      lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
-      /*additional_params=*/{}, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  GURL ai_mode_url =
+      GetUrlForAim(controller_->client()->GetTemplateURLService(),
+                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
+                   /*query_start_time=*/base::Time::Now(), query_text,
+                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+                   /*additional_params=*/{});
   controller_->client()->OpenUrl(ai_mode_url);
 }
 
