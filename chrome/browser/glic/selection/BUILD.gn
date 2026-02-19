@@ -11,6 +11,8 @@ source_set("selection") {
   sources = [
     "selection_overlay_controller.cc",
     "selection_overlay_controller.h",
+    "selection_overlay_features.cc",
+    "selection_overlay_features.h",
   ]
 
   deps = [

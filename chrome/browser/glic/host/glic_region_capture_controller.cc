@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/selection/selection_overlay_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
@@ -20,11 +21,6 @@
 namespace glic {
 
 #if !BUILDFLAG(IS_ANDROID)
-
-namespace {
-// Enable new new region selection code path based on Lens overlay controller.
-BASE_FEATURE(kGlicRegionSelectionNew, base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace
 
 // TODO(crbug.com/452944608): Add additional metrics for the CaptureRegion API.
 
@@ -67,7 +63,7 @@ void GlicRegionCaptureController::CaptureRegion(
       &GlicRegionCaptureController::OnCaptureRegionObserverDisconnected,
       base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(kGlicRegionSelectionNew)) {
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
     SelectionOverlayController::FromTabWebContents(web_contents)->Show();
   } else {
     lens_region_search_controller_ =
@@ -83,7 +79,7 @@ void GlicRegionCaptureController::CaptureRegion(
 }
 
 void GlicRegionCaptureController::ResetMembers() {
-  if (base::FeatureList::IsEnabled(kGlicRegionSelectionNew) &&
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew) &&
       tab_handle_.Get()) {
     if (auto* web_contents = tab_handle_.Get()->GetContents()) {
       SelectionOverlayController::FromTabWebContents(web_contents)->Hide();
