@@ -18,10 +18,12 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/variations/variations_associated_data.h"
+#import "components/version_info/channel.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/memory/model/features.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/channel_info.h"
 
 namespace {
 
@@ -67,6 +69,7 @@ NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
 NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 NSString* const kAsyncStartupOverrideResponse = @"AsyncStartupOverrideResponse";
 NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
+NSString* const kLensUnifiedLensMenu = @"LensUnifiedFlagsMenu";
 NSString* const kForceDisableAIMEligibility = @"ForceDisableAIMEligibility";
 NSString* const kForceDisableCreateImagesEligibility =
     @"ForceDisableCreateImagesEligibility";
@@ -366,6 +369,19 @@ bool EnableAIPrototypingMenu() {
 NSString* GetLensResultPanelGwsURL() {
   return [[NSUserDefaults standardUserDefaults]
       stringForKey:kLensResultPanelGwsURL];
+}
+
+bool EnableLensUnifiedFlagsMenu() {
+  version_info::Channel channel = GetChannel();
+  // Enable for only internal builds; Beta is public.
+  if (channel == version_info::Channel::UNKNOWN ||
+      channel == version_info::Channel::DEV ||
+      channel == version_info::Channel::CANARY) {
+    return true;
+  }
+
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kLensUnifiedLensMenu];
 }
 
 bool ShouldForceDisableComposeboxAIM() {

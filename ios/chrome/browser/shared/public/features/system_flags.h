@@ -176,6 +176,9 @@ bool EnableAIPrototypingMenu();
 // there is no alternative URL specified.
 NSString* GetLensResultPanelGwsURL();
 
+// Whether the unified flags menu should be shown in the Lens HUD overflow menu.
+bool EnableLensUnifiedFlagsMenu();
+
 // Returns true if Composebox AIM eligibility should be disabled.
 bool ShouldForceDisableComposeboxAIM();
 

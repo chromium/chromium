@@ -37,9 +37,11 @@ source_set("system_flags") {
     "//components/password_manager/core/common:features",
     "//components/segmentation_platform/public",
     "//components/variations",
+    "//components/version_info:channel",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/memory/model:features",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common",
   ]
 }
