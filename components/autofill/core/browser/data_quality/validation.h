@@ -65,6 +65,10 @@ bool IsValidZip(std::u16string_view text,
                 const AddressCountryCode& country_code,
                 bool extended_validation);
 
+// Returns true if `text` is a common placeholder value (e.g.
+// "select", "choose", "optional").
+bool IsPlaceholder(std::u16string_view text);
+
 // Returns true if `text` looks like an SSN, with or without separators.
 bool IsSSN(std::u16string_view text);
 

@@ -350,6 +350,14 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
     }
     has_address_related_fields = true;
 
+    // Skip common placeholder values (e.g. "select", "optional").
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillFilterPlaceholderValuesOnImport) &&
+        IsPlaceholder(value)) {
+      autofill_metrics::LogRemovedPlaceholderValue(field_type);
+      continue;
+    }
+
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
     // invalid.

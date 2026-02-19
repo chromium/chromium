@@ -467,4 +467,10 @@ void LogNewProfileUserDecisionPerSubmissionSourceMetric(
       decision_per_source);
 }
 
+void LogRemovedPlaceholderValue(FieldType field_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.PlaceholderValueRemoved.ByFieldType", field_type,
+      FieldType::MAX_VALID_FIELD_TYPE);
+}
+
 }  // namespace autofill::autofill_metrics

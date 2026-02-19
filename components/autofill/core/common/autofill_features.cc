@@ -654,6 +654,12 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
 // trivial refill operations, which are refills that do not modify any field.
 BASE_FEATURE(kAutofillFewerTrivialRefills, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, removes address field values that contain words "select",
+// "choose", or "optional" during profile import.
+// TODO(crbug.com/485170688): Remove when launched.
+BASE_FEATURE(kAutofillFilterPlaceholderValuesOnImport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, improves heuristic regexes for state classification to avoid
 // misclassification as civil state.
 // TODO(crbug.com/465491175): Cleanup when launched.

@@ -75,6 +75,12 @@ bool IsPossiblePhoneNumber(std::u16string_view text,
   return i18n::IsPossiblePhoneNumber(base::UTF16ToUTF8(text), country_code);
 }
 
+bool IsPlaceholder(std::u16string_view text) {
+  static constexpr char16_t kPlaceholderRe[] =
+      u"\\b(?:select|choose|optional)\\b";
+  return MatchesRegex<kPlaceholderRe>(text);
+}
+
 bool IsValidZip(std::u16string_view text,
                 const AddressCountryCode& country_code,
                 bool extended_validation) {
