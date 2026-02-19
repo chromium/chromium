@@ -55,6 +55,7 @@ class TemplateURLService;
 class WebNavigationBrowserAgent;
 class WebStateList;
 @protocol WhatsNewCommands;
+@class LayoutGuideCenter;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
@@ -104,6 +105,9 @@ class WebStateList;
 
 // BaseViewController for presenting some UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// The LayoutGuideCenter to use to retrieve the layout guide.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Bookmark model to know if the page is bookmarked.
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;

@@ -98,7 +98,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_metrics.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
@@ -2504,7 +2506,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   base::UmaHistogramEnumeration("Mobile.ShareThisPage.Used",
                                 ShareThisPageLocation::kOverflowMenu);
   [self dismissMenu];
-  [self.activityServiceHandler showShareSheetFromShareButton:nil];
+
+  UIView* toolMenuView =
+      [_layoutGuideCenter referencedViewUnderName:kToolsMenuGuide];
+
+  [self.activityServiceHandler showShareSheetFromShareButton:toolMenuView];
 }
 
 // Dismisses the menu and requests the mobile version of the current page

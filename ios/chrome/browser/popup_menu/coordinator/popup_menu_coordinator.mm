@@ -340,6 +340,7 @@ using base::UserMetricsAction;
                                   customizationEventHandler:self];
 
   LayoutGuideCenter* layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
+  mediator.layoutGuideCenter = layoutGuideCenter;
   UILayoutGuide* layoutGuide =
       [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
   [self.baseViewController.view addLayoutGuide:layoutGuide];
