@@ -1632,18 +1632,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.GoogleSearch.HttpStatusCode{NavigationType}"
+<histogram
+    name="PageLoad.Clients.GoogleSearch.HttpStatusCode{NavigationType}{IncognitoSuffix}"
     enum="HttpResponseCode" expires_after="2026-08-16">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    The HTTP status code of Google search page loads for {NavigationType}. This
-    is only recorded for Search navigations and is recorded OnRedirect and
-    OnCommit.
+    The HTTP status code of Google search page loads for {NavigationType}
+    {IncognitoSuffix}. This is only recorded for Search navigations and is
+    recorded OnRedirect and OnCommit.
   </summary>
   <token key="NavigationType">
     <variant name=".NonPrewarm" summary="non prewarm page"/>
     <variant name=".Prewarm" summary="prewarm page"/>
+  </token>
+  <token key="IncognitoSuffix">
+    <variant name="" summary="for any traffic"/>
+    <variant name=".Incognito" summary="for incognito traffic"/>
   </token>
 </histogram>
 

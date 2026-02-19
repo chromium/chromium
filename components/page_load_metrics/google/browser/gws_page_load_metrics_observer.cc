@@ -331,7 +331,9 @@ void ReportMetricForTraverseNavigation(bool is_restore_navigation,
   PAGE_LOAD_HISTOGRAM(restore_histogram_name, latency);
 }
 
-void RecordHttpStatusCode(int http_status_code, const GURL& url) {
+void RecordHttpStatusCode(int http_status_code,
+                          const GURL& url,
+                          bool is_incognito) {
   std::string suffix;
   if (page_load_metrics::IsGoogleSearchPrewarmUrl(url)) {
     suffix = internal::kHistogramGWSHttpStatusCodePrewarm;
@@ -344,6 +346,13 @@ void RecordHttpStatusCode(int http_status_code, const GURL& url) {
   base::UmaHistogramSparse(
       base::StrCat({internal::kHistogramGWSHttpStatusCode, suffix}),
       http_status_code);
+
+  if (is_incognito) {
+    base::UmaHistogramBoolean(
+        base::StrCat({internal::kHistogramGWSHttpStatusCode, suffix,
+                      internal::kHistogramIncognitoSuffix}),
+        http_status_code);
+  }
 }
 
 }  // namespace
@@ -398,7 +407,7 @@ GWSPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
     RecordHttpStatusCode(response_headers->response_code(),
-                         navigation_handle->GetURL());
+                         navigation_handle->GetURL(), IsIncognitoProfile());
   }
 
   return CONTINUE_OBSERVING;
@@ -426,7 +435,7 @@ GWSPageLoadMetricsObserver::OnCommit(
   }
   if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
     RecordHttpStatusCode(response_headers->response_code(),
-                         navigation_handle->GetURL());
+                         navigation_handle->GetURL(), IsIncognitoProfile());
   }
   if (!is_gws_url) {
     return STOP_OBSERVING;
