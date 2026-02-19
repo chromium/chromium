@@ -390,8 +390,16 @@ def __rules(ctx):
     ])
     return rules
 
+def __filegroups(ctx):
+    return clang_all.filegroups(ctx)
+
+def __input_deps(ctx):
+    return clang_all.input_deps(ctx)
+
 clang_unix = module(
     "clang_unix",
     handlers = __handlers,
     rules = __rules,
+    filegroups = __filegroups,
+    input_deps = __input_deps,
 )

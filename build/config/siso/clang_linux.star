@@ -7,7 +7,6 @@
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
-load("./clang_all.star", "clang_all")
 load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
 load("./gn_logs.star", "gn_logs")
@@ -84,12 +83,10 @@ def __filegroups(ctx):
         fg.update(android.filegroups(ctx))
     if fuchsia.enabled(ctx):
         fg.update(fuchsia.filegroups(ctx))
-    fg.update(clang_all.filegroups(ctx))
+    fg.update(clang_unix.filegroups(ctx))
     return fg
 
-__handlers = {}
-__handlers.update(clang_unix.handlers)
-__handlers.update(clang_all.handlers)
+__handlers = clang_unix.handlers
 
 def __step_config(ctx, step_config):
     gn_logs_data = gn_logs.read(ctx)
@@ -130,7 +127,7 @@ def __step_config(ctx, step_config):
 
     for cpu in target_cpus:
         __add_sysroot_for_target_cpu(step_config, cpu)
-    step_config["input_deps"].update(clang_all.input_deps(ctx))
+    step_config["input_deps"].update(clang_unix.input_deps(ctx))
 
     step_config["rules"].extend(clang_unix.rules(ctx))
     if win_sdk.enabled(ctx):
