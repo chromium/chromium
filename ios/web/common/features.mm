@@ -91,10 +91,6 @@ bool IsWebInspectorSupportEnabled() {
   return false;
 }
 
-bool CreateTabHelperOnlyForRealizedWebStates() {
-  return true;
-}
-
 BASE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

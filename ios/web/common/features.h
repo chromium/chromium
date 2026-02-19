@@ -106,9 +106,6 @@ bool IsFullscreenScrollThresholdEnabled();
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
 
-// Returns whether the TabHelpers should only be created for realized WebStates.
-bool CreateTabHelperOnlyForRealizedWebStates();
-
 // TODO(crbug.com/449156290): Clean up the kill switch for updating SSL status
 // on navigation item creation.
 // When enabled, trigger an update of the SSL status on navigation item
