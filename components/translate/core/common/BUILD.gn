@@ -1,6 +1,9 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//testing/test.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -41,6 +44,19 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/metrics_proto",
     "//url",
+  ]
+}
+
+test("translate_util_fuzztest") {
+  sources = [ "translate_util_fuzztest.cc" ]
+  fuzztests = [ "TranslateUtilFuzzTest.GetTranslateSecurityOriginDoesNotCrash" ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 }
 
