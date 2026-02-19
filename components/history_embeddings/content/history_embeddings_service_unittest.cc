@@ -41,6 +41,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace history_embeddings {
 
@@ -134,7 +135,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
     ASSERT_EQ(
         listener()->filter_words_hashes(),
-        std::unordered_set<uint32_t>({3962775614, 4220142007, 430397466}));
+        absl::flat_hash_set<uint32_t>({3962775614, 4220142007, 430397466}));
   }
 
   void TearDown() override {

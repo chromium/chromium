@@ -20,6 +20,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace history_embeddings {
 
@@ -469,7 +470,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, WordMatchBoostProtoDataTest) {
   history_embeddings::proto::WordMatchBoostTest test;
   EXPECT_TRUE(test.ParseFromString(test_proto_content));
 
-  std::unordered_set<uint32_t> stop_words_hashes;
+  absl::flat_hash_set<uint32_t> stop_words_hashes;
   for (const std::string& stop_word : test.stop_words()) {
     stop_words_hashes.insert(HashString(stop_word));
   }

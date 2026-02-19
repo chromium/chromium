@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace history_embeddings {
 
@@ -29,12 +30,12 @@ class SearchStringsUpdateListenerTest : public testing::Test {
   }
 
   void VerifyFilterWordsHashes(
-      std::unordered_set<uint32_t> filter_words_hashes) {
+      absl::flat_hash_set<uint32_t> filter_words_hashes) {
     task_environment()->RunUntilIdle();
     ASSERT_EQ(listener()->filter_words_hashes(), filter_words_hashes);
   }
 
-  void VerifyStopWordsHashes(std::unordered_set<uint32_t> stop_words_hashes) {
+  void VerifyStopWordsHashes(absl::flat_hash_set<uint32_t> stop_words_hashes) {
     task_environment()->RunUntilIdle();
     ASSERT_EQ(listener()->stop_words_hashes(), stop_words_hashes);
   }

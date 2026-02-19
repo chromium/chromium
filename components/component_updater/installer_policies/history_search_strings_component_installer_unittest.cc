@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -21,6 +20,7 @@
 #include "components/optimization_guide/proto/features/history_search_strings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace component_updater {
 
@@ -111,7 +111,7 @@ TEST_F(HistorySearchStringsComponentInstallerPolicyTest, LoadBinaryProtoFile) {
                               std::move(manifest));
   RunUntilIdle();
   ASSERT_EQ(listener()->filter_words_hashes(),
-            std::unordered_set<uint32_t>({3962775614, 4220142007, 430397466}));
+            absl::flat_hash_set<uint32_t>({3962775614, 4220142007, 430397466}));
 }
 
 }  // namespace component_updater

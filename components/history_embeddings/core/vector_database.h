@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_EMBEDDINGS_CORE_VECTOR_DATABASE_H_
 
 #include <optional>
-#include <unordered_set>
 #include <vector>
 
 #include "base/time/time.h"
@@ -14,6 +13,7 @@
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace history_embeddings {
 
@@ -226,7 +226,7 @@ class VectorDatabaseInMemory : public VectorDatabase {
 
 // Utility method to split a query into separate query terms for search.
 std::vector<std::string> SplitQueryToTerms(
-    const std::unordered_set<uint32_t>& stop_words_hashes,
+    const absl::flat_hash_set<uint32_t>& stop_words_hashes,
     std::string_view raw_query,
     size_t min_term_length);
 

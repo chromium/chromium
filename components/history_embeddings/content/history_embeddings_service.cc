@@ -34,6 +34,8 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {
@@ -711,7 +713,7 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
 
   // Move existing passages and associated embeddings into map for quick
   // hash-based lookup instead of many string comparisons.
-  std::unordered_map<std::string, passage_embeddings::Embedding>
+  absl::flat_hash_map<std::string, passage_embeddings::Embedding>
       embedding_cache;
   if (existing_url_data.has_value()) {
     size_t passages_size = existing_url_data->passages.passages_size();
@@ -1116,12 +1118,12 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
     RecordQueryFiltered(QueryFiltered::FILTERED_NOT_ASCII);
     return true;
   }
-  const std::unordered_set<uint32_t>& stop_words_hashes =
+  const absl::flat_hash_set<uint32_t>& stop_words_hashes =
       SearchStringsUpdateListener::GetInstance()->stop_words_hashes();
   size_t min_term_length = GetFeatureParameters().word_match_min_term_length;
   std::vector<std::string> query_terms =
       SplitQueryToTerms(stop_words_hashes, raw_query, min_term_length);
-  const std::unordered_set<uint32_t>& filter_words_hashes =
+  const absl::flat_hash_set<uint32_t>& filter_words_hashes =
       SearchStringsUpdateListener::GetInstance()->filter_words_hashes();
   if (std::ranges::any_of(query_terms, [&](std::string_view query_term) {
         uint32_t hash = HashString(query_term);

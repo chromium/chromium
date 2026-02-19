@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/farmhash/src/src/farmhash.h"
 
 namespace history_embeddings {
@@ -429,7 +430,7 @@ VectorDatabaseInMemory::MakeUrlDataIterator(
 }
 
 std::vector<std::string> SplitQueryToTerms(
-    const std::unordered_set<uint32_t>& stop_words_hashes,
+    const absl::flat_hash_set<uint32_t>& stop_words_hashes,
     std::string_view raw_query,
     size_t min_term_length) {
   // Configuration may permit zero-length terms, but empty strings
