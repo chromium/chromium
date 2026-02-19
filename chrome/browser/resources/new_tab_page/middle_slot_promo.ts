@@ -188,7 +188,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
     super.connectedCallback();
     this.setPromoListenerId_ =
         NewTabPageProxy.getInstance().callbackRouter.setPromo.addListener(
-            (promo: Promo) => {
+            (promo) => {
               this.promo_ = promo;
             });
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));

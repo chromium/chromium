@@ -12,6 +12,14 @@
 {%-   endif %}
 {%- endmacro %}
 
+{%- macro generate_listener_cb_type(method) %}
+    (
+{%-   for param in method.parameters -%}
+      {{param.name}}: {{param.kind|ts_type_maybe_nullable}},
+{%-   endfor -%}
+    ) => any
+{%- endmacro %}
+
 export type {{interface.name}}PendingReceiverEndpoint =
   mojo.internal.interfaceSupport.Endpoint<{{interface.name}}PendingReceiver>;
 
@@ -166,7 +174,7 @@ export class {{interface.name}}CallbackRouter {
 {%  for method in interface.methods %}
 {%-   set interface_message_id =
           interface.mojom_name ~ "_" ~ method.mojom_name %}
-  {{method.name}}: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
+  {{method.name}}: mojo.internal.interfaceSupport.InterfaceCallbackReceiver<{{generate_listener_cb_type(method)}}>;
 {%- endfor %}
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 

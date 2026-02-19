@@ -83,7 +83,7 @@ export class PostMessageReceiver {
 
   // Sends the message to the remote UI. Message should be a serialized proto,
   // or some other format that the remote UI can handle.
-  private onSendClientMessageToAim(serializedMessage: Uint8Array) {
+  private onSendClientMessageToAim(serializedMessage: number[]|Uint8Array) {
     const contentWindow = this.resultsFrame.contentWindow;
     assert(contentWindow);
     contentWindow.postMessage(serializedMessage, this.resultsSearchUrl.origin);

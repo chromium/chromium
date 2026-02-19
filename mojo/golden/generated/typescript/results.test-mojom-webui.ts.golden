@@ -147,8 +147,10 @@ export class ResultInterfaceCallbackRouter {
     ResultInterfaceRemote, ResultInterfacePendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
-  method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
-  syncMethod: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
+  method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver<
+    (a: boolean,) => any>;
+  syncMethod: mojo.internal.interfaceSupport.InterfaceCallbackReceiver<
+    (a: boolean,) => any>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor() {

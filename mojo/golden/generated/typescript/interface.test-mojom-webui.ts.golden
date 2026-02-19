@@ -130,7 +130,8 @@ export class IFaceCallbackRouter {
     IFaceRemote, IFacePendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
-  method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
+  method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver<
+    (param: boolean,) => any>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor() {

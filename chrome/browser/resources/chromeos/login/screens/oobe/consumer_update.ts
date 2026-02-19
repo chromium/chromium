@@ -265,7 +265,7 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
    * @param messageTimeLeft Message describing time left.
    */
   setUpdateStatusMessage(
-      percent: number, messagePercent: string, messageTimeLeft: string): void {
+      percent: bigint, messagePercent: string, messageTimeLeft: string): void {
     // Sets aria-live polite on percent and timeleft container every time
     // new threshold has been achieved otherwise do not initiate spoken
     // feedback update by setting aria-live off.
@@ -289,7 +289,7 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
         betterUpdateTimeleft.setAttribute('aria-live', 'off');
       }
     }
-    this.betterUpdateProgressValue = percent;
+    this.betterUpdateProgressValue = Number(percent);
     this.updateStatusMessagePercent = messagePercent;
     this.updateStatusMessageTimeLeft = messageTimeLeft;
   }

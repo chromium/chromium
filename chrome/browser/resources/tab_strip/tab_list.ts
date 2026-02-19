@@ -539,7 +539,7 @@ export class TabListElement extends CustomElement implements
   }
 
   private onTabGroupStateChanged_(
-      tabId: number, index: number, groupId: string) {
+      tabId: number, index: number, groupId: string|null) {
     const tabElement = this.findTabElement_(tabId)!;
     tabElement.tab = Object.assign({}, tabElement.tab, {groupId: groupId});
     this.placeTabElement(tabElement, index, false, groupId);

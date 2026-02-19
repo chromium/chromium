@@ -111,7 +111,9 @@ export class ArcVmDataMigrationScreen extends
         });
     this.callbackRouter.setUIState.addListener(this.setUIState.bind(this));
     this.callbackRouter.setRequiredFreeDiskSpace.addListener(
-        this.setRequiredFreeDiskSpace.bind(this));
+        requiredFreeDiskSpace => {
+          this.setRequiredFreeDiskSpace(requiredFreeDiskSpace.toString());
+        });
     this.callbackRouter.setMinimumBatteryPercent.addListener(
         this.setMinimumBatteryPercent.bind(this));
     this.callbackRouter.setBatteryState.addListener(

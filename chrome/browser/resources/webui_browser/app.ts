@@ -321,13 +321,13 @@ export class WebuiBrowserAppElement extends CrLitElement {
   }
 
   protected onFullscreenModeChanged_(
-      isFullscreen: boolean, context?: FullscreenContext) {
+      isFullscreen: boolean, context: FullscreenContext|null) {
     if (!isFullscreen) {
       this.fullscreenMode_ = '';
     } else {
       // When fullscreen is true, we should always have a context
       assert(
-          context !== undefined,
+          context !== null,
           'Context must be provided when isFullscreen is true');
 
       switch (context) {

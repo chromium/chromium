@@ -234,7 +234,7 @@ function convertMojoTimeToJS(mojoTime: Time) {
  * @param targetElement The element to which source link should be created.
  */
 function createChromiumSourceLink(
-    sourceFile: string, sourceLine: number, targetElement: Element) {
+    sourceFile: string, sourceLine: bigint, targetElement: Element) {
   // Valid source file starts with ../../
   if (!sourceFile.startsWith('../../')) {
     targetElement.textContent = `${sourceFile}(${sourceLine})`;
@@ -428,7 +428,7 @@ function initialize() {
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
       (eventTime: Time, logSource: number, sourceFile: string,
-       sourceLine: number, message: string) => {
+       sourceLine: bigint, message: string) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
         const logSourceStr = getLogSource(logSource);
         logMessages.push({

@@ -189,9 +189,9 @@ export namespace mojo {
         removeListener(id: number): boolean;
       }
 
-      class InterfaceCallbackReceiver {
+      class InterfaceCallbackReceiver<Listener> {
         constructor(router: CallbackRouter);
-        addListener(listener: Function): number;
+        addListener(listener: Listener): number;
         createReceiverHandler(expectsResponse: boolean): Function;
       }
 

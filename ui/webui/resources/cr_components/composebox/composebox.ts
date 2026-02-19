@@ -1376,7 +1376,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   private async onContextualInputStatusChanged_(
       token: UnguessableToken, status: FileUploadStatus,
-      errorType: FileUploadErrorType) {
+      errorType: FileUploadErrorType|null) {
     const {file, errorMessage} =
         this.$.context.updateFileStatus(token, status, errorType);
     if (errorMessage) {

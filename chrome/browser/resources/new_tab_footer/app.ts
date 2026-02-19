@@ -21,7 +21,7 @@ import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemo
 import {SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
-import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
+import type {ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
 import {NewTabPageType} from './new_tab_footer.mojom-webui.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -147,31 +147,30 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.setNtpExtensionNameListenerId_ =
-        this.callbackRouter_.setNtpExtensionName.addListener((name: string) => {
+        this.callbackRouter_.setNtpExtensionName.addListener(name => {
           this.extensionName_ = name;
         });
     this.handler_.updateNtpExtensionName();
     this.setManagementNoticeListener_ =
-        this.callbackRouter_.setManagementNotice.addListener(
-            (notice: ManagementNotice) => {
-                this.managementNotice_ = notice;
-            });
+        this.callbackRouter_.setManagementNotice.addListener(notice => {
+          this.managementNotice_ = notice;
+        });
     this.handler_.updateManagementNotice();
     this.setCustomizeChromeSidePanelVisibilityListener_ =
         this.customizeCallbackRouter_.setCustomizeChromeSidePanelVisibility
-            .addListener((visible: boolean) => {
+            .addListener(visible => {
               this.isCustomizeActive_ = visible;
             });
     this.setAttachedTabStateUpdatedListener_ =
         this.callbackRouter_.attachedTabStateUpdated.addListener(
-            (ntpType: NewTabPageType, canCustomizeChrome: boolean) => {
+            (ntpType, canCustomizeChrome) => {
               this.ntpType_ = ntpType;
               this.canCustomizeChrome_ = canCustomizeChrome;
             });
     this.handler_.updateAttachedTabState();
     this.setBackgroundAttributionListener_ =
         this.callbackRouter_.setBackgroundAttribution.addListener(
-            (attribution: BackgroundAttribution) => {
+            attribution => {
               if (attribution) {
                 this.backgroundAttributionText_ = attribution.name;
                 this.backgroundAttributionLink_ = attribution.url;

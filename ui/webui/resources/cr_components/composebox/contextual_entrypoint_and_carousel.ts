@@ -454,7 +454,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   updateFileStatus(
       token: UnguessableToken, status: FileUploadStatus,
-      errorType: FileUploadErrorType) {
+      errorType: FileUploadErrorType|null) {
     let errorMessage = null;
     let file = this.files_.get(token);
     if (file) {
@@ -471,9 +471,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         }
         switch (status) {
           case FileUploadStatus.kValidationFailed:
-            errorMessage = this.i18n(
-                FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
-                'composeboxFileUploadValidationFailed');
+            if (errorType) {
+              errorMessage = this.i18n(
+                  FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
+                  'composeboxFileUploadValidationFailed');
+            } else {
+              errorMessage = this.i18n('composeboxFileUploadValidationFailed');
+            }
             break;
           case FileUploadStatus.kUploadFailed:
             errorMessage = this.i18n('composeboxFileUploadFailed');

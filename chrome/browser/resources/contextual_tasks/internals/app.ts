@@ -44,14 +44,14 @@ export class EventLogMessage {
   message: string;
 
   constructor(
-      eventTime: Time, sourceFile: string, sourceLine: number,
+      eventTime: Time, sourceFile: string, sourceLine: bigint,
       message: string) {
     this.eventTime = convertMojoTimeToJs(eventTime);
     this.message = message;
     this.setSourceLink(sourceFile, sourceLine);
   }
 
-  setSourceLink(sourceFile: string, sourceLine: number) {
+  setSourceLink(sourceFile: string, sourceLine: bigint) {
     if (!sourceFile.startsWith('../../')) {
       this.sourceLinkText = `${sourceFile}(${sourceLine})`;
       return;
@@ -148,7 +148,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   }
 
   private onLogMessageAdded_(
-      eventTime: Time, sourceFile: string, sourceLine: number,
+      eventTime: Time, sourceFile: string, sourceLine: bigint,
       message: string) {
     this.eventLogMessages_.push(
         new EventLogMessage(eventTime, sourceFile, sourceLine, message));

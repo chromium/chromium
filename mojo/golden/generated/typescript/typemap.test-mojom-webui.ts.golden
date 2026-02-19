@@ -135,7 +135,8 @@ export class IFaceWithTypemapCallbackRouter {
     IFaceWithTypemapRemote, IFaceWithTypemapPendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
-  echo: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
+  echo: mojo.internal.interfaceSupport.InterfaceCallbackReceiver<
+    (param: number,) => any>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor() {
