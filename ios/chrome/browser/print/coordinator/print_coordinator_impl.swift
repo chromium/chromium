@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import ChromiumCxxStdlib
 import CxxImports
 import UIKit
 
@@ -71,7 +72,7 @@ class SwiftPrintCoordinatorImpl: PrintCoordinator,
     // Only one item must be passed.
     assert((renderer != nil) != (item != nil))
     self.defaultBaseViewController = baseViewController
-    base.RecordAction(base.UserMetricsAction("MobilePrintMenuAirPrint"))
+    base.swift.RecordUserMetricsAction("MobilePrintMenuAirPrint")
     let printInteractionController = UIPrintInteractionController.shared
     printInteractionController.delegate = self
 

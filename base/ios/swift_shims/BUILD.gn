@@ -11,6 +11,8 @@ if (enable_swift_cxx_interop) {
       "sys_info.h",
       "time.cc",
       "time.h",
+      "user_metrics.cc",
+      "user_metrics.h",
     ]
     deps = [ "//base" ]
     visibility = [ ":*" ]
@@ -23,6 +25,11 @@ if (enable_swift_cxx_interop) {
 
   swift_cxx_import("time") {
     sources = [ "time.h" ]
+    public_deps = [ ":_shims" ]
+  }
+
+  swift_cxx_import("user_metrics") {
+    sources = [ "user_metrics.h" ]
     public_deps = [ ":_shims" ]
   }
 }

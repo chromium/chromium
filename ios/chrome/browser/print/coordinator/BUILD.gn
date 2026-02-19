@@ -5,18 +5,15 @@
 import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
-  swift_cxx_import("base_import") {
-    sources = [ "//base/metrics/user_metrics.h" ]
-  }
-
   swift_source_set("swift_coordinator") {
     bridge_header = "bridge_header.h"
     sources = [ "print_coordinator_impl.swift" ]
     frameworks = [ "UIKit.framework" ]
-    cxx_import_deps = [ ":base_import" ]
+    cxx_import_deps = [ "//base/ios/swift_shims:user_metrics" ]
     deps = [
       ":coordinator",
       "//base",
+      "//ios/third_party/swift_cxxstdlib",
     ]
   }
 }
