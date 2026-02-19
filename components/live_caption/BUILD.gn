@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 
 if (!is_android && !is_ios) {
   static_library("live_caption") {
@@ -82,6 +83,8 @@ if (!is_android && !is_ios) {
       "translation_dispatcher.h",
     ]
 
+    public_deps = []
+
     deps = [
       "//base",
       "//components/keyed_service/core",
@@ -103,6 +106,18 @@ if (!is_android && !is_ios) {
       "//services/network/public/mojom",
       "//ui/native_theme",
     ]
+
+    if (enable_on_device_translation) {
+      sources += [
+        "translation_dispatcher_on_device.cc",
+        "translation_dispatcher_on_device.h",
+      ]
+      public_deps += [
+        "//components/on_device_translation:public",
+        "//components/on_device_translation/public/mojom",
+      ]
+      deps += [ "//components/on_device_translation" ]
+    }
   }
 
   source_set("unit_tests") {
@@ -127,6 +142,7 @@ if (!is_android && !is_ios) {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/sync_preferences:test_support",
+      "//content/test:test_support",
       "//media",
       "//media/mojo/mojom:speech_recognition",
       "//mojo/public/cpp/bindings",
@@ -136,6 +152,14 @@ if (!is_android && !is_ios) {
       "//testing/gtest",
       "//ui/base",
     ]
+
+    if (enable_on_device_translation) {
+      sources += [ "translation_dispatcher_on_device_unittest.cc" ]
+      deps += [
+        "//components/on_device_translation",
+        "//components/on_device_translation:test_support",
+      ]
+    }
 
     if (is_chromeos) {
       sources += [

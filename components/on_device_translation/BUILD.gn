@@ -104,7 +104,12 @@ static_library("test_support") {
   sources = [
     "test/fake_installer.cc",
     "test/fake_installer.h",
+    "test/fake_service_controller_manager.cc",
+    "test/fake_service_controller_manager.h",
+    "test/fake_translator.cc",
+    "test/fake_translator.h",
   ]
+  public_deps = [ "//components/on_device_translation/public/mojom" ]
   deps = [
     ":on_device_translation",
     ":public",

@@ -38,17 +38,20 @@ class ServiceControllerManager : public KeyedService {
       base::PassKey<ServiceControllerManagerFactory>);
   ~ServiceControllerManager() override;
 
+  // Constructor for testing.
+  explicit ServiceControllerManager(PrefService* local_state);
+
   ServiceControllerManager(const ServiceControllerManager&) = delete;
   ServiceControllerManager& operator=(const ServiceControllerManager&) = delete;
 
-  scoped_refptr<OnDeviceTranslationServiceController>
+  virtual scoped_refptr<OnDeviceTranslationServiceController>
   GetServiceControllerForOrigin(const url::Origin& origin);
 
   // Returns true if a new service can be started.
-  bool CanStartNewService() const;
+  virtual bool CanStartNewService() const;
 
   // Called when a service controller is deleted.
-  void OnServiceControllerDeleted(
+  virtual void OnServiceControllerDeleted(
       const url::Origin& origin,
       base::PassKey<OnDeviceTranslationServiceController>);
 

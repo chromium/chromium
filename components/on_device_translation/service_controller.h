@@ -49,7 +49,7 @@ class OnDeviceTranslationServiceController
 
   // Creates a translator class that implements `mojom::Translator` for the
   // given language pair.
-  void CreateTranslator(
+  virtual void CreateTranslator(
       const std::string& source_lang,
       const std::string& target_lang,
       base::OnceCallback<
@@ -58,7 +58,7 @@ class OnDeviceTranslationServiceController
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.
-  void CanTranslate(
+  virtual void CanTranslate(
       const std::string& source_lang,
       const std::string& target_lang,
       base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
@@ -72,6 +72,9 @@ class OnDeviceTranslationServiceController
   bool IsServiceRunning() const { return !!service_remote_; }
   // The information of a language pack.
   struct LanguagePackInfo;
+
+ protected:
+  virtual ~OnDeviceTranslationServiceController();
 
  private:
   friend base::RefCounted<OnDeviceTranslationServiceController>;
@@ -92,8 +95,6 @@ class OnDeviceTranslationServiceController
     std::set<LanguagePackKey> required_packs;
     base::OnceClosure once_closure;
   };
-
-  ~OnDeviceTranslationServiceController();
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.

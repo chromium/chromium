@@ -15,6 +15,9 @@ ServiceControllerManager::ServiceControllerManager(
     base::PassKey<ServiceControllerManagerFactory>)
     : local_state_(local_state) {}
 
+ServiceControllerManager::ServiceControllerManager(PrefService* local_state)
+    : local_state_(local_state) {}
+
 ServiceControllerManager::~ServiceControllerManager() = default;
 
 scoped_refptr<OnDeviceTranslationServiceController>
