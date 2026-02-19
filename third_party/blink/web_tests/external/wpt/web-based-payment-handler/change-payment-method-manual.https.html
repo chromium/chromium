@@ -3,7 +3,7 @@
 <title>Tests for PaymentRequestEvent.changePaymentMethod()</title>
 <link
   rel="help"
-  href="https://w3c.github.io/payment-handler/#changepaymentmethod-method"
+  href="https://w3c.github.io/web-based-payment-handler/#changepaymentmethod-method"
 />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,7 +12,7 @@
 <p>If the payment sheet is shown, please authorize the mock payment.</p>
 <script>
 const methodName = window.location.origin
-    + '/payment-handler/change-payment-method-manual-manifest.json';
+    + '/web-based-payment-handler/change-payment-method-manual-manifest.json';
 
 promise_test(async (t) => {
   const request = new PaymentRequest([{supportedMethods: methodName}], {

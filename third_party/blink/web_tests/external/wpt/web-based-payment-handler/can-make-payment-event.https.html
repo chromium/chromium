@@ -1,13 +1,13 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>Tests for CanMakePaymentEvent</title>
-<link rel="help" href="https://w3c.github.io/payment-handler/#the-canmakepaymentevent">
+<link rel="help" href="https://w3c.github.io/web-based-payment-handler/#the-canmakepaymentevent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
-const DEFAULT_METHOD_NAME = window.location.origin + '/payment-handler/'
+const DEFAULT_METHOD_NAME = window.location.origin + '/web-based-payment-handler/'
     + 'can-make-payment-event-manifest.json';
 
 async function registerApp(responseType = 'canMakePayment-true') {

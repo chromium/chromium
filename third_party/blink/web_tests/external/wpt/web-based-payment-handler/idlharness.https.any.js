@@ -6,7 +6,7 @@
 
 'use strict';
 
-// https://w3c.github.io/payment-handler/
+// https://w3c.github.io/web-based-payment-handler/
 
 idl_test(
   ['payment-handler'],

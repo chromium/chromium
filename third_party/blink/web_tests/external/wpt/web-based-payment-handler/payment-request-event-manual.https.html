@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>Tests for PaymentRequestEvent</title>
-<link rel="help" href="https://w3c.github.io/payment-handler/#the-paymentrequestevent">
+<link rel="help" href="https://w3c.github.io/web-based-payment-handler/#the-paymentrequestevent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -9,7 +9,7 @@
 <p>When the payment sheet is shown, please authorize the mock payment.</p>
 <script>
 promise_test(async t => {
-  const methodName = window.location.origin + '/payment-handler/'
+  const methodName = window.location.origin + '/web-based-payment-handler/'
       + 'payment-request-event-manual-manifest.json';
   await test_driver.bless('invoking a payment app');
   const response = await new PaymentRequest(

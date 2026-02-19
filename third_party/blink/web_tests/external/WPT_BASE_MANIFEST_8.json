@@ -6369,6 +6369,13 @@
        {}
       ]
      ],
+     "missing-variable-in-unparsed-value-crash.html": [
+      "b92bd62deb71f2623b0265bed099d739cd1fce3a",
+      [
+       null,
+       {}
+      ]
+     ],
      "perspective-typed-arithmetic-crash.html": [
       "b65625b28681d6adf4edf414700b8c8fd1dfb3a6",
       [
@@ -11834,6 +11841,13 @@
    "webcodecs": {
     "image-decoder-disconnect-readable-stream-crash.https.html": [
      "d04c3e70190773418fdea86af38baafc042b29b2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "imagedecoder-zero-length-crash.https.html": [
+     "e89fc0d1caa669add0178549d990bd06116e8c47",
      [
       null,
       {}
@@ -22676,43 +22690,6 @@
      ]
     ]
    },
-   "payment-handler": {
-    "change-payment-method-manual.https.html": [
-     "15165b91d779d674fe667c2f849ac7d5753799e2",
-     [
-      null,
-      {}
-     ]
-    ],
-    "change-shipping-address-manual.https.html": [
-     "e8817459c38ae0893ce278875cdfa1eed555a5bf",
-     [
-      null,
-      {}
-     ]
-    ],
-    "change-shipping-option-manual.https.html": [
-     "6e97f2878afe60ac1004f8a0e85989c54461c8d2",
-     [
-      null,
-      {}
-     ]
-    ],
-    "payment-request-event-manual.https.html": [
-     "9cd20354631b2277c17e543a4b30f81b90f0dbdb",
-     [
-      null,
-      {}
-     ]
-    ],
-    "supports-shipping-contact-delegation-manual.https.html": [
-     "e3074b4e5e58a6e5e3ac7b97e0ea40480c1b9bf3",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
    "payment-method-basic-card": {
     "billing-address-is-null-manual.https.html": [
      "5eac71963eb478e9d4f1df2fc7bd5c0c1579bc0f",
@@ -23837,6 +23814,43 @@
     ],
     "viewport-url-bar-changes-height-manual.html": [
      "563134236bf7b10b37f067035801abaa4d796cf6",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
+   "web-based-payment-handler": {
+    "change-payment-method-manual.https.html": [
+     "42a3affaed77be195fceaf7bc8689b448c6eb5e7",
+     [
+      null,
+      {}
+     ]
+    ],
+    "change-shipping-address-manual.https.html": [
+     "543c7e3bb7b10f5fc8873828d76d112ad2574c2b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "change-shipping-option-manual.https.html": [
+     "267319f63c1e13743a7f8661184bde34acfaff93",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-event-manual.https.html": [
+     "da1692c662fc078568c35df7d823672dc1c0b8f0",
+     [
+      null,
+      {}
+     ]
+    ],
+    "supports-shipping-contact-delegation-manual.https.html": [
+     "725188ef2f40f72a11ec81c9f3eb7345ebaf5b36",
      [
       null,
       {}
@@ -175559,6 +175573,29 @@
          {}
         ]
        ],
+       "clip-path-animation-no-inherit-clip-after-remove.html": [
+        "5a6791569ab017f800188f38f178694ca23d1fb6",
+        [
+         "css/css-masking/clip-path/animations/clip-path-animation-no-inherit-clip-after-remove.html?force-repaint",
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-no-inherit-clip-after-remove-ref.html?force-repaint",
+           "=="
+          ]
+         ],
+         {}
+        ],
+        [
+         "css/css-masking/clip-path/animations/clip-path-animation-no-inherit-clip-after-remove.html?skip-repaint",
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-no-inherit-clip-after-remove-ref.html?skip-repaint",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-animation-non-keyframe-timing-function.html": [
         "9e4eb019430fc9acc63414c1d7c0070ec2fcdc67",
         [
@@ -178692,6 +178729,29 @@
         [
          [
           "/css/css-masking/clip-path/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-url-reference-text-clip-no-inherit-after-remove.html": [
+       "65f97ea028353a7f679781fc06a87c83908d9bdb",
+       [
+        "css/css-masking/clip-path/clip-path-url-reference-text-clip-no-inherit-after-remove.html?force-repaint",
+        [
+         [
+          "/css/css-masking/clip-path/clip-path-url-reference-text-clip-no-inherit-after-remove-ref.html?force-repaint",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-masking/clip-path/clip-path-url-reference-text-clip-no-inherit-after-remove.html?skip-repaint",
+        [
+         [
+          "/css/css-masking/clip-path/clip-path-url-reference-text-clip-no-inherit-after-remove-ref.html?skip-repaint",
           "=="
          ]
         ],
@@ -324171,7 +324231,7 @@
          ]
         ],
         "select-appearance-font-inheriting.html": [
-         "1fced67d47146643b1fbbb73d248753b1cd0771c",
+         "b0e12d6653a9c731b284de424226257d88bc7f5e",
          [
           null,
           [
@@ -324191,7 +324251,7 @@
               ],
               [
                0,
-               8
+               75
               ]
              ]
             ]
@@ -384022,6 +384082,10 @@
         "57b1ff4f5160267d9b28dfad14e749a8137593f0",
         []
        ],
+       "clip-path-animation-no-inherit-clip-after-remove-ref.html": [
+        "73472e781bf2366c9576e4d09f3ed3276042312a",
+        []
+       ],
        "clip-path-animation-non-keyframe-timing-function-ref.html": [
         "d351f80a26fa93866afaed00f872a7800078d6c7",
         []
@@ -384209,6 +384273,10 @@
       ],
       "clip-path-svg-text-backdrop-filter-ref.html": [
        "194c4734828bfd9ff496cbbc31cf2abcf4a57a67",
+       []
+      ],
+      "clip-path-url-reference-text-clip-no-inherit-after-remove-ref.html": [
+       "42ed7b4062fc7f730327f4172cefa7123c8c4ebb",
        []
       ],
       "reference": {
@@ -402916,10 +402984,6 @@
        []
       ]
      },
-     "random-computed.tentative-expected.txt": [
-      "76a6ae2e9517c719de749bb2803d77ba719e4e22",
-      []
-     ],
      "reference": {
       "200-200-green.html": [
        "f3da3ddb3b8d90df91aa60d88f0c13d28eccef09",
@@ -436224,7 +436288,7 @@
          ]
         },
         "select-appearance-active-ref.html": [
-         "879138cf6f13a46e3aac2e0cc879182c218d02e0",
+         "65742df44a9682f3fbdcc3c6a0f82c8083336d4d",
          []
         ],
         "select-appearance-button-after-option-ref.html": [
@@ -436240,15 +436304,15 @@
          []
         ],
         "select-appearance-button-ref.html": [
-         "7b6a075237edd9f72df8f7fd48bca2174a98fdcd",
+         "db1036a7423b6c74dc8afd60d4eefc08857ad741",
          []
         ],
         "select-appearance-dark-mode-ref.html": [
-         "9d80e27d86de9d3e161090713be3c436dc4883df",
+         "22fd6f6a288608e2b7bdaeeb95a81e288d92cc79",
          []
         ],
         "select-appearance-disabled-option-ref.html": [
-         "0b59f2839b5cd2983a7279827b93788c50527cae",
+         "576081c3a28c8426fd62adc789ad47c5e01f9aff",
          []
         ],
         "select-appearance-disabled-ref.html": [
@@ -436288,7 +436352,7 @@
          []
         ],
         "select-appearance-font-inheriting-ref.html": [
-         "6321281fa8f71edf9f675096f2b7bb4745c44aeb",
+         "e6a6a4ea0920462d451f829490825c7b229e1e30",
          []
         ],
         "select-appearance-hover-ref.html": [
@@ -436300,15 +436364,15 @@
          []
         ],
         "select-appearance-optgroup-legend-ref.html": [
-         "6d75f62efcd41cc624714398dde7f1b634a3f701",
+         "dafb70bc893babb27d36d0e7222594bc116edb06",
          []
         ],
         "select-appearance-optgroup-rendering-ref.html": [
-         "d6bc50a5f715b3e77fe0706f4aaef043fe6e155f",
+         "a182a665ea22f7435ebaadec0d247feff1843f68",
          []
         ],
         "select-appearance-picker-select-border-ref.html": [
-         "d09f9bc42166908f9161911ea8bcd9d7124284af",
+         "5aa2510dcdcbf0e418b36e0c771210c9c401ea91",
          []
         ],
         "select-appearance-sizing-in-flex-ref.html": [
@@ -436316,15 +436380,19 @@
          []
         ],
         "select-appearance-switching-invalidation-ref.html": [
-         "293653055558e212f9c8cd242b1a571037be9b6b",
+         "6db21efa547a99cfd69481df00abc356db22b8e1",
          []
         ],
         "select-appearance-writing-mode-vertical-lr-ref.html": [
-         "2e36e0a6c8e53d6564f5935dc1609ef7b6234180",
+         "36ec77971f38e2b13cc61a601d264060f1a7182d",
          []
         ],
         "select-appearance-writing-mode-vertical-rl-ref.html": [
-         "e24aec5ad2303c52d263a5c0c0d14b3210e0292a",
+         "1bdabccd59823b64f072c5d7bddf0ff34bd1fa57",
+         []
+        ],
+        "select-base-appearance-computed-style-expected.txt": [
+         "03adcb7d162459fc96ddd051279ecf056010470b",
          []
         ],
         "select-display-block-ref.html": [
@@ -436352,11 +436420,11 @@
          []
         ],
         "select-open-invalidation-ref.html": [
-         "e0631712ef70e7e65f92e331ca4fc69a70f90dde",
+         "22625a79f6c121a3044f84e31d988fe9d4b16c14",
          []
         ],
         "select-option-images-ref.html": [
-         "9c675e4f21018ccff221b7fdfda6e729f3ed7c75",
+         "49e8b30b0131e1ad5b3c664280522dfe1ac4db21",
          []
         ],
         "select-picker-popover-open-invalid.tentative-expected.txt": [
@@ -436364,11 +436432,11 @@
          []
         ],
         "select-popover-exit-animation-ref.html": [
-         "994d3a5fb2163eef9ab5bcfcf313dee661e2290c",
+         "0359fd6c81663c54ce5848d32a3530f4cda4da5a",
          []
         ],
         "select-second-child-button-ref.html": [
-         "636d0514c454a54e0f5500e9013a8488ba6e7552",
+         "d1fdd539945e7f36c39aad353af820b652fbbc58",
          []
         ],
         "select-size-multiple-new-content-ref.html": [
@@ -444557,7 +444625,7 @@
     }
    },
    "lint.ignore": [
-    "303a35795d64108aff51a14d654555b6ae3af249",
+    "a7c03c52572fefc264bb0d141633172c0b462bc9",
     []
    ],
    "loading": {
@@ -448639,94 +448707,8 @@
      "360c6927a5d51b1e6fa589afc8507dd8d462a437",
      []
     ],
-    "META.yml": [
-     "eff7624d054f6fbc6feac2aa106d166587f0b3eb",
-     []
-    ],
     "OWNERS": [
      "40fff1c7b86cfc6029cd12fd3f7ebf4280984c55",
-     []
-    ],
-    "WEB_FEATURES.yml": [
-     "deacc5a28c4116067f6238e41ceb64cf5b12ec46",
-     []
-    ],
-    "app-can-make-payment.js": [
-     "6b060dffb7848ea40529bd7cf8782f1b49c64c66",
-     []
-    ],
-    "app-change-payment-method.js": [
-     "0e5a4768e7626f666077e794e0731c9a1e3e9d35",
-     []
-    ],
-    "app-change-shipping-address.js": [
-     "df39258dc92642b130c6765f6c75d7efb523712f",
-     []
-    ],
-    "app-change-shipping-option.js": [
-     "ac3307b619ccfb464a5fa44820cea39befdd8f2e",
-     []
-    ],
-    "app-simple.js": [
-     "9e70c08246b5b534ea032b9275b0d82676b3c701",
-     []
-    ],
-    "app-supports-shipping-contact-delegation.js": [
-     "770e2de64f13eeef8a1ee21783c2997facc8ff0b",
-     []
-    ],
-    "can-make-payment-event-constructor.https.serviceworker.js": [
-     "5b334d9c3aca0a974c9c32063c5b56d2214a89e2",
-     []
-    ],
-    "can-make-payment-event-manifest.json": [
-     "b31ea5ce08b59d8b227f8ad03555244e1f616b52",
-     []
-    ],
-    "can-make-payment-event.https-expected.txt": [
-     "0284f0ec5d7e34ed1955d29bafbce34278586e2d",
-     []
-    ],
-    "change-payment-method-manual-manifest.json": [
-     "7a4f5d6f7e20d8abf03a4add842d1dad603c87a3",
-     []
-    ],
-    "change-shipping-address-manual-manifest.json": [
-     "08b034e825ca66488d61da8dc4f49e3f18323006",
-     []
-    ],
-    "change-shipping-option-manual-manifest.json": [
-     "2c023902b2a79b01fcaaf22315ecd284ff3896e8",
-     []
-    ],
-    "idlharness.https.any.serviceworker-expected.txt": [
-     "077cd25813fa0adb4291e0ea52b188983737e6e5",
-     []
-    ],
-    "manifest.json": [
-     "875d74b66306ad17d29e3f75ad7d250ba74da20e",
-     []
-    ],
-    "payment-app": {
-     "payment.html": [
-      "37d2452ed916590402340f61e987924f8fd74f0d",
-      []
-     ]
-    },
-    "payment-request-event-constructor.https.serviceworker.js": [
-     "1aea7000c1428e84f8e1d4ce1ccae63e97741122",
-     []
-    ],
-    "payment-request-event-manual-manifest.json": [
-     "f97229762ce388ff0695d56684099b9286326a29",
-     []
-    ],
-    "supports-shipping-contact-delegation-manual-manifest.json": [
-     "fd6bc89ef6d38e0cee82bfadcc697e36a2952070",
-     []
-    ],
-    "untrusted-event.js": [
-     "e067952cc3b7dd0eb74909001e49615e20a8f8b9",
      []
     ]
    },
@@ -452339,11 +452321,11 @@
       []
      ],
      "generate-report-once.py": [
-      "163846a4b962c156442f4375dfec3168ee705c74",
+      "579cec63d7b196e4cb96efa83330c60776bc1b83",
       []
      ],
      "generate-report.https.sub.html": [
-      "f1f4e96300653af6c169ed41e42d3aaff144ebae",
+      "6d8b906fccf36ac52641d5ec376cecebe0347bdc",
       []
      ],
      "middle-frame.https.sub.html": [
@@ -452372,6 +452354,10 @@
      ],
      "second-csp-report.https.sub.html.sub.headers": [
       "b32c548fef4f6c1e628e587aad5eb3dfadae0d4d",
+      []
+     ],
+     "worker-trigger-deprecation.https.sub.js": [
+      "c10cddce89e239884a2e7dcd3cbfdd1d492bdfe2",
       []
      ]
     },
@@ -452843,7 +452829,7 @@
       []
      ],
      "loading-resource-lib.js": [
-      "2e607563face65a45af5aed089bc854fbe45b705",
+      "073134a579b0a5c74d9e4afd454f3c6e6dc3cc41",
       []
      ],
      "loading-resources-in-posted-task.js": [
@@ -460074,7 +460060,7 @@
        ]
       },
       "tabindex-focus-flag-expected.txt": [
-       "fda409d2cdb4f0348898dd5d10f633869b10e8dc",
+       "d89cd1450c2af48b4f5007defada5623a3d76bfd",
        []
       ]
      }
@@ -465415,6 +465401,94 @@
       }
      }
     }
+   },
+   "web-based-payment-handler": {
+    "META.yml": [
+     "6c8045203bff6aab8c3739fb5ee438f273a1fd88",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "f091e6d16c25719220457446b70897cb6f6ce2d2",
+     []
+    ],
+    "app-can-make-payment.js": [
+     "6b060dffb7848ea40529bd7cf8782f1b49c64c66",
+     []
+    ],
+    "app-change-payment-method.js": [
+     "0e5a4768e7626f666077e794e0731c9a1e3e9d35",
+     []
+    ],
+    "app-change-shipping-address.js": [
+     "df39258dc92642b130c6765f6c75d7efb523712f",
+     []
+    ],
+    "app-change-shipping-option.js": [
+     "ac3307b619ccfb464a5fa44820cea39befdd8f2e",
+     []
+    ],
+    "app-simple.js": [
+     "d5ff2b13272d03516a0ed0d97fffbeba44bd266e",
+     []
+    ],
+    "app-supports-shipping-contact-delegation.js": [
+     "770e2de64f13eeef8a1ee21783c2997facc8ff0b",
+     []
+    ],
+    "can-make-payment-event-constructor.https.serviceworker.js": [
+     "5b334d9c3aca0a974c9c32063c5b56d2214a89e2",
+     []
+    ],
+    "can-make-payment-event-manifest.json": [
+     "b31ea5ce08b59d8b227f8ad03555244e1f616b52",
+     []
+    ],
+    "can-make-payment-event.https-expected.txt": [
+     "0284f0ec5d7e34ed1955d29bafbce34278586e2d",
+     []
+    ],
+    "change-payment-method-manual-manifest.json": [
+     "7a4f5d6f7e20d8abf03a4add842d1dad603c87a3",
+     []
+    ],
+    "change-shipping-address-manual-manifest.json": [
+     "08b034e825ca66488d61da8dc4f49e3f18323006",
+     []
+    ],
+    "change-shipping-option-manual-manifest.json": [
+     "2c023902b2a79b01fcaaf22315ecd284ff3896e8",
+     []
+    ],
+    "idlharness.https.any.serviceworker-expected.txt": [
+     "077cd25813fa0adb4291e0ea52b188983737e6e5",
+     []
+    ],
+    "manifest.json": [
+     "875d74b66306ad17d29e3f75ad7d250ba74da20e",
+     []
+    ],
+    "payment-app": {
+     "payment.html": [
+      "37d2452ed916590402340f61e987924f8fd74f0d",
+      []
+     ]
+    },
+    "payment-request-event-constructor.https.serviceworker.js": [
+     "1aea7000c1428e84f8e1d4ce1ccae63e97741122",
+     []
+    ],
+    "payment-request-event-manual-manifest.json": [
+     "f97229762ce388ff0695d56684099b9286326a29",
+     []
+    ],
+    "supports-shipping-contact-delegation-manual-manifest.json": [
+     "fd6bc89ef6d38e0cee82bfadcc697e36a2952070",
+     []
+    ],
+    "untrusted-event.js": [
+     "e067952cc3b7dd0eb74909001e49615e20a8f8b9",
+     []
+    ]
    },
    "web-bundle": {
     "META.yml": [
@@ -569768,7 +569842,7 @@
       ]
      ],
      "calc-nesting.html": [
-      "f68d4ae8e98c94f99af761736f0f54d5e5cd222a",
+      "e040fb17caca25601760ed4d49c22f281caa5108",
       [
        null,
        {}
@@ -586173,35 +586247,35 @@
      ],
      "tentative": {
       "FormControlRange-basic.html": [
-       "b42186dc6378236fd678affcee820dbbbfe08014",
+       "5de64fdcc836b4f1f5f7c8031ba8bb6ff2907534",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-geometry-basic.html": [
-       "2fa7c680a1579a4bc5bbd8cd55fd38719da48679",
+       "f24703fe4d1ec12737a05939b604d323cd3ae460",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-geometry-complexity-and-visibility.html": [
-       "74ac2cb0b1f92570b6011ea6c5da6697b1478724",
+       "34bdf2d9af3e4ea37c0dbc885c4e844169bb4bcf",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-geometry-multiline-and-mutations.html": [
-       "48de9157c35b8d5e2cf825c1e7fe2cf339430f34",
+       "808428575f0f433b2515bcf26ba6d9beca5db737",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-interactive-basic.html": [
-       "8e97e069fec296c2068bb1819989edada978a285",
+       "8f5761af3c98b9f5bdcd0f7a15fa1e595583d8ce",
        [
         null,
         {
@@ -586210,7 +586284,7 @@
        ]
       ],
       "FormControlRange-interactive-overlap-and-selection.html": [
-       "b3d7b66f5e48401c8dd0937c606644c14ac72cee",
+       "b960e233175699e767b87998d3e11b6163dafe42",
        [
         null,
         {
@@ -586219,49 +586293,42 @@
        ]
       ],
       "FormControlRange-offset.html": [
-       "903f2752a6e9716dfe82dfafd9e24bcc4afbb2b2",
+       "7d2fb891972c1980ac26247b7b9fc41229e2fa85",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-programmatic-updates.html": [
-       "611d6cb4c090ff3bc461b934ed79820ea0d8ffa2",
+       "26ea5cc103c0f951c4809849b72dbba90fd37b13",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-range-updates.html": [
-       "8cf51a83d5d7373ac07f8383962b1c169ffa0440",
+       "c486fdfb0ed7d8bc17258c4b734a9571c91e06a2",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-supported-elements.html": [
-       "92d9b2437c38073ff41da06f5affc2bc759d9724",
-       [
-        null,
-        {}
-       ]
-      ],
-      "FormControlRange-toString.html": [
-       "665bfbbdda4c7f3f344544eb8a4460b166bc9740",
+       "8bbe3bd306e3d5fd20f8af20d05723885d614923",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-unsupported-elements.html": [
-       "60d9681965c9f9971d784340525d17418ceb34e6",
+       "2eee48b67c32da1c319695500af33e16ecdec12c",
        [
         null,
         {}
        ]
       ],
       "FormControlRange-update-event-order.html": [
-       "2fa5a3eff21c2ebe24d506b9d4ac86749e6ba7b4",
+       "d8c0bbb3a29f17bc314852bbf6d91516192b21aa",
        [
         null,
         {
@@ -586270,7 +586337,7 @@
        ]
       ],
       "FormControlRange-validation.html": [
-       "cffc88894f49e8f7c3018a7f8106f2685948ddc9",
+       "478c0a750e98dcddcfecd6da31741d24764c8c9c",
        [
         null,
         {}
@@ -687417,6 +687484,13 @@
          {}
         ]
        ],
+       "played-loop.html": [
+        "834c3b723c9e9498a864136ea8254d89948ad7b7",
+        [
+         null,
+         {}
+        ]
+       ],
        "playing-the-media-resource": {
         "fragmented-mp4-end.html": [
          "fafb49768cf7652a999c256a9b8e15268bfba5ad",
@@ -691788,6 +691862,15 @@
          {}
         ]
        ],
+       "customizable-combobox-keyboard-behavior.tentative.html": [
+        "d5636942dd093ab03b7e77365d38f0b38fe369e9",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "datalist-popover.tentative.html": [
         "4a4bfc4e1a390736c71eaf1c47d856ddc960dbe4",
         [
@@ -693921,7 +694004,7 @@
          ]
         ],
         "select-base-appearance-computed-style.html": [
-         "6f4689820d0e76ce177ef47a158e7b649eefbed4",
+         "62c50c6eceabc26b8f3b7cd8e04dc33af7c3178b",
          [
           null,
           {}
@@ -725440,188 +725523,6 @@
      ]
     ]
    },
-   "payment-handler": {
-    "can-make-payment-event-constructor.https.html": [
-     "6892f01aa95c805b04446e1eb0a867bb060761be",
-     [
-      null,
-      {}
-     ]
-    ],
-    "can-make-payment-event-constructor.https.serviceworker.html": [
-     "afff850dc47553932fadc46dacab170633ac47e7",
-     [
-      null,
-      {}
-     ]
-    ],
-    "can-make-payment-event-constructor.https.worker.js": [
-     "d88bddceafa97487f03d63b1a8c67c5141a16721",
-     [
-      "payment-handler/can-make-payment-event-constructor.https.worker.html",
-      {}
-     ]
-    ],
-    "can-make-payment-event.https.html": [
-     "776c68be43ad727b6f8108bb6dbbebd7ebec3196",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "idlharness.https.any.js": [
-     "d34e20630bf7d60faa5aa8333d1595754420c080",
-     [
-      "payment-handler/idlharness.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ],
-     [
-      "payment-handler/idlharness.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ],
-     [
-      "payment-handler/idlharness.https.any.sharedworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ],
-     [
-      "payment-handler/idlharness.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "payment-request-event-constructor.https.html": [
-     "31ac8cafa78fb52fb7c02722003b5359ceadb7e2",
-     [
-      null,
-      {}
-     ]
-    ],
-    "payment-request-event-constructor.https.serviceworker.html": [
-     "a64c4290e03f7d7ac33ee70e63e3cdcddb7dbda7",
-     [
-      null,
-      {}
-     ]
-    ],
-    "payment-request-event-constructor.https.worker.js": [
-     "fdb71aa845179cf63344d9370b1a138ef8924746",
-     [
-      "payment-handler/payment-request-event-constructor.https.worker.html",
-      {}
-     ]
-    ],
-    "same-object-attributes.https.html": [
-     "27c204484359d6b1afbb3412ae4feabf1295d6b1",
-     [
-      null,
-      {}
-     ]
-    ],
-    "untrusted-event.https.html": [
-     "900ac79d0d21f698707f6efe13a07dd234ed1a30",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
    "payment-method-basic-card": {
     "apply_the_modifiers.html": [
      "f1b59dda4a125bdc62b79809ddd332f4a82f0713",
@@ -745173,7 +745074,7 @@
      ]
     ],
     "document-reporting-default-endpoint.https.sub.html": [
-     "f1951e3469b90ec7040b7c2e6a9d2c0178d275b2",
+     "e54791ec7e7a4bddd5444d79fb700dcb7f637c1b",
      [
       null,
       {
@@ -745210,7 +745111,7 @@
      ]
     ],
     "document-reporting-path-absolute.https.sub.html": [
-     "48be010a00be6db990a118f58543a900cb1da259",
+     "77c3503126f0f86bc8dc592b27a90c8d1cbcbe80",
      [
       null,
       {
@@ -746715,8 +746616,15 @@
     ],
     "tentative": {
      "initiator-url": {
+      "event-handler-overwritten.html": [
+       "bf354034d64f2417f1fb426395f169bf897afcd1",
+       [
+        null,
+        {}
+       ]
+      ],
       "event-handler.html": [
-       "26071408e9edc6631de5943a92909af028eb4492",
+       "21287ee2ac6a13cd4bd6703e42b09b555e438b2e",
        [
         null,
         {}
@@ -779214,7 +779122,7 @@
        ]
       ],
       "tabindex-focus-flag.svg": [
-       "34ef5ce68521ece3b6421ceb5e87a63cff9aa2ad",
+       "20894ebb42d5b6b248d3de8ee19c3bea79f4268c",
        [
         null,
         {}
@@ -801355,6 +801263,188 @@
       ]
      }
     }
+   },
+   "web-based-payment-handler": {
+    "can-make-payment-event-constructor.https.html": [
+     "4ae2be6c283d301ba2678909272a9220cf5bf915",
+     [
+      null,
+      {}
+     ]
+    ],
+    "can-make-payment-event-constructor.https.serviceworker.html": [
+     "7b9881b7d75da63ee9540cd267a485141e6dae3c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "can-make-payment-event-constructor.https.worker.js": [
+     "d88bddceafa97487f03d63b1a8c67c5141a16721",
+     [
+      "web-based-payment-handler/can-make-payment-event-constructor.https.worker.html",
+      {}
+     ]
+    ],
+    "can-make-payment-event.https.html": [
+     "830076cb43ac16ba5c1448ac49cca23170eb9187",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "idlharness.https.any.js": [
+     "cfc1b3de455f42c29fdd5af61df76548bfc319b0",
+     [
+      "web-based-payment-handler/idlharness.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "web-based-payment-handler/idlharness.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "web-based-payment-handler/idlharness.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "web-based-payment-handler/idlharness.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "payment-request-event-constructor.https.html": [
+     "a2f51eaa607988c05def98dea7999b425138e4a7",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-event-constructor.https.serviceworker.html": [
+     "dce98694403ec077cb10d14c3e0e2223276d0b65",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-event-constructor.https.worker.js": [
+     "fdb71aa845179cf63344d9370b1a138ef8924746",
+     [
+      "web-based-payment-handler/payment-request-event-constructor.https.worker.html",
+      {}
+     ]
+    ],
+    "same-object-attributes.https.html": [
+     "408f1bacd283251719ec3af6a93704d056879c62",
+     [
+      null,
+      {}
+     ]
+    ],
+    "untrusted-event.https.html": [
+     "f3bc9e21bc8bc44701f3bd083a2b286486b64243",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "web-bundle": {
     "subresource-loading": {

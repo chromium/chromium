@@ -3,7 +3,7 @@
 <title>Tests for PaymentRequestEvent.changeShippingOption()</title>
 <link
   rel="help"
-  href="https://w3c.github.io/payment-handler/#changeshippingoption-method"
+  href="https://w3c.github.io/web-based-payment-handler/#changeshippingoption-method"
 />
 
 <script src="/resources/testharness.js"></script>
@@ -13,7 +13,7 @@
 <p>If the payment sheet is shown, please authorize the mock payment.</p>
 <script>
 const methodName = window.location.origin
-    + '/payment-handler/change-shipping-option-manual-manifest.json';
+    + '/web-based-payment-handler/change-shipping-option-manual-manifest.json';
 function createRequest() {
   return new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},

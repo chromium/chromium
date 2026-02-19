@@ -28,7 +28,7 @@ self.addEventListener('paymentrequest', event => {
     return;
   }
 
-  const expectedMethodNameSuffix = '/payment-handler/payment-request-event-manual-manifest.json';
+  const expectedMethodNameSuffix = '/web-based-payment-handler/payment-request-event-manual-manifest.json';
   if (!methodData.supportedMethods.endsWith(expectedMethodNameSuffix)) {
     const msg = `Expected payment method name "${methodData.supportedMethods}" to end with ${expectedMethodNameSuffix}"`;
     event.respondWith(Promise.reject(new Error(msg)));

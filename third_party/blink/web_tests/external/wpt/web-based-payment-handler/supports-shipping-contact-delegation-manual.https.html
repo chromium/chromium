@@ -7,7 +7,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <p>If the payment sheet is shown, please authorize the mock payment.</p>
 <script>
-const methodName = window.location.origin + '/payment-handler/'
+const methodName = window.location.origin + '/web-based-payment-handler/'
     + 'supports-shipping-contact-delegation-manual-manifest.json';
 promise_test(async (t) => {
   const request = new PaymentRequest([{supportedMethods: methodName}], {
