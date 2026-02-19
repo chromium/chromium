@@ -332,6 +332,7 @@ if (is_android) {
       "//base",
       "//chrome/browser",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/preloading",
       "//chrome/browser/profiles",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_navigator_params_headers",

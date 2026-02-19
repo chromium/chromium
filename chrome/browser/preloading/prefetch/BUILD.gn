@@ -57,6 +57,7 @@ source_set("platform_browser_tests") {
   deps = [
     ":test_support",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading:test_support",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/search_engines",
@@ -122,6 +123,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/history",
+      "//chrome/browser/preloading",
       "//chrome/browser/preloading:prefs",
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",

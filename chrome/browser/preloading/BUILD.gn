@@ -2,6 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("preloading") {
+  public = [
+    "autocomplete_dictionary_preload_service.h",
+    "autocomplete_dictionary_preload_service_factory.h",
+    "chrome_preloading.h",
+    "preloading_features.h",
+    "preloading_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "autocomplete_dictionary_preload_service.cc",
+    "autocomplete_dictionary_preload_service_factory.cc",
+    "chrome_preloading.cc",
+    "preloading_features.cc",
+    "preloading_utils.cc",
+  ]
+
+  deps = [
+    ":preloading",
+    "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+  ]
+}
+
 source_set("prefs") {
   sources = [
     "preloading_prefs.cc",
@@ -32,7 +71,45 @@ source_set("test_support") {
     "//url",
   ]
 
-  # TODO(crbug.com/408146612): Revisit this when preloading_features.h moves
-  # into this file.
-  deps = [ "//chrome/browser" ]
+  deps = [ ":preloading" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "autocomplete_dictionary_preload_browsertest.cc" ]
+    deps = [
+      ":preloading",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/preloading/prefetch:browser_tests",
+      "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//components/omnibox/browser",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//services/network/public/mojom",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "preloading_prefs_unittest.cc" ]
+  deps = [
+    ":prefs",
+    "//base/test:test_support",
+    "//chrome/browser/battery",
+    "//chrome/browser/data_saver",
+    "//chrome/browser/prefetch",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }

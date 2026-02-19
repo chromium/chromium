@@ -8,6 +8,7 @@ source_set("unit_tests") {
   sources = [ "new_tab_page_preload_unittest.cc" ]
 
   deps = [
+    "//chrome/browser/preloading",
     "//chrome/test:test_support",
     "//content/test:test_support",
   ]

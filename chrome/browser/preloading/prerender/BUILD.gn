@@ -14,6 +14,7 @@ source_set("browser_tests") {
 
   deps = [
     "//base/test:test_support",
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading:test_support",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
@@ -32,6 +33,7 @@ source_set("unit_tests") {
   sources = [ "prerender_manager_unittest.cc" ]
 
   deps = [
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading:test_support",
     "//chrome/test:test_support",
     "//content/test:test_support",

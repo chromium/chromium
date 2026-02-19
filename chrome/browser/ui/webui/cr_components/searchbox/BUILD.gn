@@ -46,6 +46,7 @@ source_set("searchbox_impl") {
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/omnibox",
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",

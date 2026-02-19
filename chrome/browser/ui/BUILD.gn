@@ -319,6 +319,7 @@ static_library("ui") {
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:impl",
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles",

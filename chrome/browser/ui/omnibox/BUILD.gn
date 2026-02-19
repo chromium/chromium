@@ -115,6 +115,7 @@ source_set("impl") {
       "//chrome/browser/favicon",
       "//chrome/browser/history",
       "//chrome/browser/omnibox",
+      "//chrome/browser/preloading",
       "//chrome/browser/preloading/search_preload",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/omnibox_popup:resources_grit",

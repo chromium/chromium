@@ -317,6 +317,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/privacy_sandbox/notice:factory",

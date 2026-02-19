@@ -8,6 +8,7 @@ source_set("unit_tests") {
   sources = [ "bookmarkbar_preload_unittest.cc" ]
 
   deps = [
+    "//chrome/browser/preloading",
     "//chrome/test:test_support",
     "//content/test:test_support",
   ]
