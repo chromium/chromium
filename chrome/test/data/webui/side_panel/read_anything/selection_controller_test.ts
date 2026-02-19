@@ -441,6 +441,29 @@ suite('SelectionController', () => {
         chrome.readingMode.isReadabilityEnabled = true;
       });
 
+      test('does nothing when node content is missing', () => {
+        const expectedAnchorOffset = 2;
+        const expectedFocusOffset = 10;
+        selectNodesInMainPanel(
+            100, expectedAnchorOffset, 101, expectedFocusOffset);
+        const prefix =
+            'Being home alone is like being home with no, with no people. ';
+        const content = 'I was alone cause there were no people at all.';
+        chrome.readingMode.getPrefixText = () => prefix;
+        // Simulate one of the nodes not having content.
+        chrome.readingMode.getTextContent = (id: number) =>
+            (id === 100) ? content : '';
+        const p = document.createElement('p');
+        p.appendChild(document.createTextNode(prefix));
+        p.appendChild(document.createTextNode(content));
+        document.body.appendChild(p);
+
+        selectionController.updateSelection(selection, document.body);
+
+        assertFalse(!!selection.anchorNode);
+        assertFalse(!!selection.focusNode);
+      });
+
       test('does nothing when ids are unknown', () => {
         selectNodesInMainPanel(0, 2, 0, 10);
         selectionController.updateSelection(selection, document.body);

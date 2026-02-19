@@ -208,14 +208,23 @@ export class SelectionController {
       return null;
     }
 
+    const anchorContent = chrome.readingMode.getTextContent(anchorNodeId);
+    const focusContent = chrome.readingMode.getTextContent(focusNodeId);
+
+    // If the nodes don't have valid text content, they shouldn't be used
+    // for selection.
+    if (!anchorContent || !focusContent) {
+      return null;
+    }
+
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     const anchorContext = {
       prefix: chrome.readingMode.getPrefixText(anchorNodeId),
-      content: chrome.readingMode.getTextContent(anchorNodeId),
+      content: anchorContent,
     };
     const focusContext = {
       prefix: chrome.readingMode.getPrefixText(focusNodeId),
-      content: chrome.readingMode.getTextContent(focusNodeId),
+      content: focusContent,
     };
 
     const result = this.findTargetNodes_(walker, anchorContext, focusContext);

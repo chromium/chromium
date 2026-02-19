@@ -1747,7 +1747,10 @@ std::string ReadAnythingAppController::GetLanguage(
 std::u16string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  CHECK(ax_node);
+  DUMP_WILL_BE_CHECK(ax_node);
+  if (!ax_node) {
+    return std::u16string();
+  }
 
   return a11y::GetTextContent(ax_node, model_.is_pdf(), IsGoogleDocs());
 }
@@ -1755,7 +1758,10 @@ std::u16string ReadAnythingAppController::GetTextContent(
 std::u16string ReadAnythingAppController::GetPrefixText(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  CHECK(ax_node);
+  DUMP_WILL_BE_CHECK(ax_node);
+  if (!ax_node) {
+    return std::u16string();
+  }
 
   return a11y::GetPrefixText(ax_node, model_.is_pdf(), IsGoogleDocs());
 }
