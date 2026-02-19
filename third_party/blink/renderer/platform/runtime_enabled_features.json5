@@ -5253,6 +5253,10 @@
       status: "stable",
     },
     {
+      name: "SvgAvoidResettingFilterQualityForTiledPattern",
+      status: "stable",
+    },
+    {
       // Treat SVG documents in <object>/<embed> as replaced elements
       // https://issues.chromium.org/41302806
       name: "SVGEmbeddedAsReplacedElement",
