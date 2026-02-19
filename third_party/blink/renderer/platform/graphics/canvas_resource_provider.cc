@@ -546,9 +546,7 @@ bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
 void CanvasResourceProviderSharedImage::EnsureWriteAccess() {
   DCHECK(resource_);
   // In software mode, we don't need write access to the resource during
-  // drawing since it is executed on cpu memory managed by skia. We ensure
-  // exclusive access to the resource when the results are copied onto the
-  // GMB in EndWriteAccess.
+  // drawing since it is executed on CPU memory managed by Skia.
   DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
       << "Write access requires exclusive access to the resource";
   DCHECK(!resource()->is_cross_thread())
@@ -999,9 +997,11 @@ sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
   }
 
   const auto props = GetSkSurfaceProps();
-  // For software raster path, we render into cpu memory managed internally
-  // by SkSurface and copy the rendered results to the GMB before dispatching
-  // it to the display compositor.
+
+  // When using software raster with GPU compositing, we render into CPU memory
+  // managed internally by SkSurface and copy the rendered results to the
+  // current resource's backing SharedImage before dispatching that SharedImage
+  // to the display compositor.
   return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
 }
 
