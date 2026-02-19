@@ -40,7 +40,7 @@ export interface ProfilePickerMainViewElement {
   $: {
     addProfile: CrButtonElement,
     askOnStartup: CrCheckboxElement|CrToggleElement,
-    'picker-logo': HTMLElement,
+    pickerLogo: HTMLElement,
     browseAsGuestButton: HTMLElement,
     openAllProfilesButton: HTMLElement,
     profilesContainer: HTMLElement,
@@ -226,7 +226,7 @@ export class ProfilePickerMainViewElement extends
       return;
     }
 
-    this.$['picker-logo'].animate(
+    this.$.pickerLogo.animate(
         {
           transform: ['none', 'rotate(-10turn)'],
         },

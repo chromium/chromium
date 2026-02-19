@@ -65,8 +65,7 @@ suite('ExtensionLoadErrorTests', function() {
   });
 
   test('CodeSection', async () => {
-    assertTrue(loadError.$.code.shadowRoot
-                   .querySelector<HTMLElement>('#scroll-container')!.hidden);
+    assertTrue(loadError.$.code.$.scrollContainer.hidden);
     const loadErrorWithSource = {
       error: 'Some error',
       path: '/some/path',
@@ -80,8 +79,7 @@ suite('ExtensionLoadErrorTests', function() {
 
     loadError.loadError = loadErrorWithSource;
     await microtasksFinished();
-    assertFalse(loadError.$.code.shadowRoot
-                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
+    assertFalse(loadError.$.code.$.scrollContainer.hidden);
   });
 
   test('PathWithoutSource', async () => {
@@ -97,15 +95,13 @@ suite('ExtensionLoadErrorTests', function() {
   });
 
   test('GenericError', async () => {
-    assertTrue(loadError.$.code.shadowRoot
-                   .querySelector<HTMLElement>('#scroll-container')!.hidden);
+    assertTrue(loadError.$.code.$.scrollContainer.hidden);
 
     loadError.loadError = new Error('Some generic error');
     await microtasksFinished();
 
     // Code section should still be hidden because there is no source.
-    assertTrue(loadError.$.code.shadowRoot
-                   .querySelector<HTMLElement>('#scroll-container')!.hidden);
+    assertTrue(loadError.$.code.$.scrollContainer.hidden);
 
     // File row should be hidden because there is no specific file.
     assertTrue(

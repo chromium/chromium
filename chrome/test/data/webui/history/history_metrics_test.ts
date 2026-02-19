@@ -63,7 +63,7 @@ suite('Metrics', function() {
    */
   async function contextMenuButtonClick(
       historyItem: HistoryItemElement, buttonId: string) {
-    historyItem.$['menu-button'].click();
+    historyItem.$.menuButton.click();
     await microtasksFinished();
 
     const sharedMenu = app.$.history.$.sharedMenu.get();
@@ -174,7 +174,7 @@ suite('Metrics', function() {
 
     // items = app.$.history.shadowRoot.querySelectorAll('history-item');
     // assertTrue(!!items[0]);
-    // items[0].$['menu-button'].click();
+    // items[0].$.menuButton.click();
     // await microtasksFinished();
 
     // app.$.history.shadowRoot.querySelector<HTMLElement>(
@@ -226,15 +226,15 @@ suite('Metrics', function() {
     const cards = syncedDeviceManager.shadowRoot.querySelectorAll(
         'history-synced-device-card');
     assertTrue(!!cards[0]);
-    cards[0].$['card-heading'].click();
+    cards[0].$.cardHeading.click();
     assertEquals(1, histogram[SyncedTabsHistogram.COLLAPSE_SESSION]);
-    cards[0].$['card-heading'].click();
+    cards[0].$.cardHeading.click();
     assertEquals(1, histogram[SyncedTabsHistogram.EXPAND_SESSION]);
     cards[0].shadowRoot.querySelectorAll<HTMLElement>(
                            '.website-link')[0]!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.LINK_CLICKED]);
 
-    const menuButton = cards[0].$['menu-button'];
+    const menuButton = cards[0].$.menuButton;
     menuButton.click();
     await microtasksFinished();
 

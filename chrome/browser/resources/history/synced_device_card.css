@@ -14,7 +14,7 @@
   display: block;
 }
 
-#card-heading {
+#cardHeading {
   cursor: pointer;
   justify-content: space-between;
   padding-inline-end: 0;

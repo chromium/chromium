@@ -31,11 +31,11 @@ import {getHtml} from './history_item.html.js';
 
 export interface HistoryItemElement {
   $: {
-    'checkbox': CrCheckboxElement,
-    'icon': HTMLElement,
-    'link': HTMLElement,
-    'menu-button': CrIconButtonElement,
-    'time-accessed': HTMLElement,
+    checkbox: CrCheckboxElement,
+    icon: HTMLElement,
+    link: HTMLElement,
+    menuButton: CrIconButtonElement,
+    timeAccessed: HTMLElement,
   };
 }
 
@@ -127,7 +127,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   focusOnMenuButton() {
-    focusWithoutInk(this.$['menu-button']);
+    focusWithoutInk(this.$.menuButton);
   }
 
   private onCheckboxKeydown_(e: KeyboardEvent) {
@@ -243,7 +243,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
     if (this.shadowRoot.querySelector('#bookmark-star') ===
         this.shadowRoot.activeElement) {
-      focusWithoutInk(this.$['menu-button']);
+      focusWithoutInk(this.$.menuButton);
     }
 
     const browserService = BrowserServiceImpl.getInstance();
@@ -311,7 +311,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
         this.item.url, this.item.isUrlInRemoteUserData,
         this.item.remoteIconUrlForUma);
     this.eventTracker_.add(
-        this.$['time-accessed'], 'mouseover', () => this.addTimeTitle_());
+        this.$.timeAccessed, 'mouseover', () => this.addTimeTitle_());
   }
 
   protected cardTitle_(): string {
@@ -329,7 +329,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     if (!this.item) {
       return;
     }
-    const el = this.$['time-accessed'];
+    const el = this.$.timeAccessed;
     el.setAttribute('title', new Date(this.item.time).toString());
     this.eventTracker_.remove(el, 'mouseover');
   }

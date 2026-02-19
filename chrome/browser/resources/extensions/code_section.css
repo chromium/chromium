@@ -26,7 +26,7 @@
   }
 }
 
-#scroll-container {
+#scrollContainer {
   background: var(--container-bg);
   height: 100%;
   overflow: auto;
@@ -34,7 +34,7 @@
 }
 
 @media (prefers-color-scheme: light) {
-  #scroll-container {
+  #scrollContainer {
     border: 1px solid var(--paper-grey-500);
   }
 }

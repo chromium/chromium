@@ -15,7 +15,7 @@ ${isGlicVersion() ? html`
 ` : ''}
 <div class="flex-container">
   <div class="title-container">
-    <img id="picker-logo" @click="${this.onProductLogoClick_}"
+    <img id="pickerLogo" @click="${this.onProductLogoClick_}"
         src="picker_logo.svg" role="presentation">
     <h1 class="title" .innerHTML="${this.getTitle_()}"></h1>
     <div class="subtitle" .innerHTML="${this.getSubtitle_()}"></div>

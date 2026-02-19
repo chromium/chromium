@@ -336,7 +336,7 @@ suite('HistoryListTest', function() {
       },
     }));
     const items = element.shadowRoot.querySelectorAll('history-item');
-    items[0]!.$['menu-button'].click();
+    items[0]!.$.menuButton.click();
     await microtasksFinished();
     element.$.sharedMenu.get();
     element.shadowRoot.querySelector<HTMLElement>('#menuMoreButton')!.click();
@@ -348,13 +348,13 @@ suite('HistoryListTest', function() {
         toolbar.$.mainToolbar.getSearchField().getValue());
 
     element.$.sharedMenu.get().close();
-    items[0]!.$['menu-button'].click();
+    items[0]!.$.menuButton.click();
     await microtasksFinished();
     assertTrue(element.shadowRoot.querySelector<HTMLElement>(
                                      '#menuMoreButton')!.hidden);
 
     element.$.sharedMenu.get().close();
-    items[1]!.$['menu-button'].click();
+    items[1]!.$.menuButton.click();
     await microtasksFinished();
     assertFalse(
         element.shadowRoot.querySelector<HTMLElement>(
@@ -470,7 +470,7 @@ suite('HistoryListTest', function() {
     items[3]!.$.checkbox.click();
     await microtasksFinished();
 
-    items[1]!.$['menu-button'].click();
+    items[1]!.$.menuButton.click();
     await microtasksFinished();
 
     testService.handler.setResultFor(
@@ -520,7 +520,7 @@ suite('HistoryListTest', function() {
     await microtasksFinished();
 
     // Delete one of the items using its own remove button.
-    items[1]!.$['menu-button'].click();
+    items[1]!.$.menuButton.click();
     element.$.sharedMenu.get();
     element.shadowRoot.querySelector<HTMLElement>('#menuRemoveButton')!.click();
     await microtasksFinished();
@@ -565,7 +565,7 @@ suite('HistoryListTest', function() {
             .querySelector('cr-button')!.disabled);
 
     // Menu button should also be re-enabled.
-    items[1]!.$['menu-button'].click();
+    items[1]!.$.menuButton.click();
     element.$.sharedMenu.get();
     assertFalse(
         element.shadowRoot

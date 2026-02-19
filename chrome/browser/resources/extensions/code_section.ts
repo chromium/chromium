@@ -24,7 +24,7 @@ function visibleLineCount(totalCount: number, oppositeCount: number): number {
 
 export interface ExtensionsCodeSectionElement {
   $: {
-    'scroll-container': HTMLElement,
+    scrollContainer: HTMLElement,
   };
 }
 
@@ -168,7 +168,7 @@ export class ExtensionsCodeSectionElement extends
     // Find the position to show the highlight roughly in the middle.
     const targetTop = highlightTop - this.clientHeight * 0.5;
 
-    this.$['scroll-container'].scrollTo({top: targetTop});
+    this.$.scrollContainer.scrollTo({top: targetTop});
   }
 
   private getAccessibilityHighlightDescription_(

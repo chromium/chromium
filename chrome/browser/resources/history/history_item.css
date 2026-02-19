@@ -85,7 +85,7 @@
   width: 12px;
 }
 
-#time-accessed {
+#timeAccessed {
   color: var(--history-item-time-color);
   font-size: 12px;
   margin-inline-start: 6px;
@@ -101,7 +101,7 @@
   white-space: nowrap;
 }
 
-#menu-button {
+#menuButton {
   --cr-icon-button-margin-end: 20px;
   --cr-icon-button-margin-start: 12px;
   --cr-icon-button-icon-size: 16px;

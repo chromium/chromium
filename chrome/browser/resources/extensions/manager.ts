@@ -82,7 +82,7 @@ export interface ExtensionsManagerElement {
     scrollableShadow: HTMLElement,
     toolbar: ExtensionsToolbarElement,
     viewManager: CrViewManagerElement,
-    'items-list': ExtensionsItemListElement,
+    itemsList: ExtensionsItemListElement,
   };
 }
 
@@ -524,7 +524,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
 
         // In the rare case where the item cannot be focused despite existing,
         // focus the search bar.
-        if (!this.$['items-list'].focusItemButton(itemToFocusId)) {
+        if (!this.$.itemsList.focusItemButton(itemToFocusId)) {
           this.$.toolbar.focusSearchInput();
         }
       } else {
@@ -552,7 +552,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     if (this.currentPage_!.page === Page.LIST) {
       // Wait for the items list to be updated with the new value before trying
       // to focus an item.
-      this.$['items-list'].updateComplete.then(() => {
+      this.$.itemsList.updateComplete.then(() => {
         this.focusAfterItemRemoved_(listId, index);
       });
     } else if (

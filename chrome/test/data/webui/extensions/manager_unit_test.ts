@@ -50,7 +50,7 @@ suite('ExtensionManagerUnitTest', function() {
   }
 
   function getExtensions(): chrome.developerPrivate.ExtensionInfo[] {
-    return manager.$['items-list'].extensions;
+    return manager.$.itemsList.extensions;
   }
 
   function getExtension(index: number): chrome.developerPrivate.ExtensionInfo {
@@ -217,13 +217,13 @@ suite('ExtensionManagerUnitTest', function() {
         {isMv2DeprecationNoticeDismissed: true});
     assertTrue(manager.isMv2DeprecationNoticeDismissed);
     await microtasksFinished();
-    assertTrue(manager.$['items-list'].isMv2DeprecationNoticeDismissed);
+    assertTrue(manager.$.itemsList.isMv2DeprecationNoticeDismissed);
 
     service.profileStateChangedTarget.callListeners(
         {isMv2DeprecationNoticeDismissed: false});
     assertFalse(manager.isMv2DeprecationNoticeDismissed);
     await microtasksFinished();
-    assertFalse(manager.$['items-list'].isMv2DeprecationNoticeDismissed);
+    assertFalse(manager.$.itemsList.isMv2DeprecationNoticeDismissed);
   });
 
   test('Uninstall', async () => {
@@ -279,7 +279,7 @@ suite('ExtensionManagerUnitTest', function() {
     await microtasksFinished();
     assertEquals(3, getExtensions().length);
 
-    const itemList = manager.$['items-list'];
+    const itemList = manager.$.itemsList;
 
     service.itemStateChangedTarget.callListeners({
       event_type: chrome.developerPrivate.EventType.UNINSTALLED,

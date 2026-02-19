@@ -26,12 +26,12 @@ suite('<history-item> focus test', function() {
 
   test('refocus checkbox on click', async () => {
     await microtasksFinished();
-    item.$['menu-button'].focus();
-    assertEquals(item.$['menu-button'], item.shadowRoot.activeElement);
+    item.$.menuButton.focus();
+    assertEquals(item.$.menuButton, item.shadowRoot.activeElement);
 
     const whenCheckboxSelected =
         eventToPromise('history-checkbox-select', item);
-    item.$['time-accessed'].click();
+    item.$.timeAccessed.click();
 
     await whenCheckboxSelected;
     assertEquals(item.$.checkbox, item.shadowRoot.activeElement);
@@ -54,6 +54,6 @@ suite('<history-item> focus test', function() {
     star.click();
 
     // Check that focus is shifted to overflow menu icon.
-    assertEquals(item.shadowRoot.activeElement, item.$['menu-button']);
+    assertEquals(item.shadowRoot.activeElement, item.$.menuButton);
   });
 });

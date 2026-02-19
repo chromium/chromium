@@ -13,7 +13,7 @@ export function getHtml(this: ExtensionsSidebarElement) {
     attr-for-selected="data-path" .selected="${this.selectedPath_}">
   <!-- Values for "data-path" attribute must match the "Page" enum. -->
   <a role="menuitem" class="cr-nav-menu-item" id="sectionsExtensions" href="/"
-      @click="${this.onLinkClick_}" data-path="items-list">
+      @click="${this.onLinkClick_}" data-path="itemsList">
     <cr-icon icon="extensions-icons:my_extensions"></cr-icon>
     $i18n{sidebarExtensions}
     <cr-ripple></cr-ripple>

@@ -42,8 +42,8 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$['file-link']));
-    assertFalse(item.$['file-link'].hasAttribute('href'));
+    assertFalse(isVisible(item.$.fileLink));
+    assertFalse(item.$.fileLink.hasAttribute('href'));
   });
 
   test('initiator origin empty string in data isn\'t displayed', async () => {
@@ -120,7 +120,7 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
     assertEquals('cr:error', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -133,7 +133,7 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals('cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'grey',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -147,7 +147,7 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals('cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'grey',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -162,7 +162,7 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals('cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'grey',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -177,7 +177,7 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals('cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'grey',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -190,7 +190,7 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals('cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'grey',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -204,7 +204,7 @@ suite('ItemTest', function() {
 
     assertEquals(
         'downloads:dangerous', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));
@@ -218,7 +218,7 @@ suite('ItemTest', function() {
 
     assertEquals(
         'downloads:dangerous', item.shadowRoot.querySelector('cr-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
+    assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',
         item.shadowRoot.querySelector('cr-icon')!.getAttribute('icon-color'));

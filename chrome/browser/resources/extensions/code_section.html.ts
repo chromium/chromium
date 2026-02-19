@@ -9,7 +9,7 @@ import type {ExtensionsCodeSectionElement} from './code_section.js';
 export function getHtml(this: ExtensionsCodeSectionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <div id="scroll-container" ?hidden="${!this.highlighted_}" dir="ltr">
+  <div id="scrollContainer" ?hidden="${!this.highlighted_}" dir="ltr">
   <div id="main">
     <!-- Line numbers are not useful to a screenreader -->
     <div id="line-numbers" aria-hidden="true">

@@ -34,7 +34,7 @@ export function getHtml(this: HistoryItemElement) {
           </div>
           <!-- ARIA hidden to avoid redundancy since timestamp is already part of
               |getEntrySummary_|. -->
-          <span id="time-accessed" aria-hidden="true">
+          <span id="timeAccessed" aria-hidden="true">
             ${this.item?.readableTimestamp}
           </span>
           <div role="gridcell" id="item-info">
@@ -69,7 +69,7 @@ export function getHtml(this: HistoryItemElement) {
             </div>
           </div>
           <div role="gridcell" id="options">
-            <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
+            <cr-icon-button id="menuButton" iron-icon="cr:more-vert"
                 focus-row-control focus-type="cr-menu-button"
                 title="$i18n{actionMenuDescription}" @click="${this.onMenuButtonClick_}"
                 @keydown="${this.onMenuButtonKeydown_}"

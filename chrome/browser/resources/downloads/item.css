@@ -86,7 +86,7 @@ cr-button {
   display: flex;
   flex: 1;
   flex-direction: column;
-  min-width: 0;  /* This allows #file-link to elide correctly. */
+  min-width: 0;  /* This allows #fileLink to elide correctly. */
   padding-bottom: 16px;
   padding-inline-end: 16px;
   padding-inline-start: var(--downloads-card-margin);
@@ -194,7 +194,7 @@ cr-button {
 }
 
 #name,
-#file-link {
+#fileLink {
   font-weight: 500;
   max-width: 100%;
   overflow: hidden;
@@ -205,7 +205,7 @@ cr-button {
 }
 
 @media (prefers-color-scheme: light) {
-  .is-active :-webkit-any(#file-link) {
+  .is-active :-webkit-any(#fileLink) {
     color: var(--google-blue-600);
   }
 
@@ -232,7 +232,7 @@ cr-button {
   direction: ltr;
 }
 
-:host-context([dir=rtl]) #file-link {
+:host-context([dir=rtl]) #fileLink {
   direction: ltr;
 }
 
@@ -262,16 +262,16 @@ cr-button {
   }
 }
 
-#controlled-by,
-#controlled-by a {
+#controlledBy,
+#controlledBy a {
   color: var(--controlled-by-inactive-color);
 }
 
-.is-active #controlled-by {
+.is-active #controlledBy {
   color: var(--controlled-by-active-color);
 }
 
-.is-active #controlled-by a {
+.is-active #controlledBy a {
   color: var(--controlled-by-active-link-color);
 }
 

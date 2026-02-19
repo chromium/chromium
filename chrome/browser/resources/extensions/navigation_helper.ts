@@ -10,7 +10,7 @@ import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
  * Note: This must remain in sync with the page ids in manager.html!
  */
 export enum Page {
-  LIST = 'items-list',
+  LIST = 'itemsList',
   DETAILS = 'details-view',
   ACTIVITY_LOG = 'activity-log',
   SITE_PERMISSIONS = 'site-permissions',

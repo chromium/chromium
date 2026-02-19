@@ -48,7 +48,7 @@ ${this.showDrawer_ ? html`
     </extensions-sidebar>
   </div>
   <cr-view-manager id="viewManager" role="main">
-    <extensions-item-list id="items-list" .delegate="${this.delegate}"
+    <extensions-item-list id="itemsList" .delegate="${this.delegate}"
         ?in-dev-mode="${this.inDevMode}"
         ?is-mv2-deprecation-notice-dismissed=
             "${this.isMv2DeprecationNoticeDismissed}"

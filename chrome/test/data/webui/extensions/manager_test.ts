@@ -52,7 +52,7 @@ suite('ExtensionManagerTest', function() {
     const extension = getExtensionByName('My extension 1');
     assertTrue(!!extension);
 
-    const list = manager.$['items-list'];
+    const list = manager.$.itemsList;
 
     function listHasItemWithName(name: string): boolean {
       return list.extensions.some(el => el.name === name);
@@ -110,7 +110,7 @@ suite('ExtensionManagerTest', function() {
 
     // Switch: item list -> detail view.
     const item =
-        manager.$['items-list'].shadowRoot.querySelector('extensions-item');
+        manager.$.itemsList.shadowRoot.querySelector('extensions-item');
     assertTrue(!!item);
     const detailsButton =
         item.shadowRoot.querySelector<HTMLElement>('#detailsButton');

@@ -33,9 +33,7 @@ suite('ExtensionCodeSectionTest', function() {
 
     const testIsVisible = isChildVisible.bind(null, codeSection);
     assertFalse(!!codeSection.code);
-    assertTrue(
-        codeSection.shadowRoot.querySelector<HTMLElement>(
-                                  '#scroll-container')!.hidden);
+    assertTrue(codeSection.$.scrollContainer.hidden);
     assertFalse(testIsVisible('#main'));
     assertTrue(testIsVisible('#no-code'));
 

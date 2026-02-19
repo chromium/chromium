@@ -55,12 +55,12 @@ suite('<history-synced-device-manager>', function() {
     assertTrue(!!cards[0]);
     assertTrue(!!cards[1]);
 
-    let focused = cards[0].$['menu-button'];
+    let focused = cards[0].$.menuButton;
     focused.focus();
 
     // Go to the collapse button.
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
-    focused = cards[0].$['collapse-button'];
+    focused = cards[0].$.collapseButton;
     assertEquals(focused, getDeepActiveElement());
 
     // Go to the first url.
@@ -71,19 +71,19 @@ suite('<history-synced-device-manager>', function() {
 
     // Collapse the first card.
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
-    focused = cards[0].$['collapse-button'];
+    focused = cards[0].$.collapseButton;
     assertEquals(focused, getDeepActiveElement());
     focused.click();
     await waitForFocusGridUpdate();
 
     // Pressing down goes to the next card.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
-    focused = cards[1].$['collapse-button'];
+    focused = cards[1].$.collapseButton;
     assertEquals(focused, getDeepActiveElement());
 
     // Expand the first card.
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
-    focused = cards[0].$['collapse-button'];
+    focused = cards[0].$.collapseButton;
     assertEquals(focused, getDeepActiveElement());
     focused.click();
     await waitForFocusGridUpdate();
@@ -105,7 +105,7 @@ suite('<history-synced-device-manager>', function() {
 
     // Go to the next card's menu buttons.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
-    focused = cards[1].$['collapse-button'];
+    focused = cards[1].$.collapseButton;
     assertEquals(focused, getDeepActiveElement());
 
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
@@ -123,7 +123,7 @@ suite('<history-synced-device-manager>', function() {
 
     // Pressing down goes to the next card.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
-    focused = cards[1].$['collapse-button'];
+    focused = cards[1].$.collapseButton;
     assertEquals(focused, getDeepActiveElement());
   });
 });

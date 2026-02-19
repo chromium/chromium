@@ -76,14 +76,14 @@ suite('<history-list>', function() {
 
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
     await microtasksFinished();
-    focused = items[3]!.$['menu-button'];
+    focused = items[3]!.$.menuButton;
     assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2]!.getFocusRow().isActive());
     assertTrue(items[3]!.getFocusRow().isActive());
 
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     await microtasksFinished();
-    focused = items[2]!.$['menu-button'];
+    focused = items[2]!.$.menuButton;
     assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2]!.getFocusRow().isActive());
     assertFalse(items[3]!.getFocusRow().isActive());
@@ -147,14 +147,14 @@ suite('<history-list>', function() {
     const items = element.shadowRoot.querySelectorAll('history-item');
     assertEquals(4, getHistoryData().length);
     assertEquals(4, items.length);
-    items[3]!.$['menu-button'].click();
+    items[3]!.$.menuButton.click();
     await microtasksFinished();
     element.shadowRoot.querySelector<HTMLElement>('#menuRemoveButton')!.click();
     await microtasksFinished();
-    assertNotEquals(items[2]!.$['menu-button'], getDeepActiveElement());
+    assertNotEquals(items[2]!.$.menuButton, getDeepActiveElement());
     await testService.handler.whenCalled('removeVisits');
     await microtasksFinished();
     assertEquals(3, getHistoryData().length);
-    assertEquals(items[2]!.$['menu-button'], getDeepActiveElement());
+    assertEquals(items[2]!.$.menuButton, getDeepActiveElement());
   });
 });

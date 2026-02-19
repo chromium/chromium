@@ -194,7 +194,7 @@ suite('<history-synced-device-manager>', function() {
 
     let cards = getCards(element);
     assertEquals(2, cards.length);
-    cards[0]!.$['menu-button'].click();
+    cards[0]!.$.menuButton.click();
     await microtasksFinished();
 
     element.shadowRoot.querySelector<HTMLElement>('#menuDeleteButton')!.click();
@@ -220,7 +220,7 @@ suite('<history-synced-device-manager>', function() {
     await microtasksFinished();
 
     let cards = getCards(element);
-    cards[0]!.$['card-heading'].click();
+    cards[0]!.$.cardHeading.click();
     await microtasksFinished();
     assertFalse(cards[0]!.opened);
 
@@ -252,7 +252,7 @@ suite('<history-synced-device-manager>', function() {
         [createSession('Chromebook', [createWindow(['https://example.com'])])]);
     await microtasksFinished();
     const cards = getCards(element);
-    cards[0]!.$['menu-button'].click();
+    cards[0]!.$.menuButton.click();
     assertTrue(element.$.menu.getIfExists()!.open);
   });
 
