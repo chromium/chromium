@@ -330,11 +330,8 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   cc::PaintFlags flags = base_flags;
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
-  if (!RuntimeEnabledFeatures::
-          SvgAvoidResettingFilterQualityForTiledPatternEnabled()) {
-    // Reset filter quality.
-    flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
-  }
+  // Reset filter quality.
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
 
   context.DrawRect(gfx::RectFToSkRect(dst_rect), flags,
                    PaintAutoDarkMode(DarkModeFilter::ElementRole::kSVG,
