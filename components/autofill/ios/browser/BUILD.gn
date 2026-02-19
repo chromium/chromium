@@ -48,6 +48,7 @@ source_set("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/common:autofill_optimization_features",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:autofill_form_features_injector",

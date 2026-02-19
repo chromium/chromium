@@ -44,6 +44,7 @@ source_set("form_handler_feature") {
     "//base",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/common:autofill_optimization_features",
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -295,6 +296,7 @@ source_set("autofill_form_features_injector") {
     "//base",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/common:autofill_optimization_features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",

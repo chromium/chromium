@@ -90,6 +90,13 @@ function shouldListenToFormSubmissionEventsInCaptureMode(): boolean {
 }
 
 /**
+ * Returns true if autofill optimization form search is enabled.
+ */
+function isAutofillOptimizationFormSearchEnabled(): boolean {
+  return (window as any).gCrWebPlaceholderAutofillOptimizationFormSearch;
+}
+
+/**
  * Schedule `mesg` to be sent on next runloop.
  * If called multiple times on the same runloop, only the last message is really
  * sent.
@@ -325,15 +332,41 @@ setTimeout(attachListeners, 1000);
  *     match.
  */
 function findAllFormElementsInNodes(nodeList: NodeList): Element[] {
-  return [...nodeList]
-             .filter(n => n.nodeType === Node.ELEMENT_NODE)
-             .map(n => [n, ...(n as Element).getElementsByTagName('*')])
-             .map(
-                 elems => elems.filter(
-                     e => (e as Element)
-                              .tagName.match(
-                                  /^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/)))
-             .flat() as Element[];
+  // The feature should give the same result in both case.
+  // The only difference should be performance.
+  if (isAutofillOptimizationFormSearchEnabled()) {
+    const elements: Element[] = [];
+    const tagNames = new Set(['FORM', 'INPUT', 'SELECT', 'OPTION', 'TEXTAREA']);
+
+    // Filter using a single for-loop instead of array functions
+    // to minimize intermediate memory allocations that affect performance.
+    for (const node of nodeList) {
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        continue;
+      }
+
+      const element = node as Element;
+      if (tagNames.has(element.tagName)) {
+        elements.push(element);
+      }
+      const descendants =
+          element.querySelectorAll('FORM, INPUT, SELECT, OPTION, TEXTAREA');
+      for (const descendant of descendants) {
+        elements.push(descendant);
+      }
+    }
+    return elements;
+  } else {
+    return [...nodeList]
+               .filter(n => n.nodeType === Node.ELEMENT_NODE)
+               .map(n => [n, ...(n as Element).getElementsByTagName('*')])
+               .map(
+                   elems => elems.filter(
+                       e => (e as Element)
+                                .tagName.match(
+                                    /^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/)))
+               .flat() as Element[];
+  }
 }
 
 /**
@@ -344,11 +377,19 @@ function findAllFormElementsInNodes(nodeList: NodeList): Element[] {
  * @return Renderer ids of the formless fields.
  */
 function findFormlessFieldsIds(elements: Element[]): string[] {
-  return elements
-      .filter(
-          e => isAutofillableElement(e) &&
-              !(e as HTMLInputElement).form)
-      .map(fillUtil.getUniqueID);
+  if (isAutofillOptimizationFormSearchEnabled()) {
+    const result: string[] = [];
+    for (const e of elements) {
+      if (isAutofillableElement(e) && !(e as HTMLInputElement).form) {
+        result.push(fillUtil.getUniqueID(e));
+      }
+    }
+    return result;
+  } else {
+    return elements
+        .filter(e => isAutofillableElement(e) && !(e as HTMLInputElement).form)
+        .map(fillUtil.getUniqueID);
+  }
 }
 
 /**

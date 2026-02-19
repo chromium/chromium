@@ -15,6 +15,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/autofill_optimization_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
@@ -54,7 +55,13 @@ AutofillJavaScriptFeature::AutofillJavaScriptFeature()
                         base::FeatureList::IsEnabled(kAutofillUndoIos);
                     return @{
                       @"window.gCrWebPlaceholderAutofillUndo" :
-                              use_undo ? @"true" : @"false"
+                              use_undo ? @"true" : @"false",
+                      @"window."
+                      @"gCrWebPlaceholderAutofillOptimizationFormSearch" :
+                              base::FeatureList::IsEnabled(
+                                  features::kAutofillOptimizationFormSearchIos)
+                          ? @"true"
+                          : @"false",
                     };
                   }))},
           {AutofillFormFeaturesJavaScriptFeature::GetInstance()}) {}
