@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.educational_tip;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +25,11 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -44,6 +51,7 @@ public class HistorySyncPromoCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SyncService mSyncService;
+    @Mock private SetupListManager mSetupListManager;
     private NonNullObservableSupplier<Profile> mProfileSupplier;
 
     private HistorySyncPromoCoordinator mHistorySyncPromoCoordinator;
@@ -57,6 +65,7 @@ public class HistorySyncPromoCoordinatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
 
         mHistorySyncPromoCoordinator =
                 new HistorySyncPromoCoordinator(
@@ -64,6 +73,56 @@ public class HistorySyncPromoCoordinatorUnitTest {
                         new CallbackController(),
                         mActionDelegate,
                         mRemoveModuleCallback);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetCardImage_SetupList() {
+        when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(true);
+        assertEquals(
+                R.drawable.setup_list_history_sync_promo_logo,
+                mHistorySyncPromoCoordinator.getCardImage());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetCardImage_Default() {
+        when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(false);
+        assertEquals(
+                R.drawable.history_sync_promo_logo, mHistorySyncPromoCoordinator.getCardImage());
+    }
+
+    @Test
+    @SmallTest
+    public void testSyncStateChanged_SetupList_MarksCompleteOnly() {
+        when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+
+        mHistorySyncPromoCoordinator.syncStateChanged();
+
+        // Should mark complete, but NOT call remove.
+        // The animation will be triggered by onShown() or on return from UI.
+        String expectedKey =
+                SetupListModuleUtils.getCompletionKeyForModule(ModuleType.HISTORY_SYNC_PROMO);
+        assertTrue(ChromeSharedPreferences.getInstance().readBoolean(expectedKey, false));
+        verify(mRemoveModuleCallback, never()).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testSyncStateChanged_Default_RemovesModule() {
+        when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(false);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+
+        mHistorySyncPromoCoordinator.syncStateChanged();
+
+        // Should call remove, NOT mark complete.
+        verify(mRemoveModuleCallback).run();
+        String expectedKey =
+                SetupListModuleUtils.getCompletionKeyForModule(ModuleType.HISTORY_SYNC_PROMO);
+        assertFalse(ChromeSharedPreferences.getInstance().readBoolean(expectedKey, false));
     }
 
     @Test

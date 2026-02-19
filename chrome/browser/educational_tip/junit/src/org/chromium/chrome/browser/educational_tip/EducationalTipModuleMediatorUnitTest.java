@@ -33,6 +33,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -49,8 +50,11 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+
+import java.util.Set;
 
 /** Unit tests for {@link EducationalTipModuleMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -274,6 +278,39 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_tab_group_title,
                 R.string.educational_tip_tab_group_description,
                 R.drawable.tab_group_promo_logo);
+    }
+
+    @Test
+    @SmallTest
+    public void testHistorySyncPromo_SetupList_AnimationFlow() {
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.HISTORY_SYNC_PROMO);
+        when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        mEducationalTipModuleMediator.showModule();
+
+        // 1. Simulate sync completion via system state (e.g. Settings).
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+
+        HistorySyncPromoCoordinator coordinator =
+                (HistorySyncPromoCoordinator)
+                        mEducationalTipModuleMediator.getCardProviderForTesting();
+
+        // This records completion but should NOT trigger the animation yet.
+        coordinator.syncStateChanged();
+        verify(mModuleDelegate, never()).removeModule(anyInt());
+        assertEquals(false, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
+
+        // 2. Simulate user returning to NTP (calling updateModule).
+        when(mSetupListManager.isModuleAwaitingCompletionAnimation(ModuleType.HISTORY_SYNC_PROMO))
+                .thenReturn(true);
+        mEducationalTipModuleMediator.updateModule();
+
+        // Now the animation sequence should run.
+        mFakeTime.advanceMillis(SetupListManager.STRIKETHROUGH_DURATION_MS);
+        ShadowLooper.runMainLooperOneTask();
+        assertEquals(true, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
     }
 
     @Test

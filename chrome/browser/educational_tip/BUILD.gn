@@ -110,6 +110,7 @@ android_resources("java_resources") {
     "java/res/drawable/setup_list_celebratory_promo_logo.xml",
     "java/res/drawable/setup_list_completed_background_wavy_circle.xml",
     "java/res/drawable/setup_list_default_browser_promo_logo.xml",
+    "java/res/drawable/setup_list_history_sync_promo_logo.xml",
     "java/res/drawable/sign_in_promo_logo.xml",
     "java/res/drawable/tab_group_promo_logo.xml",
     "java/res/drawable/tab_group_sync_promo_logo.xml",

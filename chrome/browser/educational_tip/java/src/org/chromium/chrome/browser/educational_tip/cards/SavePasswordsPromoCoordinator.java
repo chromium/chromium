@@ -170,7 +170,6 @@ public class SavePasswordsPromoCoordinator
                 (v) -> {
                     bottomSheetController.hideContent(
                             content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
-                    // TODO(crbug.com/469425754): Trigger completion animation here.
                 });
     }
 }

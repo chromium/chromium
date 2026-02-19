@@ -15,11 +15,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserStateProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.List;
+import java.util.Set;
 
 /** Utilities for setup list modules. */
 @NullMarked
@@ -132,6 +136,15 @@ public class SetupListModuleUtils {
             case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
                 return new SafeBrowsingBridge(profile).getSafeBrowsingState()
                         == SafeBrowsingState.ENHANCED_PROTECTION;
+            case ModuleType.HISTORY_SYNC_PROMO:
+                SyncService syncService = SyncServiceFactory.getForProfile(profile);
+                return syncService != null
+                        && syncService
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.HISTORY,
+                                                UserSelectableType.TABS));
             default:
                 return false;
         }

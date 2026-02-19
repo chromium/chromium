@@ -70,6 +70,12 @@ public class EducationalTipModuleMediator {
             DefaultBrowserPromoUtils.getInstance()
                     .addListener(mDefaultBrowserPromoTriggerStateListener);
         }
+        Runnable removeModuleCallback = () -> mModuleDelegate.removeModule(mModuleType);
+
+        if (mModuleType == ModuleType.HISTORY_SYNC_PROMO
+                && SetupListModuleUtils.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)) {
+            removeModuleCallback = this::updateModule;
+        }
 
         mEducationalTipCardProvider =
                 EducationalTipCardProviderFactory.createInstance(
@@ -77,9 +83,7 @@ public class EducationalTipModuleMediator {
                         this::onCardClicked,
                         mCallbackController,
                         mActionDelegate,
-                        () -> {
-                            mModuleDelegate.removeModule(mModuleType);
-                        });
+                        removeModuleCallback);
         assumeNonNull(mEducationalTipCardProvider);
 
         mModel.set(
@@ -224,6 +228,10 @@ public class EducationalTipModuleMediator {
 
     DefaultBrowserPromoTriggerStateListener getDefaultBrowserPromoTriggerStateListenerForTesting() {
         return mDefaultBrowserPromoTriggerStateListener;
+    }
+
+    @Nullable EducationalTipCardProvider getCardProviderForTesting() {
+        return mEducationalTipCardProvider;
     }
 
     void setModuleTypeForTesting(@ModuleType int moduleType) {

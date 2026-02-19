@@ -68,6 +68,7 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
             Arrays.asList(
                     ModuleType.DEFAULT_BROWSER_PROMO,
                     ModuleType.SIGN_IN_PROMO,
+                    ModuleType.HISTORY_SYNC_PROMO,
                     ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                     ModuleType.SAVE_PASSWORDS_PROMO,
                     ModuleType.PASSWORD_CHECKUP_PROMO,
@@ -211,6 +212,10 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
 
         if (moduleType == ModuleType.SAVE_PASSWORDS_PROMO) {
             return isPwManagementEnabled && isSignedIn;
+        }
+
+        if (moduleType == ModuleType.HISTORY_SYNC_PROMO) {
+            return isSignedIn;
         }
 
         if (moduleType == ModuleType.PASSWORD_CHECKUP_PROMO) {
