@@ -27,7 +27,11 @@ interface LegionInternalsPageHandler {
   SetPage(pending_remote<LegionInternalsPage> page);
   // Connect to the specified URL. Needs to be called before other methods that
   // require a "current connection".
-  Connect(string url, string api_key) => ();
+  Connect(
+      string url,
+      string api_key,
+      string proxy_url,
+      bool use_token_attestation) => ();
   // Closes the current connection.
   Close() => ();
   // Sends a request over the current connection. Request and Response are plain

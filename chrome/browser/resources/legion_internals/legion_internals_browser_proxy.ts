@@ -10,7 +10,9 @@ import {LegionInternalsPageCallbackRouter, LegionInternalsPageHandler} from './l
  */
 
 export interface LegionInternalsBrowserProxy {
-  connect(url: string, apiKey: string): Promise<void>;
+  connect(
+      url: string, apiKey: string, proxyUrl: string,
+      useTokenAttestation: boolean): Promise<void>;
   close(): Promise<void>;
   sendRequest(featureName: string, request: string):
       Promise<LegionResponseMojoType>;
@@ -29,8 +31,10 @@ export class LegionInternalsBrowserProxyImpl implements
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 
-  connect(url: string, apiKey: string): Promise<void> {
-    return this.handler.connect(url, apiKey);
+  connect(
+      url: string, apiKey: string, proxyUrl: string,
+      useTokenAttestation: boolean): Promise<void> {
+    return this.handler.connect(url, apiKey, proxyUrl, useTokenAttestation);
   }
 
   close(): Promise<void> {

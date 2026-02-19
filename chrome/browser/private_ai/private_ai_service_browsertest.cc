@@ -29,10 +29,10 @@ namespace private_ai {
 
 class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
  public:
-  PrivateAiServiceBrowserTest()
-      : profile_selections_(
-            PrivateAiServiceFactory::GetInstance(),
-            PrivateAiServiceFactory::CreateProfileSelectionsForTesting()) {}
+  PrivateAiServiceBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kLegion, {{kLegionApiKey.name, "test-api-key"}});
+  }
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -73,11 +73,9 @@ class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{kLegion};
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      profile_selections_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
@@ -178,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
 
   ASSERT_TRUE(future.Get().has_value());
 
-  // Second call should be async and return a token from the cache.
+  // Second call should return a token from the cache.
   base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future2;
   token_manager->GetAuthToken(future2.GetCallback());
   EXPECT_FALSE(future2.IsReady());

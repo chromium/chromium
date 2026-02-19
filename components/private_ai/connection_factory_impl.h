@@ -25,18 +25,19 @@ namespace phosphor {
 class TokenManager;
 }
 
-// Factory for creating `Connection` instances that use API Key for client
-// attestation.
-class ApiKeyConnectionFactoryImpl : public ConnectionFactory {
+class ConnectionFactoryImpl : public ConnectionFactory {
  public:
-  ApiKeyConnectionFactoryImpl(const GURL& url,
-                              network::mojom::NetworkContext* network_context,
-                              LegionLogger* logger);
-  ~ApiKeyConnectionFactoryImpl() override;
+  ConnectionFactoryImpl(const GURL& url,
+                        network::mojom::NetworkContext* network_context,
+                        LegionLogger* logger);
+  ~ConnectionFactoryImpl() override;
 
-  ApiKeyConnectionFactoryImpl(const ApiKeyConnectionFactoryImpl&) = delete;
-  ApiKeyConnectionFactoryImpl& operator=(const ApiKeyConnectionFactoryImpl&) =
-      delete;
+  ConnectionFactoryImpl(const ConnectionFactoryImpl&) = delete;
+  ConnectionFactoryImpl& operator=(const ConnectionFactoryImpl&) = delete;
+
+  void EnableTokenAttestation(phosphor::TokenManager* token_manager);
+  void EnableProxy(const GURL& proxy_url,
+                   network::mojom::NetworkService* network_service);
 
   // ConnectionFactory override:
   std::unique_ptr<Connection> Create(
@@ -46,62 +47,10 @@ class ApiKeyConnectionFactoryImpl : public ConnectionFactory {
   const GURL url_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
   const raw_ptr<LegionLogger> logger_;
-};
 
-// Factory for creating `Connection` instances that use blind token for client
-// attestation.
-//
-// `url` should not contain API Key, otherwise it will lead to crash.
-class TokenConnectionFactoryImpl : public ConnectionFactory {
- public:
-  TokenConnectionFactoryImpl(const GURL& url,
-                             network::mojom::NetworkContext* network_context,
-                             phosphor::TokenManager* token_manager,
-                             LegionLogger* logger);
-  ~TokenConnectionFactoryImpl() override;
-
-  TokenConnectionFactoryImpl(const TokenConnectionFactoryImpl&) = delete;
-  TokenConnectionFactoryImpl& operator=(const TokenConnectionFactoryImpl&) =
-      delete;
-
-  // ConnectionFactory override:
-  std::unique_ptr<Connection> Create(
-      base::RepeatingClosure on_disconnect) override;
-
- private:
-  const GURL url_;
-  const raw_ptr<phosphor::TokenManager> token_manager_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
-  const raw_ptr<LegionLogger> logger_;
-};
-
-// Factory for creating `Connection` instances that use blind token for client
-// attestation and proxy connection through a privacy proxy.
-class ProxyWithTokenConnectionFactoryImpl : public ConnectionFactory {
- public:
-  ProxyWithTokenConnectionFactoryImpl(
-      const GURL& url,
-      const GURL& proxy_url,
-      network::mojom::NetworkService* network_service,
-      phosphor::TokenManager* token_manager,
-      LegionLogger* logger);
-  ~ProxyWithTokenConnectionFactoryImpl() override;
-
-  ProxyWithTokenConnectionFactoryImpl(
-      const ProxyWithTokenConnectionFactoryImpl&) = delete;
-  ProxyWithTokenConnectionFactoryImpl& operator=(
-      const ProxyWithTokenConnectionFactoryImpl&) = delete;
-
-  // ConnectionFactory override:
-  std::unique_ptr<Connection> Create(
-      base::RepeatingClosure on_disconnect) override;
-
- private:
-  const GURL url_;
-  const GURL proxy_url_;
-  const raw_ptr<network::mojom::NetworkService> network_service_;
-  const raw_ptr<phosphor::TokenManager> token_manager_;
-  const raw_ptr<LegionLogger> logger_;
+  raw_ptr<phosphor::TokenManager> token_manager_ = nullptr;
+  GURL proxy_url_;
+  raw_ptr<network::mojom::NetworkService> network_service_ = nullptr;
 };
 
 }  // namespace private_ai

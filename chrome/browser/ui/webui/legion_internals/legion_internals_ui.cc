@@ -57,10 +57,15 @@ LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
 
   source->AddString("default_url", private_ai::kLegionUrl.Get());
   source->AddString("default_api_key", private_ai::kLegionApiKey.Get());
+  source->AddString("default_proxy_url",
+                    private_ai::kLegionProxyServerUrl.Get());
   source->AddString("default_feature_name",
                     private_ai::proto::FeatureName_Name(
                         private_ai::proto::FeatureName::
                             FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT));
+  source->AddBoolean(
+      "default_use_token_attestation",
+      base::FeatureList::IsEnabled(private_ai::kLegionUseTokenAttestation));
 }
 
 LegionInternalsUI::~LegionInternalsUI() = default;

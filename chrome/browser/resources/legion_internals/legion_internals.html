@@ -28,6 +28,19 @@ found in the LICENSE file.
                    value="$i18n{default_api_key}">
           </label>
         </div>
+        <div>
+          <label>
+            <input type="checkbox" id="use-token-attestation-checkbox">
+            Use Token Attestation
+          </label>
+        </div>
+        <div id="proxy-url-container" class="hidden">
+          <label>
+            Proxy URL:
+            <input type="text" id="legionProxyUrl"
+                   value="$i18n{default_proxy_url}">
+          </label>
+        </div>
 
         <button id="create-connection-button">Connect</button>
 

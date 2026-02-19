@@ -55,6 +55,7 @@ PrivateAiService::PrivateAiService(
 
   client_ = Client::Create(
       kLegionUrl.Get(), kLegionApiKey.Get(), kLegionProxyServerUrl.Get(),
+      base::FeatureList::IsEnabled(kLegionUseTokenAttestation),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
       token_manager_.get(), content::GetNetworkService(), std::move(logger));
 }

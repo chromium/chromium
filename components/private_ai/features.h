@@ -17,6 +17,9 @@ BASE_DECLARE_FEATURE(kLegion);
 // Feature flag to enable server attestation.
 BASE_DECLARE_FEATURE(kLegionSeverAttestation);
 
+// Feature flag to enable token attestation.
+BASE_DECLARE_FEATURE(kLegionUseTokenAttestation);
+
 // The API key for Legion.
 extern const base::FeatureParam<std::string> kLegionApiKey;
 

@@ -588,9 +588,10 @@ class TabStripActionContainerLegionBrowserTest
     : public TabStripActionContainerBrowserTest {
  public:
   TabStripActionContainerLegionBrowserTest() {
-    legion_feature_list_.InitWithFeatures(
-        {private_ai::kLegion,
-         contextual_cueing::kZeroStateSuggestionsUseLegion},
+    legion_feature_list_.InitWithFeaturesAndParameters(
+        {{private_ai::kLegion,
+          {{private_ai::kLegionApiKey.name, "test-api-key"}}},
+         {contextual_cueing::kZeroStateSuggestionsUseLegion, {}}},
         {});
   }
 

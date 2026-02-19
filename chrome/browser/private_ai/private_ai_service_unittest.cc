@@ -36,7 +36,8 @@ constexpr char kTestEmail[] = "test@example.com";
 class PrivateAiServiceTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kLegion);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kLegion, {{kLegionApiKey.name, "test-api-key"}});
     auto test_bsa_factory = std::make_unique<TestBlindSignAuthFactory>();
     auto* test_bsa_factory_ptr = test_bsa_factory.get();
     private_ai_service_ = std::make_unique<TestPrivateAiService>(

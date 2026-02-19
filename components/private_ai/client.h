@@ -50,34 +50,20 @@ class Client {
 
   static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
-  static std::unique_ptr<Client> CreateWithApiKey(
-      const GURL& url,
-      network::mojom::NetworkContext* network_context,
-      std::unique_ptr<LegionLogger> logger);
-
-  static std::unique_ptr<Client> CreateWithToken(
-      const GURL& url,
-      network::mojom::NetworkContext* network_context,
-      phosphor::TokenManager* token_manager,
-      std::unique_ptr<LegionLogger> logger);
-
-  static std::unique_ptr<Client> CreateWithProxyAndToken(
-      const GURL& url,
-      const GURL& proxy_url,
-      network::mojom::NetworkService* network_service,
-      phosphor::TokenManager* token_manager,
-      std::unique_ptr<LegionLogger> logger);
-
-  // Creates a client based on the provided configuration. This is a helper to
-  // consolidate client creation logic.
-  // - If `api_key` is not empty, it creates an API key based client.
-  // - Otherwise, it creates a token based client.
-  // - If `proxy_url_string` is not empty, the token based client will be
-  // wrapped in a proxy.
+  // Creates a client based on the provided configuration.
+  // `url`: The URL for the Legion service.
+  // `api_key`: The API key for the Legion service.
+  // `proxy_url_string`: Optional URL for the proxy server.
+  // `use_token_attestation`: Whether to use token attestation.
+  // `network_context`: The network context to use for connections.
+  // `token_manager`: Required if `use_token_attestation` is true.
+  // `network_service`: Required if `proxy_url_string` is not empty.
+  // `logger`: The logger for the client.
   static std::unique_ptr<Client> Create(
       const std::string& url,
       const std::string& api_key,
       const std::string& proxy_url_string,
+      bool use_token_attestation,
       network::mojom::NetworkContext* network_context,
       phosphor::TokenManager* token_manager,
       network::mojom::NetworkService* network_service,

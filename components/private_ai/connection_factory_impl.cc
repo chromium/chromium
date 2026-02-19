@@ -24,46 +24,34 @@ namespace private_ai {
 
 namespace {
 
-// Creates connection composition: Timeout(Metrics(Basic)).
-std::unique_ptr<Connection> CreateBasicMetricsTimeoutConnection(
+std::unique_ptr<Connection> CreateConnectionStack(
     const GURL& url,
-    network::mojom::NetworkContext* network_context,
     LegionLogger* logger,
-    base::OnceClosure on_disconnect) {
-  auto connection_basic = std::make_unique<ConnectionBasic>(
-      std::make_unique<SecureChannelImpl::FactoryImpl>(url, network_context,
-                                                       logger),
-      std::move(on_disconnect));
-
-  auto connection_metrics =
-      std::make_unique<ConnectionMetrics>(std::move(connection_basic));
-
-  auto connection_timeout =
-      std::make_unique<ConnectionTimeout>(std::move(connection_metrics));
-
-  return connection_timeout;
-}
-
-std::unique_ptr<Connection> CreateTokenAttestationConnection(
-    const GURL& url,
     phosphor::TokenManager* token_manager,
-    LegionLogger* logger,
     base::RepeatingClosure on_disconnect,
     network::mojom::NetworkContext* network_context) {
-  auto connection_timeout = CreateBasicMetricsTimeoutConnection(
-      url, network_context, logger, on_disconnect);
+  auto secure_channel_factory =
+      std::make_unique<SecureChannelImpl::FactoryImpl>(url, network_context,
+                                                       logger);
 
-  auto connection_token_attestation =
-      std::make_unique<ConnectionTokenAttestation>(
-          std::move(connection_timeout), token_manager,
-          std::move(on_disconnect));
+  std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(
+      std::move(secure_channel_factory), on_disconnect);
 
-  return connection_token_attestation;
+  connection = std::make_unique<ConnectionMetrics>(std::move(connection));
+
+  connection = std::make_unique<ConnectionTimeout>(std::move(connection));
+
+  if (token_manager) {
+    connection = std::make_unique<ConnectionTokenAttestation>(
+        std::move(connection), token_manager, std::move(on_disconnect));
+  }
+
+  return connection;
 }
 
 }  // namespace
 
-ApiKeyConnectionFactoryImpl::ApiKeyConnectionFactoryImpl(
+ConnectionFactoryImpl::ConnectionFactoryImpl(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
     LegionLogger* logger)
@@ -73,78 +61,40 @@ ApiKeyConnectionFactoryImpl::ApiKeyConnectionFactoryImpl(
 
   std::string api_key;
   CHECK(net::GetValueForKeyInQuery(url, "key", &api_key))
-      << "API key must be passed in the URL for ApiKeyConnectionFactoryImpl";
+      << "API key must be passed in the URL for ConnectionFactoryImpl";
   CHECK(!api_key.empty());
 }
 
-ApiKeyConnectionFactoryImpl::~ApiKeyConnectionFactoryImpl() = default;
+ConnectionFactoryImpl::~ConnectionFactoryImpl() = default;
 
-std::unique_ptr<Connection> ApiKeyConnectionFactoryImpl::Create(
-    base::RepeatingClosure on_disconnect) {
-  return CreateBasicMetricsTimeoutConnection(url_, network_context_, logger_,
-                                             std::move(on_disconnect));
+void ConnectionFactoryImpl::EnableTokenAttestation(
+    phosphor::TokenManager* token_manager) {
+  token_manager_ = token_manager;
 }
 
-TokenConnectionFactoryImpl::TokenConnectionFactoryImpl(
-    const GURL& url,
-    network::mojom::NetworkContext* network_context,
-    phosphor::TokenManager* token_manager,
-    LegionLogger* logger)
-    : url_(url),
-      token_manager_(token_manager),
-      network_context_(network_context),
-      logger_(logger) {
-  CHECK(token_manager_);
-  CHECK(network_context_);
-  CHECK(logger_);
-
-  std::string api_key;
-  CHECK(!net::GetValueForKeyInQuery(url, "key", &api_key))
-      << "API key must NOT be passed in the URL for TokenConnectionFactoryImpl";
-}
-
-TokenConnectionFactoryImpl::~TokenConnectionFactoryImpl() = default;
-
-std::unique_ptr<Connection> TokenConnectionFactoryImpl::Create(
-    base::RepeatingClosure on_disconnect) {
-  return CreateTokenAttestationConnection(url_, token_manager_, logger_,
-                                          std::move(on_disconnect),
-                                          network_context_);
-}
-
-ProxyWithTokenConnectionFactoryImpl::ProxyWithTokenConnectionFactoryImpl(
-    const GURL& url,
+void ConnectionFactoryImpl::EnableProxy(
     const GURL& proxy_url,
-    network::mojom::NetworkService* network_service,
-    phosphor::TokenManager* token_manager,
-    LegionLogger* logger)
-    : url_(url),
-      proxy_url_(proxy_url),
-      network_service_(network_service),
-      token_manager_(token_manager),
-      logger_(logger) {
-  CHECK(proxy_url_.is_valid());
-  CHECK(token_manager_);
-  CHECK(network_service_);
-  CHECK(logger_);
-
-  std::string api_key;
-  CHECK(!net::GetValueForKeyInQuery(url, "key", &api_key))
-      << "API key must NOT be passed in the URL for "
-         "ProxyWithTokenConnectionFactoryImpl";
+    network::mojom::NetworkService* network_service) {
+  proxy_url_ = proxy_url;
+  network_service_ = network_service;
 }
 
-ProxyWithTokenConnectionFactoryImpl::~ProxyWithTokenConnectionFactoryImpl() =
-    default;
-
-std::unique_ptr<Connection> ProxyWithTokenConnectionFactoryImpl::Create(
+std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     base::RepeatingClosure on_disconnect) {
-  auto inner_connection_factory =
-      base::BindOnce(&CreateTokenAttestationConnection, url_, token_manager_,
-                     logger_, on_disconnect);
+  if (!proxy_url_.is_valid()) {
+    return CreateConnectionStack(url_, logger_, token_manager_, on_disconnect,
+                                 network_context_);
+  }
+
+  CHECK(network_service_);
+  CHECK(token_manager_);
+  // ConnectionProxy requires an inner factory that creates a connection
+  // with token attestation.
+  auto inner_connection_factory = base::BindOnce(
+      &CreateConnectionStack, url_, logger_, token_manager_, on_disconnect);
 
   return std::make_unique<ConnectionProxy>(
-      proxy_url_, token_manager_.get(), network_service_,
+      proxy_url_, token_manager_, network_service_,
       std::move(inner_connection_factory), std::move(on_disconnect));
 }
 

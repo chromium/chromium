@@ -44,9 +44,19 @@ function registerOnCreateConnectionButtonListener() {
     connectionConsole.classList.remove('hidden');
     createConnectionButton.classList.add('hidden');
 
-    proxy.connect(getServerURL(), getAPIKey()).then(() => {
-      console.info('connected');
-    });
+    const useTokenAttestationCheckbox =
+        document.getElementById('use-token-attestation-checkbox') as
+        HTMLInputElement;
+    const useTokenAttestation = useTokenAttestationCheckbox.checked;
+    let proxyUrl = '';
+    if (useTokenAttestation) {
+      proxyUrl = getProxyUrl();
+    }
+
+    proxy.connect(getServerURL(), getAPIKey(), proxyUrl, useTokenAttestation)
+        .then(() => {
+          console.info('connected');
+        });
   });
 }
 
@@ -97,6 +107,31 @@ function getAPIKey() {
   return legionServerApiKey.value;
 }
 
+function getProxyUrl() {
+  const legionProxyUrl =
+      document.getElementById('legionProxyUrl') as HTMLInputElement;
+  return legionProxyUrl.value;
+}
+
+function registerOnTokenCheckboxListener() {
+  const useTokenAttestationCheckbox =
+      document.getElementById('use-token-attestation-checkbox');
+  const proxyUrlContainer = document.getElementById('proxy-url-container');
+
+  if (useTokenAttestationCheckbox === null || proxyUrlContainer === null) {
+    console.error('useTokenAttestationCheckbox or proxyUrlContainer is null');
+    return;
+  }
+
+  useTokenAttestationCheckbox.addEventListener('change', () => {
+    if ((useTokenAttestationCheckbox as HTMLInputElement).checked) {
+      proxyUrlContainer.classList.remove('hidden');
+    } else {
+      proxyUrlContainer.classList.add('hidden');
+    }
+  });
+}
+
 window.onload = function() {
   console.info('window.onload');
 
@@ -105,4 +140,13 @@ window.onload = function() {
   registerOnCreateConnectionButtonListener();
 
   registerOnSendButtonListener();
+
+  registerOnTokenCheckboxListener();
+
+  const useTokenAttestationCheckbox =
+      document.getElementById('use-token-attestation-checkbox') as
+      HTMLInputElement;
+  useTokenAttestationCheckbox.checked =
+      loadTimeData.getBoolean('defaultUseTokenAttestation');
+  useTokenAttestationCheckbox.dispatchEvent(new Event('change'));
 };

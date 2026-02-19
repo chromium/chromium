@@ -45,6 +45,8 @@ class LegionInternalsPageHandler
                    page) override;
   void Connect(const std::string& url,
                const std::string& api_key,
+               const std::string& proxy_url,
+               bool use_token_attestation,
                ConnectCallback callback) override;
   void Close(CloseCallback callback) override;
   void SendRequest(const std::string& feature_name,
