@@ -384,6 +384,10 @@ export class ContentController {
       element.classList.add('downloaded-image');
     }
 
+    if (element.nodeName === 'FIGURE') {
+      element.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
+    }
+
     if (url && element.nodeName === 'A') {
       this.setLinkAttributes_(element, url, nodeId);
     }
