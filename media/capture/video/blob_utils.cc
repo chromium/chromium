@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/blob_utils.h"
 
+#include <vector>
+
+#include "base/compiler_specific.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
-
-#include <vector>
 
 namespace media {
 
@@ -82,7 +78,7 @@ mojom::BlobPtr ProduceJpegBlobFromMjpegFrame(const uint8_t* buffer,
   }
 
   mojom::BlobPtr blob = mojom::Blob::New();
-  blob->data.assign(buffer, buffer + bytesused);
+  blob->data.assign(buffer, UNSAFE_TODO(buffer + bytesused));
   blob->mime_type = "image/jpeg";
   return blob;
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 
 #include <ks.h>
@@ -26,6 +21,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -294,7 +290,7 @@ class StubMFActivate final : public StubInterface<IMFActivate> {
     }
     *ppwszValue = static_cast<wchar_t*>(
         CoTaskMemAlloc((value.size() + 1) * sizeof(wchar_t)));
-    wcscpy(*ppwszValue, value.c_str());
+    UNSAFE_TODO(wcscpy(*ppwszValue, value.c_str()));
     *pcchLength = value.length();
     return S_OK;
   }
@@ -1197,7 +1193,7 @@ class StubEnumMoniker : public StubInterface<IEnumMoniker> {
       return S_FALSE;
     const ULONG original_cursor_position = cursor_position_;
     while (celt-- > 0 && cursor_position_ < monikers_.size())
-      *rgelt++ = AddReference(monikers_[cursor_position_++].get());
+      UNSAFE_TODO(*rgelt++) = AddReference(monikers_[cursor_position_++].get());
     if (celt_fetched)
       *celt_fetched = cursor_position_ - original_cursor_position;
     return S_OK;
@@ -1307,7 +1303,7 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
     for (auto& device : stub_devices) {
       if (!device->MatchesQuery(attributes.Get(), &hr))
         continue;
-      *(*devices + offset++) = AddReference(device.get());
+      UNSAFE_TODO(*(*devices + offset++)) = AddReference(device.get());
     }
     return true;
   }

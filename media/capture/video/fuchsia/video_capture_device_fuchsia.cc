@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/fuchsia/video_capture_device_fuchsia.h"
 
 #include <zircon/status.h>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -424,15 +420,15 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
   uint8_t* dst_y = output_handle->data().data();
   int dst_stride_y = output_size.width();
   size_t dst_y_plane_size = output_size.width() * output_size.height();
-  uint8_t* dst_u = dst_y + dst_y_plane_size;
+  uint8_t* dst_u = UNSAFE_TODO(dst_y + dst_y_plane_size);
   int dst_stride_u = output_size.width() / 2;
-  uint8_t* dst_v = dst_u + dst_y_plane_size / 4;
+  uint8_t* dst_v = UNSAFE_TODO(dst_u + dst_y_plane_size / 4);
   int dst_stride_v = output_size.width() / 2;
 
   // Check that the output fits in the buffer.
-  const uint8_t* dst_end = dst_v + dst_y_plane_size / 4;
-  CHECK_LE(dst_end,
-           output_handle->data().data() + output_handle->mapped_size());
+  const uint8_t* dst_end = UNSAFE_TODO(dst_v + dst_y_plane_size / 4);
+  UNSAFE_TODO(CHECK_LE(
+      dst_end, output_handle->data().data() + output_handle->mapped_size()));
 
   // Vertical flip is indicated to ConvertToI420() by negating src_height.
   int flipped_src_height = static_cast<int>(src_coded_height);

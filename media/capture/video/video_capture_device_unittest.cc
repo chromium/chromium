@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/capture/video/video_capture_device.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -188,7 +184,7 @@ class MockImageCaptureClient
 
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnPhotoTaken(mojom::BlobPtr blob) {
-    if (strcmp("image/jpeg", blob->mime_type.c_str()) == 0) {
+    if (UNSAFE_TODO(strcmp("image/jpeg", blob->mime_type.c_str())) == 0) {
       ASSERT_GT(blob->data.size(), 4u);
       // Check some bytes that univocally identify |data| as a JPEG File.
       // The first two bytes must be the SOI marker.
@@ -198,7 +194,7 @@ class MockImageCaptureClient
       EXPECT_EQ(0xD8, blob->data[1]);  // Second SOI byte
       EXPECT_EQ(0xFF, blob->data[2]);  // First byte of the next marker
       OnCorrectPhotoTaken();
-    } else if (strcmp("image/png", blob->mime_type.c_str()) == 0) {
+    } else if (UNSAFE_TODO(strcmp("image/png", blob->mime_type.c_str())) == 0) {
       ASSERT_GT(blob->data.size(), 4u);
       EXPECT_EQ('P', blob->data[1]);
       EXPECT_EQ('N', blob->data[2]);

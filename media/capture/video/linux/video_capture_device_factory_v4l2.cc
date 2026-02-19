@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/capture/video/linux/video_capture_device_factory_v4l2.h"
 
 #include <errno.h>
@@ -17,6 +12,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
@@ -60,7 +56,7 @@ bool ReadIdFile(const std::string& path, std::string* id) {
   if (!file) {
     return false;
   }
-  const bool success = fread(id_buf, kVidPidSize, 1, file) == 1;
+  const bool success = UNSAFE_TODO(fread(id_buf, kVidPidSize, 1, file)) == 1;
   fclose(file);
   if (!success) {
     return false;
@@ -73,7 +69,7 @@ std::string ExtractFileNameFromDeviceId(const std::string& device_id) {
   // |unique_id| is of the form "/dev/video2".  |file_name| is "video2".
   const char kDevDir[] = "/dev/";
   DCHECK(base::StartsWith(device_id, kDevDir, base::CompareCase::SENSITIVE));
-  return device_id.substr(strlen(kDevDir), device_id.length());
+  return device_id.substr(UNSAFE_TODO(strlen(kDevDir)), device_id.length());
 }
 
 class DevVideoFilePathsDeviceProvider

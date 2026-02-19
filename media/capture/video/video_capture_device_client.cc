@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/video_capture_device_client.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -78,14 +74,16 @@ void GetI420BufferAccess(
     int* uv_plane_stride) {
   *y_plane_data =
       buffer.handle_provider->GetHandleForInProcessAccess()->data().data();
-  *u_plane_data = *y_plane_data + media::VideoFrame::PlaneSize(
+  *u_plane_data =
+      UNSAFE_TODO(*y_plane_data + media::VideoFrame::PlaneSize(
                                       media::PIXEL_FORMAT_I420,
                                       media::VideoFrame::Plane::kY, dimensions)
-                                      .GetArea();
-  *v_plane_data = *u_plane_data + media::VideoFrame::PlaneSize(
+                                      .GetArea());
+  *v_plane_data =
+      UNSAFE_TODO(*u_plane_data + media::VideoFrame::PlaneSize(
                                       media::PIXEL_FORMAT_I420,
                                       media::VideoFrame::Plane::kU, dimensions)
-                                      .GetArea();
+                                      .GetArea());
   *y_plane_stride = dimensions.width();
   *uv_plane_stride = *y_plane_stride / 2;
 }
@@ -869,8 +867,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     return;
   }
   auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
-  memcpy(buffer_access->data().data(), data,
-         std::min(static_cast<size_t>(length), buffer_access->mapped_size()));
+  UNSAFE_TODO(memcpy(
+      buffer_access->data().data(), data,
+      std::min(static_cast<size_t>(length), buffer_access->mapped_size())));
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,

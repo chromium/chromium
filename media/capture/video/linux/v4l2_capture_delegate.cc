@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/capture/video/linux/v4l2_capture_delegate.h"
 
 #include <fcntl.h>
@@ -19,6 +14,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -116,7 +112,7 @@ void FillV4L2Format(v4l2_format* format,
                     uint32_t width,
                     uint32_t height,
                     uint32_t pixelformat_fourcc) {
-  memset(format, 0, sizeof(*format));
+  UNSAFE_TODO(memset(format, 0, sizeof(*format)));
   format->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   format->fmt.pix.width = width;
   format->fmt.pix.height = height;
@@ -125,14 +121,14 @@ void FillV4L2Format(v4l2_format* format,
 
 // Fills all parts of |buffer|.
 void FillV4L2Buffer(v4l2_buffer* buffer, int index) {
-  memset(buffer, 0, sizeof(*buffer));
+  UNSAFE_TODO(memset(buffer, 0, sizeof(*buffer)));
   buffer->memory = V4L2_MEMORY_MMAP;
   buffer->index = index;
   buffer->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 }
 
 void FillV4L2RequestBuffer(v4l2_requestbuffers* request_buffer, int count) {
-  memset(request_buffer, 0, sizeof(*request_buffer));
+  UNSAFE_TODO(memset(request_buffer, 0, sizeof(*request_buffer)));
   request_buffer->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   request_buffer->memory = V4L2_MEMORY_MMAP;
   request_buffer->count = count;
@@ -943,25 +939,25 @@ void V4L2CaptureDelegate::ResetUserAndCameraControlsToDefault() {
   DoIoctl(VIDIOC_S_CTRL, &auto_white_balance);
 
   special_camera_controls.clear();
-  memset(&range, 0, sizeof(range));
+  UNSAFE_TODO(memset(&range, 0, sizeof(range)));
   range.id = V4L2_CID_EXPOSURE_AUTO;
   DoIoctl(VIDIOC_QUERYCTRL, &range);
   auto_exposure.value = range.default_value;
   special_camera_controls.push_back(auto_exposure);
 
-  memset(&range, 0, sizeof(range));
+  UNSAFE_TODO(memset(&range, 0, sizeof(range)));
   range.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
   DoIoctl(VIDIOC_QUERYCTRL, &range);
   priority_auto_exposure.value = range.default_value;
   special_camera_controls.push_back(priority_auto_exposure);
 
-  memset(&range, 0, sizeof(range));
+  UNSAFE_TODO(memset(&range, 0, sizeof(range)));
   range.id = V4L2_CID_FOCUS_AUTO;
   DoIoctl(VIDIOC_QUERYCTRL, &range);
   auto_focus.value = range.default_value;
   special_camera_controls.push_back(auto_focus);
 
-  memset(&ext_controls, 0, sizeof(ext_controls));
+  UNSAFE_TODO(memset(&ext_controls, 0, sizeof(ext_controls)));
   ext_controls.ctrl_class = V4L2_CID_CAMERA_CLASS;
   ext_controls.count = special_camera_controls.size();
   ext_controls.controls = special_camera_controls.data();
