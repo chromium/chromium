@@ -16,7 +16,7 @@ export function getHtml(this: ComposeboxDropdownElement) {
             aria-label="${this.computeAriaLabel_(item)}"
             exportparts="match-text-container, match-container,
                 match-icon-container, match-focus-indicator,
-                match-icon"
+                match-icon, match-remove-button"
             style="--loading-bar-animation-delay: ${index + 1};"
             tabindex="0"
             role="option"

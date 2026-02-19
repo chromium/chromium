@@ -53,6 +53,8 @@
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
   --color-suggestions-background-loading: rgba(241, 243, 244, 1);
   --color-zero-state-greeting: rgba(0, 0, 0, 1);
+  --color-zero-state-match-icon: rgba(128, 133, 141, 1);
+  --color-zero-state-match-text: rgba(87, 89, 95, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
   --composebox-max-width: 692px;
   /* 20px on right side. */
@@ -198,6 +200,8 @@
       rgba(23, 24, 31, 1);
   --color-suggestions-background-loading: rgba(60, 64, 67, 1);
   --color-zero-state-greeting: rgba(255, 255, 255, 1);
+  --color-zero-state-match-icon: rgba(139, 140, 145, 1);
+  --color-zero-state-match-text: rgba(174, 175, 184, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
   --cr-composebox-background-color: rgba(29, 30, 38, 1);
@@ -340,7 +344,7 @@ error-page {
   width: 100%;
 }
 
-:host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
+:host([is-zero-state_]:not([enable-native-zero-state-suggestions_]))
     #flexCenterContainer {
   --flex-center-height: 50%;
   justify-content: flex-end;
@@ -350,7 +354,7 @@ error-page {
   width: 100%;
 }
 
-:host([is-zero-state_][enable-native-zero-state-suggestions])
+:host([is-zero-state_][enable-native-zero-state-suggestions_])
     #flexCenterContainer {
   box-sizing: border-box;
   flex-direction: column;
@@ -381,7 +385,7 @@ error-page {
   width: calc(100% - var(--wrapper-indent_) - 20px);
 }
 
-:host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
+:host([is-zero-state_][enable-native-zero-state-suggestions_]:not([is-shown-in-tab_]))
     #flexCenterContainer {
   justify-content: flex-end;
 }
@@ -461,25 +465,25 @@ error-page {
 }
 
 @media (max-height: 800px) {
-  :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions_]))
       #flexCenterContainer {
     padding-top: 30px;
     height: 30%;
   }
 
-  :host([is-zero-state_]:not([enable-native-zero-state-suggestions])
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions_])
       [is-shown-in-tab_]) #flexCenterContainer {
     height: calc(30% - 88px);
   }
 
-  :host([is-zero-state_]:not([enable-native-zero-state-suggestions]):not([is-shown-in-tab_]))
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions_]):not([is-shown-in-tab_]))
       #flexCenterContainer {
     padding-top: 50px;
   }
 }
 
 @media (max-height: 500px) {
-  :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions_]))
       #flexCenterContainer {
     justify-content: flex-start;
     gap: 18px;
@@ -487,7 +491,7 @@ error-page {
     padding-top: 20px;
   }
 
-  :host([is-zero-state_][enable-native-zero-state-suggestions])
+  :host([is-zero-state_][enable-native-zero-state-suggestions_])
       #flexCenterContainer {
     gap: 15px;
     padding-top: 5vh;

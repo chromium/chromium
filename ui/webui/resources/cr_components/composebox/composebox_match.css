@@ -10,7 +10,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --tab-select-color_: rgba(153, 200, 255, 1);
+  --tab-select-color_: rgba(23, 112, 216, 1);
   --input-inline-spacing: 12px;
   outline: none;
   height: var(--cr-composebox-match-height, 44px);
@@ -107,11 +107,14 @@
 #remove {
   --cr-icon-button-fill-color:
       var(--color-searchbox-results-icon-selected);
-  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-icon-size:
+      var(--cr-composebox-dropdown-match-icon-size, 16px);
   --cr-icon-button-hover-background-color:
       var(--color-searchbox-results-button-hover);
-  --cr-icon-button-margin-end: 4px;
-  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end:
+      var(--cr-composebox-dropdown-match-margin-end, 4px);
+  --cr-icon-button-margin-start:
+      var(--cr-composebox-dropdown-match-margin-start, 0);
   display: none;
   top: var(--cr-composebox-match-remove-button-top, 6px);
 }

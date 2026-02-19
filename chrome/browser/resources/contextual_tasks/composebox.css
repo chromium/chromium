@@ -512,7 +512,7 @@
 }
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon) {
-  background-color: var(--color-composebox-font-dark);
+  background-color: var(--color-zero-state-match-icon);
   height: 20px;
   margin: 2px;
   width: 20px;
@@ -520,7 +520,7 @@
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-text-container) {
   border-radius: 4px;
-  color: var(--color-composebox-font-dark);
+  color: var(--color-zero-state-match-text);
   font-family: var(--google-sans-font);
   font-size: 16px;
   letter-spacing: 1%;
@@ -543,6 +543,10 @@
   width: calc(100% - 8px);
 }
 
-#composeboxContainer:not(:has(#composebox[show-dropdown_])) ~ #contextualTasksSuggestionsContainer {
+:host([is-zero-state])
+    #contextualTasksSuggestionsContainer::part(match-remove-button) {
+  --cr-composebox-dropdown-match-margin-end: -8px;
+  --cr-composebox-dropdown-match-margin-start: 16px;
+  --cr-composebox-match-remove-button-top: 0;
   display: none;
 }
