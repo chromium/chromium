@@ -690,11 +690,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
   const char* GetSecPurposeHeaderValue(const GURL& request_url) const;
 
-  // Adds Speculation Rules Tags headers for a prefetch request to `request_url`
-  // to `headers`.
-  void AddSpeculationTagsHeader(const GURL& request_url,
-                                net::HttpRequestHeaders& headers) const;
-
   // Called when a prefetch request could not be started because of eligibility
   // reasons. Should only be called for the initial prefetch request and not
   // redirects.

@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_
 
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace content {
 
@@ -14,6 +16,15 @@ namespace content {
 // work (See crbug.com/484967082 for more details).
 extern const net::NetworkTrafficAnnotationTag
     kNavigationalPrefetchTrafficAnnotation;
+
+// Adds Speculation Rules Tags headers for a prefetch request to `request_url`
+// to `headers`.
+// Note that `request_url` and `prefetch_request.url` / `resource_request`
+// (that `request_headers` belongs)'s `url` can be different when called from
+// `PrefetchContainer::PrepareUpdateHeaders()`.
+void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
+                              const GURL& request_url,
+                              const PrefetchRequest& prefetch_request);
 
 }  // namespace content
 

@@ -26,6 +26,7 @@
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
@@ -772,23 +773,6 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   }
 }
 
-void PrefetchContainer::AddSpeculationTagsHeader(
-    const GURL& request_url,
-    net::HttpRequestHeaders& headers) const {
-  // Sec-Speculation-Tags is set only when the prefetch is triggered
-  // by speculation rules and it is not cross-site prefetch.
-  // To see more details:
-  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
-  if (request().speculation_rules_tags().has_value() &&
-      !IsCrossSiteRequest(url::Origin::Create(request_url))) {
-    std::optional<std::string> serialized_list =
-        request().speculation_rules_tags()->ConvertStringToHeaderString();
-    CHECK(serialized_list.has_value());
-    headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
-                      serialized_list.value());
-  }
-}
-
 std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
 PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   // There are sometimes other headers that are modified during navigation
@@ -813,12 +797,14 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   // `Sec-Speculation-Tags`:
   updates_for_resource_request.removed_headers.push_back(
       blink::kSecSpeculationTagsHeaderName);
-  AddSpeculationTagsHeader(url, updates_for_resource_request.modified_headers);
+  AddSpeculationTagsHeader(updates_for_resource_request.modified_headers, url,
+                           request());
   if (base::FeatureList::IsEnabled(
           features::kPrefetchFixHeaderUpdatesOnRedirect)) {
     updates_for_follow_redirect.removed_headers.push_back(
         blink::kSecSpeculationTagsHeaderName);
-    AddSpeculationTagsHeader(url, updates_for_follow_redirect.modified_headers);
+    AddSpeculationTagsHeader(updates_for_follow_redirect.modified_headers, url,
+                             request());
   }
 
   // ------------------------------------------------------------------------
@@ -1661,7 +1647,7 @@ void PrefetchContainer::MakeInitialResourceRequest() {
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Speculation-Tags`:
-  AddSpeculationTagsHeader(url, resource_request->headers);
+  AddSpeculationTagsHeader(resource_request->headers, url, request());
 
   // ------------------------------------------------------------------------
   // [2] `X-Client-Data`:
