@@ -318,6 +318,18 @@ BASE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened,
 // If enabled, the magic cursor in the actor overlay is shown.
 BASE_FEATURE(kGlicActorUiOverlayMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Default: 0.667 pixels per millisecond
+const base::FeatureParam<double> kGlicActorUiOverlayMagicCursorSpeed{
+    &kGlicActorUiOverlayMagicCursor, "magic-cursor-speed-px-per-ms", 0.667};
+
+// Default: 50ms
+const base::FeatureParam<int> kGlicActorUiOverlayMagicCursorMinDuration{
+    &kGlicActorUiOverlayMagicCursor, "magic-cursor-min-duration-ms", 50};
+
+// Default: 675ms
+const base::FeatureParam<int> kGlicActorUiOverlayMagicCursorMaxDuration{
+    &kGlicActorUiOverlayMagicCursor, "magic-cursor-max-duration-ms", 675};
+
 // If enabled, tool execution is split into separate Validate and Execute steps.
 // The Validate step initializes the tool in the renderer and returns the
 // target's coordinate point early, before the actual execution occurs.
