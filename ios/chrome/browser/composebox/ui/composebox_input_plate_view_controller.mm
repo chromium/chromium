@@ -213,6 +213,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIView* _leadingCarouselFadeView;
   /// The fade view for the carousel's trailing edge.
   UIView* _trailingCarouselFadeView;
+  __weak CAGradientLayer* _carouselLeadingGradientLayer;
+  __weak CAGradientLayer* _carouselTrailingGradientLayer;
   /// The carousel container.
   UIView* _carouselContainer;
   /// Controls that should be visible.
@@ -343,10 +345,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   // Update the gradient layer's frame.
-  _trailingCarouselFadeView.layer.sublayers.firstObject.frame =
-      _trailingCarouselFadeView.bounds;
-  _leadingCarouselFadeView.layer.sublayers.firstObject.frame =
-      _leadingCarouselFadeView.bounds;
+  _carouselTrailingGradientLayer.frame = _trailingCarouselFadeView.bounds;
+  _carouselLeadingGradientLayer.frame = _leadingCarouselFadeView.bounds;
   if (self.compact) {
     _inputPlateContainerView.layer.cornerRadius =
         _inputPlateContainerView.frame.size.height / 2;
@@ -916,20 +916,25 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self updateCarouselFade];
 }
 
-- (CAGradientLayer*)createGradientLayerForLeading:(BOOL)isLeading {
-  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+/// Updates carousel fading gradients colors.
+- (void)updateCarouselGradientAppearance {
+  // Update the gradient layer's color.
   UIColor* transparentColor =
       [_theme.inputPlateBackgroundColor colorWithAlphaComponent:0.0];
   UIColor* solidColor = _theme.inputPlateBackgroundColor;
 
-  if (isLeading) {
-    gradientLayer.colors =
-        @[ (id)solidColor.CGColor, (id)transparentColor.CGColor ];
-  } else {
-    gradientLayer.colors =
-        @[ (id)transparentColor.CGColor, (id)solidColor.CGColor ];
-  }
+  _carouselLeadingGradientLayer.colors =
+      @[ (id)solidColor.CGColor, (id)transparentColor.CGColor ];
+  _carouselTrailingGradientLayer.colors =
+      @[ (id)transparentColor.CGColor, (id)solidColor.CGColor ];
 
+  [_carouselLeadingGradientLayer setNeedsDisplay];
+  [_carouselTrailingGradientLayer setNeedsDisplay];
+}
+
+/// Returns a gradient layer for the carousel.
+- (CAGradientLayer*)createCarouselGradientLayer {
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
   gradientLayer.startPoint = CGPointMake(0.0, 0.5);
   gradientLayer.endPoint = CGPointMake(1.0, 0.5);
   return gradientLayer;
@@ -1072,6 +1077,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)userInterfaceStyleChanged {
   [self updateAIMButtonAppearance];
   [self updateDepthShadowAppearance];
+  [self updateCarouselGradientAppearance];
 }
 
 /// Adjusts the shadow of the input plate based on UI style and theme.
@@ -1724,12 +1730,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _leadingCarouselFadeView.hidden = YES;
   [_carouselContainer addSubview:_leadingCarouselFadeView];
 
-  [_trailingCarouselFadeView.layer
-      insertSublayer:[self createGradientLayerForLeading:NO]
-             atIndex:0];
-  [_leadingCarouselFadeView.layer
-      insertSublayer:[self createGradientLayerForLeading:YES]
-             atIndex:0];
+  _carouselLeadingGradientLayer = [self createCarouselGradientLayer];
+  _carouselTrailingGradientLayer = [self createCarouselGradientLayer];
+
+  [_trailingCarouselFadeView.layer insertSublayer:_carouselTrailingGradientLayer
+                                          atIndex:0];
+  [_leadingCarouselFadeView.layer insertSublayer:_carouselLeadingGradientLayer
+                                         atIndex:0];
 
   [NSLayoutConstraint activateConstraints:@[
     [_trailingCarouselFadeView.trailingAnchor
@@ -1750,6 +1757,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [_leadingCarouselFadeView.widthAnchor
         constraintEqualToConstant:kFadeViewWidth],
   ]];
+  [self updateCarouselGradientAppearance];
 }
 
 /// Sets up the main container view for the input plate.
