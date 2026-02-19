@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_scroll_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ui/gfx/image/image.h"
 
 namespace {
@@ -182,6 +184,10 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                     weak_ptr->OnKeyboardStateChanged(false);
                   }
                 }];
+    scroll_observer_ = [[GeminiScrollObserver alloc]
+        initWithScrollCallback:base::BindRepeating(
+                                   &GeminiBrowserAgent::OnScrollEvent,
+                                   weak_factory_.GetWeakPtr())];
   }
 }
 
@@ -196,6 +202,14 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
         removeObserver:keyboard_hide_observer_];
     keyboard_hide_observer_ = nil;
   }
+
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  if (active_web_state) {
+    [active_web_state->GetWebViewProxy().scrollViewProxy
+        removeObserver:scroll_observer_];
+  }
+  scroll_observer_ = nil;
 
   if (fullscreen_controller_) {
     fullscreen_controller_->RemoveObserver(this);
@@ -345,6 +359,10 @@ void GeminiBrowserAgent::UpdateActiveTabHelperWithPresentedSource(
 
 void GeminiBrowserAgent::UpdateForTraitCollection(
     UITraitCollection* traitCollection) {
+  if (is_floaty_temporarily_hidden_) {
+    return;
+  }
+
   // Update the offset for a device orientation update to landscape or portrait.
   CGFloat offset =
       GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
@@ -693,6 +711,8 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     if (old_tab_helper) {
       old_tab_helper->RemoveObserver(this);
     }
+    [old_active->GetWebViewProxy().scrollViewProxy
+        removeObserver:scroll_observer_];
   }
 
   if (new_active) {
@@ -702,6 +722,29 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
       // Propagate the context of the new active tab.
       OnPageContextUpdated(new_active);
     }
+    [new_active->GetWebViewProxy().scrollViewProxy
+        addObserver:scroll_observer_];
+  }
+}
+
+void GeminiBrowserAgent::OnScrollEvent() {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+
+  // Catch-all in case the floaty is still in a temporarily hidden state. A
+  // fullscreen update implies a user is interacting with the web page,
+  // therefore we should force-show the floaty if invoked. Uses the command
+  // handler to do eligibility checks outside of this browser agent before
+  // showing the floaty.
+  if (is_floaty_temporarily_hidden_) {
+    id<BWGCommands> gemini_handler =
+        HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
+    [gemini_handler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     ForcedFromScroll];
+    return;
   }
 }
 
@@ -729,22 +772,7 @@ void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
 void GeminiBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
-  if (!is_floaty_invoked_) {
-    return;
-  }
-
-  // Catch-all in case the floaty is still in a temporarily hidden state. A
-  // fullscreen update implies a user is interacting with the web page,
-  // therefore we should force-show the floaty if invoked. Uses the command
-  // handler to do eligibility checks outside of this browser agent before
-  // showing the floaty.
-  if (is_floaty_temporarily_hidden_) {
-    id<BWGCommands> gemini_handler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
-    [gemini_handler
-        updateFloatyVisibilityIfEligibleAnimated:NO
-                                      fromSource:gemini::FloatyUpdateSource::
-                                                     ForcedFromFullscreen];
+  if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
     return;
   }
 

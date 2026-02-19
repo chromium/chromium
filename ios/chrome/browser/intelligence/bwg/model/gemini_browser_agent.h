@@ -40,6 +40,7 @@ class PageContext;
 @class GeminiCameraHandler;
 @class GeminiPageContext;
 @class GeminiViewStateChangeHandler;
+@class GeminiScrollObserver;
 @class GeminiSuggestionHandler;
 
 @protocol BWGGatewayProtocol;
@@ -188,6 +189,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // provided web state.
   BwgTabHelper* GetActiveTabHelper(web::WebState* web_state);
 
+  // Callback for scroll events.
+  void OnScrollEvent();
+
   // FullscreenControllerObserver:
   void FullscreenProgressUpdated(FullscreenController* controller,
                                  CGFloat progress) override;
@@ -261,6 +265,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Observers for keyboard events.
   id keyboard_show_observer_ = nil;
   id keyboard_hide_observer_ = nil;
+
+  // Observer for scroll events.
+  __strong GeminiScrollObserver* scroll_observer_ = nullptr;
 
   // Whether the keyboard is currently visible.
   bool is_keyboard_visible_ = false;

@@ -45,7 +45,7 @@ enum class FloatyUpdateSource {
   TabGrid = 3,
   ContextMenu = 4,
   WebContextMenu = 5,
-  ForcedFromFullscreen = 6,
+  ForcedFromScroll = 6,
   Overlay = 7,
   IneligibleSite = 8,
   ForcedFromQueryResponse = 9,
