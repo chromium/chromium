@@ -14,26 +14,43 @@ class Check(check.Check):
     super(Check, self).__init__(*args, **kwargs)
 
   # `param` can be a lot of things so check if it is a remote/receiver.
-  # Array/Map must be recursed into.
-  def _CheckFieldOrParam(self, kind):
-    if module.IsAnyInterfaceKind(kind):
-      if module.IsPendingRemoteKind(kind):
-        return
-      if module.IsPendingAssociatedRemoteKind(kind):
-        return
-      if not kind.kind.direct_receiver:
-        interface = kind.kind.mojom_name
-        raise check.CheckException(
-            self.module, f"interface {interface} must be a DirectReceiver")
-    if module.IsStructKind(kind):
-      self._CheckStruct(kind)
-    if module.IsUnionKind(kind):
-      self._CheckUnion(kind)
-    if module.IsArrayKind(kind):
-      self._CheckFieldOrParam(kind.kind)
-    if module.IsMapKind(kind):
-      self._CheckFieldOrParam(kind.key_kind)
-      self._CheckFieldOrParam(kind.value_kind)
+  # Array/Map must be traversed into.
+  def _CheckFieldOrParam(self, root_kind):
+    stack = [root_kind]
+    visited = set()
+
+    while stack:
+      kind = stack.pop()
+
+      if kind in visited:
+        continue
+
+      if module.IsAnyInterfaceKind(kind):
+        if module.IsPendingRemoteKind(kind):
+          continue
+        if module.IsPendingAssociatedRemoteKind(kind):
+          continue
+        if not kind.kind.direct_receiver:
+          interface = kind.kind.mojom_name
+          raise check.CheckException(
+              self.module, f"interface {interface} must be a DirectReceiver")
+
+      elif module.IsStructKind(kind):
+        visited.add(kind)
+        for field in kind.fields:
+          stack.append(field.kind)
+
+      elif module.IsUnionKind(kind):
+        visited.add(kind)
+        for field in kind.fields:
+          stack.append(field.kind)
+
+      elif module.IsArrayKind(kind):
+        stack.append(kind.kind)
+
+      elif module.IsMapKind(kind):
+        stack.append(kind.key_kind)
+        stack.append(kind.value_kind)
 
   def _CheckInterface(self, interface):
     if not interface.direct_receiver:
@@ -44,14 +61,6 @@ class Check(check.Check):
       if method.response_parameters:
         for param in method.response_parameters:
           self._CheckFieldOrParam(param.kind)
-
-  def _CheckStruct(self, struct):
-    for field in struct.fields:
-      self._CheckFieldOrParam(field.kind)
-
-  def _CheckUnion(self, union):
-    for field in union.fields:
-      self._CheckFieldOrParam(field.kind)
 
   def CheckModule(self):
     """Validate that any runtime feature guarded interfaces that might be passed
