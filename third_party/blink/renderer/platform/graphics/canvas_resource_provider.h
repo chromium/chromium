@@ -669,8 +669,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   CreateForSoftwareCompositor(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      Delegate* delegate = nullptr);
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
 
   CanvasNon2DResourceProviderSharedImage(
       gfx::Size,
