@@ -373,6 +373,30 @@ public class UrlUtilities {
                 || url.getScheme().equals(UrlConstants.INTENT_SCHEME);
     }
 
+    /** Returns whether the given URL uses the Google.com domain. */
+    public static boolean isGoogleDomainUrl(String url, boolean allowNonStandardPort) {
+        return UrlUtilitiesJni.get().isGoogleDomainUrl(url, allowNonStandardPort);
+    }
+
+    /** Returns whether the given URL is a Google.com domain or sub-domain. */
+    public static boolean isGoogleSubDomainUrl(String url) {
+        return UrlUtilitiesJni.get().isGoogleSubDomainUrl(url);
+    }
+
+    /** Returns whether the given URL is a Google.com Search URL. */
+    public static boolean isGoogleSearchUrl(@Nullable String url) {
+        return UrlUtilitiesJni.get().isGoogleSearchUrl(url);
+    }
+
+    /** Returns whether the given URL is the Google Web Search URL. */
+    public static boolean isGoogleHomePageUrl(String url) {
+        return UrlUtilitiesJni.get().isGoogleHomePageUrl(url);
+    }
+
+    public static void setNativesForTesting(Natives natives) {
+        UrlUtilitiesJni.setInstanceForTesting(natives);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean sameDomainOrHost(
@@ -380,16 +404,12 @@ public class UrlUtilities {
 
         String getDomainAndRegistry(String url, boolean includePrivateRegistries);
 
-        /** Returns whether the given URL uses the Google.com domain. */
         boolean isGoogleDomainUrl(String url, boolean allowNonStandardPort);
 
-        /** Returns whether the given URL is a Google.com domain or sub-domain. */
         boolean isGoogleSubDomainUrl(String url);
 
-        /** Returns whether the given URL is a Google.com Search URL. */
         boolean isGoogleSearchUrl(@Nullable String url);
 
-        /** Returns whether the given URL is the Google Web Search URL. */
         boolean isGoogleHomePageUrl(String url);
 
         boolean isUrlWithinScope(String url, String scopeUrl);
