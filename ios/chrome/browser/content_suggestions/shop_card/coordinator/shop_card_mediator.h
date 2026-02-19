@@ -24,8 +24,8 @@ class ImpressionLimitService;
 @protocol NewTabPageActionsDelegate;
 class PrefService;
 @protocol ShopCardActionDelegate;
+@class ShopCardConfig;
 @class ShopCardData;
-@class ShopCardItem;
 @protocol ShopCardMediatorDelegate;
 
 @interface ShopCardMediator : NSObject <ShopCardCommands>
@@ -62,7 +62,7 @@ class PrefService;
 
 - (void)disableModule;
 
-- (ShopCardItem*)shopCardItemToShow;
+- (ShopCardConfig*)shopCardItemToShow;
 
 @end
 

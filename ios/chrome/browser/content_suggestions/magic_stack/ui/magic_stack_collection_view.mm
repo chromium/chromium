@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/placeholder_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
@@ -145,7 +145,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       [snapshot indexOfSectionIdentifier:kMagicStackSectionIdentifier];
 
   if ([self.diffableDataSource indexPathForItemIdentifier:item] &&
-      [item isKindOfClass:[ShopCardItem class]]) {
+      [item isKindOfClass:[ShopCardConfig class]]) {
     // TODO(crbug.com/446386562) resolve duplicate insertions of ShopCard then
     // change this to a CHECK.
     base::debug::DumpWithoutCrashing();

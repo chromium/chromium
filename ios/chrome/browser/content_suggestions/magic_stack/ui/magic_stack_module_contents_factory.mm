@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_consumer.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_item_view.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_price_tracking_view.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_view.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_action_item.h"
@@ -84,8 +84,8 @@
       return [self priceTrackingPromoViewForConfig:priceTrackingPromoConfig];
     }
     case ContentSuggestionsModuleType::kShopCard: {
-      ShopCardItem* item = static_cast<ShopCardItem*>(config);
-      return [self shopCardViewForConfig:item];
+      ShopCardConfig* shopCardConfig = static_cast<ShopCardConfig*>(config);
+      return [self shopCardViewForConfig:shopCardConfig];
     }
     case ContentSuggestionsModuleType::kSendTabPromo: {
       SendTabPromoConfig* sendTabPromoConfig =
@@ -177,11 +177,11 @@
   return view;
 }
 
-- (UIView*)shopCardViewForConfig:(ShopCardItem*)shopCardItem {
+- (UIView*)shopCardViewForConfig:(ShopCardConfig*)config {
   ShopCardModuleView* view =
       [[ShopCardModuleView alloc] initWithFrame:CGRectZero];
-  view.commandHandler = shopCardItem.shopCardHandler;
-  [view configureView:shopCardItem];
+  view.commandHandler = config.shopCardHandler;
+  [view configureView:config];
   return view;
 }
 

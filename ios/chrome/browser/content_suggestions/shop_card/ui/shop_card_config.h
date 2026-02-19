@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_ITEM_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_CONFIG_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_CONFIG_H_
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
 
@@ -11,7 +11,7 @@
 @class ShopCardData;
 
 // Item containing the configurations for the Shopcard view.
-@interface ShopCardItem : MagicStackModule
+@interface ShopCardConfig : MagicStackModule
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
@@ -20,8 +20,8 @@
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<ShopCardCommands> shopCardHandler;
-// LINT.ThenChange(shop_card_item.mm:Copy)
+// LINT.ThenChange(shop_card_config.mm:Copy)
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_CONFIG_H_

@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator.h"
 
-@class ShopCardItem;
+@class ShopCardConfig;
 
 namespace commerce {
 class ShoppingService;
@@ -18,15 +18,15 @@ class ShoppingService;
 
 - (commerce::ShoppingService*)shoppingServiceForTesting;
 
-- (ShopCardItem*)shopCardItemForTesting;
+- (ShopCardConfig*)shopCardConfigForTesting;
 
-- (void)setShopCardItemForTesting:(ShopCardItem*)item;
+- (void)setShopCardConfigForTesting:(ShopCardConfig*)config;
 
-- (void)logImpressionForItemForTesting:(ShopCardItem*)item;
+- (void)logImpressionForItemForTesting:(ShopCardConfig*)config;
 
 - (BOOL)hasReachedImpressionLimitForTesting:(const GURL&)url;
 
-- (void)logEngagementForItemForTesting:(ShopCardItem*)item;
+- (void)logEngagementForItemForTesting:(ShopCardConfig*)config;
 
 - (BOOL)hasBeenOpenedForTesting:(const GURL&)url;
 

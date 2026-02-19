@@ -5,8 +5,8 @@
 source_set("ui") {
   sources = [
     "shop_card_commands.h",
-    "shop_card_item.h",
-    "shop_card_item.mm",
+    "shop_card_config.h",
+    "shop_card_config.mm",
     "shop_card_price_tracking_view.h",
     "shop_card_price_tracking_view.mm",
     "shop_card_view.h",

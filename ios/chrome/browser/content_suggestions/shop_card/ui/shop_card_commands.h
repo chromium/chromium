@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_COMMANDS_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_COMMANDS_H_
 
-@class ShopCardItem;
+@class ShopCardConfig;
 
 // Command protocol for events of ShopCard module.
 @protocol ShopCardCommands
 
 // Opens the displayed shop card item.
-- (void)openShopCardItem:(ShopCardItem*)item;
+- (void)openShopCardItem:(ShopCardConfig*)config;
 
 @end
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHOP_CARD_UI_SHOP_CARD_COMMANDS_H_

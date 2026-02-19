@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator+testing.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/model/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -138,11 +138,11 @@ TEST_F(ShopCardMediatorTest, TestDisconnect) {
 
 // Resets card.
 TEST_F(ShopCardMediatorTest, TestReset) {
-  ShopCardItem* item = [[ShopCardItem alloc] init];
-  [mediator() setShopCardItemForTesting:item];
-  EXPECT_NE(nil, mediator().shopCardItemForTesting);
+  ShopCardConfig* config = [[ShopCardConfig alloc] init];
+  [mediator() setShopCardConfigForTesting:config];
+  EXPECT_NE(nil, mediator().shopCardConfigForTesting);
   [mediator() reset];
-  EXPECT_EQ(nil, mediator().shopCardItemForTesting);
+  EXPECT_EQ(nil, mediator().shopCardConfigForTesting);
 }
 
 // TODO(crbug.com/424378332): `removeShopCard` is not called.
@@ -158,16 +158,16 @@ TEST_F(ShopCardMediatorTest, DISABLED_TestRemoveShopCard) {
 // shown for the same URL more than 3 times. The below functions are
 // used for making this determination.
 TEST_F(ShopCardMediatorTest, TestImpressions) {
-  ShopCardItem* item = [[ShopCardItem alloc] init];
-  item.shopCardData = [[ShopCardData alloc] init];
-  item.shopCardData.productURL = GURL("https://example.com/");
-  [mediator() logImpressionForItemForTesting:item];
+  ShopCardConfig* config = [[ShopCardConfig alloc] init];
+  config.shopCardData = [[ShopCardData alloc] init];
+  config.shopCardData.productURL = GURL("https://example.com/");
+  [mediator() logImpressionForItemForTesting:config];
   EXPECT_FALSE([mediator()
       hasReachedImpressionLimitForTesting:GURL("https://example.com/")]);
-  [mediator() logImpressionForItemForTesting:item];
+  [mediator() logImpressionForItemForTesting:config];
   EXPECT_FALSE([mediator()
       hasReachedImpressionLimitForTesting:GURL("https://example.com/")]);
-  [mediator() logImpressionForItemForTesting:item];
+  [mediator() logImpressionForItemForTesting:config];
   EXPECT_TRUE([mediator()
       hasReachedImpressionLimitForTesting:GURL("https://example.com/")]);
 }
@@ -176,10 +176,10 @@ TEST_F(ShopCardMediatorTest, TestImpressions) {
 // function hasBeenOpened used to determine if we should show card for
 // the URL is working as expected.
 TEST_F(ShopCardMediatorTest, TestUrlOpened) {
-  ShopCardItem* item = [[ShopCardItem alloc] init];
-  item.shopCardData = [[ShopCardData alloc] init];
-  item.shopCardData.productURL = GURL("https://example.com/");
-  [mediator() logEngagementForItemForTesting:item];
+  ShopCardConfig* config = [[ShopCardConfig alloc] init];
+  config.shopCardData = [[ShopCardData alloc] init];
+  config.shopCardData.productURL = GURL("https://example.com/");
+  [mediator() logEngagementForItemForTesting:config];
   EXPECT_TRUE(
       [mediator() hasBeenOpenedForTesting:GURL("https://example.com/")]);
 }
@@ -192,16 +192,16 @@ TEST_F(ShopCardMediatorTest, TestUrlNotOpened) {
 }
 
 TEST_F(ShopCardMediatorTest, TestUntrackedNoShopCardData) {
-  [mediator() setShopCardItemForTesting:nil];
+  [mediator() setShopCardConfigForTesting:nil];
   // Shouldn't crash
   [mediator() onUrlUntrackedForTesting:GURL("https://example.com/")];
 }
 
 TEST_F(ShopCardMediatorTest, TestDontFetchIfShopCardDataExists) {
-  ShopCardItem* item = [[ShopCardItem alloc] init];
+  ShopCardConfig* config = [[ShopCardConfig alloc] init];
   id mock = OCMPartialMock(mediator());
   OCMReject([mock fetchPriceTrackedBookmarksForTesting]);
-  [mediator() setShopCardItemForTesting:item];
+  [mediator() setShopCardConfigForTesting:config];
   [mediator() fetchPriceTrackedBookmarksIfApplicableForTesting];
   EXPECT_OCMOCK_VERIFY(mock);
 }

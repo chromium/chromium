@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_utils.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_config.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -409,8 +409,8 @@ const CGFloat kSeparatorHeight = 0.5;
       // Send Tab and Price Tracking Promo design do not use title.
       return @"";
     case ContentSuggestionsModuleType::kShopCard: {
-      ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
-      if (shopCardItem.shopCardData.shopCardItemType ==
+      ShopCardConfig* shopCardConfig = static_cast<ShopCardConfig*>(config);
+      if (shopCardConfig.shopCardData.shopCardItemType ==
           ShopCardItemType::kPriceDropForTrackedProducts) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
@@ -455,9 +455,9 @@ const CGFloat kSeparatorHeight = 0.5;
                                              config:(MagicStackModule*)config {
   switch (type) {
     case ContentSuggestionsModuleType::kShopCard: {
-      ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
+      ShopCardConfig* shopCardConfig = static_cast<ShopCardConfig*>(config);
       _seeMoreButton.accessibilityLabel = [@[
-        _seeMoreButton.titleLabel.text, shopCardItem.shopCardData.productTitle
+        _seeMoreButton.titleLabel.text, shopCardConfig.shopCardData.productTitle
       ] componentsJoinedByString:@", "];
       break;
     }

@@ -8,8 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_commands.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -45,7 +45,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 }  // namespace
 
 @implementation ShopCardModuleView {
-  ShopCardItem* _item;
+  ShopCardConfig* _config;
   // Holds content of ShopCard. includes productAndFavicon on the left,
   // and textStack on the right.
   UIStackView* _contentStack;
@@ -68,16 +68,16 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   PriceNotificationsPriceChipView* _priceNotificationsChip;
 }
 
-- (void)configureView:(ShopCardItem*)config {
+- (void)configureView:(ShopCardConfig*)config {
   if (!config) {
     return;
   }
   [self addTapGestureRecognizer];
-  _item = config;
+  _config = config;
 
   if (config.shopCardData.shopCardItemType ==
       ShopCardItemType::kPriceDropForTrackedProducts) {
-    [self configureViewForTrackedProducts:_item];
+    [self configureViewForTrackedProducts];
   } else if (config.shopCardData.shopCardItemType ==
              ShopCardItemType::kReviews) {
     // TODO: crbug.com/394638800 - render correct view when data available
@@ -86,16 +86,16 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 
 #pragma mark - Private
 
-- (void)configureViewForTrackedProducts:(ShopCardItem*)configItem {
+- (void)configureViewForTrackedProducts {
   [self populateTitleLabel];
   [self populateUrlLabel];
   [self populatePriceNotificationChip];
 
   // Case 1: both are present, favicon on bottom right.
-  if (_item.shopCardData.productImage && _item.shopCardData.faviconImage) {
+  if (_config.shopCardData.productImage && _config.shopCardData.faviconImage) {
     // Styling
     [self addProductImageAndOverlay];
-    [self addFaviconImageAndContainer:_item.shopCardData.faviconImage];
+    [self addFaviconImageAndContainer:_config.shopCardData.faviconImage];
     _faviconImageContainer.backgroundColor = UIColor.whiteColor;
     _faviconImageContainer.layer.mask =
         [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
@@ -118,7 +118,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   }
 
   // Case 2: product image and overlay only, favicon absent.
-  if (_item.shopCardData.productImage && !_item.shopCardData.faviconImage) {
+  if (_config.shopCardData.productImage && !_config.shopCardData.faviconImage) {
     // Styling
     [self addProductImageAndOverlay];
 
@@ -136,10 +136,10 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 
   // Case 3: no product only favicon in the center. product image is empty -
   // grey.
-  if (!_item.shopCardData.productImage && _item.shopCardData.faviconImage) {
+  if (!_config.shopCardData.productImage && _config.shopCardData.faviconImage) {
     // Styling
     [self addProductImageEmptyGray];
-    [self addFaviconImageAndContainer:_item.shopCardData.faviconImage];
+    [self addFaviconImageAndContainer:_config.shopCardData.faviconImage];
     _faviconImageContainer.backgroundColor = UIColor.whiteColor;
     [self addShadowForFaviconContainer];
 
@@ -157,7 +157,8 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   }
 
   // Case 4: no favicon or product. globe in the center, product image is grey.
-  if (!_item.shopCardData.productImage && !_item.shopCardData.faviconImage) {
+  if (!_config.shopCardData.productImage &&
+      !_config.shopCardData.faviconImage) {
     // Styling
     [self addProductImageEmptyGray];
     [self addFaviconImageAndContainer:[self makeDefaultFaviconUIImage]];
@@ -198,7 +199,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   self.isAccessibilityElement = YES;
   self.accessibilityIdentifier = kShopCardViewIdentifier;
   self.accessibilityTraits = UIAccessibilityTraitButton;
-  self.accessibilityLabel = _item.shopCardData.accessibilityString;
+  self.accessibilityLabel = _config.shopCardData.accessibilityString;
   _priceNotificationsChip.isAccessibilityElement = YES;
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   // For larger font size, hide price chip.
@@ -227,12 +228,12 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   _titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.text = _item.shopCardData.productTitle;
+  _titleLabel.text = _config.shopCardData.productTitle;
 }
 
 - (void)populateUrlLabel {
   _urlLabel = [[UILabel alloc] init];
-  _urlLabel.text = [self hostnameFromGURL:_item.shopCardData.productURL];
+  _urlLabel.text = [self hostnameFromGURL:_config.shopCardData.productURL];
   _urlLabel.numberOfLines = 1;
   _urlLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   _urlLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
@@ -248,8 +249,8 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightMedium);
   _priceNotificationsChip.strikeoutPreviousPrice = YES;
   [_priceNotificationsChip
-       setPriceDrop:_item.shopCardData.priceDrop->current_price
-      previousPrice:_item.shopCardData.priceDrop->previous_price];
+       setPriceDrop:_config.shopCardData.priceDrop->current_price
+      previousPrice:_config.shopCardData.priceDrop->previous_price];
 }
 
 - (void)addWidthConstraintsForProductImage:(const CGFloat)width {
@@ -313,7 +314,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 }
 
 - (void)shopCardItemTapped:(UIGestureRecognizer*)sender {
-  [self.commandHandler openShopCardItem:_item];
+  [self.commandHandler openShopCardItem:_config];
 }
 
 - (UIImage*)makeDefaultFaviconUIImage {
@@ -382,7 +383,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   _productImage = [[UIImageView alloc] init];
 
   UIImage* retrievedProductImage =
-      [UIImage imageWithData:_item.shopCardData.productImage
+      [UIImage imageWithData:_config.shopCardData.productImage
                        scale:[UIScreen mainScreen].scale];
   _productImage.image = retrievedProductImage;
   _productImage.backgroundColor = UIColor.whiteColor;

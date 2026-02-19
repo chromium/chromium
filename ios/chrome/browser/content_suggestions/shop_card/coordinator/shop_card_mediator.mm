@@ -37,8 +37,8 @@
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/model/shop_card_prefs.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/public/shop_card_constants.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -60,7 +60,7 @@
   bool _shoppingDataForShopCardFound;
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 
-  ShopCardItem* _shopCardItem;
+  ShopCardConfig* _shopCardConfig;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   raw_ptr<PrefService> _prefService;
   PrefChangeRegistrar _prefChangeRegistrar;
@@ -112,18 +112,18 @@
 }
 
 - (void)reset {
-  _shopCardItem = nil;
+  _shopCardConfig = nil;
   _shoppingDataForShopCardFound = false;
 }
 
 - (void)setDelegate:(id<ShopCardMediatorDelegate>)delegate {
   _delegate = delegate;
   if (_delegate) {
-    [self fetchLatestShopCardItem];
+    [self fetchLatestShopCardConfig];
   }
 }
 
-- (void)fetchLatestShopCardItem {
+- (void)fetchLatestShopCardConfig {
   if (!_prefService->GetBoolean(commerce::kPriceTrackingHomeModuleEnabled)) {
     return;
   }
@@ -132,7 +132,7 @@
 }
 
 - (void)fetchPriceTrackedBookmarksIfApplicable {
-  if (self->_shopCardItem) {
+  if (self->_shopCardConfig) {
     return;
   }
   [self fetchPriceTrackedBookmarks];
@@ -192,7 +192,7 @@
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
-          [strongSelf populateShopCardItem:specifics url:bookmark->url()];
+          [strongSelf populateShopCardConfig:specifics url:bookmark->url()];
           [strongSelf onProductImageFetchedResult:imageData
                                        productUrl:GURL(bookmark->url())];
         }),
@@ -202,15 +202,15 @@
   }
 }
 
-- (void)populateShopCardItem:(const power_bookmarks::ShoppingSpecifics)specifics
-                         url:(const GURL&)url {
-  _shopCardItem = [[ShopCardItem alloc] init];
-  _shopCardItem.delegate = self;
-  _shopCardItem.shopCardData = [[ShopCardData alloc] init];
-  _shopCardItem.shopCardHandler = self;
-  _shopCardItem.shopCardData.shopCardItemType =
+- (void)populateShopCardConfig:
+            (const power_bookmarks::ShoppingSpecifics)specifics
+                           url:(const GURL&)url {
+  _shopCardConfig = [[ShopCardConfig alloc] init];
+  _shopCardConfig.delegate = self;
+  _shopCardConfig.shopCardData = [[ShopCardData alloc] init];
+  _shopCardConfig.shopCardHandler = self;
+  _shopCardConfig.shopCardData.shopCardItemType =
       ShopCardItemType::kPriceDropForTrackedProducts;
-  _shopCardItem.shouldShowSeeMore = YES;
   PriceDrop priceDrop;
 
   std::unique_ptr<payments::CurrencyFormatter> formatter =
@@ -227,18 +227,18 @@
                                        price_micros:current_price_micros];
   priceDrop.previous_price = [self GetFormattedPrice:formatter.get()
                                         price_micros:previous_price_micros];
-  _shopCardItem.shopCardData.priceDrop = priceDrop;
-  _shopCardItem.shopCardData.productURL = url;
-  _shopCardItem.shopCardData.productTitle =
+  _shopCardConfig.shopCardData.priceDrop = priceDrop;
+  _shopCardConfig.shopCardData.productURL = url;
+  _shopCardConfig.shopCardData.productTitle =
       [NSString stringWithUTF8String:specifics.title().c_str()];
 
-  _shopCardItem.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+  _shopCardConfig.shopCardData.accessibilityString = l10n_util::GetNSStringF(
       IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_ACCESSIBILITY_LABEL,
       base::SysNSStringToUTF16(
-          _shopCardItem.shopCardData.priceDrop->previous_price),
+          _shopCardConfig.shopCardData.priceDrop->previous_price),
       base::SysNSStringToUTF16(
-          _shopCardItem.shopCardData.priceDrop->current_price),
-      base::SysNSStringToUTF16(_shopCardItem.shopCardData.productTitle),
+          _shopCardConfig.shopCardData.priceDrop->current_price),
+      base::SysNSStringToUTF16(_shopCardConfig.shopCardData.productTitle),
       GetHostnameFromGURL(url));
 }
 
@@ -258,18 +258,18 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 - (void)onProductImageFetchedResult:(const std::string&)imageData
                          productUrl:(const GURL&)productUrl {
-  if (!_shopCardItem) {
-    _shopCardItem = [[ShopCardItem alloc] init];
-    _shopCardItem.delegate = self;
+  if (!_shopCardConfig) {
+    _shopCardConfig = [[ShopCardConfig alloc] init];
+    _shopCardConfig.delegate = self;
   }
 
-  if (!_shopCardItem.shopCardData) {
-    _shopCardItem.shopCardData = [[ShopCardData alloc] init];
+  if (!_shopCardConfig.shopCardData) {
+    _shopCardConfig.shopCardData = [[ShopCardData alloc] init];
   }
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
   if (data) {
-    self->_shopCardItem.shopCardData.productImage = data;
+    self->_shopCardConfig.shopCardData.productImage = data;
   }
   [self.delegate insertShopCard];
 
@@ -285,7 +285,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
   if (attributes.faviconImage) {
-    self->_shopCardItem.shopCardData.faviconImage = attributes.faviconImage;
+    self->_shopCardConfig.shopCardData.faviconImage = attributes.faviconImage;
     if (_faviconCallbackCalledOnce) {
       [self.delegate shopCardMediatorDidReconfigureItem];
     }
@@ -298,8 +298,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   _faviconCallbackCalledOnce = true;
 }
 
-- (ShopCardItem*)shopCardItemToShow {
-  return _shopCardItem;
+- (ShopCardConfig*)shopCardItemToShow {
+  return _shopCardConfig;
 }
 
 #pragma mark - Public
@@ -309,15 +309,15 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
                             ContentSuggestionsModuleType::kShopCard);
 }
 
-- (void)openShopCardItem:(ShopCardItem*)item {
+- (void)openShopCardItem:(ShopCardConfig*)config {
   [self.NTPActionsDelegate shopCardOpened];
   [self.contentSuggestionsMetricsRecorder
-      recordShopCardOpened:item.shopCardData];
-  [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
+      recordShopCardOpened:config.shopCardData];
+  [self.shopCardActionDelegate openURL:config.shopCardData.productURL];
   [self.delegate removeShopCard];
-  [self logEngagementForItem:item];
+  [self logEngagementForItem:config];
   [self reset];
-  [self fetchLatestShopCardItem];
+  [self fetchLatestShopCardConfig];
 }
 
 #pragma mark - MagicStackModuleDelegate
@@ -326,10 +326,10 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
      wasDisplayedAtIndex:(NSUInteger)index {
   if (index == 0) {
     DCHECK(magicStackModule);
-    [self logImpressionForItem:static_cast<ShopCardItem*>(magicStackModule)];
+    [self logImpressionForItem:static_cast<ShopCardConfig*>(magicStackModule)];
   }
   [self.contentSuggestionsMetricsRecorder
-      recordShopCardImpression:static_cast<ShopCardItem*>(magicStackModule)
+      recordShopCardImpression:static_cast<ShopCardConfig*>(magicStackModule)
                                    .shopCardData
                        atIndex:index];
 }
@@ -338,8 +338,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 - (void)impressionLimitService:(ImpressionLimitService*)impressionLimitService
                  didUntrackURL:(GURL)url {
-  if (_shopCardItem && _shopCardItem.shopCardData &&
-      url == _shopCardItem.shopCardData.productURL) {
+  if (_shopCardConfig && _shopCardConfig.shopCardData &&
+      url == _shopCardConfig.shopCardData.productURL) {
     [self.delegate removeShopCard];
   }
 }
@@ -368,7 +368,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   }
 }
 
-- (void)logImpressionForItem:(ShopCardItem*)item {
+- (void)logImpressionForItem:(ShopCardConfig*)item {
   if (!_impressionLimitService) {
     return;
   }
@@ -377,7 +377,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
       shop_card_prefs::kShopCardPriceDropUrlImpressions);
 }
 
-- (void)logEngagementForItem:(ShopCardItem*)item {
+- (void)logEngagementForItem:(ShopCardConfig*)item {
   if (!_impressionLimitService) {
     return;
   }
@@ -408,28 +408,28 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   return self->_shoppingService;
 }
 
-- (void)setShopCardItemForTesting:(ShopCardItem*)item {
-  self->_shopCardItem = item;
+- (void)setShopCardConfigForTesting:(ShopCardConfig*)config {
+  self->_shopCardConfig = config;
 }
 
-- (void)logImpressionForItemForTesting:(ShopCardItem*)item {
-  [self logImpressionForItem:item];
+- (void)logImpressionForItemForTesting:(ShopCardConfig*)config {
+  [self logImpressionForItem:config];
 }
 
 - (BOOL)hasReachedImpressionLimitForTesting:(const GURL&)url {
   return [self hasReachedImpressionLimit:url];
 }
 
-- (void)logEngagementForItemForTesting:(ShopCardItem*)item {
-  [self logEngagementForItem:item];
+- (void)logEngagementForItemForTesting:(ShopCardConfig*)config {
+  [self logEngagementForItem:config];
 }
 
 - (BOOL)hasBeenOpenedForTesting:(const GURL&)url {
   return [self hasBeenOpened:url];
 }
 
-- (ShopCardItem*)shopCardItemForTesting {
-  return self->_shopCardItem;
+- (ShopCardConfig*)shopCardConfigForTesting {
+  return self->_shopCardConfig;
 }
 - (void)onUrlUntrackedForTesting:(GURL)url {
   [self impressionLimitService:_impressionLimitService didUntrackURL:url];

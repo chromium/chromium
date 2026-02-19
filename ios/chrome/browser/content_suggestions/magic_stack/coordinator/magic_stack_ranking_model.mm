@@ -71,7 +71,7 @@
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/coordinator/shortcuts_mediator.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/coordinator/shortcuts_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_config.h"
@@ -289,8 +289,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   if (_prefService->GetBoolean(kPriceTrackingPromoDisabled)) {
     return;
   }
-  ShopCardItem* item = _shopCardMediator.shopCardItemToShow;
-  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
+  ShopCardConfig* config = _shopCardMediator.shopCardItemToShow;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:config];
 }
 
 - (void)removeShopCard {

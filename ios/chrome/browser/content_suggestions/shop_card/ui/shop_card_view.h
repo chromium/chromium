@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol ShopCardCommands;
-@class ShopCardItem;
+@class ShopCardConfig;
 
 // View for the Shop Card module.
 @interface ShopCardModuleView : UIView
@@ -17,7 +17,7 @@
 @property(nonatomic, weak) id<ShopCardCommands> commandHandler;
 
 // Configures this view with `config`.
-- (void)configureView:(ShopCardItem*)config;
+- (void)configureView:(ShopCardConfig*)config;
 
 @end
 
