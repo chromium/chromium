@@ -1342,13 +1342,11 @@ void HostContentSettingsMap::UpdateExpiryEnforcementTimer(
 
   base::TimeDelta next_run = base::TimeDelta::Max();
 
-  if (!expiration_enforcement_timers_.contains(content_type)) {
-    expiration_enforcement_timers_[content_type] =
-        std::make_unique<base::OneShotTimer>();
-  }
-
   auto& expiration_enforcement_timer =
       expiration_enforcement_timers_[content_type];
+  if (expiration_enforcement_timer == nullptr) {
+    expiration_enforcement_timer = std::make_unique<base::OneShotTimer>();
+  }
 
   if (expiration_enforcement_timer->IsRunning()) {
     next_run = expiration_enforcement_timer->GetCurrentDelay();
@@ -1414,13 +1412,12 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
     const base::TimeDelta next_run = std::max(
         base::Seconds(0), next_expiry - clock_->Now() - kEagerExpiryBuffer);
 
-    if (!expiration_enforcement_timers_.contains(content_setting_type)) {
-      expiration_enforcement_timers_[content_setting_type] =
-          std::make_unique<base::OneShotTimer>();
-    }
-
     auto& expiration_enforcement_timer =
         expiration_enforcement_timers_[content_setting_type];
+    if (expiration_enforcement_timer == nullptr) {
+      expiration_enforcement_timer = std::make_unique<base::OneShotTimer>();
+    }
+
     expiration_enforcement_timer->Start(
         FROM_HERE, next_run,
         base::BindOnce(&HostContentSettingsMap::
