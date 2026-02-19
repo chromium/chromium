@@ -768,7 +768,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                               : NetLogEventType::DBSC_REGISTRATION_RESULT;
     url_fetcher_->request().net_log().AddEvent(result_event_type, [&]() {
       std::string result = registration_result.Visit(absl::Overload{
-          [&](SessionError error) {
+          [&](const SessionError& error) {
             if (IsForRefreshRequest()) {
               return error.GetDeletionReason().has_value() ? "session_ended"
                                                            : "failed_continue";

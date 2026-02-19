@@ -36,6 +36,10 @@ void AssertDomainAndRegistry(const url::Origin& origin,
       << "Unexpected domain and registry.";
 }
 
+MATCHER_P(MatchesErrorType, expected_type, "") {
+  return arg.type == expected_type;
+}
+
 }  // namespace
 
 class SessionInclusionRulesTest : public ::testing::Test {
@@ -93,8 +97,9 @@ class SessionInclusionRulesTest : public ::testing::Test {
       if (test_case.expected_is_added_result == SessionError::kSuccess) {
         EXPECT_OK(inclusion_rules_or_error);
       } else {
-        EXPECT_THAT(inclusion_rules_or_error,
-                    ErrorIs(SessionError(test_case.expected_is_added_result)));
+        EXPECT_THAT(
+            inclusion_rules_or_error,
+            ErrorIs(MatchesErrorType(test_case.expected_is_added_result)));
       }
 
       if (!inclusion_rules_or_error.has_value()) {
@@ -181,7 +186,7 @@ TEST_F(SessionInclusionRulesTest, IncludeSiteAttemptedButNotAllowed) {
   EXPECT_THAT(
       SessionInclusionRules::Create(subdomain_origin, params,
                                     GURL("https://some.site.test/refresh")),
-      ErrorIs(SessionError(SessionError::kInvalidScopeIncludeSite)));
+      ErrorIs(MatchesErrorType(SessionError::kInvalidScopeIncludeSite)));
 }
 
 TEST_F(SessionInclusionRulesTest, IncludeSite) {

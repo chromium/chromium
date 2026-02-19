@@ -30,6 +30,10 @@ namespace net::device_bound_sessions {
 
 namespace {
 
+MATCHER_P(MatchesErrorType, expected_type, "") {
+  return arg.type == expected_type;
+}
+
 class SessionTest : public ::testing::Test, public WithTaskEnvironment {
  protected:
   SessionTest()
@@ -109,35 +113,37 @@ TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "http://?not-a-valid=url";
   EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kInvalidRefreshUrl)));
+              ErrorIs(MatchesErrorType(SessionError::kInvalidRefreshUrl)));
 }
 
 TEST_F(SessionTest, InvalidScopeOrigin) {
   auto params = CreateValidParams();
   params.scope.origin = "hello world";
   EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kInvalidScopeOrigin)));
+              ErrorIs(MatchesErrorType(SessionError::kInvalidScopeOrigin)));
 }
 
 TEST_F(SessionTest, InvalidFetcherUrl) {
   auto params = CreateValidParams();
   params.fetcher_url = GURL();
   EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kInvalidFetcherUrl)));
+              ErrorIs(MatchesErrorType(SessionError::kInvalidFetcherUrl)));
 }
 
 TEST_F(SessionTest, InvalidScopeOriginWithPath) {
   auto params = CreateValidParams();
   params.scope.origin = "https://example.test/path";
-  EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kScopeOriginContainsPath)));
+  EXPECT_THAT(
+      Session::CreateIfValid(params),
+      ErrorIs(MatchesErrorType(SessionError::kScopeOriginContainsPath)));
 }
 
 TEST_F(SessionTest, InvalidScopeOriginWithTrailingSlash) {
   auto params = CreateValidParams();
   params.scope.origin = "https://example.test/";
-  EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kScopeOriginContainsPath)));
+  EXPECT_THAT(
+      Session::CreateIfValid(params),
+      ErrorIs(MatchesErrorType(SessionError::kScopeOriginContainsPath)));
 }
 
 TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
@@ -145,7 +151,7 @@ TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
   params.fetcher_url = kTestUrlForWrongETLD;
   EXPECT_THAT(
       Session::CreateIfValid(params),
-      ErrorIs(SessionError(SessionError::kScopeOriginSameSiteMismatch)));
+      ErrorIs(MatchesErrorType(SessionError::kScopeOriginSameSiteMismatch)));
 }
 
 TEST_F(SessionTest, ScopeOriginPrivateRegistryChildDomainSameSiteMismatch) {
@@ -158,14 +164,15 @@ TEST_F(SessionTest, ScopeOriginPrivateRegistryChildDomainSameSiteMismatch) {
   params.scope.origin = "https://appspot.com";
   EXPECT_THAT(
       Session::CreateIfValid(params),
-      ErrorIs(SessionError(SessionError::kScopeOriginSameSiteMismatch)));
+      ErrorIs(MatchesErrorType(SessionError::kScopeOriginSameSiteMismatch)));
 }
 
 TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = kUrlStringForWrongETLD;
-  EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kRefreshUrlSameSiteMismatch)));
+  EXPECT_THAT(
+      Session::CreateIfValid(params),
+      ErrorIs(MatchesErrorType(SessionError::kRefreshUrlSameSiteMismatch)));
 }
 
 TEST_F(SessionTest, NonSecureUrl) {
@@ -176,7 +183,7 @@ TEST_F(SessionTest, NonSecureUrl) {
     params.refresh_url = "http://example.test/registration";
     params.scope.origin = "http://example.test";
     EXPECT_THAT(Session::CreateIfValid(params),
-                ErrorIs(SessionError(SessionError::kInvalidRefreshUrl)));
+                ErrorIs(MatchesErrorType(SessionError::kInvalidRefreshUrl)));
   }
 
   // But localhost is okay.
@@ -209,7 +216,7 @@ TEST_F(SessionTest, CreateOriginScopedWithSessionRules) {
       {SessionParams::Scope::Specification::Type::kExclude,
        "subdomain.example.test", "/index.html"});
   EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(
+              ErrorIs(MatchesErrorType(
                   SessionError::kScopeRuleOriginScopedHostPatternMismatch)));
 }
 
@@ -220,15 +227,16 @@ TEST_F(SessionTest, CreateWithInvalidCredential) {
       "test_cookie",
       /*attributes=*/"Domain=some-other-domain.test"}};
   EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(
+              ErrorIs(MatchesErrorType(
                   SessionError::kInvalidCredentialsCookieInvalidDomain)));
 
   // Try to create a cookie with no name.
   params.credentials = {
       SessionParams::Credential{"",
                                 /*attributes=*/"Domain=example.test"}};
-  EXPECT_THAT(Session::CreateIfValid(params),
-              ErrorIs(SessionError(SessionError::kInvalidCredentialsCookie)));
+  EXPECT_THAT(
+      Session::CreateIfValid(params),
+      ErrorIs(MatchesErrorType(SessionError::kInvalidCredentialsCookie)));
 }
 
 TEST_F(SessionTest, ToFromProto) {
@@ -1064,9 +1072,9 @@ TEST_F(SessionTest, RefreshInitiators) {
 TEST_F(SessionTest, InvalidRefreshInitiators) {
   auto params = CreateValidParams();
   params.allowed_refresh_initiators = {"star.in.middle.*.of.example.test"};
-  EXPECT_THAT(
-      Session::CreateIfValid(params),
-      ErrorIs(SessionError(SessionError::kRefreshInitiatorInvalidHostPattern)));
+  EXPECT_THAT(Session::CreateIfValid(params),
+              ErrorIs(MatchesErrorType(
+                  SessionError::kRefreshInitiatorInvalidHostPattern)));
 }
 
 }  // namespace

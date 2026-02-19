@@ -512,7 +512,7 @@ TEST_F(RegistrationTest, NoScopeJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kMissingScope);
 }
 
@@ -546,7 +546,7 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidSessionId);
 }
 
@@ -581,7 +581,7 @@ TEST_F(RegistrationTest, EmptySessionIdJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidSessionId);
 }
 
@@ -620,7 +620,7 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidScopeSpecification);
 }
 
@@ -825,7 +825,7 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidScopeSpecificationType);
 }
 
@@ -903,7 +903,7 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidCredentialsType);
 }
 
@@ -946,7 +946,7 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidCredentialsType);
 }
 
@@ -989,7 +989,7 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidCredentialsType);
 }
 
@@ -1026,7 +1026,7 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidCredentialsConfig);
 }
 
@@ -1103,7 +1103,7 @@ TEST_F(RegistrationTest, CredEntryWithEmptyName) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidCredentialsEmptyName);
 }
 
@@ -1125,7 +1125,7 @@ TEST_F(RegistrationTest, ReturnTextFile) {
   fetcher->StartCreateTokenAndFetch(params, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidConfigJson);
 }
 
@@ -1149,7 +1149,7 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidConfigJson);
 }
 
@@ -1173,7 +1173,7 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidSessionId);
 }
 
@@ -1198,7 +1198,7 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kNetError);
 
   histogram_tester.ExpectUniqueSample(
@@ -1225,7 +1225,7 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kNetError);
 }
 
@@ -1249,7 +1249,7 @@ TEST_F(RegistrationTest, ServerError407) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kNetError);
 }
 
@@ -1273,7 +1273,7 @@ TEST_F(RegistrationTest, ServerError400) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kPersistentHttpError);
 }
 
@@ -1297,7 +1297,7 @@ TEST_F(RegistrationTest, ServerError500) {
                                     callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kTransientHttpError);
 }
 
@@ -1423,7 +1423,7 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
                                     callback.callback());
 
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kNetError);
 }
 
@@ -1556,7 +1556,7 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kRegistrationAttemptedChallenge);
 }
 
@@ -1589,7 +1589,7 @@ TEST_F(RegistrationTest, FetchRefreshAndChallengeRequired_NoChallenge) {
   fetcher->StartFetchWithExistingKey(request_param, std::move(key),
                                      callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kInvalidChallenge);
 }
 
@@ -1725,7 +1725,7 @@ TEST_F(RegistrationTest, ContinueFalse) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kServerRequestedTermination);
 }
 
@@ -1767,7 +1767,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
                                      callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kSigningError);
 }
 
@@ -1809,7 +1809,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
                                      callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kSigningError);
 }
 
@@ -1902,7 +1902,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
                                      callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome().SessionErrorForTesting().type,
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
             SessionError::kTooManyChallenges);
 }
 
@@ -2126,8 +2126,9 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
   callback.WaitForCall();
 
   const RegistrationResult& out_session = callback.outcome();
-  const SessionError& session_error = out_session.SessionErrorForTesting();
-  EXPECT_EQ(session_error.type, SessionError::kMismatchedSessionId);
+  SessionError::ErrorType session_error =
+      out_session.SessionErrorForTesting()->type;
+  EXPECT_EQ(session_error, SessionError::kMismatchedSessionId);
 }
 
 TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
@@ -2177,8 +2178,9 @@ TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
   callback.WaitForCall();
 
   const RegistrationResult& out_session = callback.outcome();
-  const SessionError& session_error = out_session.SessionErrorForTesting();
-  EXPECT_EQ(session_error.type, SessionError::kRefreshInitiatorNotString);
+  SessionError::ErrorType session_error =
+      out_session.SessionErrorForTesting()->type;
+  EXPECT_EQ(session_error, SessionError::kRefreshInitiatorNotString);
 }
 
 TEST_F(RegistrationTest, MissingIncludeSiteFails) {
@@ -2225,7 +2227,7 @@ TEST_F(RegistrationTest, MissingIncludeSiteFails) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kMissingScopeIncludeSite);
 }
 
@@ -2283,7 +2285,7 @@ TEST_F(RegistrationTest, EmptyResponseOnRegistration) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kEmptySessionConfig);
 }
 
@@ -2404,7 +2406,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownUnavailable) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kSubdomainRegistrationWellKnownUnavailable);
 }
 
@@ -2434,7 +2436,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownMalformed) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kSubdomainRegistrationWellKnownMalformed);
 }
 
@@ -2465,7 +2467,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownMalformedEntry) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kSubdomainRegistrationWellKnownMalformed);
 }
 
@@ -2498,7 +2500,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Unauthorized) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kSubdomainRegistrationUnauthorized);
 }
 
@@ -2615,7 +2617,7 @@ TEST_F(RegistrationTest, FederatedProviderHasProvider) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kSessionProviderWellKnownHasProviderOrigin);
 }
 
@@ -2643,7 +2645,7 @@ TEST_F(RegistrationTest, FederatedProviderUnvailable) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kSessionProviderWellKnownUnavailable);
 }
 
@@ -2674,7 +2676,7 @@ TEST_F(RegistrationTest, FederatedProviderUnauthorized) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kFederatedNotAuthorizedByProvider);
 }
 
@@ -2702,7 +2704,7 @@ TEST_F(RegistrationTest, FederatedRelyingUnavailable) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kRelyingPartyWellKnownUnavailable);
 }
 
@@ -2734,7 +2736,7 @@ TEST_F(RegistrationTest, FederatedRelyingHasRelying) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kRelyingPartyWellKnownHasRelyingOrigins);
 }
 
@@ -2765,7 +2767,7 @@ TEST_F(RegistrationTest, FederatedRelyingNotAuthorized) {
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kFederatedNotAuthorizedByRelyingParty);
 }
 
@@ -2802,7 +2804,7 @@ TEST_F(RegistrationTest, FederatedTooManyRelying) {
       /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
-  EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
+  EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kTooManyRelyingOriginLabels);
 }
 
@@ -2905,7 +2907,7 @@ TEST_F(RegistrationTest, RegistrationFailsIfCantSetCookies) {
                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
-  EXPECT_EQ(out_session.SessionErrorForTesting().type,
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kBoundCookieSetForbidden);
 }
 
