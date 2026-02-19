@@ -126,11 +126,6 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   CHECK(new_metrics.count);
   CHECK_GT(new_metrics.count, soft_navigation_metrics_->count);
 
-  CHECK(new_metrics.navigation_id);  // blink::kNavigationIdAbsentValue
-  // Increases strictly monotonically but can overflow,
-  // see blink::NavigationIdGenerator.
-  CHECK_NE(new_metrics.navigation_id, soft_navigation_metrics_->navigation_id);
-
   // The start_time is a TimeDelta, and its resolution is in microseconds.
   // Note that it may not be monotonically increasing, see:
   // crbug.com/418449366#comment3
@@ -144,7 +139,6 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   // message, including a cleared out largest_contentful_paint field.
   soft_navigation_metrics_ = CreateSoftNavigationMetrics();
   soft_navigation_metrics_->count = new_metrics.count;
-  soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
   soft_navigation_metrics_->start_time = new_metrics.start_time;
   soft_navigation_metrics_->same_document_metrics_token =
       new_metrics.same_document_metrics_token;

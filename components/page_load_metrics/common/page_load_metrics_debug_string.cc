@@ -334,9 +334,6 @@ std::string DebugString(
   entries.emplace_back(
       "start_time", base::NumberToString(
                         soft_navigation_metrics.start_time.InMillisecondsF()));
-  entries.emplace_back(
-      "navigation_id",
-      base::NumberToString(soft_navigation_metrics.navigation_id));
   if (soft_navigation_metrics.largest_contentful_paint) {
     entries.emplace_back(
         "largest_contentful_paint",

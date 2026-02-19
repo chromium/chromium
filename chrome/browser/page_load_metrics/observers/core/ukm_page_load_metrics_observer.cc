@@ -646,7 +646,6 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     return;
   }
   ukm::builders::SoftNavigation builder(ukm_source_id);
-  builder.SetNavigationId(soft_navigation_metrics.navigation_id);
 
   builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
   PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.StartTime",
@@ -1054,9 +1053,9 @@ void UkmPageLoadMetricsObserver::RecordLastSoftNavigation() {
       GetDelegate().GetSoftNavigationMetrics();
   builder.SetSoftNavigationCount(soft_navigation_metrics.count);
 
-  // Record last soft navigation metrics; note that 0 is the absent navigation
-  // id, see third_party/blink/renderer/core/timing/navigation_id_generator.h.
-  if (soft_navigation_metrics.count && soft_navigation_metrics.navigation_id) {
+  // Record last soft navigation metrics. The smallest count that would be set
+  // for an actual soft navigation metric is 1.
+  if (soft_navigation_metrics.count) {
     RecordSoftNavigationMetrics(
         GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
             *soft_navigation_metrics.same_document_metrics_token),

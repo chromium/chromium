@@ -388,11 +388,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
         ukm_recorder(), ukm::builders::SoftNavigation::kStartTimeName);
     EXPECT_EQ(source_id_to_start_time.size(), expected_soft_nav_count);
 
-    // Soft navigation ids.
-    auto source_id_to_navigation_id = GetSoftNavigationMetrics(
-        ukm_recorder(), ukm::builders::SoftNavigation::kNavigationIdName);
-    EXPECT_EQ(source_id_to_navigation_id.size(), expected_soft_nav_count);
-
     // Soft navigation LCP.
     auto source_id_to_lcp = GetSoftNavigationMetrics(
         ukm_recorder(),

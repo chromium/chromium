@@ -198,14 +198,12 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
       base::UnguessableToken::Create();
   soft_navigation_metrics->count = 1;
   soft_navigation_metrics->start_time = base::Milliseconds(221.1);
-  soft_navigation_metrics->navigation_id = 42;
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
       .count = soft_navigation_metrics->count,
       .start_time = timing.navigation_start - base::Time::UnixEpoch() +
                     soft_navigation_metrics->start_time,
-      .navigation_id = soft_navigation_metrics->navigation_id,
       .same_document_metrics_token =
           *soft_navigation_metrics->same_document_metrics_token,
   });
@@ -253,13 +251,11 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
       base::UnguessableToken::Create();
   soft_navigation_metrics->count = 2;
   soft_navigation_metrics->start_time = base::Milliseconds(4020.71);
-  soft_navigation_metrics->navigation_id = 49;
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
       .count = soft_navigation_metrics->count,
       .start_time = timing.navigation_start - base::Time::UnixEpoch() +
                     soft_navigation_metrics->start_time,
-      .navigation_id = soft_navigation_metrics->navigation_id,
       .same_document_metrics_token =
           *soft_navigation_metrics->same_document_metrics_token,
   });

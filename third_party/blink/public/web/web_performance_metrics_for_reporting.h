@@ -44,9 +44,6 @@ struct LargestContentfulPaintDetailsForReporting {
 struct SoftNavigationMetricsForReporting {
   uint64_t count = 0;
   base::TimeDelta start_time;
-  // For the mechanism that generates these ids, see
-  // third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h.
-  uint64_t navigation_id = 0;
 
   // Identifies the same document navigation for the initial URL change.
   // This allows us to map to the UKM Source ID in the browser side,

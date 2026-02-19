@@ -636,10 +636,6 @@ struct SoftNavigationMetrics {
   // the soft navigation. It is relative to navigation start.
   mojo_base.mojom.TimeDelta start_time;
 
-  // The renderer side navigation id that increments when a soft navigation
-  // happens.
-  uint32 navigation_id;
-
   // Identifies the same document navigation for the initial URL change.
   // This allows us to map to the UKM Source ID in the browser side,
   // and therefore attribute the metrics to the correct URL

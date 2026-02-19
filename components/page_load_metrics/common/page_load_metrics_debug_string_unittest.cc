@@ -12,7 +12,6 @@ TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
   mojom::SoftNavigationMetrics soft_navigation_metrics;
   soft_navigation_metrics.count = 1;
   soft_navigation_metrics.start_time = base::Milliseconds(123);
-  soft_navigation_metrics.navigation_id = 456;
   soft_navigation_metrics.largest_contentful_paint =
       mojom::LargestContentfulPaintTiming::New();
   soft_navigation_metrics.largest_contentful_paint->largest_image_paint =
@@ -21,7 +20,7 @@ TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
       1024;
 
   EXPECT_EQ(DebugString(soft_navigation_metrics),
-            "{count: 1, start_time: 123, navigation_id: 456, "
+            "{count: 1, start_time: 123, "
             "largest_contentful_paint: {largest_image_paint: 789, "
             "largest_image_paint_size: 1024, largest_text_paint_size: 0, "
             "type: 0, image_bpp: 0, image_request_priority_valid: 0, "

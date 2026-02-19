@@ -33,7 +33,6 @@ mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
 
 mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
   auto timing = mojom::SoftNavigationMetrics::New();
-  timing->navigation_id = 0;
   timing->start_time = base::Milliseconds(0);
   timing->largest_contentful_paint = CreateLargestContentfulPaintTiming();
   return timing;
@@ -86,7 +85,7 @@ bool IsEmpty(const mojom::MonotonicPaintTiming& timing) {
 
 bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {
   return !timing.count && timing.start_time.is_zero() &&
-         !timing.navigation_id && !timing.same_document_metrics_token &&
+         !timing.same_document_metrics_token &&
          (!timing.largest_contentful_paint ||
           IsEmpty(*timing.largest_contentful_paint));
 }
