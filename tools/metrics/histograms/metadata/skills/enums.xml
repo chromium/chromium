@@ -35,6 +35,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDialogAction) -->
 
+<!-- LINT.IfChange(SkillsFetchResult) -->
+
+<enum name="SkillsFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Empty Response Body"/>
+  <int value="2" label="Empty Response Header"/>
+  <int value="3" label="Proto Parse Failure"/>
+  <int value="4" label="Network Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsFetchResult) -->
+
 <!-- LINT.IfChange(SkillsInvokeAction) -->
 
 <enum name="SkillsInvokeAction">

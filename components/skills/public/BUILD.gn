@@ -26,19 +26,27 @@ source_set("public") {
   sources = [
     "skill.cc",
     "skill.h",
-    "skills_metrics.cc",
-    "skills_metrics.h",
     "skills_service.cc",
     "skills_service.h",
   ]
 
   public_deps = [
+    ":metrics",
     "//base",
     "//components/keyed_service/core",
     "//components/skills/internal:downloader",
     "//components/skills/proto",
     "//components/sync/protocol",
   ]
+}
+
+source_set("metrics") {
+  sources = [
+    "skills_metrics.cc",
+    "skills_metrics.h",
+  ]
+
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

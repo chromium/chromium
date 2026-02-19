@@ -36,6 +36,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Skills.Downloader.FirstParty.FetchResult"
+    enum="SkillsFetchResult" expires_after="2027-02-01">
+  <owner>aashnas@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the result status (success, network error, parse error, etc.) of a
+    first-party skills download attempt.
+  </summary>
+</histogram>
+
+<histogram name="Skills.Downloader.FirstParty.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2027-02-01">
+  <owner>aashnas@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>The HTTP response code received when downloading skills.</summary>
+</histogram>
+
 <histogram name="Skills.Invoke.Action" enum="SkillsInvokeAction"
     expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>

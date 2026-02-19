@@ -20,6 +20,17 @@ enum class SkillsDialogAction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsDialogAction)
 
+// LINT.IfChange(SkillsFetchResult)
+enum class SkillsFetchResult {
+  kSuccess = 0,
+  kEmptyResponseBody = 1,
+  kEmptyResponseHeader = 2,
+  kProtoParseFailure = 3,
+  kNetworkError = 4,
+  kMaxValue = kNetworkError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsFetchResult)
+
 // LINT.IfChange(SkillsInvokeAction)
 enum class SkillsInvokeAction {
   kFirstParty = 0,
@@ -35,6 +46,13 @@ void RecordSkillsDialogAction(SkillsDialogAction action, bool is_edit_mode);
 
 // Records the execution of a skill and its type.
 void RecordSkillsInvokeAction(SkillsInvokeAction action);
+
+// Records the result of a first-party skill list download attempt from static
+// content server link.
+void RecordSkillsFetchResult(SkillsFetchResult result);
+
+// Records the HTTP response code received when downloading skills.
+void RecordSkillsHttpCode(int http_code);
 
 }  // namespace skills
 

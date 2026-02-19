@@ -42,6 +42,7 @@ source_set("downloader") {
   deps = [
     "//base",
     "//components/skills/proto",
+    "//components/skills/public:metrics",
     "//net",
     "//services/network/public/cpp",
   ]
