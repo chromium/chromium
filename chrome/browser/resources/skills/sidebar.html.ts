@@ -24,7 +24,6 @@ export function getHtml(this: SkillsSidebarElement) {
 <div class="footer">
   $i18n{footerText}
   <span class="branding">
-    <cr-icon icon="skills:spark"></cr-icon>
     $i18n{footerBranding}
   </span>
 </div>
