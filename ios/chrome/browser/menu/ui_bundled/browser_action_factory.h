@@ -119,6 +119,9 @@ class WebState;
 // Creates a UIAction instance for opening the AI debug menu.
 - (UIAction*)actionToOpenAIMenu;
 
+// Creates a UIAction instance for opening the AIM assistant.
+- (UIAction*)actionToOpenAIMode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_BROWSER_ACTION_FACTORY_H_

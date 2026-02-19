@@ -498,6 +498,19 @@
                          }];
 }
 
+- (UIAction*)actionToOpenAIMode {
+  CHECK(IsAIMCobrowseDebugEntrypointEnabled());
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  return [self actionWithTitle:@"Open AIM prototype"
+                         image:DefaultSymbolWithPointSize(
+                                   kSparklesSymbol, kSymbolActionPointSize)
+                          type:MenuActionType::AIPrototyping
+                         block:^{
+                           [handler showAssistant];
+                         }];
+}
+
 #pragma mark - ActionFactory
 
 - (UIAction*)actionWithTitle:(NSString*)title

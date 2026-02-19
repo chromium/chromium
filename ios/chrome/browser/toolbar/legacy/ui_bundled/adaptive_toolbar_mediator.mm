@@ -564,6 +564,11 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     [staticActions addObject:openAIMenu];
   }
 
+  if (IsAIMCobrowseDebugEntrypointEnabled()) {
+    UIAction* openAIMode = [self.actionFactory actionToOpenAIMode];
+    [staticActions addObject:openAIMode];
+  }
+
   if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
     std::set<const TabGroup*> groups = self.webStateList->GetGroups();
     const TabGroup* currentGroup = self.webStateList->GetGroupOfWebStateAt(
