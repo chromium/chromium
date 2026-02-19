@@ -396,7 +396,9 @@ constexpr CGFloat kStackViewSpacing = 9;
 
 // Updates the visibility of the toolbar.
 - (void)updateToolbarVisibility {
-  self.view.hidden = !_visible;
+  _leadingStackView.hidden = !_visible;
+  _locationBarContainer.hidden = !_visible;
+  _trailingStackView.hidden = !_visible;
 }
 
 @end
