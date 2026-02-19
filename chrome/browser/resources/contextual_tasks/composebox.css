@@ -33,6 +33,7 @@
   --composebox-submit-container-inline-end:
       var(--composebox-last-icon-inline-end);
   --composebox-last-icon-inline-end: 12px;
+  --cr-composebox-tool-chip-height: var(--icon-menu-button-size);
   --cr-searchbox-height: 52px;
   --cr-searchbox-min-width: min(calc(100%), 1100px);
   --icon-menu-spacing: 6px;
@@ -175,6 +176,7 @@
 }
 
 #composebox::part(input-container) {
+  --input-bottom-spacing: 12px;
   transition: padding-top var(--emphasized-curve);
   transition-duration: var(--collapse-duration);
 }
@@ -232,6 +234,8 @@
 
 #composebox::part(context-menu-entrypoint-icon) {
   --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color);
+  --cr-icon-button-icon-size: var(--icon-menu-icon-size);
+  --cr-icon-button-size: var(--icon-menu-button-size);
 }
 
 /* Controls cancel and submit buttons. */
