@@ -145,7 +145,7 @@ class Collect(object):
       third_tuesday = date(year, month, day)
       if third_tuesday.weekday() == calendar.TUESDAY:
         break
-    return today <= third_tuesday
+    return today >= third_tuesday
 
   def process_headers(self, headers):
     result = {}
