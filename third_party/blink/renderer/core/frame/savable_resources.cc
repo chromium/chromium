@@ -158,8 +158,9 @@ String SavableResources::GetSubResourceLinkFromElement(Element* element) {
   // If value has content and not start with "javascript:" then return it,
   // otherwise return an empty string.
   if (!value.IsNull() && !value.empty() &&
-      !value.StartsWith("javascript:", kTextCaseASCIIInsensitive))
+      !value.StartsWithIgnoringAsciiCase("javascript:")) {
     return value;
+  }
 
   return String();
 }

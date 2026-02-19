@@ -124,8 +124,7 @@ String ReplaceAllCaseInsensitive(
   size_t pos;
   StringBuilder builder;
   for (;;) {
-    pos = source.Find(from, offset,
-                      TextCaseSensitivity::kTextCaseASCIIInsensitive);
+    pos = source.FindIgnoringAsciiCase(from, offset);
     if (pos == kNotFound) {
       break;
     }

@@ -47,10 +47,6 @@ namespace blink {
 
 class CodePointIterator;
 
-#define DISPATCH_CASE_OP(case_sensitivity, op, args)  \
-  ((case_sensitivity == kTextCaseSensitive) ? op args \
-                                            : op##IgnoringAsciiCase args)
-
 // You can find documentation about this class in README.md in this directory.
 //
 // When a method of this class is compatible with an equivalent method in
@@ -249,13 +245,6 @@ class WTF_EXPORT String {
 
   // Find substrings.
   size_type find(const StringView& value, size_type start = 0) const;
-  wtf_size_t Find(const StringView& value,
-                  wtf_size_t start,
-                  TextCaseSensitivity case_sensitivity) const {
-    return impl_
-               ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))
-               : kNotFound;
-  }
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
@@ -291,12 +280,6 @@ class WTF_EXPORT String {
   bool StartsWith(const StringView& prefix) const {
     return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
   }
-  bool StartsWith(const StringView& prefix,
-                  TextCaseSensitivity case_sensitivity) const {
-    return impl_
-               ? DISPATCH_CASE_OP(case_sensitivity, impl_->StartsWith, (prefix))
-               : prefix.empty();
-  }
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
   // platform features.  See crbug.com/40476285.
@@ -317,11 +300,6 @@ class WTF_EXPORT String {
 
   bool EndsWith(const StringView& suffix) const {
     return impl_ ? impl_->EndsWith(suffix) : suffix.empty();
-  }
-  bool EndsWith(const StringView& suffix,
-                TextCaseSensitivity case_sensitivity) const {
-    return impl_ ? DISPATCH_CASE_OP(case_sensitivity, impl_->EndsWith, (suffix))
-                 : suffix.empty();
   }
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web

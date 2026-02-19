@@ -729,8 +729,8 @@ bool ParseContentType(const String& content_type,
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 bool IsDolbyVisionVideoCodec(const String& video_codec_str) {
-  return video_codec_str.StartsWith("dvh1.", kTextCaseSensitive) ||
-         video_codec_str.StartsWith("dvhe.", kTextCaseSensitive);
+  return video_codec_str.StartsWith("dvh1.") ||
+         video_codec_str.StartsWith("dvhe.");
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 

@@ -365,9 +365,9 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
                             parsed_result->codec == media::VideoCodec::kAV1);
     }
 
-    if (codec_string.StartsWith("h264", kTextCaseASCIIInsensitive) ||
-        codec_string.StartsWith("avc1", kTextCaseASCIIInsensitive) ||
-        codec_string.StartsWith("avc3", kTextCaseASCIIInsensitive)) {
+    if (codec_string.StartsWithIgnoringAsciiCase("h264") ||
+        codec_string.StartsWithIgnoringAsciiCase("avc1") ||
+        codec_string.StartsWithIgnoringAsciiCase("avc3")) {
       // In the case of the `video/mp4` mimetype, when the profile can be
       // parsed, make use of the parsed profile.
       const media::VideoCodecProfile profile =
@@ -392,8 +392,8 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
       }
     }
 
-    if (codec_string.StartsWith("av1", kTextCaseASCIIInsensitive) ||
-        codec_string.StartsWith("av01", kTextCaseASCIIInsensitive)) {
+    if (codec_string.StartsWithIgnoringAsciiCase("av1") ||
+        codec_string.StartsWithIgnoringAsciiCase("av01")) {
       // In the case of the `video/mp4` mimetype, when the profile can be
       // parsed, make use of the parsed profile.
       const media::VideoCodecProfile profile =
@@ -409,7 +409,7 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
       if (match) {
         base::UmaHistogramBoolean(
             "Media.MediaRecorder.HasCorrectAV1CodecString",
-            codec_string.StartsWith("av01", kTextCaseASCIIInsensitive));
+            codec_string.StartsWithIgnoringAsciiCase("av01"));
       }
 
       // If the profile is not supported by either the HW or the SW encoder,
@@ -427,8 +427,8 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
     // fact that QuickTime and Safari only support playing `hvc1` tag mp4
     // videos, and Apple only recommend using `hvc1` for HLS.
     // https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices#2969487
-    if (codec_string.StartsWith("hvc1", kTextCaseASCIIInsensitive) ||
-        codec_string.StartsWith("hev1", kTextCaseASCIIInsensitive)) {
+    if (codec_string.StartsWithIgnoringAsciiCase("hvc1") ||
+        codec_string.StartsWithIgnoringAsciiCase("hev1")) {
       match =
           // If the profile can be parsed, ensure it must be HEVC main
           // profile.
