@@ -344,4 +344,75 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWorkItemMaterials) {
             Material::Type::kUnknown);
 }
 
+TEST(ClassroomApiCourseWorkResponseTypesTest,
+     ConvertsCourseWorkItemMaterialWithoutTitle) {
+  // The Classroom api is sometimes returning malformed responses with empty
+  // material items. In these cases, we shouldn't abort the entire json
+  // conversion - instead we should just give the material an empty title.
+  const auto raw_course_work =
+      JSONReader::Read(R"(
+      {
+        "courseWork": [
+          {
+            "id": "materials-1",
+            "materials": [
+              {
+                "link": {
+                  "title": "link-title"
+                }
+              }
+            ]
+          },
+          {
+            "id": "materials-2",
+            "materials": [
+              {
+                "form": {
+                  "title": "form-title"
+                }
+              },
+              {
+                "link": {}
+              }
+            ]
+          },
+          {
+            "id": "materials-3",
+            "materials": [
+              {
+                "form": {}
+              }
+            ]
+          }
+        ]
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(raw_course_work);
+
+  const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
+  ASSERT_TRUE(course_work);
+  EXPECT_EQ(course_work->items().size(), 3u);
+
+  EXPECT_EQ(course_work->items().at(0)->id(), "materials-1");
+  EXPECT_EQ(course_work->items().at(0)->materials().size(), 1u);
+  EXPECT_EQ(course_work->items().at(0)->materials().at(0)->title(),
+            "link-title");
+  EXPECT_EQ(course_work->items().at(0)->materials().at(0)->type(),
+            Material::Type::kLink);
+  EXPECT_EQ(course_work->items().at(1)->id(), "materials-2");
+  EXPECT_EQ(course_work->items().at(1)->materials().size(), 2u);
+  EXPECT_EQ(course_work->items().at(1)->materials().at(0)->title(),
+            "form-title");
+  EXPECT_EQ(course_work->items().at(1)->materials().at(0)->type(),
+            Material::Type::kForm);
+  EXPECT_EQ(course_work->items().at(1)->materials().at(1)->title(), "");
+  EXPECT_EQ(course_work->items().at(1)->materials().at(1)->type(),
+            Material::Type::kLink);
+  EXPECT_EQ(course_work->items().at(2)->id(), "materials-3");
+  EXPECT_EQ(course_work->items().at(2)->materials().size(), 1u);
+  EXPECT_EQ(course_work->items().at(2)->materials().at(0)->title(), "");
+  EXPECT_EQ(course_work->items().at(2)->materials().at(0)->type(),
+            Material::Type::kForm);
+}
+
 }  // namespace google_apis::classroom

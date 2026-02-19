@@ -64,12 +64,7 @@ bool Material::ConvertMaterial(const base::Value* input, Material* output) {
   }
 
   const std::string* title = content_dict->FindString(kApiResponseItemTitleKey);
-  if (!title) {
-    // Title is a required field for all material types.
-    return false;
-  }
-
-  output->title_ = *title;
+  output->title_ = title ? *title : "";
   output->type_ = content_type;
   return true;
 }
