@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, MAX_APC_RESPONSE_DEPTH, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
+import {getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 import type {PageContent, PageContentAttributes, PageContentFrameData, PageContentNode} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
@@ -659,7 +660,8 @@ function addAnnotatedRoles(
 // reached.
 /**
  * Generates a PageContentNode for a given DOM node if it contains valid
- * content.
+ * content. DOM node IDs are only generated and assigned if content can be
+ * generated for the `domNode`.
  *
  * @param domNode The DOM node to process (Element or Text).
  * @param nonce Unique identifier for the extraction run.
@@ -675,6 +677,10 @@ function maybeGenerateContentNode(
   if (domNode.nodeType === Node.TEXT_NODE) {
     contentAttributes = getAttributesForTextNode(domNode);
     if (contentAttributes) {
+      const domNodeId = getOrCreateNodeId(domNode);
+      if (domNodeId !== null) {
+        contentAttributes.domNodeId = domNodeId;
+      }
       return {
         childrenNodes: [],
         contentAttributes: contentAttributes,
@@ -685,6 +691,10 @@ function maybeGenerateContentNode(
     const contentNode =
         getContentForElementNode(element, nonce, depth, maxDepth);
     if (contentNode) {
+      const domNodeId = getOrCreateNodeId(domNode);
+      if (domNodeId !== null) {
+        contentNode.contentAttributes.domNodeId = domNodeId;
+      }
       addAnnotatedRoles(element, contentNode.contentAttributes);
       return contentNode;
     }
@@ -845,8 +855,15 @@ export function extractAnnotatedPageContent(
   }
   root.setAttribute(NONCE_ATTR, nonce);
 
+  const domNodeId = getOrCreateNodeId(root);
+  if (domNodeId === null) {
+    // If the root node can't be assigned an ID, it can't be processed.
+    return null;
+  }
+
   const rootNode: PageContentNode = {
     contentAttributes: {
+      domNodeId: domNodeId,
       attributeType: PageContentAttributeType.ROOT,
       annotatedRoles: [],
       isAdRelated: false,

@@ -14,10 +14,15 @@ compile_ts("common_ts") {
   deps = [ "//components/autofill/ios/form_util:child_frame_registration_ts" ]
 }
 
+compile_ts("dom_node_ids_ts") {
+  sources = [ "resources/dom_node_ids.ts" ]
+}
+
 compile_ts("annotated_page_content_extraction_ts") {
   sources = [ "resources/annotated_page_content_extraction.ts" ]
   deps = [
     ":common_ts",
+    ":dom_node_ids_ts",
     ":page_content_types_ts",
     "//ios/web/public/js_messaging:gcrweb",
   ]

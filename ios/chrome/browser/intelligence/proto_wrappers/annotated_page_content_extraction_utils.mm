@@ -40,6 +40,7 @@ constexpr char kLocalFrameDataKey[] = "localFrameData";
 constexpr char kSourceURLKey[] = "sourceUrl";
 constexpr char kTitleKey[] = "title";
 constexpr char kChildrenNodesKey[] = "childrenNodes";
+constexpr char kDomNodeIdKey[] = "domNodeId";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -183,6 +184,13 @@ void PopulateAPCNodeFromContentTree(
   // A node must have content attribute to be populated.
   if (!content_attributes) {
     return;
+  }
+
+  // Handle DOM Node ID.
+  if (std::optional<int> dom_node_id =
+          ReadJsNumber(*content_attributes, kDomNodeIdKey)) {
+    destination_node->mutable_content_attributes()
+        ->set_common_ancestor_dom_node_id(*dom_node_id);
   }
 
   // Populate the attribute type.
