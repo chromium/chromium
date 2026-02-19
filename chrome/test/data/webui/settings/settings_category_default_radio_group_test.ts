@@ -122,7 +122,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     let whenChanged =
         eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
     let selectedChangedEventPromise =
-        eventToPromise('selected-changed', element);
+        eventToPromise('selected-value-changed', element);
     let setting;
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
@@ -143,7 +143,8 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     initialRadioButton.click();
     whenChanged =
         eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
-    selectedChangedEventPromise = eventToPromise('selected-changed', element);
+    selectedChangedEventPromise =
+        eventToPromise('selected-value-changed', element);
 
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');

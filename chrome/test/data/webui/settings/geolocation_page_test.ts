@@ -78,6 +78,8 @@ suite(`GeolocationPage`, function() {
     assertTrue(!!radioGroup);
     assertTrue(isVisible(radioGroup));
     assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
+    assertEquals(
+        SettingsState.CPSS, page.get('prefs.generated.geolocation.value'));
 
     const blockLocation =
         radioGroup.shadowRoot!.querySelector<HTMLElement>('#blockRadioOption');
@@ -85,8 +87,6 @@ suite(`GeolocationPage`, function() {
     blockLocation.click();
     await flushTasks();
     assertFalse(isChildVisible(page, '#locationCpssRadioGroup'));
-    assertEquals(
-        SettingsState.BLOCK, page.get('prefs.generated.geolocation.value'));
 
     const askForLocation =
         radioGroup.shadowRoot!.querySelector<HTMLElement>('#askRadioOption');

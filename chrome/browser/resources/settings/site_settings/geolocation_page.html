@@ -13,11 +13,11 @@
     ask-option-icon="settings:location-on"
     block-option-label="$i18n{siteSettingsLocationBlocked}"
     block-option-icon="privacy:location-off"
-    on-selected-changed="onLocationTopLevelRadioChanged_">
+    selected-value="{{locationSettingValue_}}">
 </settings-category-default-radio-group>
 <div class="radio-group"
     id="locationCpssRadioGroup"
-    hidden$="[[!isLocationAllowed_]]">
+    hidden$="[[!isEqualToAsk_(locationSettingValue_)]]">
   <h2 class="cpss-heading">
     $i18n{siteSettingsHowToShowRequests}
   </h2>

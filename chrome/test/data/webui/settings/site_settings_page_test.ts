@@ -149,10 +149,10 @@ suite('SiteSettingsPage', function() {
             '#notifications')!;
     assertTrue(!!notificationsLinkRow);
 
-    page.set('prefs.generated.notification.value', SettingsState.BLOCK);
+    page.set('prefs.generated.notification.value', SettingsState.CPSS);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsNotificationsBlocked'),
+        loadTimeData.getString('siteSettingsNotificationsAskCPSS'),
         notificationsLinkRow.subLabel);
 
     page.set('prefs.generated.notification.value', SettingsState.QUIET);

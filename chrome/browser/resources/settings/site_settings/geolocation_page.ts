@@ -25,8 +25,6 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, SettingsState} from './constants.js';
 import {getTemplate} from './geolocation_page.html.js';
-import type {SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
-import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 
 const GeolocationPageElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
@@ -54,51 +52,25 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
         value: SettingsState,
       },
 
-      /** Expose ContentSettingsTypes enum to HTML bindings. */
+      /** Expose ContentSettingTypes enum to HTML bindings. */
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
       },
 
-      /** Expose ContentSetting enum to HTML bindings. */
-      contentSettingEnum_: {
-        type: Object,
-        value: ContentSetting,
-      },
-
-      isLocationAllowed_: Boolean,
+      /**
+       * Glue property to connect the category default setting value to the
+       * visibility of the additional CPSS options.
+       */
+      locationSettingValue_: String,
     };
   }
 
   declare searchTerm: string;
-  declare private isLocationAllowed_: boolean;
-  private siteSettingsBrowserProxy_: SiteSettingsBrowserProxy =
-      SiteSettingsBrowserProxyImpl.getInstance();
+  declare private locationSettingValue_: string;
 
-  override ready() {
-    super.ready();
-    this.updateLocationState_();
-  }
-
-  private async updateLocationState_() {
-    const [locationDefaultValue] = await Promise.all([
-      this.siteSettingsBrowserProxy_.getDefaultValueForContentType(
-          ContentSettingsTypes.GEOLOCATION),
-    ]);
-    this.isLocationAllowed_ =
-        (locationDefaultValue.setting === ContentSetting.ASK);
-  }
-
-  private onLocationTopLevelRadioChanged_(
-      event: CustomEvent<{value: boolean}>) {
-    const selected = event.detail.value;
-    if (selected) {
-      this.setPrefValue('generated.geolocation', SettingsState.CPSS);
-      this.isLocationAllowed_ = true;
-    } else {
-      this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
-      this.isLocationAllowed_ = false;
-    }
+  private isEqualToAsk_(locationSettingValue: string): boolean {
+    return locationSettingValue === ContentSetting.ASK;
   }
 
   // SettingsViewMixin implementation.

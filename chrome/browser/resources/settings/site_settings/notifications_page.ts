@@ -43,8 +43,6 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, SettingsState} from './constants.js';
 import {getTemplate} from './notifications_page.html.js';
-import type {SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
-import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 
 const NotificationsPageElementBase = RouteObserverMixin(
     SettingsViewMixin(WebUiListenerMixin(PrefsMixin(PolymerElement))));
@@ -103,7 +101,12 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
         },
       },
 
-      isNotificationAllowed_: Boolean,
+      /**
+       * Glue property to connect the category default setting value to the
+       * visibility of the additional CPSS options.
+       */
+      notificationSettingValue_: String,
+
       notificationPermissionsReviewHeader_: String,
       notificationPermissionsReviewSubheader_: String,
     };
@@ -112,12 +115,10 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
   declare searchTerm: string;
   declare private isGuest_: boolean;
   declare private shouldShowSafetyHub_: boolean;
-  declare private isNotificationAllowed_: boolean;
   declare private showNotificationPermissionsReview_: boolean;
+  declare private notificationSettingValue_: string;
   declare private notificationPermissionsReviewHeader_: string;
   declare private notificationPermissionsReviewSubheader_: string;
-  private siteSettingsBrowserProxy_: SiteSettingsBrowserProxy =
-      SiteSettingsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -125,7 +126,6 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
 
   override ready() {
     super.ready();
-    this.updateNotificationState_();
 
     if (this.isGuest_) {
       return;
@@ -174,25 +174,8 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
             permissions.length);
   }
 
-  private async updateNotificationState_() {
-    const [notificationDefaultValue] = await Promise.all([
-      this.siteSettingsBrowserProxy_.getDefaultValueForContentType(
-          ContentSettingsTypes.NOTIFICATIONS),
-    ]);
-    this.isNotificationAllowed_ =
-        (notificationDefaultValue.setting === ContentSetting.ASK);
-  }
-
-  private onNotificationTopLevelRadioChanged_(
-      event: CustomEvent<{value: boolean}>) {
-    const selected = event.detail.value;
-    if (selected) {
-      this.setPrefValue('generated.notification', SettingsState.CPSS);
-      this.isNotificationAllowed_ = true;
-    } else {
-      this.setPrefValue('generated.notification', SettingsState.BLOCK);
-      this.isNotificationAllowed_ = false;
-    }
+  private isEqualToAsk_(notificationSettingValue: string): boolean {
+    return notificationSettingValue === ContentSetting.ASK;
   }
 
   private onSafetyHubButtonClick_() {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -168,11 +170,6 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               EXPECT_EQ(CONTENT_SETTING_BLOCK,
                         settings_map->GetDefaultContentSetting(
                             ContentSettingsType::NOTIFICATIONS, nullptr));
-              auto* pref_service = browser()->profile()->GetPrefs();
-              EXPECT_FALSE(pref_service->GetBoolean(
-                  prefs::kEnableQuietNotificationPermissionUi));
-              EXPECT_FALSE(
-                  pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
             }))
         .Build();
   }
@@ -359,9 +356,9 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
   auto TestRadioGroupState(bool expectedAskButtonChecked,
                            bool expectedAskSubGroupVisible,
-                           bool expectedQuietButtonChecked,
-                           bool expectedCpssButtonChecked,
-                           bool expectedLoudButtonChecked) {
+                           std::optional<bool> expectedQuietButtonChecked,
+                           std::optional<bool> expectedCpssButtonChecked,
+                           std::optional<bool> expectedLoudButtonChecked) {
     return ui::InteractionSequence::StepBuilder()
         .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                  kWebContentsInteractionTestUtilCustomEventId)
@@ -392,11 +389,13 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               EXPECT_EQ(true, isQuietButtonVisible.is_bool());
               EXPECT_EQ(expectedAskSubGroupVisible,
                         isQuietButtonVisible.GetBool());
-              auto isQuietButtonChecked = util->EvaluateAt(
-                  kQuietButton, "quietButton => quietButton.checked");
-              EXPECT_EQ(true, isQuietButtonChecked.is_bool());
-              EXPECT_EQ(expectedQuietButtonChecked,
-                        isQuietButtonChecked.GetBool());
+              if (expectedQuietButtonChecked.has_value()) {
+                auto isQuietButtonChecked = util->EvaluateAt(
+                    kQuietButton, "quietButton => quietButton.checked");
+                EXPECT_EQ(true, isQuietButtonChecked.is_bool());
+                EXPECT_EQ(*expectedQuietButtonChecked,
+                          isQuietButtonChecked.GetBool());
+              }
 
               auto isCpssButtonVisible = util->EvaluateAt(
                   kCpssButton,
@@ -404,11 +403,14 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               EXPECT_EQ(true, isCpssButtonVisible.is_bool());
               EXPECT_EQ(expectedAskSubGroupVisible,
                         isCpssButtonVisible.GetBool());
-              auto isCpssButtonChecked = util->EvaluateAt(
-                  kCpssButton, "cpssButton => cpssButton.checked");
-              EXPECT_EQ(true, isCpssButtonChecked.is_bool());
-              EXPECT_EQ(expectedCpssButtonChecked,
-                        isCpssButtonChecked.GetBool());
+
+              if (expectedCpssButtonChecked.has_value()) {
+                auto isCpssButtonChecked = util->EvaluateAt(
+                    kCpssButton, "cpssButton => cpssButton.checked");
+                EXPECT_EQ(true, isCpssButtonChecked.is_bool());
+                EXPECT_EQ(*expectedCpssButtonChecked,
+                          isCpssButtonChecked.GetBool());
+              }
 
               auto isLoudButtonVisible = util->EvaluateAt(
                   kLoudButton,
@@ -416,11 +418,13 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               EXPECT_EQ(true, isLoudButtonVisible.is_bool());
               EXPECT_EQ(expectedAskSubGroupVisible,
                         isLoudButtonVisible.GetBool());
-              auto isLoudButtonChecked = util->EvaluateAt(
-                  kLoudButton, "loudButton => loudButton.checked");
-              EXPECT_EQ(true, isLoudButtonChecked.is_bool());
-              EXPECT_EQ(expectedLoudButtonChecked,
-                        isLoudButtonChecked.GetBool());
+              if (expectedLoudButtonChecked.has_value()) {
+                auto isLoudButtonChecked = util->EvaluateAt(
+                    kLoudButton, "loudButton => loudButton.checked");
+                EXPECT_EQ(true, isLoudButtonChecked.is_bool());
+                EXPECT_EQ(*expectedLoudButtonChecked,
+                          isLoudButtonChecked.GetBool());
+              }
             }))
         .Build();
   }
@@ -473,7 +477,8 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
       InstrumentTab(kWebContentsElementId), SetPrefs(false, false, false),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kBlockButton),
-      TestRadioGroupState(false, false, false, false, false));
+      TestRadioGroupState(false, false, std::nullopt, std::nullopt,
+                          std::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,

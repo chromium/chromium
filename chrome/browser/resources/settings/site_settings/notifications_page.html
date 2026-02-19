@@ -29,10 +29,10 @@
     ask-option-icon="privacy:notifications"
     block-option-label="$i18n{siteSettingsNotificationsBlocked}"
     block-option-icon="privacy:notifications-off"
-    on-selected-changed="onNotificationTopLevelRadioChanged_">
+    selected-value="{{notificationSettingValue_}}">
 </settings-category-default-radio-group>
 <div class="radio-group"
-    hidden$="[[!isNotificationAllowed_]]">
+    hidden$="[[!isEqualToAsk_(notificationSettingValue_)]]">
   <h2 class="cpss-heading">$i18n{siteSettingsHowToShowRequests}</h2>
   <settings-radio-group
       id="notificationCpssRadioGroup"

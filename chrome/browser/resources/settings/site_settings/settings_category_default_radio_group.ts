@@ -24,7 +24,6 @@ import {getTemplate} from './settings_category_default_radio_group.html.js';
 import type {DefaultContentSetting} from './site_settings_browser_proxy.js';
 import {DefaultSettingSource} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {isSettingEnabled} from './site_settings_util.js';
 
 export interface SettingsCategoryDefaultRadioGroupElement {
   $: {
@@ -82,6 +81,13 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       blockOptionSubLabel: String,
       blockOptionIcon: String,
 
+      selectedValue: {
+        type: String,
+        computed: 'getSelectedValue_(pref_.value)',
+        readOnly: true,
+        notify: true,
+      },
+
       contentSettingEnum_: {
         type: Object,
         value: ContentSetting,
@@ -120,8 +126,9 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   declare blockOptionLabel: string;
   declare blockOptionSubLabel: string;
   declare blockOptionIcon: string;
+  declare selectedValue: string;
+
   declare private pref_: chrome.settingsPrivate.PrefObject<ContentSetting>;
-  selected: boolean;
 
   override ready() {
     super.ready();
@@ -135,22 +142,19 @@ export class SettingsCategoryDefaultRadioGroupElement extends
     return subLabel ? 'two-line' : '';
   }
 
+  private getSelectedValue_(value: string): string {
+    return value;
+  }
+
   /**
-   * A handler for changing the default permission value for a content type.
-   * This is also called during page setup after we get the default state.
+   * A handler for when the user selects a differenet option in the nested
+   * radio group.
    */
-  private onSelectedChanged_() {
+  private onSelectedRadioChanged_() {
     assert(
         this.pref_.enforcement !== chrome.settingsPrivate.Enforcement.ENFORCED);
-
     this.browserProxy.setDefaultValueForContentType(
         this.category, this.pref_.value);
-    const categoryEnabled = isSettingEnabled(this.pref_.value);
-    if (this.selected !== categoryEnabled) {
-      this.selected = categoryEnabled;
-      this.dispatchEvent(new CustomEvent(
-          'selected-changed', {detail: {value: this.selected}}));
-    }
   }
 
   /**
@@ -182,7 +186,6 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       this.set('pref_.controlledBy', undefined);
     }
 
-    this.selected = isSettingEnabled(update.setting);
     this.set('pref_.value', update.setting);
   }
 

@@ -77,15 +77,13 @@ GeneratedPermissionPromptingBehaviorPref::SetPref(const base::Value* value) {
   auto selection = static_cast<SettingsState>(value->GetInt());
   if (selection != SettingsState::kCanPromptWithAlwaysLoudUI &&
       selection != SettingsState::kCanPromptWithAlwaysQuietUI &&
-      selection != SettingsState::kCanPromptWithCPSS &&
-      selection != SettingsState::kBlocked) {
+      selection != SettingsState::kCanPromptWithCPSS) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
   auto* pref_service = profile_->GetPrefs();
 
   switch (selection) {
-    case SettingsState::kBlocked:
     case SettingsState::kCanPromptWithAlwaysLoudUI:
       base::UmaHistogramEnumeration("Permissions.CPSS.SiteSettingsChanged.Loud",
                                     content_settings_type_);
@@ -104,14 +102,9 @@ GeneratedPermissionPromptingBehaviorPref::SetPref(const base::Value* value) {
       pref_service->SetBoolean(quiet_ui_pref_name_, /*value=*/false);
       pref_service->SetBoolean(cpss_pref_name_, /*value=*/true);
       break;
+    case content_settings::SettingsState::kUndefined:
+      NOTREACHED();
   }
-
-  HostContentSettingsMapFactory::GetForProfile(profile_)
-      ->SetDefaultContentSetting(content_settings_type_,
-                                 selection == SettingsState::kBlocked
-                                     ? ContentSetting::CONTENT_SETTING_BLOCK
-                                     : ContentSetting::CONTENT_SETTING_ASK);
-
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
@@ -139,7 +132,9 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
   const bool content_setting_managed =
       content_setting_source != content_settings::SettingSource::kUser;
 
-  if (content_setting == CONTENT_SETTING_ASK && !content_setting_managed) {
+  if (!content_setting_managed) {
+    pref_object.value = base::Value(
+        static_cast<int>(SettingsState::kCanPromptWithAlwaysLoudUI));
     if (is_quiet_ui_enabled) {
       pref_object.value = base::Value(
           static_cast<int>(SettingsState::kCanPromptWithAlwaysQuietUI));
@@ -150,12 +145,15 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
       pref_object.value = base::Value(
           static_cast<int>(SettingsState::kCanPromptWithAlwaysLoudUI));
     }
-  } else if (content_setting == CONTENT_SETTING_ASK ||
-             content_setting == CONTENT_SETTING_ALLOW) {
+  } else if (content_setting == CONTENT_SETTING_ASK) {
+    // TODO(engedy): Keep existing UX, where in the managed ASK state, three
+    // disabled radios with "Expand all requests" selected. However, need to
+    // revisit this, as the actual CPSS service behavior does not follow this.
     pref_object.value = base::Value(
         static_cast<int>(SettingsState::kCanPromptWithAlwaysLoudUI));
   } else {
-    pref_object.value = base::Value(static_cast<int>(SettingsState::kBlocked));
+    pref_object.value =
+        base::Value(static_cast<int>(SettingsState::kUndefined));
   }
 
   if (content_setting_managed) {
