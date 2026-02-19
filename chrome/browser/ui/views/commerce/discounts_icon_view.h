@@ -17,7 +17,7 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 class DiscountsIconView : public PageActionIconView {
   METADATA_HEADER(DiscountsIconView, PageActionIconView)
@@ -64,7 +64,7 @@ class DiscountsIconView : public PageActionIconView {
 
   bool is_label_expanded_;
 
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   base::WeakPtrFactory<DiscountsIconView> weak_ptr_factory_{this};
 };

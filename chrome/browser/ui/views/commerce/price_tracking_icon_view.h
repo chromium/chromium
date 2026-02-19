@@ -16,7 +16,7 @@
 
 class Browser;
 class Profile;
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 // This icon appears in the location bar when the current page qualifies for
 // price tracking. Upon clicking, it shows a bubble where the user can choose to
@@ -73,7 +73,7 @@ class PriceTrackingIconView : public PageActionIconView {
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
 
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   base::WeakPtrFactory<PriceTrackingIconView> weak_ptr_factory_{this};
 };

@@ -14,7 +14,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class Profile;
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 // Controller for the Lens Overlay "Homework" page action chip that appears in
 // the omnibox.
@@ -74,7 +74,7 @@ class LensOverlayHomeworkPageActionController {
 
   base::CallbackListSubscription tab_will_detach_subscription_;
 
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LENS_OVERLAY_HOMEWORK_PAGE_ACTION_CONTROLLER_H_

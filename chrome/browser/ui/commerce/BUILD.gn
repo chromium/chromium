@@ -101,6 +101,7 @@ source_set("unit_tests") {
   deps = [
     ":commerce",
     "//base/test:test_support",
+    "//chrome/browser/ui/call_to_action",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/views/page_action:test_support",
     "//chrome/test:test_support",

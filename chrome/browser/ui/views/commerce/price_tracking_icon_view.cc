@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -189,7 +190,7 @@ void PriceTrackingIconView::UpdateImpl() {
     }
     MaybeShowPageActionLabel();
   } else {
-    scoped_window_call_to_action_ptr_.reset();
+    scoped_call_to_action_lock_.reset();
     HidePageActionLabel();
   }
   SetVisible(should_show);
@@ -330,16 +331,15 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
                          PageActionIconType::kPriceTracking)) {
     return;
   }
-  if (!tabs::TabInterface::GetFromContents(GetWebContents())
-           ->GetBrowserWindowInterface()
-           ->CanShowCallToAction()) {
+  auto* call_to_action = CallToActionLock::From(
+      tabs::TabInterface::GetFromContents(GetWebContents())
+          ->GetBrowserWindowInterface());
+
+  if (!call_to_action->CanAcquireLock()) {
     return;
   }
 
-  scoped_window_call_to_action_ptr_ =
-      tabs::TabInterface::GetFromContents(GetWebContents())
-          ->GetBrowserWindowInterface()
-          ->ShowCallToAction();
+  scoped_call_to_action_lock_ = call_to_action->AcquireLock();
 
   should_extend_label_shown_duration_ = true;
   AnimateIn(std::nullopt);

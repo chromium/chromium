@@ -2676,6 +2676,7 @@ if (!is_android) {
       "//chrome/browser/ui/bookmarks:browser_tests",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:browser_tests",
+      "//chrome/browser/ui/call_to_action:browser_tests",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:browser_tests",
@@ -10860,7 +10861,10 @@ test("unit_tests") {
       sources +=
           [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
 
-      deps += [ "//chrome/browser/ui/tabs:glic" ]
+      deps += [
+        "//chrome/browser/ui/call_to_action",
+        "//chrome/browser/ui/tabs:glic",
+      ]
       if (is_chromeos) {
         deps += [ "//chrome/browser/ash/test:test_support" ]
       }

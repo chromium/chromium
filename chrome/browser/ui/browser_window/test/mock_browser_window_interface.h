@@ -102,11 +102,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               capabilities,
               (),
               (const, override));
-  MOCK_METHOD(bool, CanShowCallToAction, (), (const, override));
-  MOCK_METHOD(std::unique_ptr<ScopedWindowCallToAction>,
-              ShowCallToAction,
-              (),
-              (override));
 #endif
 };
 

@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
@@ -45,7 +46,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -159,10 +162,12 @@ class CommerceUiTabHelperTest : public testing::TestWithParam<TestSyncConfig> {
         .WillByDefault(testing::ReturnRef(data_host_));
     ON_CALL(tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(testing::Return(&browser_window_interface_));
-    ON_CALL(browser_window_interface_, CanShowCallToAction())
-        .WillByDefault(testing::Return(false));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(data_host_));
+    // Register the call to action controller.
+    call_to_action_ =
+        std::make_unique<CallToActionLock>(&browser_window_interface_);
+    call_to_action_scoped_lock_ = call_to_action_->AcquireLock();
 
     side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab_interface_);
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
@@ -232,6 +237,7 @@ class CommerceUiTabHelperTest : public testing::TestWithParam<TestSyncConfig> {
   content::TestWebContentsFactory test_web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
   ui::UnownedUserDataHost data_host_;
+  std::unique_ptr<CallToActionLock> call_to_action_;
   MockBrowserWindowInterface browser_window_interface_;
   tabs::MockTabInterface tab_interface_;
   std::unique_ptr<CommerceUiTabHelper> tab_helper_;
@@ -245,6 +251,7 @@ class CommerceUiTabHelperTest : public testing::TestWithParam<TestSyncConfig> {
       discounts_page_action_controller_;
   std::unique_ptr<PriceInsightsPageActionViewController>
       price_insights_page_action_controller_;
+  std::unique_ptr<ScopedCallToActionLock> call_to_action_scoped_lock_;
   base::test::ScopedFeatureList sync_features_;
   base::test::ScopedFeatureList features_;
 };

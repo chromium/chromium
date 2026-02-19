@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -53,16 +54,18 @@ void DiscountsPageActionViewController::UpdatePageIcon(
     page_action_controller_->HideSuggestionChip(kActionCommerceDiscounts);
     page_action_controller_->Hide(kActionCommerceDiscounts);
 
-    scoped_window_call_to_action_ptr_.reset();
+    scoped_call_to_action_lock_.reset();
     return;
   }
 
-  if (!tab_interface_->GetBrowserWindowInterface()->CanShowCallToAction()) {
+  auto* call_to_action =
+      CallToActionLock::From(tab_interface_->GetBrowserWindowInterface());
+
+  if (!call_to_action->CanAcquireLock()) {
     return;
   }
 
-  scoped_window_call_to_action_ptr_ =
-      tab_interface_->GetBrowserWindowInterface()->ShowCallToAction();
+  scoped_call_to_action_lock_ = call_to_action->AcquireLock();
 
   page_action_controller_->Show(kActionCommerceDiscounts);
 

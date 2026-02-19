@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 namespace page_actions {
 class PageActionController;
@@ -78,7 +78,7 @@ class DiscountsPageActionViewController final
   // Keeps the browser-window “call-to-action” highlight alive while the chip
   // label is expanded. Automatically clears when reset or when the controller
   // is destroyed.
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   ui::ScopedUnownedUserData<DiscountsPageActionViewController>
       scoped_unowned_user_data_;

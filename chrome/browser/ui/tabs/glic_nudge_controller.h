@@ -11,7 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 namespace content {
 class WebContents;
@@ -84,7 +84,7 @@ class GlicNudgeController {
   GlicNudgeActivityCallback nudge_activity_callback_;
 
   std::vector<base::CallbackListSubscription> browser_subscriptions_;
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 };
 
 }  // namespace tabs

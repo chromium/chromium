@@ -1218,14 +1218,6 @@ bool Browser::IsTabModalPopupDeprecated() const {
   return is_tab_modal_popup_deprecated_;
 }
 
-bool Browser::CanShowCallToAction() const {
-  return !showing_call_to_action_;
-}
-
-std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
-  return std::make_unique<ScopedWindowCallToActionImpl>(this);
-}
-
 ui::BaseWindow* Browser::GetWindow() {
   return window_.get();
 }
@@ -3491,8 +3483,8 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
   if (cancel_downloads) {
     cancel_download_confirmation_state_ =
         CancelDownloadConfirmationState::kResponseReceived;
-      std::move(warn_before_closing_callback_)
-          .Run(WarnBeforeClosingResult::kOkToClose);
+    std::move(warn_before_closing_callback_)
+        .Run(WarnBeforeClosingResult::kOkToClose);
     return;
   }
 
@@ -3813,15 +3805,4 @@ FindBarController* Browser::CreateOrGetFindBarController() {
 
 bool Browser::HasFindBarController() {
   return GetFeatures().HasFindBarController();
-}
-
-Browser::ScopedWindowCallToActionImpl::ScopedWindowCallToActionImpl(
-    Browser* browser)
-    : browser_(browser->weak_factory_.GetWeakPtr()) {
-  DCHECK(!browser_->showing_call_to_action_);
-  browser_->showing_call_to_action_ = true;
-}
-
-Browser::ScopedWindowCallToActionImpl::~ScopedWindowCallToActionImpl() {
-  browser_->showing_call_to_action_ = false;
 }

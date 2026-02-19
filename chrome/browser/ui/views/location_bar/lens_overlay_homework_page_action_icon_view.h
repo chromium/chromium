@@ -11,7 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserWindowInterface;
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 class LensOverlayHomeworkPageActionIconView : public PageActionIconView {
   METADATA_HEADER(LensOverlayHomeworkPageActionIconView, PageActionIconView)
@@ -39,7 +39,7 @@ class LensOverlayHomeworkPageActionIconView : public PageActionIconView {
 
   const raw_ptr<BrowserWindowInterface> browser_;
 
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LENS_OVERLAY_HOMEWORK_PAGE_ACTION_ICON_VIEW_H_

@@ -9,6 +9,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -65,13 +66,14 @@ void LensOverlayHomeworkPageActionIconView::UpdateImpl() {
 
   if (should_show) {
     // UpdateImpl() can be called multiple times, so make sure we don't call
-    // ShowCallToAction() more than once while the chip is showing.
-    if (!scoped_window_call_to_action_ptr_) {
-      scoped_window_call_to_action_ptr_ = browser_->ShowCallToAction();
+    // AcquireLock() more than once while the chip is showing.
+    if (!scoped_call_to_action_lock_) {
+      scoped_call_to_action_lock_ =
+          CallToActionLock::From(browser_)->AcquireLock();
       lens::RecordLensOverlayEduActionChipShown(browser_->GetProfile());
     }
   } else {
-    scoped_window_call_to_action_ptr_.reset();
+    scoped_call_to_action_lock_.reset();
   }
 
   SetVisible(should_show);
@@ -124,10 +126,11 @@ bool LensOverlayHomeworkPageActionIconView::ShouldShow() {
   }
 
   // Treat the chip as a window-level call to action UI; only one such UI is
-  // allowed to show at a time. Check if scoped_window_call_to_action_ptr_ is
+  // allowed to show at a time. Check if scoped_call_to_action_lock_ is
   // already set (we are already showing the chip) before checking
-  // CanShowCallToAction().
-  if (!scoped_window_call_to_action_ptr_ && !browser_->CanShowCallToAction()) {
+  // CanAcquireLock().
+  if (!scoped_call_to_action_lock_ &&
+      !CallToActionLock::From(browser_)->CanAcquireLock()) {
     return false;
   }
 

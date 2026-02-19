@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/embedder_browser_window_features.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/context_highlight/context_highlight_window_feature.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -437,6 +438,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   context_highlight_window_feature_ =
       std::make_unique<ContextHighlightWindowFeature>(*browser);
+
+  call_to_action_lock_ =
+      GetUserDataFactory().CreateInstance<CallToActionLock>(*browser, browser);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   profile_customization_bubble_sync_controller_ =

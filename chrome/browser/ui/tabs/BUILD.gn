@@ -387,6 +387,7 @@ if (!is_android) {
       "//chrome/browser/actor",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/call_to_action",
       "//chrome/common:buildflags",
       "//chrome/common:chrome_features",
       "//components/prefs",

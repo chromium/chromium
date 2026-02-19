@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -44,9 +45,9 @@ void GlicNudgeController::UpdateNudgeLabel(
     return;
   }
   // Empty nudge labels close the nudge, allow those to bypass the
-  // CanShowCallToAction check.
+  // CanAcquireLock check.
   if (!nudge_label.empty() &&
-      !browser_window_interface_->CanShowCallToAction()) {
+      !CallToActionLock::From(browser_window_interface_)->CanAcquireLock()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -106,8 +107,8 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
       glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kNudge);
 #endif
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
-      scoped_window_call_to_action_ptr =
-          browser_window_interface_->ShowCallToAction();
+      scoped_call_to_action_lock_ =
+          CallToActionLock::From(browser_window_interface_)->AcquireLock();
       break;
     }
     case GlicNudgeActivity::kNudgeClicked:
@@ -118,12 +119,12 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
     case GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction:
       nudge_activity_callback_.Run(activity);
       nudge_activity_callback_.Reset();
-      scoped_window_call_to_action_ptr.reset();
+      scoped_call_to_action_lock_.reset();
 
       break;
     case GlicNudgeActivity::kNudgeNotShownWebContents:
     case GlicNudgeActivity::kNudgeNotShownWindowCallToActionUI:
-      scoped_window_call_to_action_ptr.reset();
+      scoped_call_to_action_lock_.reset();
       nudge_activity_callback_.Reset();
       break;
   }

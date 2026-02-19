@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
@@ -57,15 +58,16 @@ void LensOverlayHomeworkPageActionController::UpdatePageActionIcon() {
   CHECK(tab_->GetContents());
 
   if (ShouldShow()) {
-    if (!scoped_window_call_to_action_ptr_) {
-      scoped_window_call_to_action_ptr_ =
-          tab_->GetBrowserWindowInterface()->ShowCallToAction();
+    if (!scoped_call_to_action_lock_) {
+      scoped_call_to_action_lock_ =
+          CallToActionLock::From(tab_->GetBrowserWindowInterface())
+              ->AcquireLock();
       lens::RecordLensOverlayEduActionChipShown(base::to_address(profile_));
     }
     page_action_controller_->Show(kActionLensOverlayHomework);
     page_action_controller_->ShowSuggestionChip(kActionLensOverlayHomework);
   } else {
-    scoped_window_call_to_action_ptr_.reset();
+    scoped_call_to_action_lock_.reset();
     page_action_controller_->HideSuggestionChip(kActionLensOverlayHomework);
     page_action_controller_->Hide(kActionLensOverlayHomework);
   }
@@ -156,11 +158,12 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
   }
 
   // Treat the chip as a window-level call to action UI; only one such UI is
-  // allowed to show at a time. Check if scoped_window_call_to_action_ptr_ is
+  // allowed to show at a time. Check if scoped_call_to_action_lock_ is
   // already set (we are already showing the chip) before checking
-  // CanShowCallToAction().
-  if (!scoped_window_call_to_action_ptr_ &&
-      !tab_->GetBrowserWindowInterface()->CanShowCallToAction()) {
+  // CanAcquireLock().
+  if (!scoped_call_to_action_lock_ &&
+      !CallToActionLock::From(tab_->GetBrowserWindowInterface())
+           ->CanAcquireLock()) {
     return false;
   }
 
@@ -176,5 +179,5 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
 void LensOverlayHomeworkPageActionController::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  scoped_window_call_to_action_ptr_.reset();
+  scoped_call_to_action_lock_.reset();
 }

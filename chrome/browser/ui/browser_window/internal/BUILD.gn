@@ -69,6 +69,7 @@ source_set("internal") {
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/context_highlight",
       "//chrome/browser/ui/contextual_search",

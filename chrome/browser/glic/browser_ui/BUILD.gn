@@ -82,6 +82,7 @@ source_set("browser_ui") {
     "//chrome/browser/actor/ui",
     "//chrome/browser/glic/fre",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/call_to_action",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/tabs/glic",

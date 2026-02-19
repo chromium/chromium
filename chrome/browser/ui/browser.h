@@ -174,7 +174,6 @@ class Browser : public TabStripModelObserver,
     kDeskTemplate,
   };
 
-
   // Represents whether a value was known to be explicitly specified.
   enum class ValueSpecified { kUnknown, kSpecified, kUnspecified };
 
@@ -815,8 +814,6 @@ class Browser : public TabStripModelObserver,
   Browser* GetBrowserForMigrationOnly() override;
   const Browser* GetBrowserForMigrationOnly() const override;
   bool IsTabModalPopupDeprecated() const override;
-  bool CanShowCallToAction() const override;
-  std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() override;
   ui::BaseWindow* GetWindow() override;
   const ui::BaseWindow* GetWindow() const override;
   DesktopBrowserWindowCapabilities* capabilities() override;
@@ -871,17 +868,6 @@ class Browser : public TabStripModelObserver,
 
     // Result of the tab strip not having any significant tabs.
     kEmpty
-  };
-
-  // Tracks whether a tabstrip call to action UI is showing.
-  class ScopedWindowCallToActionImpl : public ScopedWindowCallToAction {
-   public:
-    explicit ScopedWindowCallToActionImpl(Browser* browser);
-    ~ScopedWindowCallToActionImpl() override;
-
-   private:
-    // Owns this.
-    base::WeakPtr<Browser> browser_;
   };
 
   explicit Browser(const CreateParams& params);
@@ -1366,7 +1352,6 @@ class Browser : public TabStripModelObserver,
   // determined by the NavigateParams::is_tab_modal_popup_deprecated.
   bool is_tab_modal_popup_deprecated_ = false;
 
-
   using BrowserDidCloseCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
   BrowserDidCloseCallbackList browser_did_close_callback_list_;
@@ -1397,8 +1382,6 @@ class Browser : public TabStripModelObserver,
   std::optional<ui::PlatformSessionWindowData> platform_session_data_ =
       std::nullopt;
 #endif
-  // Tracks whether a modal UI is showing.
-  bool showing_call_to_action_ = false;
 
   // Tracks whether the browser object is fully initialized.
   bool is_initialized_ = false;

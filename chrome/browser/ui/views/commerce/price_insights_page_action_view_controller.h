@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class ScopedWindowCallToAction;
+class ScopedCallToActionLock;
 
 namespace page_actions {
 class PageActionController;
@@ -61,7 +61,7 @@ class PriceInsightsPageActionViewController {
   // requests from this object.
   const raw_ref<page_actions::PageActionController> page_action_controller_;
 
-  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+  std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   ui::ScopedUnownedUserData<PriceInsightsPageActionViewController>
       scoped_unowned_user_data_;
