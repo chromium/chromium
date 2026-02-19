@@ -41,7 +41,9 @@ component("constants") {
 
   deps = [
     ":gen_routes",
+    "//ash/constants",
     "//base",
+    "//url",
   ]
 }
 

@@ -8,12 +8,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -83,16 +83,16 @@ class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
 
 TEST_F(SystemTrayClientImplTest, ShowAccountSettings) {
   client_impl_->ShowAccountSettings();
-  EXPECT_EQ(
-      settings_window_manager_->last_url(),
-      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath));
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chromeos::settings::GetOSSettingsUrl(
+                chromeos::settings::mojom::kPeopleSectionPath));
 }
 
 TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
   base::UserActionTester user_action_tester;
   client_impl_->ShowTouchpadSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowTouchpadSettingsPage));
 }
@@ -103,7 +103,7 @@ TEST_F(SystemTrayClientImplTest, ShowMouseSettings) {
   base::UserActionTester user_action_tester;
   client_impl_->ShowMouseSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDeviceMouseSubpagePath));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowMouseSettingsPage));
 }
@@ -114,7 +114,7 @@ TEST_F(SystemTrayClientImplTest, ShowGraphicsTabletSettings) {
   base::UserActionTester user_action_tester;
   client_impl_->ShowGraphicsTabletSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kGraphicsTabletSubpagePath));
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kShowGraphicsTabletSettingsPage));
@@ -124,7 +124,7 @@ TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
   base::UserActionTester user_action_tester;
   client_impl_->ShowRemapKeysSubpage(/*device_id=*/1);
   EXPECT_EQ(settings_window_manager_->last_url(),
-            base::StrCat({chrome::GetOSSettingsUrl(
+            base::StrCat({chromeos::settings::GetOSSettingsUrl(
                               chromeos::settings::mojom::
                                   kPerDeviceKeyboardRemapKeysSubpagePath)
                               .spec(),
@@ -138,7 +138,7 @@ TEST_F(SystemTrayClientImplTest, ShowApnSubpage) {
   feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
   client_impl_->ShowApnSubpage(/*network_id=*/"guid");
   EXPECT_EQ(settings_window_manager_->last_url(),
-            base::StrCat({chrome::GetOSSettingsUrl(
+            base::StrCat({chromeos::settings::GetOSSettingsUrl(
                               chromeos::settings::mojom::kApnSubpagePath)
                               .spec(),
                           "?guid=guid"}));
@@ -152,7 +152,7 @@ TEST_F(SystemTrayClientImplTest, ShowKeyboardSettings) {
   base::UserActionTester user_action_tester;
   client_impl_->ShowKeyboardSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowKeyboardSettingsPage));
 }
@@ -165,7 +165,7 @@ TEST_F(SystemTrayClientImplTest, ShowPointingStickSettings) {
   base::UserActionTester user_action_tester;
   client_impl_->ShowPointingStickSettings();
   EXPECT_EQ(settings_window_manager_->last_url(),
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDevicePointingStickSubpagePath));
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kShowPointingStickSettingsPage));

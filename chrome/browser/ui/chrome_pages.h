@@ -165,9 +165,6 @@ void ShowAppManagementPage(Profile* profile,
 
 void ShowGraduationApp(Profile* profile);
 
-// Constructs an OS settings GURL for the specified `sub_page`.
-GURL GetOSSettingsUrl(std::string_view sub_page);
-
 void ShowPrintManagementApp(Profile* profile);
 
 void ShowConnectivityDiagnosticsApp(Profile* profile);

@@ -720,12 +720,6 @@ void ShowGraduationApp(Profile* profile) {
   ShowSystemAppInternal(profile, ash::SystemWebAppType::GRADUATION, params);
 }
 
-GURL GetOSSettingsUrl(std::string_view sub_page) {
-  DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
-      << sub_page;
-  return GURL(base::StrCat({ash::kChromeUIOSSettingsURL, sub_page}));
-}
-
 void ShowPrintManagementApp(Profile* profile) {
   ShowSystemAppInternal(profile, ash::SystemWebAppType::PRINT_MANAGEMENT);
 }

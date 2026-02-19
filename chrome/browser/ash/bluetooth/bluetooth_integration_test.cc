@@ -10,12 +10,12 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
 #include "chrome/test/base/chromeos/crosier/annotations.h"
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       Log("Waiting for OS settings bluetooth page to load"),
       WaitForWebContentsReady(
           kOsSettingsElementId,
-          chrome::GetOSSettingsUrl(kBluetoothDevicesSubpagePath)),
+          chromeos::settings::GetOSSettingsUrl(kBluetoothDevicesSubpagePath)),
 
       Log("Waiting for bluetooth toggle to exist"),
       WaitForElementExists(kOsSettingsElementId, kBluetoothToggleQuery),

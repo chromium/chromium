@@ -39,11 +39,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
@@ -212,7 +212,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       "accountManagerDialogWelcomeBody",
       l10n_util::GetStringFUTF16(
           message_id,
-          base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
+          base::UTF8ToUTF16(chromeos::settings::GetOSSettingsUrl(
                                 chromeos::settings::mojom::kPeopleSectionPath)
                                 .spec()),
           ui::GetChromeOSDeviceName()));
@@ -224,10 +224,10 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
   source->AddString("userName", user->GetGivenName());
-  source->AddString(
-      "accountManagerOsSettingsUrl",
-      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
-          .spec());
+  source->AddString("accountManagerOsSettingsUrl",
+                    chromeos::settings::GetOSSettingsUrl(
+                        chromeos::settings::mojom::kPeopleSectionPath)
+                        .spec());
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,

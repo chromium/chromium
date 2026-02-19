@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -43,7 +44,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromSettings) {
       // Check Settings app launch URL.
       WaitForWebContentsReady(
           kSettingsAppWebContentsElementId,
-          chrome::GetOSSettingsUrl(
+          chromeos::settings::GetOSSettingsUrl(
               base::StrCat({chromeos::settings::mojom::kAppDetailsSubpagePath,
                             "?id=", ash::kGeminiAppId}))),
 

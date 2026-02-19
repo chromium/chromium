@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_hub_handler.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink,
     ASSERT_TRUE(web_contents);
     EXPECT_EQ(
         web_contents->GetURL(),
-        chrome::GetOSSettingsUrl(
+        chromeos::settings::GetOSSettingsUrl(
             chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath));
     EXPECT_EQ(primary_user_,
               *ash::AnnotatedAccountId::Get(web_contents->GetBrowserContext()));
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink,
     ASSERT_TRUE(web_contents);
     EXPECT_EQ(
         web_contents->GetURL(),
-        chrome::GetOSSettingsUrl(
+        chromeos::settings::GetOSSettingsUrl(
             chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath));
     EXPECT_EQ(secondary_user_,
               *ash::AnnotatedAccountId::Get(web_contents->GetBrowserContext()));

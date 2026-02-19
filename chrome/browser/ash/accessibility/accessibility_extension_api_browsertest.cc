@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/facegaze_bubble_controller.h"
 #include "ash/system/accessibility/facegaze_bubble_view.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_service.h"
@@ -131,8 +131,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
-  EXPECT_EQ(GURL(chrome::GetOSSettingsUrl("manageAccessibility/tts")),
-            web_contents->GetLastCommittedURL());
+  EXPECT_EQ(
+      GURL(chromeos::settings::GetOSSettingsUrl("manageAccessibility/tts")),
+      web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,

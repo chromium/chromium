@@ -12,12 +12,12 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
@@ -230,7 +230,8 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
                                subpage.c_str())),
 
         Log("Waiting for OS settings audio settings page to load"),
-        WaitForWebContentsReady(element_id, chrome::GetOSSettingsUrl(subpage)));
+        WaitForWebContentsReady(element_id,
+                                chromeos::settings::GetOSSettingsUrl(subpage)));
   }
 
   // Enters lower-case text into the focused html input element.

@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/command_line.h"
 #include "base/json/string_escape.h"
 #include "base/strings/pattern.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
@@ -231,7 +231,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
         WaitForShow(kSettingsWebContentsId),
         WaitForWebContentsReady(
             kSettingsWebContentsId,
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPrintingDetailsSubpagePath)));
   }
 
@@ -246,7 +246,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
         WaitForShow(kSettingsWebContentsId),
         WaitForWebContentsReady(
             kSettingsWebContentsId,
-            chrome::GetOSSettingsUrl(
+            chromeos::settings::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPrintingDetailsSubpagePath)));
   }
 

@@ -23,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/test/active_window_waiter.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -80,7 +81,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
       settings_app->tab_strip_model()->GetActiveWebContents()));
 
   EXPECT_EQ(
-      chrome::GetOSSettingsUrl(
+      chromeos::settings::GetOSSettingsUrl(
           base::StrCat({chromeos::settings::mojom::kAppDetailsSubpagePath,
                         "?id=", app->id()})),
       settings_app->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());

@@ -6,7 +6,11 @@
 
 #include <string_view>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.h"
+#include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "url/gurl.h"
 
 namespace chromeos::settings {
 
@@ -34,6 +38,11 @@ bool IsOSSettingsSubPage(std::string_view sub_page) {
   }
 
   return false;
+}
+
+GURL GetOSSettingsUrl(std::string_view sub_page) {
+  DCHECK(sub_page.empty() || IsOSSettingsSubPage(sub_page)) << sub_page;
+  return GURL(base::StrCat({ash::kChromeUIOSSettingsURL, sub_page}));
 }
 
 }  // namespace chromeos::settings

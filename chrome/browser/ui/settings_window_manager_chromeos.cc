@@ -10,6 +10,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/window_properties.h"
 #include "base/strings/strcat.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -217,7 +217,8 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
 void SettingsWindowManager::ShowOSSettings(Profile* profile,
                                            std::string_view sub_page,
                                            int64_t display_id) {
-  ShowChromePageForProfile(profile, chrome::GetOSSettingsUrl(sub_page),
+  ShowChromePageForProfile(profile,
+                           chromeos::settings::GetOSSettingsUrl(sub_page),
                            display_id, /*callback=*/{});
 }
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/audio/cras_audio_handler_delegate_impl.h"
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "url/gurl.h"
@@ -56,9 +56,9 @@ class CrasAudioHandlerDelegateImplTest : public BrowserWithTestWindowTest {
 
 TEST_F(CrasAudioHandlerDelegateImplTest, OpenSettingsAudioPage) {
   cras_audio_handler_delegate_impl_->OpenSettingsAudioPage();
-  EXPECT_EQ(
-      settings_window_manager_->last_url(),
-      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kAudioSubpagePath));
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chromeos::settings::GetOSSettingsUrl(
+                chromeos::settings::mojom::kAudioSubpagePath));
 }
 
 }  // namespace
