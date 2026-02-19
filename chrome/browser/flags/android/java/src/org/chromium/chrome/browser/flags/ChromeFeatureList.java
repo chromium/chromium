@@ -498,8 +498,6 @@ public abstract class ChromeFeatureList {
     public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT = "NewTabPageCustomizationForMvt";
-    public static final String NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON =
-            "NewTabPageCustomizationToolbarButton";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_V2 = "NewTabPageCustomizationV2";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
@@ -985,8 +983,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, true);
     public static final CachedFlag sNewTabPageCustomizationForMvt =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT, true);
-    public static final CachedFlag sNewTabPageCustomizationToolbarButton =
-            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON, false);
     public static final CachedFlag sNewTabPageCustomizationV2 =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_V2, false, true);
     public static final CachedFlag sNotificationTrampoline =
@@ -1225,7 +1221,6 @@ public abstract class ChromeFeatureList {
                     sNavBarColorAnimation,
                     sNewTabPageCustomization,
                     sNewTabPageCustomizationForMvt,
-                    sNewTabPageCustomizationToolbarButton,
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,

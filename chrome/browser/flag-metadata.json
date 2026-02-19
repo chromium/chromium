@@ -6715,11 +6715,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "new-tab-page-customization-toolbar-button",
-    "owners": ["hanxi@chromium.org", "xinyiji@google.com", "clank-start@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "new-tab-page-customization-v2",
     "owners": ["hanxi@chromium.org", "clank-start@google.com"],
     "expiry_milestone": 150

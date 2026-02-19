@@ -167,11 +167,6 @@ inline constexpr char kNewTabPageCustomizationV2Name[] =
 inline constexpr char kNewTabPageCustomizationV2Description[] =
     "Allows users to customize the new tab page, like appearance.";
 
-inline constexpr char kNewTabPageCustomizationToolbarButtonName[] =
-    "New tab page customization toolbar button";
-inline constexpr char kNewTabPageCustomizationToolbarButtonDescription[] =
-    "Add the new tab page customization button on the toolbar (mobile only).";
-
 inline constexpr char kNewTabPageCustomizationForMvtName[] =
     "Customize the new tab page for Most Visiteid Tiles";
 inline constexpr char kNewTabPageCustomizationForMvtDescription[] =

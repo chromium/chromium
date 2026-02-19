@@ -368,7 +368,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNavBarColorAnimation,
     &kNewTabPageCustomization,
     &kNewTabPageCustomizationForMvt,
-    &kNewTabPageCustomizationToolbarButton,
     &kNewTabPageCustomizationV2,
     &kNotificationPermissionVariant,
     &kNotificationTrampoline,
@@ -700,7 +699,6 @@ BASE_FEATURE(kMvcUpdateViewWhenModelChanged, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNavBarColorAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNewTabPageCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNewTabPageCustomizationForMvt, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kNewTabPageCustomizationToolbarButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationPermissionVariant, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationTrampoline, base::FEATURE_DISABLED_BY_DEFAULT);
