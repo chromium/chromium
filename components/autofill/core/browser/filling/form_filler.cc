@@ -780,8 +780,9 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
     // preview.
     if (action_persistence == mojom::ActionPersistence::kFill) {
       if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-        autofill_field.set_is_autofilled_according_to_renderer(
-            previous_state.is_autofilled_according_to_renderer);
+        autofill_field.set_is_autofilled_deprecated(
+            previous_state.is_autofilled_according_to_renderer,
+            base::PassKey<FormFiller>());
       }
       autofill_field.set_field_modifiers(previous_state.field_modifiers,
                                          base::PassKey<FormFiller>());

@@ -126,6 +126,7 @@ class ValuableSuggestionGeneratorTest : public testing::Test {
   AutofillClient& client() { return autofill_client_; }
   FormStructure& form() { return *form_structure_; }
   AutofillField& field() { return *form_structure_->fields().front(); }
+  FormFieldData& field_data() { return *form_structure_->fields().front(); }
   gfx::Image CustomIconForTest() { return gfx::test::CreateImage(32, 32); }
 
   TestValuablesDataManager& valuables_data_manager() {
@@ -206,7 +207,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
        GetSuggestionsForLoyaltyCards_WithMatchingDomainAndFieldAutofilled) {
   test_autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://domain2.example/test"));
-  field().set_is_autofilled_according_to_renderer(true);
+  field_data().set_is_autofilled_according_to_renderer(true);
   std::vector<Suggestion> suggestions_with_matching_domain =
       GetSuggestionsForLoyaltyCards(form().ToFormData(), &form(), field(),
                                     &field(), PasswordFormClassification(),

@@ -432,15 +432,16 @@ void FormStructure::UpdateFormData(const FormData& form_data) {
           return std::make_unique<AutofillField>(field_data);
         }
         const bool old_is_autofilled_according_to_renderer =
-            autofill_field->is_autofilled_according_to_renderer();
+            autofill_field->is_autofilled_deprecated(/*pass_key=*/{});
 
         // The field existed in the cache previously, update the cached members
         // of `FormFieldData` in `autofill_field` provided by `field_data`.
         autofill_field->UpdateFieldData(field_data, /*pass_key=*/{});
 
         if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-          autofill_field->set_is_autofilled_according_to_renderer(
-              old_is_autofilled_according_to_renderer);
+          autofill_field->set_is_autofilled_deprecated(
+              old_is_autofilled_according_to_renderer,
+              base::PassKey<FormStructure>());
         }
         return autofill_field;
       });
@@ -540,8 +541,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
         reason == RetrieveFromCacheReason::kFormCacheUpdateAfterParsing) {
       if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-        field->set_is_autofilled_according_to_renderer(
-            cached_field->is_autofilled_according_to_renderer());
+        field->set_is_autofilled_deprecated(
+            cached_field->is_autofilled_deprecated(/*pass_key=*/{}),
+            base::PassKey<FormStructure>());
       }
     }
     field->set_autofill_source_profile_guid(

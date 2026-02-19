@@ -238,7 +238,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
       for (auto [field, field_description] :
            base::zip(form_structure->fields(), form_description.fields)) {
         test_api(*field).set_initial_value(u"");
-        if (field->is_autofilled_according_to_renderer()) {
+        if (field_description.is_autofilled_according_to_renderer) {
           field->set_autofilled_type(field_description.role);
         }
       }

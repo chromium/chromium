@@ -208,6 +208,24 @@ class AutofillField : public FormFieldData {
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
 
+  // This is deprecated, consider using `AutofillField::field_modifiers_`
+  // instead.
+  // TODO(crbug.com/393114125): Remove this getter after launching
+  // `AutofillFixIsAutofilled`.
+  bool is_autofilled_deprecated(base::PassKey<FormStructure> pass_key) const {
+    return is_autofilled_according_to_renderer();
+  }
+
+  // This is deprecated, consider using `AutofillField::AddFieldModifier()`
+  // instead.
+  // TODO(crbug.com/393114125): Remove this setter after launching
+  // `AutofillFixIsAutofilled`.
+  void set_is_autofilled_deprecated(
+      bool is_autofilled_deprecated,
+      base::PassKey<FormStructure, FormFiller> pass_key) {
+    set_is_autofilled_according_to_renderer(is_autofilled_deprecated);
+  }
+
   // The unique identifier of the section (e.g. billing vs. shipping address)
   // of this field.
   const Section& section() const { return section_; }
@@ -516,6 +534,10 @@ class AutofillField : public FormFieldData {
 
  private:
   friend class AutofillFieldTestApi;
+
+  using FormFieldData::is_autofilled_according_to_renderer;
+  using FormFieldData::set_is_autofilled_according_to_renderer;
+
   struct PredictionResult {
     // The type may be a union type, i.e., hold multiple FieldTypes.
     AutofillType type;
