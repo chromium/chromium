@@ -14,6 +14,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/barrier_callback.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_restore/app_launch_info.h"
@@ -22,12 +23,16 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
 RestoreDataCollector::Call::Call()
     : data(std::make_unique<app_restore::RestoreData>()) {}
-RestoreDataCollector::Call::Call(RestoreDataCollector::Call&&) = default;
-RestoreDataCollector::Call& RestoreDataCollector::Call::operator=(Call&&) =
-    default;
 RestoreDataCollector::Call::~Call() = default;
+
+RestoreDataCollector::WindowData::WindowData() = default;
+RestoreDataCollector::WindowData::WindowData(WindowData&&) = default;
+RestoreDataCollector::WindowData& RestoreDataCollector::WindowData::operator=(
+    WindowData&&) = default;
+RestoreDataCollector::WindowData::~WindowData() = default;
 
 RestoreDataCollector::RestoreDataCollector() = default;
 RestoreDataCollector::~RestoreDataCollector() = default;
@@ -41,20 +46,18 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     const base::flat_set<std::string>& coral_app_id_allowlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto current_serial = serial_++;
-  auto emplace_result = calls_.emplace(current_serial, Call{});
-  DCHECK(emplace_result.second);
-  Call& call = emplace_result.first->second;
-
-  call.root_window_to_show = root_window_to_show;
-  call.template_type = template_type;
-  call.template_name = template_name;
+  auto call = std::make_unique<Call>();
+  call->root_window_to_show = root_window_to_show;
+  call->template_type = template_type;
+  call->template_name = template_name;
   auto* window_manager = MultiUserWindowManager::Get();
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto* delegate = shell->saved_desk_delegate();
-  bool has_supported_apps = false;
+
+  std::vector<aura::Window*> supported_windows;
+
   for (aura::Window* window : mru_windows) {
     // Skip transient windows without reporting.
     if (wm::GetTransientParent(window)) {
@@ -80,9 +83,9 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     }
 
     if (!delegate->IsWindowSupportedForSavedDesk(window)) {
-      call.unsupported_apps.push_back(window);
+      call->unsupported_apps.push_back(window);
       if (!delegate->IsWindowPersistable(window)) {
-        ++call.non_persistable_window_count;
+        ++call->non_persistable_window_count;
       }
       continue;
     }
@@ -93,11 +96,38 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
              ->overview_controller()
              ->disable_app_id_check_for_saved_desks() &&
         app_id.empty()) {
-      call.unsupported_apps.push_back(window);
+      call->unsupported_apps.push_back(window);
       continue;
     }
-    has_supported_apps = true;
 
+    supported_windows.push_back(window);
+  }
+
+  // Do not create a saved desk if the desk is empty or only contains
+  // unsupported apps, unless it's a Floating Workspace desk.
+  if (supported_windows.empty() &&
+      template_type != DeskTemplateType::kFloatingWorkspace) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  if (root_window_to_show) {
+    window_tracker_.Add(root_window_to_show);
+  }
+  call->callback = std::move(callback);
+
+  if (supported_windows.empty()) {
+    SendDeskTemplate(std::move(call));
+    return;
+  }
+
+  auto barrier = base::BarrierCallback<WindowData>(
+      supported_windows.size(),
+      base::BindOnce(&RestoreDataCollector::OnAllAppLaunchDataReceived,
+                     weak_factory_.GetWeakPtr(), std::move(call)));
+
+  for (aura::Window* window : supported_windows) {
+    const std::string app_id = saved_desk_util::GetAppId(window);
     std::unique_ptr<app_restore::WindowInfo> window_info =
         BuildWindowInfo(window, /*activation_index=*/std::nullopt, mru_windows);
 
@@ -107,83 +137,58 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     window_info->desk_id.reset();
     window_info->desk_guid = base::Uuid();
 
-    ++call.pending_request_count;
     delegate->GetAppLaunchDataForSavedDesk(
         window, base::BindOnce(&RestoreDataCollector::OnAppLaunchDataReceived,
-                               base::Unretained(this), current_serial, app_id,
-                               std::move(window_info)));
-  }
-
-  // Do not create a saved desk if the desk is empty or only contains
-  // unsupported apps, unless it's a Floating Workspace desk.
-  if (!has_supported_apps &&
-      template_type != DeskTemplateType::kFloatingWorkspace) {
-    calls_.erase(current_serial);
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  if (root_window_to_show) {
-    window_tracker_.Add(root_window_to_show);
-  }
-  call.callback = std::move(callback);
-
-  // If all requests in the loop above returned data synchronously, then we
-  // have no pending requests and send the data right away. Otherwise it will be
-  // sent after the last pending request is handled.
-  if (call.pending_request_count == 0) {
-    SendDeskTemplate(current_serial);
+                               weak_factory_.GetWeakPtr(), app_id,
+                               std::move(window_info), barrier));
   }
 }
 
 void RestoreDataCollector::OnAppLaunchDataReceived(
-    uint32_t serial,
-    const std::string& app_id,
+    std::string app_id,
     std::unique_ptr<app_restore::WindowInfo> window_info,
+    base::RepeatingCallback<void(WindowData)> barrier,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto call_it = calls_.find(serial);
-  DCHECK(call_it != calls_.end());
-  Call& call = call_it->second;
-
-  DCHECK(call.data);
-  DCHECK_GT(call.pending_request_count, 0u);
-
-  --call.pending_request_count;
-
-  // nullptr means that this app does not have any data to save.
-  if (app_launch_info) {
-    const int32_t window_id = *app_launch_info->window_id;
-    call.data->AddAppLaunchInfo(std::move(app_launch_info));
-    call.data->ModifyWindowInfo(app_id, window_id, *window_info);
-  }
-  // Null callback here means that the loop in
-  // `CaptureActiveDeskAsSavedDesk()` has not yet finished polling the
-  // windows.  Non-zero pending request count means that some of preceding
-  // requests were asynchronous.
-  if (call.pending_request_count == 0 && !call.callback.is_null()) {
-    SendDeskTemplate(serial);
-  }
+  WindowData data;
+  data.app_id = std::move(app_id);
+  data.window_info = std::move(window_info);
+  data.app_launch_info = std::move(app_launch_info);
+  barrier.Run(std::move(data));
 }
 
-void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
+void RestoreDataCollector::OnAllAppLaunchDataReceived(
+    std::unique_ptr<Call> call,
+    std::vector<WindowData> window_data_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto call_it = calls_.find(serial);
-  DCHECK(call_it != calls_.end());
-  Call& call = call_it->second;
+  for (auto& window_data : window_data_list) {
+    // nullptr means that this app does not have any data to save.
+    if (window_data.app_launch_info) {
+      const int32_t window_id = *window_data.app_launch_info->window_id;
+      call->data->AddAppLaunchInfo(std::move(window_data.app_launch_info));
+      call->data->ModifyWindowInfo(window_data.app_id, window_id,
+                                   *window_data.window_info);
+    }
+  }
+
+  SendDeskTemplate(std::move(call));
+}
+
+void RestoreDataCollector::SendDeskTemplate(std::unique_ptr<Call> call) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto desk_template = std::make_unique<DeskTemplate>(
       base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser,
-      call.template_name, base::Time::Now(), call.template_type);
-  desk_template->set_desk_restore_data(std::move(call.data));
+      call->template_name, base::Time::Now(), call->template_type);
+  desk_template->set_desk_restore_data(std::move(call->data));
 
-  if (!call.unsupported_apps.empty() &&
+  if (!call->unsupported_apps.empty() &&
       Shell::Get()->overview_controller()->InOverviewSession()) {
     // The ideal root window may have gone by now.  In that case fall back to
     // the primary root one.
-    auto* root_window_to_show = call.root_window_to_show.get();
+    auto* root_window_to_show = call->root_window_to_show.get();
     if (root_window_to_show && window_tracker_.Contains(root_window_to_show)) {
       window_tracker_.Remove(root_window_to_show);
     } else {
@@ -196,14 +201,12 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
     auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
     DCHECK(dialog_controller);
     dialog_controller->ShowUnsupportedAppsDialog(
-        root_window_to_show, call.unsupported_apps,
-        call.non_persistable_window_count, std::move(call.callback),
+        root_window_to_show, call->unsupported_apps,
+        call->non_persistable_window_count, std::move(call->callback),
         std::move(desk_template));
   } else {
-    std::move(call.callback).Run(std::move(desk_template));
+    std::move(call->callback).Run(std::move(desk_template));
   }
-
-  calls_.erase(call_it);
 }
 
 }  // namespace ash

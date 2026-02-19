@@ -6,9 +6,9 @@
 #define ASH_WM_DESKS_TEMPLATES_RESTORE_DATA_COLLECTOR_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -59,8 +59,8 @@ class RestoreDataCollector {
   // Keeps the state for the asynchronous call for `AppLaunchData` to the apps.
   struct Call {
     Call();
-    Call(Call&&);
-    Call& operator=(Call&&);
+    Call(const Call&) = delete;
+    Call& operator=(const Call&) = delete;
     ~Call();
 
     DeskTemplateType template_type;
@@ -69,26 +69,36 @@ class RestoreDataCollector {
     std::vector<raw_ptr<aura::Window, VectorExperimental>> unsupported_apps;
     size_t non_persistable_window_count = 0;
     std::unique_ptr<app_restore::RestoreData> data;
-    uint32_t pending_request_count = 0;
     GetDeskTemplateCallback callback;
   };
 
-  // Receives the `AppLaunchInfo` for the single app and puts it into the
-  // RestoreData record where data from all clients is accumulated.  If all data
-  // is collected, invokes the `SendDeskTemplate()` method.
+  struct WindowData {
+    WindowData();
+    WindowData(WindowData&&);
+    WindowData& operator=(WindowData&&);
+    ~WindowData();
+
+    std::string app_id;
+    std::unique_ptr<app_restore::WindowInfo> window_info;
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info;
+  };
+
+  // Receives the `AppLaunchInfo` for a single app and passes it to the
+  // `barrier` callback where data from all clients is accumulated.
   void OnAppLaunchDataReceived(
-      uint32_t serial,
-      const std::string& app_id,
+      std::string app_id,
       std::unique_ptr<app_restore::WindowInfo> window_info,
+      base::RepeatingCallback<void(WindowData)> barrier,
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
+
+  // Receives the `WindowData` for all apps and puts it into the
+  // RestoreData record where data from all clients is accumulated.
+  void OnAllAppLaunchDataReceived(std::unique_ptr<Call> call,
+                                  std::vector<WindowData> window_data_list);
 
   // Creates a `DeskTemplate` object and sends it to the consumer after all apps
   // have delivered their `AppLaunchInfo`.
-  void SendDeskTemplate(uint32_t serial);
-
-  // Auxiliary data for maintaining the asynchronous polling of the windows.
-  uint32_t serial_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-  base::flat_map<uint32_t, Call> calls_ GUARDED_BY_CONTEXT(sequence_checker_);
+  void SendDeskTemplate(std::unique_ptr<Call> call);
   aura::WindowTracker window_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
