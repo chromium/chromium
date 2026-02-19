@@ -181,7 +181,8 @@
             <settings-dropdown-menu id="tabStripPosition"
                 label="$i18n{tabStripPosition}"
                 pref="{{prefs.vertical_tabs.enabled}}"
-                menu-options="[[tabStripOptions_]]">
+                menu-options="[[tabStripOptions_]]"
+                on-settings-control-change="onTabStripPositionChanged_">
             </settings-dropdown-menu>
           </div>
         </template>

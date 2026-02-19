@@ -4,12 +4,14 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CustomizeColorSchemeModeClientRemote, SettingsAppearancePageElement, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, loadTimeData, SystemTheme} from 'chrome://settings/settings.js';
+import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, loadTimeData, MetricsBrowserProxyImpl, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestAppearanceBrowserProxy} from './test_appearance_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
 
 let appearancePage: SettingsAppearancePageElement;
 let appearanceBrowserProxy: TestAppearanceBrowserProxy;
@@ -398,6 +400,8 @@ suite('AppearanceHandler', function() {
 });
 
 suite('TabStripPositionSettings', () => {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
   setup(async () => {
     loadTimeData.overrideValues({
       showVerticalTabsEnabled: true,
@@ -405,6 +409,9 @@ suite('TabStripPositionSettings', () => {
 
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     createAppearancePage();
 
@@ -441,6 +448,34 @@ suite('TabStripPositionSettings', () => {
 
     assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
     assertEquals('false', selectElement.value);
+  });
+
+  test('Dropdown menu records user actions', async function() {
+    assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
+
+    const dropdown =
+        appearancePage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#tabStripPosition');
+    assertTrue(!!dropdown);
+
+    const selectElement = dropdown.$.dropdownMenu;
+    assertTrue(!!selectElement);
+    assertEquals('false', selectElement.value);
+
+    selectElement.value = 'true';
+    selectElement.dispatchEvent(new Event('change'));
+    const verticalUserAction =
+        await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('SwitchToVerticalTabStrip_FromSettings', verticalUserAction);
+
+    metricsBrowserProxy.reset();
+
+    selectElement.value = 'false';
+    selectElement.dispatchEvent(new Event('change'));
+    const horizontalUserAction =
+        await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'SwitchToHorizontalTabStrip_FromSettings', horizontalUserAction);
   });
 });
 

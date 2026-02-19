@@ -28,6 +28,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {pageVisibility} from '../page_visibility.js';
 import type {AppearancePageVisibility} from '../page_visibility.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
@@ -335,6 +337,8 @@ export class SettingsAppearancePageElement extends
       CustomizeColorSchemeModeClientCallbackRouter =
           CustomizeColorSchemeModeBrowserProxy.getInstance().callbackRouter;
   private setColorSchemeModeListenerId_: number|null = null;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -557,6 +561,16 @@ export class SettingsAppearancePageElement extends
 
   private showHr_(previousIsVisible: boolean, nextIsVisible: boolean): boolean {
     return previousIsVisible && nextIsVisible;
+  }
+
+  private onTabStripPositionChanged_() {
+    if (this.getPref<boolean>('vertical_tabs.enabled').value) {
+      this.metricsBrowserProxy_.recordAction(
+          'SwitchToVerticalTabStrip_FromSettings');
+    } else {
+      this.metricsBrowserProxy_.recordAction(
+          'SwitchToHorizontalTabStrip_FromSettings');
+    }
   }
 
   private showEverythingMenuToggle_(): boolean {
