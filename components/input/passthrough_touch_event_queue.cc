@@ -125,11 +125,8 @@ void PassthroughTouchEventQueue::PrependTouchScrollNotification(
   TRACE_EVENT0("input",
                "PassthroughTouchEventQueue::PrependTouchScrollNotification");
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAsyncTouchMovesImmediatelyAfterScroll)) {
-    send_touch_events_async_ = true;
-    SetAckStateForPendingTouchMovesFromSequence(primary_unique_touch_event_id);
-  }
+  send_touch_events_async_ = true;
+  SetAckStateForPendingTouchMovesFromSequence(primary_unique_touch_event_id);
 
   TouchEventWithLatencyInfo touch(
       WebInputEvent::Type::kTouchScrollStarted, WebInputEvent::kNoModifiers,
@@ -262,14 +259,11 @@ void PassthroughTouchEventQueue::FlushQueue() {
 }
 
 void PassthroughTouchEventQueue::OnTouchActionFromMain() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAsyncTouchMovesImmediatelyAfterScroll)) {
-    // It's possible a deferred scroll might have actually started upon
-    // receiving touch action from main. And as a result ack of some touch moves
-    // would have been set locally in Browser itself in
-    // `SetAckStateForPendingTouchMovesFromSequence`.
-    AckCompletedEvents();
-  }
+  // It's possible a deferred scroll might have actually started upon
+  // receiving touch action from main. And as a result ack of some touch moves
+  // would have been set locally in Browser itself in
+  // `SetAckStateForPendingTouchMovesFromSequence`.
+  AckCompletedEvents();
 }
 
 void PassthroughTouchEventQueue::StopTimeoutMonitor() {

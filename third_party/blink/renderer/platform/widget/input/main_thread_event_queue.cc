@@ -1082,9 +1082,7 @@ bool MainThreadEventQueue::ShouldThrottleAsyncTouchMoves(
     std::optional<bool> gsu_acked_as_consumed) {
   // TODO(441800312): Investigate updating touch moves throttling logic during
   // scrolls.
-  if (gsu_acked_as_consumed.has_value() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kAsyncTouchMovesImmediatelyAfterScroll)) {
+  if (gsu_acked_as_consumed.has_value()) {
     // If a gsu is acked as consumed already, async touch moves should indeed be
     // throttled.
     return *gsu_acked_as_consumed;

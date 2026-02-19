@@ -2009,10 +2009,6 @@ TEST_F(PassthroughTouchEventQueueTest, TouchMoveUnfilteredWithForwardAll) {
 // scroll.
 TEST_F(PassthroughTouchEventQueueTest,
        TouchMoveBetweenScrollStartingTouchMoveAndAckSentAsync) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAsyncTouchMovesImmediatelyAfterScroll);
-
   // A touch sequence that will turn into a scroll.
   PressTouchPoint(0, 1);
   int primary_unique_touch_event_id = GetUniqueTouchEventID();
@@ -2042,10 +2038,6 @@ TEST_F(PassthroughTouchEventQueueTest,
 // Testing sequence: TouchDown1, TouchMove1, TouchMove1Ack, TouchMove2, GSUAck.
 // Test that the TouchMove2 is sent async.
 TEST_F(PassthroughTouchEventQueueTest, TouchMoveGSUAckSentAsync) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAsyncTouchMovesImmediatelyAfterScroll);
-
   // A touch sequence that will turn into a scroll.
   PressTouchPoint(0, 1);
   int primary_unique_touch_event_id = GetUniqueTouchEventID();

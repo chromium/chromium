@@ -7,7 +7,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -26,7 +25,6 @@
 #include "content/test/render_document_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -1016,15 +1014,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollLocalSubframeInOOPIF) {
 
 class OOPIFScrollBubblingTest : public SitePerProcessBrowserTest {
  public:
-  OOPIFScrollBubblingTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kAsyncTouchMovesImmediatelyAfterScroll,
-        /* enabled= */ true);
-  }
+  OOPIFScrollBubblingTest() = default;
   ~OOPIFScrollBubblingTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class TouchMoveInjectingObserver : public RenderWidgetHost::InputEventObserver {
