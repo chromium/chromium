@@ -249,7 +249,7 @@
 //!   dynamic library libproc_macro from rustc toolchain.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/syn/2.0.115")]
+#![doc(html_root_url = "https://docs.rs/syn/2.0.116")]
 #![cfg_attr(docsrs, feature(doc_cfg), doc(auto_cfg = false))]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types)]
@@ -300,6 +300,7 @@
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::trivially_copy_pass_by_ref,
+    clippy::type_complexity,
     clippy::unconditional_recursion, // https://github.com/rust-lang/rust-clippy/issues/12133
     clippy::uninhabited_references,
     clippy::uninlined_format_args,

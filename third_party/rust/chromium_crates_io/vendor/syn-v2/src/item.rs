@@ -1607,8 +1607,9 @@ pub(crate) mod parsing {
         allow_variadic: bool,
     ) -> Result<FnArgOrVariadic> {
         let ahead = input.fork();
-        if let Ok(mut receiver) = ahead.parse::<Receiver>() {
+        if let Ok((reference, mutability, self_token)) = parse_receiver_begin(&ahead) {
             input.advance_to(&ahead);
+            let mut receiver = parse_rest_of_receiver(reference, mutability, self_token, input)?;
             receiver.attrs = attrs;
             return Ok(FnArgOrVariadic::FnArg(FnArg::Receiver(receiver)));
         }
@@ -1654,46 +1655,66 @@ pub(crate) mod parsing {
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for Receiver {
         fn parse(input: ParseStream) -> Result<Self> {
-            let reference = if input.peek(Token![&]) {
-                let ampersand: Token![&] = input.parse()?;
-                let lifetime: Option<Lifetime> = input.parse()?;
-                Some((ampersand, lifetime))
-            } else {
-                None
-            };
-            let mutability: Option<Token![mut]> = input.parse()?;
-            let self_token: Token![self] = input.parse()?;
-            let colon_token: Option<Token![:]> = if reference.is_some() {
-                None
-            } else {
-                input.parse()?
-            };
-            let ty: Type = if colon_token.is_some() {
-                input.parse()?
-            } else {
-                let mut ty = Type::Path(TypePath {
-                    qself: None,
-                    path: Path::from(Ident::new("Self", self_token.span)),
-                });
-                if let Some((ampersand, lifetime)) = reference.as_ref() {
-                    ty = Type::Reference(TypeReference {
-                        and_token: Token![&](ampersand.span),
-                        lifetime: lifetime.clone(),
-                        mutability: mutability.as_ref().map(|m| Token![mut](m.span)),
-                        elem: Box::new(ty),
-                    });
-                }
-                ty
-            };
-            Ok(Receiver {
-                attrs: Vec::new(),
-                reference,
-                mutability,
-                self_token,
-                colon_token,
-                ty: Box::new(ty),
-            })
+            let (reference, mutability, self_token) = parse_receiver_begin(input)?;
+            parse_rest_of_receiver(reference, mutability, self_token, input)
         }
+    }
+
+    fn parse_receiver_begin(
+        input: ParseStream,
+    ) -> Result<(
+        Option<(Token![&], Option<Lifetime>)>,
+        Option<Token![mut]>,
+        Token![self],
+    )> {
+        let reference = if input.peek(Token![&]) {
+            let ampersand: Token![&] = input.parse()?;
+            let lifetime: Option<Lifetime> = input.parse()?;
+            Some((ampersand, lifetime))
+        } else {
+            None
+        };
+        let mutability: Option<Token![mut]> = input.parse()?;
+        let self_token: Token![self] = input.parse()?;
+        Ok((reference, mutability, self_token))
+    }
+
+    fn parse_rest_of_receiver(
+        reference: Option<(Token![&], Option<Lifetime>)>,
+        mutability: Option<Token![mut]>,
+        self_token: Token![self],
+        input: ParseStream,
+    ) -> Result<Receiver> {
+        let colon_token: Option<Token![:]> = if reference.is_some() {
+            None
+        } else {
+            input.parse()?
+        };
+        let ty: Type = if colon_token.is_some() {
+            input.parse()?
+        } else {
+            let mut ty = Type::Path(TypePath {
+                qself: None,
+                path: Path::from(Ident::new("Self", self_token.span)),
+            });
+            if let Some((ampersand, lifetime)) = reference.as_ref() {
+                ty = Type::Reference(TypeReference {
+                    and_token: Token![&](ampersand.span),
+                    lifetime: lifetime.clone(),
+                    mutability: mutability.as_ref().map(|m| Token![mut](m.span)),
+                    elem: Box::new(ty),
+                });
+            }
+            ty
+        };
+        Ok(Receiver {
+            attrs: Vec::new(),
+            reference,
+            mutability,
+            self_token,
+            colon_token,
+            ty: Box::new(ty),
+        })
     }
 
     fn parse_fn_args(
