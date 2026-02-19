@@ -3702,3 +3702,54 @@ TEST_F(AutocompleteResultTest, AttachContextualSearchOpenLensActionToMatches) {
   EXPECT_FALSE(result.match_at(2)->takeover_action);
   EXPECT_FALSE(result.match_at(3)->takeover_action);
 }
+
+TEST_F(AutocompleteResultTest, AttachSiteSearchActionToMatches) {
+  // Register a template URL that corresponds to 'foo' search engine.
+  TemplateURLData url_data;
+  url_data.SetShortName(u"unittest");
+  url_data.SetKeyword(u"foo");
+  url_data.SetURL("http://www.foo.com/s?q={searchTerms}");
+  template_url_service().Add(std::make_unique<TemplateURL>(url_data));
+
+  AutocompleteResult result;
+  ACMatches matches;
+
+  // Match 0: No keyword
+  AutocompleteMatch match0;
+  matches.push_back(match0);
+
+  // Match 1: Valid keyword that exists in TemplateURLService
+  AutocompleteMatch match1;
+  match1.associated_keyword = u"foo";
+  matches.push_back(match1);
+
+  // Match 2: Duplicate of valid keyword
+  AutocompleteMatch match2;
+  match2.associated_keyword = u"foo";
+  matches.push_back(match2);
+
+  // Match 3: Keyword that doesn't exist in TemplateURLService
+  AutocompleteMatch match3;
+  match3.associated_keyword = u"bar";
+  matches.push_back(match3);
+
+  result.AppendMatches(matches);
+  result.AttachSiteSearchActionToMatches(&template_url_service());
+
+  ASSERT_EQ(4u, result.size());
+
+  // Match 0 should have no action attached
+  EXPECT_TRUE(result.match_at(0)->actions.empty());
+
+  // Match 1 should have the Site Search action attached
+  ASSERT_EQ(1u, result.match_at(1)->actions.size());
+  EXPECT_EQ(OmniboxActionId::SITE_SEARCH,
+            result.match_at(1)->actions[0]->ActionId());
+
+  // Match 2 should have no action attached because the 'foo' keyword was
+  // already seen
+  EXPECT_TRUE(result.match_at(2)->actions.empty());
+
+  // Match 3 should have no action attached because 'bar' keyword does not exist
+  EXPECT_TRUE(result.match_at(3)->actions.empty());
+}
