@@ -33,6 +33,7 @@
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
@@ -543,7 +544,8 @@ void TranslatePrefs::GetTranslatableContentLanguages(
   std::vector<std::string> language_codes;
   GetLanguageList(&language_codes);
 
-  std::set<std::string> unique_languages;
+  absl::flat_hash_set<std::string> unique_languages;
+  unique_languages.reserve(language_codes.size());
   for (auto& entry : language_codes) {
     std::string supports_translate_code = entry;
     // Get the language in Translate format.
@@ -554,9 +556,8 @@ void TranslatePrefs::GetTranslatableContentLanguages(
     // If the language code for a translatable language hasn't yet been added,
     // add it to the result list.
     if (TranslateDownloadManager::IsSupportedLanguage(lang_code)) {
-      if (unique_languages.count(lang_code) == 0) {
-        unique_languages.insert(lang_code);
-        codes->push_back(lang_code);
+      if (unique_languages.insert(lang_code).second) {
+        codes->push_back(std::move(lang_code));
       }
     }
   }
@@ -659,10 +660,11 @@ std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
       prefs_->GetDict(prefs::kPrefAlwaysTranslateList);
 
   std::vector<std::string> languages;
+  languages.reserve(dict.size());
   for (auto language_pair : dict) {
     std::string chrome_language(language_pair.first);
     language::ToChromeLanguageSynonym(&chrome_language);
-    languages.push_back(chrome_language);
+    languages.push_back(std::move(chrome_language));
   }
   return languages;
 }
