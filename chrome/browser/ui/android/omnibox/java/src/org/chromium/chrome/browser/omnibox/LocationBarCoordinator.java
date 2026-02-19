@@ -741,7 +741,7 @@ public class LocationBarCoordinator
 
     @Override
     public void clearOmniboxFocus() {
-        mLocationBarMediator.clearOmniboxFocus();
+        mLocationBarMediator.endInput();
     }
 
     @Override
@@ -1214,6 +1214,10 @@ public class LocationBarCoordinator
      *     null, the focus will be cleared.
      */
     public void setUrlBarFocus(@Nullable AutocompleteInput input) {
-        mLocationBarMediator.setUrlBarFocus(input);
+        if (input != null) {
+            mLocationBarMediator.beginInput(input);
+        } else {
+            mLocationBarMediator.endInput();
+        }
     }
 }

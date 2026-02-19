@@ -261,7 +261,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             ignoreCache -> {
                                 var omniboxStub = getLocationBar().getOmniboxStub();
                                 if (omniboxStub != null) {
-                                    omniboxStub.setUrlBarFocus(null);
+                                    omniboxStub.endInput();
                                 }
                                 tabController.stopOrReloadCurrentTab(ignoreCache);
                             },

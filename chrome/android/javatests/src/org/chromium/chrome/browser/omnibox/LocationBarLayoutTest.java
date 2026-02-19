@@ -141,7 +141,7 @@ public class LocationBarLayoutTest {
                 0, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    locationBarMediator.setUrlBarFocus(
+                    locationBarMediator.beginInput(
                             new AutocompleteInput()
                                     .setUserText(SEARCH_TERMS_URL)
                                     .setFocusReason(OmniboxFocusReason.FAKE_BOX_LONG_PRESS));
@@ -154,7 +154,7 @@ public class LocationBarLayoutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    locationBarMediator.setUrlBarFocus(
+                    locationBarMediator.beginInput(
                             new AutocompleteInput()
                                     .setUserText(SEARCH_TERMS_URL)
                                     .setFocusReason(OmniboxFocusReason.SEARCH_QUERY));
@@ -167,7 +167,7 @@ public class LocationBarLayoutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    locationBarMediator.setUrlBarFocus(null);
+                    locationBarMediator.endInput();
                 });
         assertFalse(getLocationBarMediator().isUrlBarFocused());
         assertFalse(getLocationBarMediator().didFocusUrlFromFakebox());
@@ -176,7 +176,7 @@ public class LocationBarLayoutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    locationBarMediator.setUrlBarFocus(
+                    locationBarMediator.beginInput(
                             new AutocompleteInput().setFocusReason(OmniboxFocusReason.OMNIBOX_TAP));
                 });
         assertTrue(getLocationBarMediator().isUrlBarFocused());

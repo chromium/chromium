@@ -30,12 +30,15 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -58,7 +61,10 @@ public class VoiceRecognitionHandler {
      */
     @VisibleForTesting public static final float VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD = 0.9f;
 
-    private final Delegate mDelegate;
+    private final OmniboxStub mOmniboxStub;
+    private final LocationBarDataProvider mLocationBarDataProvider;
+    private final AutocompleteCoordinator mAutocompleteCoordinator;
+    private final WindowAndroid mWindowAndroid;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final ApplicationStateListener mApplicationStateListener =
             this::onApplicationStateChange;
@@ -68,6 +74,7 @@ public class VoiceRecognitionHandler {
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
+    private @Nullable Runnable mCurrentOnCanceledCallback;
 
     /**
      * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
@@ -113,54 +120,6 @@ public class VoiceRecognitionHandler {
         int NUM_ENTRIES = 4;
     }
 
-    /** Delegate interface to provide data to this class from the location bar implementation. */
-    public interface Delegate {
-        /**
-         * Loads the provided URL, assumes the PageTransition type is TYPED.
-         *
-         * @param url The URL to load.
-         */
-        void loadUrlFromVoice(String url);
-
-        /**
-         * Sets the query string in the omnibox (ensuring the URL bar has focus and triggering
-         * autocomplete for the specified query) as if the user typed it.
-         *
-         * @param query The query to be set in the omnibox.
-         */
-        void setSearchQuery(final String query);
-
-        /**
-         * Grabs a reference to the location data provider from the location bar.
-         *
-         * @return The {@link LocationBarDataProvider} currently in use by the {@link
-         *     LocationBarLayout}.
-         */
-        LocationBarDataProvider getLocationBarDataProvider();
-
-        /**
-         * Grabs a reference to the autocomplete coordinator from the location bar.
-         *
-         * @return The {@link AutocompleteCoordinator} currently in use by the {@link
-         *     LocationBarLayout}.
-         */
-        // TODO(tedchoc): Limit the visibility of what is passed in here.  This does not need the
-        //                full coordinator.  It simply needs a way to pass voice suggestions to the
-        //                AutocompleteController.
-        AutocompleteCoordinator getAutocompleteCoordinator();
-
-        /**
-         * @return The current {@link WindowAndroid}.
-         */
-        WindowAndroid getWindowAndroid();
-
-        /** Clears omnibox focus, used to display the dialog when the keyboard is shown. */
-        void clearOmniboxFocus();
-
-        /** Notifies the delegate that voice recognition could not complete. */
-        void notifyVoiceRecognitionCanceled();
-    }
-
     /** Interface for observers interested in updates to the voice state. */
     public interface Observer {
         /**
@@ -196,8 +155,15 @@ public class VoiceRecognitionHandler {
     }
 
     public VoiceRecognitionHandler(
-            Delegate delegate, MonotonicObservableSupplier<Profile> profileSupplier) {
-        mDelegate = delegate;
+            OmniboxStub omniboxStub,
+            LocationBarDataProvider locationBarDataProvider,
+            AutocompleteCoordinator autocompleteCoordinator,
+            WindowAndroid windowAndroid,
+            MonotonicObservableSupplier<Profile> profileSupplier) {
+        mOmniboxStub = omniboxStub;
+        mLocationBarDataProvider = locationBarDataProvider;
+        mAutocompleteCoordinator = autocompleteCoordinator;
+        mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 mCallbackController.makeCancelable(profile -> notifyVoiceAvailabilityImpacted()));
@@ -217,12 +183,20 @@ public class VoiceRecognitionHandler {
             mCallbackController.destroy();
             mCallbackController = null;
         }
+        mCurrentOnCanceledCallback = null;
         ApplicationStatus.unregisterApplicationStateListener(mApplicationStateListener);
     }
 
     private void notifyVoiceAvailabilityImpacted() {
         for (Observer o : mObservers) {
             o.onVoiceAvailabilityImpacted();
+        }
+    }
+
+    private void notifyVoiceRecognitionCanceled() {
+        if (mCurrentOnCanceledCallback != null) {
+            mCurrentOnCanceledCallback.run();
+            mCurrentOnCanceledCallback = null;
         }
     }
 
@@ -287,12 +261,12 @@ public class VoiceRecognitionHandler {
             mCallbackComplete = true;
             if (resultCode == Activity.RESULT_CANCELED) {
                 recordVoiceSearchDismissedEvent(mSource);
-                mDelegate.notifyVoiceRecognitionCanceled();
+                notifyVoiceRecognitionCanceled();
                 return;
             }
             if (resultCode != Activity.RESULT_OK || assumeNonNull(data).getExtras() == null) {
                 recordVoiceSearchFailureEvent(mSource);
-                mDelegate.notifyVoiceRecognitionCanceled();
+                notifyVoiceRecognitionCanceled();
                 return;
             }
 
@@ -307,12 +281,10 @@ public class VoiceRecognitionHandler {
          * @param data The {@link Intent} with returned transcription data.
          */
         private void handleTranscriptionResult(Intent data) {
-            AutocompleteCoordinator autocompleteCoordinator =
-                    mDelegate.getAutocompleteCoordinator();
-            assert autocompleteCoordinator != null;
+            assert mAutocompleteCoordinator != null;
 
             List<VoiceResult> voiceResults = convertBundleToVoiceResults(data.getExtras());
-            autocompleteCoordinator.onVoiceResults(voiceResults);
+            mAutocompleteCoordinator.onVoiceResults(voiceResults);
             VoiceResult topResult =
                     (voiceResults != null && voiceResults.size() > 0) ? voiceResults.get(0) : null;
             if (topResult == null) {
@@ -330,15 +302,18 @@ public class VoiceRecognitionHandler {
             recordVoiceSearchConfidenceValue(topResult.getConfidence());
 
             if (topResult.getConfidence() < VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD) {
-                mDelegate.setSearchQuery(topResultQuery);
+                AutocompleteInput input =
+                        new AutocompleteInput()
+                                .setUserText(topResultQuery)
+                                .setSelection(0, topResultQuery.length())
+                                .setFocusReason(OmniboxFocusReason.SEARCH_QUERY);
+                mOmniboxStub.beginInput(input);
                 return;
             }
 
             // Since voice was used, we need to let the frame know that there was a user gesture.
-            LocationBarDataProvider locationBarDataProvider =
-                    mDelegate.getLocationBarDataProvider();
             Tab currentTab =
-                    locationBarDataProvider != null ? locationBarDataProvider.getTab() : null;
+                    mLocationBarDataProvider != null ? mLocationBarDataProvider.getTab() : null;
             if (currentTab != null) {
                 if (mVoiceSearchWebContentsObserver != null) {
                     mVoiceSearchWebContentsObserver.observe(null);
@@ -355,17 +330,16 @@ public class VoiceRecognitionHandler {
 
             AutocompleteMatch match = AutocompleteCoordinator.classify(profile, topResultQuery);
 
-            String url;
+            GURL url;
             if (match == null || match.isSearchSuggestion()) {
                 url =
                         TemplateUrlServiceFactory.getForProfile(profile)
-                                .getUrlForVoiceSearchQuery(topResultQuery)
-                                .getSpec();
+                                .getUrlForVoiceSearchQuery(topResultQuery);
             } else {
-                url = match.getUrl().getSpec();
+                url = match.getUrl();
             }
 
-            mDelegate.loadUrlFromVoice(url);
+            mOmniboxStub.loadUrlFromVoice(url);
         }
     }
 
@@ -411,27 +385,28 @@ public class VoiceRecognitionHandler {
      * Triggers a voice recognition intent to allow the user to specify a search query.
      *
      * @param source The source of the voice recognition initiation, such as NTP or omnibox.
+     * @param onCanceled The callback function to run when the voice recognition is canceled.
      */
-    public void startVoiceRecognition(@VoiceInteractionSource int source) {
+    public void startVoiceRecognition(@VoiceInteractionSource int source, Runnable onCanceled) {
+        mCurrentOnCanceledCallback = onCanceled;
         ThreadUtils.assertOnUiThread();
         startTrackingQueryDuration();
-        WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
-        if (windowAndroid == null) {
-            mDelegate.notifyVoiceRecognitionCanceled();
+        if (mWindowAndroid == null) {
+            notifyVoiceRecognitionCanceled();
             return;
         }
-        Activity activity = windowAndroid.getActivity().get();
+        Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) {
-            mDelegate.notifyVoiceRecognitionCanceled();
+            notifyVoiceRecognitionCanceled();
             return;
         }
 
         if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck= */ true)) {
-            mDelegate.notifyVoiceRecognitionCanceled();
+            notifyVoiceRecognitionCanceled();
             return;
         }
 
-        if (!startSystemForVoiceSearch(activity, windowAndroid, source)) {
+        if (!startSystemForVoiceSearch(activity, mWindowAndroid, source)) {
             // TODO(wylieb): Emit histogram here to identify how many users are attempting to use
             // voice search, but fail completely.
             Log.w(TAG, "Couldn't find suitable provider for voice searching");
@@ -456,7 +431,7 @@ public class VoiceRecognitionHandler {
             return true;
         }
         // If we don't have permission and also can't ask, then there's no more work left other
-        // than telling the delegate to update the mic state.
+        // than telling the OmniboxStub to update the mic state.
         if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
             notifyVoiceAvailabilityImpacted();
             return false;
@@ -465,7 +440,7 @@ public class VoiceRecognitionHandler {
         PermissionCallback callback =
                 (permissions, grantResults) -> {
                     if (grantResults.length != 1) {
-                        mDelegate.notifyVoiceRecognitionCanceled();
+                        notifyVoiceRecognitionCanceled();
                         return;
                     }
 
@@ -476,9 +451,9 @@ public class VoiceRecognitionHandler {
                     } else if (!windowAndroid.canRequestPermission(
                             Manifest.permission.RECORD_AUDIO)) {
                         notifyVoiceAvailabilityImpacted();
-                        mDelegate.notifyVoiceRecognitionCanceled();
+                        notifyVoiceRecognitionCanceled();
                     } else {
-                        mDelegate.notifyVoiceRecognitionCanceled();
+                        notifyVoiceRecognitionCanceled();
                     }
                 };
         windowAndroid.requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, callback);
@@ -492,7 +467,7 @@ public class VoiceRecognitionHandler {
         // Check if we need to request audio permissions. If we don't, then trigger a permissions
         // prompt will appear and startVoiceRecognition will be called again.
         if (!ensureAudioPermissionGranted(activity, windowAndroid, source)) {
-            mDelegate.notifyVoiceRecognitionCanceled();
+            notifyVoiceRecognitionCanceled();
             return false;
         }
 
@@ -537,16 +512,14 @@ public class VoiceRecognitionHandler {
 
     /** Returns whether voice search is enabled on the current tab. */
     public boolean isVoiceSearchEnabled() {
-        LocationBarDataProvider locationBarDataProvider = mDelegate.getLocationBarDataProvider();
-        if (locationBarDataProvider == null) return false;
-        if (locationBarDataProvider.isIncognito()) return false;
-        WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
-        if (windowAndroid == null) return false;
-        if (windowAndroid.getActivity().get() == null) return false;
+        if (mLocationBarDataProvider == null) return false;
+        if (mLocationBarDataProvider.isIncognito()) return false;
+        if (mWindowAndroid == null) return false;
+        if (mWindowAndroid.getActivity().get() == null) return false;
         if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(false)) return false;
 
         if (mIsVoiceSearchEnabledCached == null) {
-            mIsVoiceSearchEnabledCached = VoiceRecognitionUtil.isVoiceSearchEnabled(windowAndroid);
+            mIsVoiceSearchEnabledCached = VoiceRecognitionUtil.isVoiceSearchEnabled(mWindowAndroid);
 
             // isVoiceSearchEnabled depends on whether or not the user gives permissions to
             // record audio. This permission can be changed either when we display a UI prompt
@@ -580,6 +553,7 @@ public class VoiceRecognitionHandler {
         // happens with assistant experiments. See crbug.com/1116927 for details.
         if (mQueryStartTimeMs == null) return;
         mQueryStartTimeMs = null;
+        mCurrentOnCanceledCallback = null;
 
         recordVoiceSearchFinishEvent(source);
     }
