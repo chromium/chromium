@@ -31,8 +31,8 @@ class FakeConnectionFactory : public ConnectionFactory {
 
   std::unique_ptr<Connection> Create(
       base::RepeatingClosure on_disconnect) override {
-    auto connection =
-        std::make_unique<FakeConnection>(std::move(on_disconnect));
+    auto connection = std::make_unique<FakeConnection>(
+        std::move(on_disconnect), std::move(on_destruction_));
     last_connection_ = connection.get();
     return connection;
   }
@@ -40,6 +40,10 @@ class FakeConnectionFactory : public ConnectionFactory {
   FakeConnection* last_connection() {
     CHECK(last_connection_);
     return last_connection_;
+  }
+
+  void set_on_destruction(base::OnceClosure on_destruction) {
+    on_destruction_ = std::move(on_destruction);
   }
 
   void SimulateDisconnectAndDestroyConnection() {
@@ -55,6 +59,7 @@ class FakeConnectionFactory : public ConnectionFactory {
 
  private:
   raw_ptr<FakeConnection> last_connection_;
+  base::OnceClosure on_destruction_;
 };
 
 void ResolvePendingRequest(
@@ -216,6 +221,28 @@ TEST_F(ClientImplTest, SendGenerateContentRequestMalformedResponse) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kNoResponse);
+}
+
+// Test that the connection is destroyed asynchronously after a disconnect.
+TEST_F(ClientImplTest, AsyncDisconnect) {
+  base::test::TestFuture<void> destroyed_future;
+  factory_->set_on_destruction(destroyed_future.GetCallback());
+
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback(), /*options=*/{});
+
+  auto* connection = factory_->last_connection();
+  ASSERT_TRUE(connection);
+
+  // Simulate disconnect.
+  factory_->SimulateDisconnectAndDestroyConnection();
+
+  // The connection should not be destroyed immediately.
+  EXPECT_FALSE(destroyed_future.IsReady());
+
+  // Running pending tasks should destroy the connection.
+  EXPECT_TRUE(destroyed_future.Wait());
 }
 
 }  // namespace private_ai

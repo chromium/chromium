@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/error_code.h"
@@ -33,7 +34,8 @@ class FakeConnection : public Connection {
     OnRequestCallback callback;
   };
 
-  explicit FakeConnection(base::OnceClosure on_disconnect);
+  explicit FakeConnection(base::OnceClosure on_disconnect,
+                          base::OnceClosure on_destruction = {});
   ~FakeConnection() override;
 
   // Connection implementation:
@@ -49,6 +51,7 @@ class FakeConnection : public Connection {
 
  private:
   base::OnceClosure on_disconnect_;
+  base::OnceClosure on_destruction_;
   std::vector<PendingRequest> pending_requests_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "components/private_ai/client_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -180,7 +181,14 @@ void ClientImpl::OnReponseReceived(
 void ClientImpl::OnConnectionDisconnected() {
   logger_->LogInfo(FROM_HERE,
                    "Connection disconnected. Destroying connection.");
-  connection_.reset();
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<Connection> connection) {
+                       // Release the connection asynchronously to avoid
+                       // use-after-free inside this callback.
+                     },
+                     std::move(connection_)));
 }
 
 }  // namespace private_ai

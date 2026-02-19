@@ -22,10 +22,16 @@ FakeConnection::PendingRequest& FakeConnection::PendingRequest::operator=(
 
 FakeConnection::PendingRequest::~PendingRequest() = default;
 
-FakeConnection::FakeConnection(base::OnceClosure on_disconnect)
-    : on_disconnect_(std::move(on_disconnect)) {}
+FakeConnection::FakeConnection(base::OnceClosure on_disconnect,
+                               base::OnceClosure on_destruction)
+    : on_disconnect_(std::move(on_disconnect)),
+      on_destruction_(std::move(on_destruction)) {}
 
-FakeConnection::~FakeConnection() = default;
+FakeConnection::~FakeConnection() {
+  if (on_destruction_) {
+    std::move(on_destruction_).Run();
+  }
+}
 
 void FakeConnection::Send(proto::LegionRequest request,
                           base::TimeDelta timeout,
