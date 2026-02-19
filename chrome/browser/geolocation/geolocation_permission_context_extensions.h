@@ -59,9 +59,9 @@ class GeolocationPermissionContextExtensions {
       base::OnceCallback<void(content::PermissionResult)>* callback);
 
  private:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   raw_ptr<Profile> profile_;
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 };
 
 #endif  // CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_EXTENSIONS_H_
