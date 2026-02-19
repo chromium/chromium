@@ -675,8 +675,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         contextualTasksApp.isShownInTab_ = false;
         contextualTasksApp.isZeroState_ = true;
 
-        assertFalse(
-            contextualTasksApp.getEnableNativeZeroStateSuggestionsForTesting());
+        contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(false);
 
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
@@ -742,8 +741,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         contextualTasksApp.isShownInTab_ = true;
         contextualTasksApp.isZeroState_ = true;
 
-        assertFalse(
-            contextualTasksApp.getEnableNativeZeroStateSuggestionsForTesting());
+        contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(false);
 
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;

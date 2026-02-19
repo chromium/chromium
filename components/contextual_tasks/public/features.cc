@@ -36,7 +36,7 @@ BASE_FEATURE(kContextualTasksContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables suggestions for contextual tasks.
 BASE_FEATURE(kContextualTasksSuggestionsEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables tab auto-chip for contextual tasks.
 BASE_FEATURE(kContextualTasksTabAutoSuggestionChipEnabled,
@@ -141,7 +141,7 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 
 // The user agent suffix to use for requests from the contextual tasks UI.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/1.0"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/1.1"};
 
 const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
     &kContextualTasks,
@@ -209,7 +209,7 @@ const base::FeatureParam<bool> kEnableContextualTasksSmartCompose(
 const base::FeatureParam<bool> kContextualTasksEnableNativeZeroStateSuggestions(
     &kContextualTasks,
     "ContextualTasksEnableNativeZeroStateSuggestions",
-    false);
+    true);
 
 const base::FeatureParam<bool>
     kContextualTasksForceBasicModeIfOpeningThreadHistory(
