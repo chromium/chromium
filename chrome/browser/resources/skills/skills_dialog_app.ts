@@ -298,8 +298,9 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   /** Submits skill and closes the dialog. */
   protected submitSkill_(): void {
+    let skillSource: SkillSource =
+        this.skill_.source || SkillSource.kUserCreated;
     // Remixing a first party skill, set the parent and clear the ID.
-    let skillSource = SkillSource.kUserCreated;
     if (this.skill_.source === SkillSource.kFirstParty) {
       const sourceSkillId = this.skill_.id;
       this.skill_ = {...this.skill_, id: '', sourceSkillId: sourceSkillId};
