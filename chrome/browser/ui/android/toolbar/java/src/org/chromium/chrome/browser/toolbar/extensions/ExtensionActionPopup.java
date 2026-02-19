@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.PopupWindow.OnDismissListener;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -57,6 +59,9 @@ class ExtensionActionPopup implements Destroyable {
     /** The PopupWindow that is displayed on the screen, anchored to a view. */
     private final AnchoredPopupWindow mPopupWindow;
 
+    /** The content view of the popup. */
+    private final ContentView mContentView;
+
     /**
      * Constructs an ExtensionActionPopup.
      *
@@ -81,12 +86,12 @@ class ExtensionActionPopup implements Destroyable {
 
         WebContents webContents = contents.getWebContents();
 
-        ContentView contentView = ContentView.createContentView(context, webContents);
+        mContentView = ContentView.createContentView(context, webContents);
 
         webContents.setDelegates(
                 VersionInfo.getProductVersion(),
-                ViewAndroidDelegate.createBasicDelegate(contentView),
-                contentView,
+                ViewAndroidDelegate.createBasicDelegate(mContentView),
+                mContentView,
                 windowAndroid,
                 WebContents.createDefaultInternalsHolder());
 
@@ -95,7 +100,7 @@ class ExtensionActionPopup implements Destroyable {
                         context,
                         new ThinWebViewConstraints(),
                         NullUtil.assumeNonNull(windowAndroid.getIntentRequestTracker()));
-        mThinWebView.attachWebContents(webContents, contentView, null);
+        mThinWebView.attachWebContents(webContents, mContentView, null);
 
         View decorView = ((Activity) anchorView.getContext()).getWindow().getDecorView();
         mPopupWindow =
@@ -149,6 +154,16 @@ class ExtensionActionPopup implements Destroyable {
     private class ContentsDelegate implements ExtensionActionPopupContents.Delegate {
         @Override
         public void resizeDueToAutoResize(int width, int height) {
+            if (Build.VERSION.SDK_INT >= 34) {
+                // Disable transition animations for the popup window. On Android, {@link
+                // onLoaded()} is called first, and then {@link resizeDueToAutoResize()} is called.
+                // A transition would result in a sliding animation from the original bounds to the
+                // updated bounds.
+                // TODO(crbug.com/478100096): Figure out what to do for lower API levels.
+                ((WindowManager.LayoutParams) mContentView.getRootView().getLayoutParams())
+                        .setCanPlayMoveAnimation(false);
+            }
+
             mPopupWindow.setDesiredContentSize(
                     ViewUtils.dpToPx(mContext, width), ViewUtils.dpToPx(mContext, height));
         }
