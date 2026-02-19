@@ -106,6 +106,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   virtual void ComputeCheckerboardedNeedsRecord(
       AppendQuadsData* append_quads_data) = 0;
 
+  // Called just before starting the loop appending quads to allow subclasses to
+  // do any desired setup.
+  virtual void WillAppendQuads() {}
+
   // Called when AppendQuads() goes through a flow for which behavior is
   // subclass-specific (i.e., not defined in TileBasedLayerImpl::AppendQuads()
   // itself). `quad_offset` is the offset by which appended quads should be
@@ -295,6 +299,8 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   ClearLastAppendQuadsScales();
 
   ComputeCheckerboardedNeedsRecord(append_quads_data);
+
+  WillAppendQuads();
 
   int missing_tile_count = AppendQuadsSpecialization(
       context, render_pass, append_quads_data, shared_quad_state,

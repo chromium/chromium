@@ -396,6 +396,7 @@ class CC_EXPORT PictureLayerImpl
 
  private:
   // TileBasedLayerImpl:
+  void WillAppendQuads() override;
   int AppendQuadsSpecialization(const AppendQuadsContext& context,
                                 viz::CompositorRenderPass* render_pass,
                                 AppendQuadsData* append_quads_data,
