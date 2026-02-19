@@ -387,13 +387,16 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // data. This method finds the first element which has most recent data.
   ElementHolder* GetElementWithLatestContent();
 
-  // Gets or allocates a backing for a given |stream|.
-  // If a backing with a given |stream| is present, it will either return the
+  // Gets or allocates a backing for a given `stream` and `params`.
+  // It finds a backing that supports the given `stream` and is compatible
+  // with the context information in `params` by calling `SupportsAccess()`.
+  // If a compatible backing is present, it will either return the
   // backing with the latest content OR will return any supported backing (the
   // first one it finds).
   // If no backing is found, then it will allocate an appropriate backing which
-  // can support the |stream|.
-  SharedImageBacking* GetOrAllocateBacking(SharedImageAccessStream stream);
+  // can support the `stream`.
+  SharedImageBacking* GetOrAllocateBacking(SharedImageAccessStream stream,
+                                           const AccessParams& params);
 
   // Returns the gpu backing from the list of |element_| which has a shm and a
   // gpu backing.

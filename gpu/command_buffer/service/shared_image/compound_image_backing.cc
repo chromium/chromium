@@ -1252,7 +1252,11 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawn);
+  AccessParams access_params;
+  access_params.wgpu_device = device;
+  access_params.context_state = context_state;
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kDawn, access_params);
   if (!backing)
     return nullptr;
 
@@ -1272,7 +1276,11 @@ CompoundImageBacking::ProduceDawnBuffer(
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawnBuffer);
+  AccessParams access_params;
+  access_params.wgpu_device = device;
+  access_params.context_state = context_state;
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kDawnBuffer, access_params);
   if (!backing) {
     return nullptr;
   }
@@ -1290,7 +1298,13 @@ CompoundImageBacking::ProduceDawnBuffer(
 std::unique_ptr<GLTextureImageRepresentation>
 CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL);
+  // For GLTextureImageRepresentation, the SharedImageAccessStream::kGL is
+  // specific enough for backing selection. While AccessParams could be extended
+  // in the future to include GL context information for stricter correctness
+  // checks (e.g., ensuring a backing created on one GL context isn't used on
+  // another, unless it's an EglImageBacking), it is not currently needed.
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kGL, AccessParams());
   if (!backing)
     return nullptr;
 
@@ -1305,7 +1319,12 @@ CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                   MemoryTypeTracker* tracker) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL);
+  // For GLTexturePassthroughImageRepresentation, the
+  // SharedImageAccessStream::kGL is specific enough for backing selection.
+  // While AccessParams could be extended in the future to include GL context
+  // information for stricter correctness checks, it is not currently needed.
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kGL, AccessParams());
   if (!backing)
     return nullptr;
 
@@ -1323,7 +1342,10 @@ CompoundImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia);
+  AccessParams access_params;
+  access_params.context_state = context_state;
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kSkia, access_params);
   if (!backing)
     return nullptr;
 
@@ -1341,7 +1363,10 @@ CompoundImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia);
+  AccessParams access_params;
+  access_params.context_state = context_state;
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kSkia, access_params);
   if (!backing) {
     return nullptr;
   }
@@ -1358,7 +1383,10 @@ CompoundImageBacking::ProduceSkiaGraphite(
 std::unique_ptr<OverlayImageRepresentation>
 CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kOverlay);
+  // For OverlayImageRepresentation, no specific context information is
+  // currently required for backing selection, so AccessParams is empty.
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kOverlay, AccessParams());
   if (!backing)
     return nullptr;
 
@@ -1373,7 +1401,10 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
 std::unique_ptr<WebNNTensorRepresentation>
 CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kWebNNTensor);
+  // For WebNNTensorRepresentation, no specific context information is
+  // currently required for backing selection, so AccessParams is empty.
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kWebNNTensor,
+                                       AccessParams());
   if (!backing) {
     return nullptr;
   }
@@ -1390,7 +1421,10 @@ CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
 std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kMemory);
+  // For MemoryImageRepresentation, no specific context information is
+  // currently required for backing selection, so AccessParams is empty.
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kMemory, AccessParams());
   if (!backing) {
     return nullptr;
   }
@@ -1408,7 +1442,8 @@ std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     VideoDevice device) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL);
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kGL, AccessParams());
   if (!backing) {
     return nullptr;
   }
@@ -1429,7 +1464,9 @@ std::unique_ptr<VulkanImageRepresentation> CompoundImageBacking::ProduceVulkan(
     gpu::VulkanDeviceQueue* vulkan_device_queue,
     gpu::VulkanImplementation& vulkan_impl,
     bool needs_detiling) {
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kVulkan);
+  // For VulkanImageRepresentation, AccessParams is not needed as of now.
+  auto* backing =
+      GetOrAllocateBacking(SharedImageAccessStream::kVulkan, AccessParams());
   if (!backing) {
     return nullptr;
   }
@@ -1527,7 +1564,8 @@ CompoundImageBacking::GetElementWithLatestContent() {
 }
 
 SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
-    SharedImageAccessStream stream) {
+    SharedImageAccessStream stream,
+    const AccessParams& params) {
   ElementHolder* best_match = nullptr;
   ElementHolder* any_match = nullptr;
 
@@ -1536,7 +1574,8 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
   // optimize this code by using better algorithm or more suitable data
   // structure later if needed.
   for (auto& element : elements_) {
-    if (element.access_streams.Has(stream) && element.GetBacking()) {
+    if (element.access_streams.Has(stream) && element.GetBacking() &&
+        element.GetBacking()->SupportsAccess(stream, params)) {
       if (element.content_id_ == latest_content_id_) {
         best_match = &element;
         break;
