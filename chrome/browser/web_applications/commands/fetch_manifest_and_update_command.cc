@@ -190,6 +190,7 @@ void FetchManifestAndUpdateCommand::OnUpdateJobCompleted(
       command_result = CommandResult::kSuccess;
       break;
     case ManifestUpdateJobResult::kSilentlyUpdated:
+    case ManifestUpdateJobResult::kSilentlyUpdatedDueToSmallIconComparison:
       result = FetchManifestAndUpdateResult::kSuccess;
       command_result = CommandResult::kSuccess;
       break;

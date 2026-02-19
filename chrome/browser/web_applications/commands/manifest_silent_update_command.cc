@@ -292,6 +292,10 @@ void ManifestSilentUpdateCommand::OnUpdateJobCompleted(
     case ManifestUpdateJobResult::kUserNavigated:
       check_result = ManifestSilentUpdateCheckResult::kUserNavigated;
       break;
+    case ManifestUpdateJobResult::kSilentlyUpdatedDueToSmallIconComparison:
+      check_result = ManifestSilentUpdateCheckResult::
+          kAppSilentlyUpdatedDueToSmallIconComparison;
+      break;
   }
 
   CompleteCommandAndSelfDestruct(FROM_HERE, check_result);
@@ -306,6 +310,8 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
   CommandResult command_result;
   switch (check_result) {
     case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
+    case ManifestSilentUpdateCheckResult::
+        kAppSilentlyUpdatedDueToSmallIconComparison:
     case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
       record_update = true;
       command_result = CommandResult::kSuccess;

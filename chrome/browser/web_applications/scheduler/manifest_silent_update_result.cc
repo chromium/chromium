@@ -21,6 +21,8 @@ bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
     case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
     case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
+    case ManifestSilentUpdateCheckResult::
+        kAppSilentlyUpdatedDueToSmallIconComparison:
       return true;
     case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
     case ManifestSilentUpdateCheckResult::kSystemShutdown:
@@ -98,6 +100,9 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kAppHasSecurityUpdateDueToThrottle";
     case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
       return os << "kAppNotAllowedToUpdate";
+    case ManifestSilentUpdateCheckResult::
+        kAppSilentlyUpdatedDueToSmallIconComparison:
+      return os << "kAppSilentlyUpdatedDueToSmallIconComparison";
   }
 }
 

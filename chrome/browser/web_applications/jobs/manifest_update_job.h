@@ -115,6 +115,7 @@ class ManifestUpdateJob {
   void FinalizeUpdateIfSilentChangesExist();
   void UpdateFinalizedWritePendingInfo(
       std::optional<proto::PendingUpdateInfo> pending_update_info,
+      bool silent_icon_update_happened,
       const webapps::AppId& app_id,
       webapps::InstallResultCode code);
   void WritePendingUpdateInfoThenComplete(

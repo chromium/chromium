@@ -416,6 +416,8 @@ void ManifestUpdateManager::OnManifestSilentUpdateComplete(
     case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
     case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
     case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
+    case ManifestSilentUpdateCheckResult::
+        kAppSilentlyUpdatedDueToSmallIconComparison:
       any_update_occurred = true;
       break;
   }

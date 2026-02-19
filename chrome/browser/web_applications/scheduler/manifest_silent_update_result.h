@@ -32,7 +32,8 @@ enum class ManifestSilentUpdateCheckResult {
   kManifestToWebAppInstallInfoError = 13,
   kAppHasSecurityUpdateDueToThrottle = 14,
   kAppNotAllowedToUpdate = 15,
-  kMaxValue = kAppNotAllowedToUpdate,
+  kAppSilentlyUpdatedDueToSmallIconComparison = 16,
+  kMaxValue = kAppSilentlyUpdatedDueToSmallIconComparison,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppManifestSilentUpdateCheckResult)
 

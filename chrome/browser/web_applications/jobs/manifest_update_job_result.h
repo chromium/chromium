@@ -32,6 +32,7 @@ enum class ManifestUpdateJobResult {
   kAppNotAllowedToUpdate,
   kWebContentsDestroyed,
   kUserNavigated,
+  kSilentlyUpdatedDueToSmallIconComparison,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateJobResult result);

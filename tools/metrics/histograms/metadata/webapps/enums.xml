@@ -605,6 +605,7 @@ chromium-metrics-reviews@google.com.
   <int value="15"
       label="App not allowed to update because it opened in a browser tab, or
              it is not installed."/>
+  <int value="16" label="App silently updated, icon differences were minimal"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/manifest_silent_update_result.h:ManifestSilentUpdateCheckResult) -->

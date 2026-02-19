@@ -232,6 +232,7 @@ void InstallMigrateToAppCommand::OnUpdateJobFinished(
         kPendingUpdateRecorded_AppHasSecurityUpdateDueToThrottle:
     case ManifestUpdateJobResult::
         kPendingUpdateRecorded_AppHasNonSecurityAndSecurityChanges:
+    case ManifestUpdateJobResult::kSilentlyUpdatedDueToSmallIconComparison:
       command_result = InstallMigrateToAppResult::kSuccessAlreadyInstalled;
       break;
     case ManifestUpdateJobResult::kIconDownloadFailed:

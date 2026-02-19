@@ -57,6 +57,9 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateJobResult result) {
     case ManifestUpdateJobResult::kUserNavigated:
       os << "kUserNavigated";
       break;
+    case ManifestUpdateJobResult::kSilentlyUpdatedDueToSmallIconComparison:
+      os << "kSilentlyUpdatedDueToSmallIconComparison";
+      break;
   }
   return os;
 }
