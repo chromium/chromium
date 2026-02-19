@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "ui/aura/window_observer.h"
@@ -22,6 +23,7 @@ namespace ash {
 
 class DeskMiniView;
 class DeskTemplate;
+enum class DeskTemplateType;
 class SavedDeskGridView;
 class SavedDeskItemView;
 class SavedDeskLibraryEventHandler;
@@ -111,11 +113,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // Pointers to the grids with saved desks of specific types. These will be set
-  // depending on which features are enabled.
-  raw_ptr<SavedDeskGridView> desk_template_grid_view_ = nullptr;
-  raw_ptr<SavedDeskGridView> save_and_recall_grid_view_ = nullptr;
-  raw_ptr<SavedDeskGridView> coral_grid_view_ = nullptr;
+  // Maps the desk template type to the corresponding grid view. These will be
+  // set depending on which features are enabled.
+  base::flat_map<DeskTemplateType,
+                 raw_ptr<SavedDeskGridView, VectorExperimental>>
+      grid_views_map_;
 
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.

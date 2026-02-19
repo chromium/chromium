@@ -67,7 +67,9 @@ class SavedDeskLibraryViewTestApi {
   ~SavedDeskLibraryViewTestApi() = default;
 
   const SavedDeskGridView* coral_grid_view() const {
-    return library_view_->coral_grid_view_;
+    auto it = library_view_->grid_views_map_.find(DeskTemplateType::kCoral);
+    return it != library_view_->grid_views_map_.end() ? it->second.get()
+                                                      : nullptr;
   }
 
   const views::ScrollView* scroll_view() const {
