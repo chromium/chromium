@@ -4228,6 +4228,7 @@
 <translation id="7714404809393719981">相紙 (半光面)</translation>
 <translation id="7714424966701020172">已選取「填入全名」選項</translation>
 <translation id="7714464543167945231">憑證</translation>
+<translation id="7714943438925794410">系統會將結帳頁面的內容提供給 Google，以便提供這些選項。如要隱藏自動填入功能中的「先買後付」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="7716147886133743102">依據管理員的設定封鎖</translation>
 <translation id="7716375162095500223">尚未上傳或已略過</translation>
 <translation id="7716424297397655342">無法從快取載入這個網站</translation>
@@ -4310,6 +4311,7 @@
 <translation id="7862306158978555061">顯示私密資訊</translation>
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7865482168955081228">「先買後付」錯誤畫面已關閉。</translation>
+<translation id="7870207318911766769">系統會將結帳頁面的內容提供給 Google，以便提供這些選項。</translation>
 <translation id="7870281855125116701">已找到折扣</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
 <translation id="787226752901403048">登入 Chrome 即可分享及加入分頁群組，並與他人共同開發構想</translation>

@@ -6709,7 +6709,6 @@
 <translation id="5523532775593636291">Додані вами сайти завжди залишатимуться активними й пам’ять для них не звільнятиметься</translation>
 <translation id="5523558474028191231">Назва може складатися з літер, цифр і спеціальних символів, але не більше ніж <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526745900034778153">Увійдіть знову, щоб відновити синхронізацію</translation>
-<translation id="5527211644528700597">Використовувати методи виявлення загроз на пристрої</translation>
 <translation id="5527474464531963247">Можна також вибрати іншу мережу.</translation>
 <translation id="5527597176701279474">Додаток <ph name="APP_NAME" /> встановлюється</translation>
 <translation id="5527822190489075064">Оптимізоване заряджання</translation>
@@ -6905,7 +6904,6 @@
 <translation id="5663459693447872156">Автоматично переключитися на половинну ширину</translation>
 <translation id="5663653125349867535">Список читання</translation>
 <translation id="5663918299073387939">Сайти зазвичай просять надати дозвіл керувати пристроями MIDI й перепрограмовувати їх, щоб створювати й редагувати музику або оновлювати мікропрограму пристрою</translation>
-<translation id="5666116074010586111">Надсилати URL-адресу й контент сторінки в Google, щоб швидше виявляти загрози</translation>
 <translation id="5666911576871845853">&amp;Додати новий профіль</translation>
 <translation id="5667293444945855280">Шкідливі програми</translation>
 <translation id="5667546120811588575">Налаштування Google Play…</translation>
@@ -8102,7 +8100,6 @@
 <translation id="6508261954199872201">Додаток: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Перезапустіть Chromebook і повторіть спробу</translation>
 <translation id="6511827214781912955">Радимо видалити файл "<ph name="FILENAME" />", щоб інші користувачі цього пристрою не бачили ваші паролі</translation>
-<translation id="6512364354776355686">Попереджати про всі незахищені з’єднання</translation>
 <translation id="6512759338201777379">Створене зображення <ph name="INDEX" /> об’єкта "<ph name="SUBJECT" />". Настрій: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome використовуватиме мобільне передавання даних, якщо ви не підключені до іншої мережі.</translation>
 <translation id="6514010653036109809">Доступний пристрій:</translation>
@@ -10056,7 +10053,6 @@
 <translation id="7830833461614351956">Скопіювати файли (<ph name="NUM_OF_FILES" />) у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити їх?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Тут відображатимуться збережені спеціальні слова</translation>
-<translation id="7833725807105678871">Надавати пріоритет швидкості завантаження сайту, а не розширеним функціям безпеки</translation>
 <translation id="7834832693620032149">Щоб надати доступ до аудіо, натомість поділіться вкладкою або вікном</translation>
 <translation id="7836577093182643605">Список заблокованих тем, до яких ви не хочете надавати сайтам доступ</translation>
 <translation id="7836850009646241041">Спробуйте торкнутися ключа безпеки ще раз</translation>
@@ -11550,7 +11546,6 @@
 <translation id="8821045908425223359">Автоматично налаштовувати ІР-адресу</translation>
 <translation id="8821268776955756404">Додаток <ph name="APP_NAME" /> установлено.</translation>
 <translation id="882204272221080310">Оновити мікропрограму для додаткового захисту</translation>
-<translation id="8822690627597552656">Уповільнювати роботу деяких незнайомих сайтів, щоб блокувати поширені атаки</translation>
 <translation id="8823514049557262177">Копіювати те&amp;кст посилання</translation>
 <translation id="8823704566850948458">Запропонувати пароль…</translation>
 <translation id="8823963789776061136">Або виберіть файл PPD для принтера. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>

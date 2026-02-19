@@ -1999,6 +1999,7 @@
 <translation id="2332742915001411729">重置为默认设置</translation>
 <translation id="2333166365943957309">界面层次结构</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
+<translation id="2334384018887664164">您可以在内容设置中将信任的网站列入许可名单</translation>
 <translation id="233471714539944337">敏感内容</translation>
 <translation id="2335758110242123814">打开分组</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
@@ -2094,6 +2095,7 @@
 <translation id="240789602312469910">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
 <translation id="2408742686124047357">将 Google 智能镜头固定到工具栏，以便下次轻松使用</translation>
+<translation id="2408762424059547338">关闭 JavaScript 优化功能，更好地防范攻击</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2409268599591722235">开始使用</translation>
 <translation id="2409378541210421746">修改语言选择</translation>
@@ -2369,6 +2371,7 @@
 <translation id="2581992808349413349">使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的代管式服务提供商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（平台：<ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">任何智能卡读卡器</translation>
+<translation id="2583949330716828639">管理网站例外</translation>
 <translation id="2584109212074498965">无法获取 Kerberos 票据。请重试或与贵单位的设备管理员联系。（错误代码：<ph name="ERROR_CODE" />）。</translation>
 <translation id="2584974473573720127">在 Chrome 中管理网站的麦克风权限</translation>
 <translation id="2586561813241011046">无法安装 <ph name="APP_NAME" />。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -5743,6 +5746,7 @@
 <translation id="4871322859485617074">PIN 码包含无效字符</translation>
 <translation id="4871370605780490696">添加书签</translation>
 <translation id="4871568871368204250">关闭同步功能</translation>
+<translation id="4871630917300912613">JavaScript 保护机制</translation>
 <translation id="4871719318659334896">关闭分组</translation>
 <translation id="4872192066608821120">若要导入密码，请选择一个 CSV 文件</translation>
 <translation id="4872212987539553601">设置设备端加密</translation>
@@ -6678,7 +6682,6 @@
 <translation id="5523532775593636291">您添加的网站将始终保持活跃状态，且系统不会释放它们占用的内存</translation>
 <translation id="5523558474028191231">名称可以使用字母、数字和特殊字符，并且不得超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
-<translation id="5527211644528700597">使用设备端方法检测威胁</translation>
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />，正在安装</translation>
 <translation id="5527822190489075064">优化充电</translation>
@@ -6874,7 +6877,6 @@
 <translation id="5663459693447872156">自动切换至半角</translation>
 <translation id="5663653125349867535">阅读清单(&amp;R)</translation>
 <translation id="5663918299073387939">网站通常会请求控制 MIDI 设备以及为其重新编程，以便创作音乐、编辑音乐或更新设备固件</translation>
-<translation id="5666116074010586111">将网址和网页内容发送给 Google，以便更快地检测威胁</translation>
 <translation id="5666911576871845853">添加新个人资料(&amp;A)</translation>
 <translation id="5667293444945855280">恶意软件</translation>
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
@@ -7113,6 +7115,7 @@
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
+<translation id="5840656138956959276">增强：严格</translation>
 <translation id="5840680448799937675">始终离线分享</translation>
 <translation id="5841270259333717135">配置以太网</translation>
 <translation id="5841338463993781099">要保存到账号吗？</translation>
@@ -7938,6 +7941,7 @@
 <translation id="6411135999030237579">按住即可自动重复输入该键对应的字符</translation>
 <translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
+<translation id="6415434255504060856">对所有网站都采用严格模式</translation>
 <translation id="6415757856498750027">输入“w”即可显示“ư”</translation>
 <translation id="6415816101512323589">开启本地数据恢复功能以保护您的数据？</translation>
 <translation id="6415900369006735853">通过手机连接到互联网</translation>
@@ -8069,7 +8073,6 @@
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">请重启 Chromebook，然后重试</translation>
 <translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
-<translation id="6512364354776355686">在您访问任何不安全的连接时发出警告</translation>
 <translation id="6512759338201777379">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，情感基调是<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
@@ -8333,6 +8336,7 @@
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686676261102452995">您今天打开过</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
+<translation id="6686878118106035853">自定义增强型保护会为所有网站关闭 JavaScript 优化功能</translation>
 <translation id="6687008241368170505">更改 Google 密码管理工具 PIN 码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">鼠标键</translation>
@@ -10017,7 +10021,6 @@
 <translation id="7830833461614351956">将 <ph name="NUM_OF_FILES" /> 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
-<translation id="7833725807105678871">优先考虑网站速度而非增强型安全功能</translation>
 <translation id="7834832693620032149">若要分享音频，请改为分享标签页或窗口</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
@@ -10814,6 +10817,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /> 项</translation>
 <translation id="8356409598322585307">您已注册此设备。无需再次注册。</translation>
 <translation id="8357388086258943206">安装 Linux 时出错</translation>
+<translation id="8357883857705092796">无法识别的网站</translation>
 <translation id="8358685469073206162">要恢复页面吗？</translation>
 <translation id="835927394551949760">询问 Google</translation>
 <translation id="835951711479681002">保存到您的 Google 账号中</translation>
@@ -11507,7 +11511,6 @@
 <translation id="8821045908425223359">自动配置 IP 地址</translation>
 <translation id="8821268776955756404">现在可以使用 <ph name="APP_NAME" /> 了。</translation>
 <translation id="882204272221080310">更新固件以提高安全性。</translation>
-<translation id="8822690627597552656">让陌生网站的加载速度变慢，以便抵御常见攻击</translation>
 <translation id="8823514049557262177">复制链接文字(&amp;X)</translation>
 <translation id="8823704566850948458">建议密码…</translation>
 <translation id="8823963789776061136">或者，选择打印机 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>

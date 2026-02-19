@@ -4598,19 +4598,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="4182348537826882258">Wenn die Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> konfiguriert ist, wird verhindert, dass Webseiten mit unzulässigen URLs geladen werden. Administratoren können eine Liste mit URL-Mustern angeben, die blockiert werden sollen. Ist die Richtlinie nicht konfiguriert, werden keine URLs im Browser blockiert. In <ph name="URL_ALLOWLIST_POLICY_NAME" /> können bis zu 1.000 Ausnahmen definiert werden. Wie ein URL-Muster formatiert wird, siehst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Hinweis: Diese Richtlinie gilt nicht für In-Page-JavaScript-URLs mit dynamisch geladenen Daten. Wenn du etwa „beispiel.de/abc“ blockierst, kann „beispiel.de“ diese URL trotzdem über „XMLHTTPRequest“ laden. Außerdem hindert diese Richtlinie Webseiten nicht daran, die in der Omnibox angezeigte URL über die JavaScript History API in eine blockierte URL zu ändern.
-
-Ab Version 73 von <ph name="PRODUCT_NAME" /> kannst du „javascript://*“-URLs blockieren. Das betrifft jedoch nur JavaScript, das in die Adressleiste eingegeben wird, oder beispielsweise Bookmarklets.
-
-Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im monitorlosen Modus unterstützt.
-
-Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ blockiert werden, kann dies zu unerwarteten Fehlern führen oder in einigen Fällen umgangen werden. Statt bestimmte interne URLs zu blockieren, solltest du nachsehen, ob es spezifischere Richtlinien gibt. Beispiel:
-
-– Anstatt „chrome://settings/certificates“ zu blockieren, verwende <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-– Anstatt „chrome-untrusted://crosh“ zu blockieren, verwende <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">"<ph name="FLASH_PLUGIN_NAME" />" als Standardeinstellung</translation>
 <translation id="4185868802416355029">Verwaltete Erweiterungen dürfen die Enterprise Hardware Platform API verwenden</translation>
 <translation id="4186244263855283575">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Wenn sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.

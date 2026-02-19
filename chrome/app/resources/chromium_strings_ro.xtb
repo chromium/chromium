@@ -102,7 +102,7 @@
 <translation id="2135919691573380097">Raportează acest site</translation>
 <translation id="2137162749895930932">Închide ecranul de traducere</translation>
 <translation id="215352261310130060">Chromium a blocat descărcarea, deoarece site-ul nu folosește o conexiune securizată și este posibil ca fișierul să fi fost modificat</translation>
-<translation id="2170098639895543546">Selectează orice element din pagină</translation>
+<translation id="2170098639895543546">Selectează orice din pagină</translation>
 <translation id="2174178932569897599">Personalizează Chromium</translation>
 <translation id="2174917724755363426">Instalarea nu este finalizată. Sigur anulezi?</translation>
 <translation id="2185166961232948079">Chromium – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Setări de sistem</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chromium din Setări de sistem.</translation>
+<translation id="3588112919289558122">Protecția îmbunătățită dezactivează optimizarea JavaScript pentru site-urile pe care Chromium nu le recunoaște</translation>
 <translation id="3597003331831379823">Nu s-a putut rula configurarea cu privilegii de nivel superior. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Conectează-te la Chromium</translation>
 <translation id="3639635944603682591">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>

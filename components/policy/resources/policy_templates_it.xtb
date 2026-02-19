@@ -4673,19 +4673,6 @@ Se la policy non viene configurata, il relativo comportamento viene determinato 
           Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
 
           Se questa policy non viene impostata, inizialmente l'evidenziazione del cursore di testo è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
-<translation id="4182348537826882258">Se la policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> viene configurata, le pagine web con URL vietati non vengono caricate. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Se la policy non viene configurata, non viene bloccato nessun URL nel browser. Nella policy <ph name="URL_ALLOWLIST_POLICY_NAME" /> è possibile definire fino a 1000 eccezioni. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Nota: questa policy non si applica agli URL JavaScript in-page con dati caricati dinamicamente. Se hai bloccato example.com/abc, example.com potrebbe comunque caricarlo utilizzando XMLHTTPRequest. Inoltre, questa policy non impedisce alle pagine web di aggiornare l'URL mostrato nella omnibox con uno bloccato usando l'API JavaScript History.
-
-A partire dalla versione 73 di <ph name="PRODUCT_NAME" />, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet.
-
-A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questa policy è supportata anche nella modalità headless.
-
-Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare errori imprevisti o essere aggirato in alcuni casi. Anziché bloccare determinati URL interni, controlla se sono disponibili policy più specifiche. Ad esempio:
-
-- Anziché bloccare chrome://settings/certificates, usa la policy <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- Anziché bloccare chrome-untrusted://crosh, usa la policy <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Impostazione predefinita per il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Consenti alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Consente di impostare una programmazione personalizzata per il riavvio dei dispositivi. Se viene impostata su True, il dispositivo verrà riavviato in base alla programmazione. La policy deve essere rimossa per annullare ulteriori riavvii programmati.

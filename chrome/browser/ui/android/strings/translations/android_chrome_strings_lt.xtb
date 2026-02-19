@@ -645,6 +645,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3775705724665058594">Išsiųsti į jūsų įrenginius</translation>
 <translation id="3777796259512476958">Būsite atjungti nuo daugelio svetainių</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{Vienas skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
+<translation id="3792938779249970121">Paskyros pasirinkimas</translation>
 <translation id="3795154175078851242">Kopijuoti vaizdą su nuoroda</translation>
 <translation id="3807999512799921804">„<ph name="TAB_TITLE" />“, pasirinktas prisegtas inkognito skirtukas su garsu</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
@@ -1269,6 +1270,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6340526405444716530">Suasmeninimas</translation>
 <translation id="6341580099087024258">Klausti, kur saugoti failus</translation>
 <translation id="6342069812937806050">Ką tik</translation>
+<translation id="634208815998129842">Užduočių tvarkytuvė</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Žymėti kaip skaitytą</translation>
 <translation id="6356893102071098867">Patikrinkite, ar pasirinkote tinkamą paskyrą</translation>
@@ -1485,6 +1487,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7117485132243600300">Tvarkykite stebimą turinį, siūlomas temas ir paieškas</translation>
 <translation id="7119984597597798764">Uždaryti „<ph name="INSTANCE_TITLE" />“</translation>
 <translation id="7121179479711575744">Prisijungti prie „Chrome“</translation>
+<translation id="7136694880210472378">Padaryti numatytuoju</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Peržiūrėti vienos svetainės leidimai}one{Peržiūrėti # svetainės leidimai}few{Peržiūrėti # svetainių leidimai}many{Peržiūrėti # svetainės leidimai}other{Peržiūrėti # svetainių leidimai}}</translation>
 <translation id="7138678301420049075">Kitas</translation>
 <translation id="7140829094791862589">Rūšiuoti neautomatiškai</translation>
@@ -1540,6 +1543,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7314734791127433392">Nepavyko patikrinti slaptažodžių</translation>
 <translation id="7324354302972299151">Užklausos „Do Not Track“ siuntimas</translation>
 <translation id="7333041109965360609">Atšaukta pranešimų prenumerata</translation>
+<translation id="7335766481146072567">Paspauskite „Tęsti“</translation>
 <translation id="7336259382292148213">Pranešimai atrodo gerai</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7340958967809483333">„Discover“ parinktys</translation>
@@ -1852,6 +1856,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8559961053328923750">„Chrome“ riboja bendrą duomenų, kuriuos svetainės gali bendrinti naršyklėje, kad būtų galima įvertinti skelbimų našumą, kiekį</translation>
 <translation id="8559990750235505898">Siūlyti versti puslapius į kitas kalbas</translation>
 <translation id="8560602726703398413">Suraskite savo skaitymo sąrašą skiltyje „Žymės“</translation>
+<translation id="85618473456579127">Viršuje dešinėje palieskite „Profilis“</translation>
 <translation id="8565021320663436446">Pašalinti <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Negalima saugiai atsisiųsti failo</translation>
 <translation id="8571213806525832805">Pastarosios 4 savaitės</translation>

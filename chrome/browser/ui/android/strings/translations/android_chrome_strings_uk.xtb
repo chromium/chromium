@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
 <translation id="3777796259512476958">Ви автоматично вийдете з облікових записів на більшості сайтів</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
+<translation id="3792938779249970121">Виберіть обліковий запис</translation>
 <translation id="3795154175078851242">Копіювати зображення з посиланням</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" /> (вибрана анонімна вкладка, яку закріплено й на якій увімкнено звук)</translation>
 <translation id="3810973564298564668">Керувати</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">Персоналізація</translation>
 <translation id="6341580099087024258">Запитувати, де зберігати файли</translation>
 <translation id="6342069812937806050">Щойно</translation>
+<translation id="634208815998129842">Диспетчер завдань</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6356893102071098867">Переконайтеся, що ви вибрали правильний обліковий запис</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">Керуйте контентом, на який ви підписалися, а також рекомендованими темами й пошуковими запитами</translation>
 <translation id="7119984597597798764">Закрити <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Увійти в Chrome</translation>
+<translation id="7136694880210472378">Установити за умовчанням</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Дозволи перевірено для 1 сайту}one{Дозволи перевірено для # сайту}few{Дозволи перевірено для # сайтів}many{Дозволи перевірено для # сайтів}other{Дозволи перевірено для # сайту}}</translation>
 <translation id="7138678301420049075">Інше</translation>
 <translation id="7140829094791862589">Сортувати вручну</translation>

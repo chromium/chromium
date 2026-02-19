@@ -4225,6 +4225,7 @@
 <translation id="7714404809393719981">相纸（半光面）</translation>
 <translation id="7714424966701020172">已选择“填充全名”选项</translation>
 <translation id="7714464543167945231">证书</translation>
+<translation id="7714943438925794410">系统会将结账页中的内容分享给 Google，以便提供这些选项。如要隐藏“先买后付”自动填充选项，请前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="7716147886133743102">已被管理员禁止</translation>
 <translation id="7716375162095500223">尚未上传，或者已忽略</translation>
 <translation id="7716424297397655342">无法从缓存中加载此网站</translation>
@@ -4307,6 +4308,7 @@
 <translation id="7862306158978555061">显示敏感信息</translation>
 <translation id="7865448901209910068">最快的速度</translation>
 <translation id="7865482168955081228">“先买后付”错误界面已关闭。</translation>
+<translation id="7870207318911766769">系统会将结账页中的内容分享给 Google，以便提供这些选项。</translation>
 <translation id="7870281855125116701">发现了折扣</translation>
 <translation id="7871445724586827387">更改您的 Google 账号密码</translation>
 <translation id="787226752901403048">登录 Chrome 即可分享和加入标签页分组，并与他人共同构思创意</translation>

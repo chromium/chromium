@@ -1404,7 +1404,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6140948187512243695">Afficher les détails</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode navigation privée</translation>
 <translation id="6146563240635539929">Vidéos</translation>
-<translation id="6147279996212084542">Expliquer</translation>
 <translation id="6151006591088192882">Déverrouiller les onglets de navigation privée avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactifs</translation>
 <translation id="6152406514676263192">Activez la synchronisation pour bénéficier des contenus les plus pertinents en fonction de vos centres d'intérêt.</translation>
@@ -2060,6 +2059,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8439758443371991593">Masquer "Ajouter à la liste de lecture"</translation>
 <translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
+<translation id="8473815223723723001">Modifier l'image avec Gemini</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">আপনার উইন্ডো শেয়ার করতে, সিস্টেম প্রেফারেন্স থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন।  আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="3561853857681580870">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন।</translation>
+<translation id="3588112919289558122">Chromium শনাক্ত করতে পারে না এমন সব সাইটের জন্য 'উন্নত সুরক্ষা' জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করে দেয়</translation>
 <translation id="3597003331831379823">বিশেষ সুবিধার অ্যাক্সেস সহ সেট-আপ রান করা যায়নি। <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium-এ সাইন-ইন করুন</translation>
 <translation id="3639635944603682591">এই ডিভাইস থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>

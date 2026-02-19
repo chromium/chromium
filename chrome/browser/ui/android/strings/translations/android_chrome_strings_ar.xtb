@@ -646,6 +646,7 @@
 <translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
 <translation id="3777796259512476958">يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{علامة تبويب واحدة}zero{# علامة تبويب}two{علامتا تبويب}few{# علامات تبويب}many{# علامة تبويب}other{# علامة تبويب}}</translation>
+<translation id="3792938779249970121">اختيار حساب</translation>
 <translation id="3795154175078851242">نسخ الصورة مع الرابط</translation>
 <translation id="3807999512799921804">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تشغِّل صوتًا وتم اختيارها في "وضع التصفّح المتخفي"</translation>
 <translation id="3810973564298564668">إدارة</translation>
@@ -1270,6 +1271,7 @@
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6341580099087024258">السؤال عن مكان حفظ الملفات</translation>
 <translation id="6342069812937806050">الآن</translation>
+<translation id="634208815998129842">إدارة المهام</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 وعنوان إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />)}zero{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان إضافي}two{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 وعنوانان إضافيان (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />)}few{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عناوين إضافية}many{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوانًا إضافيًا}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان إضافي}}</translation>
 <translation id="6345878117466430440">وضع علامة "مقروءة"</translation>
 <translation id="6356893102071098867">يُرجى التأكّد من اختيار الحساب الصحيح.</translation>
@@ -1486,6 +1488,8 @@
 <translation id="7117485132243600300">إدارة المحتوى الذي تتم متابعته والمواضيع وعمليات البحث المقترَحة</translation>
 <translation id="7119984597597798764">إغلاق "<ph name="INSTANCE_TITLE" />"</translation>
 <translation id="7121179479711575744">‏تسجيل الدخول إلى Chrome</translation>
+<translation id="7136694880210472378">الضبط كمحرك البحث التلقائي
+</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{تمت مراجعة أذونات موقع إلكتروني واحد}zero{تمت مراجعة أذونات # موقع إلكتروني}two{تمت مراجعة أذونات موقعَين إلكترونيَين}few{تمت مراجعة أذونات # مواقع إلكترونية}many{تمت مراجعة أذونات # موقعًا إلكترونيًا}other{تمت مراجعة أذونات # موقع إلكتروني}}</translation>
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7140829094791862589">ترتيب يدوي</translation>

@@ -2006,6 +2006,7 @@
 <translation id="2332742915001411729">รีเซ็ตเป็นค่าเริ่มต้น</translation>
 <translation id="2333166365943957309">ลำดับชั้น UI</translation>
 <translation id="233375395665273385">ลบและออกจากระบบ</translation>
+<translation id="2334384018887664164">คุณเพิ่มเว็บไซต์ที่คุณเชื่อถือในรายการที่อนุญาตได้ในส่วนการตั้งค่าเนื้อหา</translation>
 <translation id="233471714539944337">เนื้อหาที่ละเอียดอ่อน</translation>
 <translation id="2335758110242123814">เปิดกลุ่ม</translation>
 <translation id="2336228925368920074">บุ๊กมาร์กแท็บทั้งหมด...</translation>
@@ -2101,6 +2102,7 @@
 <translation id="240789602312469910">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุตัวตนบุตรหลานของคุณ และจะช่วยปรับปรุงความเสถียรของระบบและแอป และอื่นๆ ข้อมูลรวมบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android เจ้าของเป็นผู้บังคับใช้<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" />นี้ เจ้าของอาจเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานสำหรับอุปกรณ์นี้ไปยัง Google หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเมตริก<ph name="BEGIN_LINK2_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">กำลังบันทึกบัตร</translation>
 <translation id="2408742686124047357">ปักหมุด Google Lens ไว้ที่แถบเครื่องมือเพื่อให้เข้าถึงได้ง่ายในครั้งถัดไป</translation>
+<translation id="2408762424059547338">ปกป้องคุณจากการโจมตีได้ดียิ่งขึ้นโดยปิดการเพิ่มประสิทธิภาพ JavaScript</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="2409268599591722235">เริ่มเลย</translation>
 <translation id="2409378541210421746">แก้ไขการเลือกภาษา</translation>
@@ -2377,6 +2379,7 @@
 <translation id="2581992808349413349">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน) การดำเนินการนี้ใช้ผู้ให้บริการที่มีการจัดการที่ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (แพลตฟอร์ม <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">เครื่องอ่านสมาร์ทการ์ดเครื่องใดก็ได้</translation>
+<translation id="2583949330716828639">จัดการการยกเว้นเว็บไซต์</translation>
 <translation id="2584109212074498965">ดึงข้อมูลตั๋ว Kerberos ไม่สำเร็จ ลองอีกครั้ง หรือติดต่อผู้ดูแลระบบอุปกรณ์ขององค์กร (รหัสข้อผิดพลาด <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">จัดการสิทธิ์เข้าถึงไมโครโฟนของเว็บไซต์ใน Chrome</translation>
 <translation id="2586561813241011046">ติดตั้ง <ph name="APP_NAME" /> ไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
@@ -5752,6 +5755,7 @@
 <translation id="4871322859485617074">PIN มีอักขระที่ไม่ถูกต้อง</translation>
 <translation id="4871370605780490696">เพิ่มบุ๊กมาร์ก</translation>
 <translation id="4871568871368204250">ปิดการซิงค์</translation>
+<translation id="4871630917300912613">กลไกป้องกันของ JavaScript</translation>
 <translation id="4871719318659334896">ปิดกลุ่ม</translation>
 <translation id="4872192066608821120">หากต้องการนำเข้ารหัสผ่าน ให้เลือกไฟล์ CSV</translation>
 <translation id="4872212987539553601">ตั้งค่าการเข้ารหัสในอุปกรณ์</translation>
@@ -6687,7 +6691,6 @@
 <translation id="5523532775593636291">เว็บไซต์ที่คุณเพิ่มจะทำงานอยู่ตลอดเวลาและระบบจะไม่เพิ่มพื้นที่ว่างในหน่วยความจำ</translation>
 <translation id="5523558474028191231">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้ โดยต้องมีความยาวไม่เกิน <ph name="MAX_CHARACTER_COUNT" /> อักขระ</translation>
 <translation id="5526745900034778153">ลงชื่อเข้าใช้อีกครั้งเพื่อซิงค์ต่อ</translation>
-<translation id="5527211644528700597">ใช้วิธีการในอุปกรณ์เพื่อตรวจหาภัยคุกคาม</translation>
 <translation id="5527474464531963247">คุณสามารถเลือกเครือข่ายอื่นได้ด้วย</translation>
 <translation id="5527597176701279474">กำลังติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="5527822190489075064">ชาร์จแบบปรับให้เหมาะสม</translation>
@@ -6883,7 +6886,6 @@
 <translation id="5663459693447872156">สลับไปเป็นแบบครึ่งความกว้างโดยอัตโนมัติ</translation>
 <translation id="5663653125349867535">เรื่องรออ่าน</translation>
 <translation id="5663918299073387939">โดยปกติแล้วเว็บไซต์จะขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่เพื่อสร้างเพลง แก้ไขเพลง หรืออัปเดตเฟิร์มแวร์อุปกรณ์</translation>
-<translation id="5666116074010586111">ส่ง URL และเนื้อหาในหน้าเว็บไปยัง Google เพื่อตรวจหาภัยคุกคามได้เร็วขึ้น</translation>
 <translation id="5666911576871845853">&amp;เพิ่มโปรไฟล์ใหม่</translation>
 <translation id="5667293444945855280">มัลแวร์</translation>
 <translation id="5667546120811588575">กำลังตั้งค่า Google Play...</translation>
@@ -7122,6 +7124,7 @@
 <translation id="583673505367439042">เว็บไซต์ขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="5836999627049108525">ภาษาต้นทาง</translation>
 <translation id="583756221537636748">เคส</translation>
+<translation id="5840656138956959276">ปรับปรุงแล้ว: เข้มงวด</translation>
 <translation id="5840680448799937675">ไฟล์จะแชร์แบบออฟไลน์เสมอ</translation>
 <translation id="5841270259333717135">กำหนดค่าอีเทอร์เน็ต</translation>
 <translation id="5841338463993781099">บันทึกในบัญชีไหม</translation>
@@ -7947,6 +7950,7 @@
 <translation id="6411135999030237579">กดค้างไว้เพื่อพิมพ์อักขระบนแป้นซ้ำโดยอัตโนมัติ</translation>
 <translation id="6414618057231176439">เลือกเวอร์ชันของ <ph name="VM_NAME" /> ที่จะติดตั้ง</translation>
 <translation id="641469293210305670">ติดตั้งอัปเดตและแอป</translation>
+<translation id="6415434255504060856">เข้มงวดสำหรับทุกเว็บไซต์</translation>
 <translation id="6415757856498750027">พิมพ์ "w" เพื่อใช้ "ư"</translation>
 <translation id="6415816101512323589">เปิดการกู้คืนข้อมูลในเครื่องเพื่อปกป้องข้อมูลของคุณไหม</translation>
 <translation id="6415900369006735853">เชื่อมต่ออินเทอร์เน็ตผ่านโทรศัพท์</translation>
@@ -8078,7 +8082,6 @@
 <translation id="6508261954199872201">แอปพลิเคชัน: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">รีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="6511827214781912955">พิจารณาลบไฟล์ <ph name="FILENAME" /> เพื่อให้ผู้อื่นที่ใช้อุปกรณ์นี้ไม่เห็นรหัสผ่านของคุณ</translation>
-<translation id="6512364354776355686">เตือนคุณเกี่ยวกับการเชื่อมต่อที่ไม่ปลอดภัยทั้งหมด</translation>
 <translation id="6512759338201777379">สร้างรูปภาพ <ph name="INDEX" /> ของ <ph name="SUBJECT" /> ในอารมณ์ <ph name="MOOD" /> แล้ว</translation>
 <translation id="6513247462497316522">Google Chrome จะใช้ข้อมูลมือถือหากคุณไม่ได้เชื่อมต่อกับเครือข่ายอื่น</translation>
 <translation id="6514010653036109809">อุปกรณ์ที่พร้อมใช้งาน:</translation>
@@ -8342,6 +8345,7 @@
 <translation id="6686665106869989887">แท็บถูกย้ายไปทางขวา</translation>
 <translation id="6686676261102452995">คุณเปิดวันนี้</translation>
 <translation id="6686817083349815241">บันทึกรหัสผ่าน</translation>
+<translation id="6686878118106035853">การปกป้องที่ดียิ่งขึ้นที่กำหนดเองจะปิดการเพิ่มประสิทธิภาพ JavaScript สำหรับทุกเว็บไซต์</translation>
 <translation id="6687008241368170505">เปลี่ยน PIN ของเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6687079240787935001">ซ่อน<ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">แป้นเมาส์</translation>
@@ -10025,7 +10029,6 @@
 <translation id="7830833461614351956">คัดลอก <ph name="NUM_OF_FILES" /> ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">คำที่กำหนดเองที่บันทึกไว้จะแสดงที่นี่</translation>
-<translation id="7833725807105678871">ให้ความสำคัญกับความเร็วเว็บไซต์มากกว่าฟีเจอร์ความปลอดภัยที่ดียิ่งขึ้น</translation>
 <translation id="7834832693620032149">หากต้องการแชร์เสียง ให้แชร์แท็บหรือหน้าต่างแทน</translation>
 <translation id="7836577093182643605">รายการหัวข้อที่คุณบล็อกและไม่ต้องการแชร์กับเว็บไซต์</translation>
 <translation id="7836850009646241041">ลองแตะคีย์ความปลอดภัยอีกครั้ง</translation>
@@ -10822,6 +10825,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">คุณลงทะเบียนอุปกรณ์นี้แล้ว ไม่จำเป็นต้องลงทะเบียนซ้ำ</translation>
 <translation id="8357388086258943206">เกิดข้อผิดพลาดขณะติดตั้ง Linux</translation>
+<translation id="8357883857705092796">เว็บไซต์ที่ไม่รู้จัก</translation>
 <translation id="8358685469073206162">ต้องการกู้คืนหน้าเว็บไหม</translation>
 <translation id="835927394551949760">ถาม Google</translation>
 <translation id="835951711479681002">บันทึกในบัญชี Google</translation>
@@ -11515,7 +11519,6 @@
 <translation id="8821045908425223359">กำหนดค่าที่อยู่ IP โดยอัตโนมัติ</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> พร้อมใช้งานแล้ว</translation>
 <translation id="882204272221080310">อัปเดตเฟิร์มแวร์เพื่อเพิ่มความปลอดภัย</translation>
-<translation id="8822690627597552656">ทำให้เว็บไซต์ที่ไม่คุ้นเคยบางเว็บไซต์ช้าลงเพื่อบล็อกการโจมตีทั่วไป</translation>
 <translation id="8823514049557262177">คัดลอก&amp;ข้อความของลิงก์</translation>
 <translation id="8823704566850948458">แนะนำรหัสผ่าน...</translation>
 <translation id="8823963789776061136">หรือเลือก PPD ของเครื่องพิมพ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>

@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">Αποστολή στις συσκευές σας</translation>
 <translation id="3777796259512476958">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 καρτέλα}other{# καρτέλες}}</translation>
+<translation id="3792938779249970121">Επιλογή λογαριασμού</translation>
 <translation id="3795154175078851242">Αντιγραφή εικόνας με σύνδεσμο</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα ανώνυμης περιήγησης που έχει ήχο</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">Εξατομίκευση</translation>
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
 <translation id="6342069812937806050">Μόλις τώρα</translation>
+<translation id="634208815998129842">Διαχείριση εργασιών</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6356893102071098867">Ελέγξτε ότι έχετε επιλέξει τον σωστό λογαριασμό</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">Διαχειριστείτε το περιεχόμενο που ακολουθείτε και τα προτεινόμενα θέματα και αναζητήσεις</translation>
 <translation id="7119984597597798764">Κλείσιμο <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Σύνδεση στο Chrome</translation>
+<translation id="7136694880210472378">Ορισμός ως προεπιλογής</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Ελέγχθηκαν οι άδειες για 1 ιστότοπο}other{Ελέγχθηκαν οι άδειες για # ιστοτόπους}}</translation>
 <translation id="7138678301420049075">Άλλο</translation>
 <translation id="7140829094791862589">Ταξ. με μη αυτόμ. σειρά</translation>

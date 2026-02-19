@@ -1404,7 +1404,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6140948187512243695">Részletek megjelenítése</translation>
 <translation id="6144589619057374135">${url} megnyitása inkognitó módban</translation>
 <translation id="6146563240635539929">Videók</translation>
-<translation id="6147279996212084542">Magyarázat</translation>
 <translation id="6151006591088192882">Inkognitó lapok zárolásának feloldása a következővel: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inaktív</translation>
 <translation id="6152406514676263192">Szinkronizáljon, ha az érdeklődési körei alapján leginkább lényeges tartalmakat szeretné látni.</translation>
@@ -2060,6 +2059,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8439758443371991593">A „Hozzáadás az Olvasólistához” művelet elrejtése</translation>
 <translation id="8443986842926457191">Az URL több mint 2048 karakterből áll</translation>
 <translation id="8449869326050867919">Jelszó megosztva</translation>
+<translation id="8473815223723723001">Kép szerkesztése a Geminivel</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="8474378002946546633">Értesítések engedélyezése</translation>
 <translation id="8477178913400731244">Adatok törlése</translation>

@@ -242,6 +242,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3522404737534491619">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Ajustes del sistema</translation>
 <translation id="3530103706039034513">Ya has iniciado sesión como <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chromium con tu perfil de <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Para compartir tu pantalla, permite la grabación de pantalla de Chromium en Ajustes del sistema.</translation>
+<translation id="3588112919289558122">La protección mejorada desactiva la optimización de JavaScript en sitios que Chromium no reconoce</translation>
 <translation id="3597003331831379823">No se ha podido ejecutar la configuración con privilegios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Iniciar sesión en Chromium</translation>
 <translation id="3639635944603682591">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar tus datos, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>

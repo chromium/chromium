@@ -2006,6 +2006,7 @@
 <translation id="2332742915001411729">रिसेट गरी डिफल्ट बनाउनुहोस्</translation>
 <translation id="2333166365943957309">UI को वरीयता क्रम</translation>
 <translation id="233375395665273385">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
+<translation id="2334384018887664164">तपाईं सामग्रीसम्बन्धी सेटिङमा गई आफूले भरोसा गर्ने साइटहरूलाई श्वेतसूचीमा हाल्न सक्नुहुन्छ</translation>
 <translation id="233471714539944337">संवेदनशील सामग्री</translation>
 <translation id="2335758110242123814">समूह खोल्नुहोस्</translation>
 <translation id="2336228925368920074">सबै ट्याबहरू लाई नुकमार्क गर्नुहोस्...</translation>
@@ -2101,6 +2102,7 @@
 <translation id="240789602312469910">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google मा पठाएर आफ्ना बच्चाको Android को सुविधाको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्। यस्तो डेटा तपाईंका बच्चाको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले सिस्टम तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। मालिक यस डिभाइसको निदान तथा प्रयोगसम्बन्धी डेटा Google मा पठाउने विकल्प छनौट गर्न सक्नुहुन्छ। तपाईंका बच्चाको खातामा "वेब तथा एपसम्बन्धी अतिरिक्त गतिविधि" सेटिङ अन गरिएको छ भने यो डेटा उनको Google खातामा सेभ गरिन सक्छ। <ph name="BEGIN_LINK2" />मेट्रिकका बारेमा थप जान्नुहोस्<ph name="BEGIN_LINK2_END" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">कार्ड सेभ गरिँदै छ</translation>
 <translation id="2408742686124047357">अर्को पटक Google लेन्स सजिलैसँग एक्सेस गर्न यसलाई आफ्नो टुलबारमा पिन गर्नुहोस्</translation>
+<translation id="2408762424059547338">यसले JavaScript अप्टिमाइजेसन अफ गरेर आक्रमणबाट तपाईंलाई अझ राम्रोसँग जोगाउँछ</translation>
 <translation id="2408955596600435184">आफ्नो PIN हाल्नुहोस्</translation>
 <translation id="2409268599591722235">जाऔँ</translation>
 <translation id="2409378541210421746">चयन गरेको भाषा बदल्नुहोस्</translation>
@@ -2377,6 +2379,7 @@
 <translation id="2581992808349413349">DNS (डोमेन नेम सिस्टम) मा कुनै साइटको IP एड्रेस खोज्न सुरक्षित कनेक्सन प्रयोग गर्नुहोस्। यसले <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> मा भएको व्यवस्थापन गरिएको सेवा प्रदायक प्रयोग गर्छ</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (मञ्च <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">सबै स्मार्ट कार्ड रिडर</translation>
+<translation id="2583949330716828639">साइटमा लागू हुने अपवादहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2584109212074498965">Kerberos को टिकट प्राप्त गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो सङ्गठनका यन्त्र व्यवस्थापकलाई सम्पर्क गर्नुहोस्। (त्रुटि कोड <ph name="ERROR_CODE" />)।</translation>
 <translation id="2584974473573720127">Chrome मा वेबसाइटलाई दिइएका माइक्रोफोन प्रयोग गर्ने अनुमति व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> इन्स्टल गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
@@ -5753,6 +5756,7 @@
 <translation id="4871322859485617074">PIN मा अमान्य वर्णहरू छन्</translation>
 <translation id="4871370605780490696">पृष्ठमञ्जूषा थप्नुहोस्</translation>
 <translation id="4871568871368204250">सिंक गर्ने सुविधा निष्क्रिय पार्नुहोस्</translation>
+<translation id="4871630917300912613">JavaScript गार्डरेल</translation>
 <translation id="4871719318659334896">समूह बन्द गर्नुहोस्</translation>
 <translation id="4872192066608821120">पासवर्डहरू इम्पोर्ट गर्न कुनै CSV फाइल चयन गर्नुहोस्</translation>
 <translation id="4872212987539553601">डिभाइसमै इन्क्रिप्ट गर्ने विधि सेटअप गर्नुहोस्</translation>
@@ -6689,7 +6693,6 @@
 <translation id="5523532775593636291">तपाईंले हाल्नुभएका साइटहरू सधैँ सक्रिय रहने छन् र ती साइटहरूबाट मेमोरी खाली गरिने छैन</translation>
 <translation id="5523558474028191231">नाममा अक्षर, सङ्ख्या तथा विशेष वर्णहरू प्रयोग गर्न मिल्छ र यसमा <ph name="MAX_CHARACTER_COUNT" /> वटा वा सोभन्दा कम वर्ण प्रयोग गरिनु पर्छ</translation>
 <translation id="5526745900034778153">सिंक प्रक्रिया जारी राख्न फेरि साइन इन गर्नुहोस्</translation>
-<translation id="5527211644528700597">खतराहरू पत्ता लगाउन डिभाइसमै भएका विधिहरू प्रयोग गर्छ</translation>
 <translation id="5527474464531963247">तपाईंले अर्को नेटवर्क पनि चयन गर्न सक्नुहुन्छ।</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, इन्स्टल गरिँदै छ</translation>
 <translation id="5527822190489075064">अप्टिमाइज गरिएको चार्जिङ</translation>
@@ -6887,7 +6890,6 @@
 <translation id="5663459693447872156">स्वचालित रूपमा अर्ध-चौडाइमा स्विच गर्नुहोस्</translation>
 <translation id="5663653125349867535">पछि पढ्न सेभ गरिएका वेबपेजको सूची</translation>
 <translation id="5663918299073387939">साइटहरूले सामान्यतया सङ्गीत सिर्जना गर्न, सङ्गीत सम्पादन गर्न वा डिभाइसको फर्मवेयर अपडेट गर्न MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति माग्छन्</translation>
-<translation id="5666116074010586111">खतराहरू अझ छिटो पत्ता लगाउन URL र पेजमा भएको सामग्री Google मा पठाउँछ</translation>
 <translation id="5666911576871845853">नयाँ प्रोफाइल हाल्नुहोस्</translation>
 <translation id="5667293444945855280">मालवेयर</translation>
 <translation id="5667546120811588575">Google Play सेटअप गरिँदै छ…</translation>
@@ -7126,6 +7128,7 @@
 <translation id="583673505367439042">साइटहरूले तपाईंको डिभाइसमा भएका फाइल तथा फोल्डरहरू सम्पादन गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="5836999627049108525">अनुवाद गर्ने स्रोत भाषा</translation>
 <translation id="583756221537636748">केस</translation>
+<translation id="5840656138956959276">परिष्कृत: कडा</translation>
 <translation id="5840680448799937675">फाइलहरू सधैँ अफलाइन सेयर गरिने छ</translation>
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
 <translation id="5841338463993781099">खातामा सेभ गर्ने हो?</translation>
@@ -7951,6 +7954,7 @@
 <translation id="6411135999030237579">की थिचिराख्दा त्यसको वर्ण स्वतः दोहोरिने पारियोस्</translation>
 <translation id="6414618057231176439"><ph name="VM_NAME" /> को जुन संस्करण इन्स्टल गर्ने हो सोही संस्करण चयन गर्नुहोस्।</translation>
 <translation id="641469293210305670">अपडेट र एप इन्स्टल गर्नुहोस्</translation>
+<translation id="6415434255504060856">सबै साइटहरूका हकमा कडा</translation>
 <translation id="6415757856498750027">"ư" प्राप्त गर्न "w" टाइप गर्नुहोस्</translation>
 <translation id="6415816101512323589">आफ्नो डेटा सुरक्षित राख्न लोकल डेटा रिकभर गर्ने सुविधा अन गर्ने हो?</translation>
 <translation id="6415900369006735853">आफ्नो फोनमार्फत इन्टरनेटमा जोडिनुहोस्</translation>
@@ -8082,7 +8086,6 @@
 <translation id="6508261954199872201">एप: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">आफ्नो Chromebook रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6511827214781912955">यो डिभाइस प्रयोग गर्ने अरू मान्छेले तपाईंका पासवर्ड देख्न नसकून भन्नाका लागि <ph name="FILENAME" /> मेटाउनुहोस्</translation>
-<translation id="6512364354776355686">तपाईंलाई सबै असुरक्षित कनेक्सनका बारेमा चेतावनी दिन्छ</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> भएको <ph name="SUBJECT" /> को सिर्जना गरिएको फोटो <ph name="INDEX" />।</translation>
 <translation id="6513247462497316522">यदि तपाइँ अर्को सञ्जालमा जडित हुनुहुन्न भने Google Chrome ले मोबाइल लगत प्रयोग गर्ने छ।</translation>
 <translation id="6514010653036109809">उपलब्ध यन्त्र:</translation>
@@ -8346,6 +8349,7 @@
 <translation id="6686665106869989887">यो ट्याब दायाँतिर सारियो</translation>
 <translation id="6686676261102452995">तपाईंले आज खोल्नुभएको थियो</translation>
 <translation id="6686817083349815241">तपाईंको पासवर्ड वचत गर्नुहोस्</translation>
+<translation id="6686878118106035853">कस्टम उन्नत सुरक्षाले सबै साइटहरूमा JavaScript अप्टिमाइजेसन अफ गर्छ</translation>
 <translation id="6687008241368170505">Google पासवर्ड म्यानेजरको PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> नदेखिने पार्नुहोस्</translation>
 <translation id="6689948774466767379">माउस की सुविधा</translation>
@@ -10029,7 +10033,6 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> वटा फाइल खोल्नुअघि ती फाइलहरू कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गर्ने हो?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">सुरक्षित गरिएका आफू अनुकूलका शब्दहरू यहाँ देखापर्ने छन्</translation>
-<translation id="7833725807105678871">सुरक्षासम्बन्धी परिष्कृत सुविधाहरूभन्दा साइट लोड हुने गतिलाई प्राथमिकता दिन्छ</translation>
 <translation id="7834832693620032149">अडियो सेयर गर्न यसको साटो ट्याब वा विन्डो सेयर गर्नुहोस्</translation>
 <translation id="7836577093182643605">साइटहरूसँग सेयर गर्न नचाहेका कारण तपाईंले ब्लक गर्नुभएका विषयहरूको सूची</translation>
 <translation id="7836850009646241041">आफ्नो सुरक्षा साँचो फेरि छोई हेर्नुहोस्</translation>
@@ -10825,6 +10828,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">तपाईंले यो डिभाइस दर्ता गरिसक्नुभएको छ। तपाईंले यसलाई फेरि दर्ता गर्नु पर्दैन।</translation>
 <translation id="8357388086258943206">Linux स्थापना गर्ने क्रममा त्रुटि भयो</translation>
+<translation id="8357883857705092796">अज्ञात साइटहरू</translation>
 <translation id="8358685469073206162">पानाहरू पुनर्स्थापित गर्ने?</translation>
 <translation id="835927394551949760">Ask Google</translation>
 <translation id="835951711479681002">आफ्नो Google खातामा सेभ गर्नुहोस्</translation>
@@ -11518,7 +11522,6 @@
 <translation id="8821045908425223359">IP एड्रेस स्वतः कन्फिगर गर्नुहोस्</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> प्रयोगका लागि तयार छ।</translation>
 <translation id="882204272221080310">थप सुरक्षाका खातिर फर्मवेयर अपडेट गर्नुहोस्।</translation>
-<translation id="8822690627597552656">सामान्य आक्रमणहरू रोक्न केही अपरिचित साइटहरू सुस्त बनाउँछ</translation>
 <translation id="8823514049557262177">लिंक टे&amp;क्स्ट कपी गर्नुहोस्</translation>
 <translation id="8823704566850948458">पासवर्ड सिफारिस गर्नुहोस्...</translation>
 <translation id="8823963789776061136">अथवा प्रिन्टर PPD चयन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>

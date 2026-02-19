@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="3777796259512476958">ಬಹುತೇಕ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="3792938779249970121">ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3795154175078851242">ಚಿತ್ರವನ್ನು ಲಿಂಕ್‌ನೊಂದಿಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, ಆಯ್ಕೆಮಾಡಿರುವ ಪಿನ್ ಮಾಡಿದ ಆಡಿಬಲ್ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
@@ -1268,6 +1269,7 @@
 <translation id="6340526405444716530">ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="6341580099087024258">ಫೈಲ್‌ಗಳನ್ನು ಎಲ್ಲಿ ಉಳಿಸಬೇಕೆಂದು ಕೇಳಿ</translation>
 <translation id="6342069812937806050">ಇದೀಗ</translation>
+<translation id="634208815998129842">ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="6356893102071098867">ನೀವು ಸರಿಯಾದ ಖಾತೆಯನ್ನು ಆರಿಸಿರುವಿರಾ ಎಂದು ಪರಿಶೀಲಿಸಿ</translation>
@@ -1484,6 +1486,7 @@
 <translation id="7117485132243600300">ನೀವು ಫಾಲೋ ಮಾಡುವ ಕಂಟೆಂಟ್‌ ಮತ್ತು ಸೂಚಿಸಲಾದ ವಿಷಯಗಳು ಹಾಗೂ ಹುಡುಕಾಟಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7121179479711575744">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="7136694880210472378">ಡಿಫಾಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="7138678301420049075">ಇತರೆ</translation>
 <translation id="7140829094791862589">ಹಸ್ತಚಾಲಿತ ಪ್ರಕಾರ ವಿಂಗಡಣೆ</translation>
@@ -1539,6 +1542,7 @@
 <translation id="7314734791127433392">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7324354302972299151">"ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ" ವಿನಂತಿಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="7333041109965360609">ನೋಟಿಫಿಕೇಶನ್‌ಗಳಿಂದ ಅನ್‌ಸಬ್‌ಸ್ಕ್ರೈಬ್‌‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7335766481146072567">ಮುಂದುವರಿಸಿ ಎಂಬುದನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="7336259382292148213">ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್ ಸರಿಯಾಗಿದೆ</translation>
 <translation id="7339898014177206373">ಹೊಸ ವಿಂಡೊ</translation>
 <translation id="7340958967809483333">Discover ಗಾಗಿ ಆಯ್ಕೆಗಳು</translation>
@@ -1851,6 +1855,7 @@
 <translation id="8559961053328923750">ಜಾಹೀರಾತು ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಅಳೆಯಲು ಬ್ರೌಸರ್ ಮೂಲಕ ಸೈಟ್ ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ ಒಟ್ಟು ಡೇಟಾವನ್ನು Chrome ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="8559990750235505898">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
 <translation id="8560602726703398413">Bookmarks ನಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
+<translation id="85618473456579127">ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿರುವ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="8570677896027847510">ಫೈಲ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>

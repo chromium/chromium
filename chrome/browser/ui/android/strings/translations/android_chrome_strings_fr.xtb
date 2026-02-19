@@ -645,6 +645,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
 <translation id="3777796259512476958">Vous déconnecte de la plupart des sites</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
+<translation id="3792938779249970121">Sélectionner un compte</translation>
 <translation id="3795154175078851242">Copier l'image avec le lien</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé sélectionné avec audio</translation>
 <translation id="3810973564298564668">Gérer</translation>
@@ -1269,6 +1270,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6340526405444716530">Personnalisation</translation>
 <translation id="6341580099087024258">Demander où enregistrer les fichiers</translation>
 <translation id="6342069812937806050">À l'instant</translation>
+<translation id="634208815998129842">Gestionnaire de tâches</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> de plus}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> de plus}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> de plus}}</translation>
 <translation id="6345878117466430440">Marquer comme lu</translation>
 <translation id="6356893102071098867">Vérifiez si vous avez choisi le bon compte</translation>
@@ -1485,6 +1487,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7117485132243600300">Gérez les contenus que vous suivez, ainsi que les thèmes et recherches suggérés</translation>
 <translation id="7119984597597798764">Fermer <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Se connecter à Chrome</translation>
+<translation id="7136694880210472378">Utiliser par défaut</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorisations examinées pour 1 site}one{Autorisations examinées pour # site}other{Autorisations examinées pour # sites}}</translation>
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7140829094791862589">Trier par ordre manuel</translation>

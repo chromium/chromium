@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
+<translation id="3792938779249970121">选择账号</translation>
 <translation id="3795154175078851242">复制图片且含链接</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />，已选择的固定无痕式标签页，正在播放音频</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6341580099087024258">询问文件保存位置</translation>
 <translation id="6342069812937806050">刚刚</translation>
+<translation id="634208815998129842">任务管理器</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
 <translation id="6345878117466430440">标记为已读</translation>
 <translation id="6356893102071098867">确保您选择的是正确的账号</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">管理您关注的内容以及建议的主题和搜索查询</translation>
 <translation id="7119984597597798764">关闭“<ph name="INSTANCE_TITLE" />”</translation>
 <translation id="7121179479711575744">登录 Chrome</translation>
+<translation id="7136694880210472378">设为默认选项</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已审核 1 个网站的权限}other{已审核 # 个网站的权限}}</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7140829094791862589">按手动顺序排序</translation>

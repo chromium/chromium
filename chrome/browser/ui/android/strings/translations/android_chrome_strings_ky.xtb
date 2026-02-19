@@ -645,6 +645,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3775705724665058594">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="3777796259512476958">Көпчүлүк сайттардагы аккаунттарыңыздан чыгарыласыз</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
+<translation id="3792938779249970121">Аккаунт тандоо</translation>
 <translation id="3795154175078851242">Сүрөттү шилтемеси менен көчүрүү</translation>
 <translation id="3807999512799921804">Кадалган <ph name="TAB_TITLE" /> өтмөгү тандалган, үн иштетилген жана ал жашыруун өтмөк</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
@@ -1269,6 +1270,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6340526405444716530">Жекечелештирүү</translation>
 <translation id="6341580099087024258">Файлдарды кайсы папкага сактоо керек экени суралсын</translation>
 <translation id="6342069812937806050">Жаңы эле</translation>
+<translation id="634208815998129842">Тапшырмаларды башкаргыч</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Окулду деп белгилөө</translation>
 <translation id="6356893102071098867">Туура аккаунтту тандаганыңызды текшериңиз</translation>
@@ -1485,6 +1487,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7117485132243600300">Катталган контентти жана сунушталган темалар менен издөөнү тескөө</translation>
 <translation id="7119984597597798764">Жабуу: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Chrome'го кирүү</translation>
+<translation id="7136694880210472378">Демейки кылуу</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{# сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="7138678301420049075">Башка</translation>
 <translation id="7140829094791862589">Кол менен иреттөө</translation>

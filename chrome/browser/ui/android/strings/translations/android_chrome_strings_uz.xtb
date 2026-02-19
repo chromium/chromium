@@ -645,6 +645,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3775705724665058594">Qurilmalaringizga yuborish</translation>
 <translation id="3777796259512476958">Bir nechta saytdagi hisobingizdan chiqasiz</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ta varaq}other{# ta varaq}}</translation>
+<translation id="3792938779249970121">Hisobni tanlang</translation>
 <translation id="3795154175078851242">Rasmni havola bilan nusxalash</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, audio ijroli mahkamlangan inkognito varaq tanlandi</translation>
 <translation id="3810973564298564668">Sozlash</translation>
@@ -1269,6 +1270,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6340526405444716530">Personalizatsiya</translation>
 <translation id="6341580099087024258">Fayllar qayerga saqlanishi so‘ralsin</translation>
 <translation id="6342069812937806050">Hozirgina</translation>
+<translation id="634208815998129842">Vazifalar menejeri</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ta}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ta}}</translation>
 <translation id="6345878117466430440">Ochildi deb belgilash</translation>
 <translation id="6356893102071098867">Kerakli hisob tanlanganini tekshiring</translation>
@@ -1485,6 +1487,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7117485132243600300">Kuzatuvdagi kontent, tavsiya etilgan mavzu va qidiruvlarni boshqarish</translation>
 <translation id="7119984597597798764">Yopish: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Chrome hisobiga kirish</translation>
+<translation id="7136694880210472378">Birlamchi bo‘lsin</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ta sayt uchun ruxsatlar tekshirilgan}other{# ta sayt uchun ruxsatlar tekshirilgan}}</translation>
 <translation id="7138678301420049075">Boshqa</translation>
 <translation id="7140829094791862589">Qoʻlda saralash</translation>

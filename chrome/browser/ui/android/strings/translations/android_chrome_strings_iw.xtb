@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">שליחה אל המכשירים שלך</translation>
 <translation id="3777796259512476958">תתבצע יציאה מהחשבון ברוב האתרים</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
+<translation id="3792938779249970121">בחירת חשבון</translation>
 <translation id="3795154175078851242">העתקת התמונה עם הקישור</translation>
 <translation id="3807999512799921804">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה והוצמדה, ומכילה תוכן שאפשר לשמוע</translation>
 <translation id="3810973564298564668">ניהול</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">התאמה אישית</translation>
 <translation id="6341580099087024258">לשאול איפה לשמור קבצים</translation>
 <translation id="6342069812937806050">זה עתה</translation>
+<translation id="634208815998129842">מנהל המשימות</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספת}one{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}two{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}}</translation>
 <translation id="6345878117466430440">סימון כפריט שנקרא</translation>
 <translation id="6356893102071098867">עליך לוודא שבחרת בחשבון הנכון</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">ניהול התוכן שבמעקב שלך והמלצות לנושאים ולחיפושים</translation>
 <translation id="7119984597597798764">סגירה של <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">‏כניסה ל-Chrome</translation>
+<translation id="7136694880210472378">הגדרה כברירת מחדל</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{נבדקו הרשאות של אתר אחד}one{נבדקו ההרשאות של # אתרים}two{נבדקו ההרשאות של # אתרים}other{נבדקו ההרשאות של # אתרים}}</translation>
 <translation id="7138678301420049075">אחר</translation>
 <translation id="7140829094791862589">מיון לפי סדר ידני</translation>

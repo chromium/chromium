@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">Се чека дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележувачи</translation>
 <translation id="2141000681034340397">Изменете го внесувањето</translation>
+<translation id="2141475438898772664">Плаќање на 4 рати или на месечно ниво</translation>
 <translation id="2144171668675205303">Нема активни теми</translation>
 <translation id="2145193671493396738">Економски вести</translation>
 <translation id="214556005048008348">Откажи го плаќањето</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">Зоолошки, аквариуми и резервати</translation>
 <translation id="5543722831081909240">180 степени</translation>
 <translation id="5544836308113951378">Крстарења и чартери</translation>
+<translation id="5545314360139398232">Поврзете ја сметката со <ph name="ISSUER_NAME" /> за да плаќате одложено</translation>
 <translation id="5547939254150808298">Печатарство и издаваштво</translation>
 <translation id="554815783948612276">Даватели на услуги за форум и разговори</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">Уметност на тело</translation>
 <translation id="692638818576287323">Комерцијални возила</translation>
 <translation id="6927878187051807444">датотеки од камерата и слики од екранот</translation>
+<translation id="6929949393612835405">Затвори и врати се на „<ph name="OPENER_TITLE" />“</translation>
 <translation id="6930607614725241390">Пребарувајте во страничната табла</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Вашиот стандарден пребарувач ви овозможува да пребарувате на интернет и ги обезбедува функциите на Chrome<ph name="END_BOLD" /> како пребарување од лентата за адреси и од слики на веб-страници. Конкретна функција може да биде недостапна ако не ја поддржува вашиот пребарувач.</translation>
 <translation id="6934672428414710184">Ова име е од вашата сметка на Google</translation>
@@ -4226,6 +4229,7 @@
 <translation id="7714404809393719981">Фотографија (полусјајна)</translation>
 <translation id="7714424966701020172">Избрана е опцијата за пополнување име</translation>
 <translation id="7714464543167945231">Сертификат</translation>
+<translation id="7714943438925794410">Содржините од страницата за наплата се споделуваат со Google за да се понудат опцииве. За да ги скриете опциите за „Платете подоцна“ во „Автоматско пополнување“, одете во <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Блокирано од администраторот</translation>
 <translation id="7716375162095500223">Сѐ уште не е прикачен или е игнориран</translation>
 <translation id="7716424297397655342">Сајтот не може да се вчита од кешот</translation>
@@ -4308,6 +4312,7 @@
 <translation id="7862306158978555061">да прикаже чувствителни податоци</translation>
 <translation id="7865448901209910068">Најдобра брзина</translation>
 <translation id="7865482168955081228">Екранот со грешка на „Купете сега, платете подоцна“ е затворен.</translation>
+<translation id="7870207318911766769">Содржините од страницата за наплата се споделуваат со Google за да се понудат опцииве.</translation>
 <translation id="7870281855125116701">Најден е попуст</translation>
 <translation id="7871445724586827387">Променете ја лозинката за сметката на Google</translation>
 <translation id="787226752901403048">Најавете се на Chrome за да споделувате и да се придружувате во групи картички, а и работете заедно на идеи</translation>

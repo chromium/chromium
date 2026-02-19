@@ -239,6 +239,7 @@
 <translation id="3522404737534491619">หากต้องการแชร์หน้าต่าง ให้อนุญาตการบันทึกหน้าจอสำหรับ Chromium ใน "การตั้งค่าระบบ"</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว  หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3561853857681580870">หากต้องการแชร์หน้าจอ ให้อนุญาตการบันทึกหน้าจอสำหรับ Chromium ใน "การตั้งค่าระบบ"</translation>
+<translation id="3588112919289558122">การปกป้องที่ดียิ่งขึ้นจะปิดการเพิ่มประสิทธิภาพ JavaScript สำหรับเว็บไซต์ที่ Chromium ไม่รู้จัก</translation>
 <translation id="3597003331831379823">เรียกใช้การตั้งค่าด้วยสิทธิ์ในระดับสูงขึ้นไม่สำเร็จ <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="3639635944603682591">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์นี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chromium ในชื่อ <ph name="USER_EMAIL" /></translation>

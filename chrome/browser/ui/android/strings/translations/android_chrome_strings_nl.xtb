@@ -645,6 +645,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3775705724665058594">Naar je apparaten sturen</translation>
 <translation id="3777796259512476958">Hiermee word je uitgelogd van de meeste sites</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
+<translation id="3792938779249970121">Account selecteren</translation>
 <translation id="3795154175078851242">Afbeelding kopiëren met link</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, geselecteerd vastgezet incognitotabblad met audio</translation>
 <translation id="3810973564298564668">Beheren</translation>
@@ -1269,6 +1270,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6340526405444716530">Personalisatie</translation>
 <translation id="6341580099087024258">Vragen waar bestanden moeten worden opgeslagen</translation>
 <translation id="6342069812937806050">Zojuist</translation>
+<translation id="634208815998129842">Taakbeheer</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> andere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> andere}}</translation>
 <translation id="6345878117466430440">Markeren als gelezen</translation>
 <translation id="6356893102071098867">Check of je het juiste account hebt gekozen</translation>
@@ -1485,6 +1487,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7117485132243600300">Beheer content die je volgt en voorgestelde onderwerpen en zoekopdrachten</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> sluiten</translation>
 <translation id="7121179479711575744">Inloggen bij Chrome</translation>
+<translation id="7136694880210472378">Instellen als standaard</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Rechten beoordeeld voor 1 site}other{Rechten beoordeeld voor # sites}}</translation>
 <translation id="7138678301420049075">Overige</translation>
 <translation id="7140829094791862589">Sorteren op handmatige volgorde</translation>

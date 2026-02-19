@@ -4230,6 +4230,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7714404809393719981">Ảnh (Bán bóng)</translation>
 <translation id="7714424966701020172">Đã chọn tuỳ chọn điền họ tên đầy đủ</translation>
 <translation id="7714464543167945231">Chứng chỉ</translation>
+<translation id="7714943438925794410">Nội dung trên trang thanh toán được chia sẻ với Google để cung cấp những lựa chọn này. Để ẩn các lựa chọn trả sau trong tính năng tự động điền, hãy chuyển đến <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Bị quản trị viên của bạn chặn</translation>
 <translation id="7716375162095500223">Chưa tải lên hoặc đã bỏ qua</translation>
 <translation id="7716424297397655342">Không thể tải trang web này từ bộ nhớ đệm</translation>
@@ -4312,6 +4313,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7862306158978555061">hiện thông tin nhạy cảm</translation>
 <translation id="7865448901209910068">Tốc độ tốt nhất</translation>
 <translation id="7865482168955081228">Màn hình báo lỗi khi Mua trước trả sau đã đóng.</translation>
+<translation id="7870207318911766769">Nội dung trên trang thanh toán được chia sẻ với Google để cung cấp những lựa chọn này.</translation>
 <translation id="7870281855125116701">Đã tìm thấy ưu đãi giảm giá</translation>
 <translation id="7871445724586827387">Thay đổi mật khẩu cho Tài khoản Google của bạn</translation>
 <translation id="787226752901403048">Đăng nhập vào Chrome để chia sẻ và tham gia nhóm thẻ, cũng như cùng nhau phát triển ý tưởng</translation>
@@ -4907,7 +4909,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8858065207712248076">Chrome khuyên bạn nên đặt lại mật khẩu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> của mình nếu đã sử dụng lại mật khẩu này trên các trang web khác.</translation>
 <translation id="885906927438988819">Nếu đúng chính tả, hãy <ph name="BEGIN_LINK" />thử chạy Chẩn đoán mạng của Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Nghệ thuật kỹ thuật số và nhiếp ảnh</translation>
-<translation id="8861482055962701239">Không thể lưu thông tin này vào Google Wallet. Thay vào đó, thông tin đã được lưu vào Chrome trên thiết bị này. Lần tới khi bạn dùng thông tin này, Chrome sẽ hỏi bạn có muốn lưu vào Wallet không.</translation>
+<translation id="8861482055962701239">Không thể lưu thông tin này vào Google Wallet. Thay vào đó, thông tin đã được lưu vào Chrome trên thiết bị này. Lần tới khi bạn dùng thông tin này, Chrome sẽ hỏi bạn có muốn lưu vào Wallet hay không.</translation>
 <translation id="8863218129525348270">Để thanh toán nhanh hơn vào lần tới, hãy lưu thông tin thẻ vào thiết bị của bạn</translation>
 <translation id="8864939224504814334">Com lê và trang phục công sở</translation>
 <translation id="8866132857352163524">Nhạc phim</translation>

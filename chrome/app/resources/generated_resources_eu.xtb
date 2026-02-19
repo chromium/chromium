@@ -2005,6 +2005,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2332742915001411729">Berrezarri balio lehenetsiak</translation>
 <translation id="2333166365943957309">Erabiltzaile-interfazearen hierarkia</translation>
 <translation id="233375395665273385">Ezabatu datuak eta amaitu saioa</translation>
+<translation id="2334384018887664164">Webgune fidagarriak baimendutakoen zerrendan sar ditzakezu edukiaren ezarpenetan</translation>
 <translation id="233471714539944337">Kontuzko edukia</translation>
 <translation id="2335758110242123814">Ireki taldea</translation>
 <translation id="2336228925368920074">Egin fitxa guztien laster-markak…</translation>
@@ -2100,6 +2101,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="240789602312469910">Bidali erabilera- eta diagnostiko-datuak. Hobetu haurraren Android-en erabilera Google-ra diagnostikoei buruzko datuak eta gailuaren eta aplikazioen erabilera-datuak automatikoki bidalita. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du <ph name="BEGIN_LINK1" />ezarpen<ph name="END_LINK1" /> hori. Gailu honen diagnostiko- eta erabilera-datuak Google-ri bidaltzea aukera dezake jabeak. Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu neurketei buruzko informazio gehiago<ph name="BEGIN_LINK2_END" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Txartela gordetzen</translation>
 <translation id="2408742686124047357">Ainguratu Google Lens tresna-barrara, hurrengoan erraz erabil dezazun</translation>
+<translation id="2408762424059547338">Hobeto babesten zaitu erasoen aurka, JavaScript-en optimizazioa desaktibatuta</translation>
 <translation id="2408955596600435184">Idatzi PINa</translation>
 <translation id="2409268599591722235">Has gaitezen</translation>
 <translation id="2409378541210421746">Editatu hautatutako hizkuntza</translation>
@@ -2376,6 +2378,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2581992808349413349">Erabili konexio segurua webgune baten IP helbidea DNSan (domeinu-izenen sistema) bilatzeko. <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> helbideko zerbitzu-hornitzaile kudeatu bat erabiltzen du.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> plataforma) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Txartel adimendunen edozein irakurgailu</translation>
+<translation id="2583949330716828639">Kudeatu webguneen salbuespenak</translation>
 <translation id="2584109212074498965">Ezin izan da lortu Kerberos-eko txartela. Saiatu berriro edo jarri harremanetan erakundeko gailuen administratzailearekin. (Errore-kodea: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Kudeatu webguneek mikrofonoa erabiltzeko dituzten baimenak Chrome-n</translation>
 <translation id="2586561813241011046">Ezin izan da instalatu <ph name="APP_NAME" />. Saiatu berriro edo jarri harremanetan administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
@@ -5751,6 +5754,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4871322859485617074">PIN kodeak balio ez duten karaktereak ditu</translation>
 <translation id="4871370605780490696">Gehitu laster-marka</translation>
 <translation id="4871568871368204250">Desaktibatu sinkronizazioa</translation>
+<translation id="4871630917300912613">JavaScript-en segurtasun-neurriak</translation>
 <translation id="4871719318659334896">Itxi taldea</translation>
 <translation id="4872192066608821120">Pasahitzak inportatzeko, hautatu CSV fitxategi bat</translation>
 <translation id="4872212987539553601">Konfiguratu gailuan bertan enkriptatzeko aukera</translation>
@@ -6686,7 +6690,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5523532775593636291">Gehitzen dituzun webguneak aktibo egongo dira beti, eta ez dira erabiliko memorian tokia egiteko</translation>
 <translation id="5523558474028191231">Hizkiak, zenbakiak eta karaktere bereziak izan ditzake izenak, eta <ph name="MAX_CHARACTER_COUNT" /> karaktere edo gutxiagoko luzera izan behar du</translation>
 <translation id="5526745900034778153">Hasi saioa berriro sinkronizazioari berrekiteko</translation>
-<translation id="5527211644528700597">Gailuko metodoak erabiltzen ditu mehatxuak hautemateko.</translation>
 <translation id="5527474464531963247">Beste sare bat ere aukera dezakezu.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalatzen</translation>
 <translation id="5527822190489075064">Karga optimizatua</translation>
@@ -6882,7 +6885,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5663459693447872156">Aldatu automatikoki zabalera erdira</translation>
 <translation id="5663653125349867535">Irakurketa-zerrenda</translation>
 <translation id="5663918299073387939">Musika sortzeko edo editatzeko, edo gailuen firmwarea eguneratzeko eskatu ohi dute webguneek zure MIDI gailuak kontrolatzeko eta berriro programatzeko baimena</translation>
-<translation id="5666116074010586111">URLak eta orrien edukia Google-ra bidaltzen ditu, mehatxuak bizkorrago hautemateko.</translation>
 <translation id="5666911576871845853">Gehitu profil bat</translation>
 <translation id="5667293444945855280">Malwarea</translation>
 <translation id="5667546120811588575">Google Play konfiguratzen…</translation>
@@ -7121,6 +7123,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="583673505367439042">Webguneek gailuko fitxategiak eta karpetak editatzea eska dezakete</translation>
 <translation id="5836999627049108525">Jatorrizko hizkuntza</translation>
 <translation id="583756221537636748">Kutxa</translation>
+<translation id="5840656138956959276">Hobetua: zorrotza</translation>
 <translation id="5840680448799937675">Internetera konektatu gabe partekatuko dira beti fitxategiak</translation>
 <translation id="5841270259333717135">Konfiguratu Etherneta</translation>
 <translation id="5841338463993781099">Kontuan gorde nahi duzu?</translation>
@@ -7946,6 +7949,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6411135999030237579">Tekla automatikoki errepikatzeko, eduki sakatuta</translation>
 <translation id="6414618057231176439">Hautatu <ph name="VM_NAME" /> zerbitzuaren zein bertsio instalatu nahi duzun.</translation>
 <translation id="641469293210305670">Instalatu eguneratzeak eta aplikazioak</translation>
+<translation id="6415434255504060856">Zorrotza webgune guztietan</translation>
 <translation id="6415757856498750027">"ư" lortzeko, idatzi "w"</translation>
 <translation id="6415816101512323589">Gailuko datuak berreskuratzeko aukera aktibatu nahi duzu?</translation>
 <translation id="6415900369006735853">Konektatu Internetera telefonoa erabiliz</translation>
@@ -8077,7 +8081,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6508261954199872201">Aplikazioa: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Berrabiarazi Chromebook-a eta saiatu berriro</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> ezabatzea gomendatzen dugu, gailua darabilten gainerakoek zure pasahitzak ikus ez ditzaten</translation>
-<translation id="6512364354776355686">Konexio ez-seguru guztiei buruzko abisuak erakusten ditu.</translation>
 <translation id="6512759338201777379">Sortutako <ph name="INDEX" />garren irudia, <ph name="SUBJECT" /> erakusten duena, <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Beste sare batera konektatuta egon ezean, Google Chrome aplikazioak datu-konexioa erabiliko du.</translation>
 <translation id="6514010653036109809">Gailu erabilgarria:</translation>
@@ -8341,6 +8344,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6686665106869989887">Eskuinera eraman da fitxa</translation>
 <translation id="6686676261102452995">Gaur ireki duzu</translation>
 <translation id="6686817083349815241">Gorde zure pasahitza</translation>
+<translation id="6686878118106035853">Babes hobetu pertsonalizatuak JavaScript-en optimizazioa desaktibatzen du webgune guztietan</translation>
 <translation id="6687008241368170505">Aldatu Google-ren Pasahitz-kudeatzailea zerbitzuko PINa</translation>
 <translation id="6687079240787935001">Ezkutatu <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Saguaren teklak</translation>
@@ -10023,7 +10027,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatu nahi dituzu ireki ahal izateko?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Hemen agertuko dira gordetako hitz pertsonalizatuak</translation>
-<translation id="7833725807105678871">Webgunearen abiadura segurtasun-eginbide hobetuen gainetik lehenesten du.</translation>
 <translation id="7834832693620032149">Audioa partekatzeko, partekatu fitxa edo leiho bat</translation>
 <translation id="7836577093182643605">Blokeatu dituzun eta webguneekin partekatu nahi ez dituzun gaien zerrenda</translation>
 <translation id="7836850009646241041">Ukitu berriro segurtasun-giltza</translation>
@@ -10819,6 +10822,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Dagoeneko erregistratu duzu gailua. Ez duzu berriro erregistratu behar.</translation>
 <translation id="8357388086258943206">Errore bat gertatu da Linux instalatzean</translation>
+<translation id="8357883857705092796">Ezagutzen ez diren webguneak</translation>
 <translation id="8358685469073206162">Orriak leheneratu nahi dituzu?</translation>
 <translation id="835927394551949760">Galdetu Google-ri</translation>
 <translation id="835951711479681002">Gorde Google-ko kontuan</translation>
@@ -11512,7 +11516,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8821045908425223359">Konfiguratu automatikoki IP helbidea</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> erabiltzeko prest dago.</translation>
 <translation id="882204272221080310">Segurtasun handiagoa izateko, eguneratu firmwarea.</translation>
-<translation id="8822690627597552656">Webgune ezezagun batzuk moteltzen ditu ohiko erasoak blokeatzeko.</translation>
 <translation id="8823514049557262177">Kopiatu estekaren te&amp;stua</translation>
 <translation id="8823704566850948458">Iradoki pasahitza…</translation>
 <translation id="8823963789776061136">Bestela, hautatu inprimagailuaren PPDa. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>

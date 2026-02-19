@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">သင့်ကိရိယာများသို့ ပို့ပါ</translation>
 <translation id="3777796259512476958">ဝက်ဆိုက်အများစုမှ သင်ထွက်သွားပါမည်</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
+<translation id="3792938779249970121">အကောင့်ရွေးပါ</translation>
 <translation id="3795154175078851242">ပုံကို လင့်ခ်နှင့်အတူ မိတ္တူကူးရန်</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
@@ -1268,6 +1269,7 @@
 <translation id="6340526405444716530">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
 <translation id="6341580099087024258">ဖိုင်များ သိမ်းရန် နေရာကို မေးမြန်းပါ</translation>
 <translation id="6342069812937806050">ယခုပင်</translation>
+<translation id="634208815998129842">အလုပ်မန်နေဂျာ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}}</translation>
 <translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="6356893102071098867">မှန်ကန်သည့်အကောင့်ကို ရွေးထားခြင်းရှိ၊ မရှိ ကြည့်ပါ</translation>
@@ -1484,6 +1486,7 @@
 <translation id="7117485132243600300">သင်လိုက်ကြည့်သော အချက်အလက်၊ အကြံပြုထားသော အကြောင်းအရာနှင့် ရှာဖွေမှုများကို စီမံနိုင်သည်</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ကို ပိတ်ရန်</translation>
 <translation id="7121179479711575744">Chrome သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
+<translation id="7136694880210472378">ပုံသေ လုပ်ရန်</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ဝဘ်ဆိုက် ၁ ခုအတွက် ခွင့်ပြုချက်များကို စိစစ်ထားသည်}other{ဝဘ်ဆိုက် # ခုအတွက် ခွင့်ပြုချက်များကို စိစစ်ထားသည်}}</translation>
 <translation id="7138678301420049075">အခြား</translation>
 <translation id="7140829094791862589">ကိုယ်တိုင်အစဉ်ဖြင့်စီရန်</translation>
@@ -1539,6 +1542,7 @@
 <translation id="7314734791127433392">စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="7324354302972299151">“Do Not Track” တောင်းဆိုမှု ပို့ရန်</translation>
 <translation id="7333041109965360609">အကြောင်းကြားချက်များ မှာယူမှု ရပ်ဆိုင်းထားသည်</translation>
+<translation id="7335766481146072567">ရှေ့ဆက်ရန်ကို နှိပ်ပါ</translation>
 <translation id="7336259382292148213">အကြောင်းကြားချက်များ အဆင်ပြေပုံပေါ်သည်</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7340958967809483333">Discover အတွက် ရွေးစရာများ</translation>
@@ -1851,6 +1855,7 @@
 <translation id="8559961053328923750">Chrome က ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရန် ဘရောင်ဇာမှတစ်ဆင့် ဝဘ်ဆိုက်များ မျှဝေနိုင်သည့် ဒေတာစုစုပေါင်းပမာဏကိုကန့်သတ်သည်</translation>
 <translation id="8559990750235505898">အခြားဘာသာစကားများဖြင့် စာမျက်နှာများကို ဘာသာပြန်ပေးရန် ပေးအပ်ချက်</translation>
 <translation id="8560602726703398413">'လိပ်စာများ' တွင် သင်၏ဖတ်ရန်စာရင်းကို ရှာပါ</translation>
+<translation id="85618473456579127">ညာဘက်ထိပ်ရှိ ပရိုဖိုင်ကို တို့ပါ</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ကို ဖယ်ရှားမလား။</translation>
 <translation id="8570677896027847510">ဖိုင်ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>

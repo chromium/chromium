@@ -4227,6 +4227,7 @@ További részletek:
 <translation id="7714404809393719981">Fotó (félig fényes)</translation>
 <translation id="7714424966701020172">A „Teljes név kitöltése” lehetőség volt kiválasztva</translation>
 <translation id="7714464543167945231">Tanúsítvány</translation>
+<translation id="7714943438925794410">A fizetési oldal tartalmát megosztjuk a Google-lal, hogy felkínálhassuk ezeket a lehetőségeket. Ha el szeretné rejteni a későbbi fizetési lehetőségeket az automatikus kitöltésnél, lépjen ide: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Rendszergazda tiltja</translation>
 <translation id="7716375162095500223">Még nincs feltöltve, vagy ki lett hagyva</translation>
 <translation id="7716424297397655342">A webhely nem tölthető be a gyorsítótárból</translation>
@@ -4309,6 +4310,7 @@ További részletek:
 <translation id="7862306158978555061">bizalmas információkat megjeleníteni</translation>
 <translation id="7865448901209910068">Legjobb sebesség</translation>
 <translation id="7865482168955081228">A Késleltetett fizetés hibajelző képernyője be van zárva.</translation>
+<translation id="7870207318911766769">A fizetési oldal tartalmát megosztjuk a Google-lal, hogy felkínálhassuk ezeket a lehetőségeket.</translation>
 <translation id="7870281855125116701">Kedvezményt találtunk</translation>
 <translation id="7871445724586827387">Google-fiók jelszavának módosítása</translation>
 <translation id="787226752901403048">Jelentkezzen be a Chrome-ba, hogy megoszthasson lapcsoportokat, csatlakozhasson hozzájuk, és együtt dolgozhasson másokkal ötleteken</translation>

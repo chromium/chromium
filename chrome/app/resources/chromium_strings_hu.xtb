@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Az ablak megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> már bejelentkezett.  Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">A képernyő megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
+<translation id="3588112919289558122">A Speciális védelem kikapcsolja a JavaScript-optimalizálást a Chromium által fel nem ismert webhelyeknél</translation>
 <translation id="3597003331831379823">Nem sikerült futtatni a beállítást emelt szintű jogosultságokkal. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Bejelentkezés a Chromiumba</translation>
 <translation id="3639635944603682591">A személy böngészési adatai törlődnek az eszközről. Az adatok visszaállításához jelentkezzen be a Chromiumba a következő felhasználóként: <ph name="USER_EMAIL" />.</translation>

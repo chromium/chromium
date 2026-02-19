@@ -4229,6 +4229,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7714404809393719981">Foto (halvglans)</translation>
 <translation id="7714424966701020172">Alternativet for å fylle ut fullt navn er valgt</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
+<translation id="7714943438925794410">Innhold fra betalingssiden deles med Google for å tilby disse alternativene. Gå til <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> for å skjule alternativene for betaling senere i autofyll.</translation>
 <translation id="7716147886133743102">Blokkert av administratoren din</translation>
 <translation id="7716375162095500223">Ignorert eller ikke lastet opp ennå</translation>
 <translation id="7716424297397655342">Dette nettstedet kan ikke lastes inn fra bufferen</translation>
@@ -4311,6 +4312,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7862306158978555061">vis sensitiv info</translation>
 <translation id="7865448901209910068">Beste hastighet</translation>
 <translation id="7865482168955081228">Feilskjermen for Kjøp nå, betal senere er lukket.</translation>
+<translation id="7870207318911766769">Innhold fra betalingssiden deles med Google for å tilby disse alternativene.</translation>
 <translation id="7870281855125116701">Fant en rabatt</translation>
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>
 <translation id="787226752901403048">Logg på Chrome for å dele og bli med i fanegrupper og samarbeide om ideer</translation>

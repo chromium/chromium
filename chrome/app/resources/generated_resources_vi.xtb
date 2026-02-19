@@ -2019,6 +2019,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2332742915001411729">Đặt lại về mặc định</translation>
 <translation id="2333166365943957309">Hệ phân cấp giao diện người dùng</translation>
 <translation id="233375395665273385">Xoá và đăng xuất</translation>
+<translation id="2334384018887664164">Bạn có thể thêm những trang web mà bạn tin tưởng vào danh sách cho phép trong phần cài đặt nội dung</translation>
 <translation id="233471714539944337">Nội dung nhạy cảm</translation>
 <translation id="2335758110242123814">Mở nhóm</translation>
 <translation id="2336228925368920074">Đánh dấu tất cả các thẻ...</translation>
@@ -2114,6 +2115,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="240789602312469910">Gửi dữ liệu sử dụng và dữ liệu chẩn đoán. Giúp cải thiện trải nghiệm của con bạn trên Android bằng cách tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và dữ liệu về mức sử dụng ứng dụng cho Google. Google sẽ không dùng dữ liệu này để nhận dạng con bạn mà chỉ dùng cho mục đích tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho các ứng dụng và đối tác của Google, chẳng hạn như nhà phát triển Android. <ph name="BEGIN_LINK1" />Chế độ cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu sử dụng của thiết bị này cho Google. Nếu bạn bật chế độ cài đặt Hoạt động bổ sung trên web và ứng dụng cho con mình thì dữ liệu này có thể được lưu vào Tài khoản Google của trẻ. <ph name="BEGIN_LINK2" />Tìm hiểu thêm về các chỉ số<ph name="BEGIN_LINK2_END" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Đang lưu thẻ</translation>
 <translation id="2408742686124047357">Ghim Google Ống kính vào thanh công cụ để dễ dàng truy cập vào lần tới</translation>
+<translation id="2408762424059547338">Bảo vệ bạn tốt hơn khỏi các cuộc tấn công bằng cách tắt tính năng tối ưu hoá JavaScript</translation>
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
 <translation id="2409268599591722235">Bắt đầu</translation>
 <translation id="2409378541210421746">Chỉnh sửa lựa chọn về ngôn ngữ</translation>
@@ -2390,6 +2392,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2581992808349413349">Dùng kết nối bảo mật để tra cứu địa chỉ IP của một trang web trong DNS (Hệ thống tên miền). Tuỳ chọn này sử dụng nhà cung cấp dịch vụ được quản lý tại <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Nền tảng <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Mọi loại máy đọc thẻ thông minh</translation>
+<translation id="2583949330716828639">Quản lý trang web ngoại lệ</translation>
 <translation id="2584109212074498965">Không tìm thấy vé Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Quản lý quyền truy cập vào micrô của các trang web trong Chrome</translation>
 <translation id="2586561813241011046">Không cài đặt được <ph name="APP_NAME" />. Hãy thử lại hoặc liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
@@ -5768,6 +5771,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4871322859485617074">Mã PIN chứa ký tự không hợp lệ</translation>
 <translation id="4871370605780490696">Thêm dấu trang</translation>
 <translation id="4871568871368204250">Tắt đồng bộ hóa</translation>
+<translation id="4871630917300912613">Hàng rào bảo vệ JavaScript</translation>
 <translation id="4871719318659334896">Đóng nhóm</translation>
 <translation id="4872192066608821120">Để nhập mật khẩu, hãy chọn một tệp CSV</translation>
 <translation id="4872212987539553601">Thiết lập quy trình mã hoá trên thiết bị</translation>
@@ -6704,7 +6708,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5523532775593636291">Các trang web bạn thêm sẽ luôn hoạt động và trình tiết kiệm bộ nhớ sẽ không giải phóng bộ nhớ khỏi các trang web này</translation>
 <translation id="5523558474028191231">Tên có thể bao gồm chữ cái, chữ số và các ký tự đặc biệt, đồng thời không được dài quá <ph name="MAX_CHARACTER_COUNT" /> ký tự</translation>
 <translation id="5526745900034778153">Đăng nhập lại để tiếp tục đồng bộ hóa</translation>
-<translation id="5527211644528700597">Sử dụng các phương thức trên thiết bị để phát hiện mối đe doạ</translation>
 <translation id="5527474464531963247">Bạn cũng có thể chọn một mạng khác.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, đang cài đặt</translation>
 <translation id="5527822190489075064">Sạc tối ưu hoá</translation>
@@ -6902,7 +6905,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5663459693447872156">Tự động chuyển sang nửa độ rộng</translation>
 <translation id="5663653125349867535">&amp;Danh sách đọc</translation>
 <translation id="5663918299073387939">Các trang web thường yêu cầu cấp quyền điều khiển và lập trình lại thiết bị MIDI để sáng tác nhạc, chỉnh sửa nhạc hoặc cập nhật chương trình cơ sở của thiết bị</translation>
-<translation id="5666116074010586111">Gửi URL và nội dung trang cho Google để phát hiện các mối đe doạ nhanh hơn</translation>
 <translation id="5666911576871845853">&amp;Thêm hồ sơ mới</translation>
 <translation id="5667293444945855280">Phần mềm độc hại</translation>
 <translation id="5667546120811588575">Đang thiết lập Google Play...</translation>
@@ -7141,6 +7143,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="583673505367439042">Các trang web có thể yêu cầu chỉnh sửa tệp và thư mục trên thiết bị</translation>
 <translation id="5836999627049108525">Ngôn ngữ gốc</translation>
 <translation id="583756221537636748">Hộp đựng</translation>
+<translation id="5840656138956959276">Nâng cao: nghiêm ngặt</translation>
 <translation id="5840680448799937675">Tệp sẽ luôn được chia sẻ mà không dùng Internet</translation>
 <translation id="5841270259333717135">Định cấu hình Ethernet</translation>
 <translation id="5841338463993781099">Lưu trong tài khoản?</translation>
@@ -7967,6 +7970,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6411135999030237579">Nhấn và giữ để tự động lặp lại phím</translation>
 <translation id="6414618057231176439">Chọn phiên bản <ph name="VM_NAME" /> bạn muốn cài đặt.</translation>
 <translation id="641469293210305670">Cài đặt bản cập nhật và ứng dụng</translation>
+<translation id="6415434255504060856">Nghiêm ngặt đối với tất cả trang web</translation>
 <translation id="6415757856498750027">Nhập "w" để gõ "ư"</translation>
 <translation id="6415816101512323589">Bật tính năng khôi phục dữ liệu cục bộ để bảo vệ dữ liệu của bạn?</translation>
 <translation id="6415900369006735853">Kết nối Internet qua điện thoại</translation>
@@ -8098,7 +8102,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6508261954199872201">Ứng dụng: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Khởi động lại Chromebook của bạn rồi thử lại</translation>
 <translation id="6511827214781912955">Bạn nên xoá <ph name="FILENAME" /> để những người khác dùng thiết bị này không xem được mật khẩu của bạn</translation>
-<translation id="6512364354776355686">Cảnh báo cho bạn về tất cả các kết nối không an toàn</translation>
 <translation id="6512759338201777379">Hình ảnh đã tạo <ph name="INDEX" /> về <ph name="SUBJECT" />, mang tâm trạng <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome sẽ sử dụng dữ liệu di động nếu bạn không được kết nối với mạng khác.</translation>
 <translation id="6514010653036109809">Thiết bị có sẵn:</translation>
@@ -8362,6 +8365,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6686665106869989887">Đã di chuyển thẻ sang phải</translation>
 <translation id="6686676261102452995">Bạn đã mở hôm nay</translation>
 <translation id="6686817083349815241">Lưu mật khẩu của bạn</translation>
+<translation id="6686878118106035853">Chế độ bảo vệ nâng cao tuỳ chỉnh sẽ tắt tính năng tối ưu hoá JavaScript đối với tất cả các trang web</translation>
 <translation id="6687008241368170505">Thay đổi mã PIN của Trình quản lý mật khẩu của Google</translation>
 <translation id="6687079240787935001">Ẩn <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Phím điều khiển chuột</translation>
@@ -10048,7 +10052,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7830833461614351956">Sao chép <ph name="NUM_OF_FILES" /> tệp vào <ph name="CLOUD_PROVIDER" /> để mở các tệp đó?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Các từ tùy chỉnh đã lưu sẽ xuất hiện ở đây</translation>
-<translation id="7833725807105678871">Ưu tiên tốc độ trang web hơn các tính năng bảo mật nâng cao</translation>
 <translation id="7834832693620032149">Để chia sẻ âm thanh, hãy chia sẻ một thẻ hoặc cửa sổ</translation>
 <translation id="7836577093182643605">Danh sách chủ đề bạn không cho phép chia sẻ với các trang web</translation>
 <translation id="7836850009646241041">Thử chạm lại vào khóa bảo mật</translation>
@@ -10845,6 +10848,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Bạn đã đăng ký thiết bị này. Bạn không phải đăng ký lại.</translation>
 <translation id="8357388086258943206">Lỗi khi cài đặt Linux</translation>
+<translation id="8357883857705092796">Trang web chưa nhận dạng được</translation>
 <translation id="8358685469073206162">Bạn có muốn khôi phục trang không?</translation>
 <translation id="835927394551949760">Hỏi Google</translation>
 <translation id="835951711479681002">Lưu trong Tài khoản Google</translation>
@@ -11538,7 +11542,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8821045908425223359">Tự động định cấu hình địa chỉ IP</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> đã sẵn sàng cho bạn sử dụng.</translation>
 <translation id="882204272221080310">Cập nhật chương trình cơ sở để tăng cường bảo mật.</translation>
-<translation id="8822690627597552656">Giảm tốc độ của một số trang web lạ để chặn các cuộc tấn công phổ biến</translation>
 <translation id="8823514049557262177">Sao chép &amp;văn bản liên kết</translation>
 <translation id="8823704566850948458">Đề xuất mật khẩu...</translation>
 <translation id="8823963789776061136">Hoặc, chọn PPD trong máy in. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>

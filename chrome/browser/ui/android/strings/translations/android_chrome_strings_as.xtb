@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3777796259512476958">অধিকাংশ ছাইটৰ পৰা আপোনাক ছাইন আউট কৰায়</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১ টা টেব}one{# টা টেব}other{# টা টেব}}</translation>
+<translation id="3792938779249970121">একাউণ্ট বাছনি কৰক</translation>
 <translation id="3795154175078851242">লিংকৰ সৈতে প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, বাছনি কৰা পিন কৰি থোৱা অডিঅ’ প্লে’ হৈ থকা ইনক’গ্নিট’ টেব</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
@@ -1485,6 +1486,7 @@
 <translation id="7117485132243600300">আপুনি ফ’ল’ কৰা সমল আৰু পৰামৰ্শিত বিষয়বস্তু আৰু সন্ধানসমূহ পৰিচালনা কৰক</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> বন্ধ কৰক</translation>
 <translation id="7121179479711575744">Chromeত ছাইন-ইন কৰক</translation>
+<translation id="7136694880210472378">ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{১ টা ছাইটৰ বাবে অনুমতি পৰ্যালোচনা কৰা হৈছে}one{# টা ছাইটৰ বাবে অনুমতি পৰ্যালোচনা কৰা হৈছে}other{# টা ছাইটৰ বাবে অনুমতি পৰ্যালোচনা কৰা হৈছে}}</translation>
 <translation id="7138678301420049075">অন্য</translation>
 <translation id="7140829094791862589">মেনুৱেল ক্ৰম অনুসৰি সজাওক</translation>

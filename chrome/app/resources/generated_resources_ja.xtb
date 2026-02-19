@@ -998,7 +998,7 @@
 <translation id="165448107578581061">Gemini がタスクを処理しています...</translation>
 <translation id="1654580009054503925">リクエストの表示を許可しないウェブサイト</translation>
 <translation id="1654713139320245449">キャスト先が見つかりません。サポートが必要ですか？</translation>
-<translation id="1656528038316521561">背景の透明度</translation>
+<translation id="1656528038316521561">背景の不透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
 <translation id="1657937299377480641">教育リソースにアクセスするために再度ログインするには、保護者の方に許可してもらってください</translation>
 <translation id="1658424621194652532">このページはマイクにアクセスしています。</translation>
@@ -2001,6 +2001,7 @@
 <translation id="2332742915001411729">デフォルトに戻す</translation>
 <translation id="2333166365943957309">UI 階層</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
+<translation id="2334384018887664164">信頼できるサイトはコンテンツの設定で許可リストに登録できます</translation>
 <translation id="233471714539944337">機密コンテンツ</translation>
 <translation id="2335758110242123814">グループを開く</translation>
 <translation id="2336228925368920074">すべてのタブをブックマークに追加...</translation>
@@ -2096,6 +2097,7 @@
 <translation id="240789602312469910">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">カードを保存しています</translation>
 <translation id="2408742686124047357">ツールバーに Google レンズを固定すると、次から簡単にアクセスできます</translation>
+<translation id="2408762424059547338">JavaScript の最適化を無効にして、攻撃からユーザーを保護します</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2409268599591722235">使ってみる</translation>
 <translation id="2409378541210421746">言語の選択を編集</translation>
@@ -2371,6 +2373,7 @@
 <translation id="2581992808349413349">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（プラットフォーム <ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">すべてのスマートカード リーダー</translation>
+<translation id="2583949330716828639">サイトの例外を管理</translation>
 <translation id="2584109212074498965">Kerberos チケットを取得できませんでした。もう一度お試しいただくか、組織のデバイス管理者にお問い合わせください。（エラーコード <ph name="ERROR_CODE" />）。</translation>
 <translation id="2584974473573720127">Chrome でウェブサイトのマイクへのアクセス権を管理する</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> をインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -5743,6 +5746,7 @@
 <translation id="4871322859485617074">PIN に無効な文字が含まれています</translation>
 <translation id="4871370605780490696">ブックマークを追加</translation>
 <translation id="4871568871368204250">同期の無効化</translation>
+<translation id="4871630917300912613">JavaScript ガードレール</translation>
 <translation id="4871719318659334896">グループを閉じる</translation>
 <translation id="4872192066608821120">パスワードをインポートするには、CSV ファイルを選択してください</translation>
 <translation id="4872212987539553601">オンデバイスの暗号化を設定</translation>
@@ -6675,7 +6679,6 @@
 <translation id="5523532775593636291">追加したサイトは常にアクティブになり、メモリの解放は行われません</translation>
 <translation id="5523558474028191231">名前には文字、数字、特殊文字を使用できます。<ph name="MAX_CHARACTER_COUNT" /> 文字以内で指定してください</translation>
 <translation id="5526745900034778153">同期を再開するにはもう一度ログインしてください</translation>
-<translation id="5527211644528700597">デバイス上で実行される方法を使用して脅威を検出します</translation>
 <translation id="5527474464531963247">別のネットワークも選択できます。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />、インストール中</translation>
 <translation id="5527822190489075064">充電の最適化</translation>
@@ -6873,7 +6876,6 @@
 <translation id="5663459693447872156">自動的に半角に切り替える</translation>
 <translation id="5663653125349867535">リーディング リスト(&amp;R)</translation>
 <translation id="5663918299073387939">多くのサイトは、音楽の制作や編集、デバイスのファームウェアの更新のため、MIDI デバイスの操作と再プログラムをリクエストします。</translation>
-<translation id="5666116074010586111">URL とページ コンテンツを Google に送信して、脅威を迅速に検出します</translation>
 <translation id="5666911576871845853">新しいプロフィールを追加(&amp;A)</translation>
 <translation id="5667293444945855280">マルウェア</translation>
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
@@ -7112,6 +7114,7 @@
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="5836999627049108525">翻訳元の言語</translation>
 <translation id="583756221537636748">ケース</translation>
+<translation id="5840656138956959276">保護強化: 厳格</translation>
 <translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5841338463993781099">アカウントに保存しますか？</translation>
@@ -7938,6 +7941,7 @@
 <translation id="6411135999030237579">長押ししてキーを自動で繰り返す</translation>
 <translation id="6414618057231176439">インストールする <ph name="VM_NAME" /> のバージョンを選択してください。</translation>
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
+<translation id="6415434255504060856">すべてのサイトで厳格に制限</translation>
 <translation id="6415757856498750027">「ư」を入力するには「w」と入力します。</translation>
 <translation id="6415816101512323589">ローカルデータの復元をオンにしてデータを保護しますか？</translation>
 <translation id="6415900369006735853">スマートフォンを使ってインターネットに接続します</translation>
@@ -8069,7 +8073,6 @@
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
-<translation id="6512364354776355686">すべての安全でない接続について警告します</translation>
 <translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
 <translation id="6514010653036109809">接続可能なデバイス:</translation>
@@ -8332,6 +8335,7 @@
 <translation id="6686665106869989887">タブを右に移動しました</translation>
 <translation id="6686676261102452995">今日開いたファイル</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
+<translation id="6686878118106035853">カスタムの保護強化機能により、すべてのサイトで JavaScript の最適化が無効になります</translation>
 <translation id="6687008241368170505">Google パスワード マネージャーの PIN を変更</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
 <translation id="6689948774466767379">マウスキー</translation>
@@ -10014,7 +10018,6 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーして開きますか？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
-<translation id="7833725807105678871">高度なセキュリティ機能よりもサイトの速度を優先します</translation>
 <translation id="7834832693620032149">音声を共有するには、タブまたはウィンドウを共有してください</translation>
 <translation id="7836577093182643605">サイトと共有しないようブロックしたトピックのリスト</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
@@ -10335,7 +10338,7 @@
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041093619605951337">幸せ</translation>
 <translation id="8041267120753677077">スマートフォンのアプリをストリーミングします</translation>
-<translation id="8042142357103597104">テキストの透明度</translation>
+<translation id="8042142357103597104">テキストの不透明度</translation>
 <translation id="8042331986490021244">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> から応答がありません。</translation>
 <translation id="8044899503464538266">遅い</translation>
@@ -10811,6 +10814,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">このデバイスはすでに登録されています。再度登録する必要はありません。</translation>
 <translation id="8357388086258943206">Linux のインストール中にエラーが発生しました</translation>
+<translation id="8357883857705092796">認識できないサイト</translation>
 <translation id="8358685469073206162">ページを復元しますか？</translation>
 <translation id="835927394551949760">Google で調べる</translation>
 <translation id="835951711479681002">Google アカウントに保存</translation>
@@ -11504,7 +11508,6 @@
 <translation id="8821045908425223359">IP アドレスを自動的に設定</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> を使用できるようになりました。</translation>
 <translation id="882204272221080310">セキュリティ強化のためにファームウェアをアップデートする。</translation>
-<translation id="8822690627597552656">一般的な攻撃をブロックするため、一部の未知のサイトの動作を遅くします</translation>
 <translation id="8823514049557262177">リンクテキストをコピー(&amp;X)</translation>
 <translation id="8823704566850948458">パスワードを自動生成...</translation>
 <translation id="8823963789776061136">または、プリンタの PPD を選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>

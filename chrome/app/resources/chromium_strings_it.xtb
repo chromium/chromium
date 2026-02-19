@@ -239,6 +239,7 @@
 <translation id="3522404737534491619">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> ha già eseguito l’accesso.  Per tenere separata la tua navigazione, accedi a Chromium nel tuo profilo per <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Per condividere lo schermo, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
+<translation id="3588112919289558122">La Protezione avanzata disattiva l'ottimizzazione di JavaScript per i siti non riconosciuti da Chromium</translation>
 <translation id="3597003331831379823">Impossibile eseguire la configurazione con privilegi elevati. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Accedi a Chromium</translation>
 <translation id="3639635944603682591">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>

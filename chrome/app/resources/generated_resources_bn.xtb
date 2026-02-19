@@ -2020,6 +2020,7 @@
 <translation id="2332742915001411729">ডিফল্টে রিসেট করুন</translation>
 <translation id="2333166365943957309">UI হায়ারার্কি</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
+<translation id="2334384018887664164">আপনার বিশ্বস্ত সাইটগুলিকে কন্টেন্ট সেটিংসে সাদাতালিকায় যোগ করতে পারেন</translation>
 <translation id="233471714539944337">সংবেদনশীল কন্টেন্ট</translation>
 <translation id="2335758110242123814">গ্রুপ খুলুন</translation>
 <translation id="2336228925368920074">সকল ট্যাব বুকমার্ক করুন...</translation>
@@ -2115,6 +2116,7 @@
 <translation id="240789602312469910">ব্যবহার এবং ডায়াগনস্টিক সম্পর্কিত ডেটা পাঠান। Google-এ ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা অটোমেটিক পাঠিয়ে, আপনার সন্তানের Android অভিজ্ঞতাকে উন্নত করতে সাহায্য করুন। এটি আপনার সন্তানকে শনাক্ত করতে ব্যবহার করা হবে না এবং সিস্টেম ও অ্যাপের স্থায়িত্ব বাড়াতে ও অন্যান্য উন্নতিতে সাহায্য করবে। কিছু পরিমাণ মোট ডেটা Android ডেভেলপারের মতো Google অ্যাপ এবং পার্টনারদেরও সাহায্য করবে। এই <ph name="BEGIN_LINK1" />সেটিং<ph name="END_LINK1" /> মালিকের নিয়ন্ত্রণে রয়েছে। এই ডিভাইসের জন্য ডায়াগনস্টিক এবং ব্যবহারের ডেটা Google-কে পাঠানোর বিষয়টি মালিক বেছে নিতে পারেন। অতিরিক্ত ওয়েব ও অ্যাপ অ্যাক্টিভিটি সেটিং আপনার সন্তানের ডিভাইসের জন্য চালু করা থাকলে, এই ডেটা তার Google অ্যাকাউন্টে সেভ করা হতে পারে। <ph name="BEGIN_LINK2" />মেট্রিক সম্পর্কে আরও জানুন<ph name="BEGIN_LINK2_END" />আরও জানুন<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">কার্ড সেভ করা হচ্ছে</translation>
 <translation id="2408742686124047357">পরের বার সহজে অ্যাক্সেস করতে আপনার টুলবারে Google Lens পিন করে রাখুন</translation>
+<translation id="2408762424059547338">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করে, আপনাকে অ্যাটাকের হাত থেকে আরও ভালোভাবে রক্ষা করে</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2409268599591722235">শুরু করা যাক</translation>
 <translation id="2409378541210421746">ভাষা বেছে নেওয়ার সুবিধা এডিট করুন</translation>
@@ -2391,6 +2393,7 @@
 <translation id="2581992808349413349">ডিএনএস (ডোমেন নেম সিস্টেম) থেকে কোনও সাইটের IP অ্যাড্রেস খুঁজতে সুরক্ষিত কানেকশন ব্যবহার করুন। এটি <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-এ ম্যানেজ করা হয়েছে এমন পরিষেবা প্রদানকারীকে ব্যবহার করে</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (প্ল্যাটফর্ম <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">যেকোনও স্মার্ট কার্ড রিডার</translation>
+<translation id="2583949330716828639">সাইট সংক্রান্ত ব্যতিক্রম ম্যানেজ করুন</translation>
 <translation id="2584109212074498965">Kerberos টিকিট পাওয়া যায়নি। আবার চেষ্টা করুন অথবা আপনার সংস্থার ডিভাইস অ্যাডমিনের সাথে যোগাযোগ করুন। (সমস্যার কোড <ph name="ERROR_CODE" />)।</translation>
 <translation id="2584974473573720127">Chrome-এ ওয়েবসাইটের মাইক্রোফোন ব্যবহার করার অনুমতি ম্যানেজ করুন</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
@@ -5769,6 +5772,7 @@
 <translation id="4871322859485617074">পিনে ভুল অক্ষর আছে</translation>
 <translation id="4871370605780490696">বুকমার্ক যোগ করুন</translation>
 <translation id="4871568871368204250">সিঙ্ক করা বন্ধ করুন</translation>
+<translation id="4871630917300912613">জাভাস্ক্রিপ্ট গার্ডরেল</translation>
 <translation id="4871719318659334896">গ্রুপ বন্ধ করুন</translation>
 <translation id="4872192066608821120">পাসওয়ার্ড ইমপোর্ট করার জন্য, CSV ফাইল বেছে নিন</translation>
 <translation id="4872212987539553601">অন-ডিভাইস এনক্রিপশন সেট-আপ করা</translation>
@@ -6705,7 +6709,6 @@
 <translation id="5523532775593636291">আপনার যোগ করা সাইট সব সময় অ্যাক্টিভ থাকবে এবং সেগুলি থেকে মেমরি খালি হয়ে যাবে না</translation>
 <translation id="5523558474028191231">নামে অক্ষর, সংখ্যা ও বিশেষ অক্ষর ব্যবহার করা যেতে পারে এবং সর্বাধিক <ph name="MAX_CHARACTER_COUNT" /> অক্ষরের মধ্যে লিখতে হবে</translation>
 <translation id="5526745900034778153">সিঙ্ক আবার চালু করতে আবার সাইন-ইন করুন</translation>
-<translation id="5527211644528700597">বিপদ শনাক্ত করতে অন-ডিভাইস পদ্ধতি ব্যবহার করে</translation>
 <translation id="5527474464531963247">আপনি হয়ত অন্য নেটওয়ার্ক নির্বাচন করতে পারেন৷</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ইনস্টল করা হচ্ছে</translation>
 <translation id="5527822190489075064">অপ্টিমাইজড চার্জিং</translation>
@@ -6904,7 +6907,6 @@
 <translation id="5663459693447872156">স্বয়ংক্রিয়ভাবে অর্ধপ্রস্থে স্যুইচ করুন</translation>
 <translation id="5663653125349867535">&amp;পড়ার তালিকা</translation>
 <translation id="5663918299073387939">সাইট সাধারণত, মিউজিক তৈরি, এডিট বা ডিভাইসের ফার্মওয়্যার আপডেট করতে MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্রাম করার জন্য অনুমতি চায়</translation>
-<translation id="5666116074010586111">আরও দ্রুত ঝুঁকি শনাক্ত করার জন্য URL ও পৃষ্ঠার কন্টেন্ট Google-এ পাঠিয়ে দেয়</translation>
 <translation id="5666911576871845853">&amp;নতুন প্রোফাইল যোগ করুন</translation>
 <translation id="5667293444945855280">দূষিত</translation>
 <translation id="5667546120811588575">Google Play সেট-আপ করা হচ্ছে...</translation>
@@ -7143,6 +7145,7 @@
 <translation id="583673505367439042">সাইট আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="5836999627049108525">যে ভাষা থেকে অনুবাদ করতে হবে</translation>
 <translation id="583756221537636748">কেস</translation>
+<translation id="5840656138956959276">উন্নত: স্ট্রিক্ট</translation>
 <translation id="5840680448799937675">সর্বদা ফাইল অফলাইনে শেয়ার করা হবে</translation>
 <translation id="5841270259333717135">ইথারনেট কনফিগার করুন</translation>
 <translation id="5841338463993781099">অ্যাকাউন্টে সেভ করবেন?</translation>
@@ -7969,6 +7972,7 @@
 <translation id="6411135999030237579">'কী' অটোমেটিক রিপিট করতে প্রেস করে ধরে রাখুন</translation>
 <translation id="6414618057231176439"><ph name="VM_NAME" />-এর কোন ভার্সন ইনস্টল করতে হবে তা বেছে নিন।</translation>
 <translation id="641469293210305670">অ্যাপ ও আপডেটগুলি ইনস্টল করুন</translation>
+<translation id="6415434255504060856">সব সাইটের জন্য স্ট্রিক্ট</translation>
 <translation id="6415757856498750027">"ư" পেতে "w" টাইপ করুন</translation>
 <translation id="6415816101512323589">আপনার ডেটা সুরক্ষিত করতে স্থানীয় ডেটা রিকভারি চালু করবেন?</translation>
 <translation id="6415900369006735853">আপনার ফোনের মাধ্যমে ইন্টারনেটে কানেক্ট করুন</translation>
@@ -8100,7 +8104,6 @@
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">আপনার Chromebook রিস্টার্ট করে আবার চেষ্টা করুন</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> মুছে ফেলার বিষয়টি বিবেচনা করুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারে</translation>
-<translation id="6512364354776355686">অসুরক্ষিত সব কানেকশন সম্পর্কে আপনাকে সতর্ক করে</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> মুড সহ <ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি।</translation>
 <translation id="6513247462497316522">যদি আপনি অন্য নেটওয়ার্কের সাথে সংযুক্ত না থাকেন তাহলে Google Chrome মোবাইল ডেটা ব্যবহার করবে৷</translation>
 <translation id="6514010653036109809">উপলব্ধ ডিভাইস:</translation>
@@ -8366,6 +8369,7 @@
 <translation id="6686665106869989887">ট্যাব ডানদিকে সরে গেছে</translation>
 <translation id="6686676261102452995">আপনি আজ খুলেছেন</translation>
 <translation id="6686817083349815241">আপনার পাসওয়ার্ড সেভ করুন</translation>
+<translation id="6686878118106035853">কাস্টম 'উন্নত সুরক্ষা' সব সাইটের জন্য জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করে দেয়</translation>
 <translation id="6687008241368170505">Google Password Manager পিন পরিবর্তন করুন</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> লুকান</translation>
 <translation id="6689948774466767379">মাউস কী</translation>
@@ -10050,7 +10054,6 @@
 <translation id="7830833461614351956">খোলার জন্য <ph name="CLOUD_PROVIDER" />-এ <ph name="NUM_OF_FILES" />টি ফাইল কপি করবেন?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">সংরক্ষিত কাস্টম শব্দ এখানে দেখা যাবে</translation>
-<translation id="7833725807105678871">উন্নত নিরাপত্তা ফিচারের চেয়ে সাইটের স্পিডকে অগ্রাধিকার দেয়</translation>
 <translation id="7834832693620032149">অডিও শেয়ার করার জন্য বরং কোনও ট্যাব অথবা উইন্ডো শেয়ার করুন</translation>
 <translation id="7836577093182643605">আপনি ব্লক করেছেন এমন বিষয়গুলির তালিকা যা আপনি সাইটে শেয়ার করতে চান না</translation>
 <translation id="7836850009646241041">আপনার নিরাপত্তা কী আবার স্পর্শ করার চেষ্টা করুন</translation>
@@ -10847,6 +10850,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">আপনি এই ডিভাইসে আগেই রেজিস্টার করেছেন। আপনাকে আর এটি রেজিস্টার করতে হবে না।</translation>
 <translation id="8357388086258943206">Linux ইনস্টল করার সময় সমস্যা হচ্ছে</translation>
+<translation id="8357883857705092796">শনাক্ত করা যায়নি এমন সাইট</translation>
 <translation id="8358685469073206162">পৃষ্ঠাগুলি পুনরুদ্ধার করবেন?</translation>
 <translation id="835927394551949760">Google-কে জিজ্ঞাসা করুন</translation>
 <translation id="835951711479681002">আপনার Google অ্যাকাউন্টে সেভ করুন</translation>
@@ -11541,7 +11545,6 @@
 <translation id="8821045908425223359">আইপি অ্যাড্রেস অটোমেটিক কনফিগার করুন</translation>
 <translation id="8821268776955756404">এবার <ph name="APP_NAME" /> ব্যবহার করতে পারবেন।</translation>
 <translation id="882204272221080310">নিরাপত্তা আরও সুরক্ষার জন্য ফার্মওয়্যার আপডেট করুন।</translation>
-<translation id="8822690627597552656">সাধারণ অ্যাটাক ব্লক করতে, কিছু অপরিচিত সাইট স্লো করে দেয়</translation>
 <translation id="8823514049557262177">লিঙ্ক টেক্সট কপি করুন</translation>
 <translation id="8823704566850948458">পাসওয়ার্ড সাজেস্ট করুন...</translation>
 <translation id="8823963789776061136">বিকল্প হিসেবে প্রিন্টার PPD বেছে নিন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>

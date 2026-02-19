@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">ផ្ញើ​ទៅ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="3777796259512476958">នាំអ្នក​ចេញពីគេហទំព័រ​ភាគច្រើន</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{ផ្ទាំង 1}other{ផ្ទាំង #}}</translation>
+<translation id="3792938779249970121">ជ្រើសរើសគណនី</translation>
 <translation id="3795154175078851242">ចម្លងរូបភាពដែលមានតំណ</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលឮសំឡេងដែលបាន​ខ្ទាស់ និង​បានជ្រើសរើស</translation>
 <translation id="3810973564298564668">គ្រប់គ្រង</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">ការកំណត់ឱ្យស្រប​តាមបុគ្គល</translation>
 <translation id="6341580099087024258">សួររក​កន្លែងដែលត្រូវរក្សាទុក​ឯកសារ</translation>
 <translation id="6342069812937806050">អំបាញ់មិញនេះ</translation>
+<translation id="634208815998129842">កម្មវិធីគ្រប់គ្រងភារកិច្ច</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}}</translation>
 <translation id="6345878117466430440">សម្គាល់​ថា​បានអាន​ហើយ</translation>
 <translation id="6356893102071098867">ពិនិត្យមើលថា​អ្នកបាន​ជ្រើសរើស​គណនី​ដែលត្រឹមត្រូវ</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">គ្រប់គ្រង​ខ្លឹមសារ​ដែលអ្នក​តាមដាន ព្រមទាំង​ការស្វែងរក និង​ប្រធានបទ​ដែលបាន​ណែនាំ</translation>
 <translation id="7119984597597798764">បិទ<ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">ចូលគណនី Chrome</translation>
+<translation id="7136694880210472378">ដាក់ជាលំនាំដើម</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{បាន​ពិនិត្យមើល​ការអនុញ្ញាត​សម្រាប់​គេហទំព័រ 1}other{បាន​ពិនិត្យមើល​ការអនុញ្ញាត​សម្រាប់​គេហទំព័រ #}}</translation>
 <translation id="7138678301420049075">ផ្សេងទៀត</translation>
 <translation id="7140829094791862589">តម្រៀបតាមលំដាប់ដោយផ្ទាល់ដៃ</translation>

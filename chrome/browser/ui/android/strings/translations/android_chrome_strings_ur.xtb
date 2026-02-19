@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">اپنے آلات پر بھیجیں</translation>
 <translation id="3777796259512476958">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
+<translation id="3792938779249970121">اکاؤنٹ منتخب کریں</translation>
 <translation id="3795154175078851242">لنک کے ساتھ تصویر کاپی کریں</translation>
 <translation id="3807999512799921804">‫<ph name="TAB_TITLE" />، منتخب کردہ پن کردہ قابل سماعت پوشیدگی ٹیب</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">ذاتی نوعیت سازی</translation>
 <translation id="6341580099087024258">پوچھیں کہ فائلیں کہاں محفوظ کرنی ہیں</translation>
 <translation id="6342069812937806050">ابھی ابھی</translation>
+<translation id="634208815998129842">ٹاسک مینیجر</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> مزید}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> مزید}}</translation>
 <translation id="6345878117466430440">بطور پڑھا ہوا مارک کریں</translation>
 <translation id="6356893102071098867">چیک کریں کہ آپ نے صحیح اکاؤنٹ کا انتخاب کیا ہے</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">اس مواد کا جس کی آپ پیروی کرتے ہیں اور تجویز کردہ موضوعات اور تلاشوں کا نظم کریں</translation>
 <translation id="7119984597597798764">‫<ph name="INSTANCE_TITLE" /> بند کریں</translation>
 <translation id="7121179479711575744">‏‫Chrome میں سائن ان کریں</translation>
+<translation id="7136694880210472378">ڈیفالٹ بنائیں</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 سائٹ کے لیے اجازتوں کا جائزہ لیا گیا}other{# سائٹس کے لیے اجازتوں کا جائزہ لیا گیا}}</translation>
 <translation id="7138678301420049075">دوسرا</translation>
 <translation id="7140829094791862589">دستی ترتیب کے مطابق ترتیب دیں</translation>

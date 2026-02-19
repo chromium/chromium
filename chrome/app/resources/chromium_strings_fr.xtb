@@ -240,6 +240,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3522404737534491619">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chromium dans les réglages système</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> est déjà connecté.  Pour séparer votre navigation, connectez-vous à Chromium dans votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Pour partager votre écran, autorisez l'enregistrement d'écran pour Chromium dans les réglages système.</translation>
+<translation id="3588112919289558122">La protection renforcée désactive l'optimisation JavaScript pour les sites que Chromium ne reconnaît pas</translation>
 <translation id="3597003331831379823">Échec de l'exécution de la configuration avec des droits élevés. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Connectez-vous à Chromium</translation>
 <translation id="3639635944603682591">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>

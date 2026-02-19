@@ -645,6 +645,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3777796259512476958">대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
+<translation id="3792938779249970121">계정 선택</translation>
 <translation id="3795154175078851242">링크가 있는 이미지 복사</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, 선택되고 고정되고 청취 가능한 시크릿 탭</translation>
 <translation id="3810973564298564668">관리</translation>
@@ -1269,6 +1270,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6340526405444716530">맞춤설정</translation>
 <translation id="6341580099087024258">파일 저장 위치 묻기</translation>
 <translation id="6342069812937806050">방금</translation>
+<translation id="634208815998129842">작업 관리자</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
 <translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6356893102071098867">올바른 계정을 선택했는지 확인</translation>
@@ -1485,6 +1487,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7117485132243600300">추천 주제, 검색어, 팔로우하는 콘텐츠 관리</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> 닫기</translation>
 <translation id="7121179479711575744">Chrome에 로그인</translation>
+<translation id="7136694880210472378">기본으로 설정</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{사이트 1개의 권한이 검토됨}other{사이트 #개의 권한이 검토됨}}</translation>
 <translation id="7138678301420049075">기타</translation>
 <translation id="7140829094791862589">직접 정렬</translation>

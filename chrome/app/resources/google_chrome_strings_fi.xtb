@@ -502,6 +502,7 @@
 <translation id="6251759518630934363">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
 <translation id="6277547788421725101">Vanhempasi on laittanut Chromen "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
 <translation id="627882678981830918">Yksilöi Chromea ja muuta sen asetuksia. Valitse Chrome oletusselaimeksi.</translation>
+<translation id="6280042952415350607">Parannettu suojaus laittaa JavaScript-optimoinnin pois päältä sivustoilla, joita Chrome ei tunnista</translation>
 <translation id="6288580400488258237">Valitse Google Chrome oletusselaimeksi ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="6291089322031436445">Chromen kehittäjäversion sovellukset</translation>
 <translation id="6291549208091401781">Google Chrome on jo asennettuna kaikille tietokoneen käyttäjille.</translation>

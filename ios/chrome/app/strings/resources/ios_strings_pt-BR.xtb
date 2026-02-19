@@ -1404,7 +1404,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6140948187512243695">Mostrar detalhes</translation>
 <translation id="6144589619057374135">Abrir ${url} na navegação anônima</translation>
 <translation id="6146563240635539929">Vídeos</translation>
-<translation id="6147279996212084542">Explicar</translation>
 <translation id="6151006591088192882">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inativas</translation>
 <translation id="6152406514676263192">Sincronize para receber conteúdo mais relevante com base nos seus interesses.</translation>
@@ -2060,6 +2059,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8439758443371991593">Ocultar "Adicionar à Lista de leitura"</translation>
 <translation id="8443986842926457191">O URL tem mais de 2.048 caracteres</translation>
 <translation id="8449869326050867919">Senha compartilhada</translation>
+<translation id="8473815223723723001">Editar imagem com o Gemini</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8477178913400731244">Excluir dados</translation>

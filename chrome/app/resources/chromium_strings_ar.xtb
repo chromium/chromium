@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings)</translation>
 <translation id="3530103706039034513">‏سبق أن تم تسجيل الدخول إلى حساب "<ph name="EXISTING_USER" />".  للحصول على تجربة تصفّح منفصلة، سجِّل الدخول إلى Chromium في ملفك الشخصي باستخدام العنوان <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
+<translation id="3588112919289558122">‏يؤدي تفعيل ميزة "الحماية المحسّنة" إلى إيقاف ميزة تحسين JavaScript للمواقع الإلكترونية التي لا يتعرّف عليها Chromium</translation>
 <translation id="3597003331831379823">تعذَّر إجراء عملية الإعداد باستخدام أذونات مميزة وعالية المستوى. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">‏سجِّل الدخول إلى Chromium</translation>
 <translation id="3639635944603682591">‏ستُحذَف بيانات تصفُّح هذا المستخدم من هذا الجهاز. ولاسترداد البيانات، سجّل الدخول إلى Chromium بصفتك <ph name="USER_EMAIL" />.</translation>

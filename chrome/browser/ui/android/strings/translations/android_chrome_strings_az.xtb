@@ -645,6 +645,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3775705724665058594">Cihazlara göndərin</translation>
 <translation id="3777796259512476958">Əksər saytlardan çıxacaqsınız</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
+<translation id="3792938779249970121">Hesab seçin</translation>
 <translation id="3795154175078851242">Şəkli keçid ilə kopyalayın</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, Seçilmiş, bərkidilmiş, səsli anonim tab</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
@@ -1267,6 +1268,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6340526405444716530">Fərdiləşdirmə</translation>
 <translation id="6341580099087024258">Faylları harada yadda saxlamaq lazım olduğunu öyrənin</translation>
 <translation id="6342069812937806050">İndicə</translation>
+<translation id="634208815998129842">Tapşırıq meneceri</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> digəri}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> digəri}}</translation>
 <translation id="6345878117466430440">Oxunmuş kimi qeyd edin</translation>
 <translation id="6356893102071098867">Düzgün hesabı seçib-seçmədiyinizi yoxlayın</translation>
@@ -1483,6 +1485,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7117485132243600300">İzlədiyiniz kontenti, təklif olunan mövzuları və axtarışları idarə edin</translation>
 <translation id="7119984597597798764">Bağlayın: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Chrome-a daxil olun</translation>
+<translation id="7136694880210472378">Defolt edin</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 sayt üçün icazələr nəzərdən keçirilib}other{# sayt üçün icazələr nəzərdən keçirilib}}</translation>
 <translation id="7138678301420049075">Digər</translation>
 <translation id="7140829094791862589">Çeşidləyin: Manual sıra</translation>

@@ -2011,6 +2011,7 @@
 <translation id="2332742915001411729">إعادة الضبط على الإعداد التلقائي</translation>
 <translation id="2333166365943957309">التسلسل الهرمي لواجهة المستخدم</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
+<translation id="2334384018887664164">يمكنك إضافة المواقع الإلكترونية الموثوقة إلى القائمة المسموح بها في إعدادات المحتوى</translation>
 <translation id="233471714539944337">يتضمّن الملف محتوى حسّاسًا.</translation>
 <translation id="2335758110242123814">فتح المجموعة</translation>
 <translation id="2336228925368920074">وضع إشارة على جميع علامات التبويب...</translation>
@@ -2106,6 +2107,7 @@
 <translation id="240789602312469910">‏إرسال بيانات الاستخدام والتشخيص: يمكنك المساهمة في تحسين تجربة طفلك على Android من خلال إرسال بيانات التشخيص وبيانات استخدام التطبيقات والجهاز تلقائيًا إلى Google. ولن يتم استخدام هذه البيانات لتحديد هوية طفلك، بل ستُستخدَم لتعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. ستساعد أيضًا بعض البيانات المجمّعة تطبيقات Google وشركاءها، مثل مطوّري تطبيقات Android. ويفرض المالك هذا <ph name="BEGIN_LINK1" />الإعداد<ph name="END_LINK1" />. قد يختار المالك إرسال بيانات الاستخدام والتشخيص لهذا الجهاز إلى Google. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لطفلك، قد يتم حفظ هذه البيانات في حسابه على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات حول المقاييس<ph name="BEGIN_LINK2_END" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">جارٍ حفظ البطاقة</translation>
 <translation id="2408742686124047357">‏تثبيت "عدسة Google" في شريط الأدوات للوصول إليها بسهولة في المرة القادمة</translation>
+<translation id="2408762424059547338">‏تحمي هذه الميزة حسابك بشكل أفضل من الهجمات من خلال إيقاف ميزة تحسين JavaScript</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2409268599591722235">بدء الاستخدام</translation>
 <translation id="2409378541210421746">تغيير اللغة التي تم اختيارها</translation>
@@ -2382,6 +2384,7 @@
 <translation id="2581992808349413349">‏استخدِم اتصالاً آمنًا للبحث عن عنوان IP لموقع إلكتروني في نظام أسماء النطاقات (DNS). ويعتمد ذلك على مقدِّم خدمة مُدار ومسجّل على الرابط <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (النظام الأساسي <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">أي قارئ بطاقات ذكية</translation>
+<translation id="2583949330716828639">إدارة استثناءات المواقع الإلكترونية</translation>
 <translation id="2584109212074498965">‏تعذّر الحصول على تذكرة Kerberos. يُرجى إعادة المحاولة أو التواصل مع مشرف أجهزة مؤسستك. (رمز الخطأ <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">‏إدارة أذونات وصول المواقع الإلكترونية إلى الميكروفون في Chrome</translation>
 <translation id="2586561813241011046">تعذّر تثبيت <ph name="APP_NAME" />. يُرجى إعادة المحاولة أو التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
@@ -5758,6 +5761,7 @@
 <translation id="4871322859485617074">يحتوي رقم التعريف الشخصي على أحرف غير صالحة</translation>
 <translation id="4871370605780490696">إضافة إشارة مرجعية</translation>
 <translation id="4871568871368204250">إيقاف المزامنة</translation>
+<translation id="4871630917300912613">‏الإجراءات الوقائية في JavaScript</translation>
 <translation id="4871719318659334896">إغلاق المجموعة</translation>
 <translation id="4872192066608821120">‏لاستيراد كلمات مرور، اختَر أحد ملفات CSV.</translation>
 <translation id="4872212987539553601">ضبط إعدادات "التشفير على الجهاز فقط"</translation>
@@ -6694,7 +6698,6 @@
 <translation id="5523532775593636291">ستظل المواقع الإلكترونية التي تضيفها نشطة دائمًا ولن يتم إخلاء المساحة التي تشغلها في الذاكرة.</translation>
 <translation id="5523558474028191231">يمكن أن يحتوي الاسم على أحرف وأرقام ورموز خاصة، ويجب ألا يزيد عن <ph name="MAX_CHARACTER_COUNT" /> حرف.</translation>
 <translation id="5526745900034778153">تسجيل الدخول مرة أخرى لاستئناف المزامنة</translation>
-<translation id="5527211644528700597">يتم استخدام طرق على الجهاز لرصد التهديدات</translation>
 <translation id="5527474464531963247">يمكنك أيضا اختيار شبكة أخرى.</translation>
 <translation id="5527597176701279474">جارٍ تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="5527822190489075064">الشحن المحسَّن</translation>
@@ -6892,7 +6895,6 @@
 <translation id="5663459693447872156">الانتقال تلقائيًا إلى منتصف العرض</translation>
 <translation id="5663653125349867535">قائمة القراءة</translation>
 <translation id="5663918299073387939">‏تطلب المواقع الإلكترونية عادةً التحكُّم في أجهزة MIDI وإعادة برمجتها لإنشاء المقاطع الموسيقية أو تعديلها أو تحديث البرامج الثابتة للجهاز.</translation>
-<translation id="5666116074010586111">‏يتم إرسال عنوان URL ومحتوى الصفحة إلى Google لرصد التهديدات بشكل أسرع</translation>
 <translation id="5666911576871845853">&amp;إضافة ملف شخصي جديد</translation>
 <translation id="5667293444945855280">برامج ضارة</translation>
 <translation id="5667546120811588575">‏جارٍ إعداد Google Play...</translation>
@@ -7131,6 +7133,7 @@
 <translation id="583673505367439042">السماح للمواقع الإلكترونية بطلب تعديل الملفات والمجلدات على جهازك</translation>
 <translation id="5836999627049108525">لغة النص المطلوب ترجمته</translation>
 <translation id="583756221537636748">الحافظة</translation>
+<translation id="5840656138956959276">مُحسّنة: صارمة</translation>
 <translation id="5840680448799937675">ستتم دائمًا مشاركة الملفات بلا اتصال بالإنترنت.</translation>
 <translation id="5841270259333717135">ضبط إعدادات إيثرنت</translation>
 <translation id="5841338463993781099">هل تريد الحفظ في الحساب؟</translation>
@@ -7957,6 +7960,7 @@
 <translation id="6411135999030237579">الضغط مع الاستمرار لتكرار المفتاح تلقائيًا</translation>
 <translation id="6414618057231176439">اختَر إصدار "<ph name="VM_NAME" />" الذي تريد تثبيته.</translation>
 <translation id="641469293210305670">تثبيت التطبيقات والتحديثات</translation>
+<translation id="6415434255504060856">إعداد صارم في جميع المواقع الإلكترونية</translation>
 <translation id="6415757856498750027">‏اكتب w لإظهار ư</translation>
 <translation id="6415816101512323589">هل تريد تفعيل ميزة استرداد البيانات المحلية لحماية بياناتك؟</translation>
 <translation id="6415900369006735853">يمكنك الاتصال بالإنترنت من خلال هاتفك.</translation>
@@ -8088,7 +8092,6 @@
 <translation id="6508261954199872201">التطبيق: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">‏يُرجى إعادة تشغيل جهاز Chromebook وإعادة المحاولة.</translation>
 <translation id="6511827214781912955">ننصحك بحذف الملف "<ph name="FILENAME" />"، حتى لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
-<translation id="6512364354776355686">يتم تحذيرك بشأن جميع الاتصالات غير الآمنة</translation>
 <translation id="6512759338201777379">تم إنشاء الصورة رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />" والحالة "<ph name="MOOD" />".</translation>
 <translation id="6513247462497316522">‏سيستخدم Google Chrome بيانات الجوال إذا لم تكن متصلاً بشبكة أخرى.</translation>
 <translation id="6514010653036109809">الجهاز المتاح:</translation>
@@ -8360,6 +8363,7 @@
 <translation id="6686665106869989887">تم نقل علامة التبويب إلى اليمين.</translation>
 <translation id="6686676261102452995">تم فتحه اليوم</translation>
 <translation id="6686817083349815241">حفظ كلمة المرور</translation>
+<translation id="6686878118106035853">‏يؤدي إيقاف ميزة "الحماية المحسّنة" المخصّصة إلى إيقاف ميزة تحسين JavaScript لجميع المواقع الإلكترونية</translation>
 <translation id="6687008241368170505">‏تغيير رقم التعريف الشخصي لخدمة "مدير كلمات المرور في Google"</translation>
 <translation id="6687079240787935001">إخفاء <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">مفاتيح الماوس</translation>
@@ -10044,7 +10048,6 @@
 <translation id="7830833461614351956">هل تريد نسخ <ph name="NUM_OF_FILES" /> ملف إلى <ph name="CLOUD_PROVIDER" /> وفتحه؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">ستظهر هنا الكلمات المُخصصة المحفوظة</translation>
-<translation id="7833725807105678871">يتم إعطاء الأولوية لسرعة الموقع على حساب ميزات الأمان المحسّنة</translation>
 <translation id="7834832693620032149">لمشاركة الصوت، يُرجى مشاركة علامة تبويب أو نافذة بدلاً من ذلك</translation>
 <translation id="7836577093182643605">تضم هذه القائمة المواضيع التي حظرتها ولا تريد مشاركتها مع المواقع الإلكترونية.</translation>
 <translation id="7836850009646241041">يُرجى محاولة لمس مفتاح الأمان مرة أخرى.</translation>
@@ -10842,6 +10845,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">سبق تسجيل هذا الجهاز. لا داعي لتسجيله مرة أخرى.</translation>
 <translation id="8357388086258943206">‏حدث خطأ أثناء تثبيت نظام التشغيل Linux</translation>
+<translation id="8357883857705092796">المواقع الإلكترونية غير المعروفة</translation>
 <translation id="8358685469073206162">هل تريد استعادة الصفحات؟</translation>
 <translation id="835927394551949760">‏طرح أسئلة على Google</translation>
 <translation id="835951711479681002">‏حفظ كلمة المرور في حسابك على Google</translation>
@@ -11539,7 +11543,6 @@
 <translation id="8821045908425223359">‏ضبط عنوان IP تلقائيًا</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> جاهز للاستخدام.</translation>
 <translation id="882204272221080310">يمكنك تحديث البرامج الثابتة لمزيد من الأمان.</translation>
-<translation id="8822690627597552656">يتم إبطاء سرعة بعض المواقع الإلكترونية غير المألوفة لحظر الهجمات الشائعة</translation>
 <translation id="8823514049557262177">نسخ &amp;نص الرابط</translation>
 <translation id="8823704566850948458">اقتراح كلمة مرور...</translation>
 <translation id="8823963789776061136">‏يمكنك، بدلاً من ذلك، اختيار ملف PPD للطابعة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>

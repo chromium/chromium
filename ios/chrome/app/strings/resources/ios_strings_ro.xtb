@@ -1404,7 +1404,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6140948187512243695">Afișează detaliile</translation>
 <translation id="6144589619057374135">Deschide ${url} în modul incognito</translation>
 <translation id="6146563240635539929">Videoclipuri</translation>
-<translation id="6147279996212084542">Explică</translation>
 <translation id="6151006591088192882">Deblochează filele incognito cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactive</translation>
 <translation id="6152406514676263192">Sincronizează pentru conținutul cel mai relevant în funcție de interesele tale.</translation>
@@ -2060,6 +2059,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8439758443371991593">Ascunde opțiunea Adaugă în lista de lecturi</translation>
 <translation id="8443986842926457191">Adresa URL are peste 2.048 de caractere.</translation>
 <translation id="8449869326050867919">S-a permis accesul la parolă</translation>
+<translation id="8473815223723723001">Editează imaginea cu Gemini</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="8474378002946546633">Permiteți notificări</translation>
 <translation id="8477178913400731244">Șterge datele</translation>

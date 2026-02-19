@@ -1053,6 +1053,7 @@
 <translation id="1695510246756136088">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકાતું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="1696214930320482113">વિવિધ પ્રોફાઇલને કારણે તમને બીજા બ્રાઉઝર પર સ્વિચ કર્યા વિના ઑફિસ, વ્યક્તિગત અને ગેમિંગ માટેની પ્રોફાઇલ અલગ-અલગ રાખવાની સુવિધા મળે છે. હમણાં જ નવી પ્રોફાઇલ ઉમેરો.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
+<translation id="1696685050160038195">તમારું ડિવાઇસ સુરક્ષિત રાખવા માટે, તમારે માત્ર વિશ્વસનીય સૉર્સ અને ડેવલપરના સૉફ્ટવેર ઇન્સ્ટૉલ કરવા અને તેનો ઉપયોગ કરવો જોઈએ.</translation>
 <translation id="169675691788639886">ડિવાઇસ માટે SSH સર્વર ગોઠવવામાં આવ્યું છે. સંવેદનશીલ એકાઉન્ટ વડે સાઇન ઇન કરશો નહીં.</translation>
 <translation id="1697122132646041614">થમ્બ્સ ડાઉન તમને શા માટે આ પરિણામો નાપસંદ છે તે વિશેનો વિગતવાર પ્રતિસાદ સબમિટ કરવા માટેનું ફોર્મ ખોલે છે.</translation>
 <translation id="1697532407822776718">તમારું બધું સેટ છે!</translation>
@@ -5866,6 +5867,7 @@
 <translation id="4943927218331934807">પાસવર્ડ જરૂરી છે</translation>
 <translation id="4944310289250773232">આ પ્રમાણીકરણ સેવા <ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ કરવામાં આવે છે</translation>
 <translation id="4945439665401275950">ફિંગરપ્રિન્ટનું સેટઅપ કરવા માટે, તમારા બાળકને પાવર બટનને ટચ કરવા જણાવો. તમારા બાળકની ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને તે હંમેશાં આ <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
+<translation id="4946215577126251136">પ્રોજેક્ટ પૅનલ બટન બતાવો</translation>
 <translation id="4946998421534856407">લૉન્ચર + ઉપરની ઍરો કી</translation>
 <translation id="4947376546135294974">તમે મુલાકાત લો છો તે સાઇટનો ડેટા</translation>
 <translation id="4948370357877377178">તમારા કાર્યો ચાલુ રાખો</translation>
@@ -6694,11 +6696,11 @@
 <translation id="5523532775593636291">તમે ઉમેરો છો તે બધી સાઇટ હંમેશાં સક્રિય રહેશે અને તેમની મેમરી ખાલી કરવામાં આવશે નહીં</translation>
 <translation id="5523558474028191231">નામમાં અક્ષર, સંખ્યા અને વિશેષ વર્ણનો ઉપયોગ કરી શકાય છે અને તે <ph name="MAX_CHARACTER_COUNT" /> અક્ષરનું કે તેનાથી ટૂંકું હોવું આવશ્યક છે</translation>
 <translation id="5526745900034778153">સિંકને ફરી શરૂ કરવા માટે ફરીથી સાઇન ઇન કરો</translation>
-<translation id="5527211644528700597">જોખમોની ભાળ મેળવવા માટે ડિવાઇસ પરની પદ્ધતિઓનો ઉપયોગ કરે છે</translation>
 <translation id="5527474464531963247">તમે બીજું નેટવર્ક પણ પસંદ કરી શકો છો. </translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરી રહ્યાં છીએ</translation>
 <translation id="5527822190489075064">ઑપ્ટિમાઇઝ કરેલું ચાર્જિંગ</translation>
 <translation id="5529554942700688235">મેમરી બચતનો સારાંશ, <ph name="MEMORY_VALUE" /> મેમરી ખાલી કરી</translation>
+<translation id="5529693968082667490">'ટૅબની શોધ' બટન બતાવો</translation>
 <translation id="5530977410273748884">Google Password Managerમાં તમારો પાસવર્ડ સાચવવા માટે, કી પર ક્લિક કરો</translation>
 <translation id="5532223876348815659">વૈશ્વિક</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />ને આ પરવાનગીની જરૂર છે</translation>
@@ -6893,7 +6895,6 @@
 <translation id="5663459693447872156">અર્ધપહોળાઈ પર આપમેળે સ્વિચ કરો</translation>
 <translation id="5663653125349867535">અને વાંચન સૂચિ</translation>
 <translation id="5663918299073387939">Sites સામાન્ય રીતે મ્યુઝિકની રચના કરવા, મ્યુઝિકમાં ફેરફાર કરવા અથવા ડિવાઇસના ફર્મવેયરને અપડેટ કરવા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાનું કહે છે</translation>
-<translation id="5666116074010586111">જોખમોની વધુ ઝડપથી ભાળ મેળવવા માટે, URL અને પેજનું કન્ટેન્ટ Googleને મોકલે છે</translation>
 <translation id="5666911576871845853">નવી પ્રોફાઇલ &amp;ઉમેરો</translation>
 <translation id="5667293444945855280">મૉલવેર</translation>
 <translation id="5667546120811588575">Google Play સેટ કરી રહ્યાં છીએ...</translation>
@@ -8092,7 +8093,6 @@ USB ડિવાઇસ</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">તમારી Chromebook ફરી શરૂ કરો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />ને ડિલીટ કરવાનું વિચારો, જેથી આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારા પાસવર્ડ ન જોઈ શકે</translation>
-<translation id="6512364354776355686">તમને બધા અસુરક્ષિત કનેક્શન વિશે ચેતવણી આપે છે</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> મૂડ ધરાવતી <ph name="SUBJECT" />ની <ph name="INDEX" /> છબી જનરેટ કરી.</translation>
 <translation id="6513247462497316522">જો તમે બીજા નેટવર્કથી કનેક્ટ નથી, તો Google Chrome મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
 <translation id="6514010653036109809">ઉપલબ્ધ ઉપકરણ:</translation>
@@ -8254,6 +8254,7 @@ USB ડિવાઇસ</translation>
 <translation id="6613267708691765962">માલવેર માટે સ્કૅન કરી રહ્યાં છીએ...</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
 <translation id="6618013221808317456">સાઇટને JavaScript ઑપ્ટિમાઇઝેશનનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
+<translation id="6618154741503063152">અપલોડ કરી શકતા નથી. જોડાણોને મંજૂરી આપવામાં આવતી નથી.</translation>
 <translation id="6619058681307408113">લાઇન પ્રિન્ટર ડેમન (LPD)</translation>
 <translation id="661907246513853610">સાઇટ તમારા સ્થાનને ટ્રૅક કરી શકે છે</translation>
 <translation id="6619243162837544323">નેટવર્કની સ્થિતિ</translation>
@@ -10043,7 +10044,6 @@ USB ડિવાઇસ</translation>
 <translation id="7830833461614351956">ખોલવા માટે <ph name="NUM_OF_FILES" /> ફાઇલને <ph name="CLOUD_PROVIDER" /> પર કૉપિ કરીએ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">સાચવેલ કસ્ટમ શબ્દો અહીં દેખાશે</translation>
-<translation id="7833725807105678871">વધારેલી સુરક્ષા સંબંધિત સુવિધાઓને બદલે સાઇટની સ્પીડને પ્રાધાન્યતા આપે છે</translation>
 <translation id="7834832693620032149">ઑડિયો શેર કરવા માટે, તેના બદલે ટૅબ અથવા વિન્ડો શેર કરો</translation>
 <translation id="7836577093182643605">તમે બ્લૉક કરેલા એવા વિષયોની સૂચિ કે જે અન્ય સાઇટ સાથે તમે શેર કરવા માગતા નથી</translation>
 <translation id="7836850009646241041">તમારી સિક્યુરિટી કીને ફરી સ્પર્શ કરી જુઓ</translation>
@@ -10347,6 +10347,7 @@ USB ડિવાઇસ</translation>
 <translation id="8034399942062051455">V8 ઑપ્ટિમાઇઝેશન બંધ છે</translation>
 <translation id="8034697324150621782">ઉપરની બાજુના વ્યૂ સાથે સ્વૉપ કરો</translation>
 <translation id="8035059678007243127">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલું છૂપું પેજ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">સાચવેલા ટૅબના ગ્રૂપનું બટન બતાવો</translation>
 <translation id="8036193484521570992">ઑટોમૅટિક રીતે ભરવાની સુવિધા બહેતર બનાવવાની રીત</translation>
 <translation id="8036504271468642248">પહેલાંનું વાક્ય</translation>
 <translation id="8037117027592400564">સિન્થેસાઇઝ કરેલ વાણીનો ઉપયોગ કરીને બધી બોલાયેલ ટેક્સ્ટને વાંચો</translation>
@@ -11530,7 +11531,6 @@ USB ડિવાઇસ</translation>
 <translation id="8821045908425223359">IP સરનામું ઑટોમૅટિક રીતે ગોઠવો</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ઉપયોગ કરવા માટે તૈયાર છે.</translation>
 <translation id="882204272221080310">વધારાની સુરક્ષા માટે ફર્મવેયર અપડેટ કરો.</translation>
-<translation id="8822690627597552656">સામાન્ય અટૅકને બ્લૉક કરવા માટે કેટલીક અપરિચિત સાઇટને ધીમી કરે છે</translation>
 <translation id="8823514049557262177">લિંક ટે&amp;ક્સ્ટને કૉપિ કરો</translation>
 <translation id="8823704566850948458">પાસવર્ડ સૂચવો...</translation>
 <translation id="8823963789776061136">વૈકલ્પિક રીતે, પ્રિન્ટર PPD પસંદ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>

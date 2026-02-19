@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്‌ക്കുക</translation>
 <translation id="3777796259512476958">നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ടാബ്}other{# ടാബുകൾ}}</translation>
+<translation id="3792938779249970121">അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3795154175078851242">ലിങ്കിനൊപ്പം ചിത്രം പകർത്തുക</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, പിൻ ചെയ്ത, ഓഡിയോ പ്ലേ ചെയ്യുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="6341580099087024258">ഫയലുകൾ എവിടെയാണ് സംരക്ഷിക്കേണ്ടതെന്ന് ചോദിക്കുക</translation>
 <translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
+<translation id="634208815998129842">ടാസ്‌ക് മാനേജർ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6345878117466430440">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="6356893102071098867">നിങ്ങൾ ശരിയായ അക്കൗണ്ടാണോ തിരഞ്ഞെടുത്തതെന്ന് പരിശോധിക്കുക</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">നിങ്ങൾ പിന്തുടരുന്ന ഉള്ളടക്കവും നിർദ്ദേശിച്ച വിഷയങ്ങളും തിരയലുകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> അടയ്‌ക്കുക</translation>
 <translation id="7121179479711575744">Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="7136694880210472378">ഡിഫോൾട്ട് ആക്കുക</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 സൈറ്റിന്റെ അനുമതികൾ അവലോകനം ചെയ്തു}other{# സൈറ്റുകളുടെ അനുമതികൾ അവലോകനം ചെയ്തു}}</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
 <translation id="7140829094791862589">നേരിട്ടുള്ള ക്രമം പ്രകാരമടുക്കൂ</translation>

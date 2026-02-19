@@ -6692,7 +6692,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5523532775593636291">Weby, které přidáte, zůstanou vždy aktivní a neuvolní se z nich paměť</translation>
 <translation id="5523558474028191231">Název smí obsahovat písmena, číslice a zvláštní znaky a smí obsahovat maximálně <ph name="MAX_CHARACTER_COUNT" /> znaků</translation>
 <translation id="5526745900034778153">Chcete-li obnovit synchronizaci, znovu se přihlaste</translation>
-<translation id="5527211644528700597">K detekci hrozeb používá metody v zařízení</translation>
 <translation id="5527474464531963247">Můžete také vybrat jinou síť</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instaluje se</translation>
 <translation id="5527822190489075064">Optimalizované nabíjení</translation>
@@ -6888,7 +6887,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5663459693447872156">Automaticky přepnout na poloviční šířku</translation>
 <translation id="5663653125349867535">&amp;Seznam četby</translation>
 <translation id="5663918299073387939">O ovládání a přeprogramování zařízení MIDI žádají weby obvykle za účelem vytváření hudby, úpravy hudby nebo aktualizace firmwaru zařízení</translation>
-<translation id="5666116074010586111">Odesílá adresu URL a obsah stránky do Googlu, aby bylo možné rychleji odhalit hrozby</translation>
 <translation id="5666911576871845853">&amp;Přidat nový profil</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Nastavování Google Play...</translation>
@@ -8085,7 +8083,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6508261954199872201">Aplikace: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Restartujte Chromebook a zkuste to znovu</translation>
 <translation id="6511827214781912955">Zvažte smazání souboru <ph name="FILENAME" />, aby ostatní uživatelé tohoto zařízení neviděli vaše hesla</translation>
-<translation id="6512364354776355686">Varuje vás před všemi nezabezpečenými připojeními</translation>
 <translation id="6512759338201777379">Vygenerovaný obrázek <ph name="INDEX" /> na téma <ph name="SUBJECT" /> s náladou <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Pokud nebudete připojeni k jiné síti, použije prohlížeč Google Chrome mobilní data.</translation>
 <translation id="6514010653036109809">Dostupné zařízení:</translation>
@@ -10037,7 +10034,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7830833461614351956">Zkopírovat soubory (<ph name="NUM_OF_FILES" />) k otevření do úložiště <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tady se budou zobrazovat uložená vlastní slova</translation>
-<translation id="7833725807105678871">Dává přednost rychlosti webu před vylepšenými zabezpečovacími funkcemi</translation>
 <translation id="7834832693620032149">Pokud chcete sdílet zvuk, sdílejte místo toho kartu nebo okno</translation>
 <translation id="7836577093182643605">Seznam zablokovaných témat, která nechcete sdílet s weby</translation>
 <translation id="7836850009646241041">Zkuste se znovu dotknout bezpečnostního klíče</translation>
@@ -11529,7 +11525,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8821045908425223359">Nakonfigurovat IP adresu automaticky</translation>
 <translation id="8821268776955756404">Aplikace <ph name="APP_NAME" /> je připravená k použití.</translation>
 <translation id="882204272221080310">Kvůli lepšímu zabezpečení aktualizovat firmware</translation>
-<translation id="8822690627597552656">Zpomaluje některé neznámé weby, což pomáhá blokovat běžné útoky</translation>
 <translation id="8823514049557262177">Kopírovat te&amp;xt odkazu</translation>
 <translation id="8823704566850948458">Navrhnout heslo...</translation>
 <translation id="8823963789776061136">Případně vyberte PPD tiskárny. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>

@@ -645,6 +645,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3775705724665058594">Odeslat na vaše zařízení</translation>
 <translation id="3777796259512476958">Budete odhlášeni z většiny webů</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
+<translation id="3792938779249970121">Vybrat účet</translation>
 <translation id="3795154175078851242">Kopírovat obrázek s odkazem</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, vybraná připnutá slyšitelná anonymní karta</translation>
 <translation id="3810973564298564668">Spravovat</translation>
@@ -1269,6 +1270,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6340526405444716530">Personalizace</translation>
 <translation id="6341580099087024258">Zeptat se, kam se soubory mají uložit</translation>
 <translation id="6342069812937806050">Právě teď</translation>
+<translation id="634208815998129842">Správce úloh</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> dalších}}</translation>
 <translation id="6345878117466430440">Označit jako přečtené</translation>
 <translation id="6356893102071098867">Zkontrolujte, zda jste vybrali správný účet</translation>
@@ -1485,6 +1487,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7117485132243600300">Spravujte obsah, který sledujete, a navrhovaná témata a vyhledávání</translation>
 <translation id="7119984597597798764">Zavřít <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Přihlásit se do Chromu</translation>
+<translation id="7136694880210472378">Nastavit jako výchozí</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění # webů}many{Byla zkontrolována oprávnění # webu}other{Byla zkontrolována oprávnění # webů}}</translation>
 <translation id="7138678301420049075">Ostatní</translation>
 <translation id="7140829094791862589">Seřadit ručně</translation>

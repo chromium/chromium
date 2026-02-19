@@ -645,6 +645,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3777796259512476958">Bạn sẽ bị đăng xuất khỏi hầu hết các trang web</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
+<translation id="3792938779249970121">Chọn tài khoản</translation>
 <translation id="3795154175078851242">Sao chép hình ảnh bằng đường liên kết</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, Thẻ ẩn danh đang phát âm thanh, được ghim và được chọn</translation>
 <translation id="3810973564298564668">Quản lý</translation>
@@ -1269,6 +1270,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6340526405444716530">Cá nhân hóa</translation>
 <translation id="6341580099087024258">Hỏi vị trí lưu tệp</translation>
 <translation id="6342069812937806050">Vừa xong</translation>
+<translation id="634208815998129842">Trình quản lý tác vụ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tùy chọn khác}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tùy chọn khác}}</translation>
 <translation id="6345878117466430440">Đánh dấu là đã đọc</translation>
 <translation id="6356893102071098867">Kiểm tra để đảm bảo bạn đã chọn đúng tài khoản</translation>
@@ -1485,6 +1487,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7117485132243600300">Quản lý nội dung bạn theo dõi cũng như các chủ đề và nội dung tìm kiếm được đề xuất</translation>
 <translation id="7119984597597798764">Đóng <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Đăng nhập vào Chrome</translation>
+<translation id="7136694880210472378">Đặt làm mặc định</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Đã xem xét các quyền của 1 trang web}other{Đã xem xét các quyền của # trang web}}</translation>
 <translation id="7138678301420049075">Khác</translation>
 <translation id="7140829094791862589">Tự sắp xếp thứ tự</translation>

@@ -1404,7 +1404,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6140948187512243695">Մանրամասներ</translation>
 <translation id="6144589619057374135">Բացել ինկոգնիտո ռեժիմում` ${url}</translation>
 <translation id="6146563240635539929">Տեսանյութեր</translation>
-<translation id="6147279996212084542">Բացատրել</translation>
 <translation id="6151006591088192882">Ապակողպեք ինկոգնիտո ներդիրները <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի միջոցով</translation>
 <translation id="6152340033632117531">Ոչ ակտիվ</translation>
 <translation id="6152406514676263192">Միացրեք համաժամացումը՝ ձեր հետաքրքրություններին համապատասխան բովանդակություն տեսնելու համար։</translation>
@@ -2060,6 +2059,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8439758443371991593">Թաքցնել «Ավելացնել ընթերցանության ցանկում» գործողությունը</translation>
 <translation id="8443986842926457191">URL-ը կարող է պարունակել առավելագույնը 2048 նիշ</translation>
 <translation id="8449869326050867919">Գաղտնաբառը փոխանցվեց</translation>
+<translation id="8473815223723723001">Խմբագրել պատկերը Gemini-ի օգնությամբ</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="8474378002946546633">Թույլատրել ծանուցումները</translation>
 <translation id="8477178913400731244">Ջնջել տվյալները</translation>

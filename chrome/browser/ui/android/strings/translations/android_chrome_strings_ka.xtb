@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="3777796259512476958">თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
+<translation id="3792938779249970121">აირჩიეთ ანგარიში</translation>
 <translation id="3795154175078851242">სურათის კოპირება ბმულთან ერთად</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, არჩეულია ჩამაგრებული ინკოგნიტო ჩანართი კონტენტის მოსასმენად</translation>
 <translation id="3810973564298564668">მართვა</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">პერსონალიზება</translation>
 <translation id="6341580099087024258">შეკითხვა ფაილების შენახვის ადგილის შესახებ</translation>
 <translation id="6342069812937806050">ახლახან</translation>
+<translation id="634208815998129842">ამოცანების მმართველი</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
 <translation id="6356893102071098867">შეამოწმეთ, სწორი ანგარიში აირჩიეთ თუ არა</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">მართეთ გამოწერილი კონტენტი და შემოთავაზებული თემები და ძიებები</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />-ის დახურვა</translation>
 <translation id="7121179479711575744">Chrome-ში შესვლა</translation>
+<translation id="7136694880210472378">აქციეთ ნაგულისხმევად</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ნებართვები განახლდა 1 საიტისთვის}other{ნებართვები განახლდა # საიტისთვის}}</translation>
 <translation id="7138678301420049075">სხვა</translation>
 <translation id="7140829094791862589">ხელით დალაგება</translation>

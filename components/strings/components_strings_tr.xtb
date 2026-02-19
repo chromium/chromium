@@ -4230,6 +4230,7 @@ Ek ayrıntılar:
 <translation id="7714404809393719981">Fotoğraf (Yarı Parlak)</translation>
 <translation id="7714424966701020172">Tam adı doldur seçeneği belirlendi</translation>
 <translation id="7714464543167945231">Sertifika</translation>
+<translation id="7714943438925794410">Bu seçenekleri sunmak için ödeme sayfasındaki sayfa içeriği Google ile paylaşılır. Otomatik doldurma özelliğinde sonra ödeme seçeneklerini gizlemek için <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> bölümüne gidin.</translation>
 <translation id="7716147886133743102">Yöneticiniz tarafından engellendi</translation>
 <translation id="7716375162095500223">Henüz yüklenmedi veya yok sayıldı</translation>
 <translation id="7716424297397655342">Bu site önbellekten yüklenemiyor</translation>
@@ -4312,6 +4313,7 @@ Ek ayrıntılar:
 <translation id="7862306158978555061">hassas bilgileri göstermeye</translation>
 <translation id="7865448901209910068">En iyi hız</translation>
 <translation id="7865482168955081228">"Şimdi al sonra öde" hata ekranı kapatıldı.</translation>
+<translation id="7870207318911766769">Bu seçenekleri sunmak için ödeme sayfasındaki sayfa içeriği Google ile paylaşılır.</translation>
 <translation id="7870281855125116701">İndirim Bulundu</translation>
 <translation id="7871445724586827387">Google Hesabınızın şifresini değiştirin</translation>
 <translation id="787226752901403048">Sekme gruplarını paylaşmak, bunlara katılmak ve fikirler üzerinde birlikte çalışmak için Chrome'da oturum açın</translation>
@@ -4907,7 +4909,7 @@ Ek ayrıntılar:
 <translation id="8858065207712248076">Chrome, <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="885906927438988819">Yazım doğruysa <ph name="BEGIN_LINK" />Windows Ağ Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotoğraf ve Dijital Sanatlar</translation>
-<translation id="8861482055962701239">Bu bilgiler Google Cüzdanınıza kaydedilemedi. Bunun yerine bu cihazdaki Chrome'a kaydedildi. Chrome, bir sonraki kullanımınızda bu bilgileri Cüzdan'a kaydetmeyi önerir.</translation>
+<translation id="8861482055962701239">Bu bilgiler Google Cüzdan'ınıza kaydedilemedi. Bunun yerine bu cihazdaki Chrome'a kaydedildi. Chrome, bir sonraki kullanımınızda bu bilgileri Cüzdan'a kaydetmeyi önerir.</translation>
 <translation id="8863218129525348270">Gelecek sefer daha hızlı ödeme yapmak için kartınızı cihazınıza kaydedin</translation>
 <translation id="8864939224504814334">Takım Elbiseler ve İş Giysileri</translation>
 <translation id="8866132857352163524">Film müzikleri</translation>

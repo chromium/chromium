@@ -242,6 +242,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3522404737534491619">Da podijelite prozor, dozvolite snimanje ekrana za Chromium u Postavkama sistema</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> je već prijavljen(a).  Da vaše pregledanje ostane odvojeno, prijavite se u Chromium na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Da podijelite ekran, dozvolite snimanje ekrana za Chromium u Postavkama sistema.</translation>
+<translation id="3588112919289558122">Poboljšana zaštita isključuje optimizaciju JavaScripta za web lokacije koje Chromium ne prepoznaje</translation>
 <translation id="3597003331831379823">Pokretanje postavljanja s dodatnim ovlastima nije uspjelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Prijavite se u Chromium</translation>
 <translation id="3639635944603682591">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da oporavite podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>

@@ -2021,6 +2021,7 @@
 <translation id="2332742915001411729">기본 설정으로 돌아가기</translation>
 <translation id="2333166365943957309">UI 계층 구조</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
+<translation id="2334384018887664164">콘텐츠 설정에서 신뢰하는 사이트를 허용 목록에 추가할 수 있습니다</translation>
 <translation id="233471714539944337">민감한 콘텐츠</translation>
 <translation id="2335758110242123814">그룹 열기</translation>
 <translation id="2336228925368920074">모든 탭 북마크...</translation>
@@ -2116,6 +2117,7 @@
 <translation id="240789602312469910">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK2_END" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408742686124047357">다음에 쉽게 액세스할 수 있도록 Google 렌즈를 툴바에 고정합니다.</translation>
+<translation id="2408762424059547338">JavaScript 최적화를 사용 중지하여 공격으로부터 사용자를 더 효과적으로 보호합니다</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409268599591722235">시작하기</translation>
 <translation id="2409378541210421746">언어 선택 수정</translation>
@@ -2392,6 +2394,7 @@
 <translation id="2581992808349413349">보안 연결을 사용하여 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회합니다. 이는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />(플랫폼 <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">모든 스마트 카드 리더</translation>
+<translation id="2583949330716828639">사이트 예외 관리</translation>
 <translation id="2584109212074498965">Kerberos 티켓을 가져올 수 없습니다. 다시 시도해 보거나 조직의 기기 관리자에게 문의하세요. (오류 코드 <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Chrome에서 웹사이트 마이크 권한 관리하기</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> 앱을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -5769,6 +5772,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4871322859485617074">PIN에 잘못된 문자가 포함되었습니다.</translation>
 <translation id="4871370605780490696">북마크 추가</translation>
 <translation id="4871568871368204250">동기화 사용 중지</translation>
+<translation id="4871630917300912613">JavaScript 보호 대책</translation>
 <translation id="4871719318659334896">그룹 닫기</translation>
 <translation id="4872192066608821120">비밀번호를 가져오려면 CSV 파일을 선택하세요.</translation>
 <translation id="4872212987539553601">온디바이스 암호화 설정</translation>
@@ -6705,7 +6709,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5523532775593636291">추가한 사이트는 항상 활성 상태로 유지되며 이러한 사이트에서 메모리가 확보되지 않습니다.</translation>
 <translation id="5523558474028191231">이름은 문자, 숫자, 특수문자를 포함할 수 있고 <ph name="MAX_CHARACTER_COUNT" />자 미만(영문 기준)이어야 합니다</translation>
 <translation id="5526745900034778153">다시 로그인하여 동기화 재개</translation>
-<translation id="5527211644528700597">기기 내 방법을 사용하여 위협을 감지합니다.</translation>
 <translation id="5527474464531963247">다른 네트워크를 선택할 수도 있습니다.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, 설치 중</translation>
 <translation id="5527822190489075064">최적화된 충전</translation>
@@ -6903,7 +6906,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5663459693447872156">반각으로 자동 전환</translation>
 <translation id="5663653125349867535">읽기 목록</translation>
 <translation id="5663918299073387939">사이트에서는 보통 음악을 만들거나 수정하거나 기기 펌웨어를 업데이트하기 위해 MIDI 기기를 제어하고 다시 프로그래밍하도록 요청합니다.</translation>
-<translation id="5666116074010586111">위협을 더 빠르게 감지하기 위해 URL 및 페이지 콘텐츠를 Google에 전송합니다.</translation>
 <translation id="5666911576871845853">새 프로필 추가(&amp;A)</translation>
 <translation id="5667293444945855280">악성 코드</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
@@ -7142,6 +7144,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
+<translation id="5840656138956959276">향상된 보호 모드: 엄격 적용</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
 <translation id="5841338463993781099">계정에 저장하시겠습니까?</translation>
@@ -7968,6 +7971,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6411135999030237579">키를 길게 누르면 자동 반복</translation>
 <translation id="6414618057231176439">설치할 <ph name="VM_NAME" /> 버전을 선택합니다.</translation>
 <translation id="641469293210305670">업데이트 및 앱 설치</translation>
+<translation id="6415434255504060856">모든 사이트에 엄격 적용</translation>
 <translation id="6415757856498750027">'w'를 입력하면 'ư'이 표시됩니다.</translation>
 <translation id="6415816101512323589">로컬 데이터 복구를 사용 설정하여 데이터를 보호하시겠습니까?</translation>
 <translation id="6415900369006735853">휴대전화를 통해 인터넷에 연결합니다.</translation>
@@ -8099,7 +8103,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
 <translation id="6511827214781912955">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제해 보세요.</translation>
-<translation id="6512364354776355686">모든 비보안 연결에 경고를 표시합니다.</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> 분위기로 생성된 <ph name="SUBJECT" />의 이미지 <ph name="INDEX" /></translation>
 <translation id="6513247462497316522">다른 네트워크에 연결되어 있지 않을 경우 Chrome은 모바일 데이터를 사용합니다.</translation>
 <translation id="6514010653036109809">사용할 수 있는 기기:</translation>
@@ -8363,6 +8366,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6686665106869989887">오른쪽으로 탭을 이동함</translation>
 <translation id="6686676261102452995">오늘 열어 본 항목</translation>
 <translation id="6686817083349815241">비밀번호 저장</translation>
+<translation id="6686878118106035853">맞춤 향상된 보호 모드는 모든 사이트에 대해 JavaScript 최적화를 사용 중지합니다</translation>
 <translation id="6687008241368170505">Google 비밀번호 관리자 PIN 변경</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> 숨기기</translation>
 <translation id="6689948774466767379">마우스 키</translation>
@@ -10046,7 +10050,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7830833461614351956">파일 <ph name="NUM_OF_FILES" />개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>
-<translation id="7833725807105678871">향상된 보안 기능보다 사이트 속도를 우선시합니다.</translation>
 <translation id="7834832693620032149">오디오를 공유하려면 탭이나 창을 대신 공유하세요.</translation>
 <translation id="7836577093182643605">사이트와 공유하지 않으려는 차단된 주제 목록</translation>
 <translation id="7836850009646241041">보안 키 다시 터치해 보기</translation>
@@ -10844,6 +10847,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" />개</translation>
 <translation id="8356409598322585307">이미 등록한 기기입니다. 다시 등록하지 않아도 됩니다.</translation>
 <translation id="8357388086258943206">Linux 설치 오류</translation>
+<translation id="8357883857705092796">인식할 수 없는 사이트</translation>
 <translation id="8358685469073206162">페이지를 복원하시겠습니까?</translation>
 <translation id="835927394551949760">Google에 물어보기</translation>
 <translation id="835951711479681002">내 Google 계정에 저장</translation>
@@ -11537,7 +11541,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8821045908425223359">자동으로 IP 주소 설정</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 앱을 사용할 수 있습니다.</translation>
 <translation id="882204272221080310">펌웨어를 업데이트하여 보안 강화</translation>
-<translation id="8822690627597552656">일반적인 공격을 차단하기 위해 익숙하지 않은 일부 사이트의 속도를 늦춥니다.</translation>
 <translation id="8823514049557262177">링크 텍스트 복사(&amp;X)</translation>
 <translation id="8823704566850948458">비밀번호 추천...</translation>
 <translation id="8823963789776061136">또는 프린터 PPD를 선택합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>

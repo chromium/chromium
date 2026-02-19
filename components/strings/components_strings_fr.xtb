@@ -813,7 +813,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2288422996159078444">Tout texte saisi, toute page consultée ou toute activité effectuée sur le Web sont surveillés. Le contenu des sites peut être modifié à votre insu.</translation>
 <translation id="2289385804009217824">Couper</translation>
 <translation id="2292556288342944218">Votre accès à Internet est bloqué</translation>
-<translation id="2295831393422400053">Activez le paramètre "Améliorer les recherches et la navigation" pour utiliser M'aider à écrire</translation>
+<translation id="2295831393422400053">Activez le paramètre "Améliorer les recherches et la navigation" pour utiliser Aide-moi à écrire</translation>
 <translation id="2296244067976588032">Clé d'accès • Trousseau iCloud</translation>
 <translation id="2296331629987861142">Payez facilement en plusieurs versements (sous réserve d'éligibilité, des frais s'appliquent)</translation>
 <translation id="2300306941146563769">Non importé</translation>
@@ -1061,7 +1061,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> groupes d'onglets ne sont plus disponibles</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2683195745483370038">Autres résultats trouvés</translation>
-<translation id="2686919536310834199">Envoyer des commentaires sur M'aider à écrire.</translation>
+<translation id="2686919536310834199">Envoyer des commentaires sur Aide-moi à écrire.</translation>
 <translation id="2687555958734450033">Taille optimale</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Oui, continuer</translation>
@@ -1648,7 +1648,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3632892046558972264">Partage d'écran suspendu</translation>
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez de saisir votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
-<translation id="3638102297696182302">Reprendre M'aider à écrire. Appuyez sur Tabulation, puis sur Entrée pour l'ouvrir.</translation>
+<translation id="3638102297696182302">Reprendre Aide-moi à écrire. Appuyez sur Tabulation, puis sur Entrée pour l'ouvrir.</translation>
 <translation id="3641116835972736297">Football américain</translation>
 <translation id="3642196846309122856">Réessayez de télécharger vos fichiers</translation>
 <translation id="3642638418806704195">Application :</translation>
@@ -1929,7 +1929,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4082333119419111506">Papier (préimprimé)</translation>
 <translation id="4082393374666368382">Paramètres - Gestion</translation>
 <translation id="4084219288110917128">Enveloppe C1</translation>
-<translation id="4085326869263783566">M'aider à écrire. Appuyer sur Tabulation, puis sur Entrée pour l'ouvrir.</translation>
+<translation id="4085326869263783566">Aide-moi à écrire. Appuyer sur Tabulation, puis sur Entrée pour l'ouvrir.</translation>
 <translation id="4085778582400064057">Bleu 2</translation>
 <translation id="4085859451613666999">Votre carte est enregistrée dans votre compte Google afin que vous puissiez la saisir automatiquement pour vos futurs achats</translation>
 <translation id="4088981014127559358">Décalage Y de l'image côté 1</translation>
@@ -3074,7 +3074,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5925040402342933574">Disque optique (semi-brillance)</translation>
 <translation id="5926982310317673627">Clubs de gym et de remise en forme</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
-<translation id="5930147475897662863">Activez ce paramètre pour utiliser M'aider à écrire</translation>
+<translation id="5930147475897662863">Activez ce paramètre pour utiliser Aide-moi à écrire</translation>
 <translation id="593102073240001326">Contenus pour bricoleurs et utilisateurs expérimentés</translation>
 <translation id="5932224571077948991">Le site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="5937560539988385583">Page traduite</translation>
@@ -4022,7 +4022,7 @@ Informations supplémentaires :
 <translation id="7423283032694727565">Bouton "Gérer les cookies" à activer pour gérer vos préférences de cookies dans les paramètres Chrome</translation>
 <translation id="742435751935045381">Applis et extensions installées dans votre profil professionnel</translation>
 <translation id="7424421098814895617">L'option "Supprimer l'adresse" a été sélectionnée</translation>
-<translation id="7425037327577270384">M'aider à écrire</translation>
+<translation id="7425037327577270384">Aide-moi à écrire</translation>
 <translation id="7425878584435172632">Design et arts visuels</translation>
 <translation id="7426745633088095666">Onglets partagés</translation>
 <translation id="7427079287360774240">Langues étrangères</translation>
@@ -4223,7 +4223,7 @@ Informations supplémentaires :
 <translation id="7701486038694690341">Country</translation>
 <translation id="7701544340847569275">Mise à jour terminée (avec erreurs)</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuer vers le site <ph name="SITE" /> (dangereux)<ph name="END_LINK" /></translation>
-<translation id="7705085181312584869">M'aider à écrire</translation>
+<translation id="7705085181312584869">Aide-moi à écrire</translation>
 <translation id="7705992072972338699">Disque optique (haute brillance)</translation>
 <translation id="7706689436519265630">Les fichiers que vous copiez ou déplacez sont envoyés dans Google Cloud ou à des tiers pour analyse (par exemple, pour vérifier qu'ils ne contiennent pas de données sensibles ni de logiciels malveillants et pour être stockés conformément aux règles de l'entreprise).</translation>
 <translation id="7709911732293795808">Assurances</translation>
@@ -4231,6 +4231,7 @@ Informations supplémentaires :
 <translation id="7714404809393719981">Photo (semi-brillance)</translation>
 <translation id="7714424966701020172">L'option "Indiquer le nom complet" a été sélectionnée</translation>
 <translation id="7714464543167945231">Certificat</translation>
+<translation id="7714943438925794410">Le contenu de la page de paiement est partagé avec Google pour proposer ces options. Pour masquer les options de paiement différé dans la saisie automatique, accédez aux <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Bloqué par votre administrateur</translation>
 <translation id="7716375162095500223">Importation en attente (ou bien le rapport a été ignoré)</translation>
 <translation id="7716424297397655342">Impossible de charger ce site à partir du cache</translation>
@@ -4313,6 +4314,7 @@ Informations supplémentaires :
 <translation id="7862306158978555061">afficher des informations sensibles</translation>
 <translation id="7865448901209910068">Vitesse optimale</translation>
 <translation id="7865482168955081228">L'écran d'erreur Acheter maintenant, payer plus tard est fermé.</translation>
+<translation id="7870207318911766769">Le contenu de la page de paiement est partagé avec Google pour proposer ces options.</translation>
 <translation id="7870281855125116701">Remise trouvée</translation>
 <translation id="7871445724586827387">Changez le mot de passe de votre compte Google</translation>
 <translation id="787226752901403048">Connectez-vous à Chrome pour partager et rejoindre des groupes d'onglets, et collaborer sur des idées</translation>

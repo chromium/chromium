@@ -4777,19 +4777,6 @@ Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor teks mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="4182348537826882258">Menyetel kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" /> akan menghentikan pemuatan halaman web yang berisi URL terlarang. Administrator dapat menentukan daftar pola URL yang akan diblokir. Jika kebijakan ini tidak disetel, tidak ada URL yang akan diblokir di browser. Hingga 1.000 pengecualian dapat ditentukan di <ph name="URL_ALLOWLIST_POLICY_NAME" />. Lihat cara memformat pola URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Catatan: Kebijakan ini tidak berlaku untuk URL JavaScript dalam halaman dengan data yang dimuat secara dinamis. Jika Anda memblokir example.com/abc, example.com tetap dapat memuatnya menggunakan XMLHTTPRequest. Selain itu, kebijakan ini tidak mencegah halaman web memperbarui URL yang ditampilkan di omnibox menjadi URL yang diblokir menggunakan JavaScript History API.
-
-Mulai <ph name="PRODUCT_NAME" /> versi 73, Anda dapat memblokir URL javascript://*. Namun, ini hanya akan memengaruhi JavaScript yang dimasukkan di kolom URL atau, misalnya, bookmarklet.
-
-Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.
-
-Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat menyebabkan error yang tidak terduga atau dapat dilewati dalam beberapa kasus. Daripada memblokir URL internal tertentu, sebaiknya periksa apakah tersedia kebijakan yang lebih spesifik. Misalnya:
-
-- Daripada memblokir chrome://settings/certificates, sebaiknya gunakan <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- Daripada memblokir chrome-untrusted://crosh, sebaiknya gunakan <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Setelan <ph name="FLASH_PLUGIN_NAME" /> default</translation>
 <translation id="4185868802416355029">Izinkan ekstensi terkelola menggunakan Enterprise Hardware Platform API</translation>
 <translation id="4186244263855283575">Memungkinkan penyetelan jadwal kustom untuk memulai ulang perangkat. Setelah kebijakan disetel ke Benar (True), perangkat akan dimulai ulang sesuai jadwal. Kebijakan harus dihapus untuk membatalkan semua mulai ulang terjadwal lainnya.

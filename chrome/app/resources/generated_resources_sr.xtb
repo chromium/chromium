@@ -6691,7 +6691,6 @@
 <translation id="5523532775593636291">Сајтови које додате ће увек остати активни, а меморија се неће ослободити</translation>
 <translation id="5523558474028191231">Слова, бројеви и специјални знакови могу да се користе у називу, а максимални број знакова је <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526745900034778153">Пријавите се поново да бисте наставили синхронизацију</translation>
-<translation id="5527211644528700597">Користи методе на уређају за откривање претњи</translation>
 <translation id="5527474464531963247">Можете и да изаберете неку другу мрежу.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, инсталира се</translation>
 <translation id="5527822190489075064">Оптимизовано пуњење</translation>
@@ -6890,7 +6889,6 @@
 <translation id="5663459693447872156">Аутоматски пређи на пола ширине</translation>
 <translation id="5663653125349867535">Листа за читање</translation>
 <translation id="5663918299073387939">Сајтови обично траже да контролишу и репрограмирају MIDI уређаје да би правили музику, мењали музику или ажурирали фирмвер уређаја</translation>
-<translation id="5666116074010586111">Шаље URL и садржај странице Google-у ради бржег откривања претњи</translation>
 <translation id="5666911576871845853">Додај нов профил</translation>
 <translation id="5667293444945855280">Малвер</translation>
 <translation id="5667546120811588575">Google Play се подешава…</translation>
@@ -8088,7 +8086,6 @@
 <translation id="6508261954199872201">Апл.: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Рестартујте Chromebook и пробајте поново</translation>
 <translation id="6511827214781912955">Размислите о томе да избришете <ph name="FILENAME" /> да други који користе овај уређај не би могли да виде ваше лозинке</translation>
-<translation id="6512364354776355686">Упозорава вас на све небезбедне везе</translation>
 <translation id="6512759338201777379">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, са расположењем <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome ће користити мобилне податке ако нисте повезани са другом мрежом.</translation>
 <translation id="6514010653036109809">Доступан уређај:</translation>
@@ -10041,7 +10038,6 @@
 <translation id="7830833461614351956">Желите да копирате <ph name="NUM_OF_FILES" /> фајл(ов)а у <ph name="CLOUD_PROVIDER" /> да бисте их отворили?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Сачуване прилагођене речи ће се појавити овде</translation>
-<translation id="7833725807105678871">Даје предност брзини сајта у односу на побољшане безбедносне функције</translation>
 <translation id="7834832693620032149">Да бисте делили звук, делите картицу или прозор</translation>
 <translation id="7836577093182643605">Листа тема које сте блокирали и за које не желите да се деле са сајтовима</translation>
 <translation id="7836850009646241041">Поново додирните безбедносни кључ</translation>
@@ -11534,7 +11530,6 @@
 <translation id="8821045908425223359">Аутоматски конфигуриши IP адресу</translation>
 <translation id="8821268776955756404">Апликација <ph name="APP_NAME" /> је спремна за коришћење.</translation>
 <translation id="882204272221080310">Ажурирајте фирмвер ради веће безбедности.</translation>
-<translation id="8822690627597552656">Успорава неке непознате сајтове да би блокирао уобичајене нападе</translation>
 <translation id="8823514049557262177">Копирај тек&amp;ст линка</translation>
 <translation id="8823704566850948458">Предложи лозинку...</translation>
 <translation id="8823963789776061136">Можете и да изаберете PPD штампача. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>

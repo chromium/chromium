@@ -241,6 +241,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3522404737534491619">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada.  Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />).</translation>
 <translation id="3561853857681580870">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan.</translation>
+<translation id="3588112919289558122">Babes hobetuak JavaScript-en optimizazioa desaktibatzen du Chromium-ek ezagutzen ez dituen webguneetan</translation>
 <translation id="3597003331831379823">Ezin izan da exekutatu konfigurazioa gehiegizko baimenekin. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Hasi saioa Chromium-en</translation>
 <translation id="3639635944603682591">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>

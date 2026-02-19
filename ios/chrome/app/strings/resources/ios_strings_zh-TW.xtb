@@ -1404,7 +1404,6 @@
 <translation id="6140948187512243695">顯示詳細資訊</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
 <translation id="6146563240635539929">影片</translation>
-<translation id="6147279996212084542">說明</translation>
 <translation id="6151006591088192882">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="6152340033632117531">閒置</translation>
 <translation id="6152406514676263192">系統會根據你的興趣同步處理最相關的內容。</translation>
@@ -2060,6 +2059,7 @@
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8443986842926457191">網址包含的字元數超過 2048 個</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
+<translation id="8473815223723723001">使用 Gemini 編輯圖片</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474378002946546633">允許通知</translation>
 <translation id="8477178913400731244">刪除資料</translation>

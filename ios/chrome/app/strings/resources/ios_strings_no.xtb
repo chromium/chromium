@@ -1404,7 +1404,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6140948187512243695">Vis detaljer</translation>
 <translation id="6144589619057374135">Åpne ${url} i inkognitomodus</translation>
 <translation id="6146563240635539929">Videoer</translation>
-<translation id="6147279996212084542">Forklar</translation>
 <translation id="6151006591088192882">Lås opp inkognitofaner med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inaktiv</translation>
 <translation id="6152406514676263192">Synkroniser for å få det mest relevante innholdet basert på interessene dine.</translation>
@@ -2060,6 +2059,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>
 <translation id="8443986842926457191">Nettadressen er lengre enn 2048 tegn</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
+<translation id="8473815223723723001">Rediger bilde med Gemini</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>
 <translation id="8477178913400731244">Slett data</translation>

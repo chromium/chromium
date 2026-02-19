@@ -2005,6 +2005,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2332742915001411729">Restablecer valores predeterminados</translation>
 <translation id="2333166365943957309">Xerarquía da interface</translation>
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
+<translation id="2334384018887664164">Na configuración de contido podes engadir á lista de entidades permitidas os sitios nos que confíes</translation>
 <translation id="233471714539944337">Contido confidencial</translation>
 <translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2336228925368920074">Engadir todas as pestanas a marcadores...</translation>
@@ -2100,6 +2101,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="240789602312469910">Envía datos de uso e diagnóstico. Para axudar a mellorar a experiencia do teu fillo ou filla en Android, envíalle automaticamente a Google datos de diagnóstico, do dispositivo e de uso das aplicacións. Esta información non se utilizará para identificar o teu fillo ou filla, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de implementar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> aplicouna a persoa propietaria, quen pode decidir se quere que se envíen a Google os datos de diagnóstico e de uso do dispositivo. Se está activada Actividade web e das aplicacións adicional para o teu fillo ou filla, estes datos pódense gardar na súa conta de Google. <ph name="BEGIN_LINK2" />Máis información sobre as métricas<ph name="BEGIN_LINK2_END" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Gardando tarxeta</translation>
 <translation id="2408742686124047357">Fixa Google Lens na barra de ferramentas para acceder facilmente a próxima vez</translation>
+<translation id="2408762424059547338">Desactiva a optimización de JavaScript para protexerte mellor dos ataques</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="2409268599591722235">Vamos aló</translation>
 <translation id="2409378541210421746">Editar selección de idioma</translation>
@@ -2376,6 +2378,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2581992808349413349">Usa unha conexión segura para buscar o enderezo IP dun sitio no DNS (Sistema de nomes de dominios) Para esta acción utilízase un fornecedor de servizos xestionado en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Calquera lector de tarxetas intelixentes</translation>
+<translation id="2583949330716828639">Xestionar excepcións dos sitios</translation>
 <translation id="2584109212074498965">Non se puido obter o tícket de Kerberos. Téntao outra vez ou contacta co administrador de dispositivos da túa organización. (Código de erro <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Xestionar os permisos de acceso ao micrófono para os sitios web en Chrome</translation>
 <translation id="2586561813241011046">Non se puido instalar a aplicación <ph name="APP_NAME" />. Téntao de novo ou ponte en contacto co teu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -5757,6 +5760,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4871322859485617074">O PIN contén caracteres non válidos</translation>
 <translation id="4871370605780490696">Engadir marcador</translation>
 <translation id="4871568871368204250">Desactivar sincronización</translation>
+<translation id="4871630917300912613">Medidas de seguranza de JavaScript</translation>
 <translation id="4871719318659334896">Pechar grupo</translation>
 <translation id="4872192066608821120">Para importar contrasinais, selecciona un ficheiro CSV</translation>
 <translation id="4872212987539553601">Configurar encriptación no dispositivo</translation>
@@ -6693,7 +6697,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5523532775593636291">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen</translation>
 <translation id="5523558474028191231">O nome pode conter letras, números e caracteres especiais; debe incluír como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526745900034778153">Volve iniciar sesión para retomar a sincronización</translation>
-<translation id="5527211644528700597">Usa métodos no dispositivo para detectar ameazas</translation>
 <translation id="5527474464531963247">Tamén podes seleccionar outra rede.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carga optimizada</translation>
@@ -6889,7 +6892,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5663459693447872156">Cambiar automaticamente a largura media</translation>
 <translation id="5663653125349867535">Lista de lectura</translation>
 <translation id="5663918299073387939">Os sitios adoitan solicitar permiso para controlar e volver programar os dispositivos MIDI co fin de crear e editar música, ou actualizar o firmware do dispositivo</translation>
-<translation id="5666116074010586111">Envía o URL e o contido da páxina a Google para detectar as ameazas máis rápido</translation>
 <translation id="5666911576871845853">&amp;Engadir novo perfil</translation>
 <translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play...</translation>
@@ -7128,6 +7130,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="583673505367439042">Os sitios poden pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="5836999627049108525">Idioma do que traducir</translation>
 <translation id="583756221537636748">Estoxo</translation>
+<translation id="5840656138956959276">Mellorada: estrita</translation>
 <translation id="5840680448799937675">Os ficheiros sempre se compartirán sen conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5841338463993781099">Queres gardalo na conta?</translation>
@@ -7953,6 +7956,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6411135999030237579">Manter premida unha tecla para que se repita automaticamente</translation>
 <translation id="6414618057231176439">Selecciona que versión de <ph name="VM_NAME" /> queres instalar.</translation>
 <translation id="641469293210305670">Instalar actualizacións e aplicacións</translation>
+<translation id="6415434255504060856">Estrita para todos os sitios</translation>
 <translation id="6415757856498750027">Escribir "w" para obter "ư"</translation>
 <translation id="6415816101512323589">Queres activar a recuperación de datos locais para protexer os teus datos?</translation>
 <translation id="6415900369006735853">Conéctase a Internet a través do teléfono</translation>
@@ -8084,7 +8088,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicia o Chromebook e téntao de novo</translation>
 <translation id="6511827214781912955">Considera a posibilidade de eliminar <ph name="FILENAME" />, de modo que outras persoas que usen este dispositivo non vexan os teus contrasinais</translation>
-<translation id="6512364354776355686">Avísate sobre todas as conexións pouco seguras</translation>
 <translation id="6512759338201777379">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móbiles se non estás conectado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo dispoñible:</translation>
@@ -8348,6 +8351,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6686665106869989887">A pestana moveuse á dereita</translation>
 <translation id="6686676261102452995">Abríchelo hoxe</translation>
 <translation id="6686817083349815241">Gardar o teu contrasinal</translation>
+<translation id="6686878118106035853">Coa protección mellorada personalizada, desactívase a optimización de JavaScript para todos os sitios</translation>
 <translation id="6687008241368170505">Cambiar PIN do xestor de contrasinais de Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Teclas do rato</translation>
@@ -10031,7 +10035,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7830833461614351956">Queres copiar <ph name="NUM_OF_FILES" /> ficheiros en <ph name="CLOUD_PROVIDER" /> para abrilos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>
-<translation id="7833725807105678871">Prioriza a velocidade do sitio sobre as funcións de seguranza melloradas</translation>
 <translation id="7834832693620032149">Para compartir o audio, o mellor é que compartas unha pestana ou pantalla</translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaches e que non queres compartir cos sitios</translation>
 <translation id="7836850009646241041">Proba a tocar de novo a túa chave de seguranza</translation>
@@ -10827,6 +10830,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8356197132883132838"><ph name="TITLE" /> (<ph name="COUNT" />)</translation>
 <translation id="8356409598322585307">Xa rexistraches este dispositivo. Non é necesario que o rexistres de novo.</translation>
 <translation id="8357388086258943206">Produciuse un erro ao instalar Linux</translation>
+<translation id="8357883857705092796">Sitios non recoñecidos</translation>
 <translation id="8358685469073206162">Queres restaurar as páxinas?</translation>
 <translation id="835927394551949760">Preguntarlle a Google</translation>
 <translation id="835951711479681002">Gardar na túa Conta de Google</translation>
@@ -11520,7 +11524,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8821045908425223359">Configurar enderezo IP automaticamente</translation>
 <translation id="8821268776955756404">A aplicación <ph name="APP_NAME" /> está lista para usarse.</translation>
 <translation id="882204272221080310">Actualizar o firmware para conseguir maior seguranza.</translation>
-<translation id="8822690627597552656">Diminúe a velocidade dalgúns sitios descoñecidos para bloquear ataques habituais</translation>
 <translation id="8823514049557262177">Copiar te&amp;xto da ligazón</translation>
 <translation id="8823704566850948458">Suxerir contrasinal…</translation>
 <translation id="8823963789776061136">Tamén podes seleccionar o PPD da impresora. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>

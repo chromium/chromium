@@ -6705,7 +6705,6 @@
 <translation id="5523532775593636291">سایت‌هایی که اضافه می‌کنید همیشه فعال می‌مانند و از حافظه پاک نمی‌شوند</translation>
 <translation id="5523558474028191231">برای نام می‌توانید از حروف، اعداد، و نویسه‌های خاص استفاده کرد و باید <ph name="MAX_CHARACTER_COUNT" /> نویسه یا کمتر باشد</translation>
 <translation id="5526745900034778153">برای ازسرگیری همگام‌سازی، دوباره به سیستم وارد شوید</translation>
-<translation id="5527211644528700597">از روش‌های درون‌دستگاهی برای تشخیص تهدیدها استفاده می‌کند</translation>
 <translation id="5527474464531963247">همچنین می‌توانید شبکه دیگری را انتخاب کنید.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />، درحال نصب</translation>
 <translation id="5527822190489075064">شارژ بهینه‌سازی‌شده</translation>
@@ -6903,7 +6902,6 @@
 <translation id="5663459693447872156">تغییر خودکار به نیم پهنا</translation>
 <translation id="5663653125349867535">&amp;فهرست خواندن</translation>
 <translation id="5663918299073387939">‏سایت‌ها معمولاً برای کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI درخواست می‌دهند تا بتوانند کارهایی مثل ساختن موسیقی، ویرایش موسیقی، یا به‌روزرسانی سفت‌افزار دستگاه را انجام دهند</translation>
-<translation id="5666116074010586111">‏نشانی وب و محتوای صفحه را برای تشخیص سریع‌تر تهدیدها به Google ارسال می‌کند</translation>
 <translation id="5666911576871845853">افزودن نمایه جدید</translation>
 <translation id="5667293444945855280">بدافزار</translation>
 <translation id="5667546120811588575">‏درحال راه‌اندازی Google Play...</translation>
@@ -8101,7 +8099,6 @@
 <translation id="6508261954199872201">برنامه: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">‏Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید</translation>
 <translation id="6511827214781912955">توصیه می‌کنیم <ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌هایتان را ببینند</translation>
-<translation id="6512364354776355686">درباره همه اتصال‌های ناامن به شما هشدار می‌دهد</translation>
 <translation id="6512759338201777379">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">‏اگر به شبکه دیگری وصل نباشید Google Chrome از داده‌های تلفن همراه استفاده خواهد کرد.</translation>
 <translation id="6514010653036109809">دستگاه دردسترس:</translation>
@@ -10052,7 +10049,6 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> فایل برای باز شدن در <ph name="CLOUD_PROVIDER" /> کپی شود؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">کلمات سفارشی ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
-<translation id="7833725807105678871">سرعت سایت را نسبت‌به ویژگی‌های امنیتی بهبودیافته در اولویت قرار می‌دهد</translation>
 <translation id="7834832693620032149">برای هم‌رسانی کردن صدا، زبانه یا پنجره‌ای را هم‌رسانی کنید</translation>
 <translation id="7836577093182643605">فهرست موضوعاتی که مسدود کرده‌اید و نمی‌خواهید با سایت‌ها هم‌رسانی شود</translation>
 <translation id="7836850009646241041">دوباره کلید امنیتی خود را لمس کنید</translation>
@@ -11544,7 +11540,6 @@
 <translation id="8821045908425223359">‏پیکربندی خودکار نشانی IP</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> آماده استفاده است.</translation>
 <translation id="882204272221080310">به‌روزرسانی سفت‌افزار برای امنیت بیشتر.</translation>
-<translation id="8822690627597552656">سرعت برخی‌از سایت‌های ناآشنا را کاهش می‌دهد تا حملات رایج را مسدود کند</translation>
 <translation id="8823514049557262177">کپی کردن متن &amp;پیوند</translation>
 <translation id="8823704566850948458">پیشنهاد گذرواژه…</translation>
 <translation id="8823963789776061136">‏یا PPD چاپگر را انتخاب کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>

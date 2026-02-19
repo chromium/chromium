@@ -242,6 +242,7 @@
 <translation id="3522404737534491619">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chromium ໃນການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບຢູ່ແລ້ວ.  ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium ໃນໂປຣໄຟລ໌ຂອງທ່ານເອງໃນຖານະ <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chromium ໃນການຕັ້ງຄ່າລະບົບ.</translation>
+<translation id="3588112919289558122">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນຈະປິດການເພີ່ມປະສິດທິພາບ JavaScript ສຳລັບເວັບໄຊທີ່ Chromium ບໍ່ຮູ້ຈັກ</translation>
 <translation id="3597003331831379823">ເອີ້ນໃຊ້ການຕັ້ງຄ່າດ້ວຍສິດທິພິເສດລະດັບສູງບໍ່ສຳເລັດ. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">ເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="3639635944603682591">ຂໍ້ມູນການທ່ອງເວັບຂອງບຸກຄົນນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຄືນມາ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>

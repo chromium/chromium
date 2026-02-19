@@ -6702,7 +6702,6 @@
 <translation id="5523532775593636291">የሚያክሏቸው ጣቢያዎች ሁልጊዜ ገቢር ሆነው ይቆያሉ እና ማህደረ ትውስታ ከእነሱ ላይ አይቀነስም</translation>
 <translation id="5523558474028191231">ስም ፊደላትን፣ ቁጥሮችን እና ልዩ ቁምፊዎችን መጠቀም ይችላል እና <ph name="MAX_CHARACTER_COUNT" /> ቁምፊዎች ወይም ከዚያ ያነሰ መሆን አለበት</translation>
 <translation id="5526745900034778153">ስምረትን ከቆመበት ለመቀጠል እንደገና ወደ መለያ ይግቡ</translation>
-<translation id="5527211644528700597">ስጋቶችን ለማግኘት የመሣሪያ ላይ ዘዴዎችን ይጠቀማል</translation>
 <translation id="5527474464531963247">ሌላ አውታረ መረብ መምረጥም ይችላሉ።</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />፣ በመጫን ላይ</translation>
 <translation id="5527822190489075064">የተባ የኃይል አሞላል</translation>
@@ -6900,7 +6899,6 @@
 <translation id="5663459693447872156">በራስ-ሰር ወደ ግማሽ-ስፋት ቀይር</translation>
 <translation id="5663653125349867535">&amp;የንባብ ዝርዝር</translation>
 <translation id="5663918299073387939">ጣቢያዎች ብዙውን ጊዜ ሙዚቃን ለመፍጠር፣ ሙዚቃን ለማርትዕ ወይም የመሣሪያውን ፊርምዌር ለማዘመን የMIDI መሣሪያዎችን ለመቆጣጠር እና እንደገና ፕሮግራም ለማድረግ ይጠይቃሉ</translation>
-<translation id="5666116074010586111">ስጋቶችን በፍጥነት ለማወቅ ዩአርኤሉን እና የገፅ ይዘቱን ወደ Google ይልካል</translation>
 <translation id="5666911576871845853">&amp;አዲስ መገለጫ ያክሉ</translation>
 <translation id="5667293444945855280">ማልዌር</translation>
 <translation id="5667546120811588575">Google Playን በማዋቀር ላይ...</translation>
@@ -8098,7 +8096,6 @@
 <translation id="6508261954199872201">መተግበሪያ፦ <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ</translation>
 <translation id="6511827214781912955">ይህን መሣሪያ የሚጠቀሙ ሌሎች የእርስዎን የይለፍ ቃላት ማየት እንዳይችሉ <ph name="FILENAME" />ን መሰረዝን ያስቡበት</translation>
-<translation id="6512364354776355686">ስለ ሁሉም ደህንነታቸው ያልተጠበቁ ግንኙነቶች ያስጠነቅቅዎታል</translation>
 <translation id="6512759338201777379">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" />፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="6513247462497316522">ከሌላ አውታረ መረብ ጋር ካልተገናኙ Google Chrome የተንቀሳቃሽ ውሂብን ይጠቀማል።</translation>
 <translation id="6514010653036109809">የሚገኝ መሣሪያ፦</translation>
@@ -10049,7 +10046,6 @@
 <translation id="7830833461614351956">ለመክፈት <ph name="NUM_OF_FILES" /> ፋይሎች <ph name="CLOUD_PROVIDER" /> ይቀዱ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">የተቀመጡ ብጁ ቃላት እዚህ ይታያሉ</translation>
-<translation id="7833725807105678871">ከተሻሻሉ የደኅንነት ባህሪያት ይልቅ ለጣቢያ ፍጥነት ቅድሚያ ይሰጣል</translation>
 <translation id="7834832693620032149">ኦዲዮን ለማጋራት በምትኩ አንድን ትር ወይም መስኮት ያጋሩ</translation>
 <translation id="7836577093182643605">ለጣቢያዎች እንዲጋሩ የማይፈልጓቸው ያገዷቸው ርዕሶች ዝርዝር</translation>
 <translation id="7836850009646241041">የደህንነት ቁልፍዎን ዳግም ለመንካት ይሞክሩ</translation>
@@ -11546,7 +11542,6 @@ nil</translation>
 <translation id="8821045908425223359">የአይፒ አድራሻ በራስ-ሰር አዋቅር</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ሥራ ላይ ለመዋል ዝግጁ ነው።</translation>
 <translation id="882204272221080310">ለተጨማሪ ደህንነት ጽኑ ትዕዛዝን ያዘምኑ።</translation>
-<translation id="8822690627597552656">የተለመዱ ጥቃቶችን ለማገድ አንዳንድ የማይታወቁ ጣቢያዎችን ያዘገያል</translation>
 <translation id="8823514049557262177">የአገናኝ ጽሁፍ &amp;ቅዳ</translation>
 <translation id="8823704566850948458">የይለፍ ቃል ጠቁም...</translation>
 <translation id="8823963789776061136">እንደ አማራጭ የማተሚያ PPDን ይምረጡ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>

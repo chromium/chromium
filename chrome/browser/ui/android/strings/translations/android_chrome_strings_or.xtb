@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ପଠାନ୍ତୁ</translation>
 <translation id="3777796259512476958">ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1ଟି ଟାବ୍}other{#ଟି ଟାବ୍}}</translation>
+<translation id="3792938779249970121">ଆକାଉଣ୍ଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3795154175078851242">ଲିଙ୍କ ସହ ଥିବା ଇମେଜ କପି କରନ୍ତୁ</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ଶୁଣିହେଉଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
@@ -1485,6 +1486,7 @@
 <translation id="7117485132243600300">ଆପଣ ଫଲୋ କରୁଥିବା ବିଷୟବସ୍ତୁ ଏବଂ ପ୍ରସ୍ତାବିତ ବିଷୟ ଓ ସର୍ଚ୍ଚଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7121179479711575744">Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="7136694880210472378">ଡିଫଲ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}other{# ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}}</translation>
 <translation id="7138678301420049075">ଅନ୍ୟ</translation>
 <translation id="7140829094791862589">ମାନୁଆଲ ଅର୍ଡରରେ ସର୍ଟ କର</translation>

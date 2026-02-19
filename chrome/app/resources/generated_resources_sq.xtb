@@ -1052,6 +1052,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1695510246756136088">Nuk mund të lidhet me internetin. Provo përsëri.</translation>
 <translation id="1696214930320482113">Profilet të lejojnë të ndash punën, gjërat personale dhe argëtimin pa kaluar në një shfletues tjetër. Shto një profil të ri tani.</translation>
 <translation id="1696555181932908973">Mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Për ta mbajtur të sigurt pajisjen tënde, duhet të ekzekutosh dhe të instalosh vetëm softuerë nga burime dhe zhvillues të besuar.</translation>
 <translation id="169675691788639886">Pajisja ka të konfiguruar serverin SSH. Mos u identifiko me llogari delikate.</translation>
 <translation id="1697122132646041614">Opsioni i gishtave poshtë hap një formular për dërgimin e komenteve të detajuara se pse nuk të pëlqejnë këto rezultate.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
@@ -5863,6 +5864,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4943927218331934807">Nevojitet fjalëkalimi</translation>
 <translation id="4944310289250773232">Ky shërbim vërtetimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Për të konfiguruar gjurmë gishti, vëre fëmijën tënd të prekë butonin e energjisë. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga ky <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Butoni "Shfaq panelin e projekteve"</translation>
 <translation id="4946998421534856407">nisësi + shigjeta lart</translation>
 <translation id="4947376546135294974">Të dhënat nga sajti që po viziton</translation>
 <translation id="4948370357877377178">Vazhdo detyrat e tua</translation>
@@ -6690,11 +6692,11 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5523532775593636291">Sajtet që shton do të qëndrojnë gjithmonë aktive dhe memoria nuk do të lirohet nga to</translation>
 <translation id="5523558474028191231">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta dhe duhet të ketë <ph name="MAX_CHARACTER_COUNT" /> karaktere ose më pak</translation>
 <translation id="5526745900034778153">Identifikohu sërish për të rifilluar sinkronizimin</translation>
-<translation id="5527211644528700597">Përdor metoda në pajisje për të zbuluar kërcënimet</translation>
 <translation id="5527474464531963247">Mund të zgjedhësh po ashtu një rrjet tjetër.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, po instalohet</translation>
 <translation id="5527822190489075064">Karikimi i optimizuar</translation>
 <translation id="5529554942700688235">Përmbledhja për kursimin e memories, <ph name="MEMORY_VALUE" /> (memoria e liruar)</translation>
+<translation id="5529693968082667490">Shfaq butonin e kërkimit të skedave</translation>
 <translation id="5530977410273748884">Për ta ruajtur fjalëkalimin tënd te "Menaxheri i fjalëkalimeve i Google", kliko te tasti</translation>
 <translation id="5532223876348815659">Globale</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dëshiron</translation>
@@ -6888,7 +6890,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5663459693447872156">Kalo automatikisht në gjysmë-largësi</translation>
 <translation id="5663653125349867535">&amp;Lista e leximit</translation>
 <translation id="5663918299073387939">Sajtet zakonisht kërkojnë të kontrollojnë dhe të riprogramojnë pajisjet MIDI për të krijuar muzikë, për të modifikuar muzikën ose për të përditësuar firmuerin e pajisjes</translation>
-<translation id="5666116074010586111">Dërgon URL-në dhe përmbajtjen e faqes te Google për të zbuluar më shpejt kërcënimet</translation>
 <translation id="5666911576871845853">&amp;Shto një profil të ri</translation>
 <translation id="5667293444945855280">Softuer keqdashës</translation>
 <translation id="5667546120811588575">Po konfiguron Google Play...</translation>
@@ -8086,7 +8087,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6508261954199872201">Aplikacioni: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
 <translation id="6511827214781912955">Ki parasysh që ta fshish <ph name="FILENAME" />, në mënyrë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua</translation>
-<translation id="6512364354776355686">Të paralajmëron për të gjitha lidhjet e pasigurta</translation>
 <translation id="6512759338201777379">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", me atmosferë "<ph name="MOOD" />".</translation>
 <translation id="6513247462497316522">Google Chrome do të përdorë të dhënat celulare nëse nuk je i lidhur me një rrjet tjetër.</translation>
 <translation id="6514010653036109809">Pajisja e disponueshme:</translation>
@@ -8246,6 +8246,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6613267708691765962">Po skanon për softuerë keqdashës...</translation>
 <translation id="6615455863669487791">Ma trego</translation>
 <translation id="6618013221808317456">Mos lejo që sajtet të përdorin optimizimin e JavaScript</translation>
+<translation id="6618154741503063152">Nuk mund të ngarkohet. Bashkëngjitjet nuk lejohen.</translation>
 <translation id="6619058681307408113">Daemon-i i printerit të linjës (LPD)</translation>
 <translation id="661907246513853610">Sajti mund të gjurmojë vendndodhjen tënde</translation>
 <translation id="6619243162837544323">Gjendja e rrjetit</translation>
@@ -10034,7 +10035,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7830833461614351956">Të kopjohen <ph name="NUM_OF_FILES" /> skedarë te <ph name="CLOUD_PROVIDER" /> për t'i hapur?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Fjalët e personalizuara të ruajtura do të shfaqen këtu</translation>
-<translation id="7833725807105678871">I jep përparësi shpejtësisë së sajtit në krahasim me veçoritë e përmirësuara të sigurisë</translation>
 <translation id="7834832693620032149">Për të ndarë audion, ndaj një skedë ose dritare më mirë</translation>
 <translation id="7836577093182643605">Lista e temave që ke bllokuar që nuk dëshiron të ndahen me sajtet</translation>
 <translation id="7836850009646241041">Provo të prekësh çelësin tënd të sigurisë përsëri</translation>
@@ -10342,6 +10342,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8034399942062051455">Optimizimi i V8 është joaktiv</translation>
 <translation id="8034697324150621782">Ndërro me pamjen lart</translation>
 <translation id="8035059678007243127">Faqja e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Butoni "Shfaq grupet e ruajtura të skedave"</translation>
 <translation id="8036193484521570992">Ndihmo në përmirësimin e "Plotësimit automatik"</translation>
 <translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8037117027592400564">Lexo të gjithë tekstin e folur duke përdorur ligjërimin e sintetizuar</translation>
@@ -11524,7 +11525,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8821045908425223359">Konfiguro automatikisht adresën IP</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> është gati për përdorim.</translation>
 <translation id="882204272221080310">Përditëso firmuerin për më shumë siguri.</translation>
-<translation id="8822690627597552656">Ngadalëson disa sajte të panjohura për të bllokuar sulmet e zakonshme</translation>
 <translation id="8823514049557262177">Kopjo tekstin e lidhjes</translation>
 <translation id="8823704566850948458">Sugjero fjalëkalim...</translation>
 <translation id="8823963789776061136">Si alternativë, zgjidh skedarin PPD të printerit. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>

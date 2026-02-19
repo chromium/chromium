@@ -241,6 +241,7 @@
 <translation id="3522404737534491619">창을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다.  방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요.</translation>
 <translation id="3561853857681580870">화면을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
+<translation id="3588112919289558122">향상된 보호 모드는 Chromium에서 인식하지 못하는 사이트에 대해 JavaScript 최적화를 사용 중지합니다</translation>
 <translation id="3597003331831379823">승격된 권한으로 설정을 실행할 수 없습니다. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium에 로그인하세요</translation>
 <translation id="3639635944603682591">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복구하려면 <ph name="USER_EMAIL" />(으)로 Chromium에 로그인하세요.</translation>

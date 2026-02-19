@@ -2008,6 +2008,7 @@
 <translation id="2332742915001411729">ڈیفالٹ پر دوبارہ ترتیب دیں</translation>
 <translation id="2333166365943957309">‏UI کے مراتب</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
+<translation id="2334384018887664164">آپ مواد کی ترتیبات میں ان سائٹس کو اجازت دے سکتے ہیں جن پر آپ بھروسہ کرتے ہیں</translation>
 <translation id="233471714539944337">حساس مواد</translation>
 <translation id="2335758110242123814">گروپ کھولیں</translation>
 <translation id="2336228925368920074">سبھی ٹیبز کا بک مارک بنائیں…</translation>
@@ -2103,6 +2104,7 @@
 <translation id="240789602312469910">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ ‫Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنے بچے کا Android تجربہ بہتر بنانے میں مدد کریں۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ مالک Google کو اس آلہ کیلئے ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا انتخاب کر سکتا ہے۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />میٹرکس کے بارے میں مزید جانیں<ph name="BEGIN_LINK2_END" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">کارڈ محفوظ ہو رہا ہے</translation>
 <translation id="2408742686124047357">‏اگلی بار آسان رسائی کے لیے Google لینز کو اپنے ٹول بار میں پن کریں</translation>
+<translation id="2408762424059547338">‏‫JavaScript کی بہتری کو آف کر کے آپ کو حملوں سے بہتر طور پر محفوظ کرتا ہے</translation>
 <translation id="2408955596600435184">‏اپنا PIN درج کریں</translation>
 <translation id="2409268599591722235">آئیے شروع کریں</translation>
 <translation id="2409378541210421746">زبان کے انتخاب میں ترمیم کریں</translation>
@@ -2379,6 +2381,7 @@
 <translation id="2581992808349413349">‏DNS (ڈومین ناموں کا نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے محفوظ کنکشن استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (پلیٹ فارم <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">کوئی بھی اسمارٹ کارڈ ریڈر</translation>
+<translation id="2583949330716828639">سائٹ کے استثناء کا نظم کریں</translation>
 <translation id="2584109212074498965">‏Kerberos کی ٹکٹ حاصل نہیں کی جا سکی۔ دوبارہ کوشش کریں یا اپنی تنظیم کے آلہ کے منتظم سے رابطہ کریں۔ (خرابی کا کوڈ <ph name="ERROR_CODE" />)۔</translation>
 <translation id="2584974473573720127">‏‫Chrome میں ویب سائٹ کے مائیکروفون کی اجازتوں کا نظم کریں</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> انسٹال نہیں کی جا سکی۔ براہ کرم دوبارہ کوشش کریں، یا اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -5754,6 +5757,7 @@
 <translation id="4871322859485617074">‏PIN میں غلط حروف ہیں</translation>
 <translation id="4871370605780490696">بُک مارک شامل کریں</translation>
 <translation id="4871568871368204250">مطابقت پذیری آف کریں</translation>
+<translation id="4871630917300912613">‏‫JavaScript گارڈ ریلز</translation>
 <translation id="4871719318659334896">گروپ بند کریں</translation>
 <translation id="4872192066608821120">‏پاس ورڈز درآمد کرنے کے لیے، ایک CSV فائل منتخب کریں</translation>
 <translation id="4872212987539553601">آلے پر مرموز کاری سیٹ اپ کریں</translation>
@@ -6688,7 +6692,6 @@
 <translation id="5523532775593636291">آپ جو سائٹس شامل کرتے ہیں وہ ہمیشہ فعال رہیں گی اور ان سے میموری کو خالی نہیں کیا جائے گا</translation>
 <translation id="5523558474028191231">نام میں کلمات، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے اور نام میں <ph name="MAX_CHARACTER_COUNT" /> یا اس سے کم حروف کا ہونا ضروری ہے</translation>
 <translation id="5526745900034778153">مطابقت پذیری دوبارہ شروع کرنے کیلئے دوبارہ سائن ان کریں</translation>
-<translation id="5527211644528700597">اس سے خطرات کا پتا لگانے کے لیے آلہ پر موجود طریقوں کو استعمال کیا جاتا ہے</translation>
 <translation id="5527474464531963247">آپ ایک دوسرے نیٹ ورک کو بھی منتخب کر سکتے ہیں۔</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" /> کو انسٹال کیا جا رہا ہے</translation>
 <translation id="5527822190489075064">چارجنگ کو بہتر بنایا گیا ہے</translation>
@@ -6886,7 +6889,6 @@
 <translation id="5663459693447872156">خود بخود نصف چوڑائی پر سوئچ کریں</translation>
 <translation id="5663653125349867535">&amp;پڑھنے کی فہرست</translation>
 <translation id="5663918299073387939">‏سائٹس موسیقی تخلیق کرنے، موسیقی میں ترمیم کرنے یا آلے کے فرم ویئر کو اپ ڈیٹ کرنے کے لیے عام طور پر MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے کا مطالبہ کرتی ہیں</translation>
-<translation id="5666116074010586111">‏اس سے خطرات کا تیزی سے پتا لگانے کے لیے Google کو URL اور صفحہ کا مواد بھیجا جاتا ہے</translation>
 <translation id="5666911576871845853">نیا پروفائل &amp;شامل کریں</translation>
 <translation id="5667293444945855280">میلوئیر</translation>
 <translation id="5667546120811588575">‏Google Play کو سیٹ کیا جا رہا ہے...</translation>
@@ -7125,6 +7127,7 @@
 <translation id="583673505367439042">سائٹس آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کیلئے پوچھ سکتی ہیں</translation>
 <translation id="5836999627049108525">وہ زبان جس سے ترجمہ کرنا ہے</translation>
 <translation id="583756221537636748">کیس</translation>
+<translation id="5840656138956959276">بہتر کردہ: سخت</translation>
 <translation id="5840680448799937675">فائلز ہمیشہ آف لائن اشتراک کی جائیں گی</translation>
 <translation id="5841270259333717135">ایتھرنیٹ کو ترتیب دیں</translation>
 <translation id="5841338463993781099">اکاؤنٹ میں محفوظ کریں؟</translation>
@@ -7951,6 +7954,7 @@
 <translation id="6411135999030237579">کلید کو خودکار طور پر دہرانے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="6414618057231176439">منتخب کریں کہ <ph name="VM_NAME" /> کا کون سا ورژن انسٹال کرنا ہے۔</translation>
 <translation id="641469293210305670">اپ ڈیٹس اور ایپس انسٹال کریں</translation>
+<translation id="6415434255504060856">تمام سائٹس کے لیے سخت</translation>
 <translation id="6415757856498750027">‏"ư" حاصل کرنے کے لیے "w" ٹائپ کریں</translation>
 <translation id="6415816101512323589">اپنے ڈیٹا کے تحفظ کے لیے مقامی ڈیٹا کی بازیابی کو آن کریں؟</translation>
 <translation id="6415900369006735853">اپنے فون کے ذریعے انٹرنیٹ سے منسلک ہوں</translation>
@@ -8082,7 +8086,6 @@
 <translation id="6508261954199872201">ایپ: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">‏اپنا Chromebook دوبارہ شروع کریں اور دوبارہ کوشش کریں</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
-<translation id="6512364354776355686">اس سے آپ کو تمام غیر محفوظ کنکشنز کے بارے میں متنبہ کیا جاتا ہے</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> مُوڈ کے ساتھ <ph name="SUBJECT" /> کی تخلیق کردہ تصویر <ph name="INDEX" /></translation>
 <translation id="6513247462497316522">‏اگر آپ کسی دوسرے نیٹ ورک سے منسلک نہیں ہیں تو Google Chrome موبائل ڈیٹا کا استعمال کرے گا۔</translation>
 <translation id="6514010653036109809">دستیاب آلہ:</translation>
@@ -8346,6 +8349,7 @@
 <translation id="6686665106869989887">ٹیب دائیں طرف منتقل کیا گیا</translation>
 <translation id="6686676261102452995">آپ نے آج کھولا</translation>
 <translation id="6686817083349815241">اپنا پاس ورڈ محفوظ کریں</translation>
+<translation id="6686878118106035853">‏حسب ضرورت بہتر کردہ حفاظت تمام سائٹس کے لیے JavaScript آپٹیمائزیشن کو آف کر دیتی ہے</translation>
 <translation id="6687008241368170505">‏‫Google پاس ورڈ مینیجر کا PIN تبدیل کریں</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> چھپائیں</translation>
 <translation id="6689948774466767379">ماؤس کنٹرول کرنے کی کلیدیں</translation>
@@ -10029,7 +10033,6 @@
 <translation id="7830833461614351956">کھولنے کے لیے <ph name="NUM_OF_FILES" /> فائلز کو <ph name="CLOUD_PROVIDER" /> میں کاپی کریں؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">محفوظ کردہ حسب ضرورت الفاظ یہاں ظاہر ہوں گے</translation>
-<translation id="7833725807105678871">اس سے بہتر کردہ سیکیورٹی کی خصوصیات پر سائٹ کی رفتار کو ترجیح دیا جاتا ہے</translation>
 <translation id="7834832693620032149">آڈیو کا اشتراک کرنے کے لیے، اس کے بجائے ایک ٹیب یا ونڈو کا اشتراک کریں</translation>
 <translation id="7836577093182643605">ان موضوعات کی فہرست جنہیں آپ نے مسدود کیا ہے اور ان کا اشتراک سائٹس کے ساتھ نہیں کرنا چاہتے ہیں</translation>
 <translation id="7836850009646241041">اپنی سیکیورٹی کلید کو دوبارہ چھونے کی کوشش کریں</translation>
@@ -10825,6 +10828,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">آپ نے پہلے ہی اس آلے پر رجسٹرڈ کیا ہے۔ آپ کو اسے دوبارہ رجسٹر کرنے کی ضرورت نہیں ہے۔</translation>
 <translation id="8357388086258943206">‏Linux انسٹال کرنے میں خرابی</translation>
+<translation id="8357883857705092796">غیر شناخت شدہ سائٹس</translation>
 <translation id="8358685469073206162">صفحات بحال کریں؟</translation>
 <translation id="835927394551949760">‏Google سے پوچھیں</translation>
 <translation id="835951711479681002">‏اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
@@ -11518,7 +11522,6 @@
 <translation id="8821045908425223359">‏خودکار طور پر IP پتہ کو کنفیگر کریں</translation>
 <translation id="8821268776955756404">استعمال کے لیے <ph name="APP_NAME" /> تیار ہے۔</translation>
 <translation id="882204272221080310">اضافی سیکیورٹی کیلئے فرم ویئر اپ ڈیٹ کریں۔</translation>
-<translation id="8822690627597552656">اس سے عام حملوں کو بلاک کرنے کے لیے کچھ غیر مانوس سائٹس کو سست کیا جاتا ہے</translation>
 <translation id="8823514049557262177">لنک کا مت&amp;ن کاپی کریں</translation>
 <translation id="8823704566850948458">پاس ورڈ تجویز کریں...</translation>
 <translation id="8823963789776061136">‏متبادل طور پر، پرنٹر PPD منتخب کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>

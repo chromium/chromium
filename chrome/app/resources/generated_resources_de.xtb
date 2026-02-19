@@ -2003,6 +2003,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2332742915001411729">Auf Standardeinstellungen zurücksetzen</translation>
 <translation id="2333166365943957309">UI-Hierarchie</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
+<translation id="2334384018887664164">In den Inhaltseinstellungen kannst du Websites, denen du vertraust, auf die Zulassungsliste setzen</translation>
 <translation id="233471714539944337">Sensible Inhalte</translation>
 <translation id="2335758110242123814">Gruppe öffnen</translation>
 <translation id="2336228925368920074">Alle Tabs als Lesezeichen speichern...</translation>
@@ -2098,6 +2099,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="240789602312469910">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Karte wird gespeichert</translation>
 <translation id="2408742686124047357">Google Lens an die Symbolleiste anpinnen, um beim nächsten Mal leichter darauf zuzugreifen</translation>
+<translation id="2408762424059547338">Bietet besseren Schutz vor Angriffen, da die JavaScript-Optimierung deaktiviert wird</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2409268599591722235">Los geht's!</translation>
 <translation id="2409378541210421746">Sprachauswahl bearbeiten</translation>
@@ -2374,6 +2376,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2581992808349413349">Verwende eine verschlüsselte Verbindung zum Suchen der IP-Adresse einer Website im DNS (Domain Name System). Dazu wird für <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ein Anbieter verwalteter Dienste verwendet.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Jedes intelligentes Kartenlesegerät</translation>
+<translation id="2583949330716828639">Ausnahmen für Websites verwalten</translation>
 <translation id="2584109212074498965">Kerberos-Ticket konnte nicht abgerufen werden (Fehlercode: <ph name="ERROR_CODE" />). Versuche es noch einmal oder wende dich an den Geräteadministrator deiner Organisation.</translation>
 <translation id="2584974473573720127">Mikrofonberechtigungen für Websites in Chrome verwalten</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> konnte nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -5749,6 +5752,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4871322859485617074">PIN enthält ungültige Zeichen</translation>
 <translation id="4871370605780490696">Lesezeichen hinzufügen</translation>
 <translation id="4871568871368204250">Synchronisierung ausschalten</translation>
+<translation id="4871630917300912613">JavaScript-Schutzmaßnahmen</translation>
 <translation id="4871719318659334896">Gruppe schließen</translation>
 <translation id="4872192066608821120">Wähle eine CSV-Datei aus, um Passwörter zu importieren</translation>
 <translation id="4872212987539553601">On-Device-Verschlüsselung einrichten</translation>
@@ -6684,7 +6688,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5523532775593636291">Hinzugefügte Websites bleiben immer aktiv und im Arbeitsspeicher</translation>
 <translation id="5523558474028191231">Der Name darf aus Buchstaben, Ziffern und Sonderzeichen bestehen und maximal <ph name="MAX_CHARACTER_COUNT" /> Zeichen lang sein</translation>
 <translation id="5526745900034778153">Wieder anmelden, um die Synchronisierung fortzusetzen</translation>
-<translation id="5527211644528700597">Verwendet auf dem Gerät Methoden zur Erkennung von Bedrohungen</translation>
 <translation id="5527474464531963247">Du kannst auch ein anderes Netzwerk auswählen.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, wird installiert</translation>
 <translation id="5527822190489075064">Optimiertes Laden</translation>
@@ -6880,7 +6883,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5663459693447872156">Automatisch in halbbreites Format wechseln</translation>
 <translation id="5663653125349867535">&amp;Leseliste</translation>
 <translation id="5663918299073387939">Websites bitten normalerweise darum, MIDI-Geräte zu steuern und neu zu programmieren, um Musiktitel zu erstellen und zu bearbeiten oder die Firmware des Geräts zu aktualisieren</translation>
-<translation id="5666116074010586111">Sendet die URL und den Seiteninhalt an Google, um Bedrohungen schneller zu erkennen</translation>
 <translation id="5666911576871845853">Neues Profil hinzuf&amp;ügen</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Google Play wird eingerichtet...</translation>
@@ -7119,6 +7121,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="583673505367439042">Websites dürfen nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchten</translation>
 <translation id="5836999627049108525">Ausgangssprache</translation>
 <translation id="583756221537636748">Case</translation>
+<translation id="5840656138956959276">Erweitert: strikt</translation>
 <translation id="5840680448799937675">Dateien werden immer offline geteilt</translation>
 <translation id="5841270259333717135">Ethernet konfigurieren</translation>
 <translation id="5841338463993781099">Im Konto speichern?</translation>
@@ -7944,6 +7947,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6411135999030237579">Gedrückt halten, um den Tastendruck automatisch zu wiederholen</translation>
 <translation id="6414618057231176439">Leg fest, welche Version von <ph name="VM_NAME" /> installiert werden soll.</translation>
 <translation id="641469293210305670">Updates und Apps installieren</translation>
+<translation id="6415434255504060856">Strikt für alle Websites</translation>
 <translation id="6415757856498750027">„w“ eingeben, um „ư“ zu erhalten</translation>
 <translation id="6415816101512323589">Soll die lokale Datenwiederherstellung zum Schutz deiner Daten aktiviert werden?</translation>
 <translation id="6415900369006735853">Internetverbindung über dein Smartphone herstellen</translation>
@@ -8075,7 +8079,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Starte Chromebook neu und versuche es noch einmal</translation>
 <translation id="6511827214781912955">Du kannst „<ph name="FILENAME" />“ löschen, damit andere Nutzer dieses Geräts deine Passwörter nicht sehen können</translation>
-<translation id="6512364354776355686">Warnt dich vor allen unsicheren Verbindungen</translation>
 <translation id="6512759338201777379">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> mit der Stimmung „<ph name="MOOD" />“</translation>
 <translation id="6513247462497316522">Google Chrome verwendet Mobilfunk, wenn du nicht mit einem anderen Netzwerk verbunden bist.</translation>
 <translation id="6514010653036109809">Verfügbares Gerät:</translation>
@@ -8339,6 +8342,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6686665106869989887">Tab wurde nach rechts verschoben</translation>
 <translation id="6686676261102452995">Von dir heute geöffnet</translation>
 <translation id="6686817083349815241">Passwort speichern</translation>
+<translation id="6686878118106035853">Durch die benutzerdefinierte erweiterte Sicherheit wird die JavaScript-Optimierung für alle Websites deaktiviert</translation>
 <translation id="6687008241368170505">PIN für Google Passwortmanager ändern</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ausblenden</translation>
 <translation id="6689948774466767379">Tastaturmaus</translation>
@@ -10023,7 +10027,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> Dateien zu <ph name="CLOUD_PROVIDER" /> kopieren, um sie zu öffnen?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Hier werden gespeicherte benutzerdefinierte Wörter angezeigt</translation>
-<translation id="7833725807105678871">Die Website-Geschwindigkeit hat Vorrang vor den erweiterten Sicherheitsfunktionen</translation>
 <translation id="7834832693620032149">Wenn du Audio teilen möchtest, musst du stattdessen einen Tab oder ein Fenster teilen</translation>
 <translation id="7836577093182643605">Liste der blockierten Themen, die nicht mit Websites geteilt werden dürfen</translation>
 <translation id="7836850009646241041">Berühre deinen Sicherheitsschlüssel noch einmal</translation>
@@ -10820,6 +10823,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du hast dieses Gerät bereits registriert. Es muss nicht noch einmal registriert werden.</translation>
 <translation id="8357388086258943206">Fehler beim Installieren von Linux</translation>
+<translation id="8357883857705092796">Nicht erkannte Websites</translation>
 <translation id="8358685469073206162">Seiten wiederherstellen?</translation>
 <translation id="835927394551949760">Google fragen</translation>
 <translation id="835951711479681002">Im Google-Konto speichern</translation>
@@ -11513,7 +11517,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8821045908425223359">IP-Adresse automatisch konfigurieren</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> kann jetzt verwendet werden.</translation>
 <translation id="882204272221080310">Für mehr Sicherheit Firmware aktualisieren.</translation>
-<translation id="8822690627597552656">Verlangsamt einige unbekannte Websites, um gängige Angriffe zu blockieren</translation>
 <translation id="8823514049557262177">Linkte&amp;xt kopieren</translation>
 <translation id="8823704566850948458">Passwort vorschlagen…</translation>
 <translation id="8823963789776061136">Alternativ kannst du die PPD-Datei des Druckers auswählen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>

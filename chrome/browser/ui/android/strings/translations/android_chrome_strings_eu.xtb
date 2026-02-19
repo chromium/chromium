@@ -645,6 +645,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3777796259512476958">Webgune gehienetako saioa amaitzen du</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fitxa}other{# fitxa}}</translation>
+<translation id="3792938779249970121">Hautatu kontua</translation>
 <translation id="3795154175078851242">Kopiatu irudia estekarekin</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" /> fitxa, hautatuta, ezkutuko modukoa, ainguratuta, audioa erreproduzitzen</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
@@ -1269,6 +1270,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6340526405444716530">Pertsonalizazioa</translation>
 <translation id="6341580099087024258">Galdetu fitxategiak non gorde behar diren</translation>
 <translation id="6342069812937806050">Oraintxe</translation>
+<translation id="634208815998129842">Zereginen kudeatzailea</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Markatu irakurritako gisa</translation>
 <translation id="6356893102071098867">Egiaztatu kontu zuzena aukeratu duzun</translation>
@@ -1485,6 +1487,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7117485132243600300">Kudeatu jarraipena egiten diozun edukia eta iradokitako gai eta bilaketak</translation>
 <translation id="7119984597597798764">Itxi <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Hasi saioa Chrome-n</translation>
+<translation id="7136694880210472378">Ezarri lehenetsi gisa</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Webgune baten baimenak berrikusi dira}other{# webguneren baimenak berrikusi dira}}</translation>
 <translation id="7138678301420049075">Beste bat</translation>
 <translation id="7140829094791862589">Ordenatu eskuz</translation>

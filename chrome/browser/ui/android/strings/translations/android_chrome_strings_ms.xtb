@@ -645,6 +645,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3775705724665058594">Hantar ke peranti anda</translation>
 <translation id="3777796259512476958">Mengelog anda keluar daripada kebanyakan laman</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
+<translation id="3792938779249970121">Pilih akaun</translation>
 <translation id="3795154175078851242">Salin imej dengan pautan</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, Tab Inkognito Boleh Dengar Yang Tersemat Dan Dipilih</translation>
 <translation id="3810973564298564668">Urus</translation>
@@ -1269,6 +1270,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6340526405444716530">Pemperibadian</translation>
 <translation id="6341580099087024258">Tanya tempat fail hendak disimpan</translation>
 <translation id="6342069812937806050">Sebentar tadi</translation>
+<translation id="634208815998129842">Pengurus tugas</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lagi}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lagi}}</translation>
 <translation id="6345878117466430440">Tandai sebagai dibaca</translation>
 <translation id="6356893102071098867">Pastikan anda memilih akaun yang betul</translation>
@@ -1485,6 +1487,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7117485132243600300">Urus kandungan yang anda ikuti serta topik dan carian yang dicadangkan</translation>
 <translation id="7119984597597798764">Tutup <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Log masuk ke Chrome</translation>
+<translation id="7136694880210472378">Jadikan lalai</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Kebenaran telah disemak untuk 1 laman}other{Kebenaran telah disemak untuk # laman}}</translation>
 <translation id="7138678301420049075">Lain-lain</translation>
 <translation id="7140829094791862589">Isih ikut tertib manual</translation>

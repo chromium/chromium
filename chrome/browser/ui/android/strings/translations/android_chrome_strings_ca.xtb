@@ -560,7 +560,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3435465986463792564">Tens moltes finestres obertes? Pots gestionar-les aquí.</translation>
 <translation id="3435575784518354875">Per mantenir l'accés a les contrasenyes, exporta-les ara, actualitza Serveis de Google Play i, a continuació, importa-les al gestor de contrasenyes de Google. <ph name="BEGIN_LINK" />Mostra les instruccions completes<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
-<translation id="3435914367318771664">Afegeix la pestanya al grup nou</translation>
+<translation id="3435914367318771664">Afegeix la pestanya a un grup nou</translation>
 <translation id="3438681572027105609">Per obtenir les teves contrasenyes i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="3439276997620616816">Trobaràs les teves pestanyes recents aquí</translation>
 <translation id="3443221991560634068">Torna a carregar la pàgina actual</translation>
@@ -645,6 +645,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3775705724665058594">Envia als teus dispositius</translation>
 <translation id="3777796259512476958">Se't tancarà la sessió de la majoria de llocs web</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestanya}other{# pestanyes}}</translation>
+<translation id="3792938779249970121">Selecciona un compte</translation>
 <translation id="3795154175078851242">Copia la imatge amb l'enllaç</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, pestanya d'incògnit audible i fixada seleccionada</translation>
 <translation id="3810973564298564668">Gestiona</translation>
@@ -1269,6 +1270,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6340526405444716530">Personalització</translation>
 <translation id="6341580099087024258">Pregunta on es desen els fitxers</translation>
 <translation id="6342069812937806050">Ara mateix</translation>
+<translation id="634208815998129842">Gestor de tasques</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}}</translation>
 <translation id="6345878117466430440">Marca com a llegit</translation>
 <translation id="6356893102071098867">Comprova que hagis triat el compte correcte</translation>
@@ -1485,6 +1487,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7117485132243600300">Gestiona el contingut que segueixes i els temes i les cerques suggerits</translation>
 <translation id="7119984597597798764">Tanca <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Inicia la sessió a Chrome</translation>
+<translation id="7136694880210472378">Estableix com a predeterminat</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{S'han revisat els permisos per a 1 lloc web}other{S'han revisat els permisos per a # llocs web}}</translation>
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7140829094791862589">Ordena manualment</translation>

@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="3777796259512476958">ከአብዛኛዎቹ ጣቢያዎች ዘግተው እንዲወጡ ያደርግዎታል</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ትር}one{# ትሮች}other{# ትሮች}}</translation>
+<translation id="3792938779249970121">መለያ ይምረጡ</translation>
 <translation id="3795154175078851242">ምስል ከአገናኝ ጋር ቅዳ</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />፣ የተመረጠ ፒን የተደረገ የሚሰማ ማንነት የማያሳውቅ ትር</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">ግላዊነት ማላበስ</translation>
 <translation id="6341580099087024258">ፋይሎች የት እንደሚቀመጡ ይጠይቁ</translation>
 <translation id="6342069812937806050">ልክ አሁን</translation>
+<translation id="634208815998129842">ተግባር አስተዳዳሪ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}}</translation>
 <translation id="6345878117466430440">እንደተነበበ ምልክት አድርግ</translation>
 <translation id="6356893102071098867">ትክክለኛውን መለያ እንደመረጡ ይፈትሹ</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">የሚከተሉትን ይዘት እና የሚጠቆሙ ርዕሶች እና ፍለጋዎችን ያስተዳድሩ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />ን ዝጋ</translation>
 <translation id="7121179479711575744">Chrome ውስጥ ይግቡ</translation>
+<translation id="7136694880210472378">ነባሪ አድርግ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ፈቃዶች ለ1 ጣቢያ ተገምግመዋል}one{ፈቃዶች ለ# ጣቢያ ተገምግመዋል}other{ፈቃዶች ለ# ጣቢያዎች ተገምግመዋል}}</translation>
 <translation id="7138678301420049075">ሌላ</translation>
 <translation id="7140829094791862589">በእጅ ደርድር</translation>

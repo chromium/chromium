@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
 <translation id="3777796259512476958">Будзе выкананы выхад з уліковых запісаў на большасці сайтаў</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
+<translation id="3792938779249970121">Выбар уліковага запісу</translation>
 <translation id="3795154175078851242">Капіраваць відарыс са спасылкай</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка ў рэжыме інкогніта з уключаным гукам</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
@@ -1485,6 +1486,7 @@
 <translation id="7117485132243600300">Кіруйце змесцівам, на якое вы падпісаны, а таксама прапанаванымі тэмамі і пошукам</translation>
 <translation id="7119984597597798764">Закрыць: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Увайсці ў Chrome</translation>
+<translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Разгледжаны дазволы для 1 сайта}one{Разгледжаны дазволы для # сайта}few{Разгледжаны дазволы для # сайтаў}many{Разгледжаны дазволы для # сайтаў}other{Разгледжаны дазволы для # сайта}}</translation>
 <translation id="7138678301420049075">Іншыя</translation>
 <translation id="7140829094791862589">Сартаваць уручную</translation>

@@ -645,6 +645,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3775705724665058594">Skicka till dina enheter</translation>
 <translation id="3777796259512476958">Du loggas ut från de flesta webbplatser</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flik}other{# flikar}}</translation>
+<translation id="3792938779249970121">Välj konto</translation>
 <translation id="3795154175078851242">Kopiera bild med länk</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, vald fäst inkognitoflik med ljud</translation>
 <translation id="3810973564298564668">Hantera</translation>
@@ -1270,6 +1271,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6340526405444716530">Anpassning</translation>
 <translation id="6341580099087024258">Fråga var filerna ska sparas</translation>
 <translation id="6342069812937806050">Alldeles nyss</translation>
+<translation id="634208815998129842">Aktivitetshanteraren</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}}</translation>
 <translation id="6345878117466430440">Markera som läst</translation>
 <translation id="6356893102071098867">Kontrollera att du har valt rätt konto</translation>
@@ -1486,6 +1488,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7117485132243600300">Hantera innehåll som du följer och föreslagna ämnen och sökningar</translation>
 <translation id="7119984597597798764">Stäng <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Logga in i Chrome</translation>
+<translation id="7136694880210472378">Ange som standard</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7140829094791862589">Sortera manuellt</translation>

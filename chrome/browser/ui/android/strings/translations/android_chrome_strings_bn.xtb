@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">আপনার ডিভাইসে পাঠান</translation>
 <translation id="3777796259512476958">বেশিরভাগ সাইট থেকে আপনাকে সাইন-আউট করিয়ে দেয়</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১টি ট্যাব}one{# টি ট্যাব}other{# টি ট্যাব}}</translation>
+<translation id="3792938779249970121">অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="3795154175078851242">লিঙ্ক সহ ছবি কপি করুন</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা অডিবল ছদ্মবেশী ট্যাব</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">নিজের পছন্দ অনুযায়ী বেছে নেওয়া</translation>
 <translation id="6341580099087024258">কোথায় ফাইল সেভ করতে চান</translation>
 <translation id="6342069812937806050">এখনই</translation>
+<translation id="634208815998129842">কার্য পরিচালক</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> আরও অনেক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> আরও অনেক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> আরও অনেক}}</translation>
 <translation id="6345878117466430440">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="6356893102071098867">আপনি সঠিক অ্যাকাউন্ট বেছে নিয়েছেন কিনা তা চেক করে দেখে নিন</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">আপনার অনুসরণ করা কন্টেন্টের সাথে সাজেস্ট করা বিষয় এবং সার্চ ম্যানেজ করুন</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> বন্ধ করুন</translation>
 <translation id="7121179479711575744">Chrome-এ সাইন-ইন করুন</translation>
+<translation id="7136694880210472378">ডিফল্ট করুন</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{১টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}one{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}other{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}}</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
 <translation id="7140829094791862589">ম্যানুয়াল অর্ডার অনুযায়ী সাজান</translation>

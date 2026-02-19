@@ -1404,7 +1404,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6140948187512243695">Pokaži podrobnosti</translation>
 <translation id="6144589619057374135">Odprite ${url} v anonimnem načinu</translation>
 <translation id="6146563240635539929">Videoposnetki</translation>
-<translation id="6147279996212084542">Pojasni</translation>
 <translation id="6151006591088192882">Odkleni anonimne zavihke s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Neaktivno</translation>
 <translation id="6152406514676263192">Sinhronizirajte za najpomembnejšo vsebino glede na vaša zanimanja.</translation>
@@ -2060,6 +2059,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8439758443371991593">Skrij Dodaj na bralni seznam</translation>
 <translation id="8443986842926457191">URL vsebuje več kot 2048 znakov</translation>
 <translation id="8449869326050867919">Geslo je deljeno</translation>
+<translation id="8473815223723723001">Urejanje slike z Geminijem</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8474378002946546633">Omogoči obvestila</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

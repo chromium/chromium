@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3777796259512476958">Ќе ве одјави од повеќето сајтови</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
+<translation id="3792938779249970121">Изберете сметка</translation>
 <translation id="3795154175078851242">Копирај ја сликата со линк</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, избрана прикачена картичка „Инкогнито“ со пуштен звук</translation>
 <translation id="3810973564298564668">Управувај</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">Персонализација</translation>
 <translation id="6341580099087024258">Прашај каде да зачувуваш датотеки</translation>
 <translation id="6342069812937806050">Пред малку</translation>
+<translation id="634208815998129842">Управник со задачи</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означи како прочитано</translation>
 <translation id="6356893102071098867">Погрижете се да ја изберете точната сметка</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">Управувајте со содржините што ги следите, како и предложените теми и пребарувања</translation>
 <translation id="7119984597597798764">Затвори <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Најавете се на Chrome</translation>
+<translation id="7136694880210472378">Направи стандардно</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани се дозволите за 1 сајт}one{Прегледани се дозволите за # сајт}other{Прегледани се дозволите за # сајта}}</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7140829094791862589">Подреди рачно</translation>

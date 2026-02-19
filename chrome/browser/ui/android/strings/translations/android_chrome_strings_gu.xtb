@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="3777796259512476958">મોટાભાગની સાઇટમાંથી તમને સાઇન આઉટ કરે છે</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ટૅબ}one{# ટૅબ}other{# ટૅબ}}</translation>
+<translation id="3792938779249970121">એકાઉન્ટ પસંદ કરો</translation>
 <translation id="3795154175078851242">લિંક સાથે છબી કૉપિ કરો</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું સાંભળી શકાય તેવું છૂપું ટૅબ</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">મનગમતું બનાવવું</translation>
 <translation id="6341580099087024258">ફાઇલો ક્યાં સાચવવી તે પૂછો</translation>
 <translation id="6342069812937806050">હમણાં જ</translation>
+<translation id="634208815998129842">કાર્ય સંચાલક</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
 <translation id="6356893102071098867">ચેક કરો કે તમે યોગ્ય એકાઉન્ટ પસંદ કર્યું હોય</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">તમે ફૉલો કરો છો તે કન્ટેન્ટ, સૂચવેલા વિષયો અને શોધને મેનેજ કરો</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> બંધ કરો</translation>
 <translation id="7121179479711575744">Chromeમાં સાઇન ઇન કરો</translation>
+<translation id="7136694880210472378">ડિફૉલ્ટ બનાવો</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}one{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}other{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>
 <translation id="7138678301420049075">અન્ય</translation>
 <translation id="7140829094791862589">મેન્યુઅલ ક્રમે સૉર્ટ કરો</translation>
@@ -1540,6 +1543,7 @@
 <translation id="7314734791127433392">પાસવર્ડ ચેક કરી શકતા નથી</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
 <translation id="7333041109965360609">નોટિફિકેશનમાંથી અનસબ્સ્ક્રાઇબ કર્યું</translation>
+<translation id="7335766481146072567">'ચાલુ રાખો' દબાવો</translation>
 <translation id="7336259382292148213">બરાબર લાગે છે</translation>
 <translation id="7339898014177206373">નવી વિન્ડો</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
@@ -1852,6 +1856,7 @@
 <translation id="8559961053328923750">જાહેરાતના કાર્યપ્રદર્શનની માપણી કરવા માટે સાઇટ દ્વારા બ્રાઉઝર મારફતે શેર કરી શકાય તેવા ડેટાની કુલ માત્રાને Chrome મર્યાદિત કરે છે</translation>
 <translation id="8559990750235505898">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="8560602726703398413">Bookmarksમાં તમારી વાંચન સૂચિ શોધો</translation>
+<translation id="85618473456579127">સૌથી ઉપર જમણી બાજુએ પ્રોફાઇલ પર ટૅપ કરો</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />ને કાઢી નાખીએ?</translation>
 <translation id="8570677896027847510">ફાઇલ સુરક્ષિત રીતે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>

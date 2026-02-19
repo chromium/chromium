@@ -1404,7 +1404,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6144589619057374135">Abre ${url} no modo de incógnito</translation>
 <translation id="6146563240635539929">Vídeos</translation>
-<translation id="6147279996212084542">Explicar</translation>
 <translation id="6151006591088192882">Desbloquear as pestanas do modo de incógnito co seguinte método: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactivas</translation>
 <translation id="6152406514676263192">Activa a sincronización para gozar do contido máis relevante baseado nos teus intereses.</translation>
@@ -2060,6 +2059,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
 <translation id="8443986842926457191">O URL contén máis de 2048 caracteres</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
+<translation id="8473815223723723001">Editar imaxe con Gemini</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>

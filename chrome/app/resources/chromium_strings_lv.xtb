@@ -239,6 +239,7 @@
 <translation id="3522404737534491619">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
 <translation id="3530103706039034513">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />.  Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Lai kopīgotu ekrānu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
+<translation id="3588112919289558122">Izmantojot uzlaboto aizsardzību, tiek izslēgta JavaScript optimizācija vietnēm, ko Chromium neatpazīst.</translation>
 <translation id="3597003331831379823">Neizdevās izpildīt iestatīšanu ar augstām privilēģijām. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Pierakstīšanās pārlūkā Chromium</translation>
 <translation id="3639635944603682591">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chromium kā lietotājs <ph name="USER_EMAIL" />.</translation>

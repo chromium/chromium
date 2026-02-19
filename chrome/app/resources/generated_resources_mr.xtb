@@ -6706,7 +6706,6 @@
 <translation id="5523532775593636291">तुम्ही जोडलेल्या साइट नेहमी अ‍ॅक्टिव्ह राहतील आणि त्यांच्याकडून मेमरी मोकळी केली जाणार नाही</translation>
 <translation id="5523558474028191231">नावामध्ये अक्षरे, अंक व विशेष वर्ण आणि <ph name="MAX_CHARACTER_COUNT" /> किंवा त्याहून कमी वर्ण वापरू शकता</translation>
 <translation id="5526745900034778153">सिंक पुन्हा पुढे सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
-<translation id="5527211644528700597">धोके डिटेक्ट करण्यासाठी डिव्हाइसवरील पद्धती वापरते</translation>
 <translation id="5527474464531963247">तुम्ही वेगळे नेटवर्क देखील निवडू शकता.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, इंस्टॉल करत आहे</translation>
 <translation id="5527822190489075064">ऑप्टिमाइझ केलेले चार्जिंग</translation>
@@ -6904,7 +6903,6 @@
 <translation id="5663459693447872156">अर्ध्यारूंदीकडे स्वयंचलितपणे स्विच करा</translation>
 <translation id="5663653125349867535">&amp;वाचन सूची</translation>
 <translation id="5663918299073387939">साइट सामान्यपणे संगीत तयार करणे, संगीत संपादित करणे किंवा डिव्हाइस फर्मवेअर अपडेट करणे यासाठी MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्याची विनंती करतात</translation>
-<translation id="5666116074010586111">धोके अधिक जलद डिटेक्ट करण्यासाठी URL आणि पेज आशय Google ला पाठवते</translation>
 <translation id="5666911576871845853">&amp;नवीन प्रोफाइल जोडा</translation>
 <translation id="5667293444945855280">मालवेअर</translation>
 <translation id="5667546120811588575">Google Play सेट अप करत आहे...</translation>
@@ -8105,7 +8103,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6508261954199872201">ॲप्लिकेशन: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">तुमचे Chromebook रीस्टार्ट करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> हटवण्याचा विचार करा, जेणेकरून हे डिव्हाइस वापरणारे इतर लोक तुमचे पासवर्ड पाहू शकणार नाहीत</translation>
-<translation id="6512364354776355686">सर्व असुरक्षित कनेक्शनबद्दल तुम्हाला चेतावणी देते</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> मूड असलेली, <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> जनरेट केलेली इमेज.</translation>
 <translation id="6513247462497316522">तुम्ही इतर नेटवर्कशी कनेक्टेड नसल्यास Google Chrome मोबाइल डेटाचा वापर करेल.</translation>
 <translation id="6514010653036109809">उपलब्ध डिव्हाइस:</translation>
@@ -10054,7 +10051,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7830833461614351956">उघडण्यासाठी <ph name="NUM_OF_FILES" /> फाइल <ph name="CLOUD_PROVIDER" /> वर कॉपी करायच्या आहेत का?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">सेव्ह केलेले कस्टम शब्द येथे दिसून येतील</translation>
-<translation id="7833725807105678871">वर्धित सुरक्षा वैशिष्ट्यांहून साइटच्या वेगाला प्राधान्य देते</translation>
 <translation id="7834832693620032149">ऑडिओ शेअर करण्यासाठी, त्याऐवजी टॅब किंवा विंडो शेअर करा</translation>
 <translation id="7836577093182643605">तुम्ही ब्लॉक केलेल्या विषयांची सूची, जे तुम्हाला साइटसह शेअर करायचे नाहीत</translation>
 <translation id="7836850009646241041">तुमच्या सिक्युरिटी कीला पुन्हा स्पर्श करून पहा</translation>
@@ -11545,7 +11541,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8821045908425223359">IP अ‍ॅड्रेस आपोआप कॉन्फिगर करा</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> वापरण्यासाठी तयार आहे.</translation>
 <translation id="882204272221080310">अतिरिक्त सुरक्षिततेसाठी फर्मवेअर अपडेट करा.</translation>
-<translation id="8822690627597552656">सामान्य हल्ले ब्लॉक करण्यासाठी काही अनोळखी साइट धीम्या करते</translation>
 <translation id="8823514049557262177">लिंक मजकूर कॉपी करा</translation>
 <translation id="8823704566850948458">पासवर्ड सुचवा...</translation>
 <translation id="8823963789776061136">याव्यतिरिक्त, प्रिंटर PPD निवडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>

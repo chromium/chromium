@@ -2018,6 +2018,7 @@
 <translation id="2332742915001411729">ຕັ້ງຄ່າເປັນມາດຕະຖານຄືນໃໝ່</translation>
 <translation id="2333166365943957309">ລະດັບຊັ້ນຂອງສ່ວນຕິດຕໍ່ຜູ້ໃຊ້</translation>
 <translation id="233375395665273385">ລຶບ ແລະ ອອກຈາກລະບົບ</translation>
+<translation id="2334384018887664164">ທ່ານສາມາດເພີ່ມເວັບໄຊທີ່ທ່ານເຊື່ອຖືໃສ່ໃນລາຍຊື່ອະນຸຍາດໄດ້ໃນການຕັ້ງຄ່າເນື້ອຫາ</translation>
 <translation id="233471714539944337">ເນື້ອຫາທີ່ລະອຽດອ່ອນ</translation>
 <translation id="2335758110242123814">ເປີດກຸ່ມ</translation>
 <translation id="2336228925368920074">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
@@ -2113,6 +2114,7 @@
 <translation id="240789602312469910">ສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິນິໄສ. ຊ່ວຍປັບປຸງປະສົບການໃນການໃຊ້ Android ຂອງລູກຂອງທ່ານໂດຍການສົ່ງຂໍ້ມູນການວິນິໄສ, ຂໍ້ມູນອຸປະກອນ ແລະ ຂໍ້ມູນການນຳໃຊ້ແອັບໄປໃຫ້ Google ໂດຍອັດຕະໂນມັດ. ຂໍ້ມູນນີ້ຈະບໍ່ຖືກໃຊ້ເພື່ອລະບຸຕົວຕົນຂອງລູກຂອງທ່ານ ແລະ ຈະຊ່ວຍປັບປຸງຄວາມສະຖຽນຂອງລະບົບ ແລະ ແອັບ ຮວມທັງການປັບປຸງດ້ານອື່ນໆ. ນອກຈາກນັ້ນ, ຂໍ້ມູນຮວມບາງສ່ວນຍັງຈະມີປະໂຫຍດຕໍ່ແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ນຳ ເຊັ່ນ: ນັກພັດທະນາ Android. ເຈົ້າຂອງເປັນຜູ້ບັງຄັບໃຊ້ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ<ph name="END_LINK1" /> ນີ້. ເຈົ້າຂອງອາດເລືອກທີ່ຈະສົ່ງຂໍ້ມູນການວິນິໄສ ແລະ ຂໍ້ມູນການນຳໃຊ້ສຳລັບອຸປະກອນນີ້ໄປໃຫ້ Google. ຫາກເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມສໍາລັບລູກຂອງທ່ານ, ລະບົບອາດບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງເຂົາເຈົ້າ. <ph name="BEGIN_LINK2" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການວັດແທກ<ph name="BEGIN_LINK2_END" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">ກຳລັງບັນທຶກບັດ</translation>
 <translation id="2408742686124047357">ປັກໝຸດ Google Lens ໄວ້ຢູ່ແຖບເຄື່ອງມືຂອງທ່ານເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍໃນເທື່ອຕໍ່ໄປ</translation>
+<translation id="2408762424059547338">ປົກປ້ອງທ່ານຈາກການໂຈມຕີໄດ້ດີຍິ່ງຂຶ້ນໂດຍປິດການເພີ່ມປະສິດທິພາບ JavaScript</translation>
 <translation id="2408955596600435184">​ປ້ອນ​ລະ​ຫັດ PIN ຂອງ​ທ່ານ</translation>
 <translation id="2409268599591722235">ເລີ່ມ​ກັນ​ເລີຍ</translation>
 <translation id="2409378541210421746">ແກ້ໄຂການເລືອກພາສາ</translation>
@@ -2389,6 +2391,7 @@
 <translation id="2581992808349413349">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພເພື່ອຊອກຫາທີ່ຢູ່ IP ຂອງເວັບໄຊໃນ DNS (ລະບົບຊື່ໂດເມນ). ການດຳເນີນການນີ້ຈະໃຊ້ຜູ້ໃຫ້ບໍລິການທີ່ມີການຈັດການຢູ່ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (ພະແລັດຟອມ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">ຕົວອ່ານບັດອັດສະລິຍະຕ່າງໆ</translation>
+<translation id="2583949330716828639">ຈັດການຂໍ້ຍົກເວັ້ນຂອງເວັບໄຊ</translation>
 <translation id="2584109212074498965">ບໍ່ສາມາດຮັບປີ້ Kerberos ໄດ້. ລອງອີກຄັ້ງ ຫຼື ຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງອົງການຂອງທ່ານ. (ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">ຈັດການການອະນຸຍາດໄມໂຄຣໂຟນຂອງເວັບໄຊໃນ Chrome</translation>
 <translation id="2586561813241011046">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
@@ -5767,6 +5770,7 @@
 <translation id="4871322859485617074">PIN ປະກອບມີຕົວອັກສອນທີ່ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4871370605780490696">ເພີ່ມບຸກມາກຄ໌</translation>
 <translation id="4871568871368204250">ປິດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="4871630917300912613">ກົນໄກປ້ອງກັນຂອງ JavaScript</translation>
 <translation id="4871719318659334896">ປິດກຸ່ມ</translation>
 <translation id="4872192066608821120">ເພື່ອນຳເຂົ້າລະຫັດຜ່ານ, ໃຫ້ເລືອກໄຟລ໌ CSV</translation>
 <translation id="4872212987539553601">ຕັ້ງຄ່າການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
@@ -6702,7 +6706,6 @@
 <translation id="5523532775593636291">ເວັບໄຊທີ່ທ່ານເພີ່ມຈະນຳໃຊ້ຢູ່ຕະຫຼອດ ແລະ ຈະບໍ່ມີການຮຽກເກັບໜ່ວຍຄວາມຈຳຈາກພວກມັນ</translation>
 <translation id="5523558474028191231">ຊື່ສາມາດໃຊ້ຕົວອັກສອນ, ຕົວເລກ ແລະ ຕົວອັກສອນພິເສດ ແລະ ຈະຕ້ອງຍາວບໍ່ເກີນ <ph name="MAX_CHARACTER_COUNT" /> ຕົວອັກສອນ</translation>
 <translation id="5526745900034778153">ເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສືບຕໍ່ການຊິ້ງຂໍ້ມູນ</translation>
-<translation id="5527211644528700597">ໃຊ້ວິທີການຢູ່ອຸປະກອນເພື່ອກວດຫາໄພຄຸກຄາມ</translation>
 <translation id="5527474464531963247">ທ່ານ​ຍັງ​ອາດ​ຈະ​ເລືອກ​ເຄືອ​ຂ່າຍ​ອື່ນໄດ້​.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ກຳລັງຕິດຕັ້ງ</translation>
 <translation id="5527822190489075064">ການສາກແບບປັບໃຫ້ເໝາະສົມ</translation>
@@ -6900,7 +6903,6 @@
 <translation id="5663459693447872156">ປ່ຽນໄປໃສ່ເຄື່ອງຄວາມກ້ວາງໂດຍອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="5663653125349867535">&amp;ລາຍຊື່ການອ່ານ</translation>
 <translation id="5663918299073387939">ໂດຍປົກກະຕິແລ້ວເວັບໄຊຈະຂໍຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ເພື່ອສ້າງເພງ, ແກ້ໄຂເພງ ຫຼື ອັບເດດເຟີມແວຂອງອຸປະກອນ</translation>
-<translation id="5666116074010586111">ສົ່ງ URL ແລະ ເນື້ອຫາໃນໜ້າເວັບໄປຫາ Google ເພື່ອກວດຫາໄພຄຸກຄາມໄດ້ໄວຂຶ້ນ</translation>
 <translation id="5666911576871845853">&amp;ເພີ່ມໂປຣໄຟລ໌ໃໝ່</translation>
 <translation id="5667293444945855280">ມາລແວ</translation>
 <translation id="5667546120811588575">ກຳລັງຕັ້ງຄ່າ Google Play...</translation>
@@ -7139,6 +7141,7 @@
 <translation id="583673505367439042">ເວັບໄຊສາມາດຂໍແກ້ໄຂໄຟລ໌ ແລະ ໂຟນເດີໃນອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="5836999627049108525">ພາສາທີ່ຕ້ອງການແປ</translation>
 <translation id="583756221537636748">ເຄສ</translation>
+<translation id="5840656138956959276">ປັບປຸງແລ້ວ: ເຂັ້ມງວດ</translation>
 <translation id="5840680448799937675">ໄຟລ໌ຈະຖືກແບ່ງປັນອອບລາຍຕະຫຼອດ</translation>
 <translation id="5841270259333717135">ຕັ້ງຄ່າອີເທີເນັດ</translation>
 <translation id="5841338463993781099">ບັນທຶກໃນບັນຊີບໍ?</translation>
@@ -7965,6 +7968,7 @@
 <translation id="6411135999030237579">ກົດຄ້າງໄວ້ເພື່ອກົດປຸ່ມຊ້ຳໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6414618057231176439">ເລືອກເວີຊັນຂອງ <ph name="VM_NAME" /> ທີ່ຈະຕິດຕັ້ງ.</translation>
 <translation id="641469293210305670">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ</translation>
+<translation id="6415434255504060856">ເຂັ້ມງວດສຳລັບທຸກເວັບໄຊ</translation>
 <translation id="6415757856498750027">ພິມ "w" ເພື່ອໃຊ້ "ư"</translation>
 <translation id="6415816101512323589">ເປີດການກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານບໍ?</translation>
 <translation id="6415900369006735853">ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດຜ່ານໂທລະສັບຂອງທ່ານ</translation>
@@ -8096,7 +8100,6 @@
 <translation id="6508261954199872201">ແອັບ: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">ກະລຸນາຣີສະຕາດ Chromebook ຂອງທ່ານແລ້ວລອງໃໝ່</translation>
 <translation id="6511827214781912955">ພິຈາລະນາລຶບ <ph name="FILENAME" />, ເພື່ອບໍ່ໃຫ້ຜູ້ອື່ນທີ່ໃຊ້ອຸປະກອນນີ້ເຫັນລະຫັດຜ່ານຂອງທ່ານ</translation>
-<translation id="6512364354776355686">ເຕືອນທ່ານກ່ຽວກັບການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພທັງໝົດ</translation>
 <translation id="6512759338201777379">ສ້າງຮູບ <ph name="INDEX" /> ຂອງ <ph name="SUBJECT" />, ດ້ວຍອາລົມ <ph name="MOOD" /> ແລ້ວ.</translation>
 <translation id="6513247462497316522">Google Chrome ຈະໃຊ້ຂໍ້ມູນມືຖື ຖ້າທ່ານບໍ່ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍອື່ນ.</translation>
 <translation id="6514010653036109809">ອຸປະກອນທີ່ພ້ອມນຳໃຊ້:</translation>
@@ -8285,7 +8288,7 @@
 <translation id="6636623428211296678">ສຳຫຼວດການຕັ້ງຄ່າເພີ່ມເຕີມທາງລຸ່ມ ຫຼື ສຳເລັດຕອນນີ້</translation>
 <translation id="6639554308659482635">ຄວາມ​ຈໍາ SQLite</translation>
 <translation id="6640268266988685324">ເປີດແຖບ</translation>
-<translation id="664271268954513498">ຄ່າ​​ນະ​ໂຍ​ບາຍ</translation>
+<translation id="664271268954513498">ຄ່ານະໂຍບາຍ</translation>
 <translation id="6642720633335369752">ເພື່ອເບິ່ງໜ້າຈໍແອັບທີ່ເປີດຢູ່ທັງໝົດ, ກະລຸນາປັດຂຶ້ນຈາກລຸ່ມສຸດແລ້ວຄ້າໄວ້.</translation>
 <translation id="664290675870910564">ການເລືອກເຄືອຂ່າຍ</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
@@ -8360,6 +8363,7 @@
 <translation id="6686665106869989887">ຍ້າຍແຖບໄປເບື້ອງຂວາແລ້ວ</translation>
 <translation id="6686676261102452995">ທ່ານເປີດມື້ນີ້</translation>
 <translation id="6686817083349815241">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="6686878118106035853">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນແບບກຳນົດເອງຈະປິດການເພີ່ມປະສິດທິພາບ JavaScript ສຳລັບທຸກເວັບໄຊ</translation>
 <translation id="6687008241368170505">ປ່ຽນ PIN ຂອງຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6687079240787935001">ເຊື່ອງ <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">ປຸ່ມເມົ້າ</translation>
@@ -10042,7 +10046,6 @@
 <translation id="7830833461614351956">ສຳເນົາ <ph name="NUM_OF_FILES" /> ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" /> ເພື່ອເປີດບໍ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">ຄຳສັບກຳນົດເອງທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
-<translation id="7833725807105678871">ໃຫ້ຄວາມສຳຄັນກັບຄວາມໄວຂອງເວັບໄຊຫຼາຍກວ່າຄຸນສົມບັດຄວາມປອດໄພທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="7834832693620032149">ເພື່ອແບ່ງປັນສຽງ, ໃຫ້ແບ່ງປັນແຖບ ຫຼື ໜ້າຈໍແທນ</translation>
 <translation id="7836577093182643605">ລາຍຊື່ຂອງຫົວຂໍ້ທີ່ທ່ານບລັອກ ແລະ ບໍ່ຕ້ອງການແບ່ງປັນໃຫ້ເວັບໄຊ</translation>
 <translation id="7836850009646241041">ລອງແຕະກະແຈຄວາມປອດໄພຂອງທ່ານອີກຄັ້ງ</translation>
@@ -10838,6 +10841,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">ທ່ານລົງທະບຽນອຸປະກອນນີ້ຮຽບຮ້ອຍແລ້ວ. ທ່ານບໍ່ຈຳເປັນຕ້ອງລົງທະບຽນມັນອີກຄັ້ງ.</translation>
 <translation id="8357388086258943206">ເກີດຄວາມຜິດພາດໃນການຕິດຕັ້ງ Linux</translation>
+<translation id="8357883857705092796">ເວັບໄຊທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="8358685469073206162">ຮື້ຟື້ນໜ້າຄືນບໍ?</translation>
 <translation id="835927394551949760">ຖາມ Google</translation>
 <translation id="835951711479681002">ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
@@ -11531,7 +11535,6 @@
 <translation id="8821045908425223359">ກຳນົດຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ພ້ອມໃຫ້ນຳໃຊ້ແລ້ວ.</translation>
 <translation id="882204272221080310">ອັບເດດເຟີມແວເພື່ອເພີ່ມຄວາມປອດໄພ.</translation>
-<translation id="8822690627597552656">ເຮັດໃຫ້ເວັບໄຊທີ່ບໍ່ຄຸ້ນເຄີຍບາງເວັບໄຊຊ້າລົງເພື່ອບລັອກການໂຈມຕີທົ່ວໄປ</translation>
 <translation id="8823514049557262177">ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ລິ້ງ</translation>
 <translation id="8823704566850948458">ແນະນຳລະຫັດຜ່ານ...</translation>
 <translation id="8823963789776061136">ຫຼື ຈະເລືອກ PPD ຂອງເຄື່ອງພິມ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>

@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="3777796259512476958">ඔබව බොහෝ අඩවිවලින් වරනු ඇත</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{ටැබ 1}one{ටැබ #}other{ටැබ #}}</translation>
+<translation id="3792938779249970121">ගිණුම තෝරන්න</translation>
 <translation id="3795154175078851242">සබැඳිය සමග රූපය පිටපත් කරන්න</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, තෝරා ගත් ඇමිණූ ශ්‍රව්‍ය අප්‍රකට පටිත්ත</translation>
 <translation id="3810973564298564668">කළමනාකරණය</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">පුද්ගලායනය</translation>
 <translation id="6341580099087024258">ගොනු සුරකින තැනක් අසන්න</translation>
 <translation id="6342069812937806050">මේ දැන්</translation>
+<translation id="634208815998129842">කාර්ය කළමණාකරු</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="6356893102071098867">ඔබ නිවැරදි ගිණුම තෝරා ගෙන තිබේ දැයි පරීක්ෂා කරන්න</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">ඔබ අනුගමනය කරන අන්තර්ගතය සහ යෝජිත මාතෘකා සහ සෙවීම් කළමනාකරණය කරන්න</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> වසන්න</translation>
 <translation id="7121179479711575744">Chrome වෙත පුරනය වන්න</translation>
+<translation id="7136694880210472378">පෙරනිමි කරන්න</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 අඩවියක් සඳහා අවසර සමාලෝචනය කරන ලදි}one{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}other{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}}</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
 <translation id="7140829094791862589">හස්තීය පිළිවෙලට සකසන්න</translation>

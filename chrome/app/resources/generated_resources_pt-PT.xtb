@@ -6696,7 +6696,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5523532775593636291">Os sites que adicionar permanecem sempre ativos e a respetiva memória não é libertada</translation>
 <translation id="5523558474028191231">O nome pode utilizar letras, números e carateres especiais e tem de ter, no máximo, <ph name="MAX_CHARACTER_COUNT" /> carateres</translation>
 <translation id="5526745900034778153">Iniciar sessão novamente para retomar a sincronização</translation>
-<translation id="5527211644528700597">Usa métodos no dispositivo para detetar ameaças</translation>
 <translation id="5527474464531963247">Também pode selecionar outra rede.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, a instalar</translation>
 <translation id="5527822190489075064">Carregamento otimizado</translation>
@@ -6895,7 +6894,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5663459693447872156">Mudar automaticamente para meia largura</translation>
 <translation id="5663653125349867535">Lista de leitura</translation>
 <translation id="5663918299073387939">Normalmente, os sites pedem para controlar e reprogramar dispositivos MIDI para criar e editar música ou atualizar o firmware dos dispositivos</translation>
-<translation id="5666116074010586111">Envia o URL e o conteúdo da página para a Google para detetar ameaças mais rapidamente</translation>
 <translation id="5666911576871845853">&amp;Adicionar novo perfil</translation>
 <translation id="5667293444945855280">Software maligno</translation>
 <translation id="5667546120811588575">A configurar o Google Play...</translation>
@@ -8093,7 +8091,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6508261954199872201">Aplicação: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicie o Chromebook e tente novamente</translation>
 <translation id="6511827214781912955">Considere eliminar o ficheiro <ph name="FILENAME" /> para que os outros utilizadores deste dispositivo não possam ver as suas palavras-passe</translation>
-<translation id="6512364354776355686">Envia-lhe avisos sobre todas as ligações inseguras</translation>
 <translation id="6512759338201777379">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">O Google Chrome irá utilizar dados móveis se não estiver ligado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo disponível:</translation>
@@ -10042,7 +10039,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7830833461614351956">Copiar <ph name="NUM_OF_FILES" /> ficheiros para o <ph name="CLOUD_PROVIDER" /> para abrir?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">As palavras personalizadas guardadas aparecem aqui</translation>
-<translation id="7833725807105678871">Dá prioridade à velocidade do site em vez de funcionalidades de segurança melhoradas</translation>
 <translation id="7834832693620032149">Para partilhar o áudio, partilhe um separador ou uma janela</translation>
 <translation id="7836577093182643605">Lista de tópicos que bloqueou e que não quer partilhar com os sites</translation>
 <translation id="7836850009646241041">Experimente tocar novamente na sua chave de segurança.</translation>
@@ -11533,7 +11529,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8821045908425223359">Configurar endereço IP automaticamente</translation>
 <translation id="8821268776955756404">A app <ph name="APP_NAME" /> está pronta para ser utilizada.</translation>
 <translation id="882204272221080310">Atualize o firmware para maior segurança.</translation>
-<translation id="8822690627597552656">Abranda alguns sites desconhecidos para bloquear ataques comuns</translation>
 <translation id="8823514049557262177">Copiar te&amp;xto do link</translation>
 <translation id="8823704566850948458">Sugerir palavra-passe…</translation>
 <translation id="8823963789776061136">Em alternativa, selecione o PPD da impressora. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>

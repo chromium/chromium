@@ -4229,6 +4229,7 @@
 <translation id="7714404809393719981">사진(반광택)</translation>
 <translation id="7714424966701020172">전체 이름 입력 옵션이 선택됨</translation>
 <translation id="7714464543167945231">인증서</translation>
+<translation id="7714943438925794410">이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다. 자동 완성에서 후불 결제 옵션을 숨기려면 <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />(으)로 이동하세요.</translation>
 <translation id="7716147886133743102">관리자가 차단함</translation>
 <translation id="7716375162095500223">아직 업로드 또는 무시되지 않음</translation>
 <translation id="7716424297397655342">이 사이트를 캐시에서 로드할 수 없음</translation>
@@ -4311,6 +4312,7 @@
 <translation id="7862306158978555061">민감한 정보 표시</translation>
 <translation id="7865448901209910068">최고 속도</translation>
 <translation id="7865482168955081228">선구매 후지불 오류 화면이 닫혔습니다.</translation>
+<translation id="7870207318911766769">이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다.</translation>
 <translation id="7870281855125116701">할인 제품 찾음</translation>
 <translation id="7871445724586827387">Google 계정 비밀번호 변경</translation>
 <translation id="787226752901403048">Chrome에 로그인하여 탭 그룹을 공유하고, 탭 그룹에 참여하며, 아이디어를 함께 작업하세요.</translation>

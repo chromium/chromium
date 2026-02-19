@@ -102,7 +102,7 @@
 <translation id="2135919691573380097">דיווח על האתר הזה</translation>
 <translation id="2137162749895930932">סגירת המסך לתרגום</translation>
 <translation id="215352261310130060">‏Chromium חסם את ההורדה הזאת כי האתר לא משתמש בחיבור מאובטח ויכול להיות שבוצעו שינויים לא מורשים בקובץ</translation>
-<translation id="2170098639895543546">בחירה של משהו מהדף</translation>
+<translation id="2170098639895543546">צריך לבחור משהו מהדף</translation>
 <translation id="2174178932569897599">‏התאמה אישית של Chromium</translation>
 <translation id="2174917724755363426">ההתקנה לא הושלמה. להמשיך בביטול?</translation>
 <translation id="2185166961232948079">‏Chromium – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
@@ -238,6 +238,7 @@
 <translation id="3522404737534491619">‏כדי לשתף את החלון, צריך לאפשר הקלטת מסך ב-Chromium בקטע "הגדרות המערכת"</translation>
 <translation id="3530103706039034513">‏כבר בוצעה כניסה לחשבון על ידי <ph name="EXISTING_USER" />.  כדי להפריד בין פעילויות הגלישה, עליך להיכנס ל-Chromium בפרופיל שלך עם האימייל <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chromium בקטע "הגדרות המערכת".</translation>
+<translation id="3588112919289558122">‏הפעלת ההגנה המשופרת משביתה את האופטימיזציה של JavaScript באתרים ש-Chromium לא מזהה</translation>
 <translation id="3597003331831379823">הפעלת ההגדרה נכשלה עם הרשאות מורחבות. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">‏כניסה ל-Chromium</translation>
 <translation id="3639635944603682591">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chromium בתור <ph name="USER_EMAIL" />.</translation>
@@ -475,7 +476,7 @@
 <translation id="6327105987658262776">אין עדכונים זמינים.</translation>
 <translation id="6333502561965082103">‏מתבצעת כרגע פעולה אחרת ב-Chromium. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="6334986366598267305">‏קל יותר כעת להשתמש ב-Chromium באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
-<translation id="6347002662287820329">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך להגדיר את Chromium בתור דפדפן ברירת המחדל.</translation>
+<translation id="6347002662287820329">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, כדאי להגדיר את Chromium בתור דפדפן ברירת המחדל.</translation>
 <translation id="6347933965114150440">‏קיצור דרך ב-Chromium</translation>
 <translation id="6366160072964553914">‏Chromium חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים כאלה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="6373523479360886564">‏ברצונך באמת להסיר את התקנת Chromium?</translation>

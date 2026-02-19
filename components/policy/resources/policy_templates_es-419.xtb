@@ -4711,6 +4711,13 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4154221011709068799">Inhabilitar dispositivos de almacenamiento externo</translation>
 <translation id="415445772247959702">Web Store (compatible desde la versión 89)</translation>
+<translation id="415631927748520887">Si estableces esta política como verdadera, las Apps de Chrome podrán seguir ejecutándose en una sesión de Kiosco, independientemente de la habilitación predeterminada de las apps de Chrome.
+
+Si no estableces esta política o la estableces como falsa, se usará el comportamiento predeterminado definido en el dispositivo.
+
+Si intentas iniciar una App de Chrome inhabilitada, se mostrará un mensaje al usuario en el que se explica por qué no se pudo iniciar la app y se le sugiere que se comunique con su departamento de TI.
+
+El valor de esta política se respetará hasta la baja de las Apps de Chrome en las sesiones de Kiosco, que se espera que ocurra en M151.</translation>
 <translation id="4157003184375321727">Informar la versión de firmware y SO.</translation>
 <translation id="4157594634940419685">Permitir el acceso a las impresoras de CUPS nativas</translation>
 <translation id="4158531549614162499">Habilitar la sincronización de Google Drive por conexiones móviles</translation>
@@ -4767,19 +4774,6 @@ Si no estableces la política, su comportamiento se determina según la polític
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función para resaltar el signo de intercalación estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="4182348537826882258">Si estableces la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se detendrá la carga de las páginas web que tengan URLs prohibidas. Los administradores pueden especificar la lista de patrones de URL que se bloquearán. Si no la estableces, no se bloqueará ninguna URL en el navegador. Se pueden definir hasta 1,000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo darle formato a un patrón de URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Nota: Esta política no se aplica a las URLs de JavaScript en la página con datos cargados de forma dinámica. Si bloqueaste example.com/abc, aún podría cargarse con XMLHTTPRequest. Además, esta política no impide que las páginas web actualicen la URL que se muestra en el cuadro multifunción a una bloqueada mediante la API de JavaScript History.
-
-A partir de la versión 73 de <ph name="PRODUCT_NAME" />, puedes bloquear las URLs javascript://*. Sin embargo, esto solo afecta el JavaScript ingresado en la barra de direcciones o, por ejemplo, bookmarklets.
-
-A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.
-
-Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posible que se produzcan errores inesperados o que se eludan en algunos casos. En lugar de bloquear determinadas URLs internas, consulta si hay más políticas específicas disponibles. Por ejemplo:
-
-- En lugar de bloquear chrome://settings/certificates, usa <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- En lugar de bloquear chrome-untrusted://crosh, usa <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Permitir que las extensiones administradas usen la API de Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Si la política se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.

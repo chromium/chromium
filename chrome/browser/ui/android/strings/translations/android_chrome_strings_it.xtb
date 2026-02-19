@@ -645,6 +645,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3775705724665058594">Invia ai tuoi dispositivi</translation>
 <translation id="3777796259512476958">Ti disconnette dalla maggior parte dei siti.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 scheda}other{# schede}}</translation>
+<translation id="3792938779249970121">Seleziona account</translation>
 <translation id="3795154175078851242">Copia immagine con link</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, scheda Incognito udibile bloccata selezionata</translation>
 <translation id="3810973564298564668">Gestisci</translation>
@@ -1269,6 +1270,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6340526405444716530">Personalizzazione</translation>
 <translation id="6341580099087024258">Chiedi dove salvare i file</translation>
 <translation id="6342069812937806050">In questo momento</translation>
+<translation id="634208815998129842">Task Manager</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Segna come letto</translation>
 <translation id="6356893102071098867">Verifica di aver scelto l'account corretto</translation>
@@ -1485,6 +1487,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7117485132243600300">Gestisci i contenuti che segui e gli argomenti e le ricerche suggeriti</translation>
 <translation id="7119984597597798764">Chiudi <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Accedi a Chrome</translation>
+<translation id="7136694880210472378">Imposta come predefinito</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>

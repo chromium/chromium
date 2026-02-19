@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">आफ्नो विन्डो सेयर गर्न सिस्टम सेटिङमा गई Chromium लाई स्क्रिन रेकर्ड गर्ने अनुमति दिनुहोस्</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> ले पहिलेदेखि नै साइन इन गर्नुभएको छ।  छुट्टै ब्राउजर प्रयोग गर्न <ph name="USER_EMAIL_ADDRESS" /> मार्फत आफ्नै प्रोफाइल प्रयोग गरी Chromium मा साइन इन गर्नुहोस्।</translation>
 <translation id="3561853857681580870">आफ्नो स्क्रिन सेयर गर्न सिस्टम सेटिङमा गई Chromium लाई स्क्रिन रेकर्ड गर्ने अनुमति दिनुहोस्।</translation>
+<translation id="3588112919289558122">उन्नत सुरक्षाले Chromium ले नचिन्ने साइटहरूमा JavaScript अप्टिमाइजेसन अफ गर्छ</translation>
 <translation id="3597003331831379823">खास विशेषाधिकारहरू प्रयोग गरी सेटअप रन गर्न सकिएन। <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium मा साइन इन गर्नुहोस्</translation>
 <translation id="3639635944603682591">यस डिभाइसबाट यो व्यक्तिको ब्राउजिङ डेटा मेटाइने छ। उक्त डेटा पुनः प्राप्त गर्न <ph name="USER_EMAIL" /> का रूपमा Chromium मा साइन इन गर्नुहोस्।</translation>

@@ -6695,7 +6695,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5523532775593636291">Weby, ktoré ste pridali, zostanú vždy aktívne a šetrič ich z pamäte neodstráni</translation>
 <translation id="5523558474028191231">Názov môže obsahovať písmená, čísla a špeciálne znaky. Môže mať maximálne tento počet znakov: <ph name="MAX_CHARACTER_COUNT" />.</translation>
 <translation id="5526745900034778153">Ak chcete obnoviť synchronizáciu, znova sa prihláste</translation>
-<translation id="5527211644528700597">Rozpoznáva hrozby pomocou metód v zariadení</translation>
 <translation id="5527474464531963247">Môžete tiež vybrať inú sieť.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, inštaluje sa</translation>
 <translation id="5527822190489075064">Optimalizované nabíjanie</translation>
@@ -6893,7 +6892,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5663459693447872156">Automaticky prepnúť na polovičnú šírku</translation>
 <translation id="5663653125349867535">&amp;Čitateľský zoznam</translation>
 <translation id="5663918299073387939">Weby zvyčajne žiadajú o povolenie ovládať a preprogramovávať zariadenia MIDI, aby mohli vytvárať či upravovať hudbu alebo aktualizovať firmvér zariadení</translation>
-<translation id="5666116074010586111">Odosiela Googlu webovú adresu a obsah stránky na rýchlejšie zisťovanie hrozieb</translation>
 <translation id="5666911576871845853">Pridať nový profil</translation>
 <translation id="5667293444945855280">Škodlivý softvér</translation>
 <translation id="5667546120811588575">Nastavuje sa služba Google Play...</translation>
@@ -8091,7 +8089,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6508261954199872201">Aplikácia: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reštartujte Chromebook a skúste to znova</translation>
 <translation id="6511827214781912955">Zvážte odstránenie súboru <ph name="FILENAME" />, aby si ostatní používatelia tohto zariadenia nemohli zobraziť vaše heslá</translation>
-<translation id="6512364354776355686">Upozorní vás na všetky nezabezpečené pripojenia</translation>
 <translation id="6512759338201777379"><ph name="INDEX" />. vygenerovaný obrázok z <ph name="SUBJECT" /> vyjadrujúci náladu <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Ak nebudete mať pripojenie k inej sieti, prehliadač Google Chrome použije mobilné dáta.</translation>
 <translation id="6514010653036109809">Dostupné zariadenie:</translation>
@@ -10043,7 +10040,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7830833461614351956">Chcete skopírovať niekoľko súborov (<ph name="NUM_OF_FILES" />) do služby <ph name="CLOUD_PROVIDER" /> a otvoriť?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tu sa zobrazia uložené vlastné slová</translation>
-<translation id="7833725807105678871">Uprednostňuje rýchlosť webu pred rozšírenými bezpečnostnými funkciami</translation>
 <translation id="7834832693620032149">Ak chcete zdieľať zvuk, zdieľajte kartu alebo okno</translation>
 <translation id="7836577093182643605">Zoznam tém, ktorých zdieľanie s webmi ste zablokovali</translation>
 <translation id="7836850009646241041">Skúste znova klepnúť na svoj bezpečnostný kľúč</translation>
@@ -11536,7 +11532,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8821045908425223359">Automaticky konfigurovať adresu IP</translation>
 <translation id="8821268776955756404">Aplikáciu <ph name="APP_NAME" /> môžete začať používať.</translation>
 <translation id="882204272221080310">Aktualizovať firmvér v rámci zvýšenia zabezpečenia</translation>
-<translation id="8822690627597552656">Spomalí niektoré neznáme weby, aby zablokoval bežné útoky</translation>
 <translation id="8823514049557262177">Kopírovať te&amp;xt odkazu</translation>
 <translation id="8823704566850948458">Navrhnúť heslo…</translation>
 <translation id="8823963789776061136">Prípadne vyberte súbor PPD tlačiarne. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>

@@ -4230,6 +4230,7 @@ Additional details:
 <translation id="7714404809393719981">Photo (semi-gloss)</translation>
 <translation id="7714424966701020172">The fill full name option was selected</translation>
 <translation id="7714464543167945231">Certificate</translation>
+<translation id="7714943438925794410">Content from the checkout page is shared with Google to offer these options. To hide pay-later options in autofill, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Blocked by your administrator</translation>
 <translation id="7716375162095500223">Not yet uploaded, or ignored</translation>
 <translation id="7716424297397655342">This site can’t be loaded from the cache</translation>
@@ -4312,6 +4313,7 @@ Additional details:
 <translation id="7862306158978555061">show sensitive info</translation>
 <translation id="7865448901209910068">Best speed</translation>
 <translation id="7865482168955081228">Buy now, pay later error screen is closed.</translation>
+<translation id="7870207318911766769">Content from the checkout page is shared with Google to offer these options.</translation>
 <translation id="7870281855125116701">Discount found</translation>
 <translation id="7871445724586827387">Change your Google Account password</translation>
 <translation id="787226752901403048">Sign in to Chrome to share and join tab groups, and work together on ideas</translation>

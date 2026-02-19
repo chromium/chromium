@@ -6671,7 +6671,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5523532775593636291">Dodane witryny będą zawsze aktywne i nie będą usuwane z pamięci w celu zwolnienia w niej miejsca</translation>
 <translation id="5523558474028191231">Nazwa może zawierać litery, cyfry i znaki specjalne, a liczba znaków nie może przekraczać <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526745900034778153">Zaloguj się ponownie, by wznowić synchronizację</translation>
-<translation id="5527211644528700597">Używa metod na urządzeniu do wykrywania zagrożeń</translation>
 <translation id="5527474464531963247">Możesz także wybrać inną sieć.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instaluję</translation>
 <translation id="5527822190489075064">Ładowanie zoptymalizowane</translation>
@@ -6869,7 +6868,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5663459693447872156">Automatycznie przełącz czcionkę na połowę szerokości</translation>
 <translation id="5663653125349867535">&amp;Do przeczytania</translation>
 <translation id="5663918299073387939">Strony zwykle proszą o zgodę na sterowanie urządzeniami MIDI i ich przeprogramowywanie w celu tworzenia lub edytowania muzyki albo aktualizowania oprogramowania urządzenia</translation>
-<translation id="5666116074010586111">Wysyła adres URL i zawartość strony do Google, aby szybciej wykrywać zagrożenia</translation>
 <translation id="5666911576871845853">&amp;Dodaj nowy profil</translation>
 <translation id="5667293444945855280">Złośliwe oprogramowanie</translation>
 <translation id="5667546120811588575">Konfiguruję Google Play…</translation>
@@ -8067,7 +8065,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6508261954199872201">Aplikacja: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Uruchom ponownie Chromebooka i spróbuj jeszcze raz</translation>
 <translation id="6511827214781912955">Zastanów się, czy nie usunąć pliku <ph name="FILENAME" />, aby Twoich haseł nie zobaczyły inne osoby korzystające z tego urządzenia</translation>
-<translation id="6512364354776355686">Ostrzegaj przed wszystkimi niezabezpieczonymi połączeniami</translation>
 <translation id="6512759338201777379">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, nastrój: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome będzie używać komórkowej transmisji danych, jeśli nie jest dostępne połączenie z inną siecią.</translation>
 <translation id="6514010653036109809">Dostępne urządzenie:</translation>
@@ -10017,7 +10014,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7830833461614351956">Skopiować pliki (<ph name="NUM_OF_FILES" />) do usługi <ph name="CLOUD_PROVIDER" />, aby je otworzyć?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tutaj pojawią się zapisane słowa niestandardowe</translation>
-<translation id="7833725807105678871">Szybkość działania witryny ma wyższy priorytet niż ulepszone funkcje zabezpieczeń</translation>
 <translation id="7834832693620032149">Aby udostępnić dźwięk, udostępnij kartę lub ekran</translation>
 <translation id="7836577093182643605">Lista zablokowanych przez Ciebie tematów, których nie chcesz udostępniać witrynom</translation>
 <translation id="7836850009646241041">Jeszcze raz dotknij klucza bezpieczeństwa</translation>
@@ -11506,7 +11502,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8821045908425223359">Skonfiguruj adres IP automatycznie</translation>
 <translation id="8821268776955756404">Aplikacja <ph name="APP_NAME" /> jest gotowa do użycia.</translation>
 <translation id="882204272221080310">Zaktualizuj oprogramowanie, by zwiększyć bezpieczeństwo.</translation>
-<translation id="8822690627597552656">Spowalnia działanie niektórych nieznanych witryn, aby blokować typowe ataki</translation>
 <translation id="8823514049557262177">Kopiuj te&amp;kst linku</translation>
 <translation id="8823704566850948458">Zaproponuj hasło…</translation>
 <translation id="8823963789776061136">Możesz też wybrać plik PPD drukarki. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>

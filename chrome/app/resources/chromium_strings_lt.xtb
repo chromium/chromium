@@ -242,6 +242,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3522404737534491619">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chromium“ ekrano vaizdą</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> jau prisijungė.  Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Jei norite bendrinti ekraną, sistemos nustatymuose leiskite įrašyti „Chromium“ ekrano vaizdą.</translation>
+<translation id="3588112919289558122">Sustiprinta apsauga išjungia „JavaScript“ optimizavimą svetainėse, kurių „Chromium“ neatpažįsta</translation>
 <translation id="3597003331831379823">Nepavyko vykdyti sąrankos su aukštesnio lygio privilegijomis. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Prisijungimas prie „Chromium“</translation>
 <translation id="3639635944603682591">Šio asmens naršymo duomenys bus ištrinti iš šio įrenginio. Jei norite atkurti duomenis, prisijunkite prie „Chromium“ kaip <ph name="USER_EMAIL" />.</translation>

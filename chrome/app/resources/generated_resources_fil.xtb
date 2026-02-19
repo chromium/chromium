@@ -6709,7 +6709,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5523532775593636291">Palaging mananatiling aktibo ang mga site na idinaragdag mo at hindi magbabakante ng memory mula sa mga ito</translation>
 <translation id="5523558474028191231">Puwedeng gumamit ang pangalan ng mga titik, numero, at special character, at dapat na <ph name="MAX_CHARACTER_COUNT" /> (na) character o mas kaunti</translation>
 <translation id="5526745900034778153">Mag-sign in muli para ituloy ang pag-sync</translation>
-<translation id="5527211644528700597">Gumagamit ng mga on-device na paraan para mag-detect ng mga banta</translation>
 <translation id="5527474464531963247">Maaari ka ring pumili ng isa pang network.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ini-install</translation>
 <translation id="5527822190489075064">Naka-optimize na pag-charge</translation>
@@ -6907,7 +6906,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5663459693447872156">Awtomatikong lumipat sa kalahating lapad</translation>
 <translation id="5663653125349867535">&amp;Listahan ng babasahin</translation>
 <translation id="5663918299073387939">Karaniwang hinihiling ng mga site na kontrolin at i-reprogram ang mga MIDI device para gumawa at mag-edit ng musika, o mag-update ng firmware ng device</translation>
-<translation id="5666116074010586111">Ipinapadala ang URL at content ng page sa Google para mas mabilis na mag-detect ng mga banta</translation>
 <translation id="5666911576871845853">&amp;Magdagdag ng bagong profile</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Sine-set up ang Google Play...</translation>
@@ -8105,7 +8103,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">I-restart ang iyong Chromebook at subukan ulit</translation>
 <translation id="6511827214781912955">Pag-isipang i-delete ang <ph name="FILENAME" />, para hindi makita ng iba pang gumagamit ng device na ito ang iyong mga password</translation>
-<translation id="6512364354776355686">Binabalaan ka tungkol sa lahat ng hindi secure na koneksyon</translation>
 <translation id="6512759338201777379">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" />, na may mood na <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Gagamit ang Google Chrome ng data ng mobile kung hindi ka nakakonekta sa isa pang network.</translation>
 <translation id="6514010653036109809">Available na device:</translation>
@@ -10056,7 +10053,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7830833461614351956">Kopyahin ang <ph name="NUM_OF_FILES" /> (na) file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Lalabas dito ang mga na-save na custom na salita</translation>
-<translation id="7833725807105678871">Ginagawang priyoridad ang bilis ng site kaysa sa mga pinahusay na panseguridad na feature</translation>
 <translation id="7834832693620032149">Para i-share ang audio, mag-share na lang ng tab o window</translation>
 <translation id="7836577093182643605">Listahan ng mga paksang na-block mo na ayaw mong ibahagi sa mga site</translation>
 <translation id="7836850009646241041">Subukang pindutin ulit ang iyong security key</translation>
@@ -11549,7 +11545,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8821045908425223359">Awtomatikong i-configure ang IP address</translation>
 <translation id="8821268776955756404">Handa nang gamitin ang <ph name="APP_NAME" />.</translation>
 <translation id="882204272221080310">I-update ang firmware para sa karagdagang seguridad.</translation>
-<translation id="8822690627597552656">Pinapabagal ang ilang hindi pamilyar na site para ma-block ang mga karaniwang pag-atake</translation>
 <translation id="8823514049557262177">Kopyahin ang text ng link</translation>
 <translation id="8823704566850948458">Magmungkahi ng password...</translation>
 <translation id="8823963789776061136">Bilang alternatibo, piliin ang PPD ng printer. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>

@@ -6705,7 +6705,6 @@
 <translation id="5523532775593636291">আপুনি যোগ দিয়া ছাইটসমূহ সদায় সক্ৰিয় হৈ থাকিব আৰু সেইসমূহৰ পৰা মেম’ৰী খালী কৰা নহয়</translation>
 <translation id="5523558474028191231">নামত আখৰ, সংখ্যা আৰু বিশেষ বৰ্ণ থাকিব পাৰে আৰু ই <ph name="MAX_CHARACTER_COUNT" /> টা অথবা তাতকৈ কম বৰ্ণৰ হ’বই লাগিব</translation>
 <translation id="5526745900034778153">ছিংক পুনৰ আৰম্ভ কৰিবলৈ পুনৰ ছাইন ইন কৰক</translation>
-<translation id="5527211644528700597">ভাবুকি চিনাক্ত কৰিবলৈ ডিভাইচত থকা পদ্ধতি ব্যৱহাৰ কৰে</translation>
 <translation id="5527474464531963247">আপুনি অন্য এটা নেটৱৰ্কো বাছনি কৰিব পাৰে।</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ইনষ্টল কৰি থকা হৈছে</translation>
 <translation id="5527822190489075064">অপ্টিমাইজ কৰা চাৰ্জিং</translation>
@@ -6903,7 +6902,6 @@
 <translation id="5663459693447872156">স্বয়ংক্ৰিয়ভাৱে halfwidthলৈ সলনি কৰক</translation>
 <translation id="5663653125349867535">পঢ়াৰ সূচী</translation>
 <translation id="5663918299073387939">ছাইটসমূহে সাধাৰণতে সংগীত সৃষ্টি কৰিবলৈ, সংগীত সম্পাদনা কৰিবলৈ অথবা ডিভাইচৰ ফাৰ্মৱেৰ আপডে’ট কৰিবলে MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰিবলৈ বিচাৰে</translation>
-<translation id="5666116074010586111">ভাবুকি দ্ৰুতভাৱে চিনাক্ত কৰিবলৈ URL আৰু পৃষ্ঠাৰ সমল Googleলৈ পঠিয়ায়</translation>
 <translation id="5666911576871845853">&amp;নতুন প্ৰ’ফাইল যোগ দিয়ক</translation>
 <translation id="5667293444945855280">মালৱেৰ</translation>
 <translation id="5667546120811588575">Google Play ছেট আপ কৰি থকা হৈছে...</translation>
@@ -8101,7 +8099,6 @@
 <translation id="6508261954199872201">এপ্‌: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> মচাৰ বিষয়ে বিবেচনা কৰক, যাতে এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকে আপোনাৰ পাছৱৰ্ডসমূহ চাব নোৱাৰে</translation>
-<translation id="6512364354776355686">আপোনাক আটাইবোৰ অসুৰক্ষিত সংযোগৰ বিষয়ে সকীয়নি দিয়ে</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> মেজাজৰ <ph name="SUBJECT" />ৰ সৃষ্টি কৰা প্ৰতিচ্ছবি <ph name="INDEX" />।</translation>
 <translation id="6513247462497316522">আপুনি কোনো অন্য নেটৱর্কত সংযোগ হৈ নাথাকিলে Google Chromeএ ম’বাইল ডেটা ব্যৱহাৰ কৰিব।</translation>
 <translation id="6514010653036109809">উপলব্ধ ডিভাইচ:</translation>
@@ -10051,7 +10048,6 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> টা ফাইল খুলিবলৈ <ph name="CLOUD_PROVIDER" />লৈ প্ৰতিলিপি কৰিবনে?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">ছেভ কৰি থোৱা কাষ্টম শব্দ ইয়াত ওলাব</translation>
-<translation id="7833725807105678871">উন্নত সুৰক্ষা সুবিধাসমূহৰ ওপৰত ছাইটৰ গতিবেগক অগ্ৰাধিকাৰ দিয়ে</translation>
 <translation id="7834832693620032149">অডিঅ’ শ্বেয়াৰ কৰিবলৈ, ইয়াৰ সলনি এটা টেব বা এখন ৱিণ্ড’ শ্বেয়াৰ কৰক</translation>
 <translation id="7836577093182643605">আপুনি ছাইটসমূহৰ সৈতে যিবোৰ বিষয়বস্তু শ্বেয়াৰ কৰাটো নিবিচাৰে, সেইবোৰৰ সূচী</translation>
 <translation id="7836850009646241041">সুৰক্ষা চাবিটো পুনৰ স্পৰ্শ কৰি চাওক</translation>
@@ -11542,7 +11538,6 @@
 <translation id="8821045908425223359">আইপি ঠিকনা স্বয়ংক্ৰিয়ভৱে কনফিগাৰ কৰক</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ব্যৱহাৰ কৰিবলৈ সাজু।</translation>
 <translation id="882204272221080310">অতিৰিক্ত সুৰক্ষাৰ বাবে ফাৰ্মৱেৰ আপডে’ট কৰক।</translation>
-<translation id="8822690627597552656">সাধাৰণ আক্ৰমণসমূহ অৱৰোধ কৰিবলৈ কিছুমান অচিনাকি ছাইটৰ গতিবেগ কম কৰে</translation>
 <translation id="8823514049557262177">লিংকৰ পা&amp;ঠ প্ৰতিলিপি কৰক</translation>
 <translation id="8823704566850948458">পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="8823963789776061136">ইয়াৰ পৰিৱৰ্তে, প্ৰিণ্টাৰ PPD বাছনি কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>

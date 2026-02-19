@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">ส่งไปยังอุปกรณ์</translation>
 <translation id="3777796259512476958">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
+<translation id="3792938779249970121">เลือกบัญชี</translation>
 <translation id="3795154175078851242">คัดลอกรูปภาพพร้อมลิงก์</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่ปักหมุดซึ่งเลือกไว้และมีเสียง</translation>
 <translation id="3810973564298564668">จัดการ</translation>
@@ -1269,6 +1270,7 @@
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="6341580099087024258">ถามว่าจะให้บันทึกไฟล์ไว้ที่ใด</translation>
 <translation id="6342069812937806050">เมื่อสักครู่</translation>
+<translation id="634208815998129842">ตัวจัดการงาน</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> แห่ง}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> แห่ง}}</translation>
 <translation id="6345878117466430440">ทำเครื่องหมายว่าอ่านแล้ว</translation>
 <translation id="6356893102071098867">ตรวจสอบว่าเลือกบัญชีที่ถูกต้อง</translation>
@@ -1485,6 +1487,7 @@
 <translation id="7117485132243600300">จัดการเนื้อหาที่คุณติดตาม รวมถึงหัวข้อและการค้นหาที่แนะนำ</translation>
 <translation id="7119984597597798764">ปิด <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">ลงชื่อเข้าใช้ Chrome</translation>
+<translation id="7136694880210472378">ทำให้เป็นค่าเริ่มต้น</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ตรวจสอบสิทธิ์สำหรับ 1 เว็บไซต์แล้ว}other{ตรวจสอบสิทธิ์สำหรับ # เว็บไซต์แล้ว}}</translation>
 <translation id="7138678301420049075">อื่นๆ</translation>
 <translation id="7140829094791862589">จัดเรียงลำดับด้วยตนเอง</translation>

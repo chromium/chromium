@@ -1404,7 +1404,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6140948187512243695">Visa detaljerad information</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
 <translation id="6146563240635539929">Videor</translation>
-<translation id="6147279996212084542">Förklara</translation>
 <translation id="6151006591088192882">Lås upp inkognitoflikar med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inaktivera</translation>
 <translation id="6152406514676263192">Synkronisera för att se det mest relevanta innehållet baserat på dina intressen.</translation>
@@ -2060,6 +2059,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8439758443371991593">Dölj Lägg till i läslistan</translation>
 <translation id="8443986842926457191">Webbadressen är längre än 2 048 tecken</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
+<translation id="8473815223723723001">Redigera bild med Gemini</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
 <translation id="8477178913400731244">Ta bort data</translation>

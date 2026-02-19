@@ -645,6 +645,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3775705724665058594">Stuur na jou toestelle toe</translation>
 <translation id="3777796259512476958">Meld jou by die meeste werwe af</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
+<translation id="3792938779249970121">Kies rekening</translation>
 <translation id="3795154175078851242">Kopieer prent met skakel</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, gekose vasgespelde hoorbare Incognito-oortjie</translation>
 <translation id="3810973564298564668">Bestuur</translation>
@@ -1269,6 +1270,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6340526405444716530">Personalisering</translation>
 <translation id="6341580099087024258">Vra waar om lêers te stoor</translation>
 <translation id="6342069812937806050">Nou net</translation>
+<translation id="634208815998129842">Taakbestuurder</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Merk as gelees</translation>
 <translation id="6356893102071098867">Maak seker dat jy die regte rekening gekies het</translation>
@@ -1485,6 +1487,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7117485132243600300">Bestuur inhoud wat jy volg en voorgestelde onderwerpe en soektogte</translation>
 <translation id="7119984597597798764">Maak <ph name="INSTANCE_TITLE" /> toe</translation>
 <translation id="7121179479711575744">Meld aan by Chrome</translation>
+<translation id="7136694880210472378">Maak verstek</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Toestemmings is vir 1 werf gekontroleer}other{Toestemmings is vir # werwe gekontroleer}}</translation>
 <translation id="7138678301420049075">Ander</translation>
 <translation id="7140829094791862589">Sorteer orde handmatig</translation>

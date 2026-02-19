@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele dit vindue.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> er allerede logget ind.  Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele din skærm.</translation>
+<translation id="3588112919289558122">Forbedret beskyttelse deaktiverer JavaScript-optimering for websites, som Chromium ikke genkender</translation>
 <translation id="3597003331831379823">Konfigurationen med udvidede adgangsrettigheder kunne ikke køres. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Log ind i Chromium</translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>

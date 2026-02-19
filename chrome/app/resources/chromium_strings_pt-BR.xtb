@@ -238,6 +238,7 @@
 <translation id="3522404737534491619">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium</translation>
 <translation id="3530103706039034513">A conta <ph name="EXISTING_USER" /> já está conectada.  Para manter sua navegação separada, faça login no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
+<translation id="3588112919289558122">A proteção reforçada desativa a otimização do JavaScript nos sites que o Chromium não reconhece.</translation>
 <translation id="3597003331831379823">Falha ao executar a configuração com privilégios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Faça login no Chromium</translation>
 <translation id="3639635944603682591">Os dados de navegação dessa pessoa serão excluídos deste dispositivo. Para recuperar os dados, faça login no Chromium como <ph name="USER_EMAIL" />.</translation>

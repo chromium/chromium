@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Để chia sẻ cửa sổ, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> đã đăng nhập.  Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Để chia sẻ màn hình, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
+<translation id="3588112919289558122">Chế độ bảo vệ nâng cao sẽ tắt tính năng tối ưu hoá JavaScript đối với những trang web mà Chromium không nhận ra</translation>
 <translation id="3597003331831379823">Không thể chạy quy trình thiết lập bằng đặc quyền cấp cao. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Đăng nhập vào Chromium</translation>
 <translation id="3639635944603682591">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chromium bằng <ph name="USER_EMAIL" />.</translation>

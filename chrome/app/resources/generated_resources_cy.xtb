@@ -6711,7 +6711,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5523532775593636291">Bydd gwefannau y byddwch yn eu hychwanegu bob amser yn aros yn weithredol ac ni fydd y cof yn cael ei ryddhau oddi wrthynt</translation>
 <translation id="5523558474028191231">Gall yr enw ddefnyddio llythrennau, rhifau, a nodau arbennig, a rhaid cynnwys <ph name="MAX_CHARACTER_COUNT" /> nod neu lai</translation>
 <translation id="5526745900034778153">Mewngofnodwch eto i barhau i gysoni</translation>
-<translation id="5527211644528700597">Yn defnyddio dulliau ar y ddyfais i ganfod bygythiadau</translation>
 <translation id="5527474464531963247">Gallwch hefyd ddewis rhwydwaith arall.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, wrthi'n gosod</translation>
 <translation id="5527822190489075064">Gwefru wedi'i optimeiddio</translation>
@@ -6909,7 +6908,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5663459693447872156">Newid yn awtomatig i hanner lled</translation>
 <translation id="5663653125349867535">&amp;Rhestr ddarllen</translation>
 <translation id="5663918299073387939">Mae gwefannau fel arfer yn gofyn am reoli ac ailraglennu dyfeisiau MIDI i greu cerddoriaeth, golygu cerddoriaeth, neu ddiweddaru cadarnwedd dyfeisiau</translation>
-<translation id="5666116074010586111">Yn anfon yr URL a chynnwys y dudalen i Google i ganfod bygythiadau yn gyflymach</translation>
 <translation id="5666911576871845853">&amp;Ychwanegu proffil newydd</translation>
 <translation id="5667293444945855280">Drwgwedd</translation>
 <translation id="5667546120811588575">Wrthi'n gosod Google Play...</translation>
@@ -8107,7 +8105,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6508261954199872201">Ap: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Ailgychwynnwch eich Chromebook a rhowch gynnig arall arni</translation>
 <translation id="6511827214781912955">Ystyriwch ddileu <ph name="FILENAME" />, fel na all eraill sy'n defnyddio'r ddyfais hon weld eich cyfrineiriau</translation>
-<translation id="6512364354776355686">Yn eich rhybuddio am bob cysylltiad anniogel</translation>
 <translation id="6512759338201777379">Llun wedi'i gynhyrchu <ph name="INDEX" /> o <ph name="SUBJECT" />, gyda hwyl <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Bydd Google Chrome yn defnyddio data symudol os nad ydych wedi'ch cysylltu â rhwydwaith arall.</translation>
 <translation id="6514010653036109809">Dyfais sydd ar gael:</translation>
@@ -10063,7 +10060,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7830833461614351956">Copïo <ph name="NUM_OF_FILES" /> ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Bydd geiriau personol sydd wedi'u cadw yn ymddangos yma</translation>
-<translation id="7833725807105678871">Yn blaenoriaethu cyflymder gwefan dros nodweddion diogelwch gwell</translation>
 <translation id="7834832693620032149">I rannu sain, rhannwch dab neu ffenestr yn lle hynny</translation>
 <translation id="7836577093182643605">Rhestr o bynciau rydych wedi'u rhwystro nad ydych am eu rhannu â gwefannau</translation>
 <translation id="7836850009646241041">Rhowch gynnig arall ar gyffwrdd â'ch allwedd ddiogelwch</translation>
@@ -11557,7 +11553,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8821045908425223359">Ffurfweddu'r cyfeiriad IP yn awtomatig</translation>
 <translation id="8821268776955756404">Mae <ph name="APP_NAME" /> yn barod i'w ddefnyddio.</translation>
 <translation id="882204272221080310">Diweddarwch y gadarnwedd ar gyfer diogelwch ychwanegol.</translation>
-<translation id="8822690627597552656">Yn arafu rhai gwefannau anghyfarwydd i rwystro ymosodiadau cyffredin</translation>
 <translation id="8823514049557262177">Copïo testun y ddol&amp;en</translation>
 <translation id="8823704566850948458">Awgrymu cyfrinair…</translation>
 <translation id="8823963789776061136">Fel arall, dewiswch argraffydd PPD. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>

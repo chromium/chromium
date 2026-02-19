@@ -645,6 +645,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3775705724665058594">Dërgo te pajisjet e tua</translation>
 <translation id="3777796259512476958">Të nxjerr nga shumica e sajteve</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
+<translation id="3792938779249970121">Zgjidh llogarinë</translation>
 <translation id="3795154175078851242">Kopjo imazhin me lidhjen</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur dhe e gozhduar duke luajtur audion</translation>
 <translation id="3810973564298564668">Menaxho</translation>
@@ -1269,6 +1270,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6340526405444716530">Personalizimi</translation>
 <translation id="6341580099087024258">Pyet ku të ruhen skedarët</translation>
 <translation id="6342069812937806050">Pikërisht tani</translation>
+<translation id="634208815998129842">Menaxheri i detyrave</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tjetër}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> të tjera}}</translation>
 <translation id="6345878117466430440">Shëno si të lexuar</translation>
 <translation id="6356893102071098867">Kontrollo nëse ke zgjedhur llogarinë e duhur</translation>
@@ -1485,6 +1487,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7117485132243600300">Menaxho përmbajtjet që ndjek dhe temat e kërkimet e sugjeruara</translation>
 <translation id="7119984597597798764">Mbyll "<ph name="INSTANCE_TITLE" />"</translation>
 <translation id="7121179479711575744">Identifikohu në Chrome</translation>
+<translation id="7136694880210472378">Bëje të parazgjedhur</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Lejet u rishikuan për 1 sajt}other{Lejet u rishikuan për # sajte}}</translation>
 <translation id="7138678301420049075">Tjetër</translation>
 <translation id="7140829094791862589">Rendit sipas renditjes manuale</translation>
@@ -1540,6 +1543,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7314734791127433392">Fjalëkalimet nuk mund të kontrollohen</translation>
 <translation id="7324354302972299151">Dërgo një kërkesë "Do Not Track"</translation>
 <translation id="7333041109965360609">U çabonove nga njoftimet</translation>
+<translation id="7335766481146072567">Shtyp "Vazhdo"</translation>
 <translation id="7336259382292148213">Njoftimet duken mirë</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7340958967809483333">Opsionet për "Zbulo"</translation>
@@ -1852,6 +1856,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8559961053328923750">Chrome e kufizon sasinë totale të të dhënave që sajtet mund të ndajnë nëpërmjet shfletuesit për matjen e perfomancës së reklamave</translation>
 <translation id="8559990750235505898">Ofro që t'i përkthesh faqet në gjuhë të tjera</translation>
 <translation id="8560602726703398413">Gjej listën tënd të leximit te "Faqeshënuesit"</translation>
+<translation id="85618473456579127">Trokit te profili në këndin e sipërm djathtas</translation>
 <translation id="8565021320663436446">Të hiqet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Skedari nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="8571213806525832805">4 javët e fundit</translation>

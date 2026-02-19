@@ -4230,6 +4230,7 @@ Dodatni detalji:
 <translation id="7714404809393719981">Foto papir (polusjajni)</translation>
 <translation id="7714424966701020172">Odabrana je opcija popunjavanja imena i prezimena</translation>
 <translation id="7714464543167945231">Potvrda</translation>
+<translation id="7714943438925794410">Sadržaj stranice za nastavak na plaćanje se dijeli s Googleom da ponudi ove opcije. Da sakrijete opcije kasnijeg plaćanja u automatskom popunjavanju, idite u <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7716147886133743102">Blokirao administrator</translation>
 <translation id="7716375162095500223">Još uvijek nije otpremljeno ili je zanemareno</translation>
 <translation id="7716424297397655342">Ova web lokacija se ne može učitati iz keš memorije</translation>
@@ -4312,6 +4313,7 @@ Dodatni detalji:
 <translation id="7862306158978555061">prikazati osjetljive informacije</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7865482168955081228">Ekran greške naknadnog plaćanja je zatvoren.</translation>
+<translation id="7870207318911766769">Sadržaj stranice za nastavak na plaćanje se dijeli s Googleom da ponudi ove opcije.</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promijenite lozinku za Google račun</translation>
 <translation id="787226752901403048">Prijavite se u Chrome da dijelite grupe kartica, pridružujete im se i sarađujete na idejama</translation>

@@ -645,6 +645,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3777796259512476958">Isa-sign out ka sa karamihan ng site</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
+<translation id="3792938779249970121">Pumili ng account</translation>
 <translation id="3795154175078851242">Kopyahin ang larawan nang may link</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, Piniling Naka-pin na Tab na Incognito na May Naririnig na Audio</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
@@ -1269,6 +1270,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6340526405444716530">Pag-personalize</translation>
 <translation id="6341580099087024258">Itanong kung saan magse-save ng mga file</translation>
 <translation id="6342069812937806050">Ngayon lang</translation>
+<translation id="634208815998129842">Task manager</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> na iba pa}}</translation>
 <translation id="6345878117466430440">Markahang nabasa na</translation>
 <translation id="6356893102071098867">Tiyaking tamang account ang pinili mo</translation>
@@ -1485,6 +1487,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7117485132243600300">Pamahalaan ang content na sinusubaybayan mo at mga iminumungkahing paksa at paghahanap</translation>
 <translation id="7119984597597798764">Isara ang <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Mag-sign in sa Chrome</translation>
+<translation id="7136694880210472378">Gawing default</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Sinuri ang mga pahintulot para sa 1 site}one{Sinuri ang mga pahintulot para sa # site}other{Sinuri ang mga pahintulot para sa # na site}}</translation>
 <translation id="7138678301420049075">Iba pa</translation>
 <translation id="7140829094791862589">I-sort sa manual order</translation>

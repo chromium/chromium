@@ -6700,7 +6700,6 @@
 <translation id="5523532775593636291">你新增的網站將一律保持使用中的狀態，不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以使用字母、數字和特殊字元，且不可超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
-<translation id="5527211644528700597">使用裝置內置功能偵測威脅</translation>
 <translation id="5527474464531963247">您也可以選取其他網絡。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" /> 安裝緊</translation>
 <translation id="5527822190489075064">優化充電</translation>
@@ -6896,7 +6895,6 @@
 <translation id="5663459693447872156">自動切換為半形</translation>
 <translation id="5663653125349867535">閱讀清單(&amp;R)</translation>
 <translation id="5663918299073387939">網站通常會要求控制 MIDI 裝置及將其重新編程，以便創作音樂、編輯音樂或更新裝置韌體</translation>
-<translation id="5666116074010586111">將網址和網頁內容傳送給 Google，以加快偵測威脅</translation>
 <translation id="5666911576871845853">新增設定檔(&amp;A)</translation>
 <translation id="5667293444945855280">惡意軟件</translation>
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
@@ -8093,7 +8091,6 @@
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">請重新啟動 Chromebook，然後再試一次</translation>
 <translation id="6511827214781912955">建議刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
-<translation id="6512364354776355686">就所有不安全的連線發出警告</translation>
 <translation id="6512759338201777379">AI 生成的<ph name="SUBJECT" /> 圖片 <ph name="INDEX" />，情境係<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果您沒有連線至其他網絡，Google Chrome 將使用流動數據網絡連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
@@ -10039,7 +10036,6 @@
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="7831754656372780761">「<ph name="TAB_TITLE" />」<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已儲存的自訂字詞將會在這裡顯示</translation>
-<translation id="7833725807105678871">優先考慮網站速度，而非強化安全功能</translation>
 <translation id="7834832693620032149">如要分享音訊，請改為分享分頁或視窗</translation>
 <translation id="7836577093182643605">您唔希望系統同網站分享呢啲主題，因此已經封鎖咗嘅主題清單</translation>
 <translation id="7836850009646241041">請嘗試再次輕觸安全密鑰</translation>
@@ -11526,7 +11522,6 @@
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
-<translation id="8822690627597552656">減慢部分陌生網站的速度，以封鎖常見攻擊</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
 <translation id="8823963789776061136">您亦可選取打印機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

@@ -645,6 +645,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3775705724665058594">Enviar contido aos teus dispositivos</translation>
 <translation id="3777796259512476958">Pecharase a túa sesión na maioría dos sitios</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestana}other{# pestanas}}</translation>
+<translation id="3792938779249970121">Selecciona unha conta</translation>
 <translation id="3795154175078851242">Copiar imaxe con ligazón</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, pestana do modo de incógnito con son fixada e seleccionada</translation>
 <translation id="3810973564298564668">Xestionar</translation>
@@ -1269,6 +1270,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6340526405444716530">Personalización</translation>
 <translation id="6341580099087024258">Preguntar onde gardar os ficheiros</translation>
 <translation id="6342069812937806050">Agora mesmo</translation>
+<translation id="634208815998129842">Xestor de tarefas</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}}</translation>
 <translation id="6345878117466430440">Marcar como lido</translation>
 <translation id="6356893102071098867">Comproba se seleccionaches a conta correcta</translation>
@@ -1485,6 +1487,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7117485132243600300">Xestiona o contido que segues e as buscas e os temas suxeridos</translation>
 <translation id="7119984597597798764">Pechar <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Iniciar sesión en Chrome</translation>
+<translation id="7136694880210472378">Converter en predeterminado</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>

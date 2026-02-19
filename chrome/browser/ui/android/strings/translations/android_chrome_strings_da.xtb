@@ -645,6 +645,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3775705724665058594">Send til dine enheder</translation>
 <translation id="3777796259512476958">Logger dig ud af de fleste websites</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fane}one{# fane}other{# faner}}</translation>
+<translation id="3792938779249970121">Vælg konto</translation>
 <translation id="3795154175078851242">Kopiér billede med link</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, valgt inkognitofane, der er fastgjort og afspiller lyd</translation>
 <translation id="3810973564298564668">Administrer</translation>
@@ -1269,6 +1270,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6340526405444716530">Personlig tilpasning</translation>
 <translation id="6341580099087024258">Spørg, hvor filer skal gemmes</translation>
 <translation id="6342069812937806050">Lige nu</translation>
+<translation id="634208815998129842">Jobliste</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> mere}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> mere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> mere}}</translation>
 <translation id="6345878117466430440">Markér som læst</translation>
 <translation id="6356893102071098867">Tjek, om du har valgt den rigtige konto</translation>
@@ -1485,6 +1487,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7117485132243600300">Administrer indhold, du følger, og forslag til emner og søgninger</translation>
 <translation id="7119984597597798764">Luk <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Log ind i Chrome</translation>
+<translation id="7136694880210472378">Gør til standard</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tilladelserne er gennemgået for 1 website}one{Tilladelserne er gennemgået for # website}other{Tilladelserne er gennemgået for # websites}}</translation>
 <translation id="7138678301420049075">Andet</translation>
 <translation id="7140829094791862589">Sortér manuelt</translation>

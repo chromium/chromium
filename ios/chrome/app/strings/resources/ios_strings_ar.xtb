@@ -1402,7 +1402,6 @@
 <translation id="6140948187512243695">عرض التفاصيل</translation>
 <translation id="6144589619057374135">‏فتح {url}$ في وضع التصفُّح المتخفي</translation>
 <translation id="6146563240635539929">فيديوهات</translation>
-<translation id="6147279996212084542">توضيح</translation>
 <translation id="6151006591088192882">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="6152340033632117531">غير نشطة</translation>
 <translation id="6152406514676263192">يمكنك تفعيل المزامنة للحصول على المحتوى الأكثر صلة باهتماماتك.</translation>
@@ -2059,6 +2058,7 @@
 <translation id="8439758443371991593">إخفاء خيار "الإضافة إلى قائمة القراءة"</translation>
 <translation id="8443986842926457191">‏يجب ألّا يزيد عدد أحرف عنوان URL عن 2048 حرفًا.</translation>
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
+<translation id="8473815223723723001">‏تعديل الصورة باستخدام Gemini</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
 <translation id="8477178913400731244">حذف البيانات</translation>

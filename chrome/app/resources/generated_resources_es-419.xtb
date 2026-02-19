@@ -2003,6 +2003,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2332742915001411729">Restablecer configuración de zoom predeterminada</translation>
 <translation id="2333166365943957309">Jerarquía de la IU</translation>
 <translation id="233375395665273385">Borrar y salir</translation>
+<translation id="2334384018887664164">Puedes incluir en la lista de sitios permitidos los sitios en los que confías en la configuración de contenido</translation>
 <translation id="233471714539944337">Incluye contenido sensible.</translation>
 <translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2336228925368920074">Agregar a favoritos todas las pestañas...</translation>
@@ -2098,6 +2099,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="240789602312469910">Enviar datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo o hija, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo o hija, y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla este <ph name="BEGIN_LINK1" />parámetro de configuración<ph name="END_LINK1" />. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la Actividad web y de aplicaciones adicional para tu hijo o hija, es posible que se almacenen estos datos en su Cuenta de Google. <ph name="BEGIN_LINK2" />Más información sobre las métricas<ph name="BEGIN_LINK2_END" />Más información<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408742686124047357">Fija Google Lens a la barra de herramientas para acceder fácilmente la próxima vez</translation>
+<translation id="2408762424059547338">Te protege mejor de los ataques desactivando la optimización de JavaScript</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
 <translation id="2409268599591722235">Comenzar</translation>
 <translation id="2409378541210421746">Editar selección de idioma</translation>
@@ -2374,6 +2376,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2581992808349413349">Usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Utiliza un proveedor de servicios administrado en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Cualquier lector de tarjetas inteligente</translation>
+<translation id="2583949330716828639">Administrar excepciones de sitios</translation>
 <translation id="2584109212074498965">No se pudo obtener el ticket de Kerberos. Vuelve a intentarlo o comunícate con el administrador de dispositivos de tu organización. (Código de error <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Administra los permisos de sitios web del micrófono en Chrome</translation>
 <translation id="2586561813241011046">No se pudo instalar <ph name="APP_NAME" />. Inténtalo de nuevo o comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -5752,6 +5755,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4871322859485617074">El PIN contiene caracteres no válidos</translation>
 <translation id="4871370605780490696">Agregar marcador</translation>
 <translation id="4871568871368204250">Desactivar la sincronización</translation>
+<translation id="4871630917300912613">Protecciones de JavaScript</translation>
 <translation id="4871719318659334896">Cerrar grupo</translation>
 <translation id="4872192066608821120">Para importar contraseñas, selecciona un archivo CSV.</translation>
 <translation id="4872212987539553601">Configurar la encriptación integrada en el dispositivo</translation>
@@ -6688,7 +6692,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5523532775593636291">Los sitios que agregues siempre permanecerán activos y no se liberará la memoria</translation>
 <translation id="5523558474028191231">El nombre puede incluir letras, números y caracteres especiales, y debe tener <ph name="MAX_CHARACTER_COUNT" /> caracteres como máximo.</translation>
 <translation id="5526745900034778153">Volver a acceder para reanudar la sincronización</translation>
-<translation id="5527211644528700597">Usa métodos integrados en el dispositivo para detectar amenazas.</translation>
 <translation id="5527474464531963247">También puedes seleccionar otra red.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carga optimizada</translation>
@@ -6886,7 +6889,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5663459693447872156">Cambiar automáticamente a ancho medio</translation>
 <translation id="5663653125349867535">&amp;Lista de lectura</translation>
 <translation id="5663918299073387939">Por lo general, los sitios solicitan permiso para controlar y reprogramar los dispositivos MIDI para crear o editar música, o para actualizar el firmware del dispositivo.</translation>
-<translation id="5666116074010586111">Envía la URL y el contenido de la página a Google para detectar amenazas más rápido.</translation>
 <translation id="5666911576871845853">&amp;Agregar nuevo perfil</translation>
 <translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play…</translation>
@@ -7125,6 +7127,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="583673505367439042">Permitir que los sitios soliciten permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="5836999627049108525">Idioma del texto de origen</translation>
 <translation id="583756221537636748">Caso</translation>
+<translation id="5840656138956959276">Mejorado: estricto</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5841338463993781099">¿Quieres guardarla en la cuenta?</translation>
@@ -7951,6 +7954,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6411135999030237579">Mantener presionado para repetir automáticamente la tecla</translation>
 <translation id="6414618057231176439">Selecciona qué versión de <ph name="VM_NAME" /> quieres instalar.</translation>
 <translation id="641469293210305670">Instalar actualizaciones y apps</translation>
+<translation id="6415434255504060856">Estricto para todos los sitios</translation>
 <translation id="6415757856498750027">Escribe "w" para obtener "ư"</translation>
 <translation id="6415816101512323589">¿Quieres activar la recuperación de datos locales para proteger tus datos?</translation>
 <translation id="6415900369006735853">Conéctate a Internet a través de tu teléfono.</translation>
@@ -8082,7 +8086,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicia la Chromebook y vuelve a intentarlo.</translation>
 <translation id="6511827214781912955">Considera borrar <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
-<translation id="6512364354776355686">Te advierte sobre todas las conexiones no seguras.</translation>
 <translation id="6512759338201777379">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará los datos para celulares si no te conectas a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
@@ -8346,6 +8349,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6686665106869989887">Se movió la pestaña hacia la derecha</translation>
 <translation id="6686676261102452995">Lo abriste hoy</translation>
 <translation id="6686817083349815241">Guardar la contraseña</translation>
+<translation id="6686878118106035853">La protección avanzada personalizada desactiva la optimización de JavaScript para todos los sitios</translation>
 <translation id="6687008241368170505">Cambiar el PIN del Administrador de contraseñas de Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Teclas del mouse</translation>
@@ -10030,7 +10034,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7830833461614351956">¿Quieres copiar <ph name="NUM_OF_FILES" /> archivos en <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
-<translation id="7833725807105678871">Prioriza la velocidad del sitio por sobre las funciones de seguridad mejoradas.</translation>
 <translation id="7834832693620032149">Para compartir audio, comparte una pestaña o pantalla</translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaste y no quieres que se compartan con los sitios</translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
@@ -10827,6 +10830,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8356197132883132838"><ph name="TITLE" /> (<ph name="COUNT" />)</translation>
 <translation id="8356409598322585307">Ya registraste este dispositivo. No es necesario que vuelvas a hacerlo.</translation>
 <translation id="8357388086258943206">Error al instalar Linux</translation>
+<translation id="8357883857705092796">Sitios no reconocidos</translation>
 <translation id="8358685469073206162">¿Restaurar las páginas?</translation>
 <translation id="835927394551949760">Pregúntale a Google</translation>
 <translation id="835951711479681002">Guardar en tu Cuenta de Google</translation>
@@ -11520,7 +11524,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8821045908425223359">Configurar una dirección IP de forma automática</translation>
 <translation id="8821268776955756404">Ya se puede usar <ph name="APP_NAME" />.</translation>
 <translation id="882204272221080310">Actualizar el firmware para mejorar la seguridad</translation>
-<translation id="8822690627597552656">Ralentiza algunos sitios desconocidos para bloquear ataques comunes.</translation>
 <translation id="8823514049557262177">Copiar texto del vínculo</translation>
 <translation id="8823704566850948458">Sugerir contraseña…</translation>
 <translation id="8823963789776061136">También puedes seleccionar el PPD de la impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>

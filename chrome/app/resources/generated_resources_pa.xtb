@@ -6709,7 +6709,6 @@
 <translation id="5523532775593636291">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਹਮੇਸ਼ਾਂ ਕਿਰਿਆਸ਼ੀਲ ਰਹਿਣਗੀਆਂ ਅਤੇ ਉਨ੍ਹਾਂ ਤੋਂ ਮੈਮੋਰੀ ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5523558474028191231">ਨਾਮ ਅੱਖਰ, ਨੰਬਰ ਅਤੇ ਖਾਸ ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ, ਅਤੇ ਇਸ ਵਿੱਚ <ph name="MAX_CHARACTER_COUNT" /> ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ</translation>
 <translation id="5526745900034778153">ਸਿੰਕ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
-<translation id="5527211644528700597">ਇਹ ਸੈਟਿੰਗਾਂ ਖਤਰਿਆਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਡੀਵਾਈਸ 'ਤੇ ਮੌਜੂਦ ਵਿਧੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="5527474464531963247">ਤੁਸੀਂ ਦੂਜਾ ਨੈੱਟਵਰਕ ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, ਸਥਾਪਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5527822190489075064">ਸੁਯੋਗ ਬਣਾਈ ਚਾਰਜਿੰਗ</translation>
@@ -6907,7 +6906,6 @@
 <translation id="5663459693447872156">ਆਟੋਮੈਟਿਕਲੀ ਹਾਫਵਿਡਥ ਤੇ ਸਵਿਚ ਕਰੋ</translation>
 <translation id="5663653125349867535">ਪੜ੍ਹਨ-ਸੂਚੀ</translation>
 <translation id="5663918299073387939">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਸੰਗੀਤ ਬਣਾਉਣ, ਸੰਗੀਤ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਜਾਂ ਡੀਵਾਈਸ ਫ਼ਰਮਵੇਅਰ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਲਈ ਕਹਿੰਦੀਆਂ ਹਨ</translation>
-<translation id="5666116074010586111">ਇਸ ਨਾਲ ਖਤਰਿਆਂ ਦਾ ਤੇਜ਼ੀ ਨਾਲ ਪਤਾ ਲਗਾਉਣ ਲਈ URL ਅਤੇ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="5666911576871845853">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ &amp;ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5667293444945855280">ਮਾਲਵੇਅਰ</translation>
 <translation id="5667546120811588575">Google Play ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -8105,7 +8103,6 @@
 <translation id="6508261954199872201">ਐਪ: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">ਆਪਣੀ Chromebook ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> ਨੂੰ ਮਿਟਾਉਣ 'ਤੇ ਵਿਚਾਰ ਕਰੋ, ਤਾਂ ਕਿ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਵਰਤਣ ਵਾਲੇ ਵਿਅਕਤੀ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਾ ਦੇਖ ਸਕਣ</translation>
-<translation id="6512364354776355686">ਇਸ ਨਾਲ ਤੁਹਾਨੂੰ ਸਾਰੇ ਅਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਬਾਰੇ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> ਮਿਜ਼ਾਜ ਨਾਲ <ph name="SUBJECT" /> ਦਾ ਬਣਾਇਆ ਗਿਆ ਚਿੱਤਰ <ph name="INDEX" />।</translation>
 <translation id="6513247462497316522">Google Chrome ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤੇਗਾ ਜੇਕਰ ਤੁਸੀਂ ਦੂਜੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਹੈ।</translation>
 <translation id="6514010653036109809">ਉਪਲਬਧ ਡੀਵਾਈਸ:</translation>
@@ -10055,7 +10052,6 @@
 <translation id="7830833461614351956">ਕੀ ਖੋਲ੍ਹਣ ਲਈ <ph name="NUM_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">ਰੱਖਿਅਤ ਕੀਤੇ ਵਿਉਂਤਬੱਧ ਸ਼ਬਦ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
-<translation id="7833725807105678871">ਇਸ ਨਾਲ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਬਜਾਏ ਸਾਈਟ ਸਪੀਡ ਨੂੰ ਤਰਜੀਹ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7834832693620032149">ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਇਸਦੀ ਬਜਾਏ ਕਿਸੇ ਟੈਬ ਜਾਂ ਵਿੰਡੋ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7836577093182643605">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੇ ਗਏ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਦੀ ਸੂਚੀ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਸਾਈਟਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ</translation>
 <translation id="7836850009646241041">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਦੁਬਾਰਾ ਸਪਰਸ਼ ਕਰਕੇ ਦੇਖੋ</translation>
@@ -11546,7 +11542,6 @@
 <translation id="8821045908425223359">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ IP ਪਤੇ ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ।</translation>
 <translation id="882204272221080310">ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
-<translation id="8822690627597552656">ਆਮ ਹਮਲਿਆਂ ਨੂੰ ਬਲਾਕ ਕਰਨ ਲਈ ਕੁਝ ਅਣਜਾਣ ਸਾਈਟਾਂ ਨੂੰ ਹੌਲੀ ਕਰ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="8823514049557262177">ਕਾਪੀ ਲਿੰਕ ਲਿ&amp;ਖਤ</translation>
 <translation id="8823704566850948458">ਪਾਸਵਰਡ ਸੁਝਾਓ...</translation>
 <translation id="8823963789776061136">ਵਿਕਲਪਕ ਤੌਰ 'ਤੇ, ਪ੍ਰਿੰਟਰ PPD ਨੂੰ ਚੁਣੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>

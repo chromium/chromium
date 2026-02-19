@@ -2019,6 +2019,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2332742915001411729">Återställ standardvärden</translation>
 <translation id="2333166365943957309">Hierarki för användargränssnitt</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
+<translation id="2334384018887664164">Du kan lägga till betrodda webbplatser på en godkännandelista i innehållsinställningarna</translation>
 <translation id="233471714539944337">Känsligt innehåll</translation>
 <translation id="2335758110242123814">Öppna gruppen</translation>
 <translation id="2336228925368920074">Bokmärk alla flikar ...</translation>
@@ -2114,6 +2115,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="240789602312469910">Skicka användnings- och diagnostikdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används bland annat till att förbättra systemets och apparnas stabilitet, inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och Googles partners, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Ägaren kan ange att användnings- och diagnostikdata för den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer om mätvärden<ph name="BEGIN_LINK2_END" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Kortet sparas</translation>
 <translation id="2408742686124047357">Fäst Google Lens i verktygsfältet så att du enkelt kommer åt det nästa gång</translation>
+<translation id="2408762424059547338">Skyddar dig bättre mot attacker genom att inaktivera JavaScript-optimering</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2409268599591722235">Då kör vi</translation>
 <translation id="2409378541210421746">Redigera språkval</translation>
@@ -2390,6 +2392,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2581992808349413349">Använd en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS). Detta använder en hanterad tjänsteleverantör på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">Alla smartkortsläsare</translation>
+<translation id="2583949330716828639">Hantera webbplatsundantag</translation>
 <translation id="2584109212074498965">Det gick inte att hämta Kerberos-biljetten. Försök igen eller kontakta organisationens enhetsadministratör. (Felkod: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Hantera webbplatsbehörigheter för mikrofonen i Chrome</translation>
 <translation id="2586561813241011046">Det gick inte att installera <ph name="APP_NAME" />. Försök igen eller kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
@@ -5768,6 +5771,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4871322859485617074">Pinkoden innehåller ogiltiga tecken</translation>
 <translation id="4871370605780490696">Lägg till bokmärke</translation>
 <translation id="4871568871368204250">Inaktivera synkronisering</translation>
+<translation id="4871630917300912613">JavaScript-skydd</translation>
 <translation id="4871719318659334896">Stäng grupp</translation>
 <translation id="4872192066608821120">Välj en CSV-fil för att importera lösenord</translation>
 <translation id="4872212987539553601">Konfigurera kryptering på enheten</translation>
@@ -6704,7 +6708,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5523532775593636291">Webbplatser du lägger till är alltid aktiva och minne frigörs inte från dem</translation>
 <translation id="5523558474028191231">Namnet kan innehålla bokstäver, siffror och specialtecken och får vara högst <ph name="MAX_CHARACTER_COUNT" /> tecken långt</translation>
 <translation id="5526745900034778153">Logga in igen för att fortsätta synkroniseringen</translation>
-<translation id="5527211644528700597">Använder metoder på enheten för att upptäcka hot</translation>
 <translation id="5527474464531963247">Du kan också välja ett annat nätverk.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installerar</translation>
 <translation id="5527822190489075064">Optimerad laddning</translation>
@@ -6902,7 +6905,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5663459693447872156">Växla automatiskt till halv bredd</translation>
 <translation id="5663653125349867535">Läslista</translation>
 <translation id="5663918299073387939">Webbplatser begär vanligtvis tillstånd att styra och omprogrammera MIDI-enheter för att skapa musik, redigera musik eller uppdatera enhetens firmware</translation>
-<translation id="5666116074010586111">Skickar webbadressen och sidinnehållet till Google för att upptäcka hot snabbare</translation>
 <translation id="5666911576871845853">&amp;Lägg till ny profil</translation>
 <translation id="5667293444945855280">Skadlig kod</translation>
 <translation id="5667546120811588575">Google Play konfigureras …</translation>
@@ -7141,6 +7143,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="583673505367439042">Webbplatser får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="5836999627049108525">Språk att översätta från</translation>
 <translation id="583756221537636748">Fodral</translation>
+<translation id="5840656138956959276">Utökat: strikt</translation>
 <translation id="5840680448799937675">Filer delas alltid offline</translation>
 <translation id="5841270259333717135">Konfigurera Ethernet</translation>
 <translation id="5841338463993781099">Vill du spara i kontot?</translation>
@@ -7967,6 +7970,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6411135999030237579">Håll tangenten nedtryckt för att upprepa den automatiskt</translation>
 <translation id="6414618057231176439">Välj vilken version av <ph name="VM_NAME" /> som ska installeras.</translation>
 <translation id="641469293210305670">Installera uppdateringar och appar</translation>
+<translation id="6415434255504060856">Strikt för alla webbplatser</translation>
 <translation id="6415757856498750027">Skriv ”w” för att få ”ư”</translation>
 <translation id="6415816101512323589">Vill du skydda din data genom att aktivera återställning av lokal data?</translation>
 <translation id="6415900369006735853">Anslut till internet via mobilen</translation>
@@ -8098,7 +8102,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Starta om Chromebook och försök igen</translation>
 <translation id="6511827214781912955">Det kan vara bra att radera <ph name="FILENAME" /> så att andra som använder enheten inte kan se lösenorden</translation>
-<translation id="6512364354776355686">Varnar om alla osäkra anslutningar</translation>
 <translation id="6512759338201777379">Genererad bild <ph name="INDEX" /> på <ph name="SUBJECT" /> med <ph name="MOOD" />-stämning.</translation>
 <translation id="6513247462497316522">Google Chrome kommer att använda mobila data om du inte är ansluten till ett annat nätverk.</translation>
 <translation id="6514010653036109809">Tillgänglig enhet:</translation>
@@ -8362,6 +8365,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6686665106869989887">Fliken flyttades åt höger</translation>
 <translation id="6686676261102452995">Du öppnade filen i dag</translation>
 <translation id="6686817083349815241">Spara lösenordet</translation>
+<translation id="6686878118106035853">Anpassat utökat skydd inaktiverar JavaScript-optimering för alla webbplatser</translation>
 <translation id="6687008241368170505">Ändra pinkod för Google Lösenordshantering</translation>
 <translation id="6687079240787935001">Dölj <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Mustangenter</translation>
@@ -10046,7 +10050,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7830833461614351956">Vill du kopiera <ph name="NUM_OF_FILES" /> filer till <ph name="CLOUD_PROVIDER" /> och öppna dem?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Sparade anpassade ord visas här</translation>
-<translation id="7833725807105678871">Prioriterar webbplatshastighet framför förbättrade säkerhetsfunktioner</translation>
 <translation id="7834832693620032149">Dela en flik eller ett fönster i stället om du vill dela ljud</translation>
 <translation id="7836577093182643605">En lista över ämnen som du har blockerat som du inte vill dela med webbplatser</translation>
 <translation id="7836850009646241041">Testa att trycka på säkerhetsnyckeln igen</translation>
@@ -10843,6 +10846,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du har redan registrerat den här enheten. Du behöver inte registrera den igen.</translation>
 <translation id="8357388086258943206">Det gick inte att installera Linux</translation>
+<translation id="8357883857705092796">Okända webbplatser</translation>
 <translation id="8358685469073206162">Vill du återställa sidorna?</translation>
 <translation id="835927394551949760">Fråga Google</translation>
 <translation id="835951711479681002">Spara i Google-kontot</translation>
@@ -11536,7 +11540,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8821045908425223359">Konfigurera IP-adress automatiskt</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> kan nu användas.</translation>
 <translation id="882204272221080310">Uppdatera firmware för ökad säkerhet.</translation>
-<translation id="8822690627597552656">Gör vissa okända webbplatser långsammare för att blockera vanliga attacker</translation>
 <translation id="8823514049557262177">Kopiera länktext</translation>
 <translation id="8823704566850948458">Föreslå lösenord …</translation>
 <translation id="8823963789776061136">Du kan även välja PPD-fil för skrivaren. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>

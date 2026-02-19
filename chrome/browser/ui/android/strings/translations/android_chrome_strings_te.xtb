@@ -645,6 +645,7 @@
 <translation id="3775705724665058594">మీ పరికరాలకు పంపండి</translation>
 <translation id="3777796259512476958">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
+<translation id="3792938779249970121">ఖాతాను ఎంచుకోండి</translation>
 <translation id="3795154175078851242">లింక్‌తో సహా కాపీ చేయండి</translation>
 <translation id="3807999512799921804">ఎంచుకున్న <ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో ఆడియోను ప్లే చేసే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
@@ -1267,6 +1268,7 @@
 <translation id="6340526405444716530">వ్యక్తిగతీకరణ</translation>
 <translation id="6341580099087024258">ఫైళ్లను ఎక్కడ సేవ్ చేయాలో అడుగు</translation>
 <translation id="6342069812937806050">ఇప్పుడే</translation>
+<translation id="634208815998129842">విధి నిర్వాహికి</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">చదివినట్లుగా గుర్తించు</translation>
 <translation id="6356893102071098867">మీరు సరైన ఖాతాను ఎంచుకున్నారో లేదో చెక్ చేయండి</translation>
@@ -1483,6 +1485,7 @@
 <translation id="7117485132243600300">మీరు ఫాలో అయ్యే కంటెంట్‌ను, సూచించిన టాపిక్‌లను, సెర్చ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />‌ను మూసివేయండి</translation>
 <translation id="7121179479711575744">Chromeకు సైన్ ఇన్ చేయండి</translation>
+<translation id="7136694880210472378">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయి</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 సైట్ కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}other{# సైట్‌ల కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}}</translation>
 <translation id="7138678301420049075">ఇతరం</translation>
 <translation id="7140829094791862589">మాన్యువల్ ఆర్డర్‌లో క్రమపద్ధతిలో అమర్చండి</translation>

@@ -115,7 +115,7 @@
 <translation id="2139300032719313227">‏הפעלה מחדש של ChromeOS</translation>
 <translation id="2151406531797534936">‏יש להפעיל מחדש את Chrome עכשיו</translation>
 <translation id="2163089732491971196">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
-<translation id="2170098639895543546">בחירה של משהו מהדף</translation>
+<translation id="2170098639895543546">צריך לבחור משהו מהדף</translation>
 <translation id="2174917724755363426">ההתקנה לא הושלמה. להמשיך בביטול?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">השגיאה בבדיקת העדכון: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -251,7 +251,7 @@
 <translation id="3622716124581627104">‏אפשר לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏קל יותר כעת להשתמש ב-Chrome באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
 <translation id="3635073343384702370">‏ל-Chrome יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
-<translation id="3636970668267555808">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך להגדיר את Chrome בתור דפדפן ברירת המחדל.</translation>
+<translation id="3636970668267555808">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, כדאי להגדיר את Chrome בתור דפדפן ברירת המחדל.</translation>
 <translation id="3667616615096815454">אין אפשרות להתקין, האפליקציה לא מוכרת לשרת.</translation>
 <translation id="3673813398384385993">‏הפריט "<ph name="EXTENSION_NAME" />" שנמצא ב-Chrome מכיל תכונה זדונית</translation>
 <translation id="3697952514309507634">‏פרופילים אחרים ב-Chrome</translation>
@@ -502,6 +502,7 @@
 <translation id="6251759518630934363">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chrome.</translation>
 <translation id="6277547788421725101">‏ההורה שלך השבית ב-Chrome את ההגדרה 'הרשאות לאתרים, לאפליקציות ולתוספים'</translation>
 <translation id="627882678981830918">‏אפשר להתאים אישית את Chrome ולנהל אותו. הגדרת Chrome כדפדפן ברירת המחדל.</translation>
+<translation id="6280042952415350607">‏הפעלת ההגנה המשופרת משביתה את האופטימיזציה של JavaScript באתרים ש-Chrome לא מזהה</translation>
 <translation id="6288580400488258237">‏הגדרת Google Chrome כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
 <translation id="6291089322031436445">‏אפליקציות לגרסת הפיתוח של Chrome</translation>
 <translation id="6291549208091401781">‏Google Chrome כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>

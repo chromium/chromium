@@ -645,6 +645,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3775705724665058594">Senda í tækin þín</translation>
 <translation id="3777796259512476958">Skráir þig út af flestum vefsvæðum</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flipi}one{# flipi}other{# flipar}}</translation>
+<translation id="3792938779249970121">Veldu reikning</translation>
 <translation id="3795154175078851242">Afrita mynd með tengli</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, valinn festur huliðsflipi með hljóði</translation>
 <translation id="3810973564298564668">Stjórna</translation>
@@ -1269,6 +1270,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6340526405444716530">Sérstillingar</translation>
 <translation id="6341580099087024258">Spyja hvar á að vista skrár</translation>
 <translation id="6342069812937806050">Rétt í þessu</translation>
+<translation id="634208815998129842">Verkstjórn</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}}</translation>
 <translation id="6345878117466430440">Merkja sem lesið</translation>
 <translation id="6356893102071098867">Kannaðu hvort þú hafir valið réttan reikning.</translation>
@@ -1485,6 +1487,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7117485132243600300">Stjórnaðu efni sem þú fylgist með, tillögum að efni og leitum</translation>
 <translation id="7119984597597798764">Loka <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Skráðu þig inn á Chrome</translation>
+<translation id="7136694880210472378">Gera sjálfgefið</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Farið yfir heimildir fyrir eitt vefsvæði}one{Farið yfir heimildir fyrir # vefsvæði}other{Farið yfir heimildir fyrir # vefsvæði}}</translation>
 <translation id="7138678301420049075">Annað</translation>
 <translation id="7140829094791862589">Raða handvirkt</translation>

@@ -1056,6 +1056,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1695510246756136088">Impossible de se connecter à Internet. Réessayez.</translation>
 <translation id="1696214930320482113">Les profils vous permettent de séparer le travail, la vie personnelle et les loisirs sans passer à un autre navigateur. Ajoutez un nouveau profil maintenant.</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Pour assurer la sécurité de votre appareil, vous ne devez exécuter et installer que des logiciels provenant de sources et de développeurs fiables.</translation>
 <translation id="169675691788639886">Cet appareil est configuré pour un serveur SSH. Ne vous connectez pas avec un compte sensible.</translation>
 <translation id="1697122132646041614">La mention Je n'aime pas ouvre un formulaire permettant de soumettre des commentaires détaillés sur les raisons pour lesquelles vous n'aimez pas ces résultats.</translation>
 <translation id="1697532407822776718">Vous êtes prêt!</translation>
@@ -5869,6 +5870,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4943927218331934807">Mot de passe requis</translation>
 <translation id="4944310289250773232">Ce service d'authentification est hébergé par <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Pour configurer une empreinte digitale, demandez à votre enfant de toucher l'interrupteur. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Afficher le bouton du panneau des projets</translation>
 <translation id="4946998421534856407">lanceur+flèche vers le haut</translation>
 <translation id="4947376546135294974">Données du site que vous visitez</translation>
 <translation id="4948370357877377178">Continuez vos tâches</translation>
@@ -6696,11 +6698,11 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5523532775593636291">Les sites que vous ajoutez resteront toujours actifs et leur mémoire ne sera pas libérée</translation>
 <translation id="5523558474028191231">Le nom peut comprendre des lettres, des chiffres et des caractères spéciaux, et doit comporter un maximum de<ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526745900034778153">Reconnectez-vous pour reprendre la synchronisation</translation>
-<translation id="5527211644528700597">Utilise des méthodes sur l'appareil pour détecter les menaces</translation>
 <translation id="5527474464531963247">Vous pouvez également sélectionner un autre réseau.</translation>
 <translation id="5527597176701279474">Installation de <ph name="APP_NAME" /> en cours…</translation>
 <translation id="5527822190489075064">Recharge optimisée</translation>
 <translation id="5529554942700688235">Résumé des économies de mémoire, <ph name="MEMORY_VALUE" /> libérés</translation>
+<translation id="5529693968082667490">Afficher le bouton de recherche d'onglets</translation>
 <translation id="5530977410273748884">Pour enregistrer votre mot de passe dans le gestionnaire de mots de passe Google, cliquez sur la clé</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
@@ -6894,7 +6896,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5663459693447872156">Passer automatiquement en demi-largeur</translation>
 <translation id="5663653125349867535">Liste de lecture</translation>
 <translation id="5663918299073387939">Les sites demandent généralement de contrôler et de reprogrammer les appareils MIDI pour créer de la musique, modifier de la musique ou mettre à jour le micrologiciel de l'appareil</translation>
-<translation id="5666116074010586111">Envoie l'URL et le contenu des pages à Google pour détecter les menaces plus rapidement</translation>
 <translation id="5666911576871845853">&amp;Ajouter un nouveau profil</translation>
 <translation id="5667293444945855280">Logiciels malveillants</translation>
 <translation id="5667546120811588575">Configuration de Google Play en cours…</translation>
@@ -8092,7 +8093,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Redémarrez votre Chromebook et réessayez</translation>
 <translation id="6511827214781912955">Envisagez de supprimer <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
-<translation id="6512364354776355686">Vous avertit de toutes les connexions non sécurisées</translation>
 <translation id="6512759338201777379">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, avec l'ambiance <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Si vous n'êtes pas connecté à un autre réseau, Google Chrome va utiliser un service de données mobiles.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
@@ -8254,6 +8254,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6613267708691765962">Analyse de logiciels malveillants…</translation>
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6618013221808317456">Ne pas autoriser les sites à utiliser l'optimisation JavaScript</translation>
+<translation id="6618154741503063152">Impossible d'effectuer le téléversement. Les pièces jointes ne sont pas autorisées.</translation>
 <translation id="6619058681307408113">Protocole LPD (Line Printer Daemon)</translation>
 <translation id="661907246513853610">Le site peut effectuer le suivi de votre position</translation>
 <translation id="6619243162837544323">État du réseau</translation>
@@ -10042,7 +10043,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers vers <ph name="CLOUD_PROVIDER" /> pour les ouvrir?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
-<translation id="7833725807105678871">Donne la priorité à la vitesse du site plutôt qu'aux fonctionnalités de sécurité améliorées</translation>
 <translation id="7834832693620032149">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="7836577093182643605">Liste des sujets bloqués que vous ne souhaitez pas partager avec les sites</translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
@@ -10350,6 +10350,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8034399942062051455">L'optimisation V8 est désactivée</translation>
 <translation id="8034697324150621782">Échanger avec l'affichage du haut</translation>
 <translation id="8035059678007243127">Page de navigation privée de la mise en cache complète bidirectionnelle : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Afficher le bouton des groupes d'onglets enregistrés</translation>
 <translation id="8036193484521570992">Aidez-nous à améliorer le remplissage automatique</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8037117027592400564">Lire tout le texte énoncé à l'aide de la synthèse vocale</translation>
@@ -11532,7 +11533,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8821045908425223359">Configurer automatiquement une adresse IP</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> est prête à l'utilisation.</translation>
 <translation id="882204272221080310">Pour une sécurité accrue, mettez à jour le micrologiciel.</translation>
-<translation id="8822690627597552656">Ralentit certains sites inconnus pour bloquer les attaques courantes</translation>
 <translation id="8823514049557262177">Copier le texte du lien</translation>
 <translation id="8823704566850948458">Suggérer un mot de passe…</translation>
 <translation id="8823963789776061136">Vous pouvez également sélectionner le PPD de l'imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>

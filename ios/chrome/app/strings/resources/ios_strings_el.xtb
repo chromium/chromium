@@ -1404,7 +1404,6 @@
 <translation id="6140948187512243695">Εμφάνιση λεπτομερειών</translation>
 <translation id="6144589619057374135">Άνοιγμα ${url} σε ανώνυμη περιήγηση</translation>
 <translation id="6146563240635539929">Βίντεο</translation>
-<translation id="6147279996212084542">Επεξήγηση</translation>
 <translation id="6151006591088192882">Ξεκλείδωμα Καρτελών ανώνυμης περιήγησης με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Ανενεργές</translation>
 <translation id="6152406514676263192">Συγχρονίστε για να βλέπετε το πιο σχετικό περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
@@ -2061,6 +2060,7 @@
 <translation id="8439758443371991593">Απόκρυψη της επιλογής Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="8443986842926457191">Το URL περιέχει περισσότερους από 2048 χαρακτήρες.</translation>
 <translation id="8449869326050867919">Ο κωδικός πρόσβασης κοινοποιήθηκε</translation>
+<translation id="8473815223723723001">Επεξεργασία εικόνας με το Gemini</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
 <translation id="8474378002946546633">Να επιτρέπονται ειδοποιήσεις</translation>
 <translation id="8477178913400731244">Διαγραφή δεδομένων</translation>

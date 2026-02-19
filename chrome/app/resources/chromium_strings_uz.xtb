@@ -237,6 +237,7 @@
 <translation id="3522404737534491619">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan.  Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring.</translation>
 <translation id="3561853857681580870">Ekranni ulashish uchun tizim sozlamalarida Chromium uchun ekranni yozib olishga ruxsat bering.</translation>
+<translation id="3588112919289558122">Kuchaytirilgan himoya Chromium uchun notanish saytlar boʻyicha JavaScript optimizatsiyasini faolsizlantiradi</translation>
 <translation id="3597003331831379823">Kengaytirilgan ruxsatlar bilan sozlash ishga tushmadi. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromiumga kirish</translation>
 <translation id="3639635944603682591">Bu foydalanuvchi brauzerining tarixi ushbu qurilmadan butunlay tozalanadi. Axborotlarni tiklash uchun brauzerga <ph name="USER_EMAIL" /> sifatida kiring.</translation>

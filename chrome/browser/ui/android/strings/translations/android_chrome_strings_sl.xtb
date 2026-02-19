@@ -645,6 +645,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3775705724665058594">Pošiljanje v vaše naprave</translation>
 <translation id="3777796259512476958">Odjavi vas z večine spletnih mest</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
+<translation id="3792938779249970121">Izbira računa</translation>
 <translation id="3795154175078851242">Kopiranje slike s povezavo</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, izbrani pripeti anonimni zavihek z zvokom</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -1269,6 +1270,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6340526405444716530">Prilagoditev</translation>
 <translation id="6341580099087024258">Vprašaj, kje shraniti datoteke</translation>
 <translation id="6342069812937806050">Pravkar</translation>
+<translation id="634208815998129842">Upravitelj opravil</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Označi kot prebrano</translation>
 <translation id="6356893102071098867">Preverite, ali ste izbrali pravi račun</translation>
@@ -1485,6 +1487,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7117485132243600300">Upravljajte vsebino, ki jo spremljate, ter predlagane teme in iskanja</translation>
 <translation id="7119984597597798764">Zapiranje »<ph name="INSTANCE_TITLE" />«</translation>
 <translation id="7121179479711575744">Prijava v Chrome</translation>
+<translation id="7136694880210472378">Nastavi za privzeto</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Dovoljenja so bila pregledana za 1 spletno mesto}one{Dovoljenja so bila pregledana za # spletno mesto}two{Dovoljenja so bila pregledana za # spletni mesti}few{Dovoljenja so bila pregledana za # spletna mesta}other{Dovoljenja so bila pregledana za # spletnih mest}}</translation>
 <translation id="7138678301420049075">Drugo</translation>
 <translation id="7140829094791862589">Razvrsti ročno</translation>

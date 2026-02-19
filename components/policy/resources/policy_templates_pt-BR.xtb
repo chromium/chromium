@@ -4764,19 +4764,6 @@ Se não for definida, o comportamento será determinado pela política <ph name=
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o destaque de circunflexos ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="4182348537826882258">Se a política <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da Web que têm URLs proibidos não vão ser carregadas. Os administradores podem especificar a lista de padrões de URL a serem bloqueados. Se a política for deixada sem definição, nenhum URL será bloqueado no navegador. Até 1.000 exceções podem ser definidas na <ph name="URL_ALLOWLIST_POLICY_NAME" />. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Observação: esta política não se aplica a URLs JavaScript na página com dados carregados dinamicamente. Se você bloqueou example.com/abc, ainda é possível carregar example.com usando XMLHTTPRequest. Além disso, essa política não impede que as páginas da Web atualizem o URL mostrado na omnibox para um bloqueado usando a API JavaScript History.
-
-Na versão 73 e mais recentes do <ph name="PRODUCT_NAME" />, é possível bloquear URLs "javascript://*". No entanto, isso só afeta JavaScript inserido na barra de endereço ou, por exemplo, os favoritos.
-
-Da versão 92 em diante do <ph name="PRODUCT_NAME" />, esta política também vai ter suporte no modo headless.
-
-Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser ignorado em alguns casos. Em vez de bloquear determinados URLs internos, confira se há políticas mais específicas disponíveis. Por exemplo:
-
-- Em vez de bloquear chrome://settings/certificates, use a <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- Em vez de bloquear chrome-untrusted://crosh, use a <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Configuração padrão de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Permitir que extensões gerenciadas usem a API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permite configurar uma programação personalizada para reiniciar dispositivos. Se ela for definida como verdadeira, o dispositivo será reiniciado de acordo com a programação. A política precisa ser removida para cancelar outras reinicializações programadas.

@@ -4231,6 +4231,7 @@
 <translation id="7714404809393719981">写真（半光沢）</translation>
 <translation id="7714424966701020172">氏名を入力するオプションが選択されました</translation>
 <translation id="7714464543167945231">証明書</translation>
+<translation id="7714943438925794410">購入手続きページのコンテンツは、これらのオプションを提供するために Google と共有されます。自動入力で後払いオプションを非表示にするには、<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> に移動してください。</translation>
 <translation id="7716147886133743102">管理者によってブロックされています</translation>
 <translation id="7716375162095500223">まだアップロードされていないか、無視されました</translation>
 <translation id="7716424297397655342">このサイトをキャッシュから読み込むことができません</translation>
@@ -4313,6 +4314,7 @@
 <translation id="7862306158978555061">機密情報を表示</translation>
 <translation id="7865448901209910068">最高速度</translation>
 <translation id="7865482168955081228">後払い決済のエラー画面が閉じられました。</translation>
+<translation id="7870207318911766769">購入手続きページのコンテンツは、これらのオプションを提供するために Google と共有されます。</translation>
 <translation id="7870281855125116701">割引が見つかりました</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>
 <translation id="787226752901403048">Chrome にログインして、タブグループの共有や参加、アイデアの出し合いなどを行うことができます</translation>

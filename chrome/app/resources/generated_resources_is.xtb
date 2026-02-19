@@ -6709,7 +6709,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5523532775593636291">Vefsvæði sem þú bætir við verða alltaf virk og ekki verður losað um minni úr þeim</translation>
 <translation id="5523558474028191231">Heitið má innihalda bókstafi, tölur og sérstafi og verður að vera <ph name="MAX_CHARACTER_COUNT" /> eða færri stafir að lengd</translation>
 <translation id="5526745900034778153">Skráðu inn aftur til að halda áfram að samstilla</translation>
-<translation id="5527211644528700597">Notar aðferðir í tæki til að greina ógnir</translation>
 <translation id="5527474464531963247">Þú getur líka valið annað net.</translation>
 <translation id="5527597176701279474">Setur upp <ph name="APP_NAME" /></translation>
 <translation id="5527822190489075064">Fínstillt hleðsla</translation>
@@ -6907,7 +6906,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5663459693447872156">Skipta sjálfkrafa yfir í hálfa breidd</translation>
 <translation id="5663653125349867535">Leslisti</translation>
 <translation id="5663918299073387939">Vefsvæði óska yfirleitt eftir því að stjórna og endurforrita MIDI-tæki til að búa til og breyta tónlist eða uppfæra fastbúnað tækisins</translation>
-<translation id="5666116074010586111">Sendir vefslóðina og innihald síðunnar til Google til að greina ógnir hraðar</translation>
 <translation id="5666911576871845853">&amp;Bæta við nýjum prófíl</translation>
 <translation id="5667293444945855280">Spilliforrit</translation>
 <translation id="5667546120811588575">Setur Google Play upp...</translation>
@@ -8105,7 +8103,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6508261954199872201">Forrit: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Endurræstu Chromebook og reyndu aftur</translation>
 <translation id="6511827214781912955">Íhugaðu að eyða <ph name="FILENAME" /> til að aðrir notendur tækisins geti ekki skoðað aðgangsorðin þín</translation>
-<translation id="6512364354776355686">Varar þig við öllum óöruggum tengingum</translation>
 <translation id="6512759338201777379">Tilbúin mynd <ph name="INDEX" /> af <ph name="SUBJECT" /> með <ph name="MOOD" />-stemningu.</translation>
 <translation id="6513247462497316522">Google Chrome notar farsímagögn ef þú ert ekki með tengingu við annað net.</translation>
 <translation id="6514010653036109809">Tiltækt tæki:</translation>
@@ -10055,7 +10052,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7830833461614351956">Afrita <ph name="NUM_OF_FILES" /> skrár í <ph name="CLOUD_PROVIDER" /> til að opna?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Vistuð sérsniðin orð munu birtast hér</translation>
-<translation id="7833725807105678871">Setur hraða vefsvæðis í forgang fram yfir bætta öryggiseiginleika</translation>
 <translation id="7834832693620032149">Til að deila hljóði skaltu deila flipa eða glugga í staðinn</translation>
 <translation id="7836577093182643605">Listi yfir umfjöllunarefni á bannlista sem þú vilt ekki deila með vefsvæðum</translation>
 <translation id="7836850009646241041">Prófaðu að snerta öryggislykilinn aftur</translation>
@@ -11546,7 +11542,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8821045908425223359">Stilla IP-tölu sjálfkrafa</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> er tilbúið til notkunar.</translation>
 <translation id="882204272221080310">Uppfæra fastbúnað fyrir aukið öryggi.</translation>
-<translation id="8822690627597552656">Hægir á sumum ókunnugum vefsvæðum til að koma í veg fyrir algengar árásir</translation>
 <translation id="8823514049557262177">Afrita tenglate&amp;xta</translation>
 <translation id="8823704566850948458">Tillaga að aðgangsorði...</translation>
 <translation id="8823963789776061136">Eða veldu PPD prentara. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>

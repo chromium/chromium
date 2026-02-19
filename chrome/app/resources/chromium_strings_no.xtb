@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> er allerede logget på.  For å holde surfingen din atskilt, logg på Chromium i din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">For å dele skjermen, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
+<translation id="3588112919289558122">Økt beskyttelse slår av JavaScript-optimalisering for nettsteder som Chromium ikke gjenkjenner</translation>
 <translation id="3597003331831379823">Kunne ikke kjøre konfigureringen med overordnede rettigheter. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Logg på Chromium</translation>
 <translation id="3639635944603682591">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chromium som <ph name="USER_EMAIL" />.</translation>

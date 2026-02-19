@@ -1404,7 +1404,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6140948187512243695">Mostra els detalls</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
 <translation id="6146563240635539929">Vídeos</translation>
-<translation id="6147279996212084542">Explica</translation>
 <translation id="6151006591088192882">Desbloqueja les pestanyes d'incògnit amb <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactiu</translation>
 <translation id="6152406514676263192">Sincronitza per obtenir el contingut més rellevant en funció dels teus interessos.</translation>
@@ -1496,7 +1495,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6435236283694032571">Afegeix a la llista de lectura</translation>
 <translation id="6435307030888827407">Continua sense iniciar la sessió</translation>
 <translation id="6436318499800111867">Compartit amb mi: <ph name="SHARED_WITH_ME_DATE" /></translation>
-<translation id="6442697326824312960">No fixis la pestanya</translation>
+<translation id="6442697326824312960">Deixa de fixar la pestanya</translation>
 <translation id="6443118737398455446">La data de caducitat no és vàlida</translation>
 <translation id="6444435711855078002">Més opcions</translation>
 <translation id="6445051938772793705">País</translation>

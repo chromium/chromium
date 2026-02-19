@@ -242,6 +242,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3522404737534491619">To share your window, allow screen recording for Chromium in System Settings</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is already signed in.  To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">To share your screen, allow screen recording for Chromium in System Settings.</translation>
+<translation id="3588112919289558122">Enhanced protection turns off JavaScript optimisation for sites that Chromium doesn't recognise</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Sign in to Chromium</translation>
 <translation id="3639635944603682591">This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>

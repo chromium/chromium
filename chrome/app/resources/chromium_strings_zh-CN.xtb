@@ -239,6 +239,7 @@
 <translation id="3522404737534491619">若要共享窗口，请在“系统设置”中为 Chromium 启用屏幕录制功能</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" />已登录。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。</translation>
 <translation id="3561853857681580870">若要共享屏幕，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
+<translation id="3588112919289558122">增强型保护会为 Chromium 无法识别的网站关闭 JavaScript 优化功能</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登录 Chromium</translation>
 <translation id="3639635944603682591">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chromium。</translation>

@@ -240,6 +240,7 @@
 <translation id="3522404737534491619">Oma akna jagamiseks lubage menüüs System Settings Chromiumi puhul ekraani salvestamine.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> on juba sisse logitud.  Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Oma ekraani jagamiseks lubage menüüs System Settings Chromiumi puhul ekraani salvestamine.</translation>
+<translation id="3588112919289558122">Täiustatud kaitse lülitab JavaScripti optimeerimise välja saitide puhul, mis on Chromiumi jaoks tundmatud.</translation>
 <translation id="3597003331831379823">Installiprogrammi käitamine administraatoriõigustega ebaõnnestus. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromiumi sisselogimine</translation>
 <translation id="3639635944603682591">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>

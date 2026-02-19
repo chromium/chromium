@@ -645,6 +645,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3775705724665058594">Lähetä laitteillesi</translation>
 <translation id="3777796259512476958">Kirjaa sinut ulos useimmilta sivustoilta</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 välilehti}other{# välilehteä}}</translation>
+<translation id="3792938779249970121">Valitse tili</translation>
 <translation id="3795154175078851242">Kopioi kuva linkillä</translation>
 <translation id="3807999512799921804"><ph name="TAB_TITLE" />, valittu kiinnitetty incognito-välilehti, jolla toistetaan audiota</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
@@ -1269,6 +1270,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6340526405444716530">Personointi</translation>
 <translation id="6341580099087024258">Kysy tiedostojen tallennussijaintia</translation>
 <translation id="6342069812937806050">Valmistui juuri</translation>
+<translation id="634208815998129842">Tehtävänhallinta</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> muu}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> muuta}}</translation>
 <translation id="6345878117466430440">Merkitse luetuksi</translation>
 <translation id="6356893102071098867">Tarkista, että olet valinnut oikean tilin</translation>
@@ -1485,6 +1487,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7117485132243600300">Valitse seurattava sisältö sekä ehdotetut aiheet ja haut</translation>
 <translation id="7119984597597798764">Sulje <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Kirjaudu Chromeen</translation>
+<translation id="7136694880210472378">Aseta oletukseksi</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Yhden sivuston luvat tarkistettu}other{# sivuston luvat tarkistettu}}</translation>
 <translation id="7138678301420049075">Muu</translation>
 <translation id="7140829094791862589">Lajittele manuaalisesti</translation>

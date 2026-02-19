@@ -6690,7 +6690,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5523532775593636291">Sites die je toevoegt, blijven altijd actief en er wordt geen geheugen van vrijgemaakt.</translation>
 <translation id="5523558474028191231">De naam mag letters, cijfers en speciale tekens bevatten en mag maximaal <ph name="MAX_CHARACTER_COUNT" /> tekens lang zijn</translation>
 <translation id="5526745900034778153">Log opnieuw in om door te gaan met synchroniseren</translation>
-<translation id="5527211644528700597">Gebruikt methoden op het apparaat om dreigingen op te sporen</translation>
 <translation id="5527474464531963247">Je kunt ook een ander netwerk selecteren.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installeren</translation>
 <translation id="5527822190489075064">Geoptimaliseerd opladen</translation>
@@ -6886,7 +6885,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5663459693447872156">Automatisch schakelen naar halve breedte</translation>
 <translation id="5663653125349867535">&amp;Leeslijst</translation>
 <translation id="5663918299073387939">Sites vragen meestal om MIDI-apparaten te bedienen en te herprogrammeren om muziek te maken en te bewerken of apparaatfirmware te updaten</translation>
-<translation id="5666116074010586111">Stuurt de URL en paginacontent naar Google om dreigingen sneller op te sporen</translation>
 <translation id="5666911576871845853">&amp;Nieuw profiel toevoegen</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Google Play instellen...</translation>
@@ -8083,7 +8081,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6508261954199872201">Applicatie: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Start je Chromebook opnieuw op en probeer het nog een keer</translation>
 <translation id="6511827214781912955">Overweeg <ph name="FILENAME" /> te verwijderen, zodat anderen die dit apparaat gebruiken je wachtwoorden niet kunnen zien.</translation>
-<translation id="6512364354776355686">Waarschuwt je voor alle niet-beveiligde verbindingen</translation>
 <translation id="6512759338201777379">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, met de stemming <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome maakt gebruik van mobiele data als je geen verbinding hebt met een ander netwerk.</translation>
 <translation id="6514010653036109809">Beschikbaar apparaat:</translation>
@@ -10031,7 +10028,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> bestanden naar <ph name="CLOUD_PROVIDER" /> kopiëren om te openen?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Opgeslagen aangepaste woorden zie je hier</translation>
-<translation id="7833725807105678871">Geeft prioriteit aan sitesnelheid boven verbeterde beveiligingsfuncties</translation>
 <translation id="7834832693620032149">Als je audio wilt delen, deel je in plaats daarvan een tabblad of venster</translation>
 <translation id="7836577093182643605">Lijst met geblokkeerde onderwerpen die je niet wilt delen met sites</translation>
 <translation id="7836850009646241041">Raak je beveiligingssleutel opnieuw aan</translation>
@@ -11523,7 +11519,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8821045908425223359">IP-adres automatisch configureren</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> is klaar voor gebruik.</translation>
 <translation id="882204272221080310">Firmware updaten voor extra beveiliging</translation>
-<translation id="8822690627597552656">Vertraagt sommige onbekende sites om veelvoorkomende aanvallen te blokkeren</translation>
 <translation id="8823514049557262177">Lin&amp;ktekst kopiëren</translation>
 <translation id="8823704566850948458">Wachtwoord voorstellen...</translation>
 <translation id="8823963789776061136">Je kunt ook de PPD van de printer selecteren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>

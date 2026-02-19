@@ -6691,7 +6691,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5523532775593636291">Els llocs web que afegeixis estaran sempre actius i no se n'alliberarà memòria</translation>
 <translation id="5523558474028191231">El nom pot incloure lletres, números i caràcters especials, i pot tenir com a màxim <ph name="MAX_CHARACTER_COUNT" /> caràcters</translation>
 <translation id="5526745900034778153">Torna a iniciar la sessió per reprendre la sincronització</translation>
-<translation id="5527211644528700597">Utilitza mètodes integrats al dispositiu per detectar amenaces</translation>
 <translation id="5527474464531963247">També podeu seleccionar una altra xarxa.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, s'està instal·lant</translation>
 <translation id="5527822190489075064">Càrrega optimitzada</translation>
@@ -6888,7 +6887,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5663459693447872156">Canvia automàticament a mitja amplada</translation>
 <translation id="5663653125349867535">Llista de lectura</translation>
 <translation id="5663918299073387939">Els llocs web solen demanar permís per controlar i reprogramar els dispositius MIDI a fi d'actualitzar-ne el microprogramari, crear música o editar-la</translation>
-<translation id="5666116074010586111">Envia l'URL i el contingut de la pàgina a Google per detectar amenaces més ràpidament</translation>
 <translation id="5666911576871845853">&amp;Afegeix un perfil nou</translation>
 <translation id="5667293444945855280">Programari maliciós</translation>
 <translation id="5667546120811588575">S'està configurant Google Play...</translation>
@@ -8085,7 +8083,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6508261954199872201">Aplicació: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicia el Chromebook i torna-ho a provar</translation>
 <translation id="6511827214781912955">Et recomanem que suprimeixis <ph name="FILENAME" /> perquè els altres usuaris que utilitzen aquest dispositiu no puguin veure les teves contrasenyes.</translation>
-<translation id="6512364354776355686">T'avisa de totes les connexions no segures</translation>
 <translation id="6512759338201777379">Imatge generada <ph name="INDEX" /> de <ph name="SUBJECT" />, amb un estat d'ànim <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
 <translation id="6514010653036109809">Dispositiu disponible:</translation>
@@ -10034,7 +10031,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7830833461614351956">Vols copiar <ph name="NUM_OF_FILES" /> fitxers a <ph name="CLOUD_PROVIDER" /> per obrir-los?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les paraules personalitzades desades es mostraran aquí</translation>
-<translation id="7833725807105678871">Prioritza la velocitat del lloc per sobre de les funcions de seguretat millorades</translation>
 <translation id="7834832693620032149">Per compartir l'àudio, comparteix una pestanya o una finestra</translation>
 <translation id="7836577093182643605">Llista de temes que has bloquejat i que no vols que es comparteixin amb els llocs web</translation>
 <translation id="7836850009646241041">Torna a tocar la clau de seguretat</translation>
@@ -11525,7 +11521,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8821045908425223359">Configura l'adreça IP automàticament</translation>
 <translation id="8821268776955756404">Ja es pot utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="882204272221080310">Per a més seguretat, actualitza el microprogramari.</translation>
-<translation id="8822690627597552656">Alenteix alguns llocs web desconeguts per bloquejar atacs habituals</translation>
 <translation id="8823514049557262177">Copia el te&amp;xt de l'enllaç</translation>
 <translation id="8823704566850948458">Suggereix una contrasenya...</translation>
 <translation id="8823963789776061136">També pots seleccionar el fitxer PPD de la impressora. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
