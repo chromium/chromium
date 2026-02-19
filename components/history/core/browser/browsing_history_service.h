@@ -253,6 +253,10 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   void RecordResultsMetrics(const std::vector<HistoryEntry>& results,
                             bool has_remote_results);
 
+  // Records the number of duplicate visits removed from a history query.
+  static void RecordDuplicateVisitsCount(
+      const std::vector<HistoryEntry>& results);
+
   // Callback from `web_history_timer_` when a response from web history has
   // not been received in time.
   void WebHistoryTimeout(scoped_refptr<QueryHistoryState> state);
