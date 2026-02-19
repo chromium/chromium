@@ -13,6 +13,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -2253,11 +2255,23 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_FALSE(handler_->has_suggested_tab_context());
   // 4. Explicitly adding the tab should remove it from the blocklist.
-  tabs::TabInterface* active_tab =
-      TabListInterface::From(browser())->GetActiveTab();
-  int32_t active_tab_id = active_tab->GetHandle().raw_value();
-  handler_->AddTabContext(active_tab_id, /*delay_upload=*/false,
-                          base::DoNothing());
+  {
+    base::HistogramTester histogram_tester;
+    base::UserActionTester user_action_tester;
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(browser())->GetActiveTab();
+    int32_t active_tab_id = active_tab->GetHandle().raw_value();
+    handler_->AddTabContext(active_tab_id, /*delay_upload=*/false,
+                            base::DoNothing());
+    histogram_tester.ExpectTotalCount(
+        "ContextualTasks.Composebox.UserAction."
+        "AddedActiveTabAfterDeletingAutoSuggestion",
+        1);
+    EXPECT_EQ(user_action_tester.GetActionCount(
+                  "ContextualTasks.Composebox.UserAction."
+                  "AddedActiveTabAfterDeletingAutoSuggestion"),
+              1);
+  }
 
   // 5. The suggestion should be allowed again.
   EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))

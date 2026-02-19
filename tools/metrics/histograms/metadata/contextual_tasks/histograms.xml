@@ -85,6 +85,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.Composebox.UserAction.AddedActiveTabAfterDeletingAutoSuggestion"
+    enum="Boolean" expires_after="2026-07-12">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a user explicitly adds the active tab after previously
+    deleting the auto-suggestion. Always recorded as true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.ContextCalculationLatency" units="ms"
     expires_after="2026-06-28">
   <owner>sophiechang@chromium.org</owner>

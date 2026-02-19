@@ -10989,6 +10989,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="ContextualTasks.Composebox.UserAction.AddedActiveTabAfterDeletingAutoSuggestion">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user readded the active tab after deleting the auto-suggested tab
+    context in the composebox.
+  </description>
+</action>
+
 <action name="ContextualTasks.TabChange.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
