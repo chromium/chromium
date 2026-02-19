@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/task/delay_policy.h"
