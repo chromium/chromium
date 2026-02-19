@@ -243,18 +243,18 @@ class TaskEnvironment {
   // condition, do not call QuitClosure() while RunUntilQuit() is running.
   RepeatingClosure QuitClosure();
 
-  // Runs tasks on both the main thread and the thread pool, until a quit
-  // closure is executed. When RunUntilQuit() returns, all previous quit
+  // Runs tasks on both the main thread and the thread pool (if any) until a
+  // quit closure is executed. When RunUntilQuit() returns, all previous quit
   // closures are invalidated, and will have no effect on future calls. Be sure
   // to create a new quit closure before calling RunUntilQuit() again.
   void RunUntilQuit();
 
   // Runs tasks until both the
   // (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle and the
-  // ThreadPool's non-delayed queues are empty.  While RunUntilIdle() is quite
-  // practical and sometimes even necessary -- for example, to flush all tasks
-  // bound to Unretained() state before destroying test members -- it should be
-  // used with caution per the following warnings:
+  // ThreadPool's non-delayed queues (if any) are empty.  While RunUntilIdle()
+  // is quite practical and sometimes even necessary -- for example, to flush
+  // all tasks bound to Unretained() state before destroying test members -- it
+  // should be used with caution per the following warnings:
   //
   // WARNING #1: This may run long (flakily timeout) and even never return! Do
   //             not use this when repeating tasks such as animated web pages

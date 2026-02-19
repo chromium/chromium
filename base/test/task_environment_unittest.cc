@@ -970,7 +970,8 @@ TEST_F(TaskEnvironmentTest, SetsDefaultRunTimeout) {
 
 TEST_F(TaskEnvironmentTest, DescribeCurrentTasksHasPendingMainThreadTasks) {
   TaskEnvironment task_environment;
-  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, DoNothing());
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, task_environment.QuitClosure());
 
   test::MockLog mock_log;
   mock_log.StartCapturingLogs();
@@ -985,7 +986,7 @@ TEST_F(TaskEnvironmentTest, DescribeCurrentTasksHasPendingMainThreadTasks) {
       .WillOnce(Return(true));
   task_environment.DescribeCurrentTasks();
 
-  task_environment.RunUntilIdle();
+  task_environment.RunUntilQuit();
 
   // Thread pool tasks (none here) are logged.
   EXPECT_CALL(mock_log, Log(::logging::LOGGING_INFO, _, _, _,
@@ -1042,6 +1043,38 @@ TEST_F(TaskEnvironmentTest, DescribeCurrentTasksHasThreadPoolTasks) {
                             Not(HasSubstr("task_environment_unittest.cc"))))
       .WillOnce(Return(true));
   // Main thread pending tasks (none here) are logged.
+  EXPECT_CALL(mock_log, Log(::logging::LOGGING_INFO, _, _, _,
+                            HasSubstr("\"immediate_work_queue_size\":0")))
+      .WillOnce(Return(true));
+  task_environment.DescribeCurrentTasks();
+}
+
+TEST_F(TaskEnvironmentTest, DescribeCurrentTasksHasPendingMainThreadOnlyTasks) {
+  TaskEnvironment task_environment{
+      TaskEnvironment::ThreadingMode::MAIN_THREAD_ONLY};
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, task_environment.QuitClosure());
+
+  test::MockLog mock_log;
+  mock_log.StartCapturingLogs();
+
+  // Thread pool tasks aren't logged since there is no ThreadPool.
+  EXPECT_CALL(mock_log, Log(::logging::LOGGING_INFO, _, _, _,
+                            HasSubstr("ThreadPool currently running tasks")))
+      .Times(0);
+  // The pending task posted above to the main thread is logged.
+  EXPECT_CALL(mock_log, Log(::logging::LOGGING_INFO, _, _, _,
+                            HasSubstr("task_environment_unittest.cc")))
+      .WillOnce(Return(true));
+  task_environment.DescribeCurrentTasks();
+
+  task_environment.RunUntilQuit();
+
+  // Thread pool tasks aren't logged since there is no ThreadPool.
+  EXPECT_CALL(mock_log, Log(::logging::LOGGING_INFO, _, _, _,
+                            HasSubstr("ThreadPool currently running tasks")))
+      .Times(0);
+  // Pending tasks (none left) are logged.
   EXPECT_CALL(mock_log, Log(::logging::LOGGING_INFO, _, _, _,
                             HasSubstr("\"immediate_work_queue_size\":0")))
       .WillOnce(Return(true));
@@ -1661,6 +1694,22 @@ TEST_F(TaskEnvironmentTest, RunUntilQuit_RunsThreadPool) {
                          task_run = true;
                          quit.Run();
                        }));
+  task_environment.RunUntilQuit();
+
+  ASSERT_TRUE(task_run);
+}
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_RunsMainThreadOnly) {
+  TaskEnvironment task_environment{
+      TaskEnvironment::ThreadingMode::MAIN_THREAD_ONLY};
+  bool task_run = false;
+  auto quit = task_environment.QuitClosure();
+
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                     BindLambdaForTesting([&] {
+                                                       task_run = true;
+                                                       quit.Run();
+                                                     }));
   task_environment.RunUntilQuit();
 
   ASSERT_TRUE(task_run);

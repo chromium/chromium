@@ -686,14 +686,16 @@ void TaskEnvironment::RunUntilQuit() {
   DCHECK(run_until_quit_loop_)
       << "QuitClosure() not called before RunUntilQuit()";
 
-  const bool could_run_tasks = task_tracker_->AllowRunTasks();
+  // `task_tracker_` is only set if a ThreadPool exists.
+  const bool could_run_thread_pool_tasks =
+      task_tracker_ && task_tracker_->AllowRunTasks();
 
   run_until_quit_loop_->Run();
   // Make the next call to RunUntilQuit() use a new RunLoop. This also
   // invalidates all existing quit closures.
   run_until_quit_loop_.reset();
 
-  if (!could_run_tasks) {
+  if (task_tracker_ && !could_run_thread_pool_tasks) {
     EXPECT_TRUE(
         task_tracker_->DisallowRunTasks(TestTimeouts::action_max_timeout()))
         << "Could not bring ThreadPool back to ThreadPoolExecutionMode::QUEUED "
@@ -899,7 +901,9 @@ bool TaskEnvironment::NextTaskIsDelayed() const {
 
 void TaskEnvironment::DescribeCurrentTasks() const {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-  LOG(INFO) << task_tracker_->DescribeRunningTasks();
+  if (task_tracker_) {
+    LOG(INFO) << task_tracker_->DescribeRunningTasks();
+  }
   LOG(INFO) << sequence_manager_->DescribeAllPendingTasks();
 }
 
