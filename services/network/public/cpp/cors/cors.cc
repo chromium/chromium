@@ -219,27 +219,6 @@ base::expected<void, CorsErrorStatus> CheckAccess(
   return base::ok();
 }
 
-base::expected<void, CorsErrorStatus> CheckAccessAndReportMetrics(
-    const GURL& response_url,
-    const std::optional<std::string>& allow_origin_header,
-    const std::optional<std::string>& allow_credentials_header,
-    mojom::CredentialsMode credentials_mode,
-    const url::Origin& origin) {
-  auto check_result =
-      CheckAccess(response_url, allow_origin_header, allow_credentials_header,
-                  credentials_mode, origin);
-  cors::AccessCheckResult result = check_result.has_value()
-                                       ? cors::AccessCheckResult::kPermitted
-                                       : cors::AccessCheckResult::kNotPermitted;
-
-  base::UmaHistogramEnumeration("Net.Cors.AccessCheckResult", result);
-  if (!IsOriginPotentiallyTrustworthy(origin)) {
-    base::UmaHistogramEnumeration(
-        "Net.Cors.AccessCheckResult.NotSecureRequestor", result);
-  }
-  return check_result;
-}
-
 bool ShouldCheckCors(const GURL& request_url,
                      const std::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode) {

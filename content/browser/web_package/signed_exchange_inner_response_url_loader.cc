@@ -90,7 +90,7 @@ SignedExchangeInnerResponseURLLoader::SignedExchangeInnerResponseURLLoader(
 
   if (network::cors::ShouldCheckCors(request.url, request.request_initiator,
                                      request.mode)) {
-    const auto result = network::cors::CheckAccessAndReportMetrics(
+    const auto result = network::cors::CheckAccess(
         request.url,
         GetHeaderString(*response_,
                         network::cors::header_names::kAccessControlAllowOrigin),

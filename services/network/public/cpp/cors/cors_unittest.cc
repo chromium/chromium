@@ -164,23 +164,17 @@ enum class AccessCheckResult {
 
   kMaxValue = kNotPermittedInPreflight,
 };
-constexpr char kAccessCheckHistogram[] = "Net.Cors.AccessCheckResult";
-constexpr char kAccessCheckHistogramNotSecure[] =
-    "Net.Cors.AccessCheckResult.NotSecureRequestor";
 
 TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedSecureOrigin) {
   base::HistogramTester histogram_tester;
   const GURL response_url("http://example.com/data");
   const url::Origin origin = url::Origin::Create(GURL("https://google.com"));
 
-  EXPECT_TRUE(CheckAccessAndReportMetrics(
-                  response_url, origin.Serialize() /* allow_origin_header */,
-                  std::nullopt /* allow_credentials_header */,
-                  network::mojom::CredentialsMode::kOmit, origin)
+  EXPECT_TRUE(CheckAccess(response_url,
+                          origin.Serialize() /* allow_origin_header */,
+                          std::nullopt /* allow_credentials_header */,
+                          network::mojom::CredentialsMode::kOmit, origin)
                   .has_value());
-  histogram_tester.ExpectUniqueSample(kAccessCheckHistogram,
-                                      AccessCheckResult::kPermitted, 1);
-  histogram_tester.ExpectTotalCount(kAccessCheckHistogramNotSecure, 0);
 }
 
 TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedNotSecureOrigin) {
@@ -188,15 +182,11 @@ TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedNotSecureOrigin) {
   const GURL response_url("http://example.com/data");
   const url::Origin origin = url::Origin::Create(GURL("http://google.com"));
 
-  EXPECT_TRUE(CheckAccessAndReportMetrics(
-                  response_url, origin.Serialize() /* allow_origin_header */,
-                  std::nullopt /* allow_credentials_header */,
-                  network::mojom::CredentialsMode::kOmit, origin)
+  EXPECT_TRUE(CheckAccess(response_url,
+                          origin.Serialize() /* allow_origin_header */,
+                          std::nullopt /* allow_credentials_header */,
+                          network::mojom::CredentialsMode::kOmit, origin)
                   .has_value());
-  histogram_tester.ExpectUniqueSample(kAccessCheckHistogram,
-                                      AccessCheckResult::kPermitted, 1);
-  histogram_tester.ExpectUniqueSample(kAccessCheckHistogramNotSecure,
-                                      AccessCheckResult::kPermitted, 1);
 }
 
 TEST_F(CorsTest, CheckAccessAndReportMetricsForNotPermittedSecureOrigin) {
@@ -204,15 +194,10 @@ TEST_F(CorsTest, CheckAccessAndReportMetricsForNotPermittedSecureOrigin) {
   const GURL response_url("http://example.com/data");
   const url::Origin origin = url::Origin::Create(GURL("https://google.com"));
 
-  EXPECT_FALSE(CheckAccessAndReportMetrics(
-                   response_url, std::nullopt /* allow_origin_header */,
-                   std::nullopt /* allow_credentials_header */,
-                   network::mojom::CredentialsMode::kOmit, origin)
+  EXPECT_FALSE(CheckAccess(response_url, std::nullopt /* allow_origin_header */,
+                           std::nullopt /* allow_credentials_header */,
+                           network::mojom::CredentialsMode::kOmit, origin)
                    .has_value());
-
-  histogram_tester.ExpectUniqueSample(kAccessCheckHistogram,
-                                      AccessCheckResult::kNotPermitted, 1);
-  histogram_tester.ExpectTotalCount(kAccessCheckHistogramNotSecure, 0);
 }
 
 TEST_F(CorsTest, SafelistedMethod) {

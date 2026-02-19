@@ -72,15 +72,6 @@ base::expected<void, CorsErrorStatus> CheckAccess(
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin);
 
-// Performs a CORS access check and reports result and error.
-COMPONENT_EXPORT(NETWORK_CPP)
-base::expected<void, CorsErrorStatus> CheckAccessAndReportMetrics(
-    const GURL& response_url,
-    const std::optional<std::string>& allow_origin_header,
-    const std::optional<std::string>& allow_credentials_header,
-    mojom::CredentialsMode credentials_mode,
-    const url::Origin& origin);
-
 // Returns true if |request_mode| is not kNavigate nor kNoCors, and the
 // |request_initiator| is not same as the origin of |request_url|. The
 // |request_url| is expected to have a http or https scheme as they are only
