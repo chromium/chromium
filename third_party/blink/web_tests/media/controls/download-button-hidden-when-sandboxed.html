@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>media controls download button hidden when sandboxed</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script src="../media-controls.js"></script>
+<iframe id="downloads-blocked"sandbox="allow-same-origin"></iframe>
+<iframe id="downloads-allowed"sandbox="allow-same-origin allow-downloads"></iframe>
+<script>
+async_test(function(t) {
+  const iframeBlocked = document.querySelector("#downloads-blocked");
+  const iframeAllowed = document.querySelector("#downloads-allowed");
+  const videoBlocked = iframeBlocked.contentDocument.createElement("video");
+  const videoAllowed = iframeAllowed.contentDocument.createElement("video");
+
+  [videoBlocked, videoAllowed].forEach((video) => {
+    video.controls = true;
+    video.setAttribute("preload", "none");
+    video.src = "https://someexample.example/example.mp4";
+  });
+  iframeBlocked.contentDocument.body.append(videoBlocked);
+  iframeAllowed.contentDocument.body.append(videoAllowed);
+
+  runAfterLayoutAndPaint(t.step_func_done(function() {
+    assert_false(isDownloadsButtonEnabled(videoBlocked),
+      "the download button should not show when the sandbox blocks downloads");
+    assert_true(isDownloadsButtonEnabled(videoAllowed),
+      "the download button should show when the sandbox allows downloads");
+  }));
+
+});
+</script>

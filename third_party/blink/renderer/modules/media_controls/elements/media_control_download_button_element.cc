@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -48,6 +49,14 @@ bool MediaControlDownloadButtonElement::ShouldDisplayDownloadButton() const {
     UseCounter::Count(MediaElement().GetDocument(),
                       WebFeature::kHTMLMediaElementControlsListNoDownload);
     return false;
+  }
+
+  if (GetDocument().GetFrame()) {
+    WebLocalFrame* web_local_frame = WebLocalFrame::FromFrameToken(
+        GetDocument().GetFrame()->GetLocalFrameToken());
+    if (web_local_frame && !web_local_frame->IsAllowedToDownload()) {
+      return false;
+    }
   }
 
   return true;
