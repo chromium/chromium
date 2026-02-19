@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -1381,9 +1380,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
 - (void)updateUIOnTraitChange {
   [self updateBackgroundColor];
 
-  if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() ||
-      omnibox::ForceBottomOmniboxInEditState() ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self updateCloseButtonVisibility];
     [self.mutator onTraitCollectionChange];
   }

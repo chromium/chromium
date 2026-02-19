@@ -76,9 +76,6 @@ enum class ToolbarCancelButtonStyle;
 // View that shows a banner promo.
 @property(nonatomic, strong) BannerPromoView* bannerPromo;
 
-// The style to use for the cancel button.
-@property(nonatomic, assign) ToolbarCancelButtonStyle cancelButtonStyle;
-
 // Sets all the subviews and constraints of the view. The `topSafeAnchor` needs
 // to be set before calling this.
 - (void)setUp;

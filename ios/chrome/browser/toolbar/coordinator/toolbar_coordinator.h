@@ -74,8 +74,6 @@
 /// transition to the expanded location bar state of the view controller.
 - (void)transitionToLocationBarFocusedState:(BOOL)focused
                                  completion:(ProceduralBlock)completion;
-/// Whether the omnibox is currently in edit state.
-- (BOOL)inEditState;
 /// Whether the omnibox is currently the first responder.
 - (BOOL)isOmniboxFirstResponder;
 /// Whether the omnibox popup is currently presented.
@@ -96,8 +94,6 @@
 - (CGFloat)collapsedSecondaryToolbarHeight;
 /// The maximum height of the secondary toolbar.
 - (CGFloat)expandedSecondaryToolbarHeight;
-/// The height necessary to display only the location bar.
-- (CGFloat)locationBarCompactDisplayHeight;
 
 @end
 

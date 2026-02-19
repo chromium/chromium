@@ -172,22 +172,6 @@ const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
      kNTPMIAEntrypointAIMInQuickActions, nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kBottomOmniboxEvolutionEditStateFollowSteadyState[] = {
-        {kBottomOmniboxEvolutionParam,
-         kBottomOmniboxEvolutionParamEditStateFollowSteadyState}};
-const FeatureEntry::FeatureParam
-    kBottomOmniboxEvolutionForceBottomOmniboxEditState[] = {
-        {kBottomOmniboxEvolutionParam,
-         kBottomOmniboxEvolutionParamForceBottomOmniboxEditState}};
-
-const FeatureEntry::FeatureVariation kBottomOmniboxEvolutionVariations[] = {
-    {"A: Follows the same position in edit state as the steady state.",
-     kBottomOmniboxEvolutionEditStateFollowSteadyState, nullptr},
-    {"B: Forces the bottom omnibox position for the edit state",
-     kBottomOmniboxEvolutionForceBottomOmniboxEditState, nullptr},
-};
-
 const FeatureEntry::FeatureParam kComposeboxTabPickerVariationCachedAPC[] = {
     {kComposeboxTabPickerVariationParam,
      kComposeboxTabPickerVariationParamCachedAPC}};
@@ -1709,11 +1693,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kOmniboxGroupingFrameworkForTypedSuggestionsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
-    {"bottom-omnibox-evolution", flag_descriptions::kBottomOmniboxEvolutionName,
-     flag_descriptions::kBottomOmniboxEvolutionDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxEvolution,
-                                    kBottomOmniboxEvolutionVariations,
-                                    "BottomOmniboxEvolution")},
     {"bwg-precise-location", flag_descriptions::kBWGPreciseLocationName,
      flag_descriptions::kBWGPreciseLocationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kBWGPreciseLocation)},

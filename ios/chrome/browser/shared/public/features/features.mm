@@ -179,14 +179,6 @@ constexpr base::FeatureParam<int>
         &kNonModalDefaultBrowserPromoImpressionLimit,
         /*name=*/"impression-limit", /*default_value=*/3};
 
-const char kBottomOmniboxEvolutionParam[] = "kBottomOmniboxEvolutionParam";
-const char kBottomOmniboxEvolutionParamEditStateFollowSteadyState[] =
-    "kBottomOmniboxEvolutionParamEditStateFollowSteadyState";
-const char kBottomOmniboxEvolutionParamForceBottomOmniboxEditState[] =
-    "kBottomOmniboxEvolutionParamForceBottomOmniboxEditState";
-
-BASE_FEATURE(kBottomOmniboxEvolution, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsSafetyCheckAutorunByManagerEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckAutorunByManagerKillswitch);
 }

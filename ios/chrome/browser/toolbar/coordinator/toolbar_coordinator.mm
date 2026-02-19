@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view_controller_delegate.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
@@ -60,13 +59,6 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
-
-namespace {
-
-/// The padding necessary for the edit state compact bottom omnibox.
-constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
-
-}  // namespace
 
 @interface ToolbarCoordinator () <ContextualPanelEntrypointCommands,
                                   GuidedTourCommands,
@@ -420,21 +412,8 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
   [self.legacyToolbarMediator locationBarFocusChangedTo:focused];
 
-  // Disable toolbar animations when focusing the omnibox on secondary toolbar.
-  ToolbarType editStatePosition;
-  if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
-    editStatePosition = _steadyStateOmniboxPosition;
-  } else if (omnibox::ForceBottomOmniboxInEditState()) {
-    if (IsCompactHeight(self.traitEnvironment.traitCollection)) {
-      editStatePosition = ToolbarType::kPrimary;
-    } else {
-      editStatePosition = ToolbarType::kSecondary;
-    }
-  } else {
-    editStatePosition = ToolbarType::kPrimary;
-  }
-
-  BOOL animateTransition = (editStatePosition == _steadyStateOmniboxPosition);
+  BOOL animateTransition =
+      (_steadyStateOmniboxPosition == ToolbarType::kPrimary);
 
   BOOL toolbarExpanded = focused && !CanShowTabStrip(self.traitEnvironment);
   if (base::FeatureList::IsEnabled(kOmniboxDRSPrototype) && focused) {
@@ -467,11 +446,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 - (BOOL)showingOmniboxPopup {
   CHECK(!IsChromeNextIaEnabled());
   return [self.locationBarCoordinator showingOmniboxPopup];
-}
-
-- (BOOL)inEditState {
-  CHECK(!IsChromeNextIaEnabled());
-  return [self isOmniboxFirstResponder] || [self showingOmniboxPopup];
 }
 
 - (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset {
@@ -534,11 +508,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   if (IsChromeNextIaEnabled()) {
     return _bottomToolbarViewController.toolbarHeight;
   }
-  BOOL presentInEditState =
-      self.locationBarFocused && omnibox::ForceBottomOmniboxInEditState();
-  BOOL showsSecondaryToolbarHeight =
-      IsSplitToolbarMode(self.traitEnvironment) || presentInEditState;
-  if (!showsSecondaryToolbarHeight) {
+  if (!IsSplitToolbarMode(self.traitEnvironment)) {
     return 0.0;
   }
   CGFloat height =
@@ -548,13 +518,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }
   return height;
-}
-
-- (CGFloat)locationBarCompactDisplayHeight {
-  CHECK(!IsChromeNextIaEnabled());
-  return self.locationBarCoordinator.locationBarViewController.view.frame.size
-             .height +
-         kLocationBarCompactBottomPadding;
 }
 
 #pragma mark - FakeboxFocuser
@@ -674,22 +637,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
   CHECK(!IsChromeNextIaEnabled());
   // Do nothing.
-}
-
-- (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar {
-  CHECK(!IsChromeNextIaEnabled());
-  BOOL userPreferenceBottom = _legacyToolbarMediator.preferredOmniboxPosition ==
-                              ToolbarType::kSecondary;
-  BOOL followSteadyState =
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
-  BOOL forcedBottomInEditState = omnibox::ForceBottomOmniboxInEditState();
-  BOOL inTheBottomInEditState =
-      (followSteadyState && userPreferenceBottom) || forcedBottomInEditState;
-  if (inTheBottomInEditState) {
-    return ToolbarCancelButtonStyle::kXCircle;
-  }
-
-  return ToolbarCancelButtonStyle::kCancelLabel;
 }
 
 #pragma mark - SideSwipeToolbarInteracting
@@ -986,29 +933,16 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (CGFloat)keyboardAttachedBottomOmniboxHeight {
-  CGFloat attachedHeight = self.locationBarCoordinator.locationBarViewController
-                               .view.frame.size.height +
-                           2 * kBottomAdaptiveLocationBarTopMargin;
-
-  if (!self.locationBarFocused) {
-    return 0;
-  }
-
-  BOOL forceEditState = omnibox::ForceBottomOmniboxInEditState();
-  if (forceEditState) {
-    return attachedHeight;
-  }
-
-  BOOL followSteadyState =
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
-  if (_omniboxPosition == ToolbarType::kSecondary && followSteadyState) {
-    return attachedHeight;
-  }
-
   return 0;
 }
 
 #pragma mark - Private
+
+/// Whether the omnibox is currently in edit state.
+- (BOOL)inEditState {
+  CHECK(!IsChromeNextIaEnabled());
+  return [self isOmniboxFirstResponder] || [self showingOmniboxPopup];
+}
 
 /// Returns primary and secondary coordinator in a array. Helper to call method
 /// on both coordinators.

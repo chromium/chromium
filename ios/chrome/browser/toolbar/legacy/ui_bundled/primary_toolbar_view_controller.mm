@@ -265,7 +265,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 }
 
 - (void)showCancelButton {
-  self.view.cancelButtonStyle = [self.delegate styleForCancelButtonInToolbar];
   self.view.cancelButton.hidden = NO;
 }
 

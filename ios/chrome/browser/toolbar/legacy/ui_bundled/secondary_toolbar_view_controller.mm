@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_keyboard_state_provider.h"
@@ -192,17 +191,8 @@
       (keyboardActiveForWebContent || findNavigatorVisible) &&
       !hideLocationIndicator;
 
-  // Whether the toolbar containing the omnibox should follow the keyboard.
-  BOOL followSteadyStateEnabled =
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
-  BOOL forceBottomOmniboxInEditState = omnibox::ForceBottomOmniboxInEditState();
-  BOOL omniboxAttachedInEditState =
-      !keyboardActiveForWebContent &&
-      (followSteadyStateEnabled || forceBottomOmniboxInEditState);
-
-  BOOL shouldAnimateOmniboxMovement = showLocationIndicator ||
-                                      hideLocationIndicator ||
-                                      omniboxAttachedInEditState;
+  BOOL shouldAnimateOmniboxMovement =
+      showLocationIndicator || hideLocationIndicator;
   if (!shouldAnimateOmniboxMovement) {
     return;
   }

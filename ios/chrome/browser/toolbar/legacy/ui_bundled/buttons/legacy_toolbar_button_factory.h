@@ -17,14 +17,6 @@
 @class ToolbarTabGridButton;
 @class ToolbarToolsMenuButton;
 
-// The possible styles for the cancel buttons.
-enum class ToolbarCancelButtonStyle {
-  // Present the cancel button as a label.
-  kCancelLabel = 0,
-  // Present the cancel button as X circle.
-  kXCircle = 2,
-};
-
 // LegacyToolbarButton Factory protocol to create LegacyToolbarButton objects
 // with certain style and configuration, depending of the implementation. A
 // dispatcher is used to send the commands associated with the buttons.
@@ -64,7 +56,6 @@ enum class ToolbarCancelButtonStyle {
 - (LegacyToolbarButton*)openNewTabButton;
 // Button to cancel the edit of the location bar.
 - (UIButton*)cancelButton;
-- (UIButton*)cancelButtonWithStyle:(ToolbarCancelButtonStyle)style;
 
 @end
 

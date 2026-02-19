@@ -219,8 +219,4 @@
       [self viewControllerSupportsBannerPromo];
 }
 
-- (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar {
-  return [self.viewControllerDelegate styleForCancelButtonInToolbar];
-}
-
 @end

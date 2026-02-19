@@ -260,10 +260,6 @@ const char kBestOfAppFREDescription[] =
     "When enabled, displays some views during the FRE highlighting the best "
     "features in the app.";
 
-const char kBottomOmniboxEvolutionName[] = "Bottom Omnibox Evolution";
-const char kBottomOmniboxEvolutionDescription[] =
-    "Enables improvements in the bottom omnibox UX and animations.";
-
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =

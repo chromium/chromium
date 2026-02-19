@@ -160,9 +160,6 @@ extern const char kBestOfAppFREDescription[];
 extern const char kBlueDotOnToolsMenuButtonName[];
 extern const char kBlueDotOnToolsMenuButtonDescription[];
 
-extern const char kBottomOmniboxEvolutionName[];
-extern const char kBottomOmniboxEvolutionDescription[];
-
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 

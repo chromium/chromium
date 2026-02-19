@@ -1214,11 +1214,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "bottom-omnibox-evolution",
-    "owners": [ "radunitescu@google.com", "christianxu@google.com"],
-    "expiry_milestone": 146
-  },
-  {
     "name": "boundary-event-dispatch-tracks-node-removal",
     "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
     "expiry_milestone": 150

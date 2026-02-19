@@ -33,9 +33,6 @@
 - (void)viewController:(PrimaryToolbarViewController*)viewController
     tabGroupIndicatorVisibilityUpdated:(BOOL)visible;
 
-// The style to use for the cancel button.
-- (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_PRIMARY_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_
