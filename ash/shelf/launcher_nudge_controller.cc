@@ -206,9 +206,6 @@ void LauncherNudgeController::HandleNudgeShown() {
 }
 
 void LauncherNudgeController::MaybeShowNudge() {
-  if (!features::IsShelfLauncherNudgeEnabled())
-    return;
-
   base::Time recheck_time;
   if (!ShouldShowNudge(recheck_time)) {
     // If `recheck_time` is set, start the timer to check again later for the

@@ -23182,9 +23182,6 @@
                         "IPH_ScalableIphUnlockedBasedThree",
                         "IPH_ScalableIphUnlockedBasedTwo",
                         "ScalableIph"
-                    ],
-                    "disable_features": [
-                        "ShelfLauncherNudge"
                     ]
                 },
                 {
@@ -23329,9 +23326,6 @@
                         "IPH_ScalableIphHelpAppBasedThree",
                         "IPH_ScalableIphHelpAppBasedTwo",
                         "ScalableIph"
-                    ],
-                    "disable_features": [
-                        "ShelfLauncherNudge"
                     ]
                 },
                 {
@@ -23543,9 +23537,6 @@
                         "IPH_ScalableIphTimerBasedThree",
                         "IPH_ScalableIphTimerBasedTwo",
                         "ScalableIph"
-                    ],
-                    "disable_features": [
-                        "ShelfLauncherNudge"
                     ]
                 },
                 {
@@ -23754,9 +23745,6 @@
                         "IPH_ScalableIphUnlockedBasedThree",
                         "IPH_ScalableIphUnlockedBasedTwo",
                         "ScalableIph"
-                    ],
-                    "disable_features": [
-                        "ShelfLauncherNudge"
                     ]
                 }
             ]

@@ -1736,10 +1736,6 @@ BASE_FEATURE(kSettingsAppThemeChangeAnimation,
 // and tablet.
 BASE_FEATURE(kShelfAutoHideSeparation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables launcher nudge that animates the home button to guide users to open
-// the launcher.
-BASE_FEATURE(kShelfLauncherNudge, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the OS update page in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMAOsUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3116,10 +3112,6 @@ bool IsSeparateWebAppShortcutBadgeIconEnabled() {
 
 bool IsSettingsAppThemeChangeAnimationEnabled() {
   return base::FeatureList::IsEnabled(kSettingsAppThemeChangeAnimation);
-}
-
-bool IsShelfLauncherNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kShelfLauncherNudge);
 }
 
 bool IsShimlessRMAOsUpdateEnabled() {
