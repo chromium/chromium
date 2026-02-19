@@ -490,6 +490,10 @@ chromium-metrics-reviews@google.com.
     WebAuthn credential create request was successfully resolved with different
     authenticator than Google Password Manager.
   </int>
+  <int value="6" label="IncognitoInterstitialShown">
+    The Incognito interstitial warning was shown to the user during passkey
+    creation.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->

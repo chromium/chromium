@@ -809,4 +809,14 @@ base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+bool PasskeyTabHelper::ShowCreationInterstitialIfNecessary(
+    base::OnceCallback<void(bool)> callback) {
+  if (web_state_->GetBrowserState()->IsOffTheRecord()) {
+    LogEvent(WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
+    client_->ShowInterstitial(std::move(callback));
+    return true;
+  }
+  return false;
+}
+
 }  // namespace webauthn

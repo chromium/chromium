@@ -34,6 +34,11 @@ void FakeIOSPasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {
   show_creation_bottom_sheet_called_ = true;
 }
 
+void FakeIOSPasskeyClient::ShowInterstitial(InterstitialCallback callback) {
+  show_interstitial_called_ = true;
+  std::move(callback).Run(interstitial_proceeds_);
+}
+
 void FakeIOSPasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {}
 
 password_manager::WebAuthnCredentialsDelegate*
@@ -52,6 +57,14 @@ bool FakeIOSPasskeyClient::DidShowCreationBottomSheet() const {
 
 bool FakeIOSPasskeyClient::DidFetchKeys() const {
   return fetch_keys_called_;
+}
+
+bool FakeIOSPasskeyClient::DidShowInterstitial() const {
+  return show_interstitial_called_;
+}
+
+void FakeIOSPasskeyClient::SetInterstitialProceeds(bool proceeds) {
+  interstitial_proceeds_ = proceeds;
 }
 
 IOSWebAuthnCredentialsDelegate* FakeIOSPasskeyClient::delegate() {

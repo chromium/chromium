@@ -41,6 +41,8 @@ using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
     kGetResolvedNonGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kIncognitoInterstitialShown;
 
 namespace {
 
@@ -425,6 +427,73 @@ TEST_F(PasskeyTabHelperTest, ShouldPerformUserVerification) {
                                         test.expected_with_biometrics,
                                         test.expected_without_biometrics);
   }
+}
+
+TEST_F(PasskeyTabHelperTest, ShowCreationInterstitialAndContinue) {
+  fake_browser_state_.SetOffTheRecord(true);
+
+  bool callback_executed = false;
+  bool callback_result = false;
+  auto callback = base::BindOnce(
+      [](bool* executed, bool* result, bool proceed) {
+        *executed = true;
+        *result = proceed;
+      },
+      &callback_executed, &callback_result);
+
+  client_->SetInterstitialProceeds(true);
+  EXPECT_TRUE(passkey_tab_helper()->ShowCreationInterstitialIfNecessary(
+      std::move(callback)));
+
+  EXPECT_TRUE(client_->DidShowInterstitial());
+  EXPECT_TRUE(callback_executed);
+  EXPECT_TRUE(callback_result);
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kIncognitoInterstitialShown),
+      /*count=*/1);
+}
+
+TEST_F(PasskeyTabHelperTest, ShowCreationInterstitialAndCancel) {
+  fake_browser_state_.SetOffTheRecord(true);
+
+  bool callback_executed = false;
+  bool callback_result = true;
+  auto callback = base::BindOnce(
+      [](bool* executed, bool* result, bool proceed) {
+        *executed = true;
+        *result = proceed;
+      },
+      &callback_executed, &callback_result);
+
+  client_->SetInterstitialProceeds(false);
+  EXPECT_TRUE(passkey_tab_helper()->ShowCreationInterstitialIfNecessary(
+      std::move(callback)));
+
+  EXPECT_TRUE(client_->DidShowInterstitial());
+  EXPECT_TRUE(callback_executed);
+  EXPECT_FALSE(callback_result);
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kIncognitoInterstitialShown),
+      /*count=*/1);
+}
+
+TEST_F(PasskeyTabHelperTest, NoCreationInterstitial) {
+  fake_browser_state_.SetOffTheRecord(false);
+
+  bool callback_executed = false;
+  auto callback =
+      base::BindOnce([](bool* executed, bool proceed) { *executed = true; },
+                     &callback_executed);
+
+  EXPECT_FALSE(passkey_tab_helper()->ShowCreationInterstitialIfNecessary(
+      std::move(callback)));
+
+  EXPECT_FALSE(client_->DidShowInterstitial());
+  EXPECT_FALSE(callback_executed);
+  histogram_tester_.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventHistogram, 0);
 }
 
 }  // namespace webauthn

@@ -48,7 +48,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
     kGetResolvedNonGpm,
     kCreateResolvedGpm,
     kCreateResolvedNonGpm,
-    kMaxValue = kCreateResolvedNonGpm,
+    kIncognitoInterstitialShown,
+    kMaxValue = kIncognitoInterstitialShown,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
@@ -108,6 +109,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Returns whether there is a pending remote validation for testing.
   bool HasPendingValidationForTesting() const;
+
+  // Returns whether the interstitial is necessary for the current state.
+  bool ShowCreationInterstitialIfNecessary(
+      base::OnceCallback<void(bool)> callback);
 
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;

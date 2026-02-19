@@ -23,6 +23,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
                  KeysFetchedCallback callback) override;
   void ShowSuggestionBottomSheet(RequestInfo request_info) override;
   void ShowCreationBottomSheet(RequestInfo request_info) override;
+  void ShowInterstitial(InterstitialCallback callback) override;
+
   void AllowPasskeyCreationInfobar(bool allowed) override;
   password_manager::WebAuthnCredentialsDelegate*
   GetWebAuthnCredentialsDelegateForDriver(
@@ -31,6 +33,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool DidShowSuggestionBottomSheet() const;
   bool DidShowCreationBottomSheet() const;
   bool DidFetchKeys() const;
+  bool DidShowInterstitial() const;
+  void SetInterstitialProceeds(bool proceeds);
   IOSWebAuthnCredentialsDelegate* delegate();
 
  private:
@@ -38,6 +42,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool show_creation_bottom_sheet_called_ = false;
   bool show_suggestion_bottom_sheet_called_ = false;
   bool fetch_keys_called_ = false;
+  bool show_interstitial_called_ = false;
+  bool interstitial_proceeds_ = true;
 };
 
 }  // namespace webauthn
