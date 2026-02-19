@@ -1401,7 +1401,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
 <translation id="5652575806481723716">A(z) <ph name="FOCUSED_APP_NAME" /> alkalmazás a figyelmét igényli.</translation>
 <translation id="5662075790140998213">10. asztal</translation>
-<translation id="5662709761327382534">A mikrofon általi hangrögzítés jelenleg <ph name="CURRENT_STATE" /> állásban van. Ha <ph name="NEW_STATE" /> állásba szeretné állítani, nyomja meg az Enter billentyűt</translation>
+<translation id="5662709761327382534">A mikrofonos hangrögzítés jelenleg <ph name="CURRENT_STATE" /> állásban van. Ha <ph name="NEW_STATE" /> állásba szeretné állítani, nyomja meg az Enter billentyűt</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5672890847723042801">Segédprogramok</translation>
@@ -1524,7 +1524,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6030495522958826102">A menü a képernyő bal alsó sarkába került.</translation>
 <translation id="6030608926359652298">Érintőpad személyre szabása</translation>
 <translation id="6032620807120418574">Kattintson bárhova a teljes képernyőről való felvétel készítéséhez</translation>
-<translation id="6040071906258664830">Mikrofon általi hangrögzítés <ph name="STATE" /> állásban</translation>
+<translation id="6040071906258664830">Mikrofonos hangrögzítés <ph name="STATE" /> állásban</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6043212731627905357">Ez a monitor nem illik össze <ph name="DEVICE_TYPE" />-eszközével (a monitor nem támogatott).</translation>
 <translation id="6043994281159824495">Kijelentkezés most</translation>

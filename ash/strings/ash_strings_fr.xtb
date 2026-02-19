@@ -234,7 +234,7 @@
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
 <translation id="1749109475624620922">La fenêtre <ph name="WINDOW_TITLE" /> est associée à tous les bureaux</translation>
 <translation id="1750088060796401187">Seuls <ph name="MAX_DESK_LIMIT" /> bureaux sont autorisés. Supprimez un bureau pour en ajouter un.</translation>
-<translation id="1751335846119670066">M'aider à lire</translation>
+<translation id="1751335846119670066">Aide-moi à lire</translation>
 <translation id="1755408179247123630">Activer Sélectionner pour écouter ?</translation>
 <translation id="1755556344721611131">Appli de diagnostic</translation>
 <translation id="1756833229520115364">Impossible d'enregistrer le modèle. Il y a trop de fenêtres ou d'onglets.</translation>
@@ -1906,7 +1906,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
 <translation id="7360036564632145207">Vous pouvez optimiser les performances en modifiant le paramètre "Protection de l'accès aux données pour les périphériques"</translation>
 <translation id="736045644501761622">Définir le fond d'écran et le style</translation>
-<translation id="7368041336688136012">Vous devez avoir au moins 18 ans pour utiliser M'aider à lire, M'aider à écrire et pour créer des images avec l'IA.</translation>
+<translation id="7368041336688136012">Vous devez avoir au moins 18 ans pour utiliser Aide-moi à lire et Aide-moi à écrire, et pour créer des images avec l'IA.</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de mémoire disponible sur un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">L'accès au micro est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>

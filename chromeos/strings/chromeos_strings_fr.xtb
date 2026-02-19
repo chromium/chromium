@@ -198,7 +198,7 @@
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou réessayez de charger les images.</translation>
 <translation id="1751249301761991853">Personnalisés</translation>
-<translation id="1751335846119670066">M'aider à lire</translation>
+<translation id="1751335846119670066">Aide-moi à lire</translation>
 <translation id="1753496554272155572">Quitter l'aperçu du fond d'écran</translation>
 <translation id="1754578112426924640">Bouton Modifier pour <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="1755556344721611131">Appli de diagnostic</translation>
@@ -367,7 +367,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2448857983905133469">Outils de cours</translation>
 <translation id="2468124392950503650">Sélectionnez un prompt pour créer ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Guide sur la création de prompts<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Utilisez M'aider à écrire pour créer un brouillon ou améliorer un travail existant grâce à l'IA de Google</translation>
+<translation id="2472215337771558851">Utilisez Aide-moi à écrire pour créer un brouillon ou améliorer un travail existant grâce à l'IA de Google</translation>
 <translation id="2475982808118771221">Une erreur s'est produite.</translation>
 <translation id="2480572840229215612">crabes</translation>
 <translation id="248546197012830854">L'appareil est hors connexion. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
@@ -1471,7 +1471,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7418738250896500352">Trop de mots pour simplifier</translation>
-<translation id="7425037327577270384">M'aider à écrire</translation>
+<translation id="7425037327577270384">Aide-moi à écrire</translation>
 <translation id="7425832472614771259">Modèle de transcription <ph name="LANGUAGE_NAME" /> téléchargé à <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN <ph name="ATTACH" /> activés sont désactivés ou supprimés.</translation>
@@ -1565,7 +1565,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7859006200041800233">fleur de cactus</translation>
 <translation id="7865217133132122390">Activer le micro</translation>
 <translation id="7869143217755017858">Désactiver le mode sombre</translation>
-<translation id="7878972877380405573">Résumer avec M'aider à lire</translation>
+<translation id="7878972877380405573">Résumer avec Aide-moi à lire</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
