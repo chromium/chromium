@@ -225,6 +225,10 @@ id<GREYMatcher> OmniboxPopupRowWithString(NSString* string) {
   return [ChromeMatchersAppInterface omniboxPopupRowWithString:string];
 }
 
+id<GREYMatcher> OmniboxPopupRowVisibleWithString(NSString* string) {
+  return [ChromeMatchersAppInterface omniboxPopupRowVisibleWithString:string];
+}
+
 id<GREYMatcher> OmniboxPopupList() {
   return [ChromeMatchersAppInterface omniboxPopupList];
 }

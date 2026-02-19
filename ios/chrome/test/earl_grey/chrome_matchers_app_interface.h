@@ -321,6 +321,10 @@
 // Returns a matcher for a popup row containing `string` as accessibility label.
 + (id<GREYMatcher>)omniboxPopupRowWithString:(NSString*)string;
 
+// Returns a matcher for a visible popup row containing `string` as
+// accessibility label.
++ (id<GREYMatcher>)omniboxPopupRowVisibleWithString:(NSString*)string;
+
 // Returns matcher for the omnibox popup list view.
 + (id<GREYMatcher>)omniboxPopupList;
 

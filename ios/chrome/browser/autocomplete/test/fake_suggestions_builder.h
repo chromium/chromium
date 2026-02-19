@@ -18,15 +18,31 @@ class FakeSuggestionsBuilder {
   FakeSuggestionsBuilder();
   ~FakeSuggestionsBuilder();
 
+// Suggestions that can be autocompleted.
+#pragma mark - Autocompleted suggestions
+
   /// Adds a shortcut URL match.
   void AddURLShortcut(const std::u16string& shortcut_text,
                       const std::u16string& shortcut_url);
+
+// Suggestions that can't be autocompleted.
+#pragma mark - Non autocompleted suggestions
+
+  /// Adds a history URL suggestion.
+  void AddHistoryURLSuggestion(const std::u16string& title,
+                               const std::u16string& destination_url);
+
+  /// Adds a search suggestion.
+  void AddSearchSuggestion(const std::u16string& query);
 
   /// Build the suggestions for the given `input`. A verbatim suggestion is
   /// added by default.
   std::vector<AutocompleteMatch> BuildSuggestionsForInput(
       const AutocompleteInput& input,
       AutocompleteProvider* provider) const;
+
+  /// Clear all the suggestions that have been added.
+  void ClearSuggestions();
 
  private:
   /// Builds the shortcuts matches for the given `input`.
@@ -41,7 +57,10 @@ class FakeSuggestionsBuilder {
     std::u16string url;
   };
 
+  // Shortcut matches, added if input text is a prefix of a shortcut text.
   std::vector<ShortcutData> shortcuts_;
+  // Regular non autocompleted matches, added for every input.
+  std::vector<AutocompleteMatch> matches_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_TEST_FAKE_SUGGESTIONS_BUILDER_H_

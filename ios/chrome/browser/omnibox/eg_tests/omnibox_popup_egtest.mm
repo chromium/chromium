@@ -516,11 +516,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"abc"];
 
   // Wait for the suggestions to show.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::OmniboxPopupRowWithString(@"abcdef")];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::OmniboxPopupRowVisibleWithString(@"abcdef")];
 
   id<GREYMatcher> appendArrowButtonMatcher = grey_allOf(
-      grey_ancestor(chrome_test_util::OmniboxPopupRowWithString(@"abcdef")),
+      grey_ancestor(
+          chrome_test_util::OmniboxPopupRowVisibleWithString(@"abcdef")),
       grey_accessibilityID(kOmniboxPopupRowAppendAccessibilityIdentifier), nil);
 
   // Wait for the append button to show.
@@ -538,7 +540,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Wait for the new suggestions to show.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          chrome_test_util::OmniboxPopupRowWithString(@"abcdefghi")];
+          chrome_test_util::OmniboxPopupRowVisibleWithString(@"abcdefghi")];
 }
 
 // Test when the popup is scrolled, the keyboard is dismissed
@@ -549,7 +551,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Clears the url and replace it with local url host.
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"abc"];
 
-  id<GREYMatcher> row = chrome_test_util::OmniboxPopupRowWithString(@"abcdef");
+  id<GREYMatcher> row =
+      chrome_test_util::OmniboxPopupRowVisibleWithString(@"abcdef");
 
   // Wait for the suggestions to show.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:row];
@@ -620,7 +623,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Matcher for the first autocomplete suggestions.
   id<GREYMatcher> testupDownAutocomplete1 =
-      chrome_test_util::OmniboxPopupRowWithString(@"testupdownautocomplete1");
+      chrome_test_util::OmniboxPopupRowVisibleWithString(
+          @"testupdownautocomplete1");
 
   // Wait for the suggestions to show.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:testupDownAutocomplete1];

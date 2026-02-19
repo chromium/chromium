@@ -23,9 +23,13 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base",
+    "//components/omnibox/browser:pref_names",
+    "//ios/chrome/browser/autocomplete/test:eg_test_support+eg2",
     "//ios/chrome/browser/composebox/public:features",
+    "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
     "//ui/base",
     "//ui/base:test_support",

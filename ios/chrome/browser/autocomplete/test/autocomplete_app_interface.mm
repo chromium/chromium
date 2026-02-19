@@ -26,6 +26,8 @@
                                             std::move(autocompleteController));
 }
 
+#pragma mark - Adding suggestions
+
 + (void)addURLShortcutMatch:(NSString*)shortcutText
        destinationURLString:(NSString*)URLString
                     context:(OmniboxPresentationContext)context {
@@ -37,6 +39,27 @@
   FakeSuggestionsBuilder* builder = controller->fake_suggestions_builder();
   builder->AddURLShortcut(shortcutText.cr_UTF16String,
                           URLString.cr_UTF16String);
+}
+
++ (void)addSearchSuggestion:(NSString*)query
+                    context:(OmniboxPresentationContext)context {
+  FakeSuggestionsAutocompleteController* controller =
+      [self fakeControllerFromContext:context];
+  FakeSuggestionsBuilder* builder = controller->fake_suggestions_builder();
+  builder->AddSearchSuggestion(query.cr_UTF16String);
+}
+
++ (void)addHistoryURLSuggestion:(NSString*)title
+           destinationURLString:(NSString*)URLString
+                        context:(OmniboxPresentationContext)context {
+  GURL destinationURL = GURL(URLString.cr_UTF16String);
+  // Destination URL must be valid.
+  CHECK(destinationURL.is_valid());
+  FakeSuggestionsAutocompleteController* controller =
+      [self fakeControllerFromContext:context];
+  FakeSuggestionsBuilder* builder = controller->fake_suggestions_builder();
+  builder->AddHistoryURLSuggestion(title.cr_UTF16String,
+                                   URLString.cr_UTF16String);
 }
 
 #pragma mark - Private

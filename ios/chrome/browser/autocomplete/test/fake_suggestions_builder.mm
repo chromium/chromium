@@ -41,11 +41,15 @@ AutocompleteMatch CreateVerbatimMatch(std::u16string search_terms) {
 }
 
 /// Creates a history URL match.
-AutocompleteMatch CreateHistoryURLMatch(std::u16string destination_url) {
+AutocompleteMatch CreateHistoryURLMatch(std::u16string title,
+                                        std::u16string destination_url) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::HISTORY_URL;
   match.destination_url = GURL(destination_url);
   match.fill_into_edit = destination_url;
+  match.swap_contents_and_description = true;
+  match.contents = destination_url;
+  match.description = title;
   return match;
 }
 
@@ -54,12 +58,10 @@ AutocompleteMatch CreateShortcutMatch(std::u16string destination_url,
                                       std::u16string shortcut_text,
                                       std::u16string autocomplete_text,
                                       std::u16string additional_text) {
-  AutocompleteMatch match = CreateHistoryURLMatch(destination_url);
+  AutocompleteMatch match =
+      CreateHistoryURLMatch(shortcut_text, destination_url);
   match.allowed_to_be_default_match = true;
   match.shortcut_boosted = true;
-  match.swap_contents_and_description = true;
-  match.contents = destination_url;
-  match.description = shortcut_text;
   match.inline_autocompletion = autocomplete_text;
   match.additional_text = additional_text;
   return match;
@@ -79,6 +81,16 @@ void FakeSuggestionsBuilder::AddURLShortcut(
   shortcuts_.push_back({shortcut_text, shortcut_url});
 }
 
+void FakeSuggestionsBuilder::AddHistoryURLSuggestion(
+    const std::u16string& title,
+    const std::u16string& destination_url) {
+  matches_.push_back(CreateHistoryURLMatch(title, destination_url));
+}
+
+void FakeSuggestionsBuilder::AddSearchSuggestion(const std::u16string& query) {
+  matches_.push_back(CreateSearchMatch(query));
+}
+
 std::vector<AutocompleteMatch> FakeSuggestionsBuilder::BuildSuggestionsForInput(
     const AutocompleteInput& input,
     AutocompleteProvider* provider) const {
@@ -92,6 +104,11 @@ std::vector<AutocompleteMatch> FakeSuggestionsBuilder::BuildSuggestionsForInput(
     matches.insert(matches.begin() + 1, CreateVerbatimMatch(input.text()));
   } else {
     matches.insert(matches.begin(), CreateVerbatimMatch(input.text()));
+  }
+
+  // Copy non autocompleted matches.
+  for (auto&& match : matches_) {
+    matches.push_back(AutocompleteMatch(match));
   }
 
   // Set a decreasing relevance.

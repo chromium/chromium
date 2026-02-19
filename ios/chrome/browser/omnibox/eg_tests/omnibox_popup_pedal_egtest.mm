@@ -83,7 +83,7 @@ NSString* const kDinoSearchString = @"dino game";
   id<GREYMatcher> dinoPedal =
       OmniboxPedalSuggestionMatcherWithSubtitleString(kDinoPedalString);
   id<GREYMatcher> dinoSearch =
-      chrome_test_util::OmniboxPopupRowWithString(kDinoSearchString);
+      chrome_test_util::OmniboxPopupRowVisibleWithString(kDinoSearchString);
 
   // Dino pedal and search suggestions should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:dinoPedal];
@@ -376,9 +376,9 @@ NSString* const kDinoSearchString = @"dino game";
 
   // Matcher for the dino pedal and search suggestions.
   id<GREYMatcher> dinoPedal =
-      chrome_test_util::OmniboxPopupRowWithString(kDinoPedalString);
+      chrome_test_util::OmniboxPopupRowVisibleWithString(kDinoPedalString);
   id<GREYMatcher> dinoSearch =
-      chrome_test_util::OmniboxPopupRowWithString(kDinoSearchString);
+      chrome_test_util::OmniboxPopupRowVisibleWithString(kDinoSearchString);
 
   // The dino search suggestion should be present.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:dinoSearch];
