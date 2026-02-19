@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 #include "url/gurl.h"
 
@@ -281,7 +281,7 @@ class CONTENT_EXPORT PresentationServiceImpl
       pending_start_presentation_cb_;
 
   // For ReconnectPresentation requests.
-  std::unordered_map<int, std::unique_ptr<NewPresentationCallbackWrapper>>
+  absl::flat_hash_map<int, std::unique_ptr<NewPresentationCallbackWrapper>>
       pending_reconnect_presentation_cbs_;
 
   mojo::ReceiverSet<blink::mojom::PresentationService>
