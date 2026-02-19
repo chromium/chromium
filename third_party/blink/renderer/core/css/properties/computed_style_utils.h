@@ -105,7 +105,8 @@ class CORE_EXPORT ComputedStyleUtils {
       const ComputedStyle&,
       const FillLayer*);
   static cssvalue::CSSBorderImageSliceValue* ValueForNinePieceImageSlice(
-      const NinePieceImage&);
+      const NinePieceImage&,
+      float zoom);
   static CSSQuadValue* ValueForNinePieceImageQuad(const BorderImageLengthBox&,
                                                   const ComputedStyle&);
   static CSSValue* ValueForNinePieceImageRepeat(const NinePieceImage&);

@@ -552,8 +552,11 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
   return list;
 }
 
-static CSSNumericLiteralValue* ValueForImageSlice(const Length& slice) {
-  CHECK(slice.IsPercent() || slice.IsFixed());
+static CSSPrimitiveValue* ValueForImageSlice(const Length& slice, float zoom) {
+  CHECK(slice.IsPercent() || slice.IsFixed() || slice.IsCalculated());
+  if (slice.IsCalculated()) {
+    return CSSPrimitiveValue::CreateFromLength(slice, zoom);
+  }
   if (slice.IsPercent()) {
     return CSSNumericLiteralValue::Create(
         slice.Percent(), CSSPrimitiveValue::UnitType::kPercentage);
@@ -563,11 +566,12 @@ static CSSNumericLiteralValue* ValueForImageSlice(const Length& slice) {
 }
 
 cssvalue::CSSBorderImageSliceValue*
-ComputedStyleUtils::ValueForNinePieceImageSlice(const NinePieceImage& image) {
+ComputedStyleUtils::ValueForNinePieceImageSlice(const NinePieceImage& image,
+                                                float zoom) {
   const LengthBox& slices = image.ImageSlices();
 
   // Create the slices.
-  CSSPrimitiveValue* top = ValueForImageSlice(slices.Top());
+  CSSPrimitiveValue* top = ValueForImageSlice(slices.Top(), zoom);
 
   CSSPrimitiveValue* right = nullptr;
   CSSPrimitiveValue* bottom = nullptr;
@@ -578,18 +582,18 @@ ComputedStyleUtils::ValueForNinePieceImageSlice(const NinePieceImage& image) {
     bottom = top;
     left = top;
   } else {
-    right = ValueForImageSlice(slices.Right());
+    right = ValueForImageSlice(slices.Right(), zoom);
 
     if (slices.Bottom() == slices.Top() && slices.Right() == slices.Left()) {
       bottom = top;
       left = right;
     } else {
-      bottom = ValueForImageSlice(slices.Bottom());
+      bottom = ValueForImageSlice(slices.Bottom(), zoom);
 
       if (slices.Left() == slices.Right()) {
         left = right;
       } else {
-        left = ValueForImageSlice(slices.Left());
+        left = ValueForImageSlice(slices.Left(), zoom);
       }
     }
   }
@@ -694,7 +698,7 @@ CSSValue* ComputedStyleUtils::ValueForNinePieceImage(
 
   // Create the image slice.
   cssvalue::CSSBorderImageSliceValue* image_slices =
-      ValueForNinePieceImageSlice(image);
+      ValueForNinePieceImageSlice(image, style.EffectiveZoom());
 
   // Create the border area slices.
   CSSValue* border_slices =

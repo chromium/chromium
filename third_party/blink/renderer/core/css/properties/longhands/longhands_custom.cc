@@ -1581,7 +1581,8 @@ const CSSValue* BorderImageSlice::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForNinePieceImageSlice(style.BorderImage());
+  return ComputedStyleUtils::ValueForNinePieceImageSlice(style.BorderImage(),
+                                                         style.EffectiveZoom());
 }
 
 const CSSValue* BorderImageSlice::InitialValue() const {
@@ -11792,7 +11793,8 @@ const CSSValue* WebkitMaskBoxImageSlice::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForNinePieceImageSlice(style.MaskBoxImage());
+  return ComputedStyleUtils::ValueForNinePieceImageSlice(style.MaskBoxImage(),
+                                                         style.EffectiveZoom());
 }
 
 const CSSValue* WebkitMaskBoxImageSource::ParseSingleValue(

@@ -317,6 +317,9 @@ class CORE_EXPORT CSSMathExpressionNode
     return !(value_feature_flags_ &
              ValueFeatureFlag::kNeedsTreeScopePopulation);
   }
+  bool HasUnresolvablePercentages() const {
+    return value_feature_flags_ & ValueFeatureFlag::kHasUnresolvablePercentages;
+  }
 
   const CSSMathExpressionNode& EnsureScopedValue(
       const TreeScope* tree_scope) const {
@@ -350,6 +353,7 @@ class CORE_EXPORT CSSMathExpressionNode
     kHasAnchorFunctions = 1 << 2,
     kHasRandomFunctions = 1 << 3,
     kNeedsTreeScopePopulation = 1 << 4,
+    kHasUnresolvablePercentages = 1 << 5,
   };
   using ValueFeatureFlags = uint8_t;
 
@@ -366,7 +370,7 @@ class CORE_EXPORT CSSMathExpressionNode
   }
 
   CalculationResultCategory category_;
-  ValueFeatureFlags value_feature_flags_ : 5 = kNoValueFeatures;
+  ValueFeatureFlags value_feature_flags_ : 6 = kNoValueFeatures;
 };
 
 class CORE_EXPORT CSSMathExpressionNumericLiteral final
@@ -1174,13 +1178,19 @@ class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
 class CORE_EXPORT CSSMathExpressionRandomFunction final
     : public CSSMathExpressionNode {
  public:
+  // Currently the computed value for calc() expressions with category
+  // `kCalcPercent`, i.e. calc() with only percentages: random(10%, 30%)
+  // would be simplified to X%. This is not correct, if percentages depend on a
+  // used value. To control that use `percentages_depend_on_used_value`
+  // parameter.
   explicit CSSMathExpressionRandomFunction(
       base::PassKey<CSSMathExpressionRandomFunction>,
       CalculationResultCategory category,
       const RandomValueSharing* random_value_sharing,
       const CSSMathExpressionNode* min,
       const CSSMathExpressionNode* max,
-      const CSSMathExpressionNode* step);
+      const CSSMathExpressionNode* step,
+      bool percentages_depend_on_used_value);
 
   // Currently the computed value for calc() expressions with category
   // `kCalcPercent`, i.e. calc() with only percentages: random(10%, 30%)
