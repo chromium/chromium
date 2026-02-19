@@ -1,0 +1,28 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_finds_internals.mojom;
+
+// Browser-to-renderer communication.
+interface Page {
+  // Appends a log message to the UI.
+  LogMessageAdded(string message);
+};
+
+// Renderer-to-browser communication.
+interface PageHandler {
+  // Starts the AI notification process with the given prompt and history count.
+  // Use 0 for all history.
+  Start(string prompt, int32 history_count);
+
+  // Returns a JSON string of the user's browsing history.
+  GetHistoryJson(int32 history_count) => (string json);
+};
+
+// Factory for creating PageHandler and linking the Page.
+interface PageHandlerFactory {
+  // Creates a page handler for the internals page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> receiver);
+};

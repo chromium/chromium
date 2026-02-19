@@ -69,6 +69,8 @@ inline constexpr char kChromeUIBrowsingTopicsInternalsHost[] =
     "topics-internals";
 inline constexpr char kChromeUICertificateViewerHost[] = "view-cert";
 inline constexpr char kChromeUICertificateViewerURL[] = "chrome://view-cert/";
+inline constexpr char kChromeUIChromeFindsInternalsHost[] =
+    "chrome-finds-internals";
 inline constexpr char kChromeUIChromeSigninHost[] = "chrome-signin";
 inline constexpr char kChromeUIChromeSigninURL[] = "chrome://chrome-signin/";
 inline constexpr char kChromeUIChromeURLsHost[] = "chrome-urls";

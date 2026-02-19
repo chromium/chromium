@@ -35,6 +35,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/browser_switch:build_ts",
     "//chrome/browser/resources/certificate_manager:build_ts",
     "//chrome/browser/resources/certificate_viewer:build_ts",
+    "//chrome/browser/resources/chrome_finds_internals:build_ts",
     "//chrome/browser/resources/color_pipeline_internals:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/compose:build_ts",

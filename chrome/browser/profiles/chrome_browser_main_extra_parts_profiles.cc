@@ -233,6 +233,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_agent_factory.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -684,6 +685,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AndroidSessionDurationsServiceFactory::GetInstance();
 #endif
   AffiliationServiceFactory::GetInstance();
+  chrome_finds_internals::ChromeFindsAgentFactory::GetInstance();
   AiDataKeyedServiceFactory::GetInstance();
   AimEligibilityServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)

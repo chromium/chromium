@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("chrome_finds_internals") {
+  sources = [
+    "chrome_finds_agent.cc",
+    "chrome_finds_agent.h",
+    "chrome_finds_agent_factory.cc",
+    "chrome_finds_agent_factory.h",
+    "chrome_finds_internals_ui.cc",
+    "chrome_finds_internals_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chrome_finds_internals:resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//chrome/browser/optimization_guide",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "chrome_finds_internals.mojom" ]
+  webui_module_path = "/"
+}

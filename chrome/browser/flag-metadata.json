@@ -1553,6 +1553,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "chrome-finds-internals",
+    "owners": ["wylieb@google.com", "evanluo@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "chrome-item-picker-ui",
     "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
     "expiry_milestone": 150

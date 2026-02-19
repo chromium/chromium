@@ -984,6 +984,7 @@ chromium-metrics-reviews@google.com.
   <int value="1399992914" label="chrome://java-crash/"/>
   <int value="1403605293" label="chrome://internet-detail-dialog/ (duplicate)"/>
   <int value="1411665301" label="chrome://lock-network/"/>
+  <int value="1423937437" label="chrome://chrome-finds-internals/"/>
   <int value="1427179406" label="chrome://gcm-internals/"/>
   <int value="1437913193" label="chrome://file-manager/"/>
   <int value="1446796271" label="chrome-untrusted://focus-mode-player/"/>

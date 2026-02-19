@@ -13047,6 +13047,7 @@ from previous Chrome versions.
       label="BoundaryEventDispatchTracksNodeRemoval:disabled"/>
   <int value="-472726214" label="GlicUnifiedFreScreen:disabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
+  <int value="-472409457" label="ChromeFindsInternals:disabled"/>
   <int value="-472014137" label="HomepageTile:disabled"/>
   <int value="-472013317" label="WebRTC-H264WithOpenH264FFmpeg:disabled"/>
   <int value="-471405972" label="ViewsProfileChooser:disabled"/>
@@ -19743,6 +19744,7 @@ from previous Chrome versions.
       label="JourneysOnDeviceClusteringContentClustering:disabled"/>
   <int value="1807178878" label="FedCmAutoReauthn:enabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
+  <int value="1808301349" label="ChromeFindsInternals:enabled"/>
   <int value="1809704744"
       label="SyncAndroidPromosWithAlternativeTitle:disabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>

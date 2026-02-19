@@ -2413,6 +2413,10 @@ inline constexpr char kChromeWebStoreNavigationThrottleName[] =
 inline constexpr char kChromeWebStoreNavigationThrottleDescription[] =
     "When enabled, passes DM Token to the Chrome Web Store.";
 
+inline constexpr char kChromeFindsInternalsName[] = "Chrome Finds Internals";
+inline constexpr char kChromeFindsInternalsDescription[] =
+    "Enables the chrome://chrome-finds-internals page.";
+
 inline constexpr char kFallbackToSWIfGLES3NotSupportedName[] =
     "Fallback to software if GLES3 is not supported";
 inline constexpr char kFallbackToSWIfGLES3NotSupportedDescription[] =
