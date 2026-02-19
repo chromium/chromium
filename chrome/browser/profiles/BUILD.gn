@@ -301,6 +301,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
     "//chrome/browser/history",
+    "//chrome/browser/k_anonymity_service",
     "//chrome/browser/media/router",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/notifications",

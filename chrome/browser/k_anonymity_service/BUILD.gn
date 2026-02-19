@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("k_anonymity_service") {
+  sources = [ "k_anonymity_service_factory.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "k_anonymity_service_factory.cc" ]
+
+  deps = [
+    ":k_anonymity_service",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}
