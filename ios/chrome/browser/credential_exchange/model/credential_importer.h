@@ -49,6 +49,9 @@ class SavedPasswordsPresenter;
 // Updates the status of the UI after importing all credential types finished.
 - (void)onImportFinished;
 
+// Notifies the delegate that an error occurred during import.
+- (void)onImportError;
+
 @end
 
 // Handles importing credentials using the Credential Exchange Format

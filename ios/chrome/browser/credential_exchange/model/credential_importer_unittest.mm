@@ -220,6 +220,14 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
   EXPECT_EQ(forms[0].in_store, PasswordForm::Store::kAccountStore);
 }
 
+TEST_F(CredentialImporterTest, PropagatesImportError) {
+  [[importer_delegate_ expect] onImportError];
+
+  [importer_ onImportError];
+
+  [importer_delegate_ verify];
+}
+
 TEST_F(CredentialImporterTest, RecordsCredentialsReceivedMetrics) {
   base::HistogramTester histogram_tester;
 

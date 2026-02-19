@@ -174,6 +174,14 @@
         baseViewController:self.baseViewController];
 }
 
+- (void)showGenericError {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
+  [self showAlertWithTitle:title
+                   message:nil
+        baseViewController:self.baseViewController];
+}
+
 - (void)showConflictResolutionScreenWithPasswords:
             (NSArray<PasswordImportItem*>*)passwords
                                          passkeys:(NSArray<PasskeyImportItem*>*)

@@ -332,4 +332,8 @@ std::string DataToString(NSData* data) {
                                         _passkeyImportResult.errors]];
 }
 
+- (void)onImportError {
+  [_delegate onImportError];
+}
+
 @end

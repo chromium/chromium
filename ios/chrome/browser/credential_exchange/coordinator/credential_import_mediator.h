@@ -55,6 +55,9 @@ class PrefService;
                                          passkeys:(NSArray<PasskeyImportItem*>*)
                                                       passkeys;
 
+// Notifies the delegate to display a generic error alert.
+- (void)showGenericError;
+
 @end
 
 // Mediator for the credential exchange import flow.

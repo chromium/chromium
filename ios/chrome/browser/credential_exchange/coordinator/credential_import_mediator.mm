@@ -209,6 +209,10 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
   [_consumer transitionToImportStage:self.importStage];
 }
 
+- (void)onImportError {
+  [_delegate showGenericError];
+}
+
 #pragma mark - DataImportCredentialConflictMutator
 
 - (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers

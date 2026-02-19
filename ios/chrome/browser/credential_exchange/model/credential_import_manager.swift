@@ -13,6 +13,9 @@ import Foundation
     passkeys: [CredentialExchangePasskey],
     exporterDisplayName: NSString,
     stats: ImportStats)
+
+  /// Called when the import failed with an error.
+  @objc func onImportError()
 }
 
 /// Handles importing user credentials through ASCredentialImportManager.
@@ -52,7 +55,7 @@ import Foundation
           stats: translatedData.stats
         )
       } catch {
-        // TODO(crbug.com/445889307): Handle errors.
+        delegate?.onImportError()
       }
     }
   }
