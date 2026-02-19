@@ -154,8 +154,7 @@ class CORE_EXPORT CascadeResolver {
   friend class StyleCascade;
   friend class TestCascadeResolver;
 
-  CascadeResolver(CascadeFilter filter, uint8_t generation)
-      : filter_(filter), generation_(generation) {}
+  explicit CascadeResolver(CascadeFilter filter) : filter_(filter) {}
 
   // If the given property is already being applied, returns true.
   //
@@ -187,7 +186,6 @@ class CORE_EXPORT CascadeResolver {
   // cycle_start_ and cycle_end_.
   wtf_size_t cycle_end_ = kNotFound;
   CascadeFilter filter_;
-  const uint8_t generation_ = 0;
   CSSProperty::Flags author_flags_ = 0;
   CSSProperty::Flags flags_ = 0;
   CSSProperty::Flags rejected_flags_ = 0;

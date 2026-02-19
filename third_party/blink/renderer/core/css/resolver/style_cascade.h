@@ -809,44 +809,35 @@ class CORE_EXPORT StyleCascade {
   MatchResult match_result_;
   CascadeInterpolations interpolations_;
   CascadeMap map_;
-  // Generational Apply
-  //
-  // Generation is a number that's incremented by one for each call to Apply
-  // (the first call to Apply has generation 1). When a declaration is applied
-  // to ComputedStyle, the current Apply-generation is stored in the CascadeMap.
-  // In other words, the CascadeMap knows which declarations have already been
-  // applied to ComputedStyle, which makes it possible to avoid applying the
-  // same declaration twice during a single call to Apply:
+  // When a declaration is applied to ComputedStyle, the we mark it as
+  // already_applied in the CascadeMap. This makes it possible to avoid applying
+  // the same declaration twice during a single call to Apply:
   //
   // For example:
   //
   //   --x: red;
   //   background-color: var(--x);
   //
-  // During Apply (generation=1), we linearly traverse the declarations above,
-  // and first apply '--x' to the ComputedStyle. Then, we proceed to
-  // 'background-color', which must first have its dependencies resolved before
-  // we can apply it. This is where we check the current generation stored for
-  // '--x'. If it's equal to the generation associated with the Apply call, we
-  // know that we already applied it. Either something else referenced it before
+  // During Apply, we linearly traverse the declarations above, and first apply
+  // '--x' to the ComputedStyle. Then, we proceed to 'background-color', which
+  // must first have its dependencies resolved before we can apply it. This is
+  // where we check the already_applied flag stored in the '--x' declaration's
+  // CascadePriority. If it is true, either something else referenced it before
   // we did, or it appeared before us in the MatchResult. Either way, we don't
   // have to apply '--x' again.
   //
   // Had the order been reversed, such that the '--x' declaration appeared after
   // the 'background-color' declaration, we would discover (during resolution of
-  // var(--x), that the current generation of '--x' is _less_ than the
-  // generation associated with the Apply call, hence we need to LookupAndApply
-  // '--x' before applying 'background-color'.
+  // var(--x), that '--x' had not yet been applied, hence we need to
+  // LookupAndApply '--x' before applying 'background-color'.
   //
-  // A secondary benefit to the generational apply mechanic, is that it's
-  // possible to efficiently apply the StyleCascade more than once (perhaps with
-  // a different CascadeFilter for each call), without rebuilding it. By
-  // incrementing generation_, the existing record of what has been applied is
-  // immediately invalidated, and everything will be applied again.
-  //
-  // Note: The maximum generation number is currently 15. This is more than
-  //       enough for our needs.
-  uint8_t generation_ = 0;
+  // If is possible to apply the StyleCascade more than once (perhaps with a
+  // different CascadeFilter for each call), without rebuilding it. However,
+  // if so, we need to clear out all the already-applied bits, so that the
+  // existing record of what has been applied is immediately invalidated, and
+  // everything will be applied again. This is noted by has_applied_,
+  // so that the second and further calls to Apply will do this cleaning.
+  bool has_applied_ = false;
 
   bool needs_collect_from_match_result_ = false;
   bool needs_collect_from_interpolations_ = false;

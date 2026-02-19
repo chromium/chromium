@@ -17,8 +17,6 @@ static_assert(
     !VectorTraits<CascadeMap::CascadePriorityList::Node>::kNeedsDestruction,
     "Backing vector should not need destruction");
 
-namespace {}  // namespace
-
 CascadePriority CascadeMap::At(const CSSPropertyName& name) const {
   if (const CascadePriority* find_result = Find(name)) {
     return *find_result;
@@ -217,6 +215,12 @@ void CascadeMap::Reset() {
 #if DCHECK_IS_ON()
   important_set_released_ = false;
 #endif
+}
+
+void CascadeMap::ClearAppliedFlags() {
+  for (CascadePriorityList::Node& node : backing_vector_) {
+    node.priority = CascadePriority(node.priority, /*already_applied=*/false);
+  }
 }
 
 }  // namespace blink

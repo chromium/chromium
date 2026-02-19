@@ -63,15 +63,13 @@ class TestCascadeResolver {
   STACK_ALLOCATED();
 
  public:
-  explicit TestCascadeResolver(uint8_t generation = 0)
-      : resolver_(CascadeFilter(), generation) {}
+  explicit TestCascadeResolver() : resolver_(CascadeFilter()) {}
   bool InCycle() const { return resolver_.InCycle(); }
   bool DetectCycle(const CSSProperty& property) {
     return resolver_.DetectCycle(property);
   }
   wtf_size_t CycleStart() const { return resolver_.cycle_start_; }
   wtf_size_t CycleEnd() const { return resolver_.cycle_end_; }
-  uint8_t GetGeneration() { return resolver_.generation_; }
   CascadeResolver& InnerResolver() { return resolver_; }
   const CSSProperty* CurrentProperty() const {
     return resolver_.CurrentProperty();
@@ -160,7 +158,7 @@ class TestCascade {
   void ApplySingle(const CSSProperty& property) {
     EnsureAtLeast(CascadeOrigin::kAnimation);
     cascade_.CollectDeclarationsIfNeeded();
-    TestCascadeResolver resolver(++cascade_.generation_);
+    TestCascadeResolver resolver;
     cascade_.LookupAndApply(property, resolver.InnerResolver());
   }
 
@@ -497,7 +495,7 @@ TEST_F(StyleCascadeTest, ApplyCustomProperty) {
   EXPECT_EQ("nope", cascade.ComputedValue("--y"));
 }
 
-TEST_F(StyleCascadeTest, ApplyGenerations) {
+TEST_F(StyleCascadeTest, ApplyMultipleTimes) {
   TestCascade cascade(GetDocument());
 
   cascade.Add("--x:10px");
@@ -3700,11 +3698,11 @@ TEST_F(StyleCascadeTest, Reset) {
 
   cascade.Add("color:red");
   cascade.Add("--x:red");
-  cascade.Apply();  // generation=1
-  cascade.Apply();  // generation=2
+  cascade.Apply();  // apply 1
+  cascade.Apply();  // apply 2
 
-  EXPECT_EQ(2u, cascade.GetPriority("color").GetGeneration());
-  EXPECT_EQ(2u, cascade.GetPriority("--x").GetGeneration());
+  EXPECT_EQ(true, cascade.GetPriority("color").IsAlreadyApplied());
+  EXPECT_EQ(true, cascade.GetPriority("--x").IsAlreadyApplied());
 
   cascade.Reset();
 

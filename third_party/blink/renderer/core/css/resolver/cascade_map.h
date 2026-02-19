@@ -100,6 +100,8 @@ class CORE_EXPORT CascadeMap {
   const CSSBitset& NativeBitset() const { return native_properties_.Bits(); }
   // Remove all properties (both native and custom) from the CascadeMap.
   void Reset();
+  // Clear all the already_applied_ flags on declarations.
+  void ClearAppliedFlags();
 
   // A sorted list storing all declarations (CascadePriority objects) seen
   // for a specific property, with the strongest CascadePriority appearing

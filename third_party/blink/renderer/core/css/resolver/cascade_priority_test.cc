@@ -259,17 +259,17 @@ TEST(CascadePriorityTest, Generation) {
   EXPECT_LT(CascadePriority(ua, 2), CascadePriority(author, 3));
 }
 
-TEST(CascadePriorityTest, GenerationOverwrite) {
+TEST(CascadePriorityTest, AlreadyAppliedOverwrite) {
   CascadePriority ua(CascadeOrigin::kUserAgent);
 
-  for (int8_t g = 0; g < 16; ++g) {
-    ua = CascadePriority(ua, g);
-    EXPECT_EQ(g, ua.GetGeneration());
+  for (bool aa : {false, true}) {
+    ua = CascadePriority(ua, aa);
+    EXPECT_EQ(aa, ua.IsAlreadyApplied());
   }
 
-  for (int8_t g = 15; g >= 0; --g) {
-    ua = CascadePriority(ua, g);
-    EXPECT_EQ(g, ua.GetGeneration());
+  for (bool aa : {true, false}) {
+    ua = CascadePriority(ua, aa);
+    EXPECT_EQ(aa, ua.IsAlreadyApplied());
   }
 }
 
