@@ -65,6 +65,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
       const PageRanges& page_ranges);
   void SetNewDocumentJobId(int job_id);
 
+  void StartEmbeddedTestServerAndNavigate(std::string_view relative_url);
+
   void PrintAndWaitUntilPreviewIsReady();
   // Returns the Print Preview dialog.
   content::WebContents* PrintAndWaitUntilPreviewIsReady(

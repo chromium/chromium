@@ -849,8 +849,13 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 #endif
 
-  TestPrintViewManager* SetUpAndReturnPrintViewManager(
-      content::WebContents* web_contents) {
+  TestPrintViewManager* SetUpPrintViewManager() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return nullptr;
+    }
+
     // Safe to use `base::Unretained(this)` since this testing class
     // necessarily must outlive all interactions from the tests which will
     // run through `PrintViewManagerBase`, which is what causes new jobs to
@@ -871,10 +876,6 @@ class SystemAccessProcessPrintBrowserTestBase
     web_contents->SetUserData(PrintViewManager::UserDataKey(),
                               std::move(manager));
     return manager_ptr;
-  }
-
-  void SetUpPrintViewManager(content::WebContents* web_contents) {
-    std::ignore = SetUpAndReturnPrintViewManager(web_contents);
   }
 
   content::WebContents* PrintAfterPreviewIsReadyAndLoaded() {
@@ -1505,9 +1506,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/3_pages.html"));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1540,9 +1540,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1576,14 +1575,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // The expected events for this are:
   // 1.  Update print settings, which fails.  No print job is created.
@@ -1611,14 +1606,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // The expected events for this are:
   // 1.  Update print settings, which fails.  No print job is created.
@@ -1632,7 +1624,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   base::RunLoop().RunUntilIdle();
   content::WebContents* preview_dialog =
       PrintPreviewDialogController::GetInstance()->GetPrintPreviewForContents(
-          web_contents);
+          print_view_manager->web_contents());
   ASSERT_FALSE(preview_dialog);
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
@@ -1653,14 +1645,10 @@ IN_PROC_BROWSER_TEST_P(
   constexpr int kJobId = 1;
   SetNewDocumentJobId(kJobId);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // The expected events for this are:
   // 1.  Update print settings.
@@ -1712,14 +1700,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   constexpr int kJobId = 1;
   SetNewDocumentJobId(kJobId);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/3_pages.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
 #if BUILDFLAG(IS_WIN)
   // Windows GDI results in a callback for each rendered page.
@@ -1768,14 +1752,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForSpoolingSharedMemoryErrors();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // No attempt to retry is made if a job has a shared memory error when trying
   // to spool a page/document fails on a shared memory error.  The test
@@ -1804,14 +1784,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/3_pages.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   if (UseService()) {
     // The expected events for this are:
@@ -1854,14 +1830,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForErrorsInNewDocument();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   if (UseService()) {
     // The expected events for this are:
@@ -1902,14 +1874,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInNewDocument();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   if (UseService()) {
     // The expected events for this are:
@@ -1949,14 +1917,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetNewDocumentJobId(kJobId);
   PrimeForAccessDeniedErrorsInNewDocument();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // The expected events for this are:
   // 1.  Update print settings.
@@ -1992,14 +1956,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   PrimeAsRepeatingErrorGenerator();
   PrimeForAccessDeniedErrorsInNewDocument();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // Test of a misbehaving printer driver which only returns access-denied
   // errors.  The expected events for this are:
@@ -2028,14 +1988,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForAccessDeniedErrorsInRenderPrintedPage();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // No attempt to retry is made if an access-denied error occurs when trying
   // to render a page.  The expected events for this are:
@@ -2070,14 +2026,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   PrimeForDelayedRenderingUntilPage(/*page_number=*/3);
   PrimeForRenderingErrorOnPage(/*page_number=*/2);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/3_pages.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // The expected events for this are:
   // 1.  Update print settings.
@@ -2116,14 +2068,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForAccessDeniedErrorsInRenderPrintedDocument();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // No attempt to retry is made if an access-denied error occurs when trying
   // to render a document.  The expected events for this are:
@@ -2153,14 +2101,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForAccessDeniedErrorsInDocumentDone();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // No attempt to retry is made if an access-denied error occurs when trying
   // do wrap-up a rendered document.  The expected events are:
@@ -2201,14 +2145,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   constexpr int kJobId = 1;
   SetNewDocumentJobId(kJobId);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   if (UseService()) {
 #if BUILDFLAG(IS_WIN)
@@ -2303,14 +2243,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // Once the transition to system print is initiated, the expected events
   // are:
@@ -2338,14 +2274,10 @@ IN_PROC_BROWSER_TEST_P(
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // First invoke system print from Print Preview.  Must wait until the
   // PrintPreviewUI is completely done before proceeding to the second part
@@ -2397,14 +2329,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // First invoke system print from Print Preview.  Must wait until the
   // PrintPreviewUI is completely done before proceeding to the second part
@@ -2445,14 +2373,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // First invoke system print from Print Preview.  Wait until the
   // PrintPreviewUI is done before proceeding to the second part of the
@@ -2499,7 +2424,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   // calls are made.
   SetNumExpectedMessages(/*num=*/2);
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2524,10 +2449,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
+  content::WebContents* web_contents = print_view_manager->web_contents();
 
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::RenderProcessHost* frame_rph = frame->GetProcess();
@@ -2594,14 +2518,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   constexpr int kJobId = 1;
   SetNewDocumentJobId(kJobId);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // The expected events for this are:
   // 1.  Get the default settings.
@@ -2614,7 +2535,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/7);
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2656,14 +2577,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   constexpr int kJobId = 1;
   SetNewDocumentJobId(kJobId);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/7_pages.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
 #if BUILDFLAG(IS_WIN)
   // The expected events for this are:
@@ -2692,7 +2610,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetNumExpectedMessages(/*num=*/7);
 #endif
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2730,14 +2648,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // The expected events for this are:
   // 1.  Get the default settings.
@@ -2746,7 +2661,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   // No print job is created because of such an early cancel.
   SetNumExpectedMessages(/*num=*/2);
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2776,14 +2691,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInAskUserForSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // The expected events for this are:
   // 1.  Get the default settings.
@@ -2793,7 +2705,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   // No print job is created because of such an early failure.
   SetNumExpectedMessages(/*num=*/3);
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2823,14 +2735,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForErrorsInNewDocument();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   if (UseService()) {
     // The expected events for this are:
@@ -2863,7 +2772,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     SetNumExpectedMessages(/*num=*/5);
   }
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2886,14 +2795,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/3_pages.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   if (UseService()) {
     // The expected events for this are:
@@ -2921,7 +2827,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     SetNumExpectedMessages(/*num=*/4);
   }
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2945,15 +2851,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  TestPrintViewManager* print_view_manager =
-      SetUpAndReturnPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // Pretend that a window has started a system print.
   std::optional<PrintBackendServiceManager::ClientId> client_id =
@@ -2974,7 +2876,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetNumExpectedMessages(/*num=*/7);
 
   // Now initiate a system print that would exist concurrently with that.
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -2990,14 +2892,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // Pretend that another tab has started a system print.
   // TODO(crbug.com/40561724)  Improve on this test by using a persistent fake
@@ -3034,15 +2932,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartBasicPrintConcurrentNotAllowed) {
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  TestPrintViewManager* print_view_manager =
-      SetUpAndReturnPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // Pretend that a window has started a system print.
   std::optional<PrintBackendServiceManager::ClientId> client_id =
@@ -3050,7 +2944,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   ASSERT_TRUE(client_id.has_value());
 
   // Now initiate a system print that would exist concurrently with that.
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   // Concurrent system print is not allowed.
   EXPECT_THAT(print_view_manager->print_now_result(), testing::Optional(false));
@@ -3067,14 +2961,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // Pretend that another tab has started a system print.
   // TODO(crbug.com/40561724)  Improve on this test by using a persistent fake
@@ -3104,14 +2994,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
                        StartBasicPrintUseDefaultFails) {
   PrimeForFailInUseDefaultSettings();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // The expected events for this are:
   // 1.  Get the default settings, which fails.
@@ -3119,7 +3006,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // No print job is created from such an early failure.
   SetNumExpectedMessages(/*num=*/2);
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -3141,14 +3028,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // in the test Print Backend service which actually does still exist.
   SkipPersistentContextsCheckOnShutdown();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  TestPrintViewManager* print_view_manager = SetUpPrintViewManager();
+  ASSERT_TRUE(print_view_manager);
 
   // The expected events for this are:
   // 1.  Get the default settings.
@@ -3158,7 +3042,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // No print job is created from such an early failure.
   SetNumExpectedMessages(/*num=*/3);
 
-  StartBasicPrint(web_contents);
+  StartBasicPrint(print_view_manager->web_contents());
 
   WaitUntilCallbackReceived();
 
@@ -3186,14 +3070,10 @@ IN_PROC_BROWSER_TEST_P(
   // in the test Print Backend service which actually does still exist.
   SkipPersistentContextsCheckOnShutdown();
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   // Once the transition to system print is initiated, the expected events
   // are:
@@ -3218,14 +3098,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest, OpenPdfInPreview) {
   constexpr int kJobId = 1;
   SetNewDocumentJobId(kJobId);
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  SetUpPrintViewManager(web_contents);
+  ASSERT_TRUE(SetUpPrintViewManager());
 
   if (UseService()) {
     // The expected events for this are:
@@ -3503,9 +3379,14 @@ class ContentAnalysisPrintBrowserTestBase
   }
 
   TestPrintViewManagerForContentAnalysis*
-  SetUpAndReturnPrintViewManagerForContentAnalysis(
-      content::WebContents* web_contents,
+  SetUpPrintViewManagerForContentAnalysis(
       enterprise_connectors::ContentAnalysisRequest::Reason expected_reason) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return nullptr;
+    }
+
     // Safe to use `base::Unretained(this)` since this testing class
     // necessarily must outlive all interactions from the tests which will
     // run through `PrintViewManagerBase`, which is what causes new jobs to
@@ -3659,16 +3540,12 @@ class ContentAnalysisScriptedPreviewlessPrintAfterDialogBrowserTest
       SkipPersistentContextsCheckOnShutdown();
     }
 
-    ASSERT_TRUE(embedded_test_server()->Started());
-    GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_NO_FATAL_FAILURE(
+        StartEmbeddedTestServerAndNavigate("/printing/test1.html"));
 
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents);
-    auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
-        web_contents,
+    auto* print_view_manager = SetUpPrintViewManagerForContentAnalysis(
         enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
+    ASSERT_TRUE(print_view_manager);
 
     if (PrintAllowedOrNonBlockingPolicy()) {
       if (UseService()) {
@@ -3704,7 +3581,8 @@ class ContentAnalysisScriptedPreviewlessPrintAfterDialogBrowserTest
       SetNumExpectedMessages(/*num=*/4);
     }
 
-    content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(), script);
+    content::ExecuteScriptAsync(
+        print_view_manager->web_contents()->GetPrimaryMainFrame(), script);
 
     WaitUntilCallbackReceived();
 
@@ -3726,16 +3604,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
                        PrintWithPreviewBeforeLoaded) {
   AddPrinter("printer_name");
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test1.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
-      web_contents,
+  auto* print_view_manager = SetUpPrintViewManagerForContentAnalysis(
       enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+  ASSERT_TRUE(print_view_manager);
 
   if (PrintAllowedOrNonBlockingPolicy() && UseService()) {
     // The expected events for this are:
@@ -3788,16 +3662,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     SkipPersistentContextsCheckOnShutdown();
   }
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test1.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
-      web_contents,
+  auto* print_view_manager = SetUpPrintViewManagerForContentAnalysis(
       enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
+  ASSERT_TRUE(print_view_manager);
 
   if (PrintAllowedOrNonBlockingPolicy()) {
     if (UseService()) {
@@ -3882,16 +3752,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
     SkipPersistentContextsCheckOnShutdown();
   }
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test3.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
-      web_contents,
+  auto* print_view_manager = SetUpPrintViewManagerForContentAnalysis(
       enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+  ASSERT_TRUE(print_view_manager);
 
   if (PrintAllowedOrNonBlockingPolicy()) {
     if (UseService()) {
@@ -3946,16 +3812,12 @@ IN_PROC_BROWSER_TEST_P(
     SkipPersistentContextsCheckOnShutdown();
   }
 
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_NO_FATAL_FAILURE(
+      StartEmbeddedTestServerAndNavigate("/printing/test1.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
-      web_contents,
+  auto* print_view_manager = SetUpPrintViewManagerForContentAnalysis(
       enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
+  ASSERT_TRUE(print_view_manager);
 
   if (PrintAllowedOrNonBlockingPolicy()) {
     if (UseService()) {
