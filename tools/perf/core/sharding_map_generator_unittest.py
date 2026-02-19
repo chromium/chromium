@@ -203,7 +203,7 @@ class TestShardingMapGenerator(unittest.TestCase):
     benchmarks_data.append(
         bot_platforms.CrossbenchConfig('cb_benchmark_0',
                                        'cb_benchmark_0_name',
-                                       arguments=['--my_arg']))
+                                       flags=['--my_arg']))
     sharding_map = sharding_map_generator.generate_sharding_map(
         benchmarks_data, timing_data, 3, None)
     self.assertIn('crossbench', sharding_map['2'])

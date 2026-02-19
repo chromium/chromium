@@ -4,7 +4,12 @@
 
 # pylint: disable=too-many-lines
 
+from __future__ import annotations
+
 import os
+
+from typing import Dict, Iterable, List, Optional, Tuple, Union
+
 import six.moves.urllib.parse  # pylint: disable=import-error
 
 from core import benchmark_finders
@@ -25,7 +30,7 @@ ALL_SCHEDULEABLE_BENCHMARKS = OFFICIAL_BENCHMARKS | CONTRIB_BENCHMARKS
 GTEST_STORY_NAME = '_gtest_'
 
 
-def _IsPlatformSupported(benchmark, platform):
+def _IsPlatformSupported(benchmark, platform: str) -> bool:
   supported = benchmark.GetSupportedPlatformNames(benchmark.SUPPORTED_PLATFORMS)
   return 'all' in supported or platform in supported
 
@@ -35,18 +40,18 @@ ALL_PLATFORMS = set()
 
 class _PerfPlatform(object):
   def __init__(self,
-               name,
-               description,
-               benchmark_configs,
-               num_shards,
-               platform_os,
-               is_fyi=False,
-               run_reference_build=False,
-               pinpoint_only=False,
-               executables=None,
-               crossbench=None):
+               name: str,
+               description: str,
+               benchmark_configs: PerfSuite,
+               num_shards: int,
+               platform_os: str,
+               is_fyi: bool = False,
+               run_reference_build: bool = False,
+               pinpoint_only: bool = False,
+               executables: Optional[frozenset[ExecutableConfig]] = None,
+               crossbench: Optional[frozenset[CrossbenchConfig]] = None):
     ALL_PLATFORMS.add(self)
-    benchmark_configs = benchmark_configs.Frozenset()
+    benchmark_config_set = benchmark_configs.Frozenset()
     self._name = name
     self._description = description
     self._platform_os = platform_os
@@ -60,9 +65,10 @@ class _PerfPlatform(object):
     assert num_shards
     self._num_shards = num_shards
     # pylint: disable=redefined-outer-name
-    self._benchmark_configs = frozenset([
-        b for b in benchmark_configs if
-          _IsPlatformSupported(b.benchmark, self._platform_os)])
+    self._benchmark_configs: frozenset[BenchmarkConfig] = frozenset([
+        b for b in benchmark_config_set
+        if _IsPlatformSupported(b.benchmark, self._platform_os)
+    ])
     # pylint: enable=redefined-outer-name
     benchmark_names = [config.name for config in self._benchmark_configs]
     assert len(set(benchmark_names)) == len(benchmark_names), (
@@ -82,50 +88,50 @@ class _PerfPlatform(object):
     return self._sort_key < other._sort_key
 
   @property
-  def num_shards(self):
+  def num_shards(self) -> int:
     return self._num_shards
 
   @property
-  def shards_map_file_path(self):
+  def shards_map_file_path(self) -> str:
     return self._shards_map_file_path
 
   @property
-  def timing_file_path(self):
+  def timing_file_path(self) -> str:
     return self._timing_file_path
 
   @property
-  def name(self):
+  def name(self) -> str:
     return self._name
 
   @property
-  def description(self):
+  def description(self) -> str:
     return self._description
 
   @property
-  def platform(self):
+  def platform(self) -> str:
     return self._platform_os
 
   @property
-  def benchmarks_to_run(self):
+  def benchmarks_to_run(self) -> frozenset[BenchmarkConfig]:
     # TODO(crbug.com/40628256): Deprecate this in favor of benchmark_configs
     # as part of change to make sharding scripts accommodate abridged
     # benchmarks.
     return frozenset({b.benchmark for b in self._benchmark_configs})
 
   @property
-  def benchmark_configs(self):
+  def benchmark_configs(self) -> frozenset[BenchmarkConfig]:
     return self._benchmark_configs
 
   @property
-  def is_fyi(self):
+  def is_fyi(self) -> bool:
     return self._is_fyi
 
   @property
-  def is_official(self):
+  def is_official(self) -> bool:
     return not self._is_fyi
 
   @property
-  def builder_url(self):
+  def builder_url(self) -> Optional[str]:
     if self.pinpoint_only:
       return None
     return ('https://ci.chromium.org/p/chrome/builders/ci/%s' %
@@ -134,7 +140,10 @@ class _PerfPlatform(object):
 
 class BenchmarkConfig(object):
 
-  def __init__(self, benchmark, abridged, pageset_repeat_override):
+  def __init__(self,
+               benchmark,
+               abridged: bool,
+               pageset_repeat_override: Optional[int] = None):
     """A configuration for a benchmark that helps decide how to shard it.
 
     Args:
@@ -152,17 +161,17 @@ class BenchmarkConfig(object):
     self.pageset_repeat_override = pageset_repeat_override
 
   @property
-  def name(self):
+  def name(self) -> str:
     return self.benchmark.Name()
 
   @property
-  def repeat(self):
+  def repeat(self) -> int:
     if self.pageset_repeat_override is not None:
       return self.pageset_repeat_override
     return self.benchmark.options.get('pageset_repeat', 1)
 
   @property
-  def stories(self):
+  def stories(self) -> List[str]:
     if self._stories is not None:
       return self._stories
     story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark())
@@ -175,7 +184,7 @@ class BenchmarkConfig(object):
     return self._stories
 
   @property
-  def exhaustive_stories(self):
+  def exhaustive_stories(self) -> List[str]:
     if self._exhaustive_stories is not None:
       return self._exhaustive_stories
     story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark(),
@@ -190,10 +199,17 @@ class BenchmarkConfig(object):
 
 
 class ExecutableConfig(object):
-  def __init__(self, name, path=None, flags=None, estimated_runtime=60):
+
+  def __init__(self,
+               name: str,
+               path: Optional[str] = None,
+               flags: Tuple[str, ...] = (),
+               extra_flags: Tuple[str, ...] = (),
+               estimated_runtime: int = 60):
     self.name = name
     self.path = path or name
-    self.flags = flags or []
+    self.flags = flags
+    self.extra_flags = extra_flags
     self.estimated_runtime = estimated_runtime
     self.abridged = False
     self.stories = [GTEST_STORY_NAME]
@@ -203,28 +219,34 @@ class ExecutableConfig(object):
 
 class CrossbenchConfig:
   def __init__(self,
-               name,
-               crossbench_name,
-               estimated_runtime=60,
+               name: str,
+               crossbench_name: str,
+               estimated_runtime: int = 60,
                stories=None,
-               arguments=None):
+               flags: Tuple[str, ...] = ()):
     self.name = name
     self.crossbench_name = crossbench_name
     self.estimated_runtime = estimated_runtime
     self.stories = stories or ['default']
-    self.arguments = arguments or []
+    self.arguments: Tuple[str, ...] = flags
     self.repeat = 1
+
+  @property
+  def extra_flags(self) -> Tuple[str, ...]:
+    return self.arguments
 
 
 class PerfSuite(object):
   def __init__(self, configs):
-    self._configs = dict()
+    self._configs: Dict[str, BenchmarkConfig] = dict()
     self.Add(configs)
 
-  def Frozenset(self):
+  def Frozenset(self) -> frozenset[BenchmarkConfig]:
     return frozenset(self._configs.values())
 
-  def Add(self, configs):
+  def Add(
+      self, configs: Union[Iterable[Union[str, BenchmarkConfig]], PerfSuite]
+  ) -> PerfSuite:
     if isinstance(configs, PerfSuite):
       configs = configs.Frozenset()
     for config in configs:
@@ -235,21 +257,19 @@ class PerfSuite(object):
       self._configs[config.name] = config
     return self
 
-  def Remove(self, configs):
-    for config in configs:
-      name = config
-      if isinstance(config, PerfSuite):
-        name = config.name
+  def Remove(self, config_names: Iterable[str]) -> PerfSuite:
+    for name in config_names:
       del self._configs[name]
     return self
 
-  def Abridge(self, config_names):
+  def Abridge(self, config_names: Iterable[str]) -> PerfSuite:
     for name in config_names:
       del self._configs[name]
       self._configs[name] = _TelemetryConfig(name, abridged=True)
     return self
 
-  def Repeat(self, config_names, pageset_repeat):
+  def Repeat(self, config_names: Iterable[str],
+             pageset_repeat: int) -> PerfSuite:
     for name in config_names:
       self._configs[name] = _TelemetryConfig(
           name,
@@ -258,7 +278,7 @@ class PerfSuite(object):
     return self
 
 
-def _TelemetryConfig(benchmark_name, abridged=False, pageset_repeat=None):
+def _TelemetryConfig(benchmark_name: str, abridged=False, pageset_repeat=None):
   benchmark = _ALL_BENCHMARKS_BY_NAMES[benchmark_name]
   return BenchmarkConfig(benchmark, abridged, pageset_repeat)
 
@@ -273,61 +293,60 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
-def _sync_performance_tests(estimated_runtime=110,
+
+def _sync_performance_tests(estimated_runtime: int = 110,
                             path=None,
-                            additional_flags=None):
-  if not additional_flags:
-    additional_flags = []
-  flags = ['--test-launcher-jobs=1', '--test-launcher-retry-limit=0']
-  flags.extend(additional_flags)
+                            extra_flags: Tuple[str, ...] = ()):
+  flags = ('--test-launcher-jobs=1', '--test-launcher-retry-limit=0')
+  flags += extra_flags
   return ExecutableConfig('sync_performance_tests',
                           path=path,
                           flags=flags,
+                          extra_flags=extra_flags,
                           estimated_runtime=estimated_runtime)
 
 
-def _base_perftests(estimated_runtime=270, path=None, additional_flags=None):
-  if not additional_flags:
-    additional_flags = []
-  flags = ['--test-launcher-jobs=1', '--test-launcher-retry-limit=0']
-  flags.extend(additional_flags)
+def _base_perftests(estimated_runtime: int = 270,
+                    path=None,
+                    extra_flags: Tuple[str, ...] = ()):
+  flags = ('--test-launcher-jobs=1', '--test-launcher-retry-limit=0')
+  flags += extra_flags
   return ExecutableConfig('base_perftests',
                           path=path,
                           flags=flags,
+                          extra_flags=extra_flags,
                           estimated_runtime=estimated_runtime)
 
 
-def _components_perftests(estimated_runtime=110):
+def _components_perftests(estimated_runtime: int = 110):
   return ExecutableConfig('components_perftests',
-                          flags=[
-                              '--xvfb',
-                          ],
+                          flags=('--xvfb', ),
                           estimated_runtime=estimated_runtime)
 
 
-def _dawn_perf_tests(estimated_runtime=270):
-  return ExecutableConfig(
-      'dawn_perf_tests',
-      flags=['--test-launcher-jobs=1', '--test-launcher-retry-limit=0'],
-      estimated_runtime=estimated_runtime)
+def _dawn_perf_tests(estimated_runtime: int = 270):
+  return ExecutableConfig('dawn_perf_tests',
+                          flags=('--test-launcher-jobs=1',
+                                 '--test-launcher-retry-limit=0'),
+                          estimated_runtime=estimated_runtime)
 
 
-def _tint_benchmark(estimated_runtime=180):
+def _tint_benchmark(estimated_runtime: int = 180):
   return ExecutableConfig('tint_benchmark',
-                          flags=['--use-chrome-perf-format'],
+                          flags=('--use-chrome-perf-format', ),
                           estimated_runtime=estimated_runtime)
 
 
-def _load_library_perf_tests(estimated_runtime=3):
+def _load_library_perf_tests(estimated_runtime: int = 3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
 
 
-def _performance_browser_tests(estimated_runtime=67):
+def _performance_browser_tests(estimated_runtime: int = 67):
   return ExecutableConfig(
       'performance_browser_tests',
       path='browser_tests',
-      flags=[
+      flags=(
           '--full-performance-run',
           '--test-launcher-jobs=1',
           '--test-launcher-retry-limit=0',
@@ -338,221 +357,249 @@ def _performance_browser_tests(estimated_runtime=67):
           '--test-launcher-timeout=60000',
           '--gtest_filter=*/TabCapturePerformanceTest.*:'
           '*/CastV2PerformanceTest.*',
-      ],
+      ),
       estimated_runtime=estimated_runtime)
 
 
-def _tracing_perftests(estimated_runtime=50):
+def _tracing_perftests(estimated_runtime: int = 50):
   return ExecutableConfig('tracing_perftests',
                           estimated_runtime=estimated_runtime)
 
 
-def _views_perftests(estimated_runtime=7):
+def _views_perftests(estimated_runtime: int = 7):
   return ExecutableConfig('views_perftests',
-                          flags=['--xvfb'],
+                          flags=('--xvfb', ),
                           estimated_runtime=estimated_runtime)
 
 
 # Speedometer:
-def _speedometer2_0_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer2_0_crossbench(estimated_runtime: int = 60,
+                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer2.0.crossbench',
                           'speedometer_2.0',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer2_1_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer2_1_crossbench(estimated_runtime: int = 60,
+                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer2.1.crossbench',
                           'speedometer_2.1',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer2_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer2_crossbench(estimated_runtime: int = 60,
+                             flags: Tuple[str, ...] = ()):
   """Alias for the latest Speedometer 2.X version."""
   return CrossbenchConfig('speedometer2.crossbench',
                           'speedometer_2',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer3_0_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer3_0_crossbench(estimated_runtime: int = 60,
+                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer3.0.crossbench',
                           'speedometer_3.0',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer3_1_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer3_1_crossbench(estimated_runtime: int = 60,
+                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer3.1.crossbench',
                           'speedometer_3.1',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer3_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer3_crossbench(estimated_runtime: int = 60,
+                             flags: Tuple[str, ...] = ()):
   """Alias for the latest Speedometer 3.X version."""
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer_main_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer_main_crossbench(estimated_runtime: int = 60,
+                                 flags: Tuple[str, ...] = ()):
   # The latest WIP speedometer version
-  arguments += ("--detailed-metrics")
+  flags += ("--detailed-metrics", )
   return CrossbenchConfig('speedometer_main.crossbench',
                           'speedometer_main',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _speedometer3_a11y_crossbench(estimated_runtime=60, arguments=()):
+def _speedometer3_a11y_crossbench(estimated_runtime: int = 60,
+                                  flags: Tuple[str, ...] = ()):
   """Latest Speedometer 3 with accessibility flag enabled."""
-  arguments += ('--extra-browser-args=--force-renderer-accessibility', )
+  flags += ('--extra-browser-args=--force-renderer-accessibility', )
   return CrossbenchConfig('speedometer3.a11y.crossbench',
                           'speedometer_3',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
 # MotionMark:
-def _motionmark1_2_crossbench(estimated_runtime=360, arguments=()):
+def _motionmark1_2_crossbench(estimated_runtime: int = 360,
+                              flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark1.2.crossbench',
                           'motionmark_1.2',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _motionmark1_3_0_crossbench(estimated_runtime=360, arguments=()):
+def _motionmark1_3_0_crossbench(estimated_runtime: int = 360,
+                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark1.3.0.crossbench',
                           'motionmark_1.3.0',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _motionmark1_3_1_crossbench(estimated_runtime=360, arguments=()):
+def _motionmark1_3_1_crossbench(estimated_runtime: int = 360,
+                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark1.3.1.crossbench',
                           'motionmark_1.3.1',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _motionmark1_3_crossbench(estimated_runtime=360, arguments=()):
+def _motionmark1_3_crossbench(estimated_runtime: int = 360,
+                              flags: Tuple[str, ...] = ()):
   """Alias for the latest MotionMark 1.3.X version."""
   return CrossbenchConfig('motionmark1.3.crossbench',
                           'motionmark_1.3',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _motionmark_main_crossbench(estimated_runtime=360, arguments=()):
+def _motionmark_main_crossbench(estimated_runtime: int = 360,
+                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark_main.crossbench',
                           'motionmark_main',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
 # JetStream:
-def _jetstream2_0_crossbench(estimated_runtime=180, arguments=()):
+def _jetstream2_0_crossbench(estimated_runtime: int = 180,
+                             flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream2.0.crossbench',
                           'jetstream_2.0',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _jetstream2_1_crossbench(estimated_runtime=180, arguments=()):
+def _jetstream2_1_crossbench(estimated_runtime: int = 180,
+                             flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream2.1.crossbench',
                           'jetstream_2.1',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _jetstream2_2_crossbench(estimated_runtime=180, arguments=()):
+def _jetstream2_2_crossbench(estimated_runtime: int = 180,
+                             flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream2.2.crossbench',
                           'jetstream_2.2',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _jetstream2_crossbench(estimated_runtime=180, arguments=()):
+def _jetstream2_crossbench(estimated_runtime: int = 180,
+                           flags: Tuple[str, ...] = ()):
   """Alias of the latest JetStream 2.X version."""
   return CrossbenchConfig('jetstream2.crossbench',
                           'jetstream_2',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _jetstream3_0_crossbench(estimated_runtime=180, arguments=()):
+def _jetstream3_0_crossbench(estimated_runtime: int = 180,
+                             flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream3_0.crossbench',
                           'jetstream_3.0',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _jetstream3_crossbench(estimated_runtime=180, arguments=()):
+def _jetstream3_crossbench(estimated_runtime: int = 180,
+                           flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream3.crossbench',
                           'jetstream_3',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
-def _jetstream_main_crossbench(estimated_runtime=180, arguments=()):
+
+def _jetstream_main_crossbench(estimated_runtime: int = 180,
+                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream_main.crossbench',
                           'jetstream_main',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _jetstream3_turbolev_future_crossbench(estimated_runtime=180, arguments=()):
-  arguments += ('--js-flags=--turbolev-future', )
+def _jetstream3_turbolev_future_crossbench(estimated_runtime: int = 180,
+                                           flags: Tuple[str, ...] = ()):
+  flags += ('--js-flags=--turbolev-future', )
   return CrossbenchConfig('jetstream3-turbolev_future.crossbench',
                           'jetstream_3',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
 # LoadLine:
-def _loadline_phone_crossbench(estimated_runtime=7000, arguments=()):
+def _loadline_phone_crossbench(estimated_runtime: int = 7000,
+                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loadline_phone.crossbench',
                           'loadline-phone-fast',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _loadline_tablet_crossbench(estimated_runtime=3600, arguments=()):
+def _loadline_tablet_crossbench(estimated_runtime: int = 3600,
+                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loadline_tablet.crossbench',
                           'loadline-tablet-fast',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _loadline2_phone_crossbench(estimated_runtime=1000, arguments=()):
+def _loadline2_phone_crossbench(estimated_runtime: int = 1000,
+                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loadline2_phone.crossbench',
                           'loadline2-phone',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
 # Webview:
-def _crossbench_loading(estimated_runtime=60, arguments=None):
+def _crossbench_loading(estimated_runtime: int = 60,
+                        flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loading.crossbench',
                           'loading',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _crossbench_embedder(estimated_runtime=20, arguments=None):
+def _crossbench_embedder(estimated_runtime: int = 20,
+                         flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('embedder.crossbench',
                           'embedder',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 
-def _devtools_frontend_crossbench(estimated_runtime=60, arguments=()):
+def _devtools_frontend_crossbench(estimated_runtime: int = 60,
+                                  flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('devtools_frontend.crossbench',
                           'devtools_frontend',
                           estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          flags=flags)
 
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _jetstream2_crossbench(),
@@ -575,46 +622,42 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 # TODO(crbug.com/338630584): Remove it when other benchmarks can be run on
 # Android.
 _CROSSBENCH_ANDROID = frozenset([
-    _speedometer3_crossbench(arguments=['--fileserver']),
-    _loadline_phone_crossbench(arguments=[
-        '--cool-down-threshold=moderate',
-    ]),
+    _speedometer3_crossbench(flags=('--fileserver', )),
+    _loadline_phone_crossbench(flags=('--cool-down-threshold=moderate', )),
 ])
 
 # TODO(crbug.com/409326154): Enable crossbench variant when supported.
 # TODO(crbug.com/409571674): Remove --debug flag.
 _CROSSBENCH_PIXEL9 = frozenset([
-    # _jetstream2_crossbench(arguments=['--fileserver', '--debug']),
-    _motionmark1_3_crossbench(arguments=['--fileserver', '--debug']),
-    _speedometer3_crossbench(arguments=['--fileserver', '--debug']),
-    _speedometer3_a11y_crossbench(arguments=['--fileserver', '--debug']),
-    _loadline_phone_crossbench(arguments=[
+    # _jetstream2_crossbench(flags=('--fileserver', '--debug')),
+    _motionmark1_3_crossbench(flags=('--fileserver', '--debug')),
+    _speedometer3_crossbench(flags=('--fileserver', '--debug')),
+    _speedometer3_a11y_crossbench(flags=('--fileserver', '--debug')),
+    _loadline_phone_crossbench(flags=(
         '--cool-down-threshold=moderate',
         '--debug',
-    ]),
-    _loadline2_phone_crossbench(arguments=['--debug']),
+    )),
+    _loadline2_phone_crossbench(flags=('--debug', )),
 ])
 
 _CROSSBENCH_ANDROID_AL_BRYA = frozenset([
-    _speedometer3_crossbench(arguments=['--fileserver', '--debug']),
-    _motionmark1_3_crossbench(arguments=['--fileserver', '--debug']),
+    _speedometer3_crossbench(flags=('--fileserver', '--debug')),
+    _motionmark1_3_crossbench(flags=('--fileserver', '--debug')),
 ])
 
 _CROSSBENCH_ANDROID_AL = frozenset([
-    _speedometer3_crossbench(arguments=['--fileserver', '--debug']),
+    _speedometer3_crossbench(flags=('--fileserver', '--debug')),
 ])
 
 _CROSSBENCH_TANGOR = frozenset([
-    _loadline_tablet_crossbench(arguments=[
-        '--cool-down-threshold=moderate',
-    ]),
+    _loadline_tablet_crossbench(flags=('--cool-down-threshold=moderate', )),
 ])
 
 # pylint: disable=line-too-long
 _CROSSBENCH_WEBVIEW = frozenset([
     _crossbench_loading(
         estimated_runtime=750,
-        arguments=[
+        flags=(
             '--wpr=crossbench_android_loading_000.wprgo',
             '--probe=chrome_histograms:{"baseline":false,"metrics":'
             '{"Android.WebView.Startup.CreationTime.StartChromiumLocked":["mean"],'
@@ -623,10 +666,10 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--repetitions=50',
             '--cool-down-threshold=moderate',
             '--stories=cnn',
-        ]),
+        )),
     _crossbench_embedder(
         estimated_runtime=900,
-        arguments=[
+        flags=(
             '--wpr=crossbench_android_embedder_000.wprgo',
             '--skip-wpr-script-injection',
             '--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk',
@@ -642,7 +685,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/'
             'agsa_setup_config.hjson',
             '--embedder-drop-caches',
-        ]),
+        )),
 ])
 # pylint: enable=line-too-long
 
