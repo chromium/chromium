@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div overscrollcontainer>
+  <div id="target">Target</div>
+</div>
+<button id="invoker" command="toggle-overscroll"></button>
+
+<script>
+test(() => {
+  const target = document.getElementById('target');
+  const invoker = document.getElementById('invoker');
+
+  // Initial state: not an overscroll target.
+  assert_not_equals(getComputedStyle(target).position, "absolute", "Initial state");
+
+  // Set commandFor via JS.
+  invoker.commandForElement = target;
+
+  // The target should now be an overscroll target and thus position: absolute.
+  assert_equals(getComputedStyle(target).position, "absolute", "After setting commandForElement");
+
+  // Clear commandFor.
+  invoker.commandForElement = null;
+  assert_not_equals(getComputedStyle(target).position, "absolute", "After clearing commandForElement");
+}, "overscroll-target should work when set via commandForElement JS property");
+</script>

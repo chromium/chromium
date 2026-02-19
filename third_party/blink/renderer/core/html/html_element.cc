@@ -860,27 +860,19 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
         GetCommandEventType(params.old_value, GetExecutionContext()));
     bool new_is_overscroll = IsOverscrollCommand(
         GetCommandEventType(params.new_value, GetExecutionContext()));
-    const AtomicString& command_for =
-        FastGetAttribute(html_names::kCommandforAttr);
-    if (old_is_overscroll != new_is_overscroll && !command_for.empty()) {
+    if (isConnected() && old_is_overscroll != new_is_overscroll) {
       if (new_is_overscroll) {
-        GetDocument().AddOverscrollCommandTarget(command_for);
+        GetDocument().AddOverscrollCommandInvoker(*this);
       } else {
-        CHECK(old_is_overscroll);
-        GetDocument().RemoveOverscrollCommandTarget(command_for);
+        GetDocument().RemoveOverscrollCommandInvoker(*this);
       }
+      GetDocument().MarkOverscrollCommandTargetsDirty();
     }
   } else if (params.name == html_names::kCommandforAttr) {
-    if (IsOverscrollCommand(
-            GetCommandEventType(FastGetAttribute(html_names::kCommandAttr),
-                                GetExecutionContext())) &&
-        params.old_value != params.new_value) {
-      if (!params.old_value.empty()) {
-        GetDocument().RemoveOverscrollCommandTarget(params.old_value);
-      }
-      if (!params.new_value.empty()) {
-        GetDocument().AddOverscrollCommandTarget(params.new_value);
-      }
+    if (isConnected() && IsOverscrollCommand(GetCommandEventType(
+                             FastGetAttribute(html_names::kCommandAttr),
+                             GetExecutionContext()))) {
+      GetDocument().MarkOverscrollCommandTargetsDirty();
     }
   }
 
@@ -3209,22 +3201,21 @@ Node::InsertionNotificationRequest HTMLElement::InsertedInto(
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().InsertedInto(insertion_point);
 
-  if (IsOverscrollCommand(GetCommandEventType(
+  if (insertion_point.isConnected() &&
+      IsOverscrollCommand(GetCommandEventType(
           FastGetAttribute(html_names::kCommandAttr), GetExecutionContext()))) {
-    const auto& command_for = FastGetAttribute(html_names::kCommandforAttr);
-    if (!command_for.empty()) {
-      GetDocument().AddOverscrollCommandTarget(command_for);
-    }
+    GetDocument().AddOverscrollCommandInvoker(*this);
+    GetDocument().MarkOverscrollCommandTargetsDirty();
   }
 
   return kInsertionDone;
 }
 
 void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
+  bool was_in_document = insertion_point.isConnected();
   if (IsPopover() && !GetDocument().StatePreservingAtomicMoveInProgress()) {
     // If a popover is removed from the document, make sure it gets
     // removed from the popover element stack and the top layer.
-    bool was_in_document = insertion_point.isConnected();
     if (was_in_document) {
       // We can't run focus event handlers while removing elements.
       HidePopoverInternal(
@@ -3238,12 +3229,11 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().RemovedFrom(insertion_point);
 
-  if (IsOverscrollCommand(GetCommandEventType(
+  if (was_in_document &&
+      IsOverscrollCommand(GetCommandEventType(
           FastGetAttribute(html_names::kCommandAttr), GetExecutionContext()))) {
-    const auto& command_for = FastGetAttribute(html_names::kCommandforAttr);
-    if (!command_for.empty()) {
-      GetDocument().RemoveOverscrollCommandTarget(command_for);
-    }
+    GetDocument().RemoveOverscrollCommandInvoker(*this);
+    GetDocument().MarkOverscrollCommandTargetsDirty();
   }
 }
 

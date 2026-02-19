@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
@@ -2304,11 +2305,12 @@ class CORE_EXPORT Document : public ContainerNode,
     }
   }
 
-  const HashCountedSet<AtomicString>& OverscrollCommandTargets() const {
-    return overscroll_command_targets_;
-  }
-  void AddOverscrollCommandTarget(const AtomicString& target);
-  void RemoveOverscrollCommandTarget(const AtomicString& target);
+  const HeapHashSet<Member<const Element>>& OverscrollCommandTargets();
+  void UpdateOverscrollCommandTargets();
+  bool OverscrollCommandTargetsDirty() const;
+  void MarkOverscrollCommandTargetsDirty();
+  void AddOverscrollCommandInvoker(Element& invoker);
+  void RemoveOverscrollCommandInvoker(Element& invoker);
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
@@ -3223,12 +3225,15 @@ class CORE_EXPORT Document : public ContainerNode,
   bool responsive_embedded_sizing_ = false;
   bool text_scale_meta_tag_present_ = false;
 
-  // A map of idrefs that have been identified by commandfor with an overscroll
-  // related command (e.g. toggle-overscroll). This determines a
-  // :-internal-overscroll-target pseudo class. Whenever adding or removing
-  // entries here, the element identified by the target needs to invalidate that
-  // pseudo class.
-  HashCountedSet<AtomicString> overscroll_command_targets_;
+  // `overscroll_command_targets_` is a set of elements that are currently the
+  // targets of command invokers that have `command=toggle-overscroll`. This
+  // set is updated lazily, when `overscroll_command_targets_dirty_` is true.
+  // The `overscroll_command_invokers_` set contains the associated list of
+  // command invokers themselves. Together, these determine the state of the
+  // `:-internal-overscroll-target` pseudo class.
+  HeapHashSet<Member<const Element>> overscroll_command_targets_;
+  HeapHashSet<Member<Element>> overscroll_command_invokers_;
+  bool overscroll_command_targets_dirty_ = false;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

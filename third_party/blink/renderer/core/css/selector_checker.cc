@@ -3677,17 +3677,8 @@ bool SelectorChecker::MatchesActiveViewTransitionPseudoClass(
 }
 
 bool SelectorChecker::MatchesOverscrollTarget(const Element& element) {
-  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
-    return false;
-  }
-
-  const AtomicString& id = element.FastGetAttribute(html_names::kIdAttr);
-  if (id.empty() ||
-      !element.GetDocument().OverscrollCommandTargets().Contains(id)) {
-    return false;
-  }
-
-  return element.GetDocument().getElementById(id) == &element;
+  return RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
+         element.GetDocument().OverscrollCommandTargets().Contains(&element);
 }
 
 bool SelectorChecker::MatchesFocusPseudoClass(

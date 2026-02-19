@@ -1349,6 +1349,9 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
       cache->HandleAttributeChanged(name, this);
     }
+    if (name == html_names::kCommandforAttr) {
+      GetDocument().MarkOverscrollCommandTargetsDirty();
+    }
   }
 }
 
@@ -3800,29 +3803,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
           ->RemovePendingParsingElement(GetIdAttribute(), this);
     }
 
-    // If the id changes that may have been a target of overscroll command, we
-    // need to notify that an overscroll-target pseudo class may have changed.
-    const auto& overscroll_command_targets =
-        GetDocument().OverscrollCommandTargets();
-    auto invalidate_overscroll_target_state = [&](const AtomicString& idref) {
-      OverscrollTargetStateChanged();
-      // We also may have a new target with the same id. Note that this
-      // invalidates all elements with this id, which should be a small set
-      // typically.
-      for (auto& element : GetDocument().GetAllElementsById(idref)) {
-        element->OverscrollTargetStateChanged();
-      }
-    };
-
-    if (!params.old_value.empty() &&
-        overscroll_command_targets.Contains(params.old_value)) {
-      invalidate_overscroll_target_state(params.old_value);
+    if (isConnected() &&
+        (!params.old_value.empty() || !params.new_value.empty())) {
+      GetDocument().MarkOverscrollCommandTargetsDirty();
     }
-    if (!params.new_value.empty() &&
-        overscroll_command_targets.Contains(params.new_value)) {
-      invalidate_overscroll_target_state(params.new_value);
-    }
-
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
         params.reason != AttributeModificationReason::kByMoveToNewDocument &&
@@ -4324,13 +4308,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     SetContainsFullScreenElementOnAncestorsCrossingFrameBoundaries(true);
   }
 
-  if (!id_value.empty() &&
-      GetDocument().OverscrollCommandTargets().Contains(id_value)) {
-    for (auto& element : GetDocument().GetAllElementsById(id_value)) {
-      element->OverscrollTargetStateChanged();
-    }
-  }
-
   // Clean up the unnecessary explicitly set custom element registry
   // in element rare data set in RemovedFrom. Note that we only need
   // to do such bookkeeping when scoped custom element registry is actually
@@ -4348,6 +4325,10 @@ Node::InsertionNotificationRequest Element::InsertedInto(
         }
       }
     }
+  }
+
+  if (insertion_point.isConnected() && !GetIdAttribute().empty()) {
+    GetDocument().MarkOverscrollCommandTargetsDirty();
   }
 
   return kInsertionDone;
@@ -4529,13 +4510,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     observer->Notify();
   }
 
-  if (!id_value.empty() &&
-      document.OverscrollCommandTargets().Contains(id_value)) {
-    for (auto& element : document.GetAllElementsById(id_value)) {
-      element->OverscrollTargetStateChanged();
-    }
-  }
-
   // Removing an element means that we should remove this overscroll area,
   // since we won't visit this node during style when we typically would do
   // this. There may be another element with the same ID that we discover
@@ -4551,6 +4525,10 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // Remove all of the overscroll areas from this tracker.
   if (auto* tracker = GetOverscrollAreaTracker()) {
     tracker->RemoveAllOverscroll();
+  }
+
+  if (was_in_document && !GetIdAttribute().empty()) {
+    document.MarkOverscrollCommandTargetsDirty();
   }
 }
 
