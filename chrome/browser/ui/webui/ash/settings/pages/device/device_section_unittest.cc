@@ -97,6 +97,8 @@ class DeviceSectionTest : public testing::Test {
     // Ensure `device_section_` is destroyed before `pref_service_`.
     device_section_.reset();
 
+    input_method::Shutdown();
+
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile("name");
   }
