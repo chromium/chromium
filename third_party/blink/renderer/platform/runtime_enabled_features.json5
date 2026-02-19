@@ -6338,7 +6338,7 @@
       depends_on: ["WebXR"],
       origin_trial_feature_name: "WebXRPlaneDetection",
       public: true,
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {

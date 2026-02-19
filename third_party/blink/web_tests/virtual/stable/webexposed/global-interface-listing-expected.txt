@@ -11765,6 +11765,7 @@ interface XRDepthInformation
     method constructor
 interface XRFrame
     attribute @@toStringTag
+    getter detectedPlanes
     getter session
     getter trackedAnchors
     method constructor
@@ -11850,6 +11851,24 @@ interface XRLightProbe : EventTarget
     getter probeSpace
     method constructor
     setter onreflectionchange
+interface XRPlane
+    attribute @@toStringTag
+    getter lastChangedTime
+    getter orientation
+    getter planeSpace
+    getter polygon
+    getter semanticLabel
+    method constructor
+interface XRPlaneSet
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
 interface XRPose
     attribute @@toStringTag
     getter emulatedPosition
@@ -11913,6 +11932,7 @@ interface XRSession : EventTarget
     method cancelAnimationFrame
     method constructor
     method end
+    method initiateRoomCapture
     method pauseDepthSensing
     method requestAnimationFrame
     method requestHitTestSource
