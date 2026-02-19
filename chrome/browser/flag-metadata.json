@@ -2412,6 +2412,16 @@
     "expiry_milestone": 150
   },
   {
+    "name": "dom-storage-sqlite",
+    "owners": [
+      "evanstade@microsoft.com",
+      "stevebe@microsoft.com",
+      "rahsin@microsoft.com",
+      "//content/browser/dom_storage/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "double-buffer-compositing",
     "owners": [ "fangzhoug@chromium.org", "chrome-gpu@google.com" ],
     // This is a debug flag to check whether issues are due to gpu memory

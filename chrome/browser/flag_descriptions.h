@@ -1649,6 +1649,12 @@ inline constexpr char kDesktopPWAsBorderlessDescription[] =
     "Enable web app manifests to declare borderless mode as a display "
     "override. Prototype implementation of: go/borderless-mode.";
 
+inline constexpr char kDomStorageSqliteName[] = "DOM Storage SQLite Backend";
+inline constexpr char kDomStorageSqliteDescription[] =
+    "Uses a SQLite-powered backing store for local and session storage. No "
+    "data is migrated from existing backing stores, including LevelDB stores "
+    "or SQLite stores with older schemas; use at your own peril.";
+
 inline constexpr char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 inline constexpr char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "

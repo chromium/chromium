@@ -12148,6 +12148,7 @@ from previous Chrome versions.
   <int value="-775952696" label="FeedStamp:enabled"/>
   <int value="-775361878" label="ReadAnythingImagesViaAlgorithm:disabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
+  <int value="-775143624" label="DomStorageSqlite:disabled"/>
   <int value="-774940991" label="CrOSLateBootCrasProcessorWavDump:enabled"/>
   <int value="-774513654" label="ShareSheetCustomActionsPolish:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
@@ -19997,6 +19998,7 @@ from previous Chrome versions.
   <int value="1889051856" label="eol-reset-dismissed-prefs:enabled"/>
   <int value="1889076955" label="disable-app-link"/>
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
+  <int value="1889302956" label="DomStorageSqlite:enabled"/>
   <int value="1889735222" label="NtpChromeCartInHistoryClusterModule:disabled"/>
   <int value="1889840958" label="ForceSigninFlowInProfilePicker:disabled"/>
   <int value="1890329937"

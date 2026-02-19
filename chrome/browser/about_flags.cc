@@ -162,7 +162,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/sensitive_content/features.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
-#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/sharing_message/features.h"
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
@@ -12653,6 +12653,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableNewFopDisplayAndroid)},
 #endif
+
+    {"dom-storage-sqlite", flag_descriptions::kDomStorageSqliteName,
+     flag_descriptions::kDomStorageSqliteDescription, kOsAll,
+     FEATURE_VALUE_TYPE(storage::kDomStorageSqlite)},
 
     {"idb-sqlite-backing-store", flag_descriptions::kIdbSqliteBackingStoreName,
      flag_descriptions::kIdbSqliteBackingStoreDescription, kOsAll,

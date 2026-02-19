@@ -316,6 +316,7 @@ include_rules = [
   "+components/services/app_service/public",
   "+components/services/filesystem/public/mojom",
   "+components/services/heap_profiling",
+  "+components/services/storage/dom_storage/features.h",
   "+components/on_device_translation/buildflags",
   "+components/on_device_translation/service/public",
   "+components/services/paint_preview_compositor/public/mojom",

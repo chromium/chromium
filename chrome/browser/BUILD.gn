@@ -8496,6 +8496,7 @@ static_library("browser_public_dependencies") {
     "//components/safe_browsing:buildflags",
     "//components/saved_tab_groups/proto",
     "//components/search_engines",
+    "//components/services/storage:storage_features",
     "//components/services/storage/public/mojom",
     "//components/session_proto_db",
     "//components/sharing_message",
