@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 namespace blink {
 
@@ -132,6 +134,47 @@ std::pair<bool, bool> JustificationContext::CheckOpportunity16(
     TextJustify method,
     UChar32 ch) {
   return CheckJustificationOpportunity<UChar>(method, ch, *this);
+}
+
+wtf_size_t JustificationContext::CountOpportunities(
+    TextJustify method,
+    base::span<const LChar> chars,
+    TextDirection direction) {
+  wtf_size_t count = 0;
+  if (direction == TextDirection::kLtr) {
+    for (LChar ch : chars) {
+      count += CountOpportunity8(method, ch);
+    }
+  } else {
+    for (size_t i = chars.size(); i > 0; --i) {
+      count += CountOpportunity8(method, chars[i - 1]);
+    }
+  }
+
+  return count;
+}
+
+wtf_size_t JustificationContext::CountOpportunities(
+    TextJustify method,
+    base::span<const UChar> chars,
+    TextDirection direction) {
+  if (chars.size() == 0) {
+    return 0;
+  }
+  wtf_size_t count = 0;
+
+  CharacterBreakIterator iter(chars);
+  if (direction == TextDirection::kLtr) {
+    for (int i = 0; static_cast<size_t>(i) < chars.size(); i = iter.Next()) {
+      count += CountOpportunity16(method, CodePointAt(chars, i));
+    }
+  } else {
+    for (int i = iter.Preceding(chars.size()); i != kTextBreakDone;
+         i = iter.Preceding(i)) {
+      count += CountOpportunity16(method, CodePointAt(chars, i));
+    }
+  }
+  return count;
 }
 
 }  // namespace blink

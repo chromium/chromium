@@ -755,15 +755,13 @@ TEST(CharacterTest, ExpansionOpportunityEmoji) {
   // a, an emoji ZWJ sequence, z
   // We should count both side of the emoji sequence.
   StringView source(u"a\U0001F635\u200d\U0001f4ABz");
-  EXPECT_EQ(2u, Character::ExpansionOpportunityCount(
-                    TextJustify::kAuto, source.Span16(), TextDirection::kLtr,
-                    context));
+  EXPECT_EQ(2u, context.CountOpportunities(TextJustify::kAuto, source.Span16(),
+                                           TextDirection::kLtr));
   EXPECT_FALSE(context.is_after_opportunity);
 
   context.is_after_opportunity = true;
-  EXPECT_EQ(2u, Character::ExpansionOpportunityCount(
-                    TextJustify::kAuto, source.Span16(), TextDirection::kRtl,
-                    context));
+  EXPECT_EQ(2u, context.CountOpportunities(TextJustify::kAuto, source.Span16(),
+                                           TextDirection::kRtl));
   EXPECT_FALSE(context.is_after_opportunity);
 }
 

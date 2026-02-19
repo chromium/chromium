@@ -7,6 +7,8 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_justify.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -16,7 +18,7 @@ namespace blink {
 
 // Information carried between characters when calculating justification
 // opportunities.
-struct JustificationContext {
+struct PLATFORM_EXPORT JustificationContext {
   // Type of the previously processed character.
   enum class Type : uint8_t {
     kNormal,
@@ -52,6 +54,14 @@ struct JustificationContext {
     auto [before, after] = CheckOpportunity16(method, ch);
     return (before ? 1 : 0) + (after ? 1 : 0);
   }
+
+  // Returns the number of justification opportunities of `chars`.
+  wtf_size_t CountOpportunities(TextJustify method,
+                                base::span<const LChar> chars,
+                                TextDirection);
+  wtf_size_t CountOpportunities(TextJustify method,
+                                base::span<const UChar> chars,
+                                TextDirection);
 
   // Debug helpers.
   static StringView ToString(JustificationContext::Type type);

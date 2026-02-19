@@ -64,15 +64,11 @@ void ShapeResultSpacing::ExpansionSetup::CountOpportunities(
     TextJustify method,
     StringView text,
     TextDirection direction) {
-  if (text.Is8Bit()) {
-    spacing_->expansion_opportunity_count_ +=
-        Character::ExpansionOpportunityCount(method, text.Span8(), direction,
-                                             justification_context_);
-  } else {
-    spacing_->expansion_opportunity_count_ +=
-        Character::ExpansionOpportunityCount(method, text.Span16(), direction,
-                                             justification_context_);
-  }
+  spacing_->expansion_opportunity_count_ +=
+      VisitCharacters(text, [&](auto chars) {
+        return justification_context_.CountOpportunities(method, chars,
+                                                         direction);
+      });
 }
 
 void ShapeResultSpacing::ExpansionSetup::CountOpportunities(TextJustify method,

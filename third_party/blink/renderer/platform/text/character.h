@@ -41,16 +41,12 @@
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
-#include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/text_justify.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-struct JustificationContext;
 
 class PLATFORM_EXPORT Character {
   STATIC_ONLY(Character);
@@ -115,15 +111,6 @@ class PLATFORM_EXPORT Character {
     // Below U+1100 is likely a common case.
     return c < 0x1100 ? false : IsHangulSlow(c);
   }
-
-  static unsigned ExpansionOpportunityCount(TextJustify method,
-                                            base::span<const LChar>,
-                                            TextDirection,
-                                            JustificationContext&);
-  static unsigned ExpansionOpportunityCount(TextJustify method,
-                                            base::span<const UChar>,
-                                            TextDirection,
-                                            JustificationContext&);
 
   static bool IsUprightInMixedVertical(UChar32 character);
 

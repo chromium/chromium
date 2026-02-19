@@ -40,16 +40,13 @@
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
-#include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
@@ -133,52 +130,6 @@ bool Character::MaybeHanKerningCloseSlow(UChar32 ch) {
   const HanKerningCharType type = Character::GetHanKerningCharType(ch);
   return type == HanKerningCharType::kClose ||
          type == HanKerningCharType::kCloseQuote;
-}
-
-unsigned Character::ExpansionOpportunityCount(
-    TextJustify method,
-    base::span<const LChar> characters,
-    TextDirection direction,
-    JustificationContext& context) {
-  unsigned count = 0;
-  if (direction == TextDirection::kLtr) {
-    for (size_t i = 0; i < characters.size(); ++i) {
-      count += context.CountOpportunity8(method, characters[i]);
-    }
-  } else {
-    for (size_t i = characters.size(); i > 0; --i) {
-      count += context.CountOpportunity8(method, characters[i - 1]);
-    }
-  }
-
-  return count;
-}
-
-unsigned Character::ExpansionOpportunityCount(
-    TextJustify method,
-    base::span<const UChar> characters,
-    TextDirection direction,
-    JustificationContext& context) {
-  if (characters.size() == 0) {
-    return 0;
-  }
-  unsigned count = 0;
-
-  CharacterBreakIterator iter(characters);
-  if (direction == TextDirection::kLtr) {
-    for (int i = 0; static_cast<size_t>(i) < characters.size();
-         i = iter.Next()) {
-      UChar32 character = CodePointAt(characters, i);
-      count += context.CountOpportunity16(method, character);
-    }
-  } else {
-    for (int i = iter.Preceding(characters.size()); i != kTextBreakDone;
-         i = iter.Preceding(i)) {
-      UChar32 character = CodePointAt(characters, i);
-      count += context.CountOpportunity16(method, character);
-    }
-  }
-  return count;
 }
 
 bool Character::CanTextDecorationSkipInk(UChar32 codepoint) {
