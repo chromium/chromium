@@ -1088,8 +1088,11 @@ void InputHandlerProxy::RecordScrollBegin(
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     const WebMouseWheelEvent& wheel_event) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFadeInScrollbarWhenMouseWheelMayBegin) &&
+  const bool is_scrollbar_fade_in_at_may_begin_phase_enabled =
+      base::FeatureList::IsEnabled(
+          blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+
+  if (is_scrollbar_fade_in_at_may_begin_phase_enabled &&
       wheel_event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
     mouse_wheel_result_ = DID_NOT_HANDLE_NON_BLOCKING;
     return *mouse_wheel_result_;
@@ -1144,9 +1147,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFadeInScrollbarWhenMouseWheelMayBegin) &&
-      result == DROP_EVENT) {
+  if (is_scrollbar_fade_in_at_may_begin_phase_enabled && result == DROP_EVENT) {
     // Do not drop began and cancelled events to ensure that the events are
     // forwarded to the main thread to start fading out scrollbars after a
     // MayBegin event.

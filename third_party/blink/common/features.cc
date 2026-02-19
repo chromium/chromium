@@ -703,10 +703,12 @@ BASE_FEATURE_PARAM(int,
                    512);
 
 BASE_FEATURE(kFadeInScrollbarWhenMouseWheelMayBegin,
-#if BUILDFLAG(IS_MAC)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
+// Do not forward may-begin/began/cancelled wheel event to main thread
+// to avoid unnecessary performance impact on android. See crbug.com/479549167.
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
