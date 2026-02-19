@@ -329,12 +329,10 @@ MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
   // Hardware support for NV12 GMBs is expected to be present on all supported
   // Fuchsia devices.
   CHECK(shared_image_capabilities.supports_ycbcr_nv12_sampling);
-  CHECK(shared_image_capabilities.supports_native_nv12_mappable_shared_images);
   return OutputFormat::NV12;
 #else
 
-  if (shared_image_capabilities.supports_ycbcr_nv12_sampling &&
-      shared_image_capabilities.supports_native_nv12_mappable_shared_images) {
+  if (shared_image_capabilities.supports_ycbcr_nv12_sampling) {
     return OutputFormat::NV12;
   }
 

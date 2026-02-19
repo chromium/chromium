@@ -41,11 +41,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return input.supports_r16_shared_images;
   }
 
-  static bool supports_native_nv12_mappable_shared_images(
-      const gpu::SharedImageCapabilities& input) {
-    return input.supports_native_nv12_mappable_shared_images;
-  }
-
   static bool supports_ycbcr_nv12_sampling(
       const gpu::SharedImageCapabilities& input) {
     return input.supports_ycbcr_nv12_sampling;
