@@ -885,14 +885,19 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
                               gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                               gpu_extra_info_);
   if (context_state_) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+    auto* surface_factory =
+        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     shared_image_caps.supports_ycbcr_nv12_sampling =
-        context_state_->feature_info()
-            ->feature_flags()
-            .chromium_image_ycbcr_420v;
+        surface_factory->IsFormatSupportedForTexturing(
+            viz::MultiPlaneFormat::kNV12);
     shared_image_caps.supports_ycbcr_p010_sampling =
-        context_state_->feature_info()
-            ->feature_flags()
-            .chromium_image_ycbcr_p010;
+        surface_factory->IsFormatSupportedForTexturing(
+            viz::MultiPlaneFormat::kP010);
+#elif BUILDFLAG(IS_APPLE)
+    shared_image_caps.supports_ycbcr_nv12_sampling = true;
+    shared_image_caps.supports_ycbcr_p010_sampling = true;
+#endif
   }
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;

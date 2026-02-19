@@ -13,10 +13,6 @@ namespace mojo {
 // static
 bool StructTraits<gpu::mojom::GpuFeatureInfoDataView, gpu::GpuFeatureInfo>::
     Read(gpu::mojom::GpuFeatureInfoDataView data, gpu::GpuFeatureInfo* out) {
-  out->supports_nv12_for_allocation_and_texturing =
-      data.supports_nv12_for_allocation_and_texturing();
-  out->supports_p010_for_allocation_and_texturing =
-      data.supports_p010_for_allocation_and_texturing();
   return data.ReadStatusValues(&out->status_values) &&
          data.ReadEnabledGpuDriverBugWorkarounds(
              &out->enabled_gpu_driver_bug_workarounds) &&

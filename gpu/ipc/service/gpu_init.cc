@@ -798,18 +798,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   // We need to get supported formats before sandboxing to avoid an known
   // issue which breaks the camera preview. (b/166850715)
-  bool supports_nv12_for_allocation_and_texturing;
-  bool supports_p010_for_allocation_and_texturing;
   {
     TRACE_EVENT("gpu,startup", "ui::ozone::IsFormatSupportedForTexturing");
     auto* surface_factory =
         ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-    supports_nv12_for_allocation_and_texturing =
-        surface_factory->IsFormatSupportedForTexturing(
-            viz::MultiPlaneFormat::kNV12);
-    supports_p010_for_allocation_and_texturing =
-        surface_factory->IsFormatSupportedForTexturing(
-            viz::MultiPlaneFormat::kP010);
     auto* gl_ozone = surface_factory->GetCurrentGLOzone();
     if (gl_ozone) {
       gpu_feature_info_.supports_nv12_gl_native_pixmap =
@@ -958,10 +950,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   SetSkiaBackendType();
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
-  gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      supports_nv12_for_allocation_and_texturing;
-  gpu_feature_info_.supports_p010_for_allocation_and_texturing =
-      supports_p010_for_allocation_and_texturing;
   [[maybe_unused]] auto* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   bool filter_set = false;
@@ -1173,12 +1161,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   auto* surface_factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      surface_factory->IsFormatSupportedForTexturing(
-          viz::MultiPlaneFormat::kNV12);
-  gpu_feature_info_.supports_p010_for_allocation_and_texturing =
-      surface_factory->IsFormatSupportedForTexturing(
-          viz::MultiPlaneFormat::kP010);
   auto* gl_ozone = surface_factory->GetCurrentGLOzone();
   if (gl_ozone) {
     gpu_feature_info_.supports_nv12_gl_native_pixmap =

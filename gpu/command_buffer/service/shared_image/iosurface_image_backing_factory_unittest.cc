@@ -807,15 +807,12 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
     }
 
     auto* feature_info = context_state_->feature_info();
-    // NV12 is always supported on Apple.
-    ASSERT_TRUE(feature_info->feature_flags().chromium_image_ycbcr_420v);
+    // NV12 and P010 are always supported on Apple.
     supports_etc1_ =
         feature_info->validators()->compressed_texture_format.IsValid(
             GL_ETC1_RGB8_OES);
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
-    supports_ycbcr_p010_ =
-        feature_info->feature_flags().chromium_image_ycbcr_p010;
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
@@ -850,7 +847,6 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
   bool supports_etc1_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
-  bool supports_ycbcr_p010_ = false;
 };
 
 // SharedImageFormat parameterized tests.
@@ -863,10 +859,8 @@ class IOSurfaceImageBackingFactoryScanoutTest
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
-    } else if (format == viz::MultiPlaneFormat::kNV12) {
+    } else if (format.is_multi_plane()) {
       return !has_pixel_data;
-    } else if (format == viz::MultiPlaneFormat::kP010) {
-      return supports_ycbcr_p010_ && !has_pixel_data;
     }
     return true;
   }
@@ -1159,6 +1153,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
     return;
   }
   ASSERT_TRUE(backing);
+  ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
   EXPECT_TRUE(backing->IsCleared());
 
   // Validate via a GLTextureImageRepresentation(Passthrough).
@@ -1295,6 +1290,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
     return;
   }
   ASSERT_TRUE(backing);
+  ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
 
   size_t backing_estimated_size = backing->GetEstimatedSize();
   EXPECT_GT(backing_estimated_size, 0u);
@@ -1370,9 +1366,8 @@ class IOSurfaceImageBackingFactoryGMBTest
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
-    } else if (format == viz::MultiPlaneFormat::kP010) {
-      return supports_ycbcr_p010_;
     }
+    // NV12 and P010 are always supported on Apple.
     return true;
   }
 

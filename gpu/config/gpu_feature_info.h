@@ -64,10 +64,6 @@ struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   // Applied gpu driver bug list entry indices.
   std::vector<uint32_t> applied_gpu_driver_bug_list_entries;
 
-  // NV12 / P010 formats that can be allocated and then bound, if known and
-  // provided by the platform.
-  bool supports_nv12_for_allocation_and_texturing = false;
-  bool supports_p010_for_allocation_and_texturing = false;
 #if BUILDFLAG(IS_OZONE)
   // SharedImageFormats of native pixmaps that can be imported in GL context.
   // TODO(crbug.com/482216427): Move these bools to SharedImageCapabilities

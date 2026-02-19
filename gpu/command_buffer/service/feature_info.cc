@@ -200,20 +200,6 @@ FeatureInfo::FeatureInfo(
   InitializeBasicState(base::CommandLine::InitializedForCurrentProcess()
                            ? base::CommandLine::ForCurrentProcess()
                            : nullptr);
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  feature_flags_.chromium_image_ycbcr_420v =
-      gpu_feature_info.supports_nv12_for_allocation_and_texturing;
-#elif BUILDFLAG(IS_APPLE)
-  feature_flags_.chromium_image_ycbcr_420v = true;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  feature_flags_.chromium_image_ycbcr_p010 =
-      gpu_feature_info.supports_p010_for_allocation_and_texturing;
-#elif BUILDFLAG(IS_APPLE)
-  feature_flags_.chromium_image_ycbcr_p010 = true;
-#endif
 }
 
 void FeatureInfo::InitializeBasicState(const base::CommandLine* command_line) {
@@ -1172,10 +1158,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     validators_.g_l_state.AddValue(GL_TEXTURE_BINDING_RECTANGLE_ANGLE);
   }
 
-  if (feature_flags_.chromium_image_ycbcr_420v) {
-    AddExtensionString("GL_CHROMIUM_ycbcr_420v_image");
-  }
-
 #if BUILDFLAG(IS_APPLE)
   // Macs can create SharedImages out of AR30 IOSurfaces. iOS based devices seem
   // to handle well also.
@@ -1194,10 +1176,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     validators_.render_buffer_format.AddValue(GL_RGB10_A2_EXT);
     validators_.texture_internal_format_storage.AddValue(GL_RGB10_A2_EXT);
     validators_.pixel_type.AddValue(GL_UNSIGNED_INT_2_10_10_10_REV);
-  }
-
-  if (feature_flags_.chromium_image_ycbcr_p010) {
-    AddExtensionString("GL_CHROMIUM_ycbcr_p010_image");
   }
 
   // TODO(gman): Add support for these extensions.

@@ -42,9 +42,4 @@ struct GpuFeatureInfo {
   // in the current platform. The entries are defined in
   // gpu/config/gpu_driver_bug_list.json.
   array<uint32> applied_gpu_driver_bug_list_entries;
-
-  // NV12 / P010 formats that can be allocated and then bound, if known and
-  // provided by the platform.
-  bool supports_nv12_for_allocation_and_texturing;
-  bool supports_p010_for_allocation_and_texturing;
 };
