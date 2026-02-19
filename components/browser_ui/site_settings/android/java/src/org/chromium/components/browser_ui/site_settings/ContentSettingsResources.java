@@ -1067,24 +1067,14 @@ public class ContentSettingsResources {
      * @return An array of 3 resource IDs for descriptions for Allowed, Ask and Blocked states, in
      *     that order.
      */
-    public static int @Nullable [] getTriStateSettingDescriptionIDs(
-            int contentType, boolean isPermissionSiteSettingsRadioButtonFeatureEnabled) {
+    public static int @Nullable [] getTriStateSettingDescriptionIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
-            if (isPermissionSiteSettingsRadioButtonFeatureEnabled) {
-                int[] descriptionIDs = {
-                    R.string.website_settings_protected_content_allow,
-                    R.string.website_settings_protected_content_ask,
-                    R.string.website_settings_protected_content_block
-                };
-                return descriptionIDs;
-            } else {
-                int[] descriptionIDs = {
-                    R.string.website_settings_category_protected_content_allowed_recommended,
-                    R.string.website_settings_category_protected_content_ask,
-                    R.string.website_settings_category_protected_content_blocked
-                };
-                return descriptionIDs;
-            }
+            int[] descriptionIDs = {
+                R.string.website_settings_protected_content_allow,
+                R.string.website_settings_protected_content_ask,
+                R.string.website_settings_protected_content_block
+            };
+            return descriptionIDs;
         }
 
         assert false;

@@ -76,11 +76,6 @@ public interface SiteSettingsDelegate {
     boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
 
     /**
-     * @return true if the PermissionSiteSettingsRadioButtonFeatureEnabled Feature is enabled.
-     */
-    boolean isPermissionSiteSettingsRadioButtonFeatureEnabled();
-
-    /**
      * Get the id of the notification channel associated with the given origin.
      *
      * @param callback Callback to be invoked with the Id of the channel.

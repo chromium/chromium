@@ -182,22 +182,12 @@ void GetOrigins(JNIEnv* env,
   ContentSettingsForOneType embargo_settings =
       content_settings_map->GetSettingsForOneType(
           ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
-  PermissionSetting default_content_setting =
-      content_settings_map->GetDefaultPermissionSetting(content_type);
 
   // Use a vector since the overall number of origins should be small.
   std::vector<std::string> seen_origins;
 
-  auto* info = PermissionSettingsRegistry::GetInstance()->Get(content_type);
-
   // Now add all origins that have a non-default setting to the list.
   for (const auto& settings_it : all_settings) {
-    if (!base::FeatureList::IsEnabled(
-            permissions::features::kPermissionSiteSettingsRadioButton) &&
-        content_settings::ValueToPermissionSetting(
-            info, settings_it.setting_value) == default_content_setting) {
-      continue;
-    }
     if (managedOnly &&
         settings_it.source != content_settings::ProviderType::kPolicyProvider) {
       continue;

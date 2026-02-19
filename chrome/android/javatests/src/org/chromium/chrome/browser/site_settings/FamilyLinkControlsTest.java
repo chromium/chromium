@@ -33,9 +33,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
@@ -45,7 +42,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -95,7 +91,6 @@ public class FamilyLinkControlsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     public void testDeletingOnDeviceDataBlockedForSupervisedUsers() {
         SettingsActivity settingsActivity =
             SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
@@ -124,38 +119,6 @@ public class FamilyLinkControlsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
-    public void testDeletingOnDeviceDataBlockedForSupervisedUsers2() {
-        SettingsActivity settingsActivity =
-            SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
-        PreferenceFragmentCompat preferenceFragment =
-            (PreferenceFragmentCompat) settingsActivity.getMainFragment();
-        PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
-            ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
-
-        // When deleting cookies are blocked through Family Link, the toggle will be checked and
-        // disabled
-        Assert.assertTrue(binary_toggle.isChecked());
-        Assert.assertFalse(binary_toggle.isEnabled());
-        onView(
-            allOf(
-                withId(android.R.id.summary),
-                hasSibling(
-                    allOf(
-                        withText(
-                            org.chromium.chrome.test.R.string.site_data_page_title),
-                        withId(android.R.id.title)))))
-        .check(
-            matches(
-                withText(
-                    containsString(
-                        settingsActivity.getString(
-                            org.chromium.chrome.test.R.string.managed_by_your_parent)))));
-        settingsActivity.finish();
-    }
-
-    @Test
-    @SmallTest
     public void testDeletingOnDeviceDataAllowedForSupervisedUsers() throws InterruptedException {
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         when(mWebsitePreferenceBridgeJniMock.getDefaultContentSettingProviderSource(
@@ -171,15 +134,9 @@ public class FamilyLinkControlsTest {
         PreferenceFragmentCompat preferenceFragment =
                 (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
-            BinaryStatePermissionPreference radioButton =
-                    preferenceScreen.findPreference("binary_radio_button");
-            Assert.assertTrue(radioButton.isEnabled());
-        } else {
-            ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
-            // When deleting cookies are not blocked through Family Link the toggle will be enabled
-            Assert.assertTrue(binary_toggle.isEnabled());
-        }
+        BinaryStatePermissionPreference radioButton =
+                preferenceScreen.findPreference("binary_radio_button");
+        Assert.assertTrue(radioButton.isEnabled());
 
         settingsActivity.finish();
     }

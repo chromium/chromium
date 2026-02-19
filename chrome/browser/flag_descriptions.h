@@ -3532,11 +3532,6 @@ inline constexpr char kPermissionsAIP92Description[] =
     "likelihood of the user granting the permission is predicted to be low. "
     "Requires `Make Searches and Browsing Better` to be enabled.";
 
-inline constexpr char kPermissionSiteSettingsRadioButtonName[] =
-    "Permission radio buttons in Site Settings";
-inline constexpr char kPermissionSiteSettingsRadioButtonDescription[] =
-    "Enables radio buttons for permissions in SiteSettings";
-
 inline constexpr char kReportNotificationContentDetectionDataName[] =
     "Option to report notifications to Google";
 inline constexpr char kReportNotificationContentDetectionDataDescription[] =

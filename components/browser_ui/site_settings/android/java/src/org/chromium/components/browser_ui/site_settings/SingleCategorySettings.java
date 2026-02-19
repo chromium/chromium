@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
@@ -385,7 +384,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
      * @param numAllowed The number of sites that are on the Allowed list
      * @param toggleValue The value the global toggle will have once precessing ends.
      */
-    private void updateAllowedHeader(int numAllowed, boolean toggleValue) {
+    private void updateAllowedHeader(int numAllowed) {
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
         if (allowedGroup == null) return;
@@ -400,14 +399,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // REQUEST_DESKTOP_SITE has its own Allowed list header.
             resourceId = R.string.website_settings_allowed_group_heading_request_desktop_site;
-        } else if (!toggleValue
-                // 3PC settings uses a radio button and always supports allowing 3PCs for sites as
-                // 3PCs are always blocked in Incognito mode (even if the user's state is "Allow").
-                && mCategory.getType() != SiteSettingsCategory.Type.THIRD_PARTY_COOKIES
-                && !getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            // When the toggle is set to Blocked, the Allowed list header should read 'Exceptions',
-            // not 'Allowed' (because it shows exceptions from the rule).
-            resourceId = R.string.website_settings_exceptions_group_heading;
         } else {
             resourceId = R.string.website_settings_allowed_group_heading;
         }
@@ -430,10 +421,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             resourceId = R.string.website_settings_blocked_group_heading_sound;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             resourceId = R.string.website_settings_blocked_group_heading_request_desktop_site;
-        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            resourceId = R.string.website_settings_not_allowed_group_heading;
         } else {
-            resourceId = R.string.website_settings_blocked_group_heading;
+            resourceId = R.string.website_settings_not_allowed_group_heading;
         }
         blockedGroup.setTitle(getHeaderTitle(resourceId, numBlocked));
         blockedGroup.setExpanded(mBlockListExpanded);
@@ -455,43 +444,17 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     private CharSequence getHeaderTitle(int resourceId, int count) {
-        if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
-            String prefCount = String.format(Locale.getDefault(), " (%d)", count);
-            spannable.append(prefCount);
+        SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
+        String prefCount = String.format(Locale.getDefault(), " (%d)", count);
+        spannable.append(prefCount);
 
-            // Color the title blue.
-            ForegroundColorSpan blueSpan =
-                    new ForegroundColorSpan(
-                            SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
-            spannable.setSpan(blueSpan, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // Color the title blue.
+        ForegroundColorSpan blueSpan =
+                new ForegroundColorSpan(
+                        SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
+        spannable.setSpan(blueSpan, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            return spannable;
-        } else {
-            SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
-            String prefCount = String.format(Locale.getDefault(), " - %d", count);
-            spannable.append(prefCount);
-
-            // Color the first part of the title blue.
-            ForegroundColorSpan blueSpan =
-                    new ForegroundColorSpan(
-                            SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
-            spannable.setSpan(
-                    blueSpan,
-                    0,
-                    spannable.length() - prefCount.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // Gray out the total count of items.
-            final @ColorInt int gray =
-                    SemanticColorUtils.getDefaultTextColorSecondary(getContext());
-            spannable.setSpan(
-                    new ForegroundColorSpan(gray),
-                    spannable.length() - prefCount.length(),
-                    spannable.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            return spannable;
-        }
+        return spannable;
     }
 
     @Override
@@ -519,8 +482,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             mGlobalToggleLayout = GlobalToggleLayout.COOKIE_TOGGLE;
         } else if (WebsitePreferenceBridge.requiresTriStateContentSetting(contentType)) {
             mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_TOGGLE;
-        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
-                && mCategory.getType() != SiteSettingsCategory.Type.ANTI_ABUSE) {
+        } else if (mCategory.getType() != SiteSettingsCategory.Type.ANTI_ABUSE) {
             mGlobalToggleLayout = GlobalToggleLayout.BINARY_RADIO_BUTTON;
         }
 
@@ -647,11 +609,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         // Do not show the toast if the System Location setting is disabled.
-        String preference_key =
-                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
-                        ? BINARY_RADIO_BUTTON_KEY
-                        : BINARY_TOGGLE_KEY;
-        if (getPreferenceScreen().findPreference(preference_key) != null && mCategory.isManaged()) {
+        if (getPreferenceScreen().findPreference(BINARY_RADIO_BUTTON_KEY) != null
+                && mCategory.isManaged()) {
             showManagedToast();
             return false;
         }
@@ -1057,7 +1016,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         if (websites.size() == 0 || !shouldAddExceptionsForCategory()) {
             updateBlockedHeader(0);
-            updateAllowedHeader(0, true);
+            updateAllowedHeader(0);
             updateManagedHeader(0);
             return false;
         }
@@ -1128,7 +1087,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
 
         updateBlockedHeader(blocked);
-        updateAllowedHeader(mAllowedSiteCount, !isBlocked());
+        updateAllowedHeader(mAllowedSiteCount);
         updateManagedHeader(managed);
 
         return websites.size() != 0;
@@ -1175,7 +1134,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
 
         updateBlockedHeader(0);
-        updateAllowedHeader(0, true);
+        updateAllowedHeader(0);
         updateManagedHeader(0);
 
         for (Pair<ArrayList<ChosenObjectInfo>, ArrayList<Website>> entry : objects.values()) {
@@ -1233,61 +1192,60 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             return R.string.website_settings_third_party_cookies_page_description;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER) {
             return R.string.website_settings_category_javascript_optimizer_page_description;
-        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
-                return R.string.website_settings_location_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
-                return R.string.website_settings_notifications_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.CAMERA) {
-                return R.string.website_settings_camera_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.MICROPHONE) {
-                return R.string.website_settings_mic_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.SENSORS) {
-                return R.string.website_settings_motion_sensors_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.NFC) {
-                return R.string.website_settings_nfc_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.USB) {
-                return R.string.website_settings_usb_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.CLIPBOARD) {
-                return R.string.website_settings_clipboard_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.VIRTUAL_REALITY) {
-                return R.string.website_settings_vr_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.AUGMENTED_REALITY) {
-                return R.string.website_settings_ar_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.IDLE_DETECTION) {
-                return R.string.website_settings_idle_detection_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT) {
-                return R.string.website_settings_javascript_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.POPUPS) {
-                return R.string.website_settings_popups_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.ADS) {
-                return R.string.website_settings_ads_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
-                return R.string.website_settings_sound_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.FEDERATED_IDENTITY_API) {
-                return R.string.website_settings_federated_identity_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
-                return R.string.website_settings_desktop_site_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.BACKGROUND_SYNC) {
-                return R.string.website_settings_background_sync_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS) {
-                return R.string.website_settings_automatic_downloads_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.FILE_EDITING) {
-                return R.string.website_settings_file_editing_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.SERIAL_PORT) {
-                return R.string.website_settings_serial_port_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS) {
-                return R.string.website_settings_local_network_access_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.LOCAL_NETWORK) {
-                return R.string.website_settings_local_network_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.LOOPBACK_NETWORK) {
-                return R.string.website_settings_loopback_network_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.WINDOW_MANAGEMENT) {
-                return R.string.website_settings_window_management_page_description;
-            } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE) {
-                return R.string.website_settings_automatic_picture_in_picture_page_description;
-            }
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
+            return R.string.website_settings_location_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
+            return R.string.website_settings_notifications_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.CAMERA) {
+            return R.string.website_settings_camera_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.MICROPHONE) {
+            return R.string.website_settings_mic_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.SENSORS) {
+            return R.string.website_settings_motion_sensors_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.NFC) {
+            return R.string.website_settings_nfc_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.USB) {
+            return R.string.website_settings_usb_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.CLIPBOARD) {
+            return R.string.website_settings_clipboard_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.VIRTUAL_REALITY) {
+            return R.string.website_settings_vr_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.AUGMENTED_REALITY) {
+            return R.string.website_settings_ar_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.IDLE_DETECTION) {
+            return R.string.website_settings_idle_detection_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT) {
+            return R.string.website_settings_javascript_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.POPUPS) {
+            return R.string.website_settings_popups_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.ADS) {
+            return R.string.website_settings_ads_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
+            return R.string.website_settings_sound_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.FEDERATED_IDENTITY_API) {
+            return R.string.website_settings_federated_identity_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            return R.string.website_settings_desktop_site_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.BACKGROUND_SYNC) {
+            return R.string.website_settings_background_sync_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS) {
+            return R.string.website_settings_automatic_downloads_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.FILE_EDITING) {
+            return R.string.website_settings_file_editing_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.SERIAL_PORT) {
+            return R.string.website_settings_serial_port_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS) {
+            return R.string.website_settings_local_network_access_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.LOCAL_NETWORK) {
+            return R.string.website_settings_local_network_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.LOOPBACK_NETWORK) {
+            return R.string.website_settings_loopback_network_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.WINDOW_MANAGEMENT) {
+            return R.string.website_settings_window_management_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE) {
+            return R.string.website_settings_automatic_picture_in_picture_page_description;
         }
+
         return -1;
     }
 
@@ -1351,8 +1309,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         @StringRes int res_id = getTextInfoResourceId();
         if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
-        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
-         && mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA) {
             infoText.setSummary(getProtectedMediaSummary());
         } else if (res_id != -1) {
             infoText.setSummary(res_id);
@@ -1385,10 +1342,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // Show either the old or new settings UI for geolocation permissions.
         if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
             if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
-                mLocationTriStatePref.initialize(
-                        UserPrefs.get(getBrowserContextHandle()),
-                        getSiteSettingsDelegate()
-                                .isPermissionSiteSettingsRadioButtonFeatureEnabled());
+                mLocationTriStatePref.initialize(UserPrefs.get(getBrowserContextHandle()));
                 updateLocationSecondaryControls();
             } else {
                 screen.removePreference(mLocationTriStatePref);
@@ -1430,10 +1384,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             // Show either the old or new settings UI for notifications permissions.
             if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
                 screen.removePreference(mNotificationsQuietUiPref);
-                mNotificationsTriStatePref.initialize(
-                        UserPrefs.get(getBrowserContextHandle()),
-                        getSiteSettingsDelegate()
-                                .isPermissionSiteSettingsRadioButtonFeatureEnabled());
+                mNotificationsTriStatePref.initialize(UserPrefs.get(getBrowserContextHandle()));
             } else {
                 screen.removePreference(mNotificationsTriStatePref);
             }
@@ -1452,31 +1403,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             screen.removePreference(mDesktopSiteWindowPref);
         }
 
-        // Only show the link that explains protected content settings when needed.
-        if (mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA
-                && getSiteSettingsDelegate().isHelpAndFeedbackEnabled()
-                && !getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            explainProtectedMediaKey.setOnPreferenceClickListener(
-                    preference -> {
-                        getSiteSettingsDelegate()
-                                .launchProtectedContentHelpAndFeedbackActivity(getActivity());
-                        return true;
-                    });
-            // Set more descriptive accessibility description to the learn more button.
-            explainProtectedMediaKey.setLearnMoreSettingName(
-                    getContext().getString(R.string.protected_content));
-
-            // On small screens with no touch input, nested focusable items inside a
-            // LinearLayout in ListView cause focus problems when using a keyboard
-            // (crbug.com/974413).
-            // TODO(chouinard): Verify on a small screen device whether this patch is still
-            // needed now that we've migrated this fragment to Support Library (mListView is
-            // a RecyclerView now).
-            mListView.setFocusable(false);
-        } else {
-            screen.removePreference(explainProtectedMediaKey);
-            mListView.setFocusable(true);
-        }
+        screen.removePreference(explainProtectedMediaKey);
+        mListView.setFocusable(true);
 
         // When this menu opens, make sure the Blocked list is collapsed.
         if (!mGroupByAllowBlock) {
@@ -1593,19 +1521,12 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 WebsitePreferenceBridge.getDefaultContentSetting(
                         getBrowserContextHandle(), contentType);
         int[] descriptionIds =
-                ContentSettingsResources.getTriStateSettingDescriptionIDs(
-                        contentType,
-                        getSiteSettingsDelegate()
-                                .isPermissionSiteSettingsRadioButtonFeatureEnabled());
-        int[] iconIds = {0, 0, 0};
-        if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            iconIds = ContentSettingsResources.getTriStateSettingIconIDs(contentType);
-        }
+                ContentSettingsResources.getTriStateSettingDescriptionIDs(contentType);
+        int[] iconIds = ContentSettingsResources.getTriStateSettingIconIDs(contentType);
         triStateToggle.initialize(
                 setting,
                 descriptionIds,
                 iconIds,
-                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled(),
                 getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
     }
 

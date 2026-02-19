@@ -43,7 +43,6 @@ public class TriStatePermissionPreference extends ContainedRadioButtonGroupPrefe
     @SuppressWarnings("NullAway.Init")
     private String mCpssPref;
 
-    private boolean mShowTitle;
     private TextView mTitleView;
 
     public TriStatePermissionPreference(Context context, AttributeSet attrs) {
@@ -61,9 +60,8 @@ public class TriStatePermissionPreference extends ContainedRadioButtonGroupPrefe
      *     UI settings.
      */
     @Initializer
-    public void initialize(PrefService prefService, boolean showTitle) {
+    public void initialize(PrefService prefService) {
         mPrefService = prefService;
-        mShowTitle = showTitle;
         if (getKey().equals("notifications_tri_state_toggle")) {
             mQuietUiPref = ENABLE_QUIET_NOTIFICATION_PERMISSION_UI;
             mCpssPref = ENABLE_NOTIFICATION_CPSS;
@@ -83,11 +81,7 @@ public class TriStatePermissionPreference extends ContainedRadioButtonGroupPrefe
         mCpss = (RadioButtonWithDescription) holder.findViewById(R.id.cpss);
         mLoud = (RadioButtonWithDescription) holder.findViewById(R.id.loud);
         mTitleView = (TextView) holder.findViewById(R.id.radio_button_title);
-        if (mShowTitle) {
-            mTitleView.setVisibility(View.VISIBLE);
-        } else {
-            mTitleView.setVisibility(View.GONE);
-        }
+        mTitleView.setVisibility(View.VISIBLE);
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
         mRadioGroup.setOnCheckedChangeListener(this);
         RadioButtonWithDescription selectedRadioButton = getSelectedRadioButton();

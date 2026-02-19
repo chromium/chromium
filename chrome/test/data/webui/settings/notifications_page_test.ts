@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {NotificationsPageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsState} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, resetPageVisibilityForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -105,80 +105,6 @@ suite(`NotificationsPage`, function() {
     assertTrue(isVisible(cpssRadioGroup));
     assertEquals(
         SettingsState.CPSS, page.get('prefs.generated.notification.value'));
-  });
-});
-
-// TODO(crbug.com/340743074): Remove tests after
-// `PermissionSiteSettingsRadioButton` launched.
-suite(`NotificationsPageWithNestedRadioButton`, function() {
-  let page: NotificationsPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePermissionSiteSettingsRadioButton: false,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  function createPage() {
-    page = document.createElement('settings-notifications-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  }
-
-  setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
-    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    return createPage();
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  test('NotificationPage', function() {
-    const notificationRadioGroup =
-        page.shadowRoot!.querySelector('#notificationRadioGroup');
-    assertTrue(!!notificationRadioGroup);
-
-    const categorySettingExceptions =
-        page.shadowRoot!.querySelector('category-setting-exceptions');
-    assertTrue(!!categorySettingExceptions);
-    assertTrue(isVisible(categorySettingExceptions));
-    assertEquals(
-        ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
-  });
-
-  test('notificationCPSS', async function() {
-    siteSettingsBrowserProxy.setPrefs(
-        createPref(ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ASK));
-
-    assertTrue(isChildVisible(page, '#notificationRadioGroup'));
-
-    const cpssRadioGroup =
-        page.shadowRoot!.querySelector('#notificationCpssRadioGroup');
-    assertTrue(!!cpssRadioGroup);
-    assertTrue(isVisible(cpssRadioGroup));
-
-    const blockNotification =
-        page.shadowRoot!.querySelector<HTMLElement>('#notificationBlock');
-    assertTrue(!!blockNotification);
-    blockNotification.click();
-    await flushTasks();
-    assertFalse(isVisible(cpssRadioGroup));
-
-    const allowNotification = page.shadowRoot!.querySelector<HTMLElement>(
-        '#notificationAskRadioButton');
-    assertTrue(!!allowNotification);
-    allowNotification.click();
-    await flushTasks();
-    assertTrue(isVisible(cpssRadioGroup));
   });
 });
 

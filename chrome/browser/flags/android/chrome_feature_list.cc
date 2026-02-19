@@ -473,7 +473,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &payments::facilitated::kFacilitatedPaymentsEnableA2APayment,
     &permissions::features::kAndroidWindowManagementWebApi,
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,
-    &permissions::features::kPermissionSiteSettingsRadioButton,
     &permissions::features::kPermissionsPromptSurvey,
     &plus_addresses::features::kPlusAddressAndroidOpenGmsCoreManagementPage,
     &plus_addresses::features::kPlusAddressesEnabled,

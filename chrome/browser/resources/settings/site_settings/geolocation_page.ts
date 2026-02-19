@@ -19,10 +19,8 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, SettingsState} from './constants.js';
@@ -50,12 +48,6 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
         value: '',
       },
 
-      enablePermissionSiteSettingsRadioButton_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
-      },
-
       /** Expose the Permissions SettingsState enum to HTML bindings. */
       settingsStateEnum_: {
         type: Object,
@@ -79,7 +71,6 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
   }
 
   declare searchTerm: string;
-  declare private enablePermissionSiteSettingsRadioButton_: boolean;
   declare private isLocationAllowed_: boolean;
   private siteSettingsBrowserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
@@ -98,23 +89,7 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
         (locationDefaultValue.setting === ContentSetting.ASK);
   }
 
-  private onLocationTopLevelRadioChanged_(event: CustomEvent<{value: string}>) {
-    const radioButtonName = event.detail.value;
-    switch (radioButtonName) {
-      case 'location-block-radio-button':
-        this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
-        this.isLocationAllowed_ = false;
-        break;
-      case 'location-ask-radio-button':
-        this.setPrefValue('generated.geolocation', SettingsState.CPSS);
-        this.isLocationAllowed_ = true;
-        break;
-      default:
-        assertNotReached();
-    }
-  }
-
-  private onLocationTopLevelRadioChanged2_(
+  private onLocationTopLevelRadioChanged_(
       event: CustomEvent<{value: boolean}>) {
     const selected = event.detail.value;
     if (selected) {

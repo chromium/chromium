@@ -239,18 +239,15 @@ class WebsitePreference extends ChromeImageViewPreference {
             return;
         }
 
-        if (mSiteSettingsDelegate.isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
-            setImageView(
-                    R.drawable.ic_more_vert_24dp,
-                    null,
-                    (OnClickListener)
-                            view -> {
-                                performClick(view);
-                            });
-            setImageViewEnabled(true);
-            setImagePadding(25, 0, 0, 0);
-            return;
-        }
+        setImageView(
+                R.drawable.ic_more_vert_24dp,
+                null,
+                (OnClickListener)
+                        view -> {
+                            performClick(view);
+                        });
+        setImageViewEnabled(true);
+        setImagePadding(25, 0, 0, 0);
     }
 
     protected void refresh() {

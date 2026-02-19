@@ -219,14 +219,8 @@
   <message name="IDS_WEBSITE_SETTINGS_ALLOWED_GROUP_HEADING" desc="The heading for a list of websites that have been allowed to use a particular permission, e.g. allowed to access a user's location.">
     Allowed
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_BLOCKED_GROUP_HEADING" desc="The heading for a list of websites that have been blocked from using a particular permission, e.g. blocked from accessing the user's location.">
-    Blocked
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_NOT_ALLOWED_GROUP_HEADING" desc="The heading for a list of websites that have been blocked from using a particular permission, e.g. blocked from accessing the user's location.">
     Not Allowed
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_EXCEPTIONS_GROUP_HEADING" desc="The heading for a list of websites that have been granted an exception to access a particular permission, e.g. to access the user's location.">
-    Exceptions
   </message>
   <message name="IDS_WEBSITE_SETTINGS_BLOCKED_GROUP_HEADING_SOUND" desc="The heading for a list of websites that have been muted.">
     Muted
@@ -1030,15 +1024,6 @@
 
   <!-- Protected content -->
 
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PROTECTED_CONTENT_ALLOWED_RECOMMENDED" desc="Summary text explaining that sites are allowed to play protected content and that it is the recommended setting.">
-    Allow sites to play protected content (recommended)
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PROTECTED_CONTENT_ASK" desc="Summary text explaining that sites need to ask for permission before playing protected content.">
-    Ask before allowing sites to play protected content
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PROTECTED_CONTENT_BLOCKED" desc="Summary text explaining that sites are blocked from playing protected content.">
-    Block sites from playing protected content
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PROTECTED_CONTENT_PAGE_DESCRIPTION" desc="Description of the protected content content setting.">
     To play content protected by copyright, sites may need to use a content protection service. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>

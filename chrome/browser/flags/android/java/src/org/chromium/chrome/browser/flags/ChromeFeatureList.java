@@ -522,8 +522,6 @@ public abstract class ChromeFeatureList {
     public static final String PCCT_MINIMUM_HEIGHT = "PCCTMinimumHeight";
     public static final String PERMISSION_DEDICATED_CPSS_SETTING_ANDROID =
             "PermissionDedicatedCpssSettingAndroid";
-    public static final String PERMISSION_SITE_SETTING_RADIO_BUTTON =
-            "PermissionSiteSettingsRadioButton";
     public static final String PERSIST_ACROSS_REBOOTS = "PersistAcrossReboots";
     public static final String PERSIST_ACROSS_REBOOTS_DEBUG_LOGS = "PersistAcrossRebootsDebugLogs";
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";

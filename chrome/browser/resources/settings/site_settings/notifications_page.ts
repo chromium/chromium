@@ -28,7 +28,6 @@ import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -74,12 +73,6 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
         },
       },
 
-      enablePermissionSiteSettingsRadioButton_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
-      },
-
       /** Expose the Permissions SettingsState enum to HTML bindings. */
       settingsStateEnum_: {
         type: Object,
@@ -118,7 +111,6 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
 
   declare searchTerm: string;
   declare private isGuest_: boolean;
-  declare private enablePermissionSiteSettingsRadioButton_: boolean;
   declare private shouldShowSafetyHub_: boolean;
   declare private isNotificationAllowed_: boolean;
   declare private showNotificationPermissionsReview_: boolean;
@@ -192,23 +184,6 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
   }
 
   private onNotificationTopLevelRadioChanged_(
-      event: CustomEvent<{value: string}>) {
-    const radioButtonName = event.detail.value;
-    switch (radioButtonName) {
-      case 'notification-block-radio-button':
-        this.setPrefValue('generated.notification', SettingsState.BLOCK);
-        this.isNotificationAllowed_ = false;
-        break;
-      case 'notification-ask-radio-button':
-        this.setPrefValue('generated.notification', SettingsState.CPSS);
-        this.isNotificationAllowed_ = true;
-        break;
-      default:
-        assertNotReached();
-    }
-  }
-
-  private onNotificationTopLevelRadioChanged2_(
       event: CustomEvent<{value: boolean}>) {
     const selected = event.detail.value;
     if (selected) {

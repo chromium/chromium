@@ -28,7 +28,6 @@ public class TriStateSiteSettingsPreference extends Preference
     private RadioButtonWithDescription mAsk;
     private RadioButtonWithDescription mBlocked;
     private RadioGroup mRadioGroup;
-    private boolean mIsPermissionSiteSettingsRadioButtonFeatureEnabled;
     private int mIconMarginEnd;
 
     public TriStateSiteSettingsPreference(Context context, AttributeSet attrs) {
@@ -53,13 +52,10 @@ public class TriStateSiteSettingsPreference extends Preference
             @ContentSetting int setting,
             int @Nullable [] descriptionIds,
             int @Nullable [] iconIds,
-            boolean isPermissionSiteSettingsRadioButtonFeatureEnabled,
             int iconMarginEnd) {
         mSetting = setting;
         mDescriptionIds = descriptionIds;
         mIconIds = iconIds;
-        mIsPermissionSiteSettingsRadioButtonFeatureEnabled =
-                isPermissionSiteSettingsRadioButtonFeatureEnabled;
         mIconMarginEnd = iconMarginEnd;
     }
 
@@ -95,15 +91,9 @@ public class TriStateSiteSettingsPreference extends Preference
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (mDescriptionIds != null) {
-            if (mIsPermissionSiteSettingsRadioButtonFeatureEnabled) {
-                mAllowed.setPrimaryText(getContext().getText(mDescriptionIds[0]));
-                mAsk.setPrimaryText(getContext().getText(mDescriptionIds[1]));
-                mBlocked.setPrimaryText(getContext().getText(mDescriptionIds[2]));
-            } else {
-                mAllowed.setDescriptionText(getContext().getText(mDescriptionIds[0]));
-                mAsk.setDescriptionText(getContext().getText(mDescriptionIds[1]));
-                mBlocked.setDescriptionText(getContext().getText(mDescriptionIds[2]));
-            }
+            mAllowed.setPrimaryText(getContext().getText(mDescriptionIds[0]));
+            mAsk.setPrimaryText(getContext().getText(mDescriptionIds[1]));
+            mBlocked.setPrimaryText(getContext().getText(mDescriptionIds[2]));
         }
 
         if (mIconIds != null) {

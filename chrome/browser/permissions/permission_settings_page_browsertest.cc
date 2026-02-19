@@ -73,11 +73,7 @@ const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
 
 class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
  public:
-  PredictionSettingsPageBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionSiteSettingsRadioButton}, {});
-  }
-
+  PredictionSettingsPageBrowserTest() = default;
   ~PredictionSettingsPageBrowserTest() override = default;
 
   void SetUp() override {

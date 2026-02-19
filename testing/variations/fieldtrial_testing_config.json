@@ -19964,25 +19964,6 @@
             ]
         }
     ],
-    "PermissionSiteSettingsRadioButton": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "windows",
-                "mac",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PermissionSiteSettingsRadioButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionsAIP92": [
         {
             "platforms": [

@@ -31,10 +31,7 @@ class DefaultNotificationsSettingBrowserTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<int> {
  public:
-  DefaultNotificationsSettingBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {}, {permissions::features::kPermissionSiteSettingsRadioButton});
-  }
+  DefaultNotificationsSettingBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -91,73 +88,142 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       web_contents,
       "customElements.whenDefined('settings-notifications-page')"));
 
-  // The UI has 3 radio buttons which are inside several layers of shadow DOM.
-  // The buttons are:
-  // (0) Sites can ask to send notifications
-  // (1) Use quieter messaging
+  // The UI has 6 radio buttons in two groups, and are inside several layers of
+  // shadow DOM. The buttons are:
+  // [Never visible] (0) Sites can send notifications
+  // (1) Sites can ask to send notifications
   // (2) Don't allow sites to send notifications
+  //
+  // (0) Collapse all requests
+  // (1) Collapse unwanted requests
+  // (2) Expand all requests
   // Query the checked and disabled state of the radio buttons.
-  std::string kGetRadios =
-      "let radios = "
+  std::string kGetCategorySettingRadios =
+      "let mainRadios = "
       "  document.querySelector('settings-ui').shadowRoot."
       "  querySelector('settings-main').shadowRoot."
       "  querySelector('settings-privacy-page-index').shadowRoot."
       "  querySelector('settings-notifications-page').shadowRoot."
-      "  querySelectorAll('cr-radio-button');";
-  std::string kGetRadiosChecked = kGetRadios +
+      "  querySelector('settings-category-default-radio-group').shadowRoot."
+      "  querySelectorAll('settings-collapse-radio-button');";
+  std::string kGetCPSSRadios =
+      "let cpssRadios = "
+      "  document.querySelector('settings-ui').shadowRoot."
+      "  querySelector('settings-main').shadowRoot."
+      "  querySelector('settings-privacy-page-index').shadowRoot."
+      "  querySelector('settings-notifications-page').shadowRoot."
+      "  querySelectorAll('settings-collapse-radio-button');";
+  std::string kGetRadiosChecked = kGetCategorySettingRadios + kGetCPSSRadios +
                                   "let radiosChecked = [];"
-                                  "radiosChecked.push(radios[0].checked);"
-                                  "radiosChecked.push(radios[1].checked);"
-                                  "radiosChecked.push(radios[2].checked);"
+                                  "radiosChecked.push(mainRadios[0].checked);"
+                                  "radiosChecked.push(mainRadios[1].checked);"
+                                  "radiosChecked.push(mainRadios[2].checked);"
+                                  "radiosChecked.push(cpssRadios[0].checked);"
+                                  "radiosChecked.push(cpssRadios[1].checked);"
+                                  "radiosChecked.push(cpssRadios[2].checked);"
                                   "radiosChecked;";
   base::ListValue radios_checked_list =
       content::EvalJs(web_contents, kGetRadiosChecked).TakeValue().TakeList();
 
-  std::string kGetRadiosEnabled = kGetRadios +
+  std::string kGetRadiosEnabled = kGetCategorySettingRadios + kGetCPSSRadios +
                                   "let radiosEnabled = [];"
-                                  "radiosEnabled.push(!radios[0].disabled);"
-                                  "radiosEnabled.push(!radios[1].disabled);"
-                                  "radiosEnabled.push(!radios[2].disabled);"
+                                  "radiosEnabled.push(!mainRadios[0].disabled);"
+                                  "radiosEnabled.push(!mainRadios[1].disabled);"
+                                  "radiosEnabled.push(!mainRadios[2].disabled);"
+                                  "radiosEnabled.push(!cpssRadios[0].disabled);"
+                                  "radiosEnabled.push(!cpssRadios[1].disabled);"
+                                  "radiosEnabled.push(!cpssRadios[2].disabled);"
                                   "radiosEnabled;";
   base::ListValue radios_enabled_list =
       content::EvalJs(web_contents, kGetRadiosEnabled).TakeValue().TakeList();
 
+  std::string kIsVisible =
+      "function isVisible(element) {"
+      "  let rect = element.getBoundingClientRect();"
+      "  return rect.width * rect.height > 0;"
+      "}";
+  std::string kGetRadiosVisible =
+      kGetCategorySettingRadios + kGetCPSSRadios + kIsVisible +
+      "let radiosVisible = [];"
+      "radiosVisible.push(isVisible(mainRadios[0]));"
+      "radiosVisible.push(isVisible(mainRadios[1]));"
+      "radiosVisible.push(isVisible(mainRadios[2]));"
+      "radiosVisible.push(isVisible(cpssRadios[0]));"
+      "radiosVisible.push(isVisible(cpssRadios[1]));"
+      "radiosVisible.push(isVisible(cpssRadios[2]));"
+      "radiosVisible;";
+
+  base::ListValue radios_visible_list =
+      content::EvalJs(web_contents, kGetRadiosVisible).TakeValue().TakeList();
+
+  EXPECT_FALSE(radios_visible_list[0].GetBool());
+  EXPECT_TRUE(radios_visible_list[1].GetBool());
+  EXPECT_TRUE(radios_visible_list[2].GetBool());
+
   switch (GetParam()) {
     case 0:
       // Policy not set.
-      EXPECT_TRUE(radios_checked_list[0].GetBool());
-      EXPECT_FALSE(radios_checked_list[1].GetBool());
-      EXPECT_TRUE(radios_checked_list[2].GetBool());
-      EXPECT_TRUE(radios_enabled_list[0].GetBool());
+      EXPECT_TRUE(radios_checked_list[1].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
+
+      EXPECT_FALSE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[2].GetBool());
+
+      EXPECT_FALSE(radios_checked_list[3].GetBool());
+      EXPECT_TRUE(radios_enabled_list[3].GetBool());
+      EXPECT_TRUE(radios_visible_list[3].GetBool());
+
+      EXPECT_TRUE(radios_checked_list[4].GetBool());
+      EXPECT_TRUE(radios_enabled_list[4].GetBool());
+      EXPECT_TRUE(radios_visible_list[4].GetBool());
+
+      EXPECT_FALSE(radios_checked_list[5].GetBool());
+      EXPECT_TRUE(radios_enabled_list[5].GetBool());
+      EXPECT_TRUE(radios_visible_list[5].GetBool());
       break;
     case 1:
       // Allow sites to show desktop notifications.
-      EXPECT_FALSE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
+      EXPECT_FALSE(radios_enabled_list[1].GetBool());
+
       EXPECT_FALSE(radios_checked_list[2].GetBool());
-      EXPECT_TRUE(radios_enabled_list[0].GetBool());
-      EXPECT_TRUE(radios_enabled_list[1].GetBool());
-      EXPECT_TRUE(radios_enabled_list[2].GetBool());
+      EXPECT_FALSE(radios_enabled_list[2].GetBool());
+
+      EXPECT_FALSE(radios_visible_list[3].GetBool());
+      EXPECT_FALSE(radios_visible_list[4].GetBool());
+      EXPECT_FALSE(radios_visible_list[5].GetBool());
       break;
     case 2:
       // Don't allow sites to show desktop notifications.
-      EXPECT_FALSE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
-      EXPECT_FALSE(radios_checked_list[2].GetBool());
-      EXPECT_TRUE(radios_enabled_list[0].GetBool());
-      EXPECT_TRUE(radios_enabled_list[1].GetBool());
-      EXPECT_TRUE(radios_enabled_list[2].GetBool());
+      EXPECT_FALSE(radios_enabled_list[1].GetBool());
+
+      EXPECT_TRUE(radios_checked_list[2].GetBool());
+      EXPECT_FALSE(radios_enabled_list[2].GetBool());
+
+      EXPECT_FALSE(radios_visible_list[3].GetBool());
+      EXPECT_FALSE(radios_visible_list[4].GetBool());
+      EXPECT_FALSE(radios_visible_list[5].GetBool());
       break;
     case 3:
       // Ask every time a site wants to show desktop notifications.
-      EXPECT_TRUE(radios_checked_list[0].GetBool());
-      EXPECT_FALSE(radios_checked_list[1].GetBool());
+      EXPECT_TRUE(radios_checked_list[1].GetBool());
+      EXPECT_FALSE(radios_enabled_list[1].GetBool());
+
       EXPECT_FALSE(radios_checked_list[2].GetBool());
-      EXPECT_TRUE(radios_enabled_list[0].GetBool());
-      EXPECT_TRUE(radios_enabled_list[1].GetBool());
-      EXPECT_TRUE(radios_enabled_list[2].GetBool());
+      EXPECT_FALSE(radios_enabled_list[2].GetBool());
+
+      EXPECT_FALSE(radios_checked_list[3].GetBool());
+      EXPECT_FALSE(radios_enabled_list[3].GetBool());
+      EXPECT_TRUE(radios_visible_list[3].GetBool());
+
+      EXPECT_FALSE(radios_checked_list[4].GetBool());
+      EXPECT_FALSE(radios_enabled_list[4].GetBool());
+      EXPECT_TRUE(radios_visible_list[4].GetBool());
+
+      EXPECT_TRUE(radios_checked_list[5].GetBool());
+      EXPECT_FALSE(radios_enabled_list[5].GetBool());
+      EXPECT_TRUE(radios_visible_list[5].GetBool());
       break;
   }
 }

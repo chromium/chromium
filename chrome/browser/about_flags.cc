@@ -9442,11 +9442,6 @@ const FeatureEntry kFeatureEntries[] = {
          content_settings::features::kSafetyCheckUnusedSitePermissions,
          kSafetyCheckUnusedSitePermissionsVariations,
          "SafetyCheckUnusedSitePermissions")},
-    {"permission-site-settings-radio-button",
-     flag_descriptions::kPermissionSiteSettingsRadioButtonName,
-     flag_descriptions::kPermissionSiteSettingsRadioButtonDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kPermissionSiteSettingsRadioButton)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"safety-hub-weak-reused-passwords",

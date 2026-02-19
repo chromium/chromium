@@ -1556,7 +1556,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
             blink::features::kWebPrinting,
 #endif
             browsing_data::features::kDbdRevampDesktop,
-            permissions::features::kPermissionSiteSettingsRadioButton,
             safe_browsing::kBundledSecuritySettings,
         },
         {});
@@ -1606,21 +1605,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
           "runMochaSuite('DeleteBrowsingDataRevampDisabled')");
 }
 
-class SettingsNotificationsPageTest : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      permissions::features::kPermissionSiteSettingsRadioButton};
-};
+class SettingsNotificationsPageTest : public SettingsBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest, NotificationsPage) {
   RunTest("settings/notifications_page_test.js",
           "runMochaSuite('NotificationsPage')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
-                       NotificationsPageWithNestedRadioButton) {
-  RunTest("settings/notifications_page_test.js",
-          "runMochaSuite('NotificationsPageWithNestedRadioButton')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
@@ -1629,11 +1618,7 @@ IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
           "runMochaSuite('NotificationPermissionReview')");
 }
 
-class SettingsGeolocationPageTest : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      permissions::features::kPermissionSiteSettingsRadioButton};
-};
+class SettingsGeolocationPageTest : public SettingsBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest, GeolocationPage) {
   RunTest("settings/geolocation_page_test.js",
@@ -1678,12 +1663,6 @@ IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerPage) {
   RunTest("settings/v8_page_test.js",
           "runMochaSuite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest,
-                       GeolocationPageWithNestedRadioButton) {
-  RunTest("settings/geolocation_page_test.js",
-          "runMochaSuite('GeolocationPageWithNestedRadioButton')");
 }
 
 class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {};
