@@ -75,10 +75,10 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
   NSString* symbol_name = nil;
   switch (entity_type_name) {
     case EntityTypeName::kPassport:
-      // TODO(crbug.com/480933607): Change this placeholder to a custom passport
-      // symbol when the SVG file is ready.
-      symbol_name = kPersonTextRectangleSymbol;
-      break;
+      return SymbolWithPalette(
+          CustomSymbolWithPointSize(kPassportSymbol, symbol_point_size), @[
+            [UIColor colorNamed:kTextPrimaryColor],
+          ]);
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
       symbol_name = kPersonTextRectangleSymbol;
