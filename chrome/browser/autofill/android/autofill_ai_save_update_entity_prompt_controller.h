@@ -55,6 +55,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   // Returns true if the entity to be saved or updated will be stored in the
   // wallet server.
   bool IsWalletableEntity() const;
+  bool IsUpdatePrompt() const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   // Called by AutofillAiSaveUpdateEntityPromptController.java

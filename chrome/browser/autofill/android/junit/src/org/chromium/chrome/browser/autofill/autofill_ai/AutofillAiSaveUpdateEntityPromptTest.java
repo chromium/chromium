@@ -57,6 +57,8 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Before
     public void setUp() {
+        RuntimeEnvironment.application.setTheme(
+                org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
         AutofillAiSaveUpdateEntityPromptControllerJni.setInstanceForTesting(mPromptControllerJni);
         mPromptController =
                 AutofillAiSaveUpdateEntityPromptController.create(
@@ -173,13 +175,62 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     @SmallTest
-    public void entityAttributeUpdateDetails() {
+    public void entityAttributeUpdateDetailsInSavePrompt() {
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
                         /* attributeName= */ "Passport number",
                         /* attributeValue= */ "AA1111",
                         /* oldAttributeValue= */ "",
-                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED);
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
+        final EntityAttributeUpdateDetails passportName =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport name",
+                        /* attributeValue= */ "John Doe",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
+        final EntityAttributeUpdateDetails passportExpirationDate =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport expiration date",
+                        /* attributeValue= */ "12/12/2030",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
+        List<EntityAttributeUpdateDetails> updateDetailsList =
+                List.of(passportNumber, passportName, passportExpirationDate);
+
+        mPrompt.setEntityUpdateDetails(updateDetailsList, /* isUpdatePrompt= */ false);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
+        assertEquals(3, attributeList.getChildCount());
+
+        // Make sure that "New" badge is not added to the attribute value.
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(0),
+                /* attributeName= */ "Passport number",
+                /* attributeValue= */ "AA1111",
+                /* oldAttributeValue= */ "");
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(1),
+                /* attributeName= */ "Passport name",
+                /* attributeValue= */ "John Doe",
+                /* oldAttributeValue= */ "");
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(2),
+                /* attributeName= */ "Passport expiration date",
+                /* attributeValue= */ "12/12/2030",
+                /* oldAttributeValue= */ "");
+    }
+
+    @Test
+    @SmallTest
+    public void entityAttributeUpdateDetailsInUpdatePrompt() {
+        final EntityAttributeUpdateDetails passportNumber =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport number",
+                        /* attributeValue= */ "AA1111",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
         final EntityAttributeUpdateDetails passportName =
                 new EntityAttributeUpdateDetails(
                         /* attributeName= */ "Passport name",
@@ -195,17 +246,18 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         List<EntityAttributeUpdateDetails> updateDetailsList =
                 List.of(passportNumber, passportName, passportExpirationDate);
 
-        mPrompt.setEntityUpdateDetails(updateDetailsList);
+        mPrompt.setEntityUpdateDetails(updateDetailsList, /* isUpdatePrompt= */ true);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
         LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
         assertEquals(3, attributeList.getChildCount());
 
+        // Make sure the "New" badge is added to the added attributes.
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(0),
                 /* attributeName= */ "Passport number",
-                /* attributeValue= */ "AA1111",
+                /* attributeValue= */ "AA1111  New",
                 /* oldAttributeValue= */ "");
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(1),
@@ -228,7 +280,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertEquals(attributeName, nameTextView.getText());
         assertThat(nameTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, is(0));
         TextView valueTextView = attributeInfo.findViewById(R.id.attribute_value);
-        assertEquals(attributeValue, valueTextView.getText());
+        assertEquals(attributeValue, valueTextView.getText().toString());
         assertThat(valueTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, is(0));
         TextView oldValueTextView = attributeInfo.findViewById(R.id.old_attribute_value);
         if (oldAttributeValue.isEmpty()) {

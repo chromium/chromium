@@ -79,7 +79,8 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
       controller->IsWalletableEntity());
 
   Java_AutofillAiSaveUpdateEntityPrompt_setEntityUpdateDetails(
-      env, java_object_, controller->GetEntityUpdateDetails());
+      env, java_object_, controller->GetEntityUpdateDetails(),
+      controller->IsUpdatePrompt());
 
   Java_AutofillAiSaveUpdateEntityPrompt_setSourceNotice(
       env, java_object_, controller->GetSourceNotice(),

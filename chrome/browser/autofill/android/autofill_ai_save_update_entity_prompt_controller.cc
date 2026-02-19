@@ -116,6 +116,10 @@ bool AutofillAiSaveUpdateEntityPromptController::IsWalletableEntity() const {
          EntityInstance::RecordType::kServerWallet;
 }
 
+bool AutofillAiSaveUpdateEntityPromptController::IsUpdatePrompt() const {
+  return old_entity_instance_.has_value();
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 AutofillAiSaveUpdateEntityPromptController::GetJavaObject() const {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);

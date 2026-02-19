@@ -1218,6 +1218,9 @@
     <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_UPDATED_ATTRIBUTE_ACCESSIBILITY_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes" translateable="false" formatter_data="android_java">
       <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph>, was <ph name="OLD_ATTRIBUTE_ATTRIBUTE">$2<ex>old value</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_NEW_ATTRIBUTE_WITH_BADGE" desc="Used in entity update dialogs, as the special badge to indicate newly added attributes that were not saved before." translateable="false" formatter_data="android_java">
+      <ph name="ATTRIBUTE_VALUE">$1<ex>John Doe</ex></ph>  <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+    </message>
   </if>
 
   <!-- Entity editor strings used on Android -->
