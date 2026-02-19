@@ -268,7 +268,7 @@ fn attributes_next<'a>(
         match &name.prefix {
             Some(pref) => {
                 let mut q_name = String::with_capacity(pref.len() + 1 + name.local_name.len());
-                q_name.push_str(&pref);
+                q_name.push_str(pref);
                 q_name.push(':');
                 q_name.push_str(&name.local_name);
                 attribute_view.as_mut().Populate(
