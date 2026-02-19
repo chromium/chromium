@@ -65,9 +65,10 @@ bool ReadAnythingImmersiveWebView::HandleKeyboardEvent(
       return true;
     }
   }
-  // Return false to signal that the event was not handled and allow it to
-  // propagate
-  return false;
+  // Call the unhandled keyboard event handler to allow for default handling
+  // and propagation.
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, GetFocusManager());
 }
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
