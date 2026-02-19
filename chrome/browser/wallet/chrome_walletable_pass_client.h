@@ -56,7 +56,6 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
   GeoIpCountryCode GetGeoIpCountryCode() override;
-  WalletHttpClient* GetWalletHttpClient() override;
 
   void ShowWalletablePassConsentBubble(
       PassCategory pass_category,
@@ -72,7 +71,6 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   std::unique_ptr<WalletablePassConsentBubbleController>
       consent_bubble_controller_;
   std::unique_ptr<WalletablePassSaveBubbleController> save_bubble_controller_;
-  std::unique_ptr<WalletHttpClient> wallet_http_client_;
 };
 
 }  // namespace wallet

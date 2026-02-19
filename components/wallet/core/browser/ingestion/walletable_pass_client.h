@@ -26,8 +26,6 @@ class StrikeDatabaseBase;
 
 namespace wallet {
 
-class WalletHttpClient;
-
 // A client interface that must be supplied to the Wallet component by the
 // embedder (e.g., Chrome). The client's goal is to provide access to
 // browser-level services required for walletable pass detection and extraction,
@@ -65,8 +63,6 @@ class WalletablePassClient {
   virtual signin::IdentityManager* GetIdentityManager() = 0;
 
   virtual GeoIpCountryCode GetGeoIpCountryCode() = 0;
-
-  virtual WalletHttpClient* GetWalletHttpClient() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
       PassCategory pass_category,
