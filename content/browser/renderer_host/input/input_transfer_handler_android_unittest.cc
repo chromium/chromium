@@ -319,6 +319,17 @@ TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
   }
 }
 
+TEST_F(InputTransferHandlerTest, DoNotTransferOnActiveTouchInterceptors) {
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
+
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+      .WillOnce(Return(static_cast<int>(
+          TransferInputToVizResult::kHasActiveTouchInterceptors)));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
+}
+
 TEST_F(InputTransferHandlerTest, DoNotConsumeEventsIfSequenceNotTransferred) {
   base::TimeTicks event_time = base::TimeTicks::Now();
   auto down_event = GetMotionEventAndroid(
@@ -401,8 +412,12 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
   for (int transfer_result = 0;
        transfer_result <= static_cast<int>(TransferInputToVizResult::kMaxValue);
        transfer_result++) {
-    if (static_cast<TransferInputToVizResult>(transfer_result) ==
-        TransferInputToVizResult::kMultipleBrowserWindowsOpen) {
+    TransferInputToVizResult transfer_result_enum =
+        static_cast<TransferInputToVizResult>(transfer_result);
+    if (transfer_result_enum ==
+            TransferInputToVizResult::kMultipleBrowserWindowsOpen ||
+        transfer_result_enum ==
+            TransferInputToVizResult::kHasActiveTouchInterceptors) {
       continue;
     }
     event_time += base::Milliseconds(8);

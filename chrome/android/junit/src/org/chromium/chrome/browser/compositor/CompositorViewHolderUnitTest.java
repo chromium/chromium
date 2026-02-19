@@ -1107,6 +1107,52 @@ public class CompositorViewHolderUnitTest {
         verify(mCompositorView, times(1)).requestRender();
     }
 
+    @Test
+    public void testActiveTouchInterceptors() {
+        TouchEventObserver observer = mock(TouchEventObserver.class);
+        when(observer.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+
+        mCompositorViewHolder.addTouchEventObserver(observer);
+        verify(mCompositorView).setHasActiveTouchInterceptors(eq(true));
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(observer);
+        verify(mCompositorView).setHasActiveTouchInterceptors(eq(false));
+    }
+
+    @Test
+    public void testMultipleActiveTouchInterceptors() {
+        TouchEventObserver observer1 = mock(TouchEventObserver.class);
+        when(observer1.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+        TouchEventObserver observer2 = mock(TouchEventObserver.class);
+        when(observer2.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+        TouchEventObserver observer3 = mock(TouchEventObserver.class);
+        when(observer3.mayInterceptTouchSequenceInWebContents()).thenReturn(false);
+
+        mCompositorViewHolder.addTouchEventObserver(observer1);
+        verify(mCompositorView).setHasActiveTouchInterceptors(eq(true));
+        reset(mCompositorView);
+
+        mCompositorViewHolder.addTouchEventObserver(observer2);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.addTouchEventObserver(observer3);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(observer3);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(observer2);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(observer1);
+        verify(mCompositorView).setHasActiveTouchInterceptors(eq(false));
+    }
+
     private static void runCurrentTasks() {
         ShadowLooper.runUiThreadTasks();
     }

@@ -2771,6 +2771,12 @@ message InputTransferHandler {
     MULTIPLE_BROWSER_WINDOWS_OPEN = 11;
     DOWN_TIME_AFTER_EVENT_TIME = 12;
     SEQUENCE_TRANSFERRED_BACK_FROM_VIZ = 13;
+    WEB_CONTENTS_IGNORING_INPUT_EVENTS = 14;
+    RIR_DELEGATE_CONNECTION_NOT_SETUP = 15;
+    SHARED_MEMORY_UNAVAILABLE = 16;
+    POSITIVE_EVENT_AND_DOWN_TIME_DELTA = 17;
+    XR_IS_ACTIVE = 18;
+    HAS_ACTIVE_TOUCH_INTERCEPTORS = 19;
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
   optional TransferInputToVizResult transfer_result = 1;

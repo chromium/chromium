@@ -219,6 +219,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
+    public boolean mayInterceptTouchSequenceInWebContents() {
+        return true;
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent e) {
         assert mContentScrollMayResizeTab && mGestureHandler != null && mGestureDetector != null;
         if (mGestureHandler.getState() == GestureState.SCROLL_CONTENT) {

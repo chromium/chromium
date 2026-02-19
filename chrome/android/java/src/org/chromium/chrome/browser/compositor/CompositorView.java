@@ -98,6 +98,7 @@ public class CompositorView extends FrameLayout
     private boolean mHaveSwappedFramesSinceSurfaceCreated;
 
     private @Nullable Integer mSurfaceId;
+    private boolean mHasActiveTouchInterceptors;
 
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
@@ -386,8 +387,19 @@ public class CompositorView extends FrameLayout
         createCompositorSurfaceManager();
     }
 
+    @SuppressWarnings("NewApi")
+    public void setHasActiveTouchInterceptors(boolean hasActiveTouchInterceptors) {
+        mHasActiveTouchInterceptors = hasActiveTouchInterceptors;
+        if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
+            InputTransferHandler handler = SurfaceInputTransferHandlerMap.getMap().get(mSurfaceId);
+            assert handler != null;
+            handler.setHasActiveTouchInterceptors(hasActiveTouchInterceptors);
+        }
+    }
+
     /**
      * Enables/disables immersive VR overlay mode, a variant of overlay video mode.
+     *
      * @param enabled Whether to enter or leave overlay immersive vr mode.
      */
     public void setOverlayVrMode(boolean enabled) {
@@ -510,7 +522,8 @@ public class CompositorView extends FrameLayout
                 && surfaceId != null
                 && browserInputToken != null) {
             InputTransferHandler handler =
-                    new InputTransferHandler(browserInputToken, mWindowAndroid);
+                    new InputTransferHandler(
+                            browserInputToken, mWindowAndroid, mHasActiveTouchInterceptors);
 
             assert mSurfaceId == null;
             mSurfaceId = surfaceId;
@@ -591,10 +604,11 @@ public class CompositorView extends FrameLayout
 
     /**
      * Notifies geometrychange event to JS.
+     *
      * @param webContents Active WebContent for which this event needs to be fired.
      * @param x When the keyboard is shown, it has the left position of the app's rect, else, 0.
      * @param y When the keyboard is shown, it has the top position of the app's rect, else, 0.
-     * @param width  When the keyboard is shown, it has the width of the view, else, 0.
+     * @param width When the keyboard is shown, it has the width of the view, else, 0.
      * @param height When the keyboard is shown, it has the height of the keyboard, else, 0.
      */
     void notifyVirtualKeyboardOverlayRect(

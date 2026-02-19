@@ -33,7 +33,8 @@ enum class TransferInputToVizResult {
   // TODO(https://crbug.com/483269973): Investigate using InputEventObserver in
   // Xr instead of blocking the transfer of input to viz.
   kXrIsActive = 17,
-  kMaxValue = kXrIsActive,
+  kHasActiveTouchInterceptors = 18,
+  kMaxValue = kHasActiveTouchInterceptors,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
 

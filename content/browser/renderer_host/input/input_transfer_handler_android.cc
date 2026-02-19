@@ -198,6 +198,13 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   }
 
   if (transfer_result ==
+      TransferInputToVizResult::kHasActiveTouchInterceptors) {
+    // Do not forcefully transfer this sequence (in code below), since all the
+    // input events on these tabs are expected to be handled by Browser.
+    return false;
+  }
+
+  if (transfer_result ==
       TransferInputToVizResult::kMultipleBrowserWindowsOpen) {
     // `kMultipleBrowserWindowsOpen` implies Viz token is null, don't attempt to
     // retransfer touch sequence.

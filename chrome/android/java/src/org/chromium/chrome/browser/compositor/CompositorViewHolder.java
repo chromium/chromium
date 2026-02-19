@@ -153,6 +153,9 @@ public class CompositorViewHolder extends FrameLayout
         void onFrameRequested();
     }
 
+    // Number of observers in `mTouchEventObservers` that return true in
+    // `mayInterceptTouchSequenceInWebContents()`.
+    private int mActiveTouchInterceptors;
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final ObserverList<FrameRequestObserver> mFrameRequestObservers = new ObserverList<>();
 
@@ -766,11 +769,23 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public void addTouchEventObserver(TouchEventObserver o) {
         mTouchEventObservers.addObserver(o);
+        if (o.mayInterceptTouchSequenceInWebContents()) {
+            mActiveTouchInterceptors += 1;
+            if (mActiveTouchInterceptors == 1) {
+                mCompositorView.setHasActiveTouchInterceptors(true);
+            }
+        }
     }
 
     @Override
     public void removeTouchEventObserver(TouchEventObserver o) {
         mTouchEventObservers.removeObserver(o);
+        if (o.mayInterceptTouchSequenceInWebContents()) {
+            mActiveTouchInterceptors -= 1;
+            if (mActiveTouchInterceptors == 0) {
+                mCompositorView.setHasActiveTouchInterceptors(false);
+            }
+        }
     }
 
     @Override
