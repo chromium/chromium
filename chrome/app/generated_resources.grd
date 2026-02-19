@@ -19824,6 +19824,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_PDF_GLIC_SUMMARIZE" desc="Button label for the button to summarize PDFs.">
         Summarize
       </message>
+      <message name="IDS_PDF_GLIC_SUMMARIZE_TOOLTIP" desc="Tooltip for the button to summarize PDFs with Gemini.">
+        Summarize with Gemini
+      </message>
     </if>
 
     <!-- Protected content identifiers permission -->

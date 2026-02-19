@@ -139,6 +139,7 @@ base::DictValue GetPdfViewerStrings() {
       {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
 #if BUILDFLAG(ENABLE_GLIC)
       {"glicSummarize", IDS_PDF_GLIC_SUMMARIZE},
+      {"glicSummarizeTooltip", IDS_PDF_GLIC_SUMMARIZE_TOOLTIP},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
       {"saveToDriveDialogCancelUploadButtonLabel",

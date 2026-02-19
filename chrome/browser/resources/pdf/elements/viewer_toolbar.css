@@ -185,8 +185,10 @@ cr-progress,
   --cr-hover-background-color: rgba(253, 252, 251, 0.10);
   border: none;
   font-weight: 400;
-  height: 36px;
-  padding: 0 8px;
+  gap: 4px;
+  height: 28px;
+  padding-inline-end: 10px;
+  padding-inline-start: 6px;
 }
 </if>
 
