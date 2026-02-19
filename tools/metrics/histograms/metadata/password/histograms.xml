@@ -3647,8 +3647,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PotentialBestMatchFormType"
-    enum="PasswordManagerMatchedFormType" expires_after="2026-03-01">
-  <owner>sygiet@google.com</owner>
+    enum="PasswordManagerMatchedFormType" expires_after="2026-09-01">
+  <owner>atsvirchkova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     This metric records the type of the potential preferred password for
