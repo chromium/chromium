@@ -577,7 +577,6 @@ TEST_F(CanvasResourceProviderTest,
           gfx::Size(10, 10),
           Canvas2DColorParams(PredefinedColorSpace::kSRGB,
                               CanvasPixelFormat::kUint8, /*has_alpha=*/true),
-          CanvasResourceProvider::ShouldInitialize::kCallClear,
           test_web_shared_image_interface_provider.get()));
 }
 
@@ -598,7 +597,6 @@ TEST_F(CanvasResourceProviderTest,
   auto provider =
       CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
           kSize, color_params,
-          CanvasResourceProvider::ShouldInitialize::kCallClear,
           test_web_shared_image_interface_provider.get());
 
   EXPECT_EQ(provider->Size(), kSize);

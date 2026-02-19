@@ -1382,12 +1382,11 @@ std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
 CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
-    ShouldInitialize initialize_provider,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
   return CreateForSoftwareCompositor(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), initialize_provider,
+      color_params.GetGfxColorSpace(), ShouldInitialize::kNo,
       shared_image_interface_provider, delegate);
 }
 
