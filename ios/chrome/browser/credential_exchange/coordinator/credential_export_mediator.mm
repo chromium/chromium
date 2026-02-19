@@ -30,7 +30,8 @@ const CGFloat kMinFaviconSize = 16.0;
 
 }  // namespace
 
-@interface CredentialExportMediator () <PasswordExporterDelegate>
+@interface CredentialExportMediator () <CredentialExporterDelegate,
+                                        PasswordExporterDelegate>
 @end
 
 @implementation CredentialExportMediator {
@@ -201,7 +202,8 @@ const CGFloat kMinFaviconSize = 16.0;
                                         sync_pb::WebauthnCredentialSpecifics>)
                                         passkeys {
   if (@available(iOS 26, *)) {
-    _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window];
+    _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window
+                                                            delegate:self];
     NSString* userEmail = base::SysUTF8ToNSString(
         _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email);
@@ -232,6 +234,12 @@ const CGFloat kMinFaviconSize = 16.0;
       ^(FaviconAttributes* attributes, bool cached) {
         completion(attributes, cached);
       });
+}
+
+#pragma mark - CredentialExporterDelegate
+
+- (void)onExportError {
+  [_delegate showGenericError];
 }
 
 @end

@@ -6,6 +6,12 @@ import AuthenticationServices
 import Foundation
 import UIKit
 
+/// Delegate for CredentialExportManager.
+@objc public protocol CredentialExportManagerDelegate {
+  /// Called when the export failed with an error.
+  @objc func onExportError()
+}
+
 /// Handles exporting user credentials through ASCredentialExportManager.
 @MainActor
 @objc public class CredentialExportManager: NSObject {
@@ -49,6 +55,9 @@ import UIKit
       self.privateKey = key.privateKey
     }
   }
+
+  /// Delegate for this class.
+  @objc weak public var delegate: CredentialExportManagerDelegate?
 
   /// Converts credential data into the `ASExportedCredentialData` format.
   @available(iOS 26, *)
@@ -158,7 +167,7 @@ import UIKit
 
         try await exportManager.exportCredentials(exportedData)
       } catch {
-        // TODO(crbug.com/444149683): Handle errors.
+        delegate?.onExportError()
       }
     }
   }

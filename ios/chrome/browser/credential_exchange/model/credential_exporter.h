@@ -14,12 +14,21 @@
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/ios/passkey_types.h"
 
+@protocol CredentialExporterDelegate <NSObject>
+
+// Notifies the delegate that an error occurred during export.
+- (void)onExportError;
+
+@end
+
 // Handles exporting credentials using the Credential Exchange format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
 @interface CredentialExporter : NSObject
 
 // `window` is a presentation anchor that will be used by the OS views.
-- (instancetype)initWithWindow:(UIWindow*)window NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWindow:(UIWindow*)window
+                      delegate:(id<CredentialExporterDelegate>)delegate
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

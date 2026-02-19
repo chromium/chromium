@@ -75,9 +75,13 @@ swift_source_set("credential_import_manager_swift") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "credential_importer_unittest.mm" ]
+  sources = [
+    "credential_exporter_unittest.mm",
+    "credential_importer_unittest.mm",
+  ]
   deps = [
     ":credential_exchange_types",
+    ":credential_export_manager_swift",
     ":credential_import_manager_swift",
     ":model",
     "//base/test:test_support",

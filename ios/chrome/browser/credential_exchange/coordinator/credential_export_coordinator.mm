@@ -178,6 +178,10 @@
                         completion:completion_block];
 }
 
+- (void)showGenericError {
+  [self showErrorAlert];
+}
+
 #pragma mark - PasswordExportHandler
 
 - (void)showActivityViewWithActivityItems:(NSArray*)activityItems

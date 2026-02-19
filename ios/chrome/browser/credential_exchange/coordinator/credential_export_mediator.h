@@ -44,6 +44,9 @@ class FaviconLoader;
 - (void)fetchTrustedVaultKeysWithCompletion:
     (void (^)(webauthn::SharedKeyList))completion;
 
+// Asks the delegate to display a generic error alert.
+- (void)showGenericError;
+
 @end
 
 // Mediator for the credential exchange export flow.

@@ -17,21 +17,30 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
+@interface CredentialExporter () <CredentialExportManagerDelegate>
+@end
+
 @implementation CredentialExporter {
   // Used as a presentation anchor for OS views. Must not be nil.
   UIWindow* _window;
 
   // Exports credentials through the OS ASCredentialExportManager API.
   CredentialExportManager* _credentialExportManager;
+
+  // Delegate for CredentialImporter.
+  id<CredentialExporterDelegate> _delegate;
 }
 
-- (instancetype)initWithWindow:(UIWindow*)window {
+- (instancetype)initWithWindow:(UIWindow*)window
+                      delegate:(id<CredentialExporterDelegate>)delegate {
   CHECK(window);
 
   self = [super init];
   if (self) {
     _window = window;
+    _delegate = delegate;
     _credentialExportManager = [[CredentialExportManager alloc] init];
+    _credentialExportManager.delegate = self;
   }
   return self;
 }
@@ -139,6 +148,12 @@
     }
   }
   return nil;
+}
+
+#pragma mark - CredentialExportManagerDelegate
+
+- (void)onExportError {
+  [_delegate onExportError];
 }
 
 @end
