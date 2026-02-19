@@ -26,11 +26,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/sinc_resampler.h"
 
 #include "base/memory/raw_ptr.h"
@@ -176,16 +171,16 @@ class BufferSourceProvider final : public AudioSourceProvider {
 
     // Clamp to number of frames available and zero-pad.
     int frames_to_copy = std::min(source_frames_available_, frames_to_process);
-    memcpy(buffer, source_, sizeof(float) * frames_to_copy);
+    UNSAFE_TODO(memcpy(buffer, source_, sizeof(float) * frames_to_copy));
 
     // Zero-pad if necessary.
     if (frames_to_copy < frames_to_process) {
-      memset(buffer + frames_to_copy, 0,
-             sizeof(float) * (frames_to_process - frames_to_copy));
+      UNSAFE_TODO(memset(buffer + frames_to_copy, 0,
+                         sizeof(float) * (frames_to_process - frames_to_copy)));
     }
 
     source_frames_available_ -= frames_to_copy;
-    source_ += frames_to_copy;
+    UNSAFE_TODO(source_ += frames_to_copy);
   }
 
   void SetClient(AudioSourceProviderClient*) override {}
@@ -211,7 +206,7 @@ void SincResampler::Process(const float* source,
     unsigned frames_this_time = std::min(remaining, block_size_);
     Process(&source_provider, destination, frames_this_time);
 
-    destination += frames_this_time;
+    UNSAFE_TODO(destination += frames_this_time);
     remaining -= frames_this_time;
   }
 }
@@ -229,12 +224,12 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
   unsigned number_of_destination_frames = frames_to_process;
 
   // Setup various region pointers in the buffer (see diagram above).
-  float* r0 = input_buffer_.Data() + kernel_size_ / 2;
+  float* r0 = UNSAFE_TODO(input_buffer_.Data() + kernel_size_ / 2);
   float* r1 = input_buffer_.Data();
   float* r2 = r0;
-  float* r3 = r0 + block_size_ - kernel_size_ / 2;
-  float* r4 = r0 + block_size_;
-  float* r5 = r0 + kernel_size_ / 2;
+  float* r3 = UNSAFE_TODO(r0 + block_size_ - kernel_size_ / 2);
+  float* r4 = UNSAFE_TODO(r0 + block_size_);
+  float* r5 = UNSAFE_TODO(r0 + kernel_size_ / 2);
 
   // Step (1)
   // Prime the input buffer at the start of the input stream.
@@ -256,11 +251,12 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
           subsample_remainder * number_of_kernel_offsets_;
       int offset_index = static_cast<int>(virtual_offset_index);
 
-      float* k1 = kernel_storage_.Data() + offset_index * kernel_size_;
-      float* k2 = k1 + kernel_size_;
+      float* k1 =
+          UNSAFE_TODO(kernel_storage_.Data() + offset_index * kernel_size_);
+      float* k2 = UNSAFE_TODO(k1 + kernel_size_);
 
       // Initialize input pointer based on quantized m_virtualSourceIndex.
-      float* input_p = r1 + source_index_i;
+      float* input_p = UNSAFE_TODO(r1 + source_index_i);
 
       // We'll compute "convolutions" for the two kernels which straddle
       // m_virtualSourceIndex
@@ -273,13 +269,13 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
       // Generate a single output sample.
       int n = kernel_size_;
 
-#define CONVOLVE_ONE_SAMPLE() \
-  do {                        \
-    input = *input_p++;       \
-    sum1 += input * *k1;      \
-    sum2 += input * *k2;      \
-    ++k1;                     \
-    ++k2;                     \
+#define CONVOLVE_ONE_SAMPLE()        \
+  do {                               \
+    UNSAFE_TODO(input = *input_p++); \
+    sum1 += input * *k1;             \
+    sum2 += input * *k2;             \
+    UNSAFE_TODO(++k1);               \
+    UNSAFE_TODO(++k2);               \
   } while (0)
 
       {
@@ -294,7 +290,7 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
         }
 
         // Now the inputP is aligned and start to apply SSE.
-        float* end_p = input_p + n - n % 4;
+        UNSAFE_TODO(float* end_p = input_p + n - n % 4);
         __m128 m_input;
         __m128 m_k1;
         __m128 m_k2;
@@ -319,9 +315,9 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
     mul2 = _mm_mul_ps(m_input, m_k2); \
     sums1 = _mm_add_ps(sums1, mul1);  \
     sums2 = _mm_add_ps(sums2, mul2);  \
-    input_p += 4;                     \
-    k1 += 4;                          \
-    k2 += 4;                          \
+    UNSAFE_TODO(input_p += 4);        \
+    UNSAFE_TODO(k1 += 4);             \
+    UNSAFE_TODO(k2 += 4);             \
   } while (0)
 
         if (k1_aligned && k2_aligned) {  // both aligned
@@ -348,11 +344,11 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
 
         // Summarize the SSE results to sum1 and sum2.
         float* group_sum_p = reinterpret_cast<float*>(&sums1);
-        sum1 +=
-            group_sum_p[0] + group_sum_p[1] + group_sum_p[2] + group_sum_p[3];
+        UNSAFE_TODO(sum1 += group_sum_p[0] + group_sum_p[1] + group_sum_p[2] +
+                            group_sum_p[3]);
         group_sum_p = reinterpret_cast<float*>(&sums2);
-        sum2 +=
-            group_sum_p[0] + group_sum_p[1] + group_sum_p[2] + group_sum_p[3];
+        UNSAFE_TODO(sum2 += group_sum_p[0] + group_sum_p[1] + group_sum_p[2] +
+                            group_sum_p[3]);
 
         n %= 4;
         while (n) {
@@ -479,7 +475,7 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
       double result = (1.0 - kernel_interpolation_factor) * sum1 +
                       kernel_interpolation_factor * sum2;
 
-      *destination++ = result;
+      UNSAFE_TODO(*destination++ = result);
 
       // Advance the virtual index.
       virtual_source_index_ += scale_factor_;
@@ -495,8 +491,8 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
 
     // Step (3) Copy r3 to r1 and r4 to r2.
     // This wraps the last input frames back to the start of the buffer.
-    memcpy(r1, r3, sizeof(float) * (kernel_size_ / 2));
-    memcpy(r2, r4, sizeof(float) * (kernel_size_ / 2));
+    UNSAFE_TODO(memcpy(r1, r3, sizeof(float) * (kernel_size_ / 2)));
+    UNSAFE_TODO(memcpy(r2, r4, sizeof(float) * (kernel_size_ / 2)));
 
     // Step (4)
     // Refresh the buffer with more input.

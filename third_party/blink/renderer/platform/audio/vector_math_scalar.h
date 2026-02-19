@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_VECTOR_MATH_SCALAR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_VECTOR_MATH_SCALAR_H_
 
@@ -42,10 +37,10 @@ ALWAYS_INLINE static void Conv(const float* source_p,
 // FIXME: The macro can be further optimized to avoid pipeline stalls. One
 // possibility is to maintain 4 separate sums and change the macro to
 // CONVOLVE_FOUR_SAMPLES.
-#define CONVOLVE_ONE_SAMPLE                   \
-  do {                                        \
-    sum += source_p[i + j] * *(filter_p - j); \
-    j++;                                      \
+#define CONVOLVE_ONE_SAMPLE                                \
+  do {                                                     \
+    sum += UNSAFE_TODO(source_p[i + j] * *(filter_p - j)); \
+    j++;                                                   \
   } while (0)
 
   while (i < frames_to_process) {
@@ -308,7 +303,7 @@ ALWAYS_INLINE static void Conv(const float* source_p,
         CONVOLVE_ONE_SAMPLE;
       }
     }
-    dest_p[i++] = sum;
+    UNSAFE_TODO(dest_p[i++] = sum);
   }
 #undef CONVOLVE_ONE_SAMPLE
 }
@@ -322,9 +317,9 @@ ALWAYS_INLINE static void Vadd(const float* source1p,
                                uint32_t frames_to_process) {
   while (frames_to_process > 0u) {
     *dest_p = *source1p + *source2p;
-    source1p += source_stride1;
-    source2p += source_stride2;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source1p += source_stride1);
+    UNSAFE_TODO(source2p += source_stride2);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -338,9 +333,9 @@ ALWAYS_INLINE static void Vsub(const float* source1p,
                                uint32_t frames_to_process) {
   while (frames_to_process > 0u) {
     *dest_p = *source1p - *source2p;
-    source1p += source_stride1;
-    source2p += source_stride2;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source1p += source_stride1);
+    UNSAFE_TODO(source2p += source_stride2);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -354,8 +349,8 @@ ALWAYS_INLINE static void Vclip(const float* source_p,
                                 uint32_t frames_to_process) {
   while (frames_to_process > 0u) {
     *dest_p = ClampTo(*source_p, *low_threshold_p, *high_threshold_p);
-    source_p += source_stride;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source_p += source_stride);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -366,7 +361,7 @@ ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
                                   uint32_t frames_to_process) {
   while (frames_to_process > 0u) {
     *max_p = std::max(*max_p, std::abs(*source_p));
-    source_p += source_stride;
+    UNSAFE_TODO(source_p += source_stride);
     --frames_to_process;
   }
 }
@@ -380,9 +375,9 @@ ALWAYS_INLINE static void Vmul(const float* source1p,
                                uint32_t frames_to_process) {
   while (frames_to_process > 0u) {
     *dest_p = *source1p * *source2p;
-    source1p += source_stride1;
-    source2p += source_stride2;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source1p += source_stride1);
+    UNSAFE_TODO(source2p += source_stride2);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -396,8 +391,8 @@ ALWAYS_INLINE static void Vsma(const float* source_p,
   const float k = *scale;
   while (frames_to_process > 0u) {
     *dest_p += k * *source_p;
-    source_p += source_stride;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source_p += source_stride);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -411,8 +406,8 @@ ALWAYS_INLINE static void Vsmul(const float* source_p,
   const float k = *scale;
   while (frames_to_process > 0u) {
     *dest_p = k * *source_p;
-    source_p += source_stride;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source_p += source_stride);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -426,8 +421,8 @@ ALWAYS_INLINE static void Vsadd(const float* source_p,
   const float k = *addend;
   while (frames_to_process > 0u) {
     *dest_p = *source_p + k;
-    source_p += source_stride;
-    dest_p += dest_stride;
+    UNSAFE_TODO(source_p += source_stride);
+    UNSAFE_TODO(dest_p += dest_stride);
     --frames_to_process;
   }
 }
@@ -439,7 +434,7 @@ ALWAYS_INLINE static void Vsvesq(const float* source_p,
   while (frames_to_process > 0u) {
     const float sample = *source_p;
     *sum_p += sample * sample;
-    source_p += source_stride;
+    UNSAFE_TODO(source_p += source_stride);
     --frames_to_process;
   }
 }
@@ -454,11 +449,13 @@ ALWAYS_INLINE static void Zvmul(const float* real1p,
   for (size_t i = 0u; i < frames_to_process; ++i) {
     // Read and compute result before storing them, in case the
     // destination is the same as one of the sources.
-    float real_result = real1p[i] * real2p[i] - imag1p[i] * imag2p[i];
-    float imag_result = real1p[i] * imag2p[i] + imag1p[i] * real2p[i];
+    float real_result =
+        UNSAFE_TODO(real1p[i] * real2p[i] - imag1p[i] * imag2p[i]);
+    float imag_result =
+        UNSAFE_TODO(real1p[i] * imag2p[i] + imag1p[i] * real2p[i]);
 
-    real_dest_p[i] = real_result;
-    imag_dest_p[i] = imag_result;
+    UNSAFE_TODO(real_dest_p[i] = real_result);
+    UNSAFE_TODO(imag_dest_p[i] = imag_result);
   }
 }
 

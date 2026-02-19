@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
 
 #include <algorithm>
@@ -57,7 +50,7 @@ double WaveShaperCurveValue(float input,
     output = curve_data[0];
   } else if (virtual_index >= curve_length - 1) {
     // input >= 1, so use last curve value
-    output = curve_data[curve_length - 1];
+    UNSAFE_TODO(output = curve_data[curve_length - 1]);
   } else {
     // The general case where -1 <= input < 1, where 0 <= virtualIndex <
     // curveLength - 1, so interpolate between the nearest samples on the
@@ -66,8 +59,8 @@ double WaveShaperCurveValue(float input,
     const unsigned index2 = index1 + 1;
     const double interpolation_factor = virtual_index - index1;
 
-    const double value1 = curve_data[index1];
-    const double value2 = curve_data[index2];
+    const double value1 = UNSAFE_TODO(curve_data[index1]);
+    const double value2 = UNSAFE_TODO(curve_data[index2]);
 
     output =
         (1.0 - interpolation_factor) * value1 + interpolation_factor * value2;
@@ -132,7 +125,7 @@ void WaveShaperHandler::SetCurve(const float* curve_data,
 
   // Copy the curve data, if any, to our internal buffer.
   curve_ = std::make_unique<Vector<float>>(curve_length);
-  memcpy(curve_->data(), curve_data, sizeof(float) * curve_length);
+  UNSAFE_TODO(memcpy(curve_->data(), curve_data, sizeof(float) * curve_length));
 
   // Compute the curve output for a zero input, and set the tail time.
   const double output = WaveShaperCurveValue(0.0, curve_data, curve_length);
@@ -264,9 +257,9 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
       for (unsigned i = 0; i < kernels_.size(); ++i) {
         if (!curve_data || !curve_length) {
           // Act as "straight wire" pass-through if no curve is set.
-          memcpy(destination_bus->Channel(i)->MutableData(),
-                 source_bus->Channel(i)->Data(),
-                 sizeof(float) * frames_to_process);
+          UNSAFE_TODO(memcpy(destination_bus->Channel(i)->MutableData(),
+                             source_bus->Channel(i)->Data(),
+                             sizeof(float) * frames_to_process));
         } else {
           switch (oversample_) {
             case V8OverSampleType::Enum::kNone:
@@ -468,14 +461,14 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
     // Do 4 eleemnts at a time
     for (int loop = 0; loop < loop_limit; ++loop, k += 4) {
       // v = virtual_index[k]
-      __m128 v = _mm_loadu_ps(virtual_index + k);
+      __m128 v = _mm_loadu_ps(UNSAFE_TODO(virtual_index + k));
 
       // index1 = static_cast<int>(v);
       __m128i index1 = _mm_cvttps_epi32(v);
 
       // v = static_cast<float>(index1) and save result to index[k:k+3]
       v = _mm_cvtepi32_ps(index1);
-      _mm_storeu_ps(&index[k], v);
+      _mm_storeu_ps(UNSAFE_TODO(&index[k]), v);
 
       // index2 = index2 + 1;
       __m128i index2 = _mm_add_epi32(index1, one);
@@ -488,14 +481,14 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
       // Get the curve_data values and save them in v1 and v2,
       // carefully clamping the values.  If the input is NaN, index1
       // could be 0x8000000.
-      v1[k] = curve_data[ClampTo(i1[0], 0, max_index)];
-      v2[k] = curve_data[ClampTo(i2[0], 0, max_index)];
-      v1[k + 1] = curve_data[ClampTo(i1[1], 0, max_index)];
-      v2[k + 1] = curve_data[ClampTo(i2[1], 0, max_index)];
-      v1[k + 2] = curve_data[ClampTo(i1[2], 0, max_index)];
-      v2[k + 2] = curve_data[ClampTo(i2[2], 0, max_index)];
-      v1[k + 3] = curve_data[ClampTo(i1[3], 0, max_index)];
-      v2[k + 3] = curve_data[ClampTo(i2[3], 0, max_index)];
+      UNSAFE_TODO(v1[k] = curve_data[ClampTo(i1[0], 0, max_index)]);
+      UNSAFE_TODO(v2[k] = curve_data[ClampTo(i2[0], 0, max_index)]);
+      UNSAFE_TODO(v1[k + 1] = curve_data[ClampTo(i1[1], 0, max_index)]);
+      UNSAFE_TODO(v2[k + 1] = curve_data[ClampTo(i2[1], 0, max_index)]);
+      UNSAFE_TODO(v1[k + 2] = curve_data[ClampTo(i1[2], 0, max_index)]);
+      UNSAFE_TODO(v2[k + 2] = curve_data[ClampTo(i2[2], 0, max_index)]);
+      UNSAFE_TODO(v1[k + 3] = curve_data[ClampTo(i1[3], 0, max_index)]);
+      UNSAFE_TODO(v2[k + 3] = curve_data[ClampTo(i2[3], 0, max_index)]);
     }
   }
 #elif defined(CPU_ARM_NEON)
@@ -512,7 +505,7 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
 
     for (int loop = 0; loop < loop_limit; ++loop, k += 4) {
       // v = virtual_index
-      float32x4_t v = vld1q_f32(virtual_index + k);
+      float32x4_t v = vld1q_f32(UNSAFE_TODO(virtual_index + k));
 
       // index1 = static_cast<int32_t>(v), then clamp to a valid index range
       // for curve_data
@@ -521,7 +514,7 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
 
       // v = static_cast<float>(v) and save it away for later use.
       v = vcvtq_f32_s32(index1);
-      vst1q_f32(&index[k], v);
+      vst1q_f32(UNSAFE_TODO(&index[k]), v);
 
       // index2 = index1 + 1, then clamp to a valid range for curve_data.
       int32x4_t index2 = vaddq_s32(index1, one);
@@ -535,14 +528,14 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
       vst1q_s32(i2, index2);
 
       // Get curve elements corresponding to the indices.
-      v1[k] = curve_data[i1[0]];
-      v2[k] = curve_data[i2[0]];
-      v1[k + 1] = curve_data[i1[1]];
-      v2[k + 1] = curve_data[i2[1]];
-      v1[k + 2] = curve_data[i1[2]];
-      v2[k + 2] = curve_data[i2[2]];
-      v1[k + 3] = curve_data[i1[3]];
-      v2[k + 3] = curve_data[i2[3]];
+      UNSAFE_TODO(v1[k] = curve_data[i1[0]]);
+      UNSAFE_TODO(v2[k] = curve_data[i2[0]]);
+      UNSAFE_TODO(v1[k + 1] = curve_data[i1[1]]);
+      UNSAFE_TODO(v2[k + 1] = curve_data[i2[1]]);
+      UNSAFE_TODO(v1[k + 2] = curve_data[i1[2]]);
+      UNSAFE_TODO(v2[k + 2] = curve_data[i2[2]]);
+      UNSAFE_TODO(v1[k + 3] = curve_data[i1[3]]);
+      UNSAFE_TODO(v2[k + 3] = curve_data[i2[3]]);
     }
   }
 #endif
@@ -550,12 +543,12 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
   // Compute values for index1 and load the curve_data corresponding to
   // indices.
   for (; k < frames_to_process; ++k) {
-    unsigned index1 =
-        ClampTo(static_cast<unsigned>(virtual_index[k]), 0, max_index);
+    unsigned index1 = ClampTo(
+        static_cast<unsigned>(UNSAFE_TODO(virtual_index[k])), 0, max_index);
     unsigned index2 = ClampTo(index1 + 1, 0, max_index);
-    index[k] = index1;
-    v1[k] = curve_data[index1];
-    v2[k] = curve_data[index2];
+    UNSAFE_TODO(index[k] = index1);
+    UNSAFE_TODO(v1[k] = curve_data[index1]);
+    UNSAFE_TODO(v2[k] = curve_data[index2]);
   }
 
   // f[k] = virtual_index[k] - index[k]
