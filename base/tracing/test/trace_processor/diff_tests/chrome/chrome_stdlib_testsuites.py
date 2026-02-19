@@ -11,9 +11,11 @@ Perfetto repositories.
 from .tests import ChromeStdlib
 from .tests_scroll_jank import ChromeScrollJankStdlib
 from .tests_chrome_interactions import ChromeInteractions
+from .tests_jetstream_3 import ChromeJetStream3Stdlib
 
 CHROME_STDLIB_TESTSUITES = [
     ChromeScrollJankStdlib,
     ChromeStdlib,
     ChromeInteractions,
+    ChromeJetStream3Stdlib,
 ]
