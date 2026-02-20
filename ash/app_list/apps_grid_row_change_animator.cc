@@ -52,9 +52,9 @@ void AppsGridRowChangeAnimator::AnimateBetweenRows(
   // The layer copy of the view which is animating between rows.
   std::unique_ptr<ui::Layer> row_change_layer;
 
-  if (row_change_layers_.count(view)) {
-    row_change_layer = std::move(row_change_layers_[view]);
-    row_change_layers_.erase(view);
+  if (auto it = row_change_layers_.find(view); it != row_change_layers_.end()) {
+    row_change_layer = std::move(it->second);
+    row_change_layers_.erase(it);
 
     // Reverse existing row change animation, by swapping the positions of the
     // mid-animation layer copy and `view`. Then animate each to the correct
