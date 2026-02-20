@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/private_ai/client.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/blind_sign_auth_factory.h"
 #include "components/private_ai/phosphor/token_fetcher_impl.h"

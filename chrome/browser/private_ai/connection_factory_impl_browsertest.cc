@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "content/public/browser/network_service_instance.h"

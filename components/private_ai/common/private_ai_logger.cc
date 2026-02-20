@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 
 #include <string_view>
 

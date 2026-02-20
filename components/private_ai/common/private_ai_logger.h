@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_AI_COMMON_LEGION_LOGGER_H_
-#define COMPONENTS_PRIVATE_AI_COMMON_LEGION_LOGGER_H_
+#ifndef COMPONENTS_PRIVATE_AI_COMMON_PRIVATE_AI_LOGGER_H_
+#define COMPONENTS_PRIVATE_AI_COMMON_PRIVATE_AI_LOGGER_H_
 
 #include <string_view>
 
@@ -45,4 +45,4 @@ class LegionLogger {
 
 }  // namespace private_ai
 
-#endif  // COMPONENTS_PRIVATE_AI_COMMON_LEGION_LOGGER_H_
+#endif  // COMPONENTS_PRIVATE_AI_COMMON_PRIVATE_AI_LOGGER_H_

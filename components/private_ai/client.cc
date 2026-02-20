@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "components/private_ai/client_impl.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection_factory_impl.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"

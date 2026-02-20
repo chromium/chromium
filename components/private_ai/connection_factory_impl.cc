@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection_basic.h"
 #include "components/private_ai/connection_metrics.h"
 #include "components/private_ai/connection_proxy.h"

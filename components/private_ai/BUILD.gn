@@ -124,7 +124,7 @@ source_set("unit_tests") {
     "connection_proxy_unittest.cc",
     "connection_timeout_unittest.cc",
     "connection_token_attestation_unittest.cc",
-    "legion_logger_unittest.cc",
+    "private_ai_logger_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]

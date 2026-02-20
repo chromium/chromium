@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
 #include "components/private_ai/client.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/proto/legion.pb.h"

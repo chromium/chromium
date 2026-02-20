@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/to_string.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/proto/legion.pb.h"
 #include "components/private_ai/proto_utils/generate_content_response_utils.h"

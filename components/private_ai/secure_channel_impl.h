@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/private_ai/attestation/handler.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/legion_common.h"
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_session.h"

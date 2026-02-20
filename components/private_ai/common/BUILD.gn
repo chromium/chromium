@@ -4,8 +4,8 @@
 
 source_set("common") {
   sources = [
-    "legion_logger.cc",
-    "legion_logger.h",
+    "private_ai_logger.cc",
+    "private_ai_logger.h",
   ]
   deps = [ "//base" ]
 }

@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/proto/legion.pb.h"
 #include "components/private_ai/testing/fake_connection.h"

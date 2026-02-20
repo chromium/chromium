@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/private_ai/client.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/connection_factory.h"
 #include "components/private_ai/legion_common.h"

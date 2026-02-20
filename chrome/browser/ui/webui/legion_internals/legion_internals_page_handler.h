@@ -9,7 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
 #include "components/private_ai/client.h"
-#include "components/private_ai/common/legion_logger.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
