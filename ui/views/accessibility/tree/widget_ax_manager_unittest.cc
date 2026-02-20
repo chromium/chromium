@@ -690,13 +690,14 @@ TEST_F(WidgetAXManagerTest, CanFireAccessibilityEvents) {
   WidgetAXManager null_mgr(nullptr);
   EXPECT_FALSE(null_mgr.CanFireAccessibilityEvents());
 
-  // Newly created widget is inactive by default.
-  EXPECT_FALSE(widget()->IsActive());
+  // Newly created widget is not visible by default.
+  EXPECT_TRUE(widget()->IsNativeWidgetInitialized());
+  EXPECT_FALSE(widget()->IsVisible());
   EXPECT_FALSE(manager()->CanFireAccessibilityEvents());
 
-  // Once activated, it should return true.
-  widget()->Activate();
-  EXPECT_TRUE(widget()->IsActive());
+  // Once shown (visible), it should return true.
+  widget()->Show();
+  EXPECT_TRUE(widget()->IsVisible());
   EXPECT_TRUE(manager()->CanFireAccessibilityEvents());
 }
 
