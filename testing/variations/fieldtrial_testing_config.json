@@ -17468,6 +17468,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect",
                         "NetworkServicePerPriorityTaskQueues"
                     ]
                 }
