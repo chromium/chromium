@@ -749,4 +749,75 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(null, loaderAfter);
     assertEquals('Done', (nameInputAfter as CrInputElement).value);
   });
+
+  test('AutoPopulateTimesOut', async function() {
+    // 1. Setup a hanging promise for refineSkill
+    const resolver = new PromiseResolver<{refinedSkill: Skill}>();
+    dialogHandler.refineSkill = () => resolver.promise;
+
+    const newSkill: Skill = {
+      id: '',
+      sourceSkillId: '',
+      name: '',
+      icon: '⚡',
+      prompt: 'Trigger auto-pop',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    // 2. Mount
+    await setupDialogWithSkill(newSkill);
+
+    // 3. Assert Loading State
+    const loader =
+        skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
+    assertTrue(!!loader);
+    assertTrue(testWindowProxy.hasScheduledTimeout());
+
+    // 4. Trigger Timeout
+    testWindowProxy.runTimeout();
+    await microtasksFinished();
+
+    // 5. Assert "Silently Fail" / Normal UI State (No Error)
+    const loaderAfter =
+        skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
+    assertEquals(null, loaderAfter);
+
+    const nameInput = skillsDialogApp.shadowRoot.querySelector('#nameText');
+    assertTrue(!!nameInput);
+
+    // Values should remain defaults
+    assertEquals('', (nameInput as CrInputElement).value);
+    assertEquals('⚡', skillsDialogApp.$.emojiTrigger.value);
+  });
+
+  test('AutoPopulateSkippedWhenNameIsNotEmpty', async function() {
+    // 1. Define a skill that looks like a "new" skill (no ID) so it triggers
+    // the "Add" flow, but give it a name to test the guard clause.
+    const preNamedSkill: Skill = {
+      id: '',
+      sourceSkillId: '',
+      name: 'Pre-existing Name',
+      icon: '⚡',
+      prompt: 'Instructions triggering auto-pop logic',
+      source: SkillSource.kUserCreated,
+      description: '',
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    // 2. Mount the component.
+    await setupDialogWithSkill(preNamedSkill);
+
+    // 3. Verify that refineSkill was NEVER called.
+    assertEquals(0, dialogHandler.getCallCount('refineSkill'));
+
+    // 4. Verify no loading state is shown and name remains unchanged.
+    const loader =
+        skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
+    assertEquals(null, loader);
+    assertEquals('Pre-existing Name', skillsDialogApp.$.nameText.value);
+  });
 });
