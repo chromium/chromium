@@ -751,18 +751,24 @@ TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
 }
 
 TEST(CharacterTest, ExpansionOpportunityEmoji) {
-  JustificationContext context;
   // a, an emoji ZWJ sequence, z
   // We should count both side of the emoji sequence.
   StringView source(u"a\U0001F635\u200d\U0001f4ABz");
-  EXPECT_EQ(2u, context.CountOpportunities(TextJustify::kAuto, source.Span16(),
-                                           TextDirection::kLtr));
-  EXPECT_FALSE(context.is_after_opportunity);
+  {
+    JustificationContext context;
+    EXPECT_EQ(2u,
+              context.CountOpportunities(TextJustify::kAuto, source.Span16(),
+                                         TextDirection::kLtr));
+    EXPECT_FALSE(context.IsAfterOpportunity());
+  }
 
-  context.is_after_opportunity = true;
-  EXPECT_EQ(2u, context.CountOpportunities(TextJustify::kAuto, source.Span16(),
-                                           TextDirection::kRtl));
-  EXPECT_FALSE(context.is_after_opportunity);
+  {
+    JustificationContext context;
+    EXPECT_EQ(2u,
+              context.CountOpportunities(TextJustify::kAuto, source.Span16(),
+                                         TextDirection::kRtl));
+    EXPECT_FALSE(context.IsAfterOpportunity());
+  }
 }
 
 static struct CanReceiveTextEmphasisTestData {

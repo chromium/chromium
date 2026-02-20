@@ -18,23 +18,18 @@ namespace blink {
 
 // Information carried between characters when calculating justification
 // opportunities.
-struct PLATFORM_EXPORT JustificationContext {
-  // Type of the previously processed character.
-  enum class Type : uint8_t {
-    kNormal,
-    kAtomicInline,
-    kCursive,
-  };
-  Type previous_type = Type::kNormal;
-  // Whether the previously processed character had the after-glyph opportunity.
-  bool is_after_opportunity = true;
+class PLATFORM_EXPORT JustificationContext {
+ public:
+  JustificationContext() = default;
+  bool IsAfterOpportunity() const { return is_after_opportunity_; }
+  void SetAfterOpportunity(bool flag) { is_after_opportunity_ = flag; }
 
   // Returns a pair of flags;
   // - first: true if we should expand just before `ch`
   // - second: true if we should expand just after `ch`
   //
   // These functions don't take care of line edges, so they should be called
-  // with is_after_opportunity=true for the first character of a line, and the
+  // with is_after_opportunity_=true for the first character of a line, and the
   // `second` result should be ignored for the last character of a line.
   //
   // CheckOpportunity8() is for a 8-bit string.
@@ -63,9 +58,25 @@ struct PLATFORM_EXPORT JustificationContext {
                                 base::span<const UChar> chars,
                                 TextDirection);
 
-  // Debug helpers.
-  static StringView ToString(JustificationContext::Type type);
+  // Debug helper.
   String ToString() const;
+
+ private:
+  // Type of the previously processed character.
+  enum class Type : uint8_t {
+    kNormal,
+    kAtomicInline,
+    kCursive,
+  };
+
+  static StringView ToString(JustificationContext::Type type);
+  template <typename CharType>
+    requires IsStringCharType<CharType>
+  std::pair<bool, bool> CheckOpportunity(TextJustify method, UChar32 ch);
+
+  Type previous_type_ = Type::kNormal;
+  // Whether the previously processed character had the after-glyph opportunity.
+  bool is_after_opportunity_ = true;
 };
 
 }  // namespace blink

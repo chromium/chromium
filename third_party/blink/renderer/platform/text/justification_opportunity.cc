@@ -25,8 +25,9 @@ StringView JustificationContext::ToString(JustificationContext::Type type) {
 
 String JustificationContext::ToString() const {
   return StrCat(
-      {"JustificationContext {previous_type:", ToString(previous_type),
-       ", is_after_opportunity:", String::Boolean(is_after_opportunity), "}"});
+      {"JustificationContext {previous_type_:", ToString(previous_type_),
+       ", is_after_opportunity_:", String::Boolean(is_after_opportunity_),
+       "}"});
 }
 
 // Returns a pair of flags;
@@ -34,29 +35,27 @@ String JustificationContext::ToString() const {
 // - second: true if we should expand just after `ch`
 template <typename CharType>
   requires IsStringCharType<CharType>
-std::pair<bool, bool> CheckJustificationOpportunity(
-    TextJustify method,
-    UChar32 ch,
-    JustificationContext& context) {
+std::pair<bool, bool> JustificationContext::CheckOpportunity(TextJustify method,
+                                                             UChar32 ch) {
   if (Character::IsDefaultIgnorable(ch)) {
     return {false, false};
   }
   constexpr bool kIsLatin = sizeof(CharType) == 1u;
-  JustificationContext::Type type = JustificationContext::Type::kNormal;
+  Type type = Type::kNormal;
   if constexpr (!kIsLatin) {
     if (ch == uchar::kObjectReplacementCharacter) {
-      type = JustificationContext::Type::kAtomicInline;
+      type = Type::kAtomicInline;
     } else if (Character::IsCursiveScript(ch)) {
-      type = JustificationContext::Type::kCursive;
+      type = Type::kCursive;
     }
   }
-  JustificationContext::Type previous_type = context.previous_type;
-  context.previous_type = type;
+  Type previous_type = previous_type_;
+  previous_type_ = type;
 
   switch (method) {
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-none
     case TextJustify::kNone:
-      context.is_after_opportunity = false;
+      is_after_opportunity_ = false;
       return {false, false};
 
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-character
@@ -65,27 +64,26 @@ std::pair<bool, bool> CheckJustificationOpportunity(
         // For atomic inlines and cursive scripts, we should expand before
         // the glyph if the previous character type is different from the
         // current one.
-        bool expand_before =
-            !context.is_after_opportunity && previous_type != type;
+        bool expand_before = !is_after_opportunity_ && previous_type != type;
         // We never expand after an atomic inilne or a cursive script because
         // the next character might have the same type.
-        context.is_after_opportunity = false;
+        is_after_opportunity_ = false;
         return {expand_before, false};
       }
       // We should expand before this glyph if the glyph is placed after an
       // atomic inline or a cursive script.
-      bool expand_before = !context.is_after_opportunity;
-      context.is_after_opportunity = true;
+      bool expand_before = !is_after_opportunity_;
+      is_after_opportunity_ = true;
       return {expand_before, true};
     }
 
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-word
     case TextJustify::kInterWord:
       if (Character::TreatAsSpace(ch)) {
-        context.is_after_opportunity = true;
+        is_after_opportunity_ = true;
         return {false, true};
       }
-      context.is_after_opportunity = false;
+      is_after_opportunity_ = false;
       return {false, false};
 
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-auto
@@ -99,12 +97,12 @@ std::pair<bool, bool> CheckJustificationOpportunity(
   }
 
   if (treat_as_space) {
-    context.is_after_opportunity = true;
+    is_after_opportunity_ = true;
     return {false, true};
   }
 
   if constexpr (kIsLatin) {
-    context.is_after_opportunity = false;
+    is_after_opportunity_ = false;
     return {false, false};
   }
 
@@ -112,28 +110,28 @@ std::pair<bool, bool> CheckJustificationOpportunity(
   // each character.
   // http://www.w3.org/TR/jlreq/#line_adjustment
   if (!Character::IsCJKIdeographOrSymbol(ch)) {
-    context.is_after_opportunity = false;
+    is_after_opportunity_ = false;
     return {false, false};
   }
 
   // We won't expand before this character if
   //  - We expand after the previous character, or
   //  - The character is at the beginning of a text.
-  bool expand_before = !context.is_after_opportunity;
-  context.is_after_opportunity = true;
+  bool expand_before = !is_after_opportunity_;
+  is_after_opportunity_ = true;
   return {expand_before, true};
 }
 
 std::pair<bool, bool> JustificationContext::CheckOpportunity8(
     TextJustify method,
     LChar ch) {
-  return CheckJustificationOpportunity<LChar>(method, ch, *this);
+  return CheckOpportunity<LChar>(method, ch);
 }
 
 std::pair<bool, bool> JustificationContext::CheckOpportunity16(
     TextJustify method,
     UChar32 ch) {
-  return CheckJustificationOpportunity<UChar>(method, ch, *this);
+  return CheckOpportunity<UChar>(method, ch);
 }
 
 wtf_size_t JustificationContext::CountOpportunities(

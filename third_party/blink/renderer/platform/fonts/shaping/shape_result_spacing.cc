@@ -36,18 +36,16 @@ ShapeResultSpacing::ExpansionSetup::ExpansionSetup(
     ShapeResultSpacing* spacing,
     bool allows_leading_expansion,
     bool allows_trailing_expansion)
-    : spacing_(spacing),
-      allows_trailing_expansion_(allows_trailing_expansion),
-      justification_context_(JustificationContext::Type::kNormal,
-                             !allows_leading_expansion) {
+    : spacing_(spacing), allows_trailing_expansion_(allows_trailing_expansion) {
   DCHECK_GT(expansion, InlineLayoutUnit());
+  justification_context_.SetAfterOpportunity(!allows_leading_expansion);
   spacing_->expansion_ = expansion;
   spacing_->expansion_opportunity_count_ = 0;
   spacing_->justification_context_ = justification_context_;
 }
 
 ShapeResultSpacing::ExpansionSetup::~ExpansionSetup() {
-  if (justification_context_.is_after_opportunity &&
+  if (justification_context_.IsAfterOpportunity() &&
       !allows_trailing_expansion_ &&
       spacing_->expansion_opportunity_count_ > 0) {
     --spacing_->expansion_opportunity_count_;
@@ -100,7 +98,7 @@ TextRunLayoutUnit ShapeResultSpacing::NextExpansion() {
     NOTREACHED();
   }
 
-  justification_context_.is_after_opportunity = true;
+  justification_context_.SetAfterOpportunity(true);
 
   if (!--expansion_opportunity_count_) [[unlikely]] {
     const TextRunLayoutUnit remaining = expansion_.To<TextRunLayoutUnit>();
