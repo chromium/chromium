@@ -10,6 +10,8 @@ source_set("model") {
     "address_normalizer_factory.mm",
     "autocomplete_history_manager_factory.h",
     "autocomplete_history_manager_factory.mm",
+    "autofill_ai_save_entity_infobar_delegate_ios.h",
+    "autofill_ai_save_entity_infobar_delegate_ios.mm",
     "autofill_ai_util.h",
     "autofill_ai_util.mm",
     "autofill_image_fetcher_factory.h",
@@ -63,8 +65,10 @@ source_set("model") {
     "//components/optimization_guide/core:model_execution",
     "//components/plus_addresses/core/common:features",
     "//components/prefs",
+    "//components/strings:components_strings__strings_grit",
     "//components/sync/service",
     "//components/variations/service",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/resources",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
@@ -195,6 +199,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "autofill_ai_save_entity_infobar_delegate_ios_unittest.mm",
     "autofill_controller_js_unittest.mm",
     "autofill_controller_unittest.mm",
     "autofill_image_fetcher_impl_unittest.mm",
@@ -236,8 +241,10 @@ source_set("unit_tests") {
     "//components/password_manager/ios",
     "//components/plus_addresses/core/common:features",
     "//components/security_state/ios",
+    "//components/strings:components_strings__strings_grit",
     "//components/sync_user_events:test_support",
     "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/form_input_accessory/coordinator",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
@@ -265,6 +272,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/leveldatabase",
     "//third_party/ocmock",
+    "//ui/base",
     "//ui/base:test_support",
     "//ui/gfx:test_support",
   ]
