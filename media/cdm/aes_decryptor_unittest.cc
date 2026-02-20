@@ -396,6 +396,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
   }
 
   void TearDown() override {
+    decryptor_ = nullptr;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     if (GetParam() == TestType::kCdmAdapter) {
       // CDM must be destroyed before the module is reset.
@@ -584,7 +585,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
 
   StrictMock<MockCdmClient> cdm_client_;
   scoped_refptr<ContentDecryptionModule> cdm_;
-  raw_ptr<Decryptor, DanglingUntriaged> decryptor_;
+  raw_ptr<Decryptor> decryptor_;
   std::string session_id_;
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
