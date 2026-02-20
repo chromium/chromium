@@ -40,6 +40,24 @@ BOOL IsInputValid(NSString* input) {
              length] > 0;
 }
 
+/// Error message that should be displayed for each possible results when the
+/// user applies the changes.
+NSString* GetErrorMessage(PinnedSiteMutationResult result) {
+  int message_id;
+  switch (result) {
+    case PinnedSiteMutationResult::kSuccess:
+      return nil;
+    case PinnedSiteMutationResult::kURLExisted:
+      message_id = IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_EXISTS;
+      break;
+    case PinnedSiteMutationResult::kURLInvalid:
+      message_id =
+          IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED;
+      break;
+  }
+  return l10n_util::GetNSString(message_id);
+}
+
 }  // namespace
 
 @interface PinnedSiteFormViewController ()
@@ -57,9 +75,9 @@ BOOL IsInputValid(NSString* input) {
   /// Current input values.
   NSString* _name;
   NSString* _URL;
-  /// Whether the error message should be displayed. Usually caused by an
-  /// invalid URL input.
-  BOOL _shouldShowErrorMessage;
+  /// Currently displaying error message. Should be updated using
+  /// `-setErrorMessage:` method.
+  NSString* _errorMessage;
   /// Whether any error has been encountered before form dismissal.
   BOOL _hasFailedOnce;
   /// If `YES`, the form is ready to be edited.
@@ -173,6 +191,7 @@ BOOL IsInputValid(NSString* input) {
               forControlEvents:UIControlEventEditingChanged];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.identifyingIconButton.hidden = YES;
+  cell.isAccessibilityElement = NO;
   BOOL maybeFocusOnCell;
   switch (static_cast<ItemIdentifier>(identifier.integerValue)) {
     case ItemTypeName:
@@ -216,7 +235,7 @@ BOOL IsInputValid(NSString* input) {
 /// Handler for changes in the `URL` field.
 - (void)URLDidChange:(UITextField*)textField {
   _URL = textField.text;
-  [self setErrorMessageVisibility:NO];
+  [self setErrorMessage:nil];
   [self updateApplyButtonState];
 }
 
@@ -226,26 +245,26 @@ BOOL IsInputValid(NSString* input) {
   if (!IsInputValid(name)) {
     name = _URL;
   }
-  BOOL success;
+  PinnedSiteMutationResult result;
   switch (_action) {
     case PinnedSiteAction::kCreate:
-      success = [self.mutator addPinnedSiteWithTitle:name URL:_URL];
+      result = [self.mutator addPinnedSiteWithTitle:name URL:_URL];
       break;
     case PinnedSiteAction::kModify:
-      success = [self.mutator editPinnedSiteForURL:_originalURL
-                                         withTitle:name
-                                               URL:_URL];
+      result = [self.mutator editPinnedSiteForURL:_originalURL
+                                        withTitle:name
+                                              URL:_URL];
       break;
   }
-  if (success) {
+  if (result == PinnedSiteMutationResult::kSuccess) {
     RecordPinnedSiteFormUserAction(
         _action, _hasFailedOnce
                      ? MostVisitedPinSiteFormUserAction::kApplyAfterFailure
                      : MostVisitedPinSiteFormUserAction::kApplyImmediately);
     [self dismissModal];
-  } else {
-    [self setErrorMessageVisibility:YES];
+    return;
   }
+  [self setErrorMessage:GetErrorMessage(result)];
 }
 
 /// Handles the tap on the "Cancel" button or swiping down.
@@ -262,19 +281,18 @@ BOOL IsInputValid(NSString* input) {
 /// fields.
 - (void)updateApplyButtonState {
   self.navigationItem.rightBarButtonItem.enabled =
-      IsInputValid(_URL) && !_shouldShowErrorMessage;
+      IsInputValid(_URL) && !_errorMessage;
 }
 
 /// Updates the footer of the table.
 - (void)updateFooter {
-  if (!_shouldShowErrorMessage) {
+  if (!_errorMessage) {
     self.tableView.tableFooterView = nil;
     return;
   }
   /// Sets up the label.
   UILabel* errorMessage = [[UILabel alloc] initWithFrame:CGRectZero];
-  errorMessage.text = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED);
+  errorMessage.text = _errorMessage;
   errorMessage.textColor = [UIColor colorNamed:kRedColor];
   errorMessage.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
@@ -294,13 +312,13 @@ BOOL IsInputValid(NSString* input) {
                                   footer);
 }
 
-/// Sets the visibility state of the error message.
-- (void)setErrorMessageVisibility:(BOOL)visible {
-  _hasFailedOnce = _hasFailedOnce || visible;
-  if (_shouldShowErrorMessage == visible) {
+/// Sets the error message.
+- (void)setErrorMessage:(NSString*)message {
+  _hasFailedOnce = _hasFailedOnce || message;
+  if ((!_errorMessage && !message) || [_errorMessage isEqualToString:message]) {
     return;
   }
-  _shouldShowErrorMessage = visible;
+  _errorMessage = message;
   [self updateApplyButtonState];
   [self updateFooter];
 }
