@@ -60,6 +60,9 @@ bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host);
 void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
                                        const GURL& new_pdf_url);
 
+// Returns true if the glic summarize button should be shown.
+bool ShouldShowGlicSummarizeButton(content::BrowserContext* context);
+
 }  // namespace pdf_extension_util
 
 #endif  // CHROME_BROWSER_PDF_PDF_EXTENSION_UTIL_H_
