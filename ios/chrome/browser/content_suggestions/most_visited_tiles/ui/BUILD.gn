@@ -10,6 +10,8 @@ source_set("ui") {
     "most_visited_tile_view.mm",
     "most_visited_tiles_collection_view.h",
     "most_visited_tiles_collection_view.mm",
+    "most_visited_tiles_collection_view_layout.h",
+    "most_visited_tiles_collection_view_layout.mm",
     "most_visited_tiles_commands.h",
     "most_visited_tiles_config.h",
     "most_visited_tiles_config.mm",
