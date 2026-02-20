@@ -16,9 +16,12 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         return html`
         <cr-composebox-tool-chip
             id="deepSearchChip"
+            exportparts="tool-chip-label"
             icon="composebox:deepSearch"
             label="${this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch)}"
-            remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
+            remove-chip-aria-label="${
+            this.i18n(
+                'removeToolChipAriaLabel',
                 this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch))}"
             ?visible="${true}"
             @click="${this.handleDeepSearchClick_}">
@@ -28,9 +31,12 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         return html`
         <cr-composebox-tool-chip
             id="nanoBananaChip"
+            exportparts="tool-chip-label"
             icon="composebox:nanoBanana"
             label="${this.getToolChipLabel_(ComposeboxToolMode.kImageGen)}"
-            remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
+            remove-chip-aria-label="${
+            this.i18n(
+                'removeToolChipAriaLabel',
                 this.getToolChipLabel_(ComposeboxToolMode.kImageGen))}"
             ?visible="${true}"
             @click="${this.handleImageGenClick_}">
@@ -40,9 +46,12 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         return html`
         <cr-composebox-tool-chip
             id="canvasChip"
+            exportparts="tool-chip-label"
             icon="composebox:canvas"
             label="${this.getToolChipLabel_(ComposeboxToolMode.kCanvas)}"
-            remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
+            remove-chip-aria-label="${
+            this.i18n(
+                'removeToolChipAriaLabel',
                 this.getToolChipLabel_(ComposeboxToolMode.kCanvas))}"
             ?visible="${true}"
             @click="${this.handleCanvasClick_}">
@@ -154,7 +163,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
     ${this.showFileCarousel_ ? html`
       <cr-composebox-file-carousel
         part="cr-composebox-file-carousel"
-        exportparts="thumbnail"
+        exportparts="thumbnail, thumbnail-title"
         id="carousel"
         class="${this.carouselOnTop_ ? 'top' : ''}"
         .files="${Array.from(this.files_.values())}"

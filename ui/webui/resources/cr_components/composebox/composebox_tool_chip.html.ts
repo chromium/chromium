@@ -15,7 +15,7 @@ export function getHtml(this: ComposeboxToolChipElement) {
     <cr-icon class="tool-icon" .icon="${this.icon}"></cr-icon>
     <cr-icon class="close-icon" icon="cr:close"></cr-icon>
   </div>
-  <div>${this.label}</div>
+  <div part="tool-chip-label">${this.label}</div>
 </cr-button>`;
   // clang-format on
 }

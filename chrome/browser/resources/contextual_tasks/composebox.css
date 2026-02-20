@@ -168,6 +168,12 @@
   padding: 0;
 }
 
+#composebox::part(input),
+#composebox::part(tool-chip-label),
+#composebox::part(file-thumbnail-title) {
+  font-family: var(--google-sans-font);
+}
+
 #composebox::part(input-container) {
   transition: padding-top var(--emphasized-curve);
   transition-duration: var(--collapse-duration);
@@ -510,7 +516,7 @@
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-text-container) {
   border-radius: 4px;
   color: var(--color-composebox-font-dark);
-  font-family: inherit;
+  font-family: var(--google-sans-font);
   font-size: 16px;
   letter-spacing: 1%;
   inset-inline-start: 12px;

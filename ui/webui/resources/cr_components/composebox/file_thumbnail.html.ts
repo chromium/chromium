@@ -28,7 +28,9 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </div>
 
           <div class="tabInfo">
-            <div class="title">${this.file.name}</div>
+            <div part="thumbnail-title" class="title">
+              ${this.file.name}
+            </div>
             <div class="url">${this.formattedUrl_}</div>
           </div>
           <div class="overlay">
@@ -71,7 +73,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                   </cr-icon>
             `}
           </div>
-          <p class="title" id="pdfTitle">${this.file.name}</p>
+          <p class="title"
+              part="thumbnail-title" id="pdfTitle">${this.file.name}</p>
           <div class="overlay">
             <div class="gradient-protection"></div>
             ${this.file.isDeletable ? html`<cr-icon-button

@@ -65,6 +65,7 @@
   color: var(--cr-primary-text-color);
   cursor: pointer;
   display: flex;
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
   font-size: 13px;
   font-weight: 400;
   gap: 8px;
