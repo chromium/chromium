@@ -3198,9 +3198,11 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE" desc="Title of the dialog for reporting an unsafe site to Google">
         Report this site to Google
       </message>
-
       <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION" desc="Explanatory text in dialog for reporting an unsafe site to Google">
         Improve online safety for everyone when you report a site you think is harmful. Learn more about <ph name="BEGIN_LINK">&lt;a href="https://safebrowsing.google.com/#policies" target="_blank" id="unsafe_site_policy_link"&gt;</ph>Google's unsafe site policy.<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_FOOTER" desc="Explanatory text in dialog footer describing what other information is sent to Google as part of the unsafe-site-report.">
+          We use info to improve this service. See <ph name="BEGIN_LINK1">&lt;a href="https://policies.google.com/privacy" target="_blank"&gt;</ph>Privacy Policy<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a href="https://policies.google.com/terms" target="_blank"&gt;</ph>Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
       </message>
 
       <!-- Indigo Strings -->

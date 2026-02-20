@@ -2,13 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import './icons.html.js';
+
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './report_unsafe_site_app.css.js';
 import {getHtml} from './report_unsafe_site_app.html.js';
 
 export class ReportUnsafeSiteAppElement extends CrLitElement {
   static get is() {
     return 'report-unsafe-site-app';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -21,7 +20,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -49,10 +47,7 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
     set_parent_window(
         platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
     set_close_on_deactivate(false);
-    SetTitle(l10n_util::GetStringUTF16(IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE));
     SetShowCloseButton(true);
-    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
     SetProperty(views::kElementIdentifierKey,
                 ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId);
     web_view()->SetProperty(views::kElementIdentifierKey,

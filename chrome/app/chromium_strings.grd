@@ -3172,9 +3172,11 @@ Chromium is unable to recover your settings.
       <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE" desc="Title of the dialog for reporting an unsafe site to Chromium">
         Report this site
       </message>
-
       <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION" desc="Explanatory text in dialog for reporting an unsafe site to Chromium">
         Improve online safety for everyone when you report a site you think is harmful.
+      </message>
+      <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_FOOTER" desc="Explanatory text in dialog footer describing what other information is sent as part of the unsafe-site-report.">
+          We use info to improve this service. See Privacy Policy and Terms of Service.
       </message>
 
       <!-- Indigo Strings -->

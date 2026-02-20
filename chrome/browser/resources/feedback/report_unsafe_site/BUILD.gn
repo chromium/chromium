@@ -10,7 +10,10 @@ build_webui("build") {
 
   static_files = [ "report_unsafe_site.html" ]
 
+  css_files = [ "report_unsafe_site_app.css" ]
+
   ts_files = [
+    "icons.html.ts",
     "report_unsafe_site_app.ts",
     "report_unsafe_site_app.html.ts",
   ]
@@ -21,4 +24,6 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
   webui_context_type = "trusted"
+
+  ts_composite = true
 }

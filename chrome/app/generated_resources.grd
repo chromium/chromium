@@ -20250,6 +20250,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Source
       </message>
     </if>
+    <!-- chrome://feedback/report-unsafe-site -->
+    <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_INCLUDE_SCREENSHOT_CHECKBOX_LABEL" desc="Label for checkbox to include screenshot in report unsafe-site-report sent to Google">
+      Include screenshot
+    </message>
+    <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_SEND_BUTTON_LABEL" desc="Dialog button label to send unsafe-site-report to Google">
+      Send
+    </message>
+    <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_URL_LABEL" desc="Label which denotes URL of the unsafe-site in report-unsafe-site dialog">
+      URL
+    </message>
   </messages>
 </release>
 </grit>

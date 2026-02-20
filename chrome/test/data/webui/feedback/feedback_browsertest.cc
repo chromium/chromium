@@ -30,3 +30,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, SeaPenFeedback) {
 IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, SystemInfo) {
   RunTest("feedback/system_info_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, ReportUnsafeSite) {
+  RunTest("feedback/report_unsafe_site_test.js", "mocha.run()");
+}
