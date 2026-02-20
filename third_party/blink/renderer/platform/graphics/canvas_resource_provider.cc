@@ -1138,7 +1138,7 @@ Canvas2DResourceProviderSharedImage::Create(
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
-Canvas2DResourceProviderSharedImage::CreateForSoftwareCompositor(
+Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,

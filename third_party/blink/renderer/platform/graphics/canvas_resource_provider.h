@@ -558,7 +558,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProviderSharedImage>
-  CreateForSoftwareCompositor(
+  CreateWithClearForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
