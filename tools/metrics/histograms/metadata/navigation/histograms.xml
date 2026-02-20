@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence"
+    name="Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence2"
     enum="InputStartPresence" expires_after="2026-12-01">
   <owner>annasato@google.com</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.BrowserInitiated.DuplicateNavInputTimeDiff"
+<histogram name="Navigation.BrowserInitiated.DuplicateNavInputTimeDiff2"
     units="ms" expires_after="2026-12-01">
   <owner>annasato@google.com</owner>
   <owner>chrome-navigation@google.com</owner>

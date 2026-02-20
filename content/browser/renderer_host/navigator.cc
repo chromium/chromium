@@ -899,7 +899,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     base::UmaHistogramTimes(
         "Navigation.BrowserInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
-    if (request->IsRendererInitiated()) {
+    if (!request->IsRendererInitiated()) {
       const auto& new_input_start = request->common_params().input_start;
       const auto& old_input_start =
           ongoing_navigation_request->common_params().input_start;
@@ -914,12 +914,12 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
         presence = blink::InputStartPresence::kBoth;
       }
       base::UmaHistogramEnumeration(
-          "Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence",
+          "Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence2",
           presence);
       if (presence == blink::InputStartPresence::kBoth) {
         const base::TimeDelta input_diff = new_input_start - old_input_start;
         base::UmaHistogramTimes(
-            "Navigation.BrowserInitiated.DuplicateNavInputTimeDiff",
+            "Navigation.BrowserInitiated.DuplicateNavInputTimeDiff2",
             input_diff);
       }
     }
