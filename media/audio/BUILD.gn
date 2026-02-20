@@ -129,8 +129,6 @@ source_set("audio") {
     "power_observer_helper.h",
     "reconfigurable_audio_bus_pool.cc",
     "reconfigurable_audio_bus_pool.h",
-    "scoped_task_runner_observer.cc",
-    "scoped_task_runner_observer.h",
     "simple_sources.cc",
     "simple_sources.h",
     "system_glitch_reporter.cc",
