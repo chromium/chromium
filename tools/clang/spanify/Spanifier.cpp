@@ -33,6 +33,16 @@ using namespace clang::ast_matchers;
 
 namespace {
 
+enum class Project {
+  kChrome,
+  kPartitionAlloc,
+  kDawn,
+  kSkia,
+  kAngle,
+};
+
+Project g_project;
+
 // Specifies how `EmitContainerPointerRewrites()` should behave.
 enum class ContainerPointerRewritesMode {
   // When `container` is not (and will not be) a span, but is fed into a
@@ -3827,6 +3837,17 @@ int main(int argc, const char* argv[]) {
       "spanifier: changes"
       " 1- |T* var| to |base::span<T> var|."
       " 2- |raw_ptr<T> var| to |base::raw_span<T> var|");
+
+  g_project = llvm::cl::opt<Project>(
+      "project", llvm::cl::desc("The project to run on."),
+      llvm::cl::values(
+          clEnumValN(Project::kChrome, "chrome", "The Chrome browser."),
+          clEnumValN(Project::kPartitionAlloc, "partition_alloc",
+                     "The PartitionAlloc project."),
+          clEnumValN(Project::kDawn, "dawn", "The Dawn project."),
+          clEnumValN(Project::kSkia, "skia", "The Skia project."),
+          clEnumValN(Project::kAngle, "angle", "The Angle project.")),
+      llvm::cl::init(Project::kChrome), llvm::cl::cat(category));
 
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
       clang::tooling::CommonOptionsParser::create(argc, argv, category);
