@@ -1722,9 +1722,10 @@ bool View::OnMouseWheel(const ui::MouseWheelEvent& event) {
 }
 
 void View::OnEvent(ui::Event* event) {
-  if (!GetEnabledInViewsSubtree()) {
-    // if this view or any of it parent is disabled, we should "eat" events
-    // without processing
+  if (!GetEnabledInViewsSubtree() || !can_process_events_within_subtree_) {
+    // If this view or any of it parent is disabled, we should "eat" events
+    // without processing. Similarly we should honor views configured to
+    // ignore events within its subtree.
     return;
   }
   ui::EventHandler::OnEvent(event);

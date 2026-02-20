@@ -108,6 +108,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_targeter.h"
+#include "ui/views/view_targeter_delegate.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -161,19 +163,26 @@ void UpdateDragEventSourceCrashKey(
 //
 class TabStrip::TabDragContextImpl : public TabDragContext,
                                      public TabDragPositioningDelegate,
-                                     public views::BoundsAnimatorObserver {
+                                     public views::BoundsAnimatorObserver,
+                                     public views::ViewTargeterDelegate {
   METADATA_HEADER(TabDragContextImpl, TabDragContext)
 
  public:
   explicit TabDragContextImpl(TabStrip* tab_strip)
       : tab_strip_(tab_strip), bounds_animator_(this) {
-    SetCanProcessEventsWithinSubtree(false);
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
     bounds_animator_.AddObserver(this);
   }
   // If a window is closed during a drag session, all our tabs will be taken
   // from us before our destructor is even called.
   ~TabDragContextImpl() override = default;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    return false;
+  }
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
