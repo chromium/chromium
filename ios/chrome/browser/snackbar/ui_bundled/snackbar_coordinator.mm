@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view_delegate.h"
 
-@interface SnackbarCoordinator () <SnackbarViewDelegate>
+@interface SnackbarCoordinator () <SnackbarCommands, SnackbarViewDelegate>
 @end
 
 @implementation SnackbarCoordinator {

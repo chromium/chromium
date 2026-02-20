@@ -9,6 +9,7 @@
 // An object that records the selectors that are invoked on it in an array.
 @interface DispatchRecorder : NSProxy
 @property(nonatomic, strong) NSMutableArray<NSString*>* dispatches;
+@property(nonatomic, strong) NSMutableSet<Protocol*>* protocols;
 @end
 
 @implementation DispatchRecorder {
@@ -17,7 +18,16 @@
 
 - (instancetype)init {
   _dispatches = [[NSMutableArray alloc] init];
+  _protocols = [[NSMutableSet alloc] init];
   return self;
+}
+
+- (void)willDispatchProtocol:(Protocol*)protocol {
+  [_protocols addObject:protocol];
+}
+
+- (BOOL)conformsToProtocol:(Protocol*)protocol {
+  return [_protocols containsObject:protocol];
 }
 
 - (void)setAction:(ProceduralBlock)block forSelector:(SEL)selector {
@@ -55,6 +65,7 @@
 
 - (BOOL)dispatchingForProtocol:(Protocol*)protocol {
   if (![super dispatchingForProtocol:protocol]) {
+    [_recorder willDispatchProtocol:protocol];
     [self startDispatchingToTarget:_recorder forProtocol:protocol];
   }
   return YES;

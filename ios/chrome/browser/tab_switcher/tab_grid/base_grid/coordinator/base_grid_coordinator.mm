@@ -53,7 +53,7 @@ using ResultCallback =
     collaboration::CollaborationControllerDelegate::ResultCallback;
 using collaboration::CollaborationControllerDelegate;
 
-@interface BaseGridCoordinator ()
+@interface BaseGridCoordinator () <TabGroupsCommands>
 
 // Callback invoked upon confirming leaving or deleting a shared group.
 @property(nonatomic, copy) void (^leaveOrDeleteCompletion)

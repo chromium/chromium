@@ -67,6 +67,16 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
                                         completion:(ProceduralBlock)completion {
   completion();
 }
+
+// Allow registering the stub as a SceneCommands handler.
+// Any call to one of these methods will crash.
+- (BOOL)conformsToProtocol:(Protocol*)protocol {
+  if (protocol == @protocol(SceneCommands)) {
+    return YES;
+  }
+  return [super conformsToProtocol:protocol];
+}
+
 @end
 
 class TipsNotificationClientTest : public PlatformTest {

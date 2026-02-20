@@ -95,6 +95,10 @@ GetConformingProtocols(Protocol* protocol) {
 }
 
 - (void)startDispatchingToTarget:(id)target forProtocol:(Protocol*)protocol {
+  DCHECK([target conformsToProtocol:protocol])
+      << base::SysNSStringToUTF8(NSStringFromClass([target class]))
+      << " should implement "
+      << base::SysNSStringToUTF8(NSStringFromProtocol(protocol)) << ".";
   for (const objc_method_description& method : GetRequiredMethods(protocol)) {
     [self startDispatchingToTarget:target forSelector:method.name];
   }

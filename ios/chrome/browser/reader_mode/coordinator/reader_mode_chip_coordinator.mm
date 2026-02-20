@@ -16,6 +16,9 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
+@interface ReaderModeChipCoordinator () <ReaderModeChipCommands>
+@end
+
 @implementation ReaderModeChipCoordinator {
   // Observer that updates ReaderModeChipViewController for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _readerModeChipFullscreenUIUpdater;

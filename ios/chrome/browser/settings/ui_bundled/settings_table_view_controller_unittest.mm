@@ -142,6 +142,7 @@ class SettingsTableViewControllerTest
     // exist during tests, so if the tests call any commands they will fail.
     id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+    id mock_browser_handler = OCMProtocolMock(@protocol(BrowserCommands));
     id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
     mock_popup_menu_handler_ = OCMProtocolMock(@protocol(PopupMenuCommands));
 
@@ -150,7 +151,7 @@ class SettingsTableViewControllerTest
                              forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
-    [dispatcher startDispatchingToTarget:mock_settings_handler
+    [dispatcher startDispatchingToTarget:mock_browser_handler
                              forProtocol:@protocol(BrowserCommands)];
     [dispatcher startDispatchingToTarget:mock_snackbar_handler
                              forProtocol:@protocol(SnackbarCommands)];

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -31,12 +32,16 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 
 class BrowserLifecycleManagerTest : public PlatformTest {
@@ -148,11 +153,17 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
   // `task_environment_` must outlive all objects created by BVC, because those
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
+    id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+    IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
+        initWithReauthModule:[[ReauthenticationModule alloc] init]
+                sceneHandler:mock_scene_handler];
+    [scene_state() addAgent:reauth_agent];
     BrowserLifecycleManager* wrangler =
         [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                               sceneState:scene_state()
-                                     applicationEndpoint:nil
-                                        settingsEndpoint:nil];
+                                     applicationEndpoint:mock_scene_handler
+                                        settingsEndpoint:mock_settings_handler];
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -182,11 +193,17 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
 }
 
 TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
+      initWithReauthModule:[[ReauthenticationModule alloc] init]
+              sceneHandler:mock_scene_handler];
+  [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                   applicationEndpoint:nil
-                                      settingsEndpoint:nil];
+                                   applicationEndpoint:mock_scene_handler
+                                      settingsEndpoint:mock_settings_handler];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -249,11 +266,17 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
 }
 
 TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
+      initWithReauthModule:[[ReauthenticationModule alloc] init]
+              sceneHandler:mock_scene_handler];
+  [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                   applicationEndpoint:nil
-                                      settingsEndpoint:nil];
+                                   applicationEndpoint:mock_scene_handler
+                                      settingsEndpoint:mock_settings_handler];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -275,11 +298,17 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
 
 // Tests the session restoration logic.
 TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
+      initWithReauthModule:[[ReauthenticationModule alloc] init]
+              sceneHandler:mock_scene_handler];
+  [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                   applicationEndpoint:nil
-                                      settingsEndpoint:nil];
+                                   applicationEndpoint:mock_scene_handler
+                                      settingsEndpoint:mock_settings_handler];
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.

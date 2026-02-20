@@ -176,18 +176,17 @@ class BrowserCoordinatorTest : public PlatformTest {
     // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
-    id mockSettingsCommandHandler =
-        OCMProtocolMock(@protocol(SettingsCommands));
+    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     [dispatcher startDispatchingToTarget:mock_scene_handler_
                              forProtocol:@protocol(SceneCommands)];
-    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+    [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
 
-    IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
+    IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]
                 sceneHandler:mock_scene_handler_];
-    [scene_state_ addAgent:reauthAgent];
-    [dispatcher startDispatchingToTarget:reauthAgent
+    [scene_state_ addAgent:reauth_agent];
+    [dispatcher startDispatchingToTarget:reauth_agent
                              forProtocol:@protocol(IncognitoReauthCommands)];
   }
 

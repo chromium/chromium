@@ -30,7 +30,8 @@
 @end
 
 // A handler with methods that take no arguments.
-@interface CommandDispatcherTestSimpleTarget : NSObject <ShowProtocol>
+@interface CommandDispatcherTestSimpleTarget
+    : NSObject <ShowProtocol, CompositeProtocolWithMethods>
 
 // Will be set to YES when the `-show` method is called.
 @property(nonatomic, assign) BOOL showCalled;
@@ -40,6 +41,12 @@
 
 // Will be set to YES when the `-hide` method is called.
 @property(nonatomic, assign) BOOL hideCalled;
+
+// Will be set to YES when the `-hideMore` method is called.
+@property(nonatomic, assign) BOOL hideMoreCalled;
+
+// Will be set to YES when the `-doCompositeThings` method is called.
+@property(nonatomic, assign) BOOL doCompositeThingsCalled;
 
 // Resets the above properties to NO.
 - (void)resetProperties;
@@ -54,11 +61,15 @@
 @synthesize showCalled = _showCalled;
 @synthesize showMoreCalled = _showMoreCalled;
 @synthesize hideCalled = _hideCalled;
+@synthesize hideMoreCalled = _hideMoreCalled;
+@synthesize doCompositeThingsCalled = _doCompositeThingsCalled;
 
 - (void)resetProperties {
   self.showCalled = NO;
   self.showMoreCalled = NO;
   self.hideCalled = NO;
+  self.hideMoreCalled = NO;
+  self.doCompositeThingsCalled = NO;
 }
 
 - (void)show {
@@ -71,6 +82,14 @@
 
 - (void)hide {
   self.hideCalled = YES;
+}
+
+- (void)hideMore {
+  self.hideMoreCalled = YES;
+}
+
+- (void)doCompositeThings {
+  self.doCompositeThingsCalled = YES;
 }
 
 @end
@@ -440,7 +459,8 @@ TEST_F(CommandDispatcherTest, RespondsToSelector) {
 
 TEST_F(CommandDispatcherTest, DispatchingForProtocol) {
   id dispatcher = [[CommandDispatcher alloc] init];
-  NSObject* target = [[NSObject alloc] init];
+  CommandDispatcherTestSimpleTarget* target =
+      [[CommandDispatcherTestSimpleTarget alloc] init];
 
   // Check that -dispatchingForProtocol tracks simple stop/start.
   EXPECT_FALSE([dispatcher dispatchingForProtocol:@protocol(HideProtocol)]);
@@ -480,7 +500,8 @@ TEST_F(CommandDispatcherTest, DispatchingForProtocol) {
 
 TEST_F(CommandDispatcherTest, HandlerForProtocol) {
   CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
-  NSObject* target = [[NSObject alloc] init];
+  CommandDispatcherTestSimpleTarget* target =
+      [[CommandDispatcherTestSimpleTarget alloc] init];
 
   [dispatcher startDispatchingToTarget:target
                            forProtocol:@protocol(ShowProtocol)];

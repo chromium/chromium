@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
-@interface QRScannerLegacyCoordinator () <ScannerPresenting>
+@interface QRScannerLegacyCoordinator () <QRScannerCommands, ScannerPresenting>
 
 @property(nonatomic, readwrite, strong) QRScannerViewController* viewController;
 @property(nonatomic, readwrite, strong) QRScannerMediator* mediator;

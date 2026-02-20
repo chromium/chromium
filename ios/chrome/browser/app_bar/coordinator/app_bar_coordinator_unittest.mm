@@ -33,9 +33,11 @@ class AppBarCoordinatorTest : public PlatformTest {
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:scene_handler_
                      forProtocol:@protocol(SceneCommands)];
+    tab_grid_handler_ = OCMProtocolMock(@protocol(TabGridCommands));
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:tab_grid_handler_
                      forProtocol:@protocol(TabGridCommands)];
+    tab_group_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:tab_group_handler_
                      forProtocol:@protocol(TabGroupsCommands)];
