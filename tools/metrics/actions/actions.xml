@@ -29077,6 +29077,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileOmniboxBookmarkHidden" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Bookmark button hidden.</description>
+</action>
+
+<action name="MobileOmniboxBookmarkShown" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Bookmark button shown.</description>
+</action>
+
 <action name="MobileOmniboxClipboardChanged">
   <obsolete>
     Replaced with MobileOmniboxClipboardChanged in April 2017.
@@ -29106,9 +29116,19 @@ should be able to be added at any place in this file.
   <description>Please enter the description of the metric.</description>
 </action>
 
+<action name="MobileOmniboxDeleteHidden" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Delete button hidden.</description>
+</action>
+
 <action name="MobileOmniboxDeleteRequested">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="MobileOmniboxDeleteShown" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Delete button shown.</description>
 </action>
 
 <action name="MobileOmniboxDeleteUrl">
@@ -29136,6 +29156,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxInstallHidden" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Install button hidden.</description>
+</action>
+
+<action name="MobileOmniboxInstallShown" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Install button shown.</description>
+</action>
+
 <action name="MobileOmniboxLens">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
@@ -29152,6 +29182,16 @@ should be able to be added at any place in this file.
   <owner>wylieb@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <description>Mobile Omnibox Lens button shown.</description>
+</action>
+
+<action name="MobileOmniboxMicHidden" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Mic button hidden.</description>
+</action>
+
+<action name="MobileOmniboxMicShown" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <description>Mobile Omnibox Mic button shown.</description>
 </action>
 
 <action name="MobileOmniboxRefineSuggestion">
@@ -29284,6 +29324,18 @@ should be able to be added at any place in this file.
 <action name="MobileOmniboxVoiceSearch">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileOmniboxZoomHidden" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>Mobile Omnibox Zoom button hidden.</description>
+</action>
+
+<action name="MobileOmniboxZoomShown" not_user_triggered="true">
+  <owner>clhager@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>Mobile Omnibox Zoom button shown.</description>
 </action>
 
 <action name="MobileOpenGroupClosed">
