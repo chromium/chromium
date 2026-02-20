@@ -208,7 +208,7 @@ std::optional<WebAppBannerData> AppBannerManager::GetCurrentWebAppBannerData()
 void AppBannerManager::RequestAppBanner() {
   DCHECK_EQ(State::INACTIVE, state_);
 
-  if (!CanRequestAppBanner()) {
+  if (!delegate_->CanRequestAppBanner()) {
     return;
   }
 
@@ -284,8 +284,10 @@ bool AppBannerManager::IsPromptAvailableForTesting() const {
   return receiver_.is_bound();
 }
 
-AppBannerManager::AppBannerManager(content::WebContents* web_contents)
+AppBannerManager::AppBannerManager(Delegate* delegate,
+                                   content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      delegate_(delegate),
       manager_(InstallableManager::FromWebContents(web_contents)),
       status_reporter_(std::make_unique<NullStatusReporter>()),
       triggering_disabled_for_testing_(
@@ -321,11 +323,11 @@ bool AppBannerManager::ShouldDeferToRelatedNonWebApp(
     const blink::mojom::Manifest& manifest) const {
   for (const auto& related_app : manifest.related_applications) {
     if (manifest.prefer_related_applications &&
-        IsSupportedNonWebAppPlatform(
+        delegate_->IsSupportedNonWebAppPlatform(
             related_app.platform.value_or(std::u16string()))) {
       return true;
     }
-    if (IsRelatedNonWebAppInstalled(related_app)) {
+    if (delegate_->IsRelatedNonWebAppInstalled(related_app)) {
       return true;
     }
   }
@@ -385,10 +387,10 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
 void AppBannerManager::PerformInstallableChecks() {
   CHECK(web_app_data_);
   CHECK_EQ(state_, State::FETCHING_MANIFEST);
-  if (ShouldDoNativeAppCheck(web_app_data_->manifest())) {
+  if (delegate_->ShouldDoNativeAppCheck(web_app_data_->manifest())) {
     UpdateState(State::FETCHING_NATIVE_DATA);
     mode_ = AppBannerMode::kNativeApp;
-    DoNativeAppInstallableCheck(
+    delegate_->DoNativeAppInstallableCheck(
         web_contents(), validated_url_, web_app_data_->manifest(),
         base::BindOnce(&AppBannerManager::OnNativeAppInstallableCheckComplete,
                        weak_factory_for_this_navigation_.GetWeakPtr()));
@@ -422,7 +424,7 @@ void AppBannerManager::PerformInstallableWebAppCheck() {
 
   base::expected<void, InstallableStatusCode>
       can_run_web_app_installable_checks =
-          CanRunWebAppInstallableChecks(web_app_data_->manifest());
+          delegate_->CanRunWebAppInstallableChecks(web_app_data_->manifest());
   if (!can_run_web_app_installable_checks.has_value()) {
     Stop(can_run_web_app_installable_checks.error());
     return;
@@ -431,7 +433,7 @@ void AppBannerManager::PerformInstallableWebAppCheck() {
   // Fetch and verify the other required information.
   UpdateState(State::PENDING_INSTALLABLE_CHECK);
   manager_->GetData(
-      ParamsToPerformInstallableWebAppCheck(),
+      delegate_->ParamsToPerformInstallableWebAppCheck(),
       base::BindOnce(&AppBannerManager::OnDidPerformInstallableWebAppCheck,
                      weak_factory_for_this_navigation_.GetWeakPtr()));
 }
@@ -459,7 +461,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     Stop(data.GetFirstError());
     return;
   }
-  OnWebAppInstallableCheckedNoErrors(data.manifest->id);
+  delegate_->OnWebAppInstallableCheckedNoErrors(data.manifest->id);
 
   UpdateState(State::PENDING_CONFLICTING_INSTALLATION_CHECK);
 
@@ -521,8 +523,8 @@ void AppBannerManager::ResetBindings() {
   event_.reset();
 }
 
-void AppBannerManager::ResetCurrentPageDataInternal() {
-  InvalidateWeakPtrsForThisNavigation();
+void AppBannerManager::ResetCurrentPageData() {
+  delegate_->InvalidateWeakPtrsForThisNavigation();
   weak_factory_for_this_navigation_.InvalidateWeakPtrs();
   load_finished_ = false;
   active_media_players_.clear();
@@ -532,7 +534,7 @@ void AppBannerManager::ResetCurrentPageDataInternal() {
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
-  ResetCurrentPageData();
+  delegate_->ResetCurrentPageData();
 }
 
 void AppBannerManager::Terminate(InstallableStatusCode code) {
@@ -604,7 +606,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
       break;
   }
 
-  InstallableWebAppStatusUpdate();
+  delegate_->InstallableWebAppStatusUpdate();
   for (Observer& observer : observer_list_) {
     observer.OnInstallableWebAppStatusUpdated(result, web_app_data_);
   }
@@ -625,7 +627,7 @@ void AppBannerManager::RecheckInstallabilityForLoadedPage() {
 void AppBannerManager::Stop(InstallableStatusCode code) {
   ReportStatus(code);
 
-  InvalidateWeakPtrsForThisNavigation();
+  delegate_->InvalidateWeakPtrsForThisNavigation();
   weak_factory_for_this_navigation_.InvalidateWeakPtrs();
   if (installable_web_app_check_result_ ==
       InstallableWebAppCheckResult::kUnknown) {
@@ -708,7 +710,7 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   if (state_ != State::COMPLETE && state_ != State::INACTIVE) {
     Terminate(TerminationCodeFromState());
   }
-  ResetCurrentPageDataInternal();
+  ResetCurrentPageData();
 
   if (handle->IsServedFromBackForwardCache()) {
     UrlType url_type =
@@ -944,7 +946,7 @@ void AppBannerManager::OnBannerPromptReply(
 
   if (state_ == State::SENDING_EVENT) {
     if (!event_canceled) {
-      MaybeShowAmbientBadge(install_config);
+      delegate_->MaybeShowAmbientBadge(install_config);
       UpdateState(State::PENDING_PROMPT_NOT_CANCELED);
     } else {
       UpdateState(State::PENDING_PROMPT_CANCELED);
@@ -988,7 +990,7 @@ void AppBannerManager::ShowBannerForCurrentPageState() {
   std::optional<InstallBannerConfig> config = GetCurrentBannerConfig();
   CHECK(config);
   TrackBeforeInstallEvent(BEFORE_INSTALL_EVENT_COMPLETE);
-  ShowBannerUi(install_source, config.value());
+  delegate_->ShowBannerUi(install_source, config.value());
   ReportStatus(InstallableStatusCode::SHOWING_APP_INSTALLATION_DIALOG);
   UpdateState(State::COMPLETE);
 

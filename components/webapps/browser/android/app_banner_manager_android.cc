@@ -95,7 +95,7 @@ void AppBannerManagerAndroid::CreateForWebContents(
 AppBannerManagerAndroid::AppBannerManagerAndroid(
     content::WebContents* web_contents,
     std::unique_ptr<ChromeDelegate> delegate)
-    : AppBannerManager(web_contents),
+    : AppBannerManager(this, web_contents),
       content::WebContentsUserData<AppBannerManagerAndroid>(*web_contents),
       delegate_(std::move(delegate)) {
   CreateJavaBannerManager(web_contents);
@@ -687,9 +687,7 @@ bool AppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
       std::move(a2hs_params));
 }
 
-void AppBannerManagerAndroid::OnMlInstallPrediction(
-    base::PassKey<MLInstallabilityPromoter>,
-    std::string result_label) {
+void AppBannerManagerAndroid::OnMlInstallPrediction(std::string result_label) {
   // TODO(crbug.com/40269982): Implement.
 }
 

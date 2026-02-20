@@ -72,10 +72,11 @@ using State = AppBannerManager::State;
 // instead of overriding like this.
 // TODO(http://crbug.com/322342499): Completely remove this class.
 class AppBannerManagerTest : public AppBannerManager,
+                             public AppBannerManager::Delegate,
                              private AppBannerManager::Observer {
  public:
   explicit AppBannerManagerTest(content::WebContents* web_contents)
-      : AppBannerManager(web_contents) {
+      : AppBannerManager(this, web_contents) {
     AddObserver(this);
     SetTriggeringDisabledForTesting(false);
   }
@@ -98,8 +99,7 @@ class AppBannerManagerTest : public AppBannerManager,
   // Configures a callback to be invoked when the app banner flow finishes.
   void PrepareDone(base::OnceClosure on_done) { on_done_ = std::move(on_done); }
 
-  void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
-                             std::string result_label) override {}
+  void OnMlInstallPrediction(std::string result_label) override {}
 
  protected:
   bool CanRequestAppBanner() const override { return true; }

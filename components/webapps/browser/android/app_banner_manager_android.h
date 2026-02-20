@@ -62,6 +62,7 @@ struct InstallBannerConfig;
 // move to //components/webapps.
 class AppBannerManagerAndroid
     : public AppBannerManager,
+      public AppBannerManager::Delegate,
       public content::WebContentsUserData<AppBannerManagerAndroid> {
  public:
   class ChromeDelegate {
@@ -136,9 +137,8 @@ class AppBannerManagerAndroid
                                          WebappInstallSource install_source,
                                          const InstallBannerConfig& data);
 
-  // AppBannerManager override:
-  void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
-                             std::string result_label) override;
+  // AppBannerManager::Delegate override:
+  void OnMlInstallPrediction(std::string result_label) override;
 
  protected:
   friend class content::WebContentsUserData<AppBannerManagerAndroid>;
@@ -154,7 +154,7 @@ class AppBannerManagerAndroid
   AppBannerManagerAndroid(content::WebContents* web_contents,
                           std::unique_ptr<ChromeDelegate> delegate);
 
-  // AppBannerManager overrides.
+  // AppBannerManager::Delegate overrides.
   bool CanRequestAppBanner() const override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   bool ShouldDoNativeAppCheck(
