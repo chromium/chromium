@@ -109,7 +109,7 @@ public class NewTabPageSigninPromoTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsNotReady() {
-        try (var unused = mSigninTestRule.blockGetAccountsUpdate(/* populateCache= */ false)) {
+        try (var unused = mSigninTestRule.blockGetAccountsUpdate()) {
             openNewTabPage();
             // Check that the sign-in promo is not shown if accounts are not ready.
             onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());

@@ -397,7 +397,7 @@ public class FeedV2NewTabPageTest {
     @Feature({"FeedNewTabPage"})
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSignInPromo_AccountsNotReady() {
-        try (var unused = mSigninTestRule.blockGetAccountsUpdate(false)) {
+        try (var unused = mSigninTestRule.blockGetAccountsUpdate()) {
             openNewTabPage();
             // Check that the sign-in promo is not shown if accounts are not ready.
             onView(withId(R.id.feed_stream_recycler_view))
