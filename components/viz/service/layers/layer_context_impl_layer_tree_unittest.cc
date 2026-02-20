@@ -495,6 +495,32 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   EXPECT_EQ(result.error(), "Invalid max safe area inset bottom");
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest,
+       UpdateIsViewportMobileOptimized) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->is_viewport_mobile_optimized = false;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_FALSE(host_impl->viewport_mobile_optimized());
+
+  // Update to true.
+  auto update2 = CreateDefaultUpdate();
+  update2->is_viewport_mobile_optimized = true;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(host_impl->viewport_mobile_optimized());
+
+  // Update back to false.
+  auto update3 = CreateDefaultUpdate();
+  update3->is_viewport_mobile_optimized = false;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_FALSE(host_impl->viewport_mobile_optimized());
+}
+
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
   cc::LayerTreeImpl* active_tree =
       layer_context_impl_->host_impl()->active_tree();
