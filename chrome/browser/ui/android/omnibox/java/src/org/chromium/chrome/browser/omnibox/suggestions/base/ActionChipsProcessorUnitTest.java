@@ -59,7 +59,9 @@ public class ActionChipsProcessorUnitTest {
                 /* showAsActionButton= */ false,
                 WindowOpenDisposition.CURRENT_TAB) {
             @Override
-            public void execute(OmniboxActionDelegate delegate) {}
+            public boolean execute(OmniboxActionDelegate delegate) {
+                return true;
+            }
         };
     }
 

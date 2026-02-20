@@ -96,7 +96,9 @@ public class OmniboxPedalUnitTest {
                                         /* showAsActionButton= */ false,
                                         WindowOpenDisposition.CURRENT_TAB) {
                                     @Override
-                                    public void execute(OmniboxActionDelegate d) {}
+                                    public boolean execute(OmniboxActionDelegate d) {
+                                        return true;
+                                    }
                                 }));
     }
 

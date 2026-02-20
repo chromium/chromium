@@ -687,8 +687,9 @@ class AutocompleteMediator
         if (match != null) {
             recordMetrics(match, action, position, action.disposition);
         }
-        action.execute(mOmniboxActionDelegate);
-        finishInteraction();
+        if (action.execute(mOmniboxActionDelegate)) {
+            finishInteraction();
+        }
     }
 
     /**

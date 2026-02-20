@@ -33,7 +33,8 @@ public class SiteSearchAction extends OmniboxAction {
     }
 
     @Override
-    public void execute(OmniboxActionDelegate delegate) {
+    public boolean execute(OmniboxActionDelegate delegate) {
         // TODO(crbug.com/459590224): Implement execution.
+        return false;
     }
 }

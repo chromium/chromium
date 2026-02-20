@@ -50,7 +50,7 @@ public class OmniboxPedal extends OmniboxAction {
     }
 
     @Override
-    public void execute(OmniboxActionDelegate delegate) {
+    public boolean execute(OmniboxActionDelegate delegate) {
         switch (pedalId) {
             case OmniboxPedalId.MANAGE_CHROME_SETTINGS:
                 delegate.openSettingsPage(SettingsFragment.MAIN);
@@ -85,6 +85,7 @@ public class OmniboxPedal extends OmniboxAction {
                 delegate.openIncognitoTab();
                 break;
         }
+        return true;
     }
 
     /**

@@ -101,7 +101,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
     /** Execute an Intent associated with OmniboxActionInSuggest. */
     @Override
-    public void execute(OmniboxActionDelegate delegate) {
+    public boolean execute(OmniboxActionDelegate delegate) {
         boolean actionStarted = false;
         boolean isIncognito = delegate.isIncognito();
         Intent intent = null;
@@ -110,7 +110,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
             intent = Intent.parseUri(mActionUri, Intent.URI_INTENT_SCHEME);
         } catch (URISyntaxException e) {
             // Never happens. http://b/279756377.
-            return;
+            return true;
         }
 
         switch (actionType) {
@@ -165,5 +165,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 delegate.loadPageInCurrentTab(assumeNonNull(intent.getDataString()));
             }
         }
+
+        return true;
     }
 }
