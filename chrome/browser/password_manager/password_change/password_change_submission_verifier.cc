@@ -35,7 +35,6 @@ using PasswordChangeOutcome = optimization_guide::proto ::
 using PasswordChangeErrorCase = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeErrorCase;
 using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
-using SubmissionResult = PasswordChangeSubmissionVerifier::SubmissionResult;
 
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kSubmitVerification = optimization_guide::proto::PasswordChangeRequest::
@@ -136,26 +135,22 @@ char PasswordChangeSubmissionVerifier::kSubmissionOutcomeHistogramName[] =
 
 PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
     content::WebContents* web_contents,
-    ModelQualityLogsUploader* logs_uploader)
+    ModelQualityLogsUploader* logs_uploader,
+    FormSubmissionVerificationResultCallback callback)
     : creation_time_(base::Time::Now()),
       web_contents_(web_contents),
-      logs_uploader_(logs_uploader) {}
-
-PasswordChangeSubmissionVerifier::~PasswordChangeSubmissionVerifier() {
-  logs_uploader_->SetStepDuration(kSubmitVerification,
-                                  base::Time::Now() - creation_time_);
-}
-
-void PasswordChangeSubmissionVerifier::CheckSubmissionOutcome(
-    FormSubmissionResultCallback callback) {
-  CHECK(web_contents_);
-  callback_ = std::move(callback);
-
+      logs_uploader_(logs_uploader),
+      callback_(std::move(callback)) {
   capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
       web_contents_, GetAIPageContentOptions(),
       base::BindOnce(
           &PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+PasswordChangeSubmissionVerifier::~PasswordChangeSubmissionVerifier() {
+  logs_uploader_->SetStepDuration(kSubmitVerification,
+                                  base::Time::Now() - creation_time_);
 }
 
 void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
@@ -167,7 +162,7 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
     LogPageContentCaptureFailure(
         password_manager::metrics_util::PasswordChangeFlowStep::
             kVerifySubmissionStep);
-    std::move(callback_).Run(SubmissionResult::kFailure);
+    std::move(callback_).Run(SubmissionVerificationResult::kFailure);
     return;
   }
 
@@ -219,7 +214,7 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
   if (!response) {
     // Password change failed as the response was empty or
     // unable to be parsed.
-    std::move(callback_).Run(SubmissionResult::kFailure);
+    std::move(callback_).Run(SubmissionVerificationResult::kFailure);
     return;
   }
 
@@ -232,7 +227,8 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
               PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED &&
       base::FeatureList::IsEnabled(
           password_manager::features::kUserInterventionForPasswordChange)) {
-    std::move(callback_).Run(SubmissionResult::kUserInterventionNeeded);
+    std::move(callback_).Run(
+        SubmissionVerificationResult::kUserInterventionNeeded);
     return;
   }
 
@@ -242,9 +238,9 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
       outcome ==
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    std::move(callback_).Run(SubmissionResult::kSuccess);
+    std::move(callback_).Run(SubmissionVerificationResult::kSuccess);
     return;
   }
 
-  std::move(callback_).Run(SubmissionResult::kFailure);
+  std::move(callback_).Run(SubmissionVerificationResult::kFailure);
 }

@@ -1212,6 +1212,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ChangePasswordFormSubmissionError"
+    enum="ChangePasswordFormSubmissionError" expires_after="2026-12-14">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the error ChangePasswordFormFillingSubmissionHelper encountered
+    while filling and submitting a change password form.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2026-07-12">

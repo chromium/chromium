@@ -58,8 +58,10 @@ namespace {
 using ::password_manager::BrowserSavePasswordProgressLogger;
 using FlowStep = ModelQualityLogsUploader::FlowStep;
 using QualityStatus = ModelQualityLogsUploader::QualityStatus;
-using SubmissionResult =
-    ChangePasswordFormFillingSubmissionHelper::SubmissionResult;
+using SubmissionError =
+    ChangePasswordFormFillingSubmissionHelper::SubmissionError;
+using SubmissionVerificationResult =
+    PasswordChangeSubmissionVerifier::SubmissionVerificationResult;
 
 constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
@@ -374,14 +376,7 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   ReportFlowInterruption(
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
-  login_state_checker_.reset();
-  navigation_observer_.reset();
-  submission_verifier_.reset();
-  form_finder_.reset();
-  otp_fields_detected_subscription_ = {};
-  hidden_executor_.reset();
-  visible_executor_ = nullptr;
-
+  ResetInternalState();
   UpdateState(State::kCanceled);
 }
 
@@ -395,15 +390,14 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
       form_manager->GetDriver()->GetPasswordGenerationHelper());
 
   CHECK(executor());
-  CHECK(!submission_verifier_);
-  submission_verifier_ =
+  CHECK(!form_submission_helper_);
+  form_submission_helper_ =
       std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
           executor(), ChromePasswordManagerClient::FromWebContents(executor()),
           logs_uploader_.get(),
-          base::BindOnce(
-              &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
-              weak_ptr_factory_.GetWeakPtr()));
-  submission_verifier_->FillChangePasswordForm(
+          base::BindOnce(&PasswordChangeDelegateImpl::OnChangeFormSubmitted,
+                         weak_ptr_factory_.GetWeakPtr()));
+  form_submission_helper_->FillChangePasswordForm(
       form_manager, username_, original_password_, generated_password_);
   UpdateState(State::kChangingPassword);
 }
@@ -440,14 +434,11 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
         QualityStatus::
             PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
     // Reset pointers immediately to avoid keeping dangling pointer to the tab.
+    ResetInternalState();
     originator_ = nullptr;
     visible_executor_ = nullptr;
-    navigation_observer_.reset();
-    login_state_checker_.reset();
-    submission_verifier_.reset();
+    hidden_executor_.reset();
     ui_controller_.reset();
-    form_finder_.reset();
-    submission_verifier_.reset();
     Stop();
   }
 }
@@ -470,8 +461,8 @@ void PasswordChangeDelegateImpl::Stop() {
 
 void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
     content::WebContents* web_contents) {
-  if (submission_verifier_) {
-    submission_verifier_->OnPasswordFormSubmission(web_contents);
+  if (form_submission_helper_) {
+    form_submission_helper_->OnPasswordFormSubmission(web_contents);
   }
 }
 
@@ -484,9 +475,7 @@ void PasswordChangeDelegateImpl::OnOtpFieldDetected() {
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
 
-  form_finder_.reset();
-  submission_verifier_.reset();
-
+  ResetInternalState();
   UpdateState(State::kOtpDetected);
 }
 
@@ -508,14 +497,15 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
     FocusPasswordChangeTab(web_contents);
   }
 
-  if (current_state_ == State::kOtpDetected && submission_verifier_) {
+  if (current_state_ == State::kOtpDetected && form_manager_) {
     CHECK(base::FeatureList::IsEnabled(
         password_manager::features::kUserInterventionForPasswordChange));
     // If user decided to take over control when interruption is detected we
     // assume they will complete the password change process, thus the new
     // password must be saved.
-    submission_verifier_->SavePassword(username_);
-    submission_verifier_.reset();
+    form_manager_->OnUpdateUsernameFromPrompt(username_);
+    form_manager_->Save();
+    form_manager_.reset();
   }
 }
 
@@ -658,14 +648,39 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
   }
 }
 
+void PasswordChangeDelegateImpl::OnChangeFormSubmitted(
+    ChangePasswordFormFillingSubmissionHelper::SubmissionResult result) {
+  form_submission_helper_.reset();
+  if (result.has_value()) {
+    form_manager_ = std::move(result).value();
+    submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
+        executor(), logs_uploader_.get(),
+        base::BindOnce(
+            &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  switch (result.error()) {
+    case SubmissionError::kFailedToFillForm:
+    case SubmissionError::kTimeout:
+    case SubmissionError::kFailedToCaptureContent:
+    case SubmissionError::kFailedToParseResponse:
+    case SubmissionError::kSubmitButtonNotFound:
+    case SubmissionError::kFailedToClickSubmit:
+      UpdateState(State::kPasswordChangeFailed);
+      break;
+    case SubmissionError::kInterventionDetected:
+      UpdateState(State::kOtpDetected);
+      break;
+  }
+}
+
 void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
-    SubmissionResult result) {
+    SubmissionVerificationResult result) {
+  submission_verifier_.reset();
   switch (result) {
-    case SubmissionResult::kUserInterventionNeededPasswordNotSumbitted:
-      submission_verifier_.reset();
-      // Fallthrough to the kUserInterventionNeeded case to show dedicated UI.
-      [[fallthrough]];
-    case SubmissionResult::kUserInterventionNeeded:
+    case SubmissionVerificationResult::kUserInterventionNeeded:
       // The feature must be enabled to receive the User Intervention state.
       if (auto logger = GetLoggerIfAvailable(executor())) {
         logger->LogBoolean(
@@ -675,7 +690,7 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
       }
       UpdateState(State::kOtpDetected);
       break;
-    case SubmissionResult::kFailure:
+    case SubmissionVerificationResult::kFailure:
       if (auto logger = GetLoggerIfAvailable(executor())) {
         logger->LogBoolean(
             BrowserSavePasswordProgressLogger::
@@ -683,10 +698,8 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
             /*truth_value=*/false);
       }
       UpdateState(State::kPasswordChangeFailed);
-      submission_verifier_.reset();
       break;
-
-    case SubmissionResult::kSuccess:
+    case SubmissionVerificationResult::kSuccess:
       if (auto logger = GetLoggerIfAvailable(executor())) {
         logger->LogBoolean(
             BrowserSavePasswordProgressLogger::
@@ -695,10 +708,12 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
       }
       // Password change was successful. Save new password with an original
       // username.
-      submission_verifier_->SavePassword(username_);
+      CHECK(form_manager_);
+      form_manager_->OnUpdateUsernameFromPrompt(username_);
+      form_manager_->Save();
+      form_manager_.reset();
       NotifyPasswordChangeFinishedSuccessfully(originator_);
       UpdateState(State::kPasswordSuccessfullyChanged);
-      submission_verifier_.reset();
       break;
   }
 }
@@ -713,8 +728,7 @@ bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
 }
 
 std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
-  GURL url = submission_verifier_ ? submission_verifier_->GetURL()
-                                  : change_password_url_;
+  GURL url = form_manager_ ? form_manager_->GetURL() : change_password_url_;
   return url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
@@ -734,19 +748,17 @@ void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
   // Navigation happened when looking for a change password form, password
   // change can be terminated safely with `kChangePasswordFormNotFound`.
   if (form_finder_) {
-    OnPasswordChangeFormNotFound(
-        ChangePasswordFormFinder::kInterruptionDetected);
-    return;
-  }
-  // Navigation happened when submitting the form. Terminate flow with a failure
-  // message.
-  if (submission_verifier_) {
-    OnChangeFormSubmissionVerified(SubmissionResult::kFailure);
-    return;
+    UpdateState(State::kChangePasswordFormNotFound);
+  } else if (form_submission_helper_ || submission_verifier_) {
+    // Navigation happened when submitting the form. Terminate flow with a
+    // failure message.
+    UpdateState(State::kPasswordChangeFailed);
+  } else {
+    // This shouldn't happen, just stop the flow immediately.
+    Stop();
   }
 
-  // This shouldn't happen, just stop the flow immediately.
-  Stop();
+  ResetInternalState();
 }
 
 void PasswordChangeDelegateImpl::ReportFlowInterruption(QualityStatus status) {
@@ -766,11 +778,18 @@ void PasswordChangeDelegateImpl::ReportFlowInterruption(QualityStatus status) {
     return;
   }
 
-  if (submission_verifier_) {
+  if (form_submission_helper_) {
     logs_uploader_->SetFlowInterrupted(
-        submission_verifier_->IsPasswordFormSubmitted()
+        form_submission_helper_->IsPasswordFormSubmitted()
             ? FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP
             : FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+        status);
+    return;
+  }
+
+  if (submission_verifier_) {
+    logs_uploader_->SetFlowInterrupted(
+        FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP,
         status);
     return;
   }
@@ -778,4 +797,14 @@ void PasswordChangeDelegateImpl::ReportFlowInterruption(QualityStatus status) {
 
 base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PasswordChangeDelegateImpl::ResetInternalState() {
+  navigation_observer_.reset();
+  login_state_checker_.reset();
+  form_finder_.reset();
+  form_submission_helper_.reset();
+  submission_verifier_.reset();
+  form_manager_.reset();
+  otp_fields_detected_subscription_ = {};
 }

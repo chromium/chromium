@@ -317,6 +317,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Form not found"/>
 </enum>
 
+<!-- LINT.IfChange(ChangePasswordFormSubmissionError) -->
+
+<enum name="ChangePasswordFormSubmissionError">
+  <int value="0" label="Failed to fill the form"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Failed to capture page content"/>
+  <int value="3" label="Failed to parse response"/>
+  <int value="4" label="Submit button not found"/>
+  <int value="5" label="Interruption detected (OTP, etc.)"/>
+  <int value="6" label="Failed to click submit"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/change_password_form_filling_submission_helper.h) -->
+
 <enum name="CharacterClassPresenceChange">
   <int value="0" label="No change"/>
   <int value="1" label="Character class was absent and is added"/>
