@@ -4,10 +4,70 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 
+#include <sstream>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
+
+TEST(AxisTest, StreamOperators) {
+  test::TaskEnvironment task_environment;
+
+  {
+    std::stringstream ss;
+    ss << kLogicalAxesNone;
+    EXPECT_EQ("\"kLogicalAxesNone\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << kLogicalAxesInline;
+    EXPECT_EQ("\"kLogicalAxesInline\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << kLogicalAxesBlock;
+    EXPECT_EQ("\"kLogicalAxesBlock\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << kLogicalAxesBoth;
+    EXPECT_EQ("\"kLogicalAxesBoth\"", ss.str());
+  }
+
+  {
+    std::stringstream ss;
+    ss << kPhysicalAxesNone;
+    EXPECT_EQ("\"kPhysicalAxesNone\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << kPhysicalAxesHorizontal;
+    EXPECT_EQ("\"kPhysicalAxesHorizontal\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << kPhysicalAxesVertical;
+    EXPECT_EQ("\"kPhysicalAxesVertical\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << kPhysicalAxesBoth;
+    EXPECT_EQ("\"kPhysicalAxesBoth\"", ss.str());
+  }
+
+  // Test fallback
+  {
+    std::stringstream ss;
+    ss << LogicalAxes(100);
+    EXPECT_EQ("\"LogicalAxes(100)\"", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << PhysicalAxes(100);
+    EXPECT_EQ("\"PhysicalAxes(100)\"", ss.str());
+  }
+}
 
 TEST(AxisTest, LogicalAxesOperators) {
   test::TaskEnvironment task_environment;
