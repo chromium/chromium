@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
@@ -960,17 +961,27 @@ public class ChildProcessConnection {
         int NUM_ENTRIES = 4;
     }
 
+    private static final String NATIVE_SANDBOXED_SERVICE =
+            "org.chromium.content.app.NativeOnlySandboxedProcessService";
+    private static final String SANDBOXED_SERVICE =
+            "org.chromium.content.app.SandboxedProcessService";
+    private static final String PRIVILEGED_SERVICE =
+            "org.chromium.content.app.PrivilegedProcessService";
+
     private void fallbackService() {
         assert mFallbackServiceName != null;
         @ServiceNames int serviceName;
         String className = mFallbackServiceName.getClassName();
+        if (mServiceName.getClassName().startsWith(NATIVE_SANDBOXED_SERVICE)) {
+            JavaExceptionReporter.reportException(
+                    new Throwable("Fallback from NativeOnlySandboxedProcessService"));
+        }
         // Don't use the exact match because service names have a number as a suffix.
-        if (className.startsWith("org.chromium.content.app.SandboxedProcessService")) {
+        if (className.startsWith(SANDBOXED_SERVICE)) {
             serviceName = ServiceNames.JAVA_SANDBOXED;
-        } else if (className.startsWith(
-                "org.chromium.content.app.NativeOnlySandboxedProcessService")) {
+        } else if (className.startsWith(NATIVE_SANDBOXED_SERVICE)) {
             serviceName = ServiceNames.NATIVE_ONLY_SANDBOXED;
-        } else if (className.startsWith("org.chromium.content.app.PrivilegedProcessService")) {
+        } else if (className.startsWith(PRIVILEGED_SERVICE)) {
             serviceName = ServiceNames.PRIVILEGED;
         } else {
             serviceName = ServiceNames.OTHER;
