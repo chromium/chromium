@@ -62,6 +62,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Skills.UserSkills.Count" units="skills"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the total number of skills a user possesses per profile. Used to
+    measure adoption depth over time. This metric is recorded, potentially
+    multiple times (once per profile) with every UMA log by
+    SkillsMetricsProvider.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

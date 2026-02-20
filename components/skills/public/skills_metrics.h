@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SKILLS_PUBLIC_SKILLS_METRICS_H_
 #define COMPONENTS_SKILLS_PUBLIC_SKILLS_METRICS_H_
 
+#include <cstddef>
 namespace skills {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -46,6 +47,11 @@ void RecordSkillsDialogAction(SkillsDialogAction action, bool is_edit_mode);
 
 // Records the execution of a skill and its type.
 void RecordSkillsInvokeAction(SkillsInvokeAction action);
+
+// Records the current total number of skills the user possesses.
+// This is called periodically by the SkillsMetricsProvider to capture
+// the user's status throughout the session.
+void RecordUserSkillCount(size_t skill_count);
 
 // Records the result of a first-party skill list download attempt from static
 // content server link.

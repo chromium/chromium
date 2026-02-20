@@ -231,7 +231,9 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/skills/skills_metrics_provider.h"
 #include "chrome/browser/ui/tabs/tab_metrics_provider.h"
+#include "components/skills/features.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -567,8 +569,8 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::structured::ChromeStructuredMetricsRecorder::RegisterLocalState(
       registry);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-        // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // \ BUILDFLAG(IS_MAC)
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1012,6 +1014,16 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<TabMetricsProvider>(
           g_browser_process->profile_manager()));
+  if (base::FeatureList::IsEnabled(features::kSkillsMetricsProviderEnabled)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<skills::SkillsMetricsProvider>(
+            base::BindRepeating([]() {
+              return g_browser_process->profile_manager()
+                         ? g_browser_process->profile_manager()
+                               ->GetLoadedProfiles()
+                         : std::vector<Profile*>();
+            })));
+  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

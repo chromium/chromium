@@ -8,6 +8,8 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("skills") {
   sources = [
+    "skills_metrics_provider.cc",
+    "skills_metrics_provider.h",
     "skills_service_factory.cc",
     "skills_service_factory.h",
   ]
@@ -33,9 +35,9 @@ source_set("skills") {
 source_set("public") {
   sources = [
     "skills_dialog_launcher.h",
-    "skills_ui_window_controller.h",
     "skills_ui_tab_controller_interface.cc",
     "skills_ui_tab_controller_interface.h",
+    "skills_ui_window_controller.h",
   ]
   deps = [
     "//base",
@@ -138,6 +140,7 @@ if (enable_glic) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "skills_metrics_provider_unittest.cc",
       "skills_ui_tab_controller_unittest.cc",
       "skills_update_observer_unittest.cc",
     ]
@@ -155,6 +158,7 @@ if (enable_glic) {
       "//chrome/test:test_support",
       "//components/keyed_service/core",
       "//components/skills:features",
+      "//components/skills/mocks",
       "//components/skills/proto",
       "//components/skills/public",
       "//components/tabs:test_support",
