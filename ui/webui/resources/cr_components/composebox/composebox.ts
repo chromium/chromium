@@ -833,6 +833,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected voiceSearchEndCleanup_() {
     this.inVoiceSearchMode_ = false;
     this.animationState = GlowAnimationState.NONE;
+    this.transcript_ = '';
   }
 
   protected async onVoiceSearchFinalResult_(e: CustomEvent<string>) {
@@ -847,6 +848,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.searchboxHandler_.submitQuery(
           e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
           /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+      this.submitCleanup_();
     } else {
       // If auto-submit is not enabled, update the input to the voice search
       // query, clear autocomplete matches, and recompute whether submission
@@ -1198,6 +1200,28 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  protected submitCleanup_() {
+    // Update states after submitting:
+    this.animationState = GlowAnimationState.SUBMITTING;
+    // Nano banana and deep search allow for follow ups, so
+    // do not clear them.
+    if (this.activeToolMode_ === ToolMode.kCanvas) {
+      this.resetModes();
+    }
+
+    // If the composebox is expandable or we should clear it, clear the input
+    // after submitting the query.
+    if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery_) {
+      this.clearAllInputs(/* querySubmitted= */ true);
+    }
+
+    if (this.isCollapsible) {
+      this.$.input.blur();
+    }
+
+    this.fire('composebox-submit');
+  }
+
   protected submitQuery_(e: KeyboardEvent|MouseEvent) {
     // If the submit button is disabled, do nothing.
     if (!this.canSubmitFilesAndInput_) {
@@ -1229,24 +1253,7 @@ export class ComposeboxElement extends I18nMixinLit
           e.ctrlKey, e.metaKey, e.shiftKey);
     }
 
-    this.animationState = GlowAnimationState.SUBMITTING;
-
-    // Nano banana and deep search allow for follow ups, so
-    // do not clear them.
-    if (this.activeToolMode_ === ToolMode.kCanvas) {
-      this.resetModes();
-    }
-
-    // If the composebox is expandable, collapse it and clear the input after
-    // submitting.
-    if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery_) {
-      this.clearAllInputs(/* querySubmitted= */ true);
-    }
-
-    if (this.isCollapsible) {
-      this.$.input.blur();
-    }
-    this.fire('composebox-submit');
+    this.submitCleanup_();
   }
 
   /**

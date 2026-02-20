@@ -1671,68 +1671,26 @@ suite('ContextualTasksComposeboxTest', () => {
             'Voice search button clicked metric count is incorrect');
       });
 
-  test('on voice search result updates the searchbox input', async () => {
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
-
-    const voiceSearchButton = getVoiceSearchButton(composebox);
-    voiceSearchButton!.click();
-    await microtasksFinished();
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.State',
-            /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
-        'Voice search button clicked metric count is incorrect');
-
-    const result = createResults(2);
-    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
-    Object.assign(result.results[1]![0]!, {transcript: 'world'});
-
-    mockSpeechRecognition.onresult!(result);
-    await microtasksFinished();
-
-    const voiceSearchElement = (composebox as any).$.voiceSearch;
-    const voiceSearchInput = voiceSearchElement.$.input;
-
-    assertEquals('helloworld', voiceSearchInput.value);
-    await microtasksFinished();
-
-    assertEquals(
-        0,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.State',
-            /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 2),
-        'Voice search transcription success\
-                metric count is incorrect for helloworld');
-
-    const result2 = createResults(2);
-    Object.assign(result2.results[0]![0]!, {transcript: 'hello'});
-    Object.assign(result2.results[1]![0]!, {transcript: 'hellogoodbye'});
-    /* Done with transcribing once there is one `isFinal`.
-     * This is because it is in continuous mode. Means terminate and
-     * take the specific result marked with `resultIndex`.
-     */
-    Object.assign(result2.results[1]!, {isFinal: true});
-    (result2 as any).resultIndex = 1;
-    mockSpeechRecognition.onresult!(result2);
-    await microtasksFinished();
-
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.State',
-            /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
-        'Voice transcription success metric count is wrong: hellogoodbye');
-  });
-
   test(
-      'voice search with final result submits metric when idle out',
+      'on voice search result updates the searchbox' +
+          'input (final, continuous) but no submit',
       async () => {
-        const composebox = contextualTasksApp.$.composebox.$.composebox;
+        composebox.autoSubmitVoiceSearch = false;
+        await composebox.updateComplete;
+        await microtasksFinished();
 
         const voiceSearchButton = getVoiceSearchButton(composebox);
         voiceSearchButton!.click();
+
+        await composebox.updateComplete;
         await microtasksFinished();
+
+        assertEquals(
+            composebox.animationState, GlowAnimationState.LISTENING,
+            'Animation state should be LISTENING');
+        assertTrue(
+            composebox.inVoiceSearchMode_,
+            'Should be in voice search mode after clicking button');
 
         assertEquals(
             1,
@@ -1740,20 +1698,170 @@ suite('ContextualTasksComposeboxTest', () => {
                 'ContextualTasks.VoiceSearch.State',
                 /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
             'Voice search button clicked metric count is incorrect');
+        assertTrue(
+            composebox.inVoiceSearchMode_,
+            'Should be in voice search mode after clicking button');
 
-        const voiceSearchElement = (composebox as any).$.voiceSearch;
-        voiceSearchElement.transcript_ = 'test';
-        voiceSearchElement.onIdleTimeout_();
+        const result = createResults(2);
+        Object.assign(result.results[0]![0]!, {transcript: 'hello'});
+        Object.assign(result.results[1]![0]!, {transcript: 'world'});
+
+        mockSpeechRecognition.onresult!(result);
+
+        const voiceSearchElement = composebox.$.voiceSearch;
+        const voiceSearchInput = voiceSearchElement.$.input;
+
         await microtasksFinished();
+        await composebox.updateComplete;
+        await voiceSearchElement.updateComplete;
+        await voiceSearchInput.updateComplete;
+
+        assertEquals(
+            'helloworld', voiceSearchInput.value,
+            'Input should be updated immediately on result');
+        assertEquals(
+            'helloworld', composebox.transcript_,
+            'Composebox transcript should be updated with voice result');
+        assertEquals(
+            'helloworld', voiceSearchElement.transcript_,
+            'Voice search transcript should be updated with voice result');
+
+        assertEquals(
+            '', composebox.input_,
+            'Composebox input should be empty if not final result');
+
+        assertEquals(
+            0,
+            metrics.count(
+                'ContextualTasks.VoiceSearch.State',
+                /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 2),
+            'Voice search transcription success\
+                metric count is incorrect for helloworld');
+
+        const result2 = createResults(2);
+        Object.assign(result2.results[0]![0]!, {transcript: 'hello'});
+        Object.assign(result2.results[1]![0]!, {transcript: 'hellogoodbye'});
+        /* Done with transcribing once there is one `isFinal`.
+         * This is because it is in continuous mode. Means terminate and
+         * take the specific result marked with `resultIndex`.
+         * Only 'hellogoodbye' should be taken as final result given
+         * we set its flag 'isFinal' to true. There
+         * can only be one final result.
+         */
+        Object.assign(result2.results[1]!, {isFinal: true});
+        (result2 as any).resultIndex = 1;
+        mockSpeechRecognition.onresult!(result2);
+
+        await microtasksFinished();
+        await composebox.updateComplete;
+
+
+        assertEquals(
+            'hellogoodbye', composebox.input_,
+            'Composebox input should be updated with final result');
+
+        assertEquals(
+            '', voiceSearchElement.transcript_,
+            'Voice search transcript should be cleared with final result');
+        assertEquals(
+            '', voiceSearchInput.value,
+            'Voice search input value should be cleared with final result');
 
         assertEquals(
             1,
             metrics.count(
                 'ContextualTasks.VoiceSearch.State',
                 /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
-            'Voice search transcription success\
-                metric count is incorrect for idle timeout');
+            'Voice transcription success metric count is wrong: hellogoodbye');
+
+        assertNotEquals(
+            composebox.animationState, GlowAnimationState.SUBMITTING,
+            'Query is not submitted via submitQuery_()');
+        assertFalse(
+            composebox.inVoiceSearchMode_,
+            'Should exit voice search mode after submit');
+        assertEquals(
+            composebox.transcript_, '',
+            'Composebox transcript should be cleared after voice mode end');
       });
+
+  test('on voice search result submits if auto submit enabled', async () => {
+    composebox.autoSubmitVoiceSearch = true;
+
+    const voiceSearchButton = getVoiceSearchButton(composebox);
+    voiceSearchButton!.click();
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertTrue(
+        composebox.inVoiceSearchMode_,
+        'Should be in voice search mode after clicking button');
+    assertEquals(
+        composebox.animationState, GlowAnimationState.LISTENING,
+        'Animation state should be LISTENING');
+    assertEquals(
+        1,
+        metrics.count(
+            'ContextualTasks.VoiceSearch.State',
+            /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
+        'Voice search button clicked metric count is incorrect');
+    const [callback] = await windowProxy.whenCalled('setTimeout');
+
+    const result = createResults(2);
+    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result.results[1]![0]!, {transcript: 'world2'});
+
+    const voiceSearchElement = composebox.$.voiceSearch;
+    const voiceSearchInput = voiceSearchElement.$.input;
+
+    mockSpeechRecognition.onresult!(result);
+
+    await microtasksFinished();
+    await composebox.updateComplete;
+    await voiceSearchElement.updateComplete;
+    await voiceSearchInput.updateComplete;
+
+    assertEquals('helloworld2', voiceSearchInput.value);
+    assertEquals(
+        'helloworld2', voiceSearchElement.transcript_,
+        'Voice search transcript should be updated immediately on result');
+    assertEquals(
+        'helloworld2', composebox.transcript_,
+        'Transcript should be updated immediately on result');
+
+    assertEquals(
+        '', composebox.input_,
+        'Input should not be updated in composebox without final result');
+
+    callback();
+    await microtasksFinished();
+    await composebox.updateComplete;
+
+    assertEquals(
+        1,
+        metrics.count(
+            'ContextualTasks.VoiceSearch.State',
+            /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
+        'Voice transcription success metric count is wrong: helloworld2');
+    assertEquals(
+        composebox.animationState, GlowAnimationState.SUBMITTING,
+        'Query is submitted via submitQuery_()');
+    assertEquals(composebox.input_, '', 'Input should be cleared after submit');
+
+    assertEquals(
+        '', voiceSearchInput.value,
+        'Voice Search input should be cleared after submit');
+    assertEquals(
+        '', voiceSearchElement.transcript_,
+        'Voice Search transcript should be cleared after submit');
+
+    assertFalse(
+        composebox.inVoiceSearchMode_,
+        'Should exit voice search mode after submit');
+    assertEquals(
+        composebox.transcript_, '',
+        'Composebox transcript should be cleared after submit');
+  });
 
   test('on error shows error container for NOT_ALLOWED', async () => {
     const composeboxDiv =
