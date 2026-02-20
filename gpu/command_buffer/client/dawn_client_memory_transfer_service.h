@@ -6,8 +6,10 @@
 #define GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_MEMORY_TRANSFER_SERVICE_H_
 
 #include <dawn/wire/WireClient.h>
+
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 
 namespace gpu {
@@ -43,9 +45,10 @@ class DawnClientMemoryTransferService
   class ReadHandleImpl;
   class WriteHandleImpl;
 
-  // Allocate a shared memory handle for the memory transfer.
-  // TODO(crbug.com/40285824): Return the span instead of a pointer.
-  void* AllocateHandle(size_t size, MemoryTransferHandle* handle);
+  // Allocate a shared memory transfer buffer and populate `handle` with its
+  // metadata (shm_id, shm_offset, size).
+  base::span<uint8_t> AllocateTransferBuffer(size_t size,
+                                             MemoryTransferHandle* handle);
 
   // Mark a shared memory allocation as free. This should not be called more
   // than once per block.
