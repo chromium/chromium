@@ -14,6 +14,7 @@ export function getHtml(this: SearchboxElement) {
     part="contextual-entrypoint-and-carousel"
     exportparts="composebox-entrypoint, context-menu-entrypoint-icon, voice-icon, context-menu-and-tools"
     .tabSuggestions="${this.tabSuggestions_}"
+    .recentTabForChip="${this.recentTabForChip_}"
     entrypoint-name="Realbox"
     @add-tab-context="${this.addTabContext_}"
     @add-file-context="${this.addFileContext_}"
@@ -25,7 +26,8 @@ export function getHtml(this: SearchboxElement) {
     @context-menu-closed="${this.onContextMenuClosed_}"
     @context-menu-opened="${this.onContextMenuOpened_}"
     ?show-dropdown="${this.dropdownIsVisible}"
-    ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
+    ?show-recent-tab-chip="${!this.useCompactLayout_() &&
+        this.computeShowRecentTabChip_()}"
     .inputState="${this.inputState_}"
     ?show-model-picker="${this.showModelPicker_}"
     searchbox-layout-mode="${this.searchboxLayoutMode}"

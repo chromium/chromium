@@ -98,7 +98,7 @@ export function getHtml(this: SearchboxElement) {
     ${this.useCompactLayout_() ? html`
       <div class="dropdownContainer">
         ${getDropdownHtml.bind(this)()}
-        ${this.shouldShowRecentTabChipInDropdown_() ? html`
+        ${this.computeShowRecentTabChip_() ? html`
           <div id="recentTabChipContainer">
             <composebox-recent-tab-chip
                 .recentTab="${this.recentTabForChip_}"

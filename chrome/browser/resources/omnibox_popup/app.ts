@@ -95,7 +95,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       isLensSearchEligible_: {type: Boolean},
       isAimEligible_: {type: Boolean},
       isRecentTabChipEnabled_: {type: Boolean},
-      tabSuggestions_: {type: Array},
+      recentTabForChip_: {type: Object},
       inputState_: {type: Object},
       showModelPicker_: {type: Boolean},
       usePecApi_: {type: Boolean},
@@ -120,7 +120,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor isLensSearchEligible_: boolean = false;
   protected accessor isAimEligible_: boolean = false;
-  protected accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor inputState_: InputState|null = null;
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
@@ -212,7 +212,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         changedPrivateProperties.has('searchboxLayoutMode_') ||
         changedPrivateProperties.has('isInKeywordMode_') ||
         changedPrivateProperties.has('showAiModePrefEnabled_') ||
-        changedPrivateProperties.has('tabSuggestions_') ||
+        changedPrivateProperties.has('recentTabForChip_') ||
         changedPrivateProperties.has('result_') ||
         changedPrivateProperties.has('isLensSearchEligible_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
@@ -268,7 +268,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_) {
       this.$.context.blurEntrypoint();
     }
-    this.refreshTabSuggestions_();
+    this.refreshRecentTabForChip_();
   }
 
   protected onResultRepaint_() {
@@ -302,9 +302,13 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.pageHandler_.showContextMenu(point);
   }
 
-  protected async refreshTabSuggestions_() {
+  protected async refreshRecentTabForChip_() {
     const {tabs} = await this.pageHandler_.getRecentTabs();
-    this.tabSuggestions_ = [...tabs];
+    this.recentTabForChip_ = tabs.find(tab => tab.showInCurrentTabChip) || null;
+    if (!this.recentTabForChip_) {
+      this.recentTabForChip_ =
+          tabs.find(tab => tab.showInPreviousTabChip) || null;
+    }
   }
 
   protected onLensSearchChipClicked_() {
@@ -322,17 +326,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   protected computeShowRecentTabChip_() {
     const input = this.result_?.input;
-    let recentTabForChip =
-        this.tabSuggestions_.find(tab => tab.showInCurrentTabChip) || null;
-    if (!recentTabForChip) {
-      recentTabForChip =
-          this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
-    }
     // When "Always Show Full URL" is enabled the input has protocol etc.
     // so strip both input and url from the recent tab chip.
-    return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
+    return this.isRecentTabChipEnabled_ && !!this.recentTabForChip_ &&
         (input?.length === 0 ||
-         this.stripUrl_(input) === this.stripUrl_(recentTabForChip?.url));
+         this.stripUrl_(input) === this.stripUrl_(this.recentTabForChip_?.url));
   }
 
   private stripUrl_(url: string|undefined): string {

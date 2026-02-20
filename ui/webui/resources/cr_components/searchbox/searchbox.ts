@@ -1203,17 +1203,14 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected computeShowRecentTabChip_(): boolean {
     // composeboxShowRecentTabChip is unavailable in the WebUI Browser.
-    return loadTimeData.valueExists('composeboxShowRecentTabChip') &&
-        loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
-        this.result_?.input.length === 0;
-  }
-
-  protected shouldShowRecentTabChipInDropdown_(): boolean {
+    const recentTabChipEnabled =
+        loadTimeData.valueExists('composeboxShowRecentTabChip') &&
+        loadTimeData.getBoolean('composeboxShowRecentTabChip');
     const isBrowserTabAllowed = !this.showModelPicker_ ||
         (!!this.inputState_ &&
          this.inputState_.allowedInputTypes.includes(InputType.kBrowserTab));
-    return !!this.recentTabForChip_ && this.dropdownIsVisible &&
-        this.isInputEmpty() && isBrowserTabAllowed;
+    return recentTabChipEnabled && !!this.recentTabForChip_ &&
+        this.dropdownIsVisible && this.isInputEmpty() && isBrowserTabAllowed;
   }
 
   protected computePlaceholderText_(placeholderText: string): string {

@@ -12,10 +12,10 @@ import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoi
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   // clang-format off
   const toolChips = html`
-    ${this.shouldShowRecentTabChip_ ? html`
+    ${this.showRecentTabChip ? html`
       <composebox-recent-tab-chip id="recentTabChip"
           class="upload-button contextual-chip"
-          .recentTab="${this.recentTabForChip_}"
+          .recentTab="${this.recentTabForChip}"
           @add-tab-context="${this.addTabContext_}">
       </composebox-recent-tab-chip>
     ` : ''}
