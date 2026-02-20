@@ -899,14 +899,10 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
   ParseNameLabelResult results_to_match[] = {RESULT_MATCH_NAME,
                                              RESULT_MATCH_LABEL};
   // Give the label priority over the name to avoid misclassifications when the
-  // name has a misleading value (e.g. in TR the province field is named "city",
-  // in MX the input field for "Municipio/Delegación" is sometimes named "city"
-  // even though that should be mapped to a "Ciudad").
-  if (context.page_language == LanguageCode("tr") &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
-    std::swap(results_to_match[0], results_to_match[1]);
-  } else if (context.client_country == GeoIpCountryCode("MX")) {
+  // name has a misleading value (e.g. in MX the input field for
+  // "Municipio/Delegación" is sometimes named "city" even though that should be
+  // mapped to a "Ciudad").
+  if (context.client_country == GeoIpCountryCode("MX")) {
     // We may want to consider whether we unify this logic with the previous
     // block. Currently, we don't swap the language if page_language ==
     // LanguageCode("es") because Spanish is spoken in many countries and we

@@ -367,25 +367,10 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
   // is used consistently to keep the code readable.
 
   // Give the label priority over the name to avoid misclassifications when the
-  // name has a misleading value (e.g. in TR the province field is named "city",
-  // in MX the input field for "Municipio/Delegación" is sometimes named "city"
-  // even though that should be mapped to a "Ciudad"). The list of conditions is
-  // currently hard-coded for simplicity and performance.
-  // We may want to consider whether we unify this logic with the two if-blocks.
-  // The first block is language-based, the second one is country based.
-  // Currently, we don't always prefer labels if page_language ==
-  // LanguageCode("es") here because Spanish is spoken in many countries and we
-  // don't know whether such a change would be uniformly positive. At the same
-  // time, limiting prefer_label in the first block to the Turkish geolocation
-  // may restrict the behavior more than necessary.
-  bool prefer_label = false;
-  if (context_->page_language == LanguageCode("tr") &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
-    prefer_label = true;
-  } else if (context_->client_country == GeoIpCountryCode("MX")) {
-    prefer_label = true;
-  }
+  // name has a misleading value (e.g. in MX the input field for
+  // "Municipio/Delegación" is sometimes named "city" even though that should be
+  // mapped to a "Ciudad").
+  bool prefer_label = context_->client_country == GeoIpCountryCode("MX");
 
   auto MatchOnlyLabel = [](const MatchParams& p) {
     return MatchParamsWithoutAttribute(p, MatchAttribute::kName);

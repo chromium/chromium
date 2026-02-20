@@ -381,20 +381,6 @@ TEST_F(AddressFieldParserTest, ParseAmbiguousCountryState2) {
   ClassifyAndVerify();
 }
 
-// Tests that city and state fields are classified correctly when their names
-// contain keywords for different types. This is achieved by giving the priority
-// to the label over the name for pages in Turkish.
-TEST_F(AddressFieldParserTest, ParseTurkishCityStateWithLabelPrecedence) {
-  // TODO(crbug.com/40735892): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableLabelPrecedenceForTurkishAddresses);
-
-  AddTextFormFieldData("city", "Il", ADDRESS_HOME_STATE);
-  AddTextFormFieldData("county", "Ilce", ADDRESS_HOME_CITY);
-  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("TR"),
-                    LanguageCode("tr"));
-}
 
 // Tests that address name is not misclassified as address.
 TEST_F(AddressFieldParserTest, NotParseAddressName_TR) {
