@@ -253,6 +253,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Sharing.OneTimeTokenSharingHandler.NotificationValidationResult"
+    enum="OneTimeTokenValidationResult" expires_after="2027-02-16">
+  <owner>bkassenov@google.com</owner>
+  <owner>src/chrome/browser/sharing/OWNERS</owner>
+  <summary>
+    Records the result of validating an incoming OneTimeTokenSharing message.
+    Recorded when a message is received by OneTimeTokenSharingHandler.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.PreparePreviewFaviconDuration" units="ms"
     expires_after="2025-06-08">
   <owner>wenyufu@chromium.org</owner>

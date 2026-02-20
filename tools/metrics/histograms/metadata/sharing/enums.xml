@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="OneTimeTokenValidationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not Gmail One Time Password"/>
+  <int value="2" label="Empty Encrypted Message Reference"/>
+</enum>
+
 <enum name="PageSummarySheetEvents">
   <int value="0" label="OPEN_SUMMARY_SHEET">
     Open summary sheet: user clicked the 'create summary' option on the share

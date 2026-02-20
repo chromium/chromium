@@ -4,9 +4,11 @@
 
 #include "chrome/browser/sharing/one_time_tokens/one_time_token_sharing_handler.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_message_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +43,7 @@ class OneTimeTokenSharingHandlerTest : public testing::Test {
 };
 
 TEST_F(OneTimeTokenSharingHandlerTest, OnMessageCallsBackendAndRunsCallback) {
+  base::HistogramTester histogram_tester;
   MockGmailOtpBackend mock_gmail_otp_backend;
   auto handler =
       std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
@@ -60,10 +63,15 @@ TEST_F(OneTimeTokenSharingHandlerTest, OnMessageCallsBackendAndRunsCallback) {
   EXPECT_CALL(done_callback, Run(_));
 
   handler->OnMessage(message, done_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
+      OneTimeTokenValidationResult::kSuccess, 1);
 }
 
 TEST_F(OneTimeTokenSharingHandlerTest,
        OnEmptySharingMessageDoesNotCallBackend) {
+  base::HistogramTester histogram_tester;
   MockGmailOtpBackend mock_gmail_otp_backend;
   auto handler =
       std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
@@ -80,10 +88,15 @@ TEST_F(OneTimeTokenSharingHandlerTest,
   EXPECT_CALL(done_callback, Run(_));
 
   handler->OnMessage(message, done_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
+      OneTimeTokenValidationResult::kNotGmailOneTimePassword, 1);
 }
 
 TEST_F(OneTimeTokenSharingHandlerTest,
        OnEmptyMessageReferenceDoesNotCallBackend) {
+  base::HistogramTester histogram_tester;
   MockGmailOtpBackend mock_gmail_otp_backend;
   auto handler =
       std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
@@ -101,6 +114,10 @@ TEST_F(OneTimeTokenSharingHandlerTest,
   EXPECT_CALL(done_callback, Run(_));
 
   handler->OnMessage(message, done_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
+      OneTimeTokenValidationResult::kEmptyEncryptedMessageReference, 1);
 }
 
 }  // namespace

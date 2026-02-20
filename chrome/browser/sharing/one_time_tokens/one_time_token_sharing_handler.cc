@@ -4,8 +4,10 @@
 
 #include "chrome/browser/sharing/one_time_tokens/one_time_token_sharing_handler.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/sharing_message/proto/one_time_token_backend_notification.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_message_handler.h"
 #include "content/public/browser/browser_context.h"
@@ -20,21 +22,32 @@ void OneTimeTokenSharingHandler::OnMessage(
     components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   CHECK(message.has_one_time_token_backend_notification());
-  if (!message.one_time_token_backend_notification()
-           .has_gmail_one_time_password() ||
-      message.one_time_token_backend_notification()
-          .gmail_one_time_password()
+
+  OneTimeTokenValidationResult validation_result =
+      HandleOneTimeTokenNotification(
+          message.one_time_token_backend_notification());
+  base::UmaHistogramEnumeration(
+      "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
+      validation_result);
+
+  std::move(done_callback).Run(/*response=*/nullptr);
+}
+
+OneTimeTokenValidationResult
+OneTimeTokenSharingHandler::HandleOneTimeTokenNotification(
+    const components_sharing_message::OneTimeTokenBackendNotification&
+        notification) {
+  if (!notification.has_gmail_one_time_password()) {
+    return OneTimeTokenValidationResult::kNotGmailOneTimePassword;
+  }
+  if (notification.gmail_one_time_password()
           .encrypted_message_reference()
           .empty()) {
-    // TODO(crbug.com/482313390): Add logging.
-    std::move(done_callback).Run(/*response=*/nullptr);
-    return;
+    return OneTimeTokenValidationResult::kEmptyEncryptedMessageReference;
   }
-
   gmail_otp_backend_->OnIncomingOneTimeTokenBackendTickle(
       one_time_tokens::GmailOtpBackend::EncryptedMessageReference(
-          message.one_time_token_backend_notification()
-              .gmail_one_time_password()
+          notification.gmail_one_time_password()
               .encrypted_message_reference()));
-  std::move(done_callback).Run(/*response=*/nullptr);
+  return OneTimeTokenValidationResult::kSuccess;
 }
