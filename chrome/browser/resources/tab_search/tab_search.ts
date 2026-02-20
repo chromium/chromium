@@ -10,7 +10,6 @@ export {TabSearchAppElement} from './app.js';
 export {AutoTabGroupsPageElement} from './auto_tab_groups/auto_tab_groups_page.js';
 export {AutoTabGroupsResultsElement} from './auto_tab_groups/auto_tab_groups_results.js';
 export {DeclutterPageElement} from './declutter/declutter_page.js';
-export {LazyListElement} from './lazy_list.js';
 export type {SearchOptions} from './search.js';
 export {search} from './search.js';
 export {SelectableLazyListElement} from './selectable_lazy_list.js';
