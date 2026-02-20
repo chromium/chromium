@@ -53,6 +53,15 @@ class CONTENT_EXPORT PrefetchSingleRedirectHop final {
   PrefetchSingleRedirectHop& operator=(const PrefetchSingleRedirectHop&) =
       delete;
 
+  // Registers a cookie listener for this prefetch if it is using an isolated
+  // network context. If the cookies in the default partition associated with
+  // this URL change after this point, then the prefetched resources should
+  // not be served.
+  void RegisterCookieListener();
+  bool HaveDefaultContextCookiesChanged() const;
+  void PauseCookieListener();
+  void ResumeCookieListener();
+
   // Copies any cookies in the isolated network context associated with `this`
   // to the default network context.
   void CopyIsolatedCookies() const;

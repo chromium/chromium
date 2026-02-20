@@ -865,7 +865,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(DoNotInterceptNavigationCookiesChanged)) {
-  const GURL kTestUrl("https://example.com");
+  // The prefetch URL should be cross-site to go through cookie-related checks.
+  const GURL kTestUrl("https://cross-site.example.org");
 
   EXPECT_CALL(*test_content_browser_client(), WillCreateURLLoaderFactory)
       .Times(0);
@@ -1337,6 +1338,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   IgnoreWillCreateURLLoaderFactoryForNavigation();
 
   const GURL kTestUrl("https://example.com");
+  // The redirect URL should be cross-site to go through cookie-related checks.
   const GURL kRedirectUrl("https://redirect.com");
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(

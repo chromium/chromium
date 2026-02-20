@@ -746,13 +746,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   }
 
   if (is_eligible && !IsDecoy()) {
-    // Registers a cookie listener for this prefetch if it is using an isolated
-    // network context. If the cookies in the default partition associated with
-    // this URL change after this point, then the prefetched resources should
-    // not be served.
-    if (IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
-      RegisterCookieListener();
-    }
+    RegisterCookieListener();
   }
 }
 
@@ -924,13 +918,7 @@ void PrefetchContainer::AddXClientDataHeader(
 }
 
 void PrefetchContainer::RegisterCookieListener() {
-  PrefetchSingleRedirectHop& this_prefetch =
-      GetCurrentSingleRedirectHopToPrefetch();
-  this_prefetch.cookie_listener_ = PrefetchCookieListener::MakeAndRegister(
-      this_prefetch.url_, request()
-                              .browser_context()
-                              ->GetDefaultStoragePartition()
-                              ->GetCookieManagerForBrowserProcess());
+  GetCurrentSingleRedirectHopToPrefetch().RegisterCookieListener();
 }
 
 void PrefetchContainer::PauseAllCookieListeners() {
@@ -938,9 +926,7 @@ void PrefetchContainer::PauseAllCookieListeners() {
   // pause/resume all single prefetch's cookie listener during each single
   // prefetch's isolated cookie copy.
   for (const auto& single_redirect_hop : redirect_chain_) {
-    if (single_redirect_hop->cookie_listener_) {
-      single_redirect_hop->cookie_listener_->PauseListening();
-    }
+    single_redirect_hop->PauseCookieListener();
   }
 }
 
@@ -949,9 +935,7 @@ void PrefetchContainer::ResumeAllCookieListeners() {
   // pause/resume all single prefetch's cookie listener during each single
   // prefetch's isolated cookie copy.
   for (const auto& single_redirect_hop : redirect_chain_) {
-    if (single_redirect_hop->cookie_listener_) {
-      single_redirect_hop->cookie_listener_->ResumeListening();
-    }
+    single_redirect_hop->ResumeCookieListener();
   }
 }
 

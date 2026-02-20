@@ -7,7 +7,10 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace content {
 
@@ -31,6 +34,37 @@ PrefetchSingleRedirectHop::~PrefetchSingleRedirectHop() {
   CHECK(response_reader_);
   base::SequencedTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(response_reader_));
+}
+
+void PrefetchSingleRedirectHop::RegisterCookieListener() {
+  if (!is_isolated_network_context_required_) {
+    return;
+  }
+
+  cookie_listener_ = PrefetchCookieListener::MakeAndRegister(
+      url_, prefetch_container_->request()
+                .browser_context()
+                ->GetDefaultStoragePartition()
+                ->GetCookieManagerForBrowserProcess());
+}
+
+bool PrefetchSingleRedirectHop::HaveDefaultContextCookiesChanged() const {
+  if (cookie_listener_) {
+    return cookie_listener_->HaveCookiesChanged();
+  }
+  return false;
+}
+
+void PrefetchSingleRedirectHop::PauseCookieListener() {
+  if (cookie_listener_) {
+    cookie_listener_->PauseListening();
+  }
+}
+
+void PrefetchSingleRedirectHop::ResumeCookieListener() {
+  if (cookie_listener_) {
+    cookie_listener_->ResumeListening();
+  }
 }
 
 }  // namespace content

@@ -136,12 +136,8 @@ PrefetchServingHandle::redirect_chain() const {
 }
 
 bool PrefetchServingHandle::HaveDefaultContextCookiesChanged() const {
-  const PrefetchSingleRedirectHop& this_prefetch =
-      GetCurrentSingleRedirectHopToServe();
-  if (this_prefetch.cookie_listener_) {
-    return this_prefetch.cookie_listener_->HaveCookiesChanged();
-  }
-  return false;
+  return GetCurrentSingleRedirectHopToServe()
+      .HaveDefaultContextCookiesChanged();
 }
 
 bool PrefetchSingleRedirectHop::HasIsolatedCookieCopyStarted() const {
