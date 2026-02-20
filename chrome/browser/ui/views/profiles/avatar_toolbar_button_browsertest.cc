@@ -961,10 +961,8 @@ class AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest
 // that the profile will already be signed in.
 // This allows some specific scenarios to be easily tested; e.g. showing the
 // greeting.
-// Note: this does not scale accordingly with `MAYBE_*` tests; a simple (not
-// ideal) solution is to just not compile the test at all for the expected
-// DISABLED platform/buildflag. Also does not scale well with tests that expect
-// `PRE_` in their main test definition.
+// Note: this oes not scale well with tests that expect `PRE_` in their main
+// test definition.
 #define TEST_WITH_SIGNED_IN_FROM_PRE(test_type, test_suite, test_name)       \
   test_type(test_suite, PRE_##test_name) {                                   \
     AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());         \
@@ -1656,6 +1654,36 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonPromoBrowserTest,
   avatar->ClearActiveStateForTesting();
 
   // Then normal state.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonPromoBrowserTest,
+                             NoPromoShownUntilSyncServiceIsInitialized) {
+  SetupRequirementsForPromoType(GetAvatarPromoType());
+
+  SetSyncServiceTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+  // No Promo shown as long as the sync service is not active.
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  // Check crbug.com/454927990.
+  SetSyncServiceTransportState(
+      syncer::SyncService::TransportState::CONFIGURING);
+  // No Promo shown as long as the sync service is not active.
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  SetSyncServiceTransportState(syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_EQ(avatar->GetText(), GetExpectedPromoText());
+  avatar->ClearActiveStateForTesting();
+
+  // Once the greeting and promo are not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
 
@@ -3221,159 +3249,6 @@ IN_PROC_BROWSER_TEST_F(
   // The button should return to the normal state.
   EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-#if !BUILDFLAG(IS_WIN)
-TEST_WITH_SIGNED_IN_FROM_PRE(
-    IN_PROC_BROWSER_TEST_F,
-    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
-    ShowBatchUploadBookmarksPromo) {
-  const GaiaId primary_account_gaia_id =
-      GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
-  ASSERT_FALSE(primary_account_gaia_id.empty());
-  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
-  browser()->profile()->GetPrefs()->SetString(
-      prefs::kGoogleServicesLastSyncingGaiaId,
-      primary_account_gaia_id.ToString());
-  batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
-                                                   /*item_count=*/5);
-
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       test_given_name()));
-  avatar->ClearActiveStateForTesting();
-
-  ASSERT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(
-          IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO));
-  avatar->ClearActiveStateForTesting();
-
-  // Once the greeting and promo are not shown anymore, we expect no text.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-}
-#endif  // !BUILDFLAG(IS_WIN)
-
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-#if !BUILDFLAG(IS_WIN)
-TEST_WITH_SIGNED_IN_FROM_PRE(
-    IN_PROC_BROWSER_TEST_F,
-    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
-    ShowBatchUploadPromo) {
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
-  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
-                                                   /*item_count=*/5);
-
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       test_given_name()));
-  avatar->ClearActiveStateForTesting();
-
-  ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO));
-  avatar->ClearActiveStateForTesting();
-
-  // Once the greeting and promo are not shown anymore, we expect no text.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-}
-#endif  // !BUILDFLAG(IS_WIN)
-
-class AvatarToolbarButtonWithWindows10DepreciationBrowserTest
-    : public AvatarToolbarButtonBrowserTest {
- public:
-  AvatarToolbarButtonWithWindows10DepreciationBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::
-                                  kSigninWindows10DepreciationStateForTesting},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-#if !BUILDFLAG(IS_WIN)
-TEST_WITH_SIGNED_IN_FROM_PRE(
-    IN_PROC_BROWSER_TEST_F,
-    AvatarToolbarButtonWithWindows10DepreciationBrowserTest,
-    ShowBatchUploadWindowsDepreciationPromo) {
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
-  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
-                                                   /*item_count=*/5);
-
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       test_given_name()));
-  avatar->ClearActiveStateForTesting();
-
-  ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO));
-  avatar->ClearActiveStateForTesting();
-
-  // Once the greeting and promo are not shown anymore, we expect no text.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-}
-#endif  // !BUILDFLAG(IS_WIN)
-
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-#if !BUILDFLAG(IS_WIN)
-TEST_WITH_SIGNED_IN_FROM_PRE(
-    IN_PROC_BROWSER_TEST_F,
-    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
-    NoPromoShownUntilSyncServiceIsInitialized) {
-  const GaiaId primary_account_gaia_id =
-      GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
-  ASSERT_FALSE(primary_account_gaia_id.empty());
-  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
-  browser()->profile()->GetPrefs()->SetString(
-      ::prefs::kGoogleServicesLastSyncingGaiaId,
-      primary_account_gaia_id.ToString());
-  batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
-                                                   /*item_count=*/5);
-  SetSyncServiceTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
-
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       test_given_name()));
-  avatar->ClearActiveStateForTesting();
-  // No Promo shown as long as the sync service is not active.
-  ASSERT_EQ(avatar->GetText(), std::u16string());
-
-  // Check crbug.com/454927990.
-  SetSyncServiceTransportState(
-      syncer::SyncService::TransportState::CONFIGURING);
-  // No Promo shown as long as the sync service is not active.
-  ASSERT_EQ(avatar->GetText(), std::u16string());
-
-  SetSyncServiceTransportState(syncer::SyncService::TransportState::ACTIVE);
-  ASSERT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(
-          IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO));
-  avatar->ClearActiveStateForTesting();
-
-  // Once the greeting and promo are not shown anymore, we expect no text.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-}
-#endif  // !BUILDFLAG(IS_WIN)
-
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class AvatarToolbarButtonSignInBenefitsIphBrowserTest
