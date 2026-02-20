@@ -23,6 +23,10 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Dismisses picture in picture if the user returned to the app manually instead
+// of using the picture in picture restore action.
+- (void)dismissIfNotPipRestore;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PICTURE_IN_PICTURE_COORDINATOR_PICTURE_IN_PICTURE_COORDINATOR_H_

@@ -5108,6 +5108,10 @@ const char kChromeAppStoreUrl[] =
   _pictureInPictureCoordinator = nil;
 }
 
+- (void)dismissPictureInPictureIfNotPipRestore {
+  [_pictureInPictureCoordinator dismissIfNotPipRestore];
+}
+
 #pragma mark - NotificationsOptInCoordinatorDelegate
 
 - (void)notificationsOptInScreenDidFinish:

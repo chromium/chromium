@@ -9,12 +9,16 @@
 
 @class PictureInPictureConfiguration;
 @protocol PictureInPictureMutator;
+@protocol PictureInPictureCommands;
 
 // View controller for picture in picture.
 @interface PictureInPictureViewController : ButtonStackViewController
 
 // Mutator for picture in picture.
 @property(nonatomic, weak) id<PictureInPictureMutator> mutator;
+
+// Handler for the picture in picture commands.
+@property(nonatomic, weak) id<PictureInPictureCommands> handler;
 
 // Designated initializer.
 - (instancetype)initWithTitle:(NSString*)title
@@ -26,6 +30,10 @@
 
 // Unavailable initializer.
 - (instancetype)init NS_UNAVAILABLE;
+
+// Dismisses picture in picture if the user returned to the app manually instead
+// of using the picture in picture restore action.
+- (void)dismissIfNotPipRestore;
 
 @end
 

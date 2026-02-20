@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/docking_promo/model/docking_promo_scene_agent.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
@@ -75,6 +76,7 @@
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/picture_in_picture/model/picture_in_picture_scene_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
@@ -1501,6 +1503,10 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
   if (IsDockingPromoV2Enabled()) {
     [sceneState addAgent:[[DockingPromoSceneAgent alloc]
                              initWithPromosManager:promosManager]];
+  }
+
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [sceneState addAgent:[[PictureInPictureSceneAgent alloc] init]];
   }
 
   // Do not gate by feature flag so it can run for enabled -> disabled

@@ -9,9 +9,11 @@
 
 #import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/picture_in_picture/ui/picture_in_picture_mutator.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 
 namespace {
@@ -42,6 +44,9 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
   AVPlayerLayer* _playerLayer;
   // The boolean flag for the initial picture in picture start.
   BOOL _initialPictureInPictureStart;
+
+  // The boolean flag for restored from picture in picture.
+  BOOL _restoredFromPip;
 }
 
 - (instancetype)initWithTitle:(NSString*)title
@@ -73,6 +78,20 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   _playerLayer.frame = _playerView.bounds;
+}
+
+#pragma mark - Public
+
+- (void)dismissIfNotPipRestore {
+  __weak __typeof(self) weakSelf = self;
+  // Defer execution to allow
+  // `restoreUserInterfaceForPictureInPictureStopWithCompletionHandler` to fire
+  // first. This lets us distinguish a manual launch (which dismisses
+  // everything) from a PiP restore (which preserves the UI).
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf handleAppRestore];
+      }));
 }
 
 #pragma mark - Private
@@ -125,6 +144,20 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 
   // Start playing the video.
   [_player play];
+}
+
+// Handles the app restore after picture in picture.
+- (void)handleAppRestore {
+  if (_restoredFromPip) {
+    return;
+  }
+
+  if (_pipController.isPictureInPictureActive) {
+    _playerView.alpha = 0.0f;
+    [_pipController stopPictureInPicture];
+    [_playerView removeFromSuperview];
+    [_handler dismissPictureInPicture];
+  }
 }
 
 // Removes the observer for time control status.
@@ -196,6 +229,7 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
             (AVPictureInPictureController*)pictureInPictureController
     restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:
         (void (^)(BOOL restored))completionHandler {
+  _restoredFromPip = YES;
   completionHandler(YES);
 }
 

@@ -18,6 +18,10 @@
 // Dismisses picture-in-picture.
 - (void)dismissPictureInPicture;
 
+// Command picture in picture to be dismissed if app was not restored from
+// picture-in-picture restore action.
+- (void)dismissPictureInPictureIfNotPipRestore;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PICTURE_IN_PICTURE_COMMANDS_H_
