@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -60,6 +61,14 @@ using ::search_engines::WipeSearchEngineChoicePrefs;
 using ChoiceStatus = ::search_engines::SearchEngineChoiceService::ChoiceStatus;
 
 #if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+constexpr regional_capabilities::ProgramSettings
+    kSettingsHighlightCurrentDefault{
+        .choice_screen_eligibility_config =
+            regional_capabilities::ChoiceScreenEligibilityConfig{
+                .highlight_current_default = true,
+            },
+    };
+
 constexpr regional_capabilities::ProgramSettings
     kSettingsManagedUsersCanBeEligible{
         .choice_screen_eligibility_config =
@@ -502,7 +511,8 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
   EXPECT_EQ(GetDynamicConditions(),
-            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+            IfSupported(SearchEngineChoiceScreenConditions::
+                            kHasNonHighlightablePrepopulatedSearchEngine));
 }
 
 TEST_F(SearchEngineChoiceEligibilityTest,
@@ -901,6 +911,23 @@ TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
   EXPECT_EQ(GetDynamicConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       CurrentEngineNotOfferedInChoiceScreen) {
+  SetProgram(kSettingsHighlightCurrentDefault);
+
+  // Naver is a prepopulated engine, but it is not available in the default set.
+  auto naver_turl_data =
+      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::naver);
+  TemplateURL* naver_turl = template_url_service().Add(
+      std::make_unique<TemplateURL>(*naver_turl_data));
+  ASSERT_TRUE(naver_turl);
+  template_url_service().SetUserSelectedDefaultSearchProvider(naver_turl);
+
+  EXPECT_EQ(GetDynamicConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::
+                            kHasNonHighlightablePrepopulatedSearchEngine));
 }
 #endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 

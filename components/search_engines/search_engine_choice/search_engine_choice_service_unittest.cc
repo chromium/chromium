@@ -1240,6 +1240,27 @@ TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest, DseHighlight) {
       choice_screen_data->display_state().is_current_default_search_presented);
   EXPECT_FALSE(
       choice_screen_data->display_state().includes_non_regional_set_engine);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.Debug.DefaultHighlightingResult", true, 1);
+}
+
+TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest, DseHighlight_NotOffered) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kCurrentDseHighlightOnChoiceScreenSupport};
+
+  OverrideProgramAndSetHighlightSettingTo(true);
+
+  // Naver is a prepopulated engine, but it is not available in the default set.
+  auto& test_dse = TemplateURLPrepopulateData::naver;
+  SetDefaultSearchProvider(test_dse);
+
+  auto choice_screen_data = template_url_service().GetChoiceScreenData();
+
+  EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().is_current_default_search_presented);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.Debug.DefaultHighlightingResult", false, 1);
 }
 
 TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,

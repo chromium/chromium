@@ -68,8 +68,12 @@ enum class SearchEngineChoiceScreenConditions {
   // having been requested by the program for devices that can be identified has
   // having had this choice imported, for example from backup and restore flows.
   kEligibleForRestore = 22,
+  // The user has a prepopulated engine that's not in the list of engines to be
+  // offered on the choice screen set as default, while the program settings
+  // require to highlight the current default.
+  kHasNonHighlightablePrepopulatedSearchEngine = 23,
 
-  kMaxValue = kEligibleForRestore,
+  kMaxValue = kHasNonHighlightablePrepopulatedSearchEngine,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
 

@@ -501,6 +501,11 @@ chromium-metrics-reviews@google.com.
     having been requested by the program for devices that can be identified has
     having had this choice imported, for example from backup and restore flows.
   </int>
+  <int value="23" label="HasNonHighlightablePrepopulatedSearchEngine">
+    The user has a prepopulated engine that's not in the list of engines to be
+    offered on the choice screen set as default, while the program settings
+    require to highlight the current default.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/enums.h:SearchEngineChoiceScreenConditions) -->
@@ -553,6 +558,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="CurrentIsUnknownPrepopulated"/>
   <int value="10" label="AccountNotEligible"/>
   <int value="11" label="Managed"/>
+  <int value="12" label="CurrentCannotBeHighlighted"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_service.h:ChoiceStatus) -->

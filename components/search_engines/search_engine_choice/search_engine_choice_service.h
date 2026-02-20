@@ -225,8 +225,11 @@ class SearchEngineChoiceService : public KeyedService {
     // The device is not eligible for the choice screen based on its management
     // status.
     kManaged = 11,
+    // The current default search engine is not in the list of engines to be
+    // offered on the choice screen, so it cannot be highlighted.
+    kCurrentCannotBeHighlighted = 12,
 
-    kMaxValue = kManaged
+    kMaxValue = kCurrentCannotBeHighlighted
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceStatus)
 
