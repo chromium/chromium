@@ -1829,7 +1829,7 @@ TEST_P(PrefetchContainerTest, CrossSitePrefetchContainerNoSpeculationTag) {
       GURL("https://test.com"),
       {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})});
 
-  EXPECT_TRUE(prefetch_container->IsCrossOriginRequest(
+  EXPECT_TRUE(prefetch_container->request().IsCrossOriginRequest(
       url::Origin::Create(prefetch_container->GetURL())));
   // Cross-site Speculation rules prefetch should not contain tag in the header.
   prefetch_container->MakeInitialResourceRequest();

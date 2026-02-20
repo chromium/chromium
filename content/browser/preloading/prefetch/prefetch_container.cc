@@ -906,14 +906,6 @@ void PrefetchContainer::AddRedirectHop(const GURL& url) {
       request().preload_pipeline_info().GetFlow()));
 }
 
-bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
-  return request().IsCrossSiteRequest(origin);
-}
-
-bool PrefetchContainer::IsCrossOriginRequest(const url::Origin& origin) const {
-  return request().IsCrossOriginRequest(origin);
-}
-
 void PrefetchContainer::MarkCrossSiteContaminated() {
   is_cross_site_contaminated_ = true;
 }
@@ -1509,10 +1501,6 @@ PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
   return this_prefetch.response_reader_->GetWeakPtr();
 }
 
-bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
-  return request().IsProxyRequiredForURL(url);
-}
-
 void PrefetchContainer::MakeInitialResourceRequest() {
   const GURL& url = request().key().url();
   url::Origin origin = url::Origin::Create(url);
@@ -1838,7 +1826,7 @@ void PrefetchContainer::AddClientHintsHeaders(
   // prefetch, and potentially a cross-site only. (This logic might need to be
   // revisited if we ever supported prefetching in another site's partition,
   // such as in a subframe.)
-  const bool is_cross_site = IsCrossSiteRequest(origin);
+  const bool is_cross_site = request().IsCrossSiteRequest(origin);
   const auto cross_site_behavior =
       features::kPrefetchClientHintsCrossSiteBehavior.Get();
   if (!is_cross_site ||

@@ -288,10 +288,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
 
-  // Whether or not the prefetch proxy would be required to fetch the given url
-  // based on `prefetch_type_`.
-  bool IsProxyRequiredForURL(const GURL& url) const;
-
   // Creates the initial resource request based on `PrefetchRequest`.
   // `UpdateResourceRequest()`, which will be called on redirect, may update
   // this resource request later on.
@@ -365,10 +361,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // response, and not serve any prefetched resources.
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
-
-  // Whether the prefetch request is cross-site/cross-origin for given origin.
-  bool IsCrossSiteRequest(const url::Origin& origin) const;
-  bool IsCrossOriginRequest(const url::Origin& origin) const;
 
   // Whether this prefetch is potentially contaminated by cross-site state.
   // If so, it may need special handling for privacy.
