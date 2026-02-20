@@ -1358,6 +1358,7 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     page_->OnReadabilityDistillationStateChanged(
         read_anything::mojom::ReadAnythingDistillationState::
             kDistillationEmpty);
+    page_->UpdateContent(/*title=*/"", /*content=*/"");
   }
 }
 
