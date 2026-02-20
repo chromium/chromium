@@ -11,17 +11,20 @@
 
 #carousel {
   box-sizing: border-box;
-  margin-bottom: 12px;
-  margin-top: 4px;
-  margin-inline-end: var(--context-carousel-inline-end-spacing, 50px);
-  margin-inline-start: var(--context-carousel-inline-start-spacing, 50px);
+  margin-bottom: var(--context-non-top-carousel-bottom-margin, 12px);
+  margin-top: var(--context-non-top-carousel-top-margin, 4px);
+  /* Prefer using margin, but from legacy var name, we should be using inset. */
+  inset-inline-start: var(--context-carousel-inline-start-spacing, 50px);
+  position: relative;
+  width: calc(100% - var(--context-carousel-inline-start-spacing, 50px) -
+      var(--context-carousel-inline-end-spacing, 50px));
 }
 
 #carousel.top {
-  margin-bottom: 0;
-  margin-top: 0;
+  margin-bottom: var(--context-top-carousel-bottom-margin, 0);
+  margin-top: var(--context-top-carousel-top-margin, 0);
   position: absolute;
-  top: 14px;
+  top: var(--context-carousel-top-position, 14px);
   width: auto;
 }
 
