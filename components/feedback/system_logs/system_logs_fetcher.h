@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -44,12 +45,12 @@ using SysLogsFetcherCallback =
 class SystemLogsFetcher {
  public:
   // If |scrub_data| is true, logs will be redacted.
-  // |first_party_extension_ids| is a null terminated array of all the 1st
-  // party extension IDs whose URLs won't be redacted. It is OK to pass null for
-  // that value if it's OK to redact those URLs or they won't be present.
+  // |first_party_extension_ids| is a span of all the 1st party
+  // extension IDs whose URLs won't be redacted. It is OK to pass an
+  // empty span if it's OK to redact those URLs or they won't be present.
   explicit SystemLogsFetcher(
       bool scrub_data,
-      base::span<const char* const> first_party_extension_ids = {});
+      base::span<const std::string_view> first_party_extension_ids = {});
 
   SystemLogsFetcher(const SystemLogsFetcher&) = delete;
   SystemLogsFetcher& operator=(const SystemLogsFetcher&) = delete;

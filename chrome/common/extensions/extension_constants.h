@@ -326,7 +326,7 @@ inline constexpr char kExtensionRequestTimestamp[] = "timestamp";
 inline constexpr char kExtensionWorkflowJustification[] = "justification";
 
 inline constexpr auto kBuiltInFirstPartyExtensionIds =
-    std::to_array<const char* const>({
+    std::to_array<const std::string_view>({
         kCalculatorAppId,
         kCalendarAppId,
         kDataSaverExtensionId,
@@ -359,7 +359,6 @@ inline constexpr auto kBuiltInFirstPartyExtensionIds =
         kTTSEngineExtensionId,
         kComponentUpdaterTTSEngineExtensionId,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-        nullptr,  // Null-terminated array.
     });
 
 }  // namespace extension_misc

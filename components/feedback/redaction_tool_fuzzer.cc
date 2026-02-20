@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -33,22 +34,21 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // The first_party_extension_ids we pass to the RedactionTool constructor.
   // This owns the array but not the pointed-to strings. Note that if
-  // first_party_extension_id_count is -1, this is not set so we pass nullptr to
-  // the constructor; that's deliberate.
-  base::HeapArray<const char*> unowned_first_party_extension_ids;
+  // first_party_extension_id_count is -1, this is not set so we pass an empty
+  // span to the constructor; that's deliberate.
+  base::HeapArray<std::string_view> unowned_first_party_extension_ids;
 
   if (first_party_extension_id_count >= 0) {
     first_party_extension_id_store.reserve(first_party_extension_id_count);
-    unowned_first_party_extension_ids = base::HeapArray<const char*>::WithSize(
-        first_party_extension_id_count + 1);
+    unowned_first_party_extension_ids =
+        base::HeapArray<std::string_view>::WithSize(
+            first_party_extension_id_count);
 
     for (int i = 0; i < first_party_extension_id_count; ++i) {
       first_party_extension_id_store.emplace_back(
           provider.ConsumeRandomLengthString(kArbitraryMaxNameLength));
-      unowned_first_party_extension_ids[i] =
-          first_party_extension_id_store[i].c_str();
+      unowned_first_party_extension_ids[i] = first_party_extension_id_store[i];
     }
-    unowned_first_party_extension_ids[first_party_extension_id_count] = nullptr;
   }
 
   redaction::RedactionTool redactor(

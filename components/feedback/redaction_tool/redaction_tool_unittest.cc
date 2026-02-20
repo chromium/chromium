@@ -21,8 +21,13 @@
 
 namespace redaction {
 
-const char kFakeFirstPartyID[] = "nkoccljplnhpfnfiajclkommnmllphnl";
-const char* const kFakeFirstPartyExtensionIDs[] = {kFakeFirstPartyID, nullptr};
+namespace {
+
+constexpr auto kFakeFirstPartyExtensionIDs = std::to_array<std::string_view>({
+    "nkoccljplnhpfnfiajclkommnmllphnl",
+});
+
+}  // namespace
 
 struct StringWithRedaction {
   // The raw version of the string before redaction. May contain PII sensitive
@@ -270,7 +275,7 @@ class RedactionToolTest : public testing::Test {
  public:
   RedactionToolTest()
       : metrics_tester_(MetricsTester::Create()),
-        redactor_(kFakeFirstPartyExtensionIDs,
+        redactor_(base::span(kFakeFirstPartyExtensionIDs),
                   metrics_tester_->SetupRecorder()) {}
 
  protected:
