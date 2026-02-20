@@ -113,6 +113,11 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   // Gather the metrics for all the processes.
   virtual void SampleAllProcesses(Observer* observer);
 
+  void AddChildProcessInfoForTesting(
+      int id,
+      MonitoredProcessType type,
+      std::unique_ptr<base::ProcessMetrics> process_metrics);
+
  private:
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(
@@ -154,7 +159,7 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
 
   std::map<content::RenderProcessHost*, ProcessInfo> render_process_infos_;
 
-  std::map<int, ProcessInfo> browser_child_process_infos_;
+  std::map<int /*ChildProcessId*/, ProcessInfo> browser_child_process_infos_;
 
   // The metrics for the processes that exited during the last interval. Added
   // to the current interval's sample and then reset to zero.

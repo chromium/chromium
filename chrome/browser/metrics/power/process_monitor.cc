@@ -267,6 +267,15 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   observer->OnAggregatedMetricsSampled(aggregated_metrics);
 }
 
+void ProcessMonitor::AddChildProcessInfoForTesting(
+    int id,
+    MonitoredProcessType type,
+    std::unique_ptr<base::ProcessMetrics> process_metrics) {
+  browser_child_process_infos_.emplace(
+      std::piecewise_construct, std::forward_as_tuple(id),
+      std::forward_as_tuple(type, std::move(process_metrics)));
+}
+
 void ProcessMonitor::OnRenderProcessHostCreated(
     content::RenderProcessHost* render_process_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
