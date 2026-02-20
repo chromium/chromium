@@ -8,12 +8,14 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/message_loop/message_pump_apple.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -304,6 +306,11 @@ void TextInputClientMac::EnterNestedLoop(base::TimeDelta timeout) {
     base::OneShotTimer nested_loop_timer;
     nested_loop_timer.Start(FROM_HERE, timeout, this,
                             &TextInputClientMac::OnNestedLoopTimeout);
+
+    // Don't pump UI events in the nested loop, to prevent re-entering from
+    // queued AppKit NSTextInputContext events.
+    base::ScopedRestrictNSEventMask event_mask(
+        base::PassKey<TextInputClientMac>{});
 
     // The loop will exit either when a response is received, or the timer
     // fires.

@@ -40,6 +40,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/run_loop.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 
 #if defined(__OBJC__)
@@ -58,6 +59,10 @@
 @end
 #endif  // BUILDFLAG(IS_IOS)
 #endif  // defined(__OBJC__)
+
+namespace content {
+class TextInputClientMac;
+}
 
 namespace base {
 
@@ -349,7 +354,7 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
   std::optional<RunLoop> run_loop_;
 };
 
-#else
+#else  // !BUILDFLAG(IS_IOS)
 
 // While in scope, permits posted tasks to be run in private AppKit run loop
 // modes that would otherwise make the UI unresponsive. E.g., menu fade out.
@@ -381,6 +386,7 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
 
  private:
   friend class ScopedPumpMessagesInPrivateModes;
+  friend class ScopedRestrictNSEventMask;
 
   void EnterExitRunLoop(CFRunLoopActivity activity) override;
 
@@ -393,6 +399,9 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
   // True if Quit() was called while a modal window was shown and needed to be
   // deferred.
   bool quit_pending_ = false;
+
+  // The mask of NSEvent types to be pumped by DoRun() in a nested run loop.
+  uint64_t nested_event_mask_;
 };
 
 class MessagePumpCrApplication : public MessagePumpNSApplication {
@@ -409,7 +418,33 @@ class MessagePumpCrApplication : public MessagePumpNSApplication {
   // Requires NSApp implementing CrAppProtocol.
   bool ShouldCreateAutoreleasePool() override;
 };
-#endif  // BUILDFLAG(IS_IOS)
+
+// While in scope, restricts the types of NSEvents that are pumped by
+// MessagePumpNSApplication::DoRun(). This only applies to nested run loops.
+// NSEventTypeApplicationDefined events are always pumped, regardless of `mask`,
+// because they're used internally by the message pump.
+class BASE_EXPORT ScopedRestrictNSEventMask {
+ public:
+  // Public constructor is limited to TextInputClientMac.
+  explicit ScopedRestrictNSEventMask(PassKey<content::TextInputClientMac>,
+                                     uint64_t mask = 0u)
+      : ScopedRestrictNSEventMask(mask) {}
+
+  ~ScopedRestrictNSEventMask();
+
+  ScopedRestrictNSEventMask(const ScopedRestrictNSEventMask&) = delete;
+  ScopedRestrictNSEventMask& operator=(const ScopedRestrictNSEventMask&) =
+      delete;
+
+ private:
+  friend class MessagePumpAppleScopedRestrictNSEventMaskTest;
+
+  explicit ScopedRestrictNSEventMask(uint64_t mask = 0u);
+
+  uint64_t old_mask_;
+};
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace message_pump_apple {
 
