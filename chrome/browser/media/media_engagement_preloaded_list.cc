@@ -5,6 +5,7 @@
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -121,6 +122,9 @@ bool MediaEngagementPreloadedList::CheckOriginIsPresent(
 MediaEngagementPreloadedList::DafsaResult
 MediaEngagementPreloadedList::CheckStringIsPresent(
     const std::string& input) const {
-  return static_cast<MediaEngagementPreloadedList::DafsaResult>(
-      net::LookupStringInFixedSet(dafsa_, input));
+  return net::LookupStringInFixedSet(dafsa_, input)
+      .transform([](int result) {
+        return static_cast<MediaEngagementPreloadedList::DafsaResult>(result);
+      })
+      .value_or(DafsaResult::kNotFound);
 }
