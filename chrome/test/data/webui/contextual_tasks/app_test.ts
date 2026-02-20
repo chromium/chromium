@@ -528,7 +528,8 @@ suite('ContextualTasksAppTest', function() {
         {url: 'http://example.com'} as OnBeforeRequestDetails);
     await microtasksFinished();
 
-    // Should be in basic mode now because the app is navigating from an AI page.
+    // Should be in basic mode now because the app is navigating from an AI
+    // page.
     assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
     assertTrue(appElement.isNavigatingForTesting());
 
@@ -636,4 +637,48 @@ suite('ContextualTasksAppTest', function() {
 
         assertTrue(composebox.inputEnabled);
       });
+
+  test('composebox bounds update styles', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const composebox = appElement.$.composebox;
+    const crComposebox =
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!crComposebox);
+
+    const rect = {
+      top: 10,
+      left: 20,
+      width: 100,
+      height: 200,
+      right: 120,
+      bottom: 210,
+    };
+
+    // Simulate callback update
+    (appElement as any).forcedComposeboxBounds_ = rect;
+    await microtasksFinished();
+
+    // Verify styles applied
+    assertEquals('fixed', crComposebox.style.position);
+    assertEquals('10px', crComposebox.style.top);
+    assertEquals('20px', crComposebox.style.left);
+    assertEquals('100px', crComposebox.style.width);
+    assertEquals('', crComposebox.style.height);
+
+    // Verify zero state clears styles
+    (appElement as any).isZeroState_ = true;
+    await microtasksFinished();
+
+    assertEquals('', crComposebox.style.position);
+    assertEquals('', crComposebox.style.top);
+    assertEquals('', crComposebox.style.left);
+    assertEquals('', crComposebox.style.width);
+    assertEquals('', crComposebox.style.height);
+  });
 });
