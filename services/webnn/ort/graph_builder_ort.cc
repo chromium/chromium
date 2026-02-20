@@ -2781,12 +2781,25 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
 }
 
 void GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
-  const std::string node_name = GenerateNodeName(reverse.label);
   const std::string input = GetOperandNameById(reverse.input_operand_id);
   const std::string output = GetOperandNameById(reverse.output_operand_id);
 
   CHECK(context_properties_.data_type_limits.reverse_input.Supports(
       GetOperand(reverse.input_operand_id).descriptor));
+
+  // Workaround: explicitly empty axes for a reverse operation should result in
+  // a no-op per spec. But we map this to an Identity node to prevent ORT
+  // EPs from mishandling empty arrays.
+  if (reverse.axes.empty()) {
+    const std::string node_name = GenerateNodeName(base::JoinString(
+        {kInserted, kOpTypeIdentity, kToEmulate, reverse.label}, kUnderscore));
+    std::array<const char*, 1> inputs = {input.c_str()};
+    std::array<const char*, 1> outputs = {output.c_str()};
+    model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
+    return;
+  }
+
+  const std::string node_name = GenerateNodeName(reverse.label);
 
   // Axes can be empty, which means no dimensions are reversed.
   base::FixedArray<int64_t> axes(reverse.axes.begin(), reverse.axes.end());
