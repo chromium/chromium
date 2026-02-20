@@ -426,6 +426,9 @@ const CGFloat kGrabberTopPadding = 5;
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
 }
 
+- (void)popupDidInitializePresenter:(OmniboxPopupPresenter*)presenter {
+}
+
 #pragma mark - LensToolbarConsumer
 
 - (void)setOmniboxFocused:(BOOL)isFocused {
