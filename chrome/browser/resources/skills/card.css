@@ -79,7 +79,7 @@
 }
 
 #cardFooter {
-  flex: 1;
+  margin-top: auto;
 }
 
 #editButton,
