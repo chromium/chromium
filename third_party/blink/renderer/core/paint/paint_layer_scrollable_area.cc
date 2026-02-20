@@ -2393,7 +2393,7 @@ void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
     return;
   }
 
-  if (box->IsPseudo(kPseudoIdOverscrollAreaParent)) {
+  if (box->IsOverscrollAreaParent()) {
     // ::-internal-overscroll-area-parent has implicit snap areas and should
     // always be enqueued for pending snap updates.
     box->GetFrameView()->AddPendingSnapUpdate(this);

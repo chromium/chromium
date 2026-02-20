@@ -1051,9 +1051,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsScrollButtonOrMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   inline bool IsInterestHintContent() const;
-  inline bool IsPseudo(PseudoId id) const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
+  }
+
+  bool IsOverscrollAreaParent() const {
+    NOT_DESTROYED();
+    const Node* node = GetNode();
+    return node && node->GetPseudoId() == kPseudoIdOverscrollAreaParent;
   }
 
   // Returns true if the text is generated (from, e.g., list marker,
@@ -1525,7 +1530,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsOverscrollContainer() const {
     NOT_DESTROYED();
     return StyleRef().IsInternalOverscrollAreaAuto() ||
-           IsPseudo(kPseudoIdOverscrollAreaParent);
+           IsOverscrollAreaParent();
   }
 
   bool IsScrollContainer() const {
@@ -4294,12 +4299,6 @@ inline bool LayoutObject::IsInterestHintContent() const {
 inline bool LayoutObject::IsBeforeOrAfterContent() const {
   NOT_DESTROYED();
   return IsBeforeContent() || IsAfterContent();
-}
-
-inline bool LayoutObject::IsPseudo(PseudoId id) const {
-  NOT_DESTROYED();
-  PseudoElement* pseudo = DynamicTo<PseudoElement>(GetNode());
-  return pseudo && pseudo->GetPseudoId() == id;
 }
 
 inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {

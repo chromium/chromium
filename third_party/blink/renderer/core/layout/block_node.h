@@ -138,9 +138,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   bool MayContainAnchor() const { return box_->MayContainAnchor(); }
 
-  bool IsOverscrollAreaParentPseudoElement() const {
-    return box_->IsPseudo(kPseudoIdOverscrollAreaParent);
-  }
+  bool IsOverscrollAreaParent() const { return box_->IsOverscrollAreaParent(); }
 
   bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }
   bool HasTopOverflow() const { return box_->HasTopOverflow(); }

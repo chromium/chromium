@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
@@ -1958,7 +1959,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           style.IsRunningBackdropFilterAnimationOnCompositor();
 
       const auto* parent_effect = context_.current_effect;
-      if (object_.IsPseudo(kPseudoIdViewTransition)) {
+      if (IsA<ViewTransitionTransitionElement>(object_.GetNode())) {
         parent_effect = ParentForViewTransitionPseudoEffect();
       }
       DCHECK(parent_effect);
@@ -3512,10 +3513,10 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // recomputing them.
       context_.current.paint_offset += box->PhysicalLocation();
 
-      if (object_.IsPseudo(kPseudoIdViewTransition)) {
-        auto* scope = DynamicTo<LayoutBox>(To<PseudoElement>(object_.GetNode())
-                                               ->UltimateOriginatingElement()
-                                               .GetLayoutObject());
+      if (const auto* transition_element =
+              DynamicTo<ViewTransitionTransitionElement>(object_.GetNode())) {
+        auto* scope = DynamicTo<LayoutBox>(
+            transition_element->UltimateOriginatingElement().GetLayoutObject());
         LayoutBlock* containing_block = object_.ContainingBlock();
         if (scope && containing_block == scope) {
           // Undo the scroll origin offset that was applied during
@@ -3713,7 +3714,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   PhysicalOffset sticky_offset;
   UpdateForObjectLocation(paint_offset_translation, sticky_offset);
 
-  if (object_.IsPseudo(kPseudoIdViewTransition)) {
+  if (IsA<ViewTransitionTransitionElement>(object_.GetNode())) {
     // The transition pseudos escape the scope's clip and scroll translation.
     context_.current.clip = context_.clip_ancestor_for_transition_pseudo_root;
     context_.current.transform =

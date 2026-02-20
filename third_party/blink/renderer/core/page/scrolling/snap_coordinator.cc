@@ -152,7 +152,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
           ? old_snap_container_data->GetTargetSnapAreaElementIds()
           : cc::TargetSnapAreaElementIds();
 
-  if (snap_container.IsPseudo(kPseudoIdOverscrollAreaParent)) {
+  if (snap_container.IsOverscrollAreaParent()) {
     AddOverscrollSnapAreas(snap_container, snap_container_data, new_target_ids,
                            old_target_ids);
   } else {
