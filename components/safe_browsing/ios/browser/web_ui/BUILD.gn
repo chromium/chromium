@@ -6,12 +6,20 @@ source_set("web_ui") {
   sources = [
     "chrome_ios_safe_browsing_local_state_delegate.h",
     "chrome_ios_safe_browsing_local_state_delegate.mm",
+    "web_ui_ios_info_singleton.h",
+    "web_ui_ios_info_singleton.mm",
   ]
 
   deps = [
     "//base",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser/web_ui:event_observer",
+    "//components/safe_browsing/core/browser/web_ui:event_observer_impl",
+    "//components/safe_browsing/core/browser/web_ui:info_singleton",
     "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/web/public/thread",
+    "//services/network/public/mojom",
   ]
 }
 

@@ -30,7 +30,8 @@ class WebUIContentInfoSingleton : public WebUIInfoSingleton {
       delete;
 
   // WebUIInfoSingleton::
-  void LogMessage(const std::string& message) override;
+  void PostLogMessage(base::Time timestamp,
+                      const std::string& message) override;
 
   // Notify listeners of changes to the log messages. Static to avoid this being
   // called after the destruction of the WebUIInfoSingleton

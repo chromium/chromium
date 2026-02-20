@@ -11,6 +11,7 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace sync_pb {
 class GaiaPasswordReuse;
@@ -134,10 +135,14 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void ClearHPRTLookupPings();
 
   // Log an arbitrary message. Frequently used for debugging.
-  virtual void LogMessage(const std::string& message) = 0;
+  void LogMessage(const std::string& message);
 
   // Clear the log messages.
   void ClearLogMessages();
+
+  // Notify listeners of changes to the log messages.
+  void NotifyLogMessageListeners(const base::Time& timestamp,
+                                 const std::string& message);
 
   // Add the reporting event to |upload_event_requests_| and send it to all the
   // open chrome://safe-browsing tabs.
@@ -190,6 +195,9 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // Unregister the WebUI listener object, and clean the list of reports, if
   // this is last listener.
   void UnregisterWebUIInstance(WebUIInfoSingletonEventObserver* observer);
+
+  mojo::Remote<network::mojom::CookieManager> GetCookieManager(
+      network::mojom::NetworkContext* network_context);
 
   // Get the list of download URLs checked since the oldest currently open
   // chrome://safe-browsing tab was opened.
@@ -326,6 +334,10 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void ClearListenerForTesting();
 
  protected:
+  // Posts the task that logs the message and timestamp to the UI thread runner.
+  virtual void PostLogMessage(base::Time timestamp,
+                              const std::string& message) = 0;
+
   // List of messages logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
   std::vector<std::pair<base::Time, std::string>> log_messages_;

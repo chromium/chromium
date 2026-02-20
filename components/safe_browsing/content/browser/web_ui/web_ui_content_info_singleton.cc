@@ -27,14 +27,8 @@ WebUIContentInfoSingleton* WebUIContentInfoSingleton::GetInstance() {
   return instance.get();
 }
 
-void WebUIContentInfoSingleton::LogMessage(const std::string& message) {
-  if (!HasListener()) {
-    return;
-  }
-
-  base::Time timestamp = base::Time::Now();
-  log_messages_.push_back(std::make_pair(timestamp, message));
-
+void WebUIContentInfoSingleton::PostLogMessage(const base::Time timestamp,
+                                               const std::string& message) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&WebUIContentInfoSingleton::NotifyLogMessageListeners,
@@ -45,22 +39,18 @@ void WebUIContentInfoSingleton::LogMessage(const std::string& message) {
     const base::Time& timestamp,
     const std::string& message) {
   WebUIInfoSingleton* web_ui_info = GetInstance();
-  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
-       web_ui_info->webui_instances()) {
-    webui_listener->NotifyLogMessageJsListener(timestamp, message);
-  }
+  web_ui_info->NotifyLogMessageListeners(timestamp, message);
 }
 
 mojo::Remote<network::mojom::CookieManager>
 WebUIContentInfoSingleton::GetCookieManager(
     content::BrowserContext* browser_context) {
-  mojo::Remote<network::mojom::CookieManager> cookie_manager_remote;
+  network::mojom::NetworkContext* network_context = nullptr;
   if (sb_service_) {
-    sb_service_->GetNetworkContext(browser_context)
-        ->GetCookieManager(cookie_manager_remote.BindNewPipeAndPassReceiver());
+    network_context = sb_service_->GetNetworkContext(browser_context);
   }
 
-  return cookie_manager_remote;
+  return WebUIInfoSingleton::GetCookieManager(network_context);
 }
 
 ReferrerChainProvider* WebUIContentInfoSingleton::GetReferrerChainProvider(

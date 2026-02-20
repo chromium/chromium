@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace safe_browsing {
 
@@ -296,8 +297,27 @@ void WebUIInfoSingleton::ClearHPRTLookupPings() {
   std::map<int, V5::SearchHashesResponse>().swap(hprt_lookup_responses_);
 }
 
+void WebUIInfoSingleton::LogMessage(const std::string& message) {
+  if (!HasListener()) {
+    return;
+  }
+
+  base::Time timestamp = base::Time::Now();
+  log_messages_.push_back(std::make_pair(timestamp, message));
+
+  PostLogMessage(timestamp, message);
+}
+
 void WebUIInfoSingleton::ClearLogMessages() {
   std::vector<std::pair<base::Time, std::string>>().swap(log_messages_);
+}
+
+void WebUIInfoSingleton::NotifyLogMessageListeners(const base::Time& timestamp,
+                                                   const std::string& message) {
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
+       webui_instances_) {
+    webui_listener->NotifyLogMessageJsListener(timestamp, message);
+  }
 }
 
 void WebUIInfoSingleton::AddToReportingEvents(
@@ -451,6 +471,18 @@ void WebUIInfoSingleton::UnregisterWebUIInstance(
 #endif
 
   MaybeClearData();
+}
+
+mojo::Remote<network::mojom::CookieManager>
+WebUIInfoSingleton::GetCookieManager(
+    network::mojom::NetworkContext* network_context) {
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_remote;
+  if (network_context) {
+    network_context->GetCookieManager(
+        cookie_manager_remote.BindNewPipeAndPassReceiver());
+  }
+
+  return cookie_manager_remote;
 }
 
 void WebUIInfoSingleton::ClearListenerForTesting() {
