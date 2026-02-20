@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
@@ -133,6 +134,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       touch_ui_subscription_(ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&WebUIToolbarWebView::OnTouchUiChanged,
                               base::Unretained(this)))) {
+  base::trace_event::EmitNamedTrigger("webui-toolbar-constructor");
   last_queued_state_.split_tabs_control_state =
       browser_controls_api::mojom::SplitTabsControlState::New();
   last_queued_state_.reload_control_state =
