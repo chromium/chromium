@@ -7,6 +7,11 @@ import("../build_webui_tests.gni")
 assert(!is_android && !is_ios)
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "cr_components_browsertest.cc",
+    "cr_components_interactive_test.cc",
+  ]
+
   files = [
     "color_change_listener_test.ts",
     "customize_color_scheme_mode_test.ts",

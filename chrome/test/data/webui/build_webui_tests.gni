@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//chrome/test/data/webui/check_tests_referenced.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/eslint_ts.gni")
@@ -11,7 +12,11 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 template("build_webui_tests") {
   not_needed([ "target_name" ])
 
-  forward_variables_from(invoker, [ "files" ])
+  forward_variables_from(invoker,
+                         [
+                           "files",
+                           "cc_test_files",
+                         ])
 
   preprocess_dir = "${target_gen_dir}/preprocessed"
   tsc_dir = "${target_gen_dir}/tsc"
@@ -142,6 +147,7 @@ template("build_webui_tests") {
 
   if (enable_type_aware_eslint_checks) {
     eslint_ts("lint") {
+      visibility = [ ":build_grdp" ]
       in_folder = preprocess_dir
       in_files = filter_exclude(files, [ "*.js" ])
       tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
@@ -149,6 +155,19 @@ template("build_webui_tests") {
         ":build_ts",
         ":preprocess",
       ]
+    }
+  }
+
+  if (defined(cc_test_files)) {
+    check_tests_referenced("check_tests_referenced") {
+      visibility = [ ":build_grdp" ]
+      in_folder = "."
+      cc_files = cc_test_files
+      ts_files = filter_include(files,
+                                [
+                                  "*_test.ts",
+                                  "*_test.js",
+                                ])
     }
   }
 
@@ -171,10 +190,16 @@ template("build_webui_tests") {
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
 
+    # Adding a few dependencies that perform checks below so that they run as
+    # part of the build, even though this `generate_grd()` target does not use
+    # any outputs from them.
+
     if (enable_type_aware_eslint_checks) {
-      # Adding as a dependency so that it runs as part of the build, even though
-      # this `generate_grd()` target does not use any outputs from it.
       deps += [ ":lint" ]
+    }
+
+    if (defined(cc_test_files)) {
+      deps += [ ":check_tests_referenced" ]
     }
   }
 }

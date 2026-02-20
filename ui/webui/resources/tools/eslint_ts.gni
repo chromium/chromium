@@ -20,6 +20,7 @@ template("eslint_ts") {
                              "in_files",
                              "tsconfig",
                              "enable_web_component_missing_deps",
+                             "visibility",
                            ])
 
     # The file holding the ESLint configuration.
