@@ -91,6 +91,9 @@
 
   // Coordinator for displaying welcome screen for fetching trusted vault keys.
   PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
+
+  // Provides status of password manager as iOS AutoFill credential provider.
+  PasswordAutoFillStatusManager* _passwordAutoFillStatusManager;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -107,6 +110,12 @@
 }
 
 - (void)start {
+  // Ensure that the status manager is initialized and has checked the status by
+  // the time the import flow finishes.
+  _passwordAutoFillStatusManager =
+      [PasswordAutoFillStatusManager sharedManager];
+  [_passwordAutoFillStatusManager checkAndUpdatePasswordAutoFillStatus];
+
   _viewController = [[CredentialImportViewController alloc] init];
   _viewController.delegate = self;
   ProfileIOS* profile = self.profile;
@@ -246,9 +255,8 @@
     case CredentialImportStage::kImported: {
       // On successful import, display the credential provider prompt, if the
       // AutoFill is not already enabled.
-      PasswordAutoFillStatusManager* sharedManager =
-          [PasswordAutoFillStatusManager sharedManager];
-      if (!sharedManager.ready || sharedManager.autoFillEnabled) {
+      if (!_passwordAutoFillStatusManager.ready ||
+          _passwordAutoFillStatusManager.autoFillEnabled) {
         [_delegate credentialImportCoordinatorDidFinish:self];
         break;
       }
