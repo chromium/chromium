@@ -475,6 +475,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kRewriter_RewriteStreaming, WebDXFeature::kRewriter},
           {WebFeature::kWriter_Write, WebDXFeature::kWriter},
           {WebFeature::kWriter_WriteStreaming, WebDXFeature::kWriter},
+          {WebFeature::kModelContextRegisterTool, WebDXFeature::kDRAFT_WebMCP},
+          {WebFeature::kModelContextRegisterDeclarativeTool,
+           WebDXFeature::kDRAFT_WebMCP},
           // Add new features above this line.
       }};
 
