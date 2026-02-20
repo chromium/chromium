@@ -358,7 +358,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#if BUILDFLAG(FULL_SAFE_BROWSING)
 bool IsResumableUpload(const BinaryUploadRequest& request) {
   if (safe_browsing::IsConsumerScanRequest(request) ||
       !request.cloud_or_local_settings().is_cloud_analysis()) {
@@ -370,7 +369,6 @@ bool IsResumableUpload(const BinaryUploadRequest& request) {
              enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY ||
          request.image_paste();
 }
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 bool CloudMultipartResultIsFailure(ScanRequestUploadResult result) {
   return result != ScanRequestUploadResult::kSuccess;
