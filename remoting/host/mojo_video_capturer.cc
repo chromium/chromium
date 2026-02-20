@@ -96,6 +96,8 @@ void MojoVideoCapturer::OnCaptureResult(
          !i.IsAtEnd(); i.Advance()) {
       dirty_region.push_back(i.rect());
     }
+    DCHECK(frame->shared_memory())
+        << "Received frame is not a shared memory frame.";
     capture_result =
         mojom::CaptureResult::NewDesktopFrame(mojom::DesktopFrame::New(
             frame->shared_memory()->id(), frame->stride(), frame->size(),

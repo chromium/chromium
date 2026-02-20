@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
 
@@ -50,6 +51,13 @@ void PipewireDesktopCapturer::SetMaxFrameRate(std::uint32_t max_frame_rate) {
   }
 }
 
+void PipewireDesktopCapturer::SetSharedMemoryFactory(
+    std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  shared_memory_factory_ = std::move(shared_memory_factory);
+}
+
 bool PipewireDesktopCapturer::GetSourceList(SourceList* sources) {
   NOTREACHED();
 }
@@ -79,6 +87,17 @@ void PipewireDesktopCapturer::OnCaptureResult(
     Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO: crbug.com/475611769 - Add shared memory support to
+  // webrtc::SharedScreenCastStream to eliminate the unnecessary copy.
+  if (frame && shared_memory_factory_) {
+    auto shared_memory_frame = webrtc::SharedMemoryDesktopFrame::Create(
+        frame->size(), frame->pixel_format(), shared_memory_factory_.get());
+    webrtc::DesktopRect rect = frame->rect();
+    shared_memory_frame->CopyPixelsFrom(*frame, rect.top_left(), rect);
+    shared_memory_frame->MoveFrameInfoFrom(frame.get());
+    frame = std::move(shared_memory_frame);
+  }
   callback_->OnCaptureResult(result, std::move(frame));
 }
 

@@ -40,6 +40,8 @@ class PipewireDesktopCapturer : public DesktopCapturer,
   void Start(Callback* callback) override;
   void CaptureFrame() override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;
+  void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
+                                  shared_memory_factory) override;
 
   // Unimplemented DesktopCapturer methods that should not be called. Rather,
   // the appropriate PipewireCaptureStream is provided to the constructor by the
@@ -58,6 +60,8 @@ class PipewireDesktopCapturer : public DesktopCapturer,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
   base::WeakPtr<CaptureStream> stream_;
+
+  std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory_;
 
   // Per the webrtc::DesktopCapturer interface, callback is required to remain
   // valid until this is destroyed.
