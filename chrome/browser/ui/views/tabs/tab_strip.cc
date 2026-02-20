@@ -1208,8 +1208,7 @@ bool TabStrip::TabHasNetworkError(int tab_index) const {
 }
 
 std::optional<tabs::TabAlert> TabStrip::GetTabAlertState(int tab_index) const {
-  return tabs::TabAlertController::GetAlertStateToShow(
-      tab_at(tab_index)->data().alert_state);
+  return tab_at(tab_index)->data().alert_state;
 }
 
 void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
