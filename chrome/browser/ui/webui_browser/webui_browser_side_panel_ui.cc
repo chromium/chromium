@@ -193,7 +193,7 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
       current_key(panel_type)->tab_handle) {
     auto* active_entry =
         old_contextual_registry->GetActiveEntryFor(panel_type).value();
-    active_entry->CacheView(std::move(std::move(current_side_panel_view_)));
+    active_entry->CacheView(std::move(current_side_panel_view_));
     current_side_panel_view_.reset();
   }
 
