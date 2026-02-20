@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 
 import java.util.function.Supplier;
 
@@ -47,8 +46,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
      * @param browserControlsStateProvider a provider that can provide the state of the toolbar
-     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use for the {@link
-     *     HierarchicalMenuController}.
+     * @param submenuHeaderMenuId The menu ID to use for the submenu header in the app menu.
      */
     public AppMenuCoordinatorImpl(
             Context context,
@@ -60,7 +58,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
             Supplier<Rect> appRect,
             WindowAndroid windowAndroid,
             BrowserControlsStateProvider browserControlsStateProvider,
-            SubmenuHeaderFactory submenuHeaderFactory) {
+            int submenuHeaderMenuId) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
@@ -77,7 +75,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         appRect,
                         windowAndroid,
                         browserControlsStateProvider,
-                        submenuHeaderFactory);
+                        submenuHeaderMenuId);
     }
 
     @Override

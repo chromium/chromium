@@ -50,7 +50,7 @@ public class AppMenuCoordinatorFactory {
             Supplier<Rect> appRect,
             WindowAndroid windowAndroid,
             BrowserControlsStateProvider browserControlsStateProvider,
-            SubmenuHeaderFactory submenuHeaderFactory) {
+            int submenuHeaderMenuId) {
         return new AppMenuCoordinatorImpl(
                 context,
                 activityLifecycleDispatcher,
@@ -61,7 +61,7 @@ public class AppMenuCoordinatorFactory {
                 appRect,
                 windowAndroid,
                 browserControlsStateProvider,
-                submenuHeaderFactory);
+                submenuHeaderMenuId);
     }
 
     /**

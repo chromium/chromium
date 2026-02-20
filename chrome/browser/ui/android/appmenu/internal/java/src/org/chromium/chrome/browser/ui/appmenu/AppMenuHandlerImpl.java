@@ -155,7 +155,7 @@ class AppMenuHandlerImpl
             Supplier<Rect> appRect,
             WindowAndroid windowAndroid,
             BrowserControlsStateProvider browserControlsStateProvider,
-            SubmenuHeaderFactory submenuHeaderFactory) {
+            int submenuHeaderMenuId) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -166,7 +166,19 @@ class AppMenuHandlerImpl
         mAppRect = appRect;
         mWindowAndroid = windowAndroid;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mSubmenuHeaderFactory = submenuHeaderFactory;
+        mSubmenuHeaderFactory =
+                (clickedItem, backRunnable) -> {
+                    PropertyModel.Builder builder =
+                            new PropertyModel.Builder(AppMenuSubmenuHeaderItemProperties.ALL_KEYS);
+                    HierarchicalMenuController.populateDefaultHeaderProperties(
+                            builder,
+                            new AppMenuUtil.AppMenuKeyProvider(),
+                            clickedItem.model.get(AppMenuItemProperties.TITLE),
+                            backRunnable);
+                    builder.with(AppMenuItemProperties.MENU_ITEM_ID, submenuHeaderMenuId);
+                    return new ListItem(
+                            AppMenuHandler.AppMenuItemType.SUBMENU_HEADER, builder.build());
+                };
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
