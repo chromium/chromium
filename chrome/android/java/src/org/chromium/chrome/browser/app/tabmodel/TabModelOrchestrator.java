@@ -242,6 +242,7 @@ public class TabModelOrchestrator {
             if (mShadowTabPersistentStore != null) {
                 mShadowTabPersistentStore.clearState();
             }
+            if (mMigrationManager != null) mMigrationManager.onAllStoresRazed();
         }
     }
 
@@ -265,6 +266,7 @@ public class TabModelOrchestrator {
             if (mShadowTabPersistentStore != null) {
                 mShadowTabPersistentStore.clearCurrentWindow();
             }
+            if (mMigrationManager != null) mMigrationManager.onWindowCleared();
         }
     }
 

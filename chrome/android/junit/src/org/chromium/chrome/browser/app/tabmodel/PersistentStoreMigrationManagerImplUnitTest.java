@@ -39,6 +39,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
             TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.createKey(WINDOW_TAG_1);
     private static final String SHADOW_WRITTEN_STORE_KEY_1 =
             TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.createKey(WINDOW_TAG_1);
+    private static final String CURRENT_AUTHORITATIVE_STORE_KEY_2 =
+            TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.createKey(WINDOW_TAG_2);
     private static final String SHADOW_WRITTEN_STORE_KEY_2 =
             TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.createKey(WINDOW_TAG_2);
 
@@ -227,22 +229,26 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     }
 
     @Test
-    public void testOnAllShadowStoresRazed() {
+    public void testOnAllStoresRazed() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_2, StoreType.TAB_STATE_STORE);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(SHADOW_WRITTEN_STORE_KEY_2, StoreType.LEGACY);
+
         mManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCaughtUp();
 
-        PersistentStoreMigrationManagerImpl otherManager =
-                new PersistentStoreMigrationManagerImpl(WINDOW_TAG_2);
-        otherManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
-        otherManager.onShadowStoreCaughtUp();
-
         assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
         assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_2));
+        assertTrue(
+                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_2));
 
-        mManager.onAllShadowStoresRazed();
+        mManager.onAllStoresRazed();
 
         assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
         assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_2));
+        assertFalse(
+                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_2));
     }
 
     @Test

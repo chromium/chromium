@@ -35,22 +35,6 @@ public class TabStateStorageService {
         }
     }
 
-    /** Data shared between stores. */
-    public static class SharedStoreData {
-        private boolean mWasStoreRazed;
-
-        /** Whether a store has razed its data during startup. */
-        public boolean wasStoreRazed() {
-            return mWasStoreRazed;
-        }
-
-        /** Called when a store has razed its data. */
-        public void onStoreRazed() {
-            mWasStoreRazed = true;
-        }
-    }
-
-    private final SharedStoreData mSharedStoreData = new SharedStoreData();
     private final long mNativeTabStateStorageService;
 
     private TabStateStorageService(long nativeTabStateStorageService) {
@@ -188,11 +172,6 @@ public class TabStateStorageService {
     public byte[] generateKey(String windowTag) {
         return TabStateStorageServiceJni.get()
                 .generateKey(mNativeTabStateStorageService, windowTag);
-    }
-
-    /** Returns the data shared between all clients of this service. */
-    public SharedStoreData getSharedStoreData() {
-        return mSharedStoreData;
     }
 
     @NativeMethods
