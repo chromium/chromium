@@ -9,53 +9,46 @@ manually start `fake_dmserver`.
 Create a simple JSON file with the policies you want to test (e.g.,
 `$HOME/dmserver_data/policies.json`).
 
-### Step 2: Build Chrome
+Here is a minimal example, where you log into Chromium as alice@acme.com and
+want both machine-level and user-level policies.
 
-`blob_generator.py` depends on Python protobuf bindings generated during
-Chrome's build process. You need a fresh build of Chrome before you can run
-`blob_generator.py`:
-
-```bash
-autoninja -C out/Default chrome
+```
+{
+  "policy_user": "alice@acme.com",
+  "machine": {
+    "AllowDinosaurEasterEgg": true,
+  },
+  "user": {
+    "HomepageLocation": "http://example.com/",
+  },
+}
 ```
 
-### Step 3: Generate the Policy Blob
+You should put this file somewhere outside of `chromium/src`, so you don't
+accidentally commit or upload them to Gerrit.
 
-Use the `blob_generator.py` script to convert your simple JSON into the format
-`fake_dmserver` understands. Pass the `--build-path` argument from step 2.
+More examples of JSON files are at the end of this document.
 
-```bash
-# Make sure the output directory exists
-mkdir -p $HOME/dmserver_data
+### Step 2: Start `fake_dmserver`
 
-vpython3 components/policy/tools/fake_dmserver/blob_generator.py \
-  --build-path=out/Default \
-  --input-policies=$HOME/dmserver_data/policies.json \
-  --output-blob=$HOME/dmserver_data/policy.json \
-  --manual-map=components/policy/resources/templates/manual_device_policy_proto_map.yaml
-```
-
-### Step 4: Start `fake_dmserver`
-
-Manually start the `fake_dmserver` on the device, pointing it to your generated
-policy blob.
+Manually start the `fake_dmserver` on the device, pointing it to the file from
+step 1.
 
 ```bash
-# Build the server binary.
+# Build the server binary first.
 autoninja -C out/Default fake_dmserver
 
 # Start the server.
-./out/Default/fake_dmserver \
-    --policy-blob-path=$HOME/dmserver_data/policy.json
+out/Default/fake_dmserver --policy-path=$HOME/dmserver_data/policies.json
 ```
+
+This will create a `state.json` file in the same directory as `policies.json`,
+for `fake_dmserver` to save/load its internal state.
 
 Optionally arguments:
 - `--port=...` to set the server port. Defaults to 6112.
-- `--client-state-path=...` to tell fake_dmserver where to load/save its
-  internal state. Defaults to `state.json` in the same directory as your
-  `policy-blob-path`.
 
-### Step 5: Launch Chrome
+### Step 3: Launch Chrome
 
 When launching Chromium or Chrome, tell it to use your local server. For
 Chromium builds, add `--enable-chrome-browser-cloud-management`:
@@ -75,12 +68,10 @@ define the actual policies to be applied.
 
 ### Configuration Parameters
 
-*   `user`: (Object) A dictionary where keys are user policy names and values
-    are the policy values.
-*   `machine-level-user`: (Object) A dictionary where keys are browser policy
-    names and values are the policy values.
-*   `machine-level-extension-install`: (Object) A dictionary where keys are
-    "extension_id@version" extensions and values are objects:
+*   `machine` or `user`: (Object) A dictionary where keys are user policy names
+    and values are the policy values.
+*   `machine-extension-install`, `user-extension-install`: (Object) A dictionary
+    where keys are "extension_id@version" extensions and values are objects:
     * `action`: (String enum) `"allow"` or `"block"`
     * `reasons`: (Array of String enums) elements can be `"blocked_category"`
       or `"risk_score"`
@@ -110,20 +101,7 @@ define the actual policies to be applied.
 
 ### Example `policies.json`
 
-Minimal example:
-
-```json
-{
-  "user": {
-    "AllowDinosaurEasterEgg": true
-  },
-  "machine-level-user": {
-    "HomepageLocation": "https://www.google.com"
-  }
-}
-```
-
-More complete example showcasing some of fake_dmserver's features:
+More complete example showcasing some of `fake_dmserver`'s features:
 
 ```json
 {
@@ -131,6 +109,8 @@ More complete example showcasing some of fake_dmserver's features:
   "managed_users": ["alice@example.com", "bob@example.com"],
   "user": {
     "AllowDinosaurEasterEgg": true,
+  },
+  "machine": {
     "ShowHomeButton": true,
     "HomepageLocation": "https://www.google.com",
     "RestoreOnStartup": 1,
@@ -139,7 +119,7 @@ More complete example showcasing some of fake_dmserver's features:
       "unwanted-site.org"
     ],
   },
-  "machine-level-extension-install": {
+  "machine-extension-install": {
     "abcdefghijklmnopabcdefghijklmnop@1.0.0": {
       "action": "block",
       "reasons": ["risk_score"]
@@ -152,13 +132,3 @@ More complete example showcasing some of fake_dmserver's features:
 For full details on available policies and value formats, please refer to the
 [Chrome Enterprise policies documentation]
 (https://chromeenterprise.google.com/policies/).
-
-## 3. Troubleshooting
-
-### "Policy not found" Warnings
-If you see a warning like `WARNING: Policy 'YourPolicyName' not found in
-protobuf schema. Skipping.`, you may need to re-build `chrome` and re-run the
-script.
-
-This will update the policy definitions used by the tool to match the latest
-version of Chrome.

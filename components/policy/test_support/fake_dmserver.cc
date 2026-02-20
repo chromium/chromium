@@ -4,12 +4,14 @@
 
 #include "components/policy/test_support/fake_dmserver.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
 #include "base/notreached.h"
@@ -20,11 +22,15 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/policy_constants_mutable.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/request_handler_for_policy.h"
 #include "components/policy/test_support/test_server_helpers.h"
+#include "third_party/re2/src/re2/re2.h"
 
 #define RETURN_IF_FALSE(expr) \
   if (!expr) {                \
@@ -34,6 +40,8 @@
 namespace fakedms {
 
 namespace {
+
+namespace em = enterprise_management;
 
 constexpr char kPolicyTypeKey[] = "policy_type";
 constexpr char kEntityIdKey[] = "entity_id";
@@ -60,6 +68,13 @@ constexpr char kInitialEnrollmentModeKey[] = "initial_enrollment_mode";
 constexpr char kCurrentKeyIndexKey[] = "current_key_index";
 constexpr char kPolicyUserKey[] = "policy_user";
 
+constexpr char kActionKey[] = "action";
+constexpr char kReasonsKey[] = "reasons";
+constexpr char kActionAllow[] = "allow";
+constexpr char kActionBlock[] = "block";
+constexpr char kReasonBlockedCategory[] = "blocked_category";
+constexpr char kReasonRiskScore[] = "risk_score";
+
 constexpr char kDefaultPolicyBlobFilename[] = "policy.json";
 constexpr char kDefaultClientStateFilename[] = "state.json";
 constexpr int kDefaultMinLogLevel = logging::LOGGING_INFO;
@@ -67,6 +82,7 @@ constexpr bool kDefaultLogToConsole = false;
 constexpr int kDefaultPort = 6112;
 
 constexpr char kPolicyBlobPathSwitch[] = "policy-blob-path";
+constexpr char kPolicyPathSwitch[] = "policy-path";
 constexpr char kClientStatePathSwitch[] = "client-state-path";
 constexpr char kGrpcUnixSocketUriSwitch[] = "grpc-unix-socket-uri";
 constexpr char kLogPathSwitch[] = "log-path";
@@ -77,6 +93,29 @@ constexpr char kPortSwitch[] = "port";
 
 constexpr base::TimeDelta kRemoteCommandTimeoutSeconds = base::Seconds(10);
 constexpr int64_t kDefaultServerStopTimeoutMs = 100;
+
+// Maps policy type to its name in the policies.json config file.
+struct PolicyTypeEntry {
+  const char* policy_type;
+  const char* config_key;
+};
+
+const PolicyTypeEntry kPolicyTypeMapping[] = {
+    // TODO(nicolaso): Implement "google/chrome/device" if ChromeOS folks are
+    // interested. It uses ChromeDeviceSettingsProto, which is a completely
+    // different schema. Use manual_device_policy_proto_map.yaml for this.
+    //
+    // {policy::dm_protocol::kChromeDevicePolicyType, "device"},
+    {policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType, "machine"},
+    {policy::dm_protocol::GetChromeUserPolicyType(), "user"},
+};
+
+const PolicyTypeEntry kExtensionInstallPolicyTypeMapping[] = {
+    {policy::dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      "user-extension-install"},
+    {policy::dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
+      "machine-extension-install"},
+};
 
 static remote_commands::WaitRemoteCommandResultResponse
 BuildWaitRemoteCommandResultResponse(const em::RemoteCommandResult& result) {
@@ -279,6 +318,170 @@ bool ParseCurrentKeyIndex(const base::DictValue* dict,
   return true;
 }
 
+// Used to print a human-readable type name in warnings in TrySetCloudPolicySettings.
+template <typename T>
+const char* GetExpectedTypeName() {
+  if constexpr (std::is_same_v<T, bool>) {
+    return "boolean";
+  } else if constexpr (std::is_same_v<T, int>) {
+    return "integer";
+  } else if constexpr (std::is_same_v<T, std::string>) {
+    return "string";
+  } else {
+    static_assert(false, "Unsupported type");
+  }
+}
+
+// To avoid duplicating the same code 3 times for boolean, integers, and
+// strings. This function tries to convert the simple `value` to a proto for
+// type `T`, and setting it in `policy_settings`.
+template <typename Access, typename T, typename UnwrapMethod>
+bool TrySetCloudPolicySettings(const Access& access,
+                               const base::Value& value,
+                               UnwrapMethod unwrap,
+                               em::CloudPolicySettings& policy_settings) {
+  auto unwrapped = std::invoke(unwrap, value);
+  if (!unwrapped) {
+    LOG(WARNING) << "Wrong policy type for '" << access.policy_key
+                 << "'. Expected " << GetExpectedTypeName<T>() << ", got "
+                 << value.type();
+    return false;
+  }
+  auto* proto = access.get_proto_mutable(policy_settings);
+  CHECK(proto);
+  proto->mutable_policy_options()->set_mode(em::PolicyOptions::MANDATORY);
+  proto->set_value(*unwrapped);
+  return true;
+}
+
+// Checks that `value` is the right type for `policy_name`, and sets it in
+// `policy_settings` if it is.
+bool ValidateAndSetPolicyValue(std::string_view policy_name,
+                               const base::Value& value,
+                               em::CloudPolicySettings& policy_settings) {
+  for (const auto& access : policy::test::kBooleanPolicyAccess) {
+    if (policy_name == access.policy_key) {
+      return TrySetCloudPolicySettings<decltype(access), bool>(
+          access, value, &base::Value::GetIfBool, policy_settings);
+    }
+  }
+
+  for (const auto& access : policy::test::kIntegerPolicyAccess) {
+    if (policy_name == access.policy_key) {
+      return TrySetCloudPolicySettings<decltype(access), int>(
+          access, value, &base::Value::GetIfInt, policy_settings);
+    }
+  }
+
+  for (const auto& access : policy::test::kStringPolicyAccess) {
+    if (policy_name != access.policy_key) {
+      continue;
+    }
+    switch (access.type) {
+      case policy::test::StringPolicyType::STRING:
+        // Strings are encoded as protos with a single string field.
+        return TrySetCloudPolicySettings<decltype(access), std::string>(
+            access, value,
+            static_cast<const std::string* (base::Value::*)() const>(
+                &base::Value::GetIfString),
+            policy_settings);
+
+      case policy::test::StringPolicyType::JSON: {
+        // JSON values are converted to JSON, then encoded the same as
+        // strings.
+        if (!value.is_dict()) {
+          LOG(WARNING) << "Failed to set policy " << policy_name
+                       << " with type " << value.type();
+          return false;
+        }
+        std::string json;
+        CHECK(base::JSONWriter::Write(value, &json));
+        auto* proto = access.get_proto_mutable(policy_settings);
+        CHECK(proto);
+        proto->set_value(json);
+        return true;
+      }
+
+      case policy::test::StringPolicyType::EXTERNAL:
+        // TODO(nicolaso): These are ChromeOS-only. Implement if there's
+        // demand.
+        LOG(ERROR) << "External policies NYI, skipping policy '" << policy_name
+                   << "'";
+        return false;
+    }
+  }
+
+  LOG(WARNING) << "Unknown policy name: '" << policy_name << "', skipping.";
+  return false;
+}
+
+// Checks that `value` is a valid ExtensionInstallPolicy proto, and returns a
+// serialized ExtensionInstallPolicy proto if it is.
+std::optional<std::string> ValidateAndSerializeExtensionInstallPolicyValue(
+    std::string_view extension_id_and_version,
+    const base::DictValue& value) {
+  // Should look like "abcdefghijklmnopabcdefghijklmnop@1.0.0".
+  static constexpr char kExtensionIdAndVersionRegex[] =
+      "[a-p]{32}@([0-9]+(\\.[0-9]+)*)";
+  if (!RE2::FullMatch(extension_id_and_version, kExtensionIdAndVersionRegex)) {
+    LOG(ERROR) << "Policy for '" << extension_id_and_version
+               << "' has invalid extension id and version, skipping.";
+    return std::nullopt;
+  }
+
+  if (!value.FindString(kActionKey)) {
+    LOG(ERROR) << "Policy for '" << extension_id_and_version
+               << "' is missing the '" << kActionKey << "' field, skipping.";
+    return std::nullopt;
+  }
+  if (!value.FindList(kReasonsKey)) {
+    LOG(ERROR) << "Policy for '" << extension_id_and_version
+               << "' is missing the '" << kReasonsKey << "' field, skipping.";
+    return std::nullopt;
+  }
+
+  em::ExtensionInstallPolicies proto;
+  em::ExtensionInstallPolicy* policy = proto.add_policies();
+  policy->set_extension_id(extension_id_and_version.substr(0, 32));
+  policy->set_extension_version(extension_id_and_version.substr(33));
+
+  // Parse action.
+  const std::string& action = *value.FindString(kActionKey);
+  if (action == kActionAllow) {
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_ALLOW);
+  } else if (action == kActionBlock) {
+    policy->set_action(em::ExtensionInstallPolicy::ACTION_BLOCK);
+  } else {
+    LOG(ERROR) << "Policy for '" << extension_id_and_version
+               << "' has invalid action: " << action << ", skipping.";
+    return std::nullopt;
+  }
+
+  // Parse reasons.
+  const base::ListValue& reasons = *value.FindList(kReasonsKey);
+  for (const auto& reason : reasons) {
+    if (!reason.is_string()) {
+      LOG(ERROR) << "Policy for '" << extension_id_and_version
+                 << "' has invalid reason type: " << reason << ", skipping.";
+      return std::nullopt;
+    }
+    const std::string& reason_str = reason.GetString();
+    if (reason_str == kReasonBlockedCategory) {
+      policy->add_reasons(em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
+    } else if (reason_str == kReasonRiskScore) {
+      policy->add_reasons(em::ExtensionInstallPolicy::REASON_RISK_SCORE);
+    } else {
+      LOG(ERROR) << "Policy for '" << extension_id_and_version
+                 << "' has invalid reason, skipping.";
+      return std::nullopt;
+    }
+  }
+
+  std::string serialized_proto;
+  CHECK(proto.SerializeToString(&serialized_proto));
+  return serialized_proto;
+}
+
 }  // namespace
 
 void InitLogging(const std::optional<std::string>& log_path,
@@ -317,13 +520,19 @@ void ParseFlags(const base::CommandLine& command_line,
   min_log_level = kDefaultMinLogLevel;
   port = kDefaultPort;
 
-  if (command_line.HasSwitch(kPolicyBlobPathSwitch)) {
+  // kPolicyPathSwitch is an alias for kPolicyBlobPathSwitch.
+  if (command_line.HasSwitch(kPolicyBlobPathSwitch) ||
+      command_line.HasSwitch(kPolicyPathSwitch)) {
     policy_blob_path = command_line.GetSwitchValueASCII(kPolicyBlobPathSwitch);
+    if (policy_blob_path.empty()) {
+      policy_blob_path = command_line.GetSwitchValueASCII(kPolicyPathSwitch);
+    }
     // If not specified, set client_state_path to the same directory as the
     // policy blob.
-    client_state_path =
-        base::FilePath(policy_blob_path).DirName()
-        .Append(kDefaultClientStateFilename).AsUTF8Unsafe();
+    client_state_path = base::FilePath(policy_blob_path)
+                            .DirName()
+                            .Append(kDefaultClientStateFilename)
+                            .AsUTF8Unsafe();
   }
 
   if (command_line.HasSwitch(kLogPathSwitch)) {
@@ -755,7 +964,76 @@ bool FakeDMServer::SetExternalPolicyPayload(
   return true;
 }
 
-bool FakeDMServer::ParsePolicies(const base::DictValue* dict) {
+bool FakeDMServer::ParsePoliciesJson(const base::DictValue* dict) {
+  // Normal policies look like e.g.:
+  // "user": {
+  //   "AllowDinosaurEasterEgg": true,
+  //   "HomepageLocation": "http://example.com/"
+  // }
+  em::CloudPolicySettings cloud_policy_settings;
+  for (const auto& entry : kPolicyTypeMapping) {
+    const base::Value* policies = dict->Find(entry.config_key);
+    if (!policies) {
+      continue;
+    }
+    if (!policies->is_dict()) {
+      LOG(WARNING) << "Policy for '" << entry.config_key << "' is not a dict.";
+      return false;
+    }
+    bool any_policy_set_for_type = false;
+    for (const auto [policy_name, value] : policies->GetDict()) {
+      if (!ValidateAndSetPolicyValue(policy_name, value,
+                                     cloud_policy_settings)) {
+        continue;
+      }
+      any_policy_set_for_type = true;
+    }
+    if (any_policy_set_for_type) {
+      std::string serialized_proto;
+      CHECK(cloud_policy_settings.SerializeToString(&serialized_proto));
+      policy_storage()->SetPolicyPayload(entry.policy_type, serialized_proto);
+    }
+  }
+
+  // Extension install policies look like e.g.:
+  // "machine-extension-install": {
+  //   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@1.2.3": {
+  //     "action": "allow",
+  //     "reasons": ["risk_score"]
+  //   }
+  // }
+  for (const auto& entry : kExtensionInstallPolicyTypeMapping) {
+    const base::Value* policies = dict->Find(entry.config_key);
+    if (!policies) {
+      continue;
+    }
+    if (!policies->is_dict()) {
+      LOG(WARNING) << "Policy for '" << entry.config_key << "' is not a dict.";
+      return false;
+    }
+    for (const auto [extension_id_and_version, value] : policies->GetDict()) {
+      if (!value.is_dict()) {
+        LOG(WARNING) << "Policy for extension '" << extension_id_and_version
+                     << "' is not a dict.";
+        return false;
+      }
+      const base::DictValue& dict_value = value.GetDict();
+      std::optional<std::string> serialized_proto =
+          ValidateAndSerializeExtensionInstallPolicyValue(
+              extension_id_and_version, dict_value);
+      if (!serialized_proto.has_value()) {
+        continue;
+      }
+      policy_storage()->SetPolicyPayload(entry.policy_type,
+                                         extension_id_and_version,
+                                         serialized_proto.value());
+    }
+  }
+
+  return true;
+}
+
+bool FakeDMServer::ParsePolicyBlobs(const base::DictValue* dict) {
   const base::ListValue* policies = dict->FindList(kPoliciesKey);
   if (policies) {
     for (const base::Value& policy : *policies) {
@@ -829,8 +1107,13 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   RETURN_IF_FALSE(ParseRequestErrors(dict, this));
   RETURN_IF_FALSE(ParseInitialEnrollmentState(dict, policy_storage()));
   RETURN_IF_FALSE(ParseCurrentKeyIndex(dict, policy_storage()));
-  RETURN_IF_FALSE(ParsePolicies(dict));
-
+  if (dict->contains(kPoliciesKey) || dict->contains(kExternalPoliciesKey)) {
+    LOG(INFO) << "Parsing policies from base64 blobs.";
+    RETURN_IF_FALSE(ParsePolicyBlobs(dict));
+  } else {
+    LOG(INFO) << "Parsing policies from JSON.";
+    RETURN_IF_FALSE(ParsePoliciesJson(dict));
+  }
   return true;
 }
 

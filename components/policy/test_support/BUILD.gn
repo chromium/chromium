@@ -94,6 +94,7 @@ static_library("test_support") {
 
   if (is_chromeos || (is_linux && !is_cfi)) {
     public_deps += [ ":remote_commands_service_castcore" ]
+    deps += [ "//components/policy:generated_testonly" ]
   }
   if (is_chromeos) {
     public_deps += [ "//third_party/private_membership" ]

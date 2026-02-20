@@ -29,6 +29,7 @@
 #include "base/test/test_future.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
@@ -1193,6 +1194,166 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
         extension_install_policies.ParseFromString(policy_data.policy_value()));
     EXPECT_EQ(extension_install_policies.policies_size(), 0);
   }
+}
+
+TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII(),
+                             grpc_unix_socket_uri_);
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "policy_user" : "tast-user@managedchrome.com",
+      "machine": {
+        "AllowDinosaurEasterEgg": true
+      },
+      "user": {
+        "HomepageLocation": "http://example.com"
+      }
+    }
+  )"));
+  ASSERT_TRUE(base::WriteFile(
+      client_state_path_,
+      base::StringPrintf(
+          R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "username" : "tast-user@managedchrome.com",
+        "state_keys" : [ "fake_state_key" ],
+        "allowed_policy_types" : [
+          "%s",
+          "%s"
+        ]
+      }
+    }
+  )",
+          policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+          policy::dm_protocol::GetChromeUserPolicyType())));
+
+  em::DeviceManagementRequest request_proto;
+  request_proto.mutable_policy_request()->add_requests()->set_policy_type(
+      policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  request_proto.mutable_policy_request()->add_requests()->set_policy_type(
+      policy::dm_protocol::GetChromeUserPolicyType());
+
+  Response response =
+      SendRequest(fake_dmserver.GetServiceURL(),
+                  "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                  "oauth_token=fake_policy_token&request=policy",
+                  std::move(request_proto));
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+  EXPECT_EQ(response.proto().policy_response().responses_size(), 2);
+
+  std::map<std::string, em::PolicyFetchResponse> responses;
+  for (const auto& r : response.proto().policy_response().responses()) {
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(r.policy_data()));
+    responses[policy_data.policy_type()] = r;
+  }
+
+  {
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        responses[policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType]
+            .policy_data()));
+    em::CloudPolicySettings settings;
+    ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
+    EXPECT_TRUE(settings.has_allowdinosaureasteregg());
+    EXPECT_TRUE(settings.allowdinosaureasteregg().value());
+  }
+
+  {
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        responses[policy::dm_protocol::GetChromeUserPolicyType()].policy_data()));
+    em::CloudPolicySettings settings;
+    ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
+    EXPECT_TRUE(settings.has_homepagelocation());
+    EXPECT_EQ(settings.homepagelocation().value(), "http://example.com");
+  }
+}
+
+TEST_F(FakeDMServerTest,
+       HandleExtensionInstallPolicyRequestWithJsonFormatSucceeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII(),
+                             grpc_unix_socket_uri_);
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "policy_user" : "tast-user@managedchrome.com",
+      "machine-extension-install": {
+        "abcdefghijklmnopabcdefghijklmnop@1.0.0": {
+          "action": "block",
+          "reasons": ["risk_score"]
+        }
+      }
+    }
+  )"));
+  ASSERT_TRUE(base::WriteFile(
+      client_state_path_,
+      base::StringPrintf(
+          R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "username" : "tast-user@managedchrome.com",
+        "state_keys" : [ "fake_state_key" ],
+        "allowed_policy_types" : [
+          "%s"
+        ]
+      }
+    }
+  )",
+          policy::dm_protocol::
+              kChromeExtensionInstallMachineLevelCloudPolicyType)));
+
+  em::DeviceManagementRequest request_proto;
+  auto* policy_request = request_proto.mutable_policy_request()->add_requests();
+  policy_request->set_policy_type(
+      policy::dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
+  policy_request->set_settings_entity_id(
+      "abcdefghijklmnopabcdefghijklmnop@1.0.0");
+
+  Response response =
+      SendRequest(fake_dmserver.GetServiceURL(),
+                  "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                  "oauth_token=fake_policy_token&request=policy",
+                  std::move(request_proto));
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+  EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+
+  em::PolicyData policy_data;
+  ASSERT_TRUE(policy_data.ParseFromString(
+      response.proto().policy_response().responses(0).policy_data()));
+  EXPECT_EQ(
+      policy_data.policy_type(),
+      policy::dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
+
+  em::ExtensionInstallPolicies extension_install_policies;
+  ASSERT_TRUE(
+      extension_install_policies.ParseFromString(policy_data.policy_value()));
+  EXPECT_EQ(extension_install_policies.policies_size(), 1);
+
+  em::ExtensionInstallPolicy extension_install_policy =
+      extension_install_policies.policies(0);
+  EXPECT_EQ(extension_install_policy.extension_id(),
+            "abcdefghijklmnopabcdefghijklmnop");
+  EXPECT_EQ(extension_install_policy.extension_version(), "1.0.0");
+  EXPECT_EQ(extension_install_policy.action(),
+            em::ExtensionInstallPolicy::ACTION_BLOCK);
+  EXPECT_EQ(extension_install_policy.reasons_size(), 1);
+  EXPECT_EQ(extension_install_policy.reasons(0),
+            em::ExtensionInstallPolicy::REASON_RISK_SCORE);
 }
 
 }  // namespace fakedms
