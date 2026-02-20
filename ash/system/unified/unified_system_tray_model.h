@@ -59,6 +59,7 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
     // |by_user| is true when brightness is changed by user action.
     virtual void OnDisplayBrightnessChanged(bool by_user) {}
+    virtual void OnLidStateChanged() {}
     virtual void OnKeyboardBrightnessChanged(
         power_manager::BacklightBrightnessChange_Cause cause) {}
   };
@@ -96,6 +97,9 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
   float display_brightness() const { return display_brightness_; }
   float keyboard_brightness() const { return keyboard_brightness_; }
+  chromeos::PowerManagerClient::LidState lid_state() const {
+    return lid_state_;
+  }
 
   void set_notification_target_mode(NotificationTargetMode mode) {
     notification_target_mode_ = mode;
@@ -125,6 +129,7 @@ class ASH_EXPORT UnifiedSystemTrayModel
   ~UnifiedSystemTrayModel();
 
   void DisplayBrightnessChanged(float brightness, bool by_user);
+  void LidStateChanged(chromeos::PowerManagerClient::LidState state);
   void KeyboardBrightnessChanged(
       float brightness,
       power_manager::BacklightBrightnessChange_Cause cause);
@@ -146,6 +151,10 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
   // The last value of the keyboard brightness slider. Between 0.0 and 1.0.
   float keyboard_brightness_ = 1.f;
+
+  // The last value of the lid state.
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   // Stores Manual changes to notification expanded / collapsed state in order
   // to restore on reopen.

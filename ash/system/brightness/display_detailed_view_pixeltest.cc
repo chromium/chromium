@@ -9,6 +9,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -33,6 +34,10 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool());
 
 TEST_P(DisplayDetailedViewPixelTest, Basics) {
+  // In the detailed view, the UnifiedBrightnessSliderView is disabled for
+  // non-internal displays.
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
   ASSERT_TRUE(system_tray->bubble());

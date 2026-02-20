@@ -22,7 +22,6 @@
 #include "ash/system/audio/unified_volume_view.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
-#include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness/quick_settings_display_detailed_view_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/camera/autozoom_feature_pod_controller.h"
@@ -76,7 +75,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
-#include "ui/display/util/display_util.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 
@@ -96,17 +94,9 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
   pagination_controller_ = std::make_unique<PaginationController>(
       model_->pagination_model(), PaginationController::SCROLL_AXIS_HORIZONTAL,
       base::BindRepeating(&RecordPageSwitcherSourceByEventType));
-  chromeos::PowerManagerClient* power_manager_client =
-      chromeos::PowerManagerClient::Get();
-  power_manager_client->AddObserver(this);
-  power_manager_client->GetSwitchStates(
-      base::BindOnce(&UnifiedSystemTrayController::OnGetSwitchStates,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-UnifiedSystemTrayController::~UnifiedSystemTrayController() {
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-}
+UnifiedSystemTrayController::~UnifiedSystemTrayController() = default;
 
 void UnifiedSystemTrayController::AddObserver(Observer* observer) {
   if (observer) {
@@ -148,7 +138,6 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
                       base::Unretained(this))));
   unified_brightness_view_ =
       qs_view->AddSliderView(brightness_slider_controller_->CreateView());
-  UpdateBrightnessSlider();
 
   qs_view->SetMaxHeight(max_height);
 
@@ -510,50 +499,6 @@ void UnifiedSystemTrayController::PrepareBubbleDestroy() {
   quick_settings_view_ = nullptr;
   unified_volume_view_ = nullptr;
   unified_brightness_view_ = nullptr;
-}
-
-void UnifiedSystemTrayController::UpdateBrightnessSlider() const {
-  if (!unified_brightness_view_) {
-    return;
-  }
-  auto* slider =
-      views::AsViewClass<UnifiedBrightnessView>(unified_brightness_view_)
-          ->slider();
-
-  // For the case of ChromeBox and etc, when there is no internal display, the
-  // slider should be disabled.
-  if (!display::HasInternalDisplay()) {
-    slider->SetEnabled(false);
-    return;
-  }
-
-  // When the lid is open, the brightness should be changeable.
-  slider->SetEnabled(lid_state_ ==
-                     chromeos::PowerManagerClient::LidState::OPEN);
-}
-
-bool UnifiedSystemTrayController::GetBrightnessSliderEnabledForTesting() const {
-  if (!unified_brightness_view_) {
-    return false;
-  }
-  return views::AsViewClass<UnifiedBrightnessView>(unified_brightness_view_)
-      ->slider()
-      ->GetEnabled();
-}
-
-void UnifiedSystemTrayController::OnGetSwitchStates(
-    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
-  if (switch_states.has_value()) {
-    lid_state_ = switch_states->lid_state;
-    UpdateBrightnessSlider();
-  }
-}
-
-void UnifiedSystemTrayController::LidEventReceived(
-    chromeos::PowerManagerClient::LidState state,
-    base::TimeTicks timestamp) {
-  lid_state_ = state;
-  UpdateBrightnessSlider();
 }
 
 }  // namespace ash

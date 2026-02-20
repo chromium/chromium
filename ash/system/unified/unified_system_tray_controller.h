@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_CONTROLLER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/media/quick_settings_media_view_controller.h"
@@ -14,13 +12,8 @@
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/advanced_memory_safety_checks.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/global_media_controls/public/constants.h"
-#include "ui/views/controls/slider.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -135,10 +128,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   // UnifiedVolumeSliderController::Delegate:
   void OnAudioSettingsButtonClicked() override;
 
-  // PowerManagerClient::Observer:
-  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        base::TimeTicks timestamp) override;
-
   // Sets whether the quick settings view should show the media view.
   void SetShowMediaView(bool show_media_view);
 
@@ -183,10 +172,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShutDownDetailedViewController();
   void PrepareBubbleDestroy();
 
-  // Enable or disable the brightness slider view.
-  void UpdateBrightnessSlider() const;
-  bool GetBrightnessSliderEnabledForTesting() const;
-
  private:
   friend class AccessibilityFeaturePodControllerTest;
   friend class SystemTrayTestApi;
@@ -206,10 +191,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowDetailedView(std::unique_ptr<DetailedViewController> controller);
 
   bool ShouldShowDeferredUpdateDialog() const;
-
-  // Get the initial lid state.
-  void OnGetSwitchStates(
-      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // Model that stores UI specific variables. Unowned.
   scoped_refptr<UnifiedSystemTrayModel> model_;
@@ -249,12 +230,7 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   bool showing_calendar_view_ = false;
 
-  chromeos::PowerManagerClient::LidState lid_state_ =
-      chromeos::PowerManagerClient::LidState::OPEN;
-
   base::ObserverList<Observer> observers_;
-
-  base::WeakPtrFactory<UnifiedSystemTrayController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -12,6 +12,7 @@
 #include "ash/system/status_area_widget.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 
 namespace {
@@ -39,13 +40,23 @@ class UnifiedSystemTrayModel::DBusObserver
  private:
   void HandleInitialBrightness(std::optional<double> percent);
 
+  // Get the initial lid state.
+  void HandleInitialLidState(
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+
   // chromeos::PowerManagerClient::Observer:
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   const raw_ptr<UnifiedSystemTrayModel> owner_;
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   base::WeakPtrFactory<DBusObserver> weak_ptr_factory_{this};
 };
@@ -53,15 +64,17 @@ class UnifiedSystemTrayModel::DBusObserver
 UnifiedSystemTrayModel::DBusObserver::DBusObserver(
     UnifiedSystemTrayModel* owner)
     : owner_(owner) {
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
+  power_manager_client_observation_.Observe(power_manager_client);
   Shell::Get()->brightness_control_delegate()->GetBrightnessPercent(
       base::BindOnce(&DBusObserver::HandleInitialBrightness,
                      weak_ptr_factory_.GetWeakPtr()));
+  power_manager_client->GetSwitchStates(base::BindOnce(
+      &DBusObserver::HandleInitialLidState, weak_ptr_factory_.GetWeakPtr()));
 }
 
-UnifiedSystemTrayModel::DBusObserver::~DBusObserver() {
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-}
+UnifiedSystemTrayModel::DBusObserver::~DBusObserver() = default;
 
 void UnifiedSystemTrayModel::DBusObserver::HandleInitialBrightness(
     std::optional<double> percent) {
@@ -76,6 +89,19 @@ void UnifiedSystemTrayModel::DBusObserver::ScreenBrightnessChanged(
       change.percent() / 100.,
       change.cause() ==
           power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+}
+
+void UnifiedSystemTrayModel::DBusObserver::HandleInitialLidState(
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+  if (switch_states.has_value()) {
+    owner_->LidStateChanged(switch_states->lid_state);
+  }
+}
+
+void UnifiedSystemTrayModel::DBusObserver::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  owner_->LidStateChanged(state);
 }
 
 void UnifiedSystemTrayModel::DBusObserver::KeyboardBrightnessChanged(
@@ -152,6 +178,14 @@ void UnifiedSystemTrayModel::DisplayBrightnessChanged(float brightness,
   display_brightness_ = brightness;
   for (auto& observer : observers_)
     observer.OnDisplayBrightnessChanged(by_user);
+}
+
+void UnifiedSystemTrayModel::LidStateChanged(
+    chromeos::PowerManagerClient::LidState state) {
+  lid_state_ = state;
+  for (auto& observer : observers_) {
+    observer.OnLidStateChanged();
+  }
 }
 
 void UnifiedSystemTrayModel::KeyboardBrightnessChanged(
