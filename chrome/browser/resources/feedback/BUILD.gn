@@ -20,6 +20,7 @@ build_webui("build") {
     "images/button_butter_bar_close.png",
     "images/button_butter_bar_close_hover.png",
     "images/button_butter_bar_close_pressed.png",
+    "report_unsafe_site.html",
   ]
 
   ts_files = [
@@ -32,6 +33,9 @@ build_webui("build") {
     "js/feedback_util.ts",
     "js/questionnaire.ts",
     "js/take_screenshot.ts",
+    "report_unsafe_site/icons.html.ts",
+    "report_unsafe_site/report_unsafe_site_app.ts",
+    "report_unsafe_site/report_unsafe_site_app.html.ts",
     "system_info_app.html.ts",
     "system_info_app.ts",
   ]
@@ -41,6 +45,7 @@ build_webui("build") {
     "css/about_sys.css",
     "feedback_shared_styles.css",
     "feedback_shared_vars.css",
+    "report_unsafe_site/report_unsafe_site_app.css",
   ]
 
   if (is_chromeos) {
@@ -65,9 +70,6 @@ build_webui("build") {
   ts_path_mappings = [ "/shared/key_value_pair_viewer/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/key_value_pair_viewer_shared/tsc/*",
                            target_gen_dir) ]
-
-  extra_grdp_deps = [ "report_unsafe_site:build_grdp" ]
-  extra_grdp_files = [ "$target_gen_dir/report_unsafe_site/resources.grdp" ]
 
   webui_context_type = "trusted"
 }

@@ -82,9 +82,8 @@ void AddStringResources(content::WebUIDataSource* source,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (feedback::ReportUnsafeSiteDialog::IsEnabled(*profile)) {
-    source->AddResourcePath(
-        "report-unsafe-site",
-        IDR_FEEDBACK_REPORT_UNSAFE_SITE_REPORT_UNSAFE_SITE_HTML);
+    source->AddResourcePath("report-unsafe-site",
+                            IDR_FEEDBACK_REPORT_UNSAFE_SITE_HTML);
   }
 }
 

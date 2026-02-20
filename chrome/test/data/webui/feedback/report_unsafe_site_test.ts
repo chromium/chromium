@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://feedback/report_unsafe_site_app.js';
+import 'chrome://feedback/report_unsafe_site/report_unsafe_site_app.js';
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
