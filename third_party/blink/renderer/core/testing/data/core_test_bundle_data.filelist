@@ -433,6 +433,7 @@ testing/data/root-scroller.html
 testing/data/rtl-iframe-inner.html
 testing/data/rtl-iframe.html
 testing/data/rtl-overview-mode.html
+testing/data/sandboxed-srcdoc-ctrl-click.html
 testing/data/scale_oscillate.html
 testing/data/script/nested-script.js
 testing/data/script/not-parser-blocked-async-nested-script.html

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<body>
+<iframe
+    sandbox="allow-scripts"
+    srcdoc='
+        <div id="container"></div>
+        <script>
+            let clicked = false;
+            const btn = document.createElement("a");
+            btn.id = "btn";
+            btn.href = "about:blank";
+            document.body.appendChild(btn);
+
+            btn.addEventListener("click", (event) => {
+                if (clicked) return;
+                clicked = true;
+                event.preventDefault();
+                const clickEvent = new MouseEvent("click", {
+                    ctrlKey: true,
+                    metaKey: true,
+                    bubbles: true,
+                    cancelable: true,
+                });
+                btn.dispatchEvent(clickEvent);
+            });
+        </script>
+'
+>
+</iframe>
+</html>

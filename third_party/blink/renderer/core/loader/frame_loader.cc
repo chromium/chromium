@@ -868,6 +868,17 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
+  // A sandboxed iframe without `allow-popups` should not be able to
+  // open a new browsing context by emulating a user gesture in JS.
+  // (e.g. Ctrl+click).
+  if (request.GetNavigationPolicy() != kNavigationPolicyCurrentTab &&
+      request.GetTriggeringEventInfo() ==
+          mojom::blink::TriggeringEventInfo::kFromUntrustedEvent &&
+      frame_->GetSecurityContext()->IsSandboxed(
+          network::mojom::blink::WebSandboxFlags::kPopups)) {
+    return;
+  }
+
   if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
       (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
                              frame_->DomWindow()->GetSecurityOrigin()))) {

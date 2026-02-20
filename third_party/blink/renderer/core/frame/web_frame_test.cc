@@ -7653,8 +7653,8 @@ class TestNewWindowWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
+    begin_navigation_call_count_++;
     if (ignore_navigations_) {
-      begin_navigation_call_count_++;
       return;
     }
     TestWebFrameClient::BeginNavigation(std::move(info));
@@ -14844,6 +14844,57 @@ TEST_F(WebFrameTest, IframeMoveBeforeConnectedSubframeCount) {
   EXPECT_EQ(body->ConnectedSubframeCount(), 1u);
   EXPECT_EQ(old_parent->ConnectedSubframeCount(), 0u);
   EXPECT_EQ(new_parent->ConnectedSubframeCount(), 1u);
+}
+class IframeBeginNavivationCountTestWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  IframeBeginNavivationCountTestWebFrameClient() = default;
+  ~IframeBeginNavivationCountTestWebFrameClient() override = default;
+
+  // WebLocalFrameClient:
+  WebLocalFrame* CreateChildFrame(
+      mojom::blink::TreeScopeType scope,
+      const WebString& name,
+      const WebString& fallback_name,
+      const FramePolicy& frame_policy,
+      const WebFrameOwnerProperties&,
+      FrameOwnerElementType,
+      WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
+      FinishChildFrameCreationFn finish_creation) override {
+    auto client = std::make_unique<TestNewWindowWebFrameClient>();
+    client_ = client.get();
+    client_->set_sandbox_flags(frame_policy.sandbox_flags);
+    return CreateLocalChild(*Frame(), scope, std::move(client),
+                            std::move(policy_container_bind_params),
+                            finish_creation);
+  }
+
+  TestNewWindowWebFrameClient* iframe_client() const { return client_; }
+
+ private:
+  TestNewWindowWebFrameClient* client_ = nullptr;
+};
+
+TEST_F(WebFrameTest, SandboxedIframePopupCtrlClick) {
+  RegisterMockedHttpURLLoad("sandboxed-srcdoc-ctrl-click.html");
+  IframeBeginNavivationCountTestWebFrameClient web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(
+      base_url_ + "sandboxed-srcdoc-ctrl-click.html", &web_frame_client);
+
+  ASSERT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 1);
+
+  LocalFrame* child = To<LocalFrame>(
+      web_view_helper.GetWebView()->GetPage()->MainFrame()->FirstChild());
+  Element* element =
+      child->GetDocument()->body()->getElementById(AtomicString("btn"));
+  To<HTMLElement>(element)->click();
+
+  // Clicking the button will attempt a synthetic Ctrl+Click from an iframe
+  // sandboxed without `allow-popups`. This should be blocked before reaching
+  // BeginNavigation().
+  EXPECT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 1);
 }
 
 }  // namespace blink

@@ -581,6 +581,14 @@ class TestWebFrameClient : public WebLocalFrameClient {
     return sandbox_flags_;
   }
 
+  // Subclasses that override CreateChildFrame() to gave the child frame a
+  // custom TestWebFrameClient subclass lose the propagation of sandbox flags
+  // that is performed in TestWebFrameClient::CreateChildFrame(). This allows
+  // such cases to set the flags manually.
+  void set_sandbox_flags(network::mojom::WebSandboxFlags flags) {
+    sandbox_flags_ = flags;
+  }
+
   void DestroyChildViews();
 
   void SetFrameDetachedCallback(base::OnceClosure callback);
