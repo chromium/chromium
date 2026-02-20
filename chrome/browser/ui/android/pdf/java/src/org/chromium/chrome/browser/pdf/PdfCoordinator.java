@@ -153,7 +153,10 @@ public class PdfCoordinator implements PdfActionsDelegate {
     /** The class responsible for rendering pdf document. */
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
 
-        private final PdfActionsDelegate mDelegate;
+        private @Nullable PdfActionsDelegate mDelegate;
+
+        /** Public no-arg constructor for FragmentManager. */
+        public ChromePdfViewerFragment() {}
 
         public ChromePdfViewerFragment(PdfActionsDelegate handler) {
             mDelegate = handler;
@@ -170,6 +173,9 @@ public class PdfCoordinator implements PdfActionsDelegate {
 
         @Override
         public boolean onLinkClicked(ExternalLink externalLink) {
+            if (mDelegate == null) {
+                return false;
+            }
             return mDelegate.onLinkClicked(externalLink.getUri());
         }
 

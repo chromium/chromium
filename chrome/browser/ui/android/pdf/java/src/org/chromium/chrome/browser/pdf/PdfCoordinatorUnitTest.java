@@ -103,4 +103,17 @@ public class PdfCoordinatorUnitTest {
                 Origin.create(new GURL(PDF_URL)).toString(),
                 params.getInitiatorOrigin().toString());
     }
+
+    @Test
+    public void testFragmentCanBeInstantiated() {
+        // This test verifies that the fragment can be instantiated by the FragmentManager.
+        // The FragmentManager requires a public no-argument constructor.
+        try {
+            PdfCoordinator.ChromePdfViewerFragment fragment =
+                    new PdfCoordinator.ChromePdfViewerFragment();
+            Assert.assertNotNull("Fragment should be created successfully.", fragment);
+        } catch (Exception e) {
+            Assert.fail("Fragment instantiation should not throw an exception: " + e.getMessage());
+        }
+    }
 }
