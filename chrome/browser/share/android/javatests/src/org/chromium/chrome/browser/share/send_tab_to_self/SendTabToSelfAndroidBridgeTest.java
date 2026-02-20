@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,8 +35,8 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock SendTabToSelfAndroidBridge.Natives mNativeMock;
-    private Profile mProfile;
-    private WebContents mWebContents;
+    @Mock Profile mProfile;
+    @Mock WebContents mWebContents;
 
     private static final String GUID = "randomguid";
     private static final String URL = "http://www.tanyastacos.com";
@@ -50,9 +51,22 @@ public class SendTabToSelfAndroidBridgeTest {
     @Test
     @SmallTest
     public void testAddEntry() {
-        SendTabToSelfAndroidBridge.addEntry(mProfile, URL, TITLE, TARGET_DEVICE_SYNC_CACHE_GUID);
+        SendTabToSelfAndroidBridge.addEntry(
+                mProfile, URL, TITLE, TARGET_DEVICE_SYNC_CACHE_GUID, /* pageContext= */ null);
         verify(mNativeMock)
-                .addEntry(eq(mProfile), eq(URL), eq(TITLE), eq(TARGET_DEVICE_SYNC_CACHE_GUID));
+                .addEntry(
+                        eq(mProfile),
+                        eq(URL),
+                        eq(TITLE),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        isNull());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreatePageContext() {
+        SendTabToSelfAndroidBridge.createPageContext(mWebContents);
+        verify(mNativeMock).createPageContext(eq(mWebContents));
     }
 
     @Test

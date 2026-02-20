@@ -142,6 +142,7 @@ public class SendTabToSelfCoordinator {
     private final @Nullable WindowAndroid mWindowAndroid;
     private final String mUrl;
     private final String mTitle;
+    private final @Nullable PageContext mPageContext;
     private final BottomSheetController mController;
     private final Profile mProfile;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
@@ -151,6 +152,7 @@ public class SendTabToSelfCoordinator {
             @Nullable WindowAndroid windowAndroid,
             String url,
             String title,
+            @Nullable PageContext pageContext,
             BottomSheetController controller,
             Profile profile,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
@@ -158,6 +160,7 @@ public class SendTabToSelfCoordinator {
         mWindowAndroid = windowAndroid;
         mUrl = url;
         mTitle = title;
+        mPageContext = pageContext;
         mController = controller;
         mProfile = profile;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -180,7 +183,13 @@ public class SendTabToSelfCoordinator {
                         SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
                 mController.requestShowContent(
                         new DevicePickerBottomSheetContent(
-                                mContext, mUrl, mTitle, mController, targetDevices, mProfile),
+                                mContext,
+                                mUrl,
+                                mTitle,
+                                mPageContext,
+                                mController,
+                                targetDevices,
+                                mProfile),
                         true);
                 return;
             case EntryPointDisplayReason.OFFER_SIGN_IN:

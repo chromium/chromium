@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -39,11 +40,13 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     private final Profile mProfile;
     private final String mUrl;
     private final String mTitle;
+    private final @Nullable PageContext mPageContext;
 
     public DevicePickerBottomSheetContent(
             Context context,
             String url,
             String title,
+            @Nullable PageContext pageContext,
             BottomSheetController controller,
             List<TargetDeviceInfo> targetDevices,
             Profile profile) {
@@ -53,6 +56,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         mAdapter = new DevicePickerBottomSheetAdapter(targetDevices);
         mUrl = url;
         mTitle = title;
+        mPageContext = pageContext;
 
         createToolbarView();
         createContentView();
@@ -147,7 +151,8 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         MetricsRecorder.recordCrossDeviceTabJourney();
         TargetDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
 
-        SendTabToSelfAndroidBridge.addEntry(mProfile, mUrl, mTitle, targetDeviceInfo.cacheGuid);
+        SendTabToSelfAndroidBridge.addEntry(
+                mProfile, mUrl, mTitle, targetDeviceInfo.cacheGuid, mPageContext);
 
         Resources res = mContext.getResources();
 

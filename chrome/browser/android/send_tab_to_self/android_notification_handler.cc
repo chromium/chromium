@@ -13,10 +13,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -25,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
@@ -127,7 +130,19 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
-  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+  content::WebContents* new_contents =
+      web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
+      new_contents) {
+    const SendTabToSelfEntry* entry =
+        send_tab_to_self_model_->GetEntryByGUID(guid);
+    if (entry) {
+      FillWebContents(new_contents, url::Origin::Create(entry->GetURL()),
+                      entry->GetPageContext());
+    }
+  }
+
   send_tab_to_self_model_->DismissEntry(guid);
 }
 

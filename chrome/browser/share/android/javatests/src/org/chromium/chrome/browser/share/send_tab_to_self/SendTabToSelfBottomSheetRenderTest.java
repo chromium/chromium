@@ -97,6 +97,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                             sActivity,
                                             JUnitTestGURLs.HTTP_URL.getSpec(),
                                             "Title",
+                                            /* pageContext= */ null,
                                             mBottomSheetController,
                                             devices,
                                             mProfile);
@@ -127,6 +128,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                     sActivity,
                                     JUnitTestGURLs.HTTP_URL.getSpec(),
                                     "Title",
+                                    /* pageContext= */ null,
                                     mBottomSheetController,
                                     devices,
                                     mProfile);
