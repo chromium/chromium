@@ -75,6 +75,10 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, FilterChips) {
   RunTest("history/history_app_test.js", "runMochaSuite('FilterChips')");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryFilterChip) {
+  RunTest("history/history_filter_chips_test.js", "mocha.run()");
+}
+
 class HistoryListTest : public HistoryUIBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

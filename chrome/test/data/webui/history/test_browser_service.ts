@@ -34,6 +34,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       'navigateToUrl',
       'openForeignSessionTab',
       'otherDevicesInitialized',
+      'recordAction',
       'recordBooleanHistogram',
       'recordHistogram',
       'recordLongTime',
@@ -124,6 +125,8 @@ export class TestBrowserService extends TestBrowserProxy implements
     }
 
     this.actionMap[action]!++;
+
+    this.methodCalled('recordAction', action);
   }
 
   recordHistogram(histogram: string, value: number, max: number) {
