@@ -966,12 +966,12 @@ bool PrefetchContainer::IsStreamingURLLoaderDeletionScheduledForTesting()
 const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
     const {
   CHECK(!redirect_chain_.empty());
-  if (!redirect_chain_.back()->response_reader_->GetHead()) {
+  if (!redirect_chain_.back()->response_reader().GetHead()) {
     // Either the last PrefetchResponseReader is for a redirect response, or for
     // a final response not yet receiving its header.
     return nullptr;
   }
-  return redirect_chain_.back()->response_reader_.get();
+  return &redirect_chain_.back()->response_reader();
 }
 
 const network::mojom::URLResponseHead* PrefetchContainer::GetNonRedirectHead()
@@ -1263,7 +1263,7 @@ PrefetchServableState PrefetchContainer::GetServableStateInternal2(
   // Can only block until head if the request has been started using a
   // streaming URL loader and head/failure/redirect hasn't been received yet.
   if (GetStreamingURLLoader() &&
-      redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
+      redirect_chain_.back()->response_reader().IsWaitingForResponse()) {
     return PrefetchServableState::kShouldBlockUntilHeadReceived;
   }
 
@@ -1330,7 +1330,7 @@ PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverActionInternal(
           std::nullopt);
     case LoadState::kCompleted: {
       CHECK(!redirect_chain_.empty());
-      CHECK_EQ(redirect_chain_.back()->response_reader_->load_state(),
+      CHECK_EQ(redirect_chain_.back()->response_reader().load_state(),
                PrefetchResponseReader::LoadState::kCompleted);
       // This branch corresponds to the first `if` in
       // `GetServableStateInternal2()`.
@@ -1456,33 +1456,32 @@ void PrefetchContainer::OnPrefetchStarted() {
 }
 
 GURL PrefetchContainer::GetCurrentURL() const {
-  return GetCurrentSingleRedirectHopToPrefetch().url_;
+  return GetCurrentSingleRedirectHopToPrefetch().url();
 }
 
 GURL PrefetchContainer::GetPreviousURL() const {
-  return GetPreviousSingleRedirectHopToPrefetch().url_;
+  return GetPreviousSingleRedirectHopToPrefetch().url();
 }
 
 bool PrefetchContainer::IsIsolatedNetworkContextRequiredForCurrentPrefetch()
     const {
   const PrefetchSingleRedirectHop& this_prefetch =
       GetCurrentSingleRedirectHopToPrefetch();
-  return this_prefetch.is_isolated_network_context_required_;
+  return this_prefetch.is_isolated_network_context_required();
 }
 
 bool PrefetchContainer::IsIsolatedNetworkContextRequiredForPreviousRedirectHop()
     const {
   const PrefetchSingleRedirectHop& previous_prefetch =
       GetPreviousSingleRedirectHopToPrefetch();
-  return previous_prefetch.is_isolated_network_context_required_;
+  return previous_prefetch.is_isolated_network_context_required();
 }
 
 base::WeakPtr<PrefetchResponseReader>
 PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
-  const PrefetchSingleRedirectHop& this_prefetch =
+  PrefetchSingleRedirectHop& this_prefetch =
       GetCurrentSingleRedirectHopToPrefetch();
-  CHECK(this_prefetch.response_reader_);
-  return this_prefetch.response_reader_->GetWeakPtr();
+  return this_prefetch.response_reader().GetWeakPtr();
 }
 
 void PrefetchContainer::MakeInitialResourceRequest() {

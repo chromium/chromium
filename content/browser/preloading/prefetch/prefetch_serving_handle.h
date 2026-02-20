@@ -133,6 +133,7 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   // Returns the `SingleRedirectHop` to be served next.
   const PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe() const;
+  PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe();
 
   // Validation methods.
   struct OnGotPrefetchToServeState;

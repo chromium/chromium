@@ -37,7 +37,7 @@ PrefetchSingleRedirectHop::~PrefetchSingleRedirectHop() {
 }
 
 void PrefetchSingleRedirectHop::RegisterCookieListener() {
-  if (!is_isolated_network_context_required_) {
+  if (!is_isolated_network_context_required()) {
     return;
   }
 
