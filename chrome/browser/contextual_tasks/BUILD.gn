@@ -138,6 +138,7 @@ source_set("ui") {
       "contextual_tasks_side_panel_coordinator.h",
       "contextual_tasks_ui.h",
       "contextual_tasks_ui_service_factory.h",
+      "contextual_tasks_web_view.h",
     ]
   }
 
@@ -196,6 +197,7 @@ source_set("ui_impl") {
       "contextual_tasks_ui_service.cc",
       "contextual_tasks_ui_service_factory.cc",
       "contextual_tasks_url_loader_factory_interceptor.cc",
+      "contextual_tasks_web_view.cc",
     ]
   }
 
