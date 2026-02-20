@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
@@ -28,7 +28,6 @@ namespace tabs {
 
 class RestoreEntityTracker;
 class TabStateStorageDatabase;
-class TabStateStorageService;
 
 // Represents data loaded from the database.
 class StorageLoadedData {
@@ -106,11 +105,24 @@ class StorageLoadedData {
         TabStateStorageDatabase* database);
 
    private:
+    void ReconcileDivergentNodes(base::PassKey<Builder>,
+                                 TabStateStorageDatabase* database);
+
+    // Parses a children proto from a byte span and returns the parsed proto.
+    // Returns nullopt on parsing failure. Populates `children_map` with
+    // the parsed storage IDs.
+    std::optional<tabs_pb::Children> ParseChildren(
+        StorageId id,
+        base::span<const uint8_t> children_payload,
+        absl::flat_hash_map<StorageId, std::vector<StorageId>>& children_map);
+
     std::string window_tag_;
     bool is_off_the_record_;
     std::unique_ptr<RestoreEntityTracker> tracker_;
     absl::flat_hash_map<StorageId, tabs_pb::TabState> loaded_tabs_map_;
     absl::flat_hash_map<StorageId, std::vector<StorageId>> children_map_;
+    absl::flat_hash_map<StorageId, std::vector<StorageId>>
+        divergent_children_map_;
     std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
     std::optional<StorageId> root_storage_id_;
     std::optional<StorageId> active_tab_storage_id_;

@@ -146,17 +146,9 @@ void StorageLoadedData::Builder::AddNode(
   }
 
   DCHECK(children.has_value());
-  tabs_pb::Children children_proto;
-  if (children_proto.ParseFromArray(children->data(), children->size())) {
-    std::vector<StorageId> storage_ids_vector;
-    storage_ids_vector.reserve(children_proto.storage_id_size());
-    for (const auto& child_id : children_proto.storage_id()) {
-      storage_ids_vector.push_back(StorageIdFromTokenProto(child_id));
-    }
-    children_map_.emplace(id, std::move(storage_ids_vector));
-  } else {
-    context_.SetStatus(StorageLoadingStatus::kParseError,
-                       "Failed to parse children for id: " + id.ToString());
+  std::optional<tabs_pb::Children> children_proto =
+      ParseChildren(id, *children, children_map_);
+  if (!children_proto.has_value()) {
     return;
   }
 
@@ -195,7 +187,7 @@ void StorageLoadedData::Builder::AddNode(
     // are supported on Android.
     NOTIMPLEMENTED();
   }
-  tracker_->RegisterCollection(id, type, children_proto, collection_specific_id,
+  tracker_->RegisterCollection(id, type, *children_proto, collection_specific_id,
                                passkey);
 }
 
@@ -204,7 +196,98 @@ void StorageLoadedData::Builder::AddDivergentNode(
     TabStorageType type,
     std::optional<base::span<const uint8_t>> children,
     base::PassKey<TabStateStorageDatabase> passkey) {
-  NOTIMPLEMENTED();
+  if (context_.HasError()) {
+    return;
+  }
+
+  DCHECK(children.has_value());
+  std::optional<tabs_pb::Children> children_proto =
+      ParseChildren(id, *children, divergent_children_map_);
+  if (!children_proto.has_value()) {
+    return;
+  }
+}
+
+void StorageLoadedData::Builder::ReconcileDivergentNodes(
+    base::PassKey<Builder> builder_passkey,
+    TabStateStorageDatabase* database) {
+  if (divergent_children_map_.empty()) {
+    return;
+  }
+
+  // Collect all children that are part of any divergent vector.
+  absl::flat_hash_set<StorageId> all_divergent_children;
+  for (const auto& [id, children] : divergent_children_map_) {
+    for (const auto& child_id : children) {
+      all_divergent_children.insert(child_id);
+    }
+  }
+
+  TabStateStorageDatabase::OpenTransaction* transaction =
+      database->CreateTransaction();
+  for (auto& [id, divergent_children] : divergent_children_map_) {
+    std::vector<StorageId> reconciled_children = std::move(divergent_children);
+
+    auto canonical_it = children_map_.find(id);
+    if (canonical_it != children_map_.end()) {
+      bool found_divergent_match = false;
+
+      // Append canonical children starting from the first that is not in any
+      // divergent vector.
+      for (const auto& canonical_child : canonical_it->second) {
+        if (found_divergent_match) {
+          reconciled_children.push_back(canonical_child);
+        } else if (all_divergent_children.find(canonical_child) ==
+                   all_divergent_children.end()) {
+          // TODO(crbug.com/483984954): Needs to handle cases where a deletion
+          // has occurred.
+          found_divergent_match = true;
+        }
+      }
+    }
+
+    // The reconciled children vector is now canonical. Save it to the database.
+    tabs_pb::Children children_proto;
+    for (const auto& child_id : reconciled_children) {
+      tabs_pb::Token* token = children_proto.add_storage_id();
+      StorageIdToTokenProto(child_id, token);
+    }
+
+    std::vector<uint8_t> serialized_children(children_proto.ByteSizeLong());
+    children_proto.SerializeToArray(serialized_children.data(),
+                                    serialized_children.size());
+    database->SaveNodeChildren(transaction, id, std::move(serialized_children));
+
+    children_map_[id] = std::move(reconciled_children);
+  }
+
+  // Clear the divergent window from the database now that we have reconciled
+  // the divergent data.
+  database->ClearDivergentNodesForWindow(window_tag_, is_off_the_record_);
+
+  database->CloseTransaction(transaction);
+}
+
+std::optional<tabs_pb::Children> StorageLoadedData::Builder::ParseChildren(
+    StorageId id,
+    base::span<const uint8_t> children_payload,
+    absl::flat_hash_map<StorageId, std::vector<StorageId>>& children_map) {
+  tabs_pb::Children children_proto;
+  if (!children_proto.ParseFromArray(children_payload.data(),
+                                     children_payload.size())) {
+    context_.SetStatus(StorageLoadingStatus::kParseError,
+                       "Failed to parse children for id: " + id.ToString());
+    return std::nullopt;
+  }
+
+  std::vector<StorageId> storage_ids_vector;
+  storage_ids_vector.reserve(children_proto.storage_id_size());
+  for (const tabs_pb::Token& child_id : children_proto.storage_id()) {
+    storage_ids_vector.push_back(StorageIdFromTokenProto(child_id));
+  }
+  children_map.emplace(id, std::move(storage_ids_vector));
+
+  return std::move(children_proto);
 }
 
 std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
@@ -216,6 +299,8 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
         std::vector<std::unique_ptr<TabGroupCollectionData>>(),
         std::move(tracker_), std::nullopt, std::move(context_)));
   }
+
+  ReconcileDivergentNodes(base::PassKey<Builder>(), database);
 
   std::vector<tabs_pb::TabState> loaded_tabs;
   loaded_tabs.reserve(loaded_tabs_map_.size());
@@ -235,13 +320,6 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
       loaded_tabs.emplace_back(std::move(tab));
     }
   }
-
-  // TODO(crbug.com/483984954): Reconcile the divergence window data with the
-  // canonical window data and save the reconciled differences.
-
-  // Clear the divergent window from the database now that we have reconciled
-  // the divergent data.
-  database->ClearDivergentNodesForWindow(window_tag_, is_off_the_record_);
 
   // TODO(crbug.com/460490530): CHECK that every tab row was found in the
   // child traversal. Otherwise we've got an inconsistent state and cleanup
