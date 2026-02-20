@@ -1316,15 +1316,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_TrustAndSafety",
-                    "params": {
-                        "trust_and_safety": "true"
-                    },
-                    "enable_features": [
-                        "AndroidTipsNotifications"
-                    ]
-                },
-                {
                     "name": "Enabled_Essential",
                     "params": {
                         "essential": "true"
