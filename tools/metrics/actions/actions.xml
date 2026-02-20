@@ -48848,8 +48848,17 @@ should be able to be added at any place in this file.
   <owner>agale@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    Recorded when the user switches to horizontal tab strip mode. This user
-    action only applies to Desktop.
+    Recorded when the user switches to horizontal tab strip mode via the frame
+    context menu. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToHorizontalTabStrip_FromSettings">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to horizontal tab strip mode via the
+    settings page. This user action only applies to Desktop.
   </description>
 </action>
 
@@ -48857,8 +48866,17 @@ should be able to be added at any place in this file.
   <owner>agale@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    Recorded when the user switches to vertical tab strip mode. This user action
-    only applies to Desktop.
+    Recorded when the user switches to vertical tab strip mode via the frame
+    context menu. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip_FromSettings">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode via the settings
+    page. This user action only applies to Desktop.
   </description>
 </action>
 
