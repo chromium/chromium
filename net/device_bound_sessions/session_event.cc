@@ -21,11 +21,6 @@ SessionEvent::SessionEvent(SessionEvent&& other) = default;
 SessionEvent& SessionEvent::operator=(SessionEvent&& other) = default;
 
 CreationEventDetails::CreationEventDetails() = default;
-CreationEventDetails::CreationEventDetails(
-    SessionError::ErrorType fetch_error,
-    std::optional<SessionDisplay> new_session_display)
-    : fetch_error(fetch_error),
-      new_session_display(std::move(new_session_display)) {}
 CreationEventDetails::~CreationEventDetails() = default;
 CreationEventDetails::CreationEventDetails(const CreationEventDetails&) =
     default;
@@ -37,15 +32,6 @@ CreationEventDetails& CreationEventDetails::operator=(
     CreationEventDetails&& other) = default;
 
 RefreshEventDetails::RefreshEventDetails() = default;
-RefreshEventDetails::RefreshEventDetails(
-    RefreshResult refresh_result,
-    bool was_fully_proactive_refresh,
-    std::optional<SessionError::ErrorType> fetch_error,
-    std::optional<SessionDisplay> new_session_display)
-    : refresh_result(refresh_result),
-      was_fully_proactive_refresh(was_fully_proactive_refresh),
-      fetch_error(fetch_error),
-      new_session_display(std::move(new_session_display)) {}
 RefreshEventDetails::~RefreshEventDetails() = default;
 RefreshEventDetails::RefreshEventDetails(const RefreshEventDetails&) = default;
 RefreshEventDetails& RefreshEventDetails::operator=(
@@ -86,11 +72,13 @@ SessionEvent SessionEvent::MakeCreationEvent(
     SchemefulSite site,
     std::optional<std::string> session_id,
     bool succeeded,
-    SessionError::ErrorType fetch_error,
+    SessionError fetch_error,
     std::optional<SessionDisplay> new_session_display) {
   SessionEvent event(std::move(site), std::move(session_id), succeeded);
-  event.event_type_details.emplace<CreationEventDetails>(
-      fetch_error, std::move(new_session_display));
+  auto& details = event.event_type_details.emplace<CreationEventDetails>();
+  details.fetch_error = fetch_error.type;
+  details.new_session_display = std::move(new_session_display);
+  details.failed_request = std::move(fetch_error.failed_request);
   return event;
 }
 
@@ -100,13 +88,18 @@ SessionEvent SessionEvent::MakeRefreshEvent(
     const std::string& session_id,
     bool succeeded,
     RefreshResult refresh_result,
-    std::optional<SessionError::ErrorType> fetch_error,
+    std::optional<SessionError> fetch_error,
     std::optional<SessionDisplay> new_session_display,
     bool was_fully_proactive_refresh) {
   SessionEvent event(std::move(site), session_id, succeeded);
-  event.event_type_details.emplace<RefreshEventDetails>(
-      refresh_result, was_fully_proactive_refresh, fetch_error,
-      std::move(new_session_display));
+  auto& details = event.event_type_details.emplace<RefreshEventDetails>();
+  details.refresh_result = refresh_result;
+  details.was_fully_proactive_refresh = was_fully_proactive_refresh;
+  details.new_session_display = std::move(new_session_display);
+  if (fetch_error) {
+    details.fetch_error = fetch_error->type;
+    details.failed_request = std::move(fetch_error->failed_request);
+  }
   return event;
 }
 

@@ -536,6 +536,51 @@ TEST_F(SessionServiceImplTest, EventObserverOnRegistrationFailure) {
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
+TEST_F(SessionServiceImplTest,
+       EventObserverOnRegistrationCapturedFailedRequest) {
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_FALSE(event.succeeded);
+    ASSERT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<CreationEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kPersistentHttpError);
+    ASSERT_TRUE(details.failed_request.has_value());
+    EXPECT_EQ(details.failed_request->request_url, kTestUrl);
+    EXPECT_EQ(details.failed_request->net_error, OK);
+    EXPECT_EQ(details.failed_request->response_error, 404);
+    EXPECT_EQ(details.failed_request->response_error_body, "Not Found");
+  });
+
+  SessionError error(SessionError::kPersistentHttpError);
+  FailedRequest failed_request;
+  failed_request.request_url = kTestUrl;
+  failed_request.net_error = OK;
+  failed_request.response_error = 404;
+  failed_request.response_error_body = "Not Found";
+  error.failed_request = std::move(failed_request);
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](std::optional<FailedRequest> failed_request,
+         SessionError::ErrorType error_type,
+         RegistrationFetcher::RegistrationCompleteCallback callback) {
+        SessionError error(error_type);
+        error.failed_request = std::move(failed_request);
+        std::move(callback).Run(nullptr, RegistrationResult(std::move(error)));
+      },
+      error.failed_request, error.type));
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+}
+
 TEST_F(SessionServiceImplTest, EventObserverOnAddSession) {
   base::MockCallback<SessionService::OnEventCallback> event_callback;
   base::CallbackListSubscription subscription =
@@ -789,6 +834,61 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshTransientError) {
   base::test::TestFuture<RefreshResult> future;
   auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
       SessionError::kTransientHttpError, kRefreshUrlString);
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      future.GetCallback());
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnRefreshCapturedFailedRequest) {
+  // Register a session with kSessionId.
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  auto site = SchemefulSite(kTestUrl);
+  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
+
+  // Create a request and defer it.
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_FALSE(event.succeeded);
+    ASSERT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<RefreshEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kTransientHttpError);
+    ASSERT_TRUE(details.failed_request.has_value());
+    EXPECT_EQ(details.failed_request->request_url, kTestRefreshUrl);
+    EXPECT_EQ(details.failed_request->net_error, OK);
+    EXPECT_EQ(details.failed_request->response_error, 500);
+    EXPECT_EQ(details.failed_request->response_error_body,
+              "Internal Server Error");
+  });
+
+  SessionError error(SessionError::kTransientHttpError);
+  FailedRequest failed_request;
+  failed_request.request_url = kTestRefreshUrl;
+  failed_request.net_error = OK;
+  failed_request.response_error = 500;
+  failed_request.response_error_body = "Internal Server Error";
+  error.failed_request = std::move(failed_request);
+
+  base::test::TestFuture<RefreshResult> future;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](std::optional<FailedRequest> failed_request,
+         SessionError::ErrorType error_type,
+         RegistrationFetcher::RegistrationCompleteCallback callback) {
+        SessionError error(error_type);
+        error.failed_request = std::move(failed_request);
+        std::move(callback).Run(nullptr, RegistrationResult(std::move(error)));
+      },
+      error.failed_request, error.type));
   service().DeferRequestForRefresh(
       dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
       future.GetCallback());

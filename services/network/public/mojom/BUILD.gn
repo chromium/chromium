@@ -1062,6 +1062,10 @@ mojom("url_loader_base") {
           cpp = "::net::device_bound_sessions::SessionError::ErrorType"
         },
         {
+          mojom = "network.mojom.DeviceBoundSessionFailedRequest"
+          cpp = "::net::device_bound_sessions::FailedRequest"
+        },
+        {
           mojom = "network.mojom.DeviceBoundSessionDisplay"
           cpp = "::net::device_bound_sessions::SessionDisplay"
         },

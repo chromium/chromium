@@ -20,8 +20,6 @@ namespace net::device_bound_sessions {
 
 struct NET_EXPORT CreationEventDetails {
   CreationEventDetails();
-  CreationEventDetails(SessionError::ErrorType fetch_error,
-                       std::optional<SessionDisplay> new_session_display);
   CreationEventDetails(const CreationEventDetails&);
   CreationEventDetails& operator=(const CreationEventDetails&);
   ~CreationEventDetails();
@@ -30,14 +28,11 @@ struct NET_EXPORT CreationEventDetails {
 
   SessionError::ErrorType fetch_error = SessionError::ErrorType::kSuccess;
   std::optional<SessionDisplay> new_session_display;
+  std::optional<FailedRequest> failed_request;
 };
 
 struct NET_EXPORT RefreshEventDetails {
   RefreshEventDetails();
-  RefreshEventDetails(RefreshResult refresh_result,
-                      bool was_fully_proactive_refresh,
-                      std::optional<SessionError::ErrorType> fetch_error,
-                      std::optional<SessionDisplay> new_session_display);
   RefreshEventDetails(const RefreshEventDetails&);
   RefreshEventDetails& operator=(const RefreshEventDetails&);
   ~RefreshEventDetails();
@@ -51,6 +46,7 @@ struct NET_EXPORT RefreshEventDetails {
   bool was_fully_proactive_refresh = false;
   std::optional<SessionError::ErrorType> fetch_error;
   std::optional<SessionDisplay> new_session_display;
+  std::optional<FailedRequest> failed_request;
 };
 
 struct NET_EXPORT ChallengeEventDetails {
@@ -92,7 +88,7 @@ struct NET_EXPORT SessionEvent {
       SchemefulSite site,
       std::optional<std::string> session_id,
       bool succeeded,
-      SessionError::ErrorType fetch_error,
+      SessionError fetch_error,
       std::optional<SessionDisplay> new_session_display);
 
   static SessionEvent MakeRefreshEvent(
@@ -100,7 +96,7 @@ struct NET_EXPORT SessionEvent {
       const std::string& session_id,
       bool succeeded,
       RefreshResult refresh_result,
-      std::optional<SessionError::ErrorType> fetch_error,
+      std::optional<SessionError> fetch_error,
       std::optional<SessionDisplay> new_session_display,
       bool was_fully_proactive_refresh);
 

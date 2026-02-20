@@ -56,7 +56,6 @@ enum DeviceBoundSessionUsage {
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
-
 struct DeviceBoundSessionWithUsage {
   // Key of session that was used.
   DeviceBoundSessionKey session_key;
@@ -353,6 +352,20 @@ struct DeviceBoundSessionDisplay {
   array<string> allowed_refresh_initiators;
 };
 
+// Details about a failed device bound session request.
+struct DeviceBoundSessionFailedRequest {
+  // The failed request URL.
+  url.mojom.Url request_url;
+  // The net error of the response if it was not OK.
+  int32? net_error;
+  // The response code if the net error was OK and the response code was not
+  // 200.
+  int32? response_error;
+  // The body of the response if the net error was OK, the response code was
+  // not 200, and the response body was not empty.
+  string? response_error_body;
+};
+
 // Session event details specific to creation.
 struct DeviceBoundSessionCreationDetails {
   // The result of the fetch attempt.
@@ -360,6 +373,9 @@ struct DeviceBoundSessionCreationDetails {
   // The session display if there was a newly created session. This is populated
   // for all successful creation events.
   DeviceBoundSessionDisplay? new_session_display;
+  // Details about a failed device bound session network request if there was
+  // one.
+  DeviceBoundSessionFailedRequest? failed_request;
 };
 
 // Session event details specific to refresh.
@@ -374,6 +390,9 @@ struct DeviceBoundSessionRefreshDetails {
   // See comments on
   // `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
   bool was_fully_proactive_refresh;
+  // Details about a failed device bound session network request if there was
+  // one.
+  DeviceBoundSessionFailedRequest? failed_request;
 };
 
 // Session event details specific to termination.

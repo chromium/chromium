@@ -469,12 +469,24 @@ bool EnumTraits<network::mojom::DeviceBoundSessionChallengeResult,
 }
 
 // static
+bool StructTraits<network::mojom::DeviceBoundSessionFailedRequestDataView,
+                  net::device_bound_sessions::FailedRequest>::
+    Read(network::mojom::DeviceBoundSessionFailedRequestDataView data,
+         net::device_bound_sessions::FailedRequest* out) {
+  out->net_error = data.net_error();
+  out->response_error = data.response_error();
+  return data.ReadRequestUrl(&out->request_url) &&
+         data.ReadResponseErrorBody(&out->response_error_body);
+}
+
+// static
 bool StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
                   net::device_bound_sessions::CreationEventDetails>::
     Read(network::mojom::DeviceBoundSessionCreationDetailsDataView data,
          net::device_bound_sessions::CreationEventDetails* out) {
   return data.ReadFetchError(&out->fetch_error) &&
-         data.ReadNewSessionDisplay(&out->new_session_display);
+         data.ReadNewSessionDisplay(&out->new_session_display) &&
+         data.ReadFailedRequest(&out->failed_request);
 }
 
 // static
@@ -485,9 +497,9 @@ bool StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
   out->was_fully_proactive_refresh = data.was_fully_proactive_refresh();
   return data.ReadRefreshResult(&out->refresh_result) &&
          data.ReadFetchError(&out->fetch_error) &&
-         data.ReadNewSessionDisplay(&out->new_session_display);
+         data.ReadNewSessionDisplay(&out->new_session_display) &&
+         data.ReadFailedRequest(&out->failed_request);
 }
-
 // static
 bool StructTraits<network::mojom::DeviceBoundSessionTerminationDetailsDataView,
                   net::device_bound_sessions::TerminationEventDetails>::
@@ -652,6 +664,38 @@ StructTraits<network::mojom::DeviceBoundSessionTerminationDetailsDataView,
 }
 
 // static
+const GURL&
+StructTraits<network::mojom::DeviceBoundSessionFailedRequestDataView,
+             net::device_bound_sessions::FailedRequest>::
+    request_url(const net::device_bound_sessions::FailedRequest& r) {
+  return r.request_url;
+}
+
+// static
+std::optional<int32_t>
+StructTraits<network::mojom::DeviceBoundSessionFailedRequestDataView,
+             net::device_bound_sessions::FailedRequest>::
+    net_error(const net::device_bound_sessions::FailedRequest& r) {
+  return r.net_error;
+}
+
+// static
+std::optional<int32_t>
+StructTraits<network::mojom::DeviceBoundSessionFailedRequestDataView,
+             net::device_bound_sessions::FailedRequest>::
+    response_error(const net::device_bound_sessions::FailedRequest& r) {
+  return r.response_error;
+}
+
+// static
+const std::optional<std::string>&
+StructTraits<network::mojom::DeviceBoundSessionFailedRequestDataView,
+             net::device_bound_sessions::FailedRequest>::
+    response_error_body(const net::device_bound_sessions::FailedRequest& r) {
+  return r.response_error_body;
+}
+
+// static
 const std::optional<net::device_bound_sessions::SessionDisplay>&
 StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
              net::device_bound_sessions::CreationEventDetails>::
@@ -661,12 +705,29 @@ StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
 }
 
 // static
+const std::optional<net::device_bound_sessions::FailedRequest>&
+StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
+             net::device_bound_sessions::CreationEventDetails>::
+    failed_request(
+        const net::device_bound_sessions::CreationEventDetails& obj) {
+  return obj.failed_request;
+}
+
+// static
 const std::optional<net::device_bound_sessions::SessionDisplay>&
 StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
              net::device_bound_sessions::RefreshEventDetails>::
     new_session_display(
         const net::device_bound_sessions::RefreshEventDetails& obj) {
   return obj.new_session_display;
+}
+
+// static
+const std::optional<net::device_bound_sessions::FailedRequest>&
+StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
+             net::device_bound_sessions::RefreshEventDetails>::
+    failed_request(const net::device_bound_sessions::RefreshEventDetails& obj) {
+  return obj.failed_request;
 }
 
 // static

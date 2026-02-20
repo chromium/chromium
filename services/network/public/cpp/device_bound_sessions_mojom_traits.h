@@ -924,6 +924,25 @@ struct UnionTraits<network::mojom::DeviceBoundSessionEventTypeDetailsDataView,
 };
 
 template <>
+struct StructTraits<network::mojom::DeviceBoundSessionFailedRequestDataView,
+                    net::device_bound_sessions::FailedRequest> {
+  static const GURL& request_url(
+      const net::device_bound_sessions::FailedRequest& r);
+
+  static std::optional<int32_t> net_error(
+      const net::device_bound_sessions::FailedRequest& r);
+
+  static std::optional<int32_t> response_error(
+      const net::device_bound_sessions::FailedRequest& r);
+
+  static const std::optional<std::string>& response_error_body(
+      const net::device_bound_sessions::FailedRequest& r);
+
+  static bool Read(network::mojom::DeviceBoundSessionFailedRequestDataView data,
+                   net::device_bound_sessions::FailedRequest* out);
+};
+
+template <>
 struct StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
                     net::device_bound_sessions::CreationEventDetails> {
   static net::device_bound_sessions::SessionError::ErrorType fetch_error(
@@ -932,6 +951,10 @@ struct StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
   static const std::optional<net::device_bound_sessions::SessionDisplay>&
   new_session_display(
       const net::device_bound_sessions::CreationEventDetails& obj);
+
+  static const std::optional<net::device_bound_sessions::FailedRequest>&
+  failed_request(
+      const net::device_bound_sessions::CreationEventDetails& event_details);
 
   static bool Read(
       network::mojom::DeviceBoundSessionCreationDetailsDataView data,
@@ -955,6 +978,10 @@ struct StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
   static const std::optional<net::device_bound_sessions::SessionDisplay>&
   new_session_display(
       const net::device_bound_sessions::RefreshEventDetails& obj);
+
+  static const std::optional<net::device_bound_sessions::FailedRequest>&
+  failed_request(
+      const net::device_bound_sessions::RefreshEventDetails& event_details);
 
   static bool Read(
       network::mojom::DeviceBoundSessionRefreshDetailsDataView data,
