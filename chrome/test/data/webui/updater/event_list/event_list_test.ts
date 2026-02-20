@@ -88,6 +88,11 @@ suite('EventListElement', () => {
     const items = element.shadowRoot.querySelectorAll('event-list-item');
     assertEquals(2, items.length);
     assertEquals('INSTALL', items[0]!.event?.eventType);
+
+    assertFalse(
+        !!element.shadowRoot.querySelector('.events-without-dates-label'));
+    assertFalse(
+        !!element.shadowRoot.querySelector('.events-with-parse-errors-label'));
   });
 
   test('handles parse errors', async () => {
@@ -98,8 +103,8 @@ suite('EventListElement', () => {
     element.messages = messages;
     await microtasksFinished();
 
-    assertTrue(!!element.shadowRoot.querySelectorAll(
-        'events-with-parse-errors-label'));
+    assertTrue(
+        !!element.shadowRoot.querySelector('.events-with-parse-errors-label'));
   });
 
   test('handles events without dates', async () => {
@@ -118,7 +123,7 @@ suite('EventListElement', () => {
     await microtasksFinished();
 
     assertTrue(
-        !!element.shadowRoot.querySelectorAll('events-without-dates-label'));
+        !!element.shadowRoot.querySelector('.events-without-dates-label'));
   });
 
   test('filters events', async () => {
