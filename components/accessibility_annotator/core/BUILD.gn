@@ -27,11 +27,18 @@ source_set("features") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "data_models/entity_unittest.cc" ]
+  sources = [
+    "data_models/entity_unittest.cc",
+    "storage/accessibility_annotator_database_unittest.cc",
+  ]
 
   deps = [
+    ":core",
     "//base",
     "//components/accessibility_annotator/core/data_models",
+    "//components/accessibility_annotator/core/storage",
+    "//sql",
+    "//sql:test_support",
     "//testing/gtest",
   ]
 }
