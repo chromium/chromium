@@ -26,8 +26,15 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(bool, GetShouldAnimateChipOut, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnimateChipIn, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnnounceChip, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowAnchoredMessage, (), (const, override));
+  MOCK_METHOD(bool, IsAnchoredMessageShowing, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetAccessibleName, (), (const, override));
+  MOCK_METHOD(const std::u16string&,
+              GetAnchoredMessageText,
+              (),
+              (const, override));
+  MOCK_METHOD(bool, GetAnchoredMessageCloseIcon, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
   MOCK_METHOD(bool, GetActionActive, (), (const, override));
@@ -60,8 +67,27 @@ class MockPageActionModel : public PageActionModelInterface {
                const SuggestionChipConfig& config),
               (override));
   MOCK_METHOD(void,
+              SetShouldShowAnchoredMessage,
+              (base::PassKey<PageActionController>, bool show),
+              (override));
+  MOCK_METHOD(void,
+              SetAnchoredMessageText,
+              (base::PassKey<PageActionController>,
+               const std::u16string& anchored_message),
+              (override));
+  MOCK_METHOD(void,
+              SetAnchoredMessageCloseIcon,
+              (base::PassKey<PageActionController>,
+               const bool anchored_message_show_close_icon),
+              (override));
+  MOCK_METHOD(void,
               SetIsChipShowing,
               (base::PassKey<PageActionController>, bool is_chip_showing),
+              (override));
+  MOCK_METHOD(void,
+              SetIsAnchoredMessageShowing,
+              (base::PassKey<PageActionController>,
+               bool is_anchored_message_showing),
               (override));
   MOCK_METHOD(void,
               SetHasPinnedIcon,

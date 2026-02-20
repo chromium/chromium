@@ -45,10 +45,14 @@ class PageActionModelInterface {
                                            bool show) = 0;
   virtual void SetSuggestionChipConfig(base::PassKey<PageActionController>,
                                        const SuggestionChipConfig& config) = 0;
+  virtual void SetShouldShowAnchoredMessage(base::PassKey<PageActionController>,
+                                            bool show) = 0;
   virtual void SetTabActive(base::PassKey<PageActionController>,
                             bool is_active) = 0;
   virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
                                 bool has_pinned_icon) = 0;
+  // TODO(crbug.com/376285838): Move overrides to SuggestionChip and
+  // AnchoredMessage configs.
   virtual void SetOverrideText(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) = 0;
@@ -62,6 +66,12 @@ class PageActionModelInterface {
   virtual void SetOverrideTooltip(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_tooltip) = 0;
+  virtual void SetAnchoredMessageText(
+      base::PassKey<PageActionController>,
+      const std::u16string& anchored_message) = 0;
+  virtual void SetAnchoredMessageCloseIcon(
+      base::PassKey<PageActionController>,
+      const bool anchored_message_show_close_icon) = 0;
   virtual void SetActionActive(base::PassKey<PageActionController>,
                                bool is_active) = 0;
   virtual void SetIsSuppressedByOmnibox(base::PassKey<PageActionController>,
@@ -71,6 +81,9 @@ class PageActionModelInterface {
       bool is_exempt) = 0;
   virtual void SetIsChipShowing(base::PassKey<PageActionController>,
                                 bool is_chip_showing) = 0;
+  virtual void SetIsAnchoredMessageShowing(
+      base::PassKey<PageActionController>,
+      bool is_anchored_message_showing) = 0;
 
   virtual bool GetVisible() const = 0;
   virtual bool IsChipShowing() const = 0;
@@ -78,10 +91,14 @@ class PageActionModelInterface {
   virtual bool GetShouldAnimateChipOut() const = 0;
   virtual bool GetShouldAnimateChipIn() const = 0;
   virtual bool GetShouldAnnounceChip() const = 0;
+  virtual bool ShouldShowAnchoredMessage() const = 0;
+  virtual bool IsAnchoredMessageShowing() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string& GetText() const = 0;
   virtual const std::u16string& GetTooltipText() const = 0;
   virtual const std::u16string& GetAccessibleName() const = 0;
+  virtual const std::u16string& GetAnchoredMessageText() const = 0;
+  virtual bool GetAnchoredMessageCloseIcon() const = 0;
   virtual bool GetActionItemIsShowingBubble() const = 0;
   virtual bool GetActionActive() const = 0;
   virtual PageActionColorSource GetColorSource() const = 0;
@@ -110,6 +127,8 @@ class PageActionModel : public PageActionModelInterface {
                                    bool show) override;
   void SetSuggestionChipConfig(base::PassKey<PageActionController>,
                                const SuggestionChipConfig& config) override;
+  void SetShouldShowAnchoredMessage(base::PassKey<PageActionController>,
+                                    bool show) override;
   void SetTabActive(base::PassKey<PageActionController>,
                     bool is_active) override;
   void SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -131,6 +150,13 @@ class PageActionModel : public PageActionModelInterface {
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_tooltip) override;
 
+  void SetAnchoredMessageText(base::PassKey<PageActionController>,
+                              const std::u16string& anchored_message) override;
+
+  void SetAnchoredMessageCloseIcon(
+      base::PassKey<PageActionController>,
+      const bool anchored_message_show_close_icon) override;
+
   void SetActionActive(base::PassKey<PageActionController>,
                        bool is_active) override;
 
@@ -143,6 +169,9 @@ class PageActionModel : public PageActionModelInterface {
   void SetIsChipShowing(base::PassKey<PageActionController>,
                         bool is_chip_showing) override;
 
+  void SetIsAnchoredMessageShowing(base::PassKey<PageActionController>,
+                                   bool is_anchored_message_showing) override;
+
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
   bool IsChipShowing() const override;
@@ -150,10 +179,14 @@ class PageActionModel : public PageActionModelInterface {
   bool GetShouldAnimateChipOut() const override;
   bool GetShouldAnimateChipIn() const override;
   bool GetShouldAnnounceChip() const override;
+  bool ShouldShowAnchoredMessage() const override;
+  bool IsAnchoredMessageShowing() const override;
 
   const ui::ImageModel& GetImage() const override;
   const std::u16string& GetText() const override;
   const std::u16string& GetAccessibleName() const override;
+  const std::u16string& GetAnchoredMessageText() const override;
+  bool GetAnchoredMessageCloseIcon() const override;
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
   bool GetActionActive() const override;
@@ -196,6 +229,12 @@ class PageActionModel : public PageActionModelInterface {
   // reader.
   bool should_announce_chip_ = false;
 
+  // Whether the anchored message is showing.
+  bool is_anchored_message_showing_ = false;
+
+  // Wgether the anchored message should be shown.
+  bool should_show_anchored_message_ = false;
+
   // Properties taken from ActionItem.
   bool action_item_enabled_ = false;
   bool action_item_visible_ = false;
@@ -211,6 +250,11 @@ class PageActionModel : public PageActionModelInterface {
 
   // When set, it will always take precedence over `text_`.
   std::optional<std::u16string> override_text_;
+
+  // The text to be shown on anchored messages.
+  std::u16string anchored_message_text_;
+  // Whether the anchored message should have a close icon.
+  bool anchored_message_show_close_icon_;
 
   // When set, it will always take precedence over `text_` because by default
   // `text_` will be used.

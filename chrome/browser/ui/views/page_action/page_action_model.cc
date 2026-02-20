@@ -272,4 +272,60 @@ bool PageActionModel::IsEphemeral() const {
   return is_ephemeral_;
 }
 
+void PageActionModel::SetShouldShowAnchoredMessage(
+    base::PassKey<PageActionController>,
+    bool show) {
+  if (should_show_anchored_message_ == show) {
+    return;
+  }
+  should_show_anchored_message_ = show;
+  NotifyChange();
+}
+
+void PageActionModel::SetAnchoredMessageText(
+    base::PassKey<PageActionController>,
+    const std::u16string& anchored_message) {
+  if (anchored_message_text_ == anchored_message) {
+    return;
+  }
+  anchored_message_text_ = anchored_message;
+  NotifyChange();
+}
+
+void PageActionModel::SetAnchoredMessageCloseIcon(
+    base::PassKey<PageActionController>,
+    const bool anchored_message_show_close_icon) {
+  if (anchored_message_show_close_icon_ == anchored_message_show_close_icon) {
+    return;
+  }
+  anchored_message_show_close_icon_ = anchored_message_show_close_icon;
+  NotifyChange();
+}
+
+bool PageActionModel::ShouldShowAnchoredMessage() const {
+  return should_show_anchored_message_;
+}
+
+bool PageActionModel::IsAnchoredMessageShowing() const {
+  return is_anchored_message_showing_;
+}
+
+void PageActionModel::SetIsAnchoredMessageShowing(
+    base::PassKey<PageActionController>,
+    bool is_anchored_message_showing) {
+  if (is_anchored_message_showing_ == is_anchored_message_showing) {
+    return;
+  }
+  is_anchored_message_showing_ = is_anchored_message_showing;
+  NotifyChange();
+}
+
+const std::u16string& PageActionModel::GetAnchoredMessageText() const {
+  return anchored_message_text_;
+}
+
+bool PageActionModel::GetAnchoredMessageCloseIcon() const {
+  return anchored_message_show_close_icon_;
+}
+
 }  // namespace page_actions

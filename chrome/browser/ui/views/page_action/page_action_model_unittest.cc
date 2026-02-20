@@ -314,5 +314,45 @@ TEST_F(PageActionModelTest, OverrideImageWithColorSource) {
   EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
 }
 
+TEST_F(PageActionModelTest, ShouldShowAnchoredMessage) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetShouldShowAnchoredMessage(PassKey(), true);
+  EXPECT_EQ(model_.ShouldShowAnchoredMessage(), true);
+
+  model_.SetShouldShowAnchoredMessage(PassKey(), false);
+  EXPECT_EQ(model_.ShouldShowAnchoredMessage(), false);
+}
+
+TEST_F(PageActionModelTest, AnchoredMessageVisibility) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetIsAnchoredMessageShowing(PassKey(), true);
+  EXPECT_EQ(model_.IsAnchoredMessageShowing(), true);
+
+  model_.SetIsAnchoredMessageShowing(PassKey(), false);
+  EXPECT_EQ(model_.IsAnchoredMessageShowing(), false);
+}
+
+TEST_F(PageActionModelTest, AnchoredMessageText) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetAnchoredMessageText(PassKey(), kTestText);
+  EXPECT_EQ(model_.GetAnchoredMessageText(), kTestText);
+
+  model_.SetAnchoredMessageText(PassKey(), std::u16string());
+  EXPECT_EQ(model_.GetAnchoredMessageText(), std::u16string());
+}
+
+TEST_F(PageActionModelTest, AnchoredMessageCloseIcon) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetAnchoredMessageCloseIcon(PassKey(), true);
+  EXPECT_EQ(model_.GetAnchoredMessageCloseIcon(), true);
+
+  model_.SetAnchoredMessageCloseIcon(PassKey(), false);
+  EXPECT_EQ(model_.GetAnchoredMessageCloseIcon(), false);
+}
+
 }  // namespace
 }  // namespace page_actions
