@@ -639,7 +639,7 @@ bool TypeTool::SupportsPaintStability() const {
   return true;
 }
 
-mojom::ActionResultPtr TypeTool::Validate() {
+ValidationResult TypeTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
@@ -647,25 +647,27 @@ mojom::ActionResultPtr TypeTool::Validate() {
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return std::move(resolved_target.error());
+    return ValidationResult(std::move(resolved_target.error()));
   }
 
   if (target_->is_dom_node_id()) {
     const WebNode& node = resolved_target->node;
     if (!node.IsElementNode()) {
-      return MakeResult(mojom::ActionResultCode::kTypeTargetNotElement);
+      return ValidationResult(
+          MakeResult(mojom::ActionResultCode::kTypeTargetNotElement));
     }
 
     WebElement element = node.To<WebElement>();
     if (WebFormControlElement form_control =
             element.DynamicTo<WebFormControlElement>()) {
       if (!form_control.IsEnabled()) {
-        return MakeResult(mojom::ActionResultCode::kElementDisabled);
+        return ValidationResult(
+            MakeResult(mojom::ActionResultCode::kElementDisabled));
       }
     }
   }
   resolved_target_ = std::move(resolved_target.value());
-  return MakeOkResult();
+  return ValidationResult(MakeOkResult(), resolved_target_->widget_point);
 }
 
 bool TypeTool::ProcessInputText(

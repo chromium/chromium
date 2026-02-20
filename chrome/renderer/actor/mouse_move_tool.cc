@@ -74,17 +74,17 @@ std::string MouseMoveTool::DebugString() const {
   return absl::StrFormat("MouseMoveTool[%s]", ToDebugString(target_));
 }
 
-mojom::ActionResultPtr MouseMoveTool::Validate() {
+ValidationResult MouseMoveTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return std::move(resolved_target.error());
+    return ValidationResult(std::move(resolved_target.error()));
   }
 
   validated_target_ = std::move(resolved_target.value());
-  return MakeOkResult();
+  return ValidationResult(MakeOkResult(), validated_target_->widget_point);
 }
 
 }  // namespace actor
