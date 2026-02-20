@@ -92,6 +92,9 @@ enum class LayoutConstant {
   // The size of the trailing icons used inside the LocationBar.
   kLocationBarTrailingIconSize,
 
+  // The horizontal margin between location bar and other toolbar items.
+  kLocationBarMargin,
+
   // The corner radius of the MainBackgroundRegion when tool bar height side
   // panel is visible
   kMainBackgroundRegionCornerRadius,
@@ -171,9 +174,6 @@ enum class LayoutConstant {
 
   // Default margin of the toolbar icons set by the layout manager.
   kToolbarIconDefaultMargin,
-
-  // The horizontal space between most items in the toolbar.
-  kToolbarStandardSpacing,
 
   // corner radius on the top of the toolbar introduced in chrome refresh 2023
   kToolbarCornerRadius,
