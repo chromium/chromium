@@ -260,11 +260,11 @@ struct LowercaseLookupTranslator {
   // lowercase version of |query|.
   static bool Equal(StringImpl* const& bucket,
                     const HashTranslatorLowercaseBuffer& buf) {
-    // This is similar to EqualIgnoringASCIICase, but not the same.
+    // This is similar to EqualIgnoringAsciiCase, but not the same.
     // In particular, it validates that |bucket| is a lowercase version of
     // |buf.impl()|.
     //
-    // Unlike EqualIgnoringASCIICase, it returns false if they are equal
+    // Unlike EqualIgnoringAsciiCase, it returns false if they are equal
     // ignoring ASCII case but |bucket| contains an uppercase ASCII character.
     //
     // However, similar optimizations are used here as there, so these should
@@ -543,7 +543,7 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercase(
   if (it == table_.end())
     return WeakResult();
   DCHECK(StringView(*it).IsLowerASCII());
-  DCHECK(EqualIgnoringASCIICase(*it, string));
+  DCHECK(EqualIgnoringAsciiCase(*it, string));
   return WeakResult(*it);
 }
 

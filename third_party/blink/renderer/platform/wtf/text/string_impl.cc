@@ -883,7 +883,7 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringAsciiCaseInternal(
   const SearchCharacterType* search_data = search.data();
   // Keep looping until we match.
   // SAFETY: The `i == delta` check below guarantees the span is in `search`.
-  while (!EqualIgnoringASCIICase(
+  while (!EqualIgnoringAsciiCase(
       UNSAFE_BUFFERS(
           base::span(search_data + i, search_data + i + match.size())),
       match)) {
@@ -1049,8 +1049,8 @@ bool StringImpl::StartsWithIgnoringAsciiCase(const StringView& prefix) const {
     return false;
   return VisitCharacters(*this, [&prefix](auto chars) {
     auto sub_span = chars.first(prefix.length());
-    return prefix.Is8Bit() ? EqualIgnoringASCIICase(sub_span, prefix.Span8())
-                           : EqualIgnoringASCIICase(sub_span, prefix.Span16());
+    return prefix.Is8Bit() ? EqualIgnoringAsciiCase(sub_span, prefix.Span8())
+                           : EqualIgnoringAsciiCase(sub_span, prefix.Span16());
   });
 }
 
@@ -1088,8 +1088,8 @@ bool StringImpl::EndsWithIgnoringAsciiCase(const StringView& suffix) const {
   wtf_size_t start_offset = length() - suffix.length();
   return VisitCharacters(*this, [&](auto chars) {
     auto sub_span = chars.subspan(start_offset);
-    return suffix.Is8Bit() ? EqualIgnoringASCIICase(sub_span, suffix.Span8())
-                           : EqualIgnoringASCIICase(sub_span, suffix.Span16());
+    return suffix.Is8Bit() ? EqualIgnoringAsciiCase(sub_span, suffix.Span8())
+                           : EqualIgnoringAsciiCase(sub_span, suffix.Span16());
   });
 }
 

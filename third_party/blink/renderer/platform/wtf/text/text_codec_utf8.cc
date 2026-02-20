@@ -183,7 +183,7 @@ std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
 }
 
 bool TextCodecUtf8::IsSupported(StringView canonical_name) {
-  return EqualIgnoringASCIICase(canonical_name, "UTF-8");
+  return EqualIgnoringAsciiCase(canonical_name, "UTF-8");
 }
 
 void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {

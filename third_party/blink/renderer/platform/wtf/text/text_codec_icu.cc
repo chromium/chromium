@@ -143,7 +143,7 @@ void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
                !strcmp(standard_name, "cp1363")) {
       standard_name = "EUC-KR";
     // And so on.
-    } else if (EqualIgnoringASCIICase(standard_name, "iso-8859-9")) {
+    } else if (EqualIgnoringAsciiCase(standard_name, "iso-8859-9")) {
       // This name is returned in different case by ICU 3.2 and 3.6.
       standard_name = "windows-1254";
     } else if (!strcmp(standard_name, "TIS-620")) {
@@ -478,8 +478,9 @@ String TextCodecIcu::Decode(base::span<const uint8_t> data,
   // Simplified Chinese pages use the code A3A0 to mean "full-width space", but
   // ICU decodes it as U+E5E5.
   if (encoding_.GetName() != "GBK") {
-    if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
+    if (EqualIgnoringAsciiCase(encoding_.GetName(), "gb18030")) {
       result_string.Replace(0xE5E5, uchar::kIdeographicSpace);
+    }
     // Make GBK compliant to the encoding spec and align with GB18030
     result_string.Replace(0x01F9, 0xE7C8);
     // FIXME: Once https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3

@@ -353,7 +353,7 @@ bool DeprecatedEqualIgnoringCase(const StringView& a, const StringView& b) {
   return DeprecatedEqualIgnoringCaseAndNullity(a, b);
 }
 
-bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
+bool EqualIgnoringAsciiCase(const StringView& a, const StringView& b) {
   if (a.IsNull() || b.IsNull())
     return a.IsNull() == b.IsNull();
   if (a.length() != b.length())
@@ -361,8 +361,8 @@ bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
   if (a.Bytes() == b.Bytes() && a.Is8Bit() == b.Is8Bit())
     return true;
   return VisitCharacters(a, [b](auto chars) {
-    return b.Is8Bit() ? EqualIgnoringASCIICase(chars, b.Span8())
-                      : EqualIgnoringASCIICase(chars, b.Span16());
+    return b.Is8Bit() ? EqualIgnoringAsciiCase(chars, b.Span8())
+                      : EqualIgnoringAsciiCase(chars, b.Span16());
   });
 }
 

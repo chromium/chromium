@@ -369,22 +369,22 @@ TEST(StringTest, EndsWithIgnoringAsciiCase) {
   EXPECT_FALSE(non_ascii.EndsWithIgnoringAsciiCase(all_ascii_different));
 }
 
-TEST(StringTest, EqualIgnoringASCIICase) {
+TEST(StringTest, EqualIgnoringAsciiCase) {
   String all_ascii("LINK");
   String all_ascii_lower_case("link");
-  EXPECT_TRUE(EqualIgnoringASCIICase(all_ascii, all_ascii_lower_case));
+  EXPECT_TRUE(EqualIgnoringAsciiCase(all_ascii, all_ascii_lower_case));
   String all_ascii_mixed_case("lInK");
-  EXPECT_TRUE(EqualIgnoringASCIICase(all_ascii, all_ascii_mixed_case));
+  EXPECT_TRUE(EqualIgnoringAsciiCase(all_ascii, all_ascii_mixed_case));
   String all_ascii_different("foo");
-  EXPECT_FALSE(EqualIgnoringASCIICase(all_ascii, all_ascii_different));
+  EXPECT_FALSE(EqualIgnoringAsciiCase(all_ascii, all_ascii_different));
   String non_ascii = String::FromUTF8("LIN\xE2\x84\xAA");
-  EXPECT_FALSE(EqualIgnoringASCIICase(all_ascii, non_ascii));
-  EXPECT_TRUE(EqualIgnoringASCIICase(all_ascii, non_ascii.DeprecatedLower()));
+  EXPECT_FALSE(EqualIgnoringAsciiCase(all_ascii, non_ascii));
+  EXPECT_TRUE(EqualIgnoringAsciiCase(all_ascii, non_ascii.DeprecatedLower()));
 
-  EXPECT_FALSE(EqualIgnoringASCIICase(non_ascii, all_ascii));
-  EXPECT_FALSE(EqualIgnoringASCIICase(non_ascii, all_ascii_lower_case));
-  EXPECT_FALSE(EqualIgnoringASCIICase(non_ascii, all_ascii_mixed_case));
-  EXPECT_FALSE(EqualIgnoringASCIICase(non_ascii, all_ascii_different));
+  EXPECT_FALSE(EqualIgnoringAsciiCase(non_ascii, all_ascii));
+  EXPECT_FALSE(EqualIgnoringAsciiCase(non_ascii, all_ascii_lower_case));
+  EXPECT_FALSE(EqualIgnoringAsciiCase(non_ascii, all_ascii_mixed_case));
+  EXPECT_FALSE(EqualIgnoringAsciiCase(non_ascii, all_ascii_different));
 }
 
 TEST(StringTest, FindIgnoringAsciiCase) {

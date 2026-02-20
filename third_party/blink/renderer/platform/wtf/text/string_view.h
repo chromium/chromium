@@ -465,23 +465,35 @@ inline void StringView::Set(const StringImpl& impl,
 // Unicode aware case insensitive string matching. Non-ASCII characters might
 // match to ASCII characters. These functions are rarely used to implement web
 // platform features.
-// These functions are deprecated. Use EqualIgnoringASCIICase(), or introduce
+// These functions are deprecated. Use EqualIgnoringAsciiCase(), or introduce
 // EqualIgnoringUnicodeCase(). See crbug.com/627682
 WTF_EXPORT bool DeprecatedEqualIgnoringCase(const StringView&,
                                             const StringView&);
 WTF_EXPORT bool DeprecatedEqualIgnoringCaseAndNullity(const StringView&,
                                                       const StringView&);
 
-WTF_EXPORT bool EqualIgnoringASCIICase(const StringView&, const StringView&);
+WTF_EXPORT bool EqualIgnoringAsciiCase(const StringView&, const StringView&);
 
 template <size_t N>
-inline bool EqualIgnoringASCIICase(const StringView& a,
+inline bool EqualIgnoringAsciiCase(const StringView& a,
                                    const char (&literal)[N]) {
   if (a.length() != N - 1 || (N == 1 && a.IsNull()))
     return false;
   base::span<const char> span = base::span(literal).template first<N - 1>();
-  return a.Is8Bit() ? EqualIgnoringASCIICase(a.Span8(), span)
-                    : EqualIgnoringASCIICase(a.Span16(), span);
+  return a.Is8Bit() ? EqualIgnoringAsciiCase(a.Span8(), span)
+                    : EqualIgnoringAsciiCase(a.Span16(), span);
+}
+
+// Use EqualIgnoringAsciiCase() instead.
+inline bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
+  return EqualIgnoringAsciiCase(a, b);
+}
+
+// Use EqualIgnoringAsciiCase() instead.
+template <size_t N>
+inline bool EqualIgnoringASCIICase(const StringView& a,
+                                   const char (&literal)[N]) {
+  return EqualIgnoringAsciiCase<N>(a, literal);
 }
 
 WTF_EXPORT int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b);

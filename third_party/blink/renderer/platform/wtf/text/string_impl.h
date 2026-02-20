@@ -731,7 +731,7 @@ ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
 // Unicode aware case insensitive string matching. Non-ASCII characters might
 // match to ASCII characters. These functions are rarely used to implement web
 // platform features.
-// These functions are deprecated. Use EqualIgnoringASCIICase(), or introduce
+// These functions are deprecated. Use EqualIgnoringAsciiCase(), or introduce
 // EqualIgnoringUnicodeCase(). See crbug.com/627682
 WTF_EXPORT bool DeprecatedEqualIgnoringCase(base::span<const LChar>,
                                             base::span<const LChar>);
@@ -747,7 +747,7 @@ WTF_EXPORT bool DeprecatedEqualIgnoringCase(base::span<const UChar>,
 WTF_EXPORT bool EqualIgnoringNullity(StringImpl*, StringImpl*);
 
 template <typename CharacterTypeA, typename CharacterTypeB>
-inline bool EqualIgnoringASCIICase(base::span<const CharacterTypeA> a,
+inline bool EqualIgnoringAsciiCase(base::span<const CharacterTypeA> a,
                                    base::span<const CharacterTypeB> b) {
   CHECK_EQ(a.size(), b.size());
   size_t length = a.size();
@@ -764,7 +764,7 @@ inline bool EqualIgnoringASCIICase(base::span<const CharacterTypeA> a,
 }
 
 #if HWY_TARGET != HWY_SCALAR
-ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const LChar> a,
+ALWAYS_INLINE bool SimdEqualIgnoringAsciiCase(base::span<const LChar> a,
                                               base::span<const LChar> b) {
   namespace hw = hwy::HWY_NAMESPACE;
   constexpr hw::FixedTag<uint8_t, 16> d;
@@ -798,7 +798,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const LChar> a,
   return true;
 }
 
-ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
+ALWAYS_INLINE bool SimdEqualIgnoringAsciiCase(base::span<const UChar> a,
                                               base::span<const LChar> b) {
   namespace hw = hwy::HWY_NAMESPACE;
   constexpr hw::FixedTag<uint16_t, 8> d16;
@@ -836,7 +836,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
   return true;
 }
 
-ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
+ALWAYS_INLINE bool SimdEqualIgnoringAsciiCase(base::span<const UChar> a,
                                               base::span<const UChar> b) {
   namespace hw = hwy::HWY_NAMESPACE;
   constexpr hw::FixedTag<uint16_t, 8> d;
@@ -871,38 +871,38 @@ ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
 }
 #endif  // HWY_TARGET != HWY_SCALAR
 
-ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const LChar> a,
+ALWAYS_INLINE bool EqualIgnoringAsciiCase(base::span<const LChar> a,
                                           base::span<const LChar> b) {
   CHECK_EQ(a.size(), b.size());
 #if HWY_TARGET != HWY_SCALAR
-  return SimdEqualIgnoringASCIICase(a, b);
+  return SimdEqualIgnoringAsciiCase(a, b);
 #else
-  return EqualIgnoringASCIICase<LChar, LChar>(a, b);
+  return EqualIgnoringAsciiCase<LChar, LChar>(a, b);
 #endif  // HWY_TARGET != HWY_SCALAR
 }
 
-ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const UChar> a,
+ALWAYS_INLINE bool EqualIgnoringAsciiCase(base::span<const UChar> a,
                                           base::span<const LChar> b) {
   CHECK_EQ(a.size(), b.size());
 #if HWY_TARGET != HWY_SCALAR
-  return SimdEqualIgnoringASCIICase(a, b);
+  return SimdEqualIgnoringAsciiCase(a, b);
 #else
-  return EqualIgnoringASCIICase<UChar, LChar>(a, b);
+  return EqualIgnoringAsciiCase<UChar, LChar>(a, b);
 #endif  // HWY_TARGET != HWY_SCALAR
 }
 
-ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const LChar> a,
+ALWAYS_INLINE bool EqualIgnoringAsciiCase(base::span<const LChar> a,
                                           base::span<const UChar> b) {
-  return EqualIgnoringASCIICase(b, a);
+  return EqualIgnoringAsciiCase(b, a);
 }
 
-ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const UChar> a,
+ALWAYS_INLINE bool EqualIgnoringAsciiCase(base::span<const UChar> a,
                                           base::span<const UChar> b) {
   CHECK_EQ(a.size(), b.size());
 #if HWY_TARGET != HWY_SCALAR
-  return SimdEqualIgnoringASCIICase(a, b);
+  return SimdEqualIgnoringAsciiCase(a, b);
 #else
-  return EqualIgnoringASCIICase<UChar, UChar>(a, b);
+  return EqualIgnoringAsciiCase<UChar, UChar>(a, b);
 #endif  // HWY_TARGET != HWY_SCALAR
 }
 

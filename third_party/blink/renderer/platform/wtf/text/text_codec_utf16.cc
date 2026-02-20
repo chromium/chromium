@@ -40,8 +40,8 @@
 namespace blink {
 
 bool TextCodecUtf16::IsSupported(StringView canonical_name) {
-  return EqualIgnoringASCIICase(canonical_name, "UTF-16LE") ||
-         EqualIgnoringASCIICase(canonical_name, "UTF-16BE");
+  return EqualIgnoringAsciiCase(canonical_name, "UTF-16LE") ||
+         EqualIgnoringAsciiCase(canonical_name, "UTF-16BE");
 }
 
 void TextCodecUtf16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
