@@ -56,12 +56,14 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
       zoom::ZoomController::FromWebContents(GetWebContents());
   CHECK(zoom_controller);
 
-  // Update the tooltip with the current zoom percentage.
-  page_action_controller_->OverrideTooltip(
-      kActionZoomNormal,
-      l10n_util::GetStringFUTF16(
-          IDS_TOOLTIP_ZOOM,
-          base::FormatPercent(zoom_controller->GetZoomPercent())));
+  auto accessible_text = l10n_util::GetStringFUTF16(
+      IDS_TOOLTIP_ZOOM, base::FormatPercent(zoom_controller->GetZoomPercent()));
+
+  // Update the tooltip and the accessible name with the current zoom
+  // percentage.
+  page_action_controller_->OverrideTooltip(kActionZoomNormal, accessible_text);
+  page_action_controller_->OverrideAccessibleName(kActionZoomNormal,
+                                                  accessible_text);
 
   switch (zoom_controller->GetZoomRelativeToDefault()) {
     case ZoomController::ZOOM_BELOW_DEFAULT_ZOOM:
