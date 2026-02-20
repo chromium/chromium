@@ -177,6 +177,7 @@ if (_is_default_toolchain) {
       ":ui_locale_string_resources",
       "//chrome/android/webapk/libs/common:splash_resources",
       "//chrome/app:java_strings_grd",
+      "//chrome/browser/actor/android:java_resources",
       "//chrome/browser/android/customtabs/branding:java_resources",
       "//chrome/browser/autofill/android:java_resources",
       "//chrome/browser/auxiliary_search:java_resources",
@@ -392,7 +393,7 @@ if (_is_default_toolchain) {
 
       # TODO(ssid): Decouple dependency on internal library.
       "//base:holder_java",
-      "//chrome/browser/actor/android:actor_java",
+      "//chrome/browser/actor/android:java",
       "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
@@ -924,7 +925,7 @@ if (_is_default_toolchain) {
     deps = [
       ":chrome_java",
       "//chrome/android/features/keyboard_accessory:internal_java",
-      "//chrome/browser/actor/android:actor_java",
+      "//chrome/browser/actor/android:java",
       "//chrome/browser/android/content:java",
       "//chrome/browser/android/httpclient:java",
       "//chrome/browser/commerce/merchant_viewer/android:java",
@@ -1097,6 +1098,7 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.webapps",
       "junit:chrome_junit_tests_various",
       "//chrome/android/features/android_library_factory:junit_tests",
+      "//chrome/browser/actor/android:junit",
       "//chrome/browser/android/browserservices/intents:junit",
       "//chrome/browser/android/cookies:junit",
       "//chrome/browser/android/customtabs/branding:junit",

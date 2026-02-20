@@ -5,18 +5,26 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-android_library("actor_java") {
+android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayMediator.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayProperties.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayView.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewBinder.java",
   ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
   ]
 
   srcjar_deps = [
@@ -47,5 +55,21 @@ source_set("android") {
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/profiles",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/actor_overlay.xml" ]
+}
+
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

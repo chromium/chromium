@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
+import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
@@ -327,6 +328,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
             new OneshotSupplierImpl<>();
     private ContextualTasksBridge mContextualTasksBridge;
+    private @Nullable ActorOverlayCoordinator mActorOverlayCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -840,6 +842,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mContextualTasksBridge = null;
         }
 
+        if (mActorOverlayCoordinator != null) {
+            mActorOverlayCoordinator.destroy();
+            mActorOverlayCoordinator = null;
+        }
+
         super.onDestroy();
     }
 
@@ -965,6 +972,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityTabProvider.asObservable(),
                             assumeNonNull(mOmniboxChipManager),
                             mActivity);
+        }
+
+        if (ChromeFeatureList.sGlicActorUi.isEnabled()
+                && ChromeFeatureList.sGlicActorUiOverlay.getValue()) {
+            ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
+            mActorOverlayCoordinator = new ActorOverlayCoordinator(stub);
         }
     }
 

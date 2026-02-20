@@ -205,6 +205,13 @@ found in the LICENSE file.
             android:layout_gravity="bottom|start"
             android:layout="@layout/link_hover_status_bar" />
 
+        <ViewStub
+            android:id="@+id/actor_overlay_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inflatedId="@+id/actor_overlay"
+            android:layout="@layout/actor_overlay" />
+
         <FrameLayout
             android:id="@+id/sheet_container"
             android:layout_width="match_parent"
