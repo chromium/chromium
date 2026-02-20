@@ -1084,6 +1084,13 @@ public class FeedSurfaceCoordinator
         view.setId(R.id.feed_stream_recycler_view);
         view.setClipToPadding(false);
 
+        RecyclerView.ItemAnimator animator = view.getItemAnimator();
+        if (animator != null) {
+            // Prevents Feeds flickering when bring Chrome to the background and move to foreground
+            // again.
+            animator.setAddDuration(0);
+        }
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
             // Used to draw containment background.
             view.addItemDecoration(
