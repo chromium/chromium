@@ -40,7 +40,6 @@
 #import "ios/chrome/app/profile/app_icon_launched_profile_agent.h"
 #import "ios/chrome/app/profile/application_storage_metrics.h"
 #import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
-#import "ios/chrome/app/profile/docking_promo_profile_agent.h"
 #import "ios/chrome/app/profile/features.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/identity_confirmation_profile_agent.h"
@@ -651,17 +650,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   if (IsDockingPromoV2Enabled()) {
     [_state addAgent:[[AppIconLaunchedProfileAgent alloc] init]];
-  }
-
-  if (IsDockingPromoEnabled()) {
-    switch (DockingPromoExperimentTypeEnabled()) {
-      case DockingPromoDisplayTriggerArm::kDuringFRE:
-        break;
-      case DockingPromoDisplayTriggerArm::kAfterFRE:
-      case DockingPromoDisplayTriggerArm::kAppLaunch:
-        [_state addAgent:[[DockingPromoProfileAgent alloc] init]];
-        break;
-    }
   }
 
   if (IsWelcomeBackEnabled()) {

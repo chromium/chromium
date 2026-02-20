@@ -37,7 +37,6 @@ source_set("profile_controller") {
     ":app_icon_launched_profile_agent",
     ":application_storage_metrics",
     ":certificate_policy_profile_agent",
-    ":docking_promo_profile_agent",
     ":features",
     ":first_run_profile_agent",
     ":identity_confirmation_profile_agent",
@@ -169,28 +168,6 @@ source_set("post_restore_profile_agent") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:signin_util",
-  ]
-}
-
-source_set("docking_promo_profile_agent") {
-  sources = [
-    "docking_promo_profile_agent.h",
-    "docking_promo_profile_agent.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/prefs",
-    "//ios/chrome/app/profile",
-    "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/docking_promo/model:utils",
-    "//ios/chrome/browser/promos_manager/model",
-    "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/start_surface/ui_bundled",
   ]
 }
 
