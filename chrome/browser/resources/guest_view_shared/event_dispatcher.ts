@@ -41,17 +41,12 @@ export class EventDict {
  * the event to be dispatched. If the factory returns null, the event is not
  * dispatched to the element.
  *
- * If `handler` is set, it is called bound to the event and with the element as
- * an argument. It is the responsibility of the handler to dispatch the event.
- * If the `handler` is undefined, the event is dispatched to the element.
- *
- * The remaining properties are used to construct an Event if the `factory` is
- * undefined.
+ * The remaining properties are used to construct an Event if the factory is not
+ * set.
  */
 export interface EventDescriptor {
   guestInstanceAssociated?: boolean;
   factory?: (args: EventDict) => Event | null;
-  handler?: (element: HTMLElement) => void;
 
   // Properties used if `factory` is undefined.
   cancelable?: boolean;
@@ -128,10 +123,6 @@ export class EventDispatcher {
     if (event === null) {
       return;
     }
-    if (descriptor.handler) {
-      descriptor.handler.call(event, this.element);
-    } else {
-      this.element.dispatchEvent(event);
-    }
+    this.element.dispatchEvent(event);
   }
 }

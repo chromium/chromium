@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
@@ -123,24 +123,6 @@ class SizeChangedEvent extends Event {
     this.newHeight = args.getInt('newHeight');
     this.newWidth = args.getInt('newWidth');
   }
-
-  handle(element: HTMLElement) {
-    assertInstanceof(element, SlimWebViewElement);
-    const maxWidth = element.maxwidth || element.offsetWidth;
-    const minWidth =
-        Math.min(element.minwidth || element.offsetWidth, maxWidth);
-    const maxHeight = element.maxheight || element.offsetHeight;
-    const minHeight =
-        Math.min(element.minheight || element.offsetHeight, maxHeight);
-
-    if (!element.autosize ||
-        (this.newWidth >= minWidth && this.newWidth <= maxWidth &&
-         this.newHeight >= minHeight && this.newHeight <= maxHeight)) {
-      element.style.width = `${this.newWidth}px`;
-      element.style.height = `${this.newHeight}px`;
-      element.dispatchEvent(this);
-    }
-  }
 }
 
 const eventDescriptors: EventMap = new Map([
@@ -173,7 +155,6 @@ const eventDescriptors: EventMap = new Map([
     'sizechanged',
     {
       factory: SizeChangedEvent.factory,
-      handler: SizeChangedEvent.prototype.handle,
     },
   ],
   ['unresponsive', {}],
@@ -196,20 +177,10 @@ export class SlimWebViewElement extends CrLitElement {
   static override get properties() {
     return {
       src: {type: String, reflect: true},
-      autosize: {type: Boolean, reflect: true},
-      minwidth: {type: Number, reflect: true},
-      maxwidth: {type: Number, reflect: true},
-      minheight: {type: Number, reflect: true},
-      maxheight: {type: Number, reflect: true},
     };
   }
 
   accessor src: string = '';
-  accessor autosize: boolean = false;
-  accessor minwidth: number = 0;
-  accessor maxwidth: number = 0;
-  accessor minheight: number = 0;
-  accessor maxheight: number = 0;
 
   contentWindow: WindowProxy|null = null;
 
@@ -250,33 +221,11 @@ export class SlimWebViewElement extends CrLitElement {
       }
       this.navigate();
     }
-    if (changedProperties.has('autosize') ||
-        changedProperties.has('minwidth') ||
-        changedProperties.has('maxwidth') ||
-        changedProperties.has('minheight') ||
-        changedProperties.has('maxheight')) {
-      this.updateAutoSize();
-    }
   }
 
   private async createGuest() {
-    const css = getComputedStyle(this);
-    const elementRect = this.getBoundingClientRect();
-    const elementWidth =
-        elementRect.width || parseInt(css.getPropertyValue('width'));
-    const elementHeight =
-        elementRect.height || parseInt(css.getPropertyValue('height'));
     const createParams: DictionaryValue = {
-      storage: {
-        instanceId: {intValue: this.viewInstanceId},
-        elementWidth: {intValue: elementWidth},
-        elementHeight: {intValue: elementHeight},
-        autosize: {boolValue: this.autosize},
-        minwidth: {intValue: this.minwidth},
-        maxwidth: {intValue: this.maxwidth},
-        minheight: {intValue: this.minheight},
-        maxheight: {intValue: this.maxheight},
-      },
+      storage: {instanceId: {intValue: this.viewInstanceId}},
     };
     const result =
         await BrowserProxyImpl.getInstance().handler.createGuest(createParams);
@@ -337,26 +286,6 @@ export class SlimWebViewElement extends CrLitElement {
     assert(url.protocol === 'https:' || url.href === 'about:blank');
     BrowserProxyImpl.getInstance().handler.navigate(
         this.guestInstanceId, url.href);
-  }
-
-  private updateAutoSize() {
-    if (this.guestInstanceId === null ||
-        this.guestInstanceId === GUEST_INSTANCE_ID_PENDING) {
-      return;
-    }
-    const params = {
-      enableAutoSize: this.autosize,
-      min: {
-        width: this.minwidth,
-        height: this.minheight,
-      },
-      max: {
-        width: this.maxwidth,
-        height: this.maxheight,
-      },
-    };
-    BrowserProxyImpl.getInstance().handler.setSize(
-        this.guestInstanceId, params);
   }
 }
 

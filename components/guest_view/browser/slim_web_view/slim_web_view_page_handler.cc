@@ -37,21 +37,6 @@ void SlimWebViewPageHandler::CreateGuest(base::DictValue create_params,
                                   std::move(create_guest_callback));
 }
 
-void SlimWebViewPageHandler::SetSize(int32_t guest_instance_id,
-                                     mojom::SetSizeParamsPtr size_params) {
-  auto* guest = SlimWebViewGuest::FromInstanceID(
-      render_frame_host().GetProcess()->GetID(), guest_instance_id);
-  if (!guest) {
-    mojo::ReportBadMessage("Invalid guest instance id.");
-    return;
-  }
-  guest_view::SetSizeParams params;
-  params.enable_auto_size = size_params->enable_auto_size;
-  params.min_size.emplace(size_params->min.width(), size_params->min.height());
-  params.max_size.emplace(size_params->max.width(), size_params->max.height());
-  guest->SetSize(params);
-}
-
 void SlimWebViewPageHandler::Navigate(int32_t guest_instance_id,
                                       const GURL& url) {
   auto* guest = SlimWebViewGuest::FromInstanceID(

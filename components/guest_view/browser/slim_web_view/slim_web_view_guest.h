@@ -65,7 +65,6 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
   void GuestViewDocumentOnLoadCompleted() final;
-  bool IsAutoSizeSupported() const final;
   void GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                      const gfx::Size& new_size) final;
   void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;

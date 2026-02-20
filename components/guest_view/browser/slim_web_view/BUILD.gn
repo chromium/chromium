@@ -39,7 +39,6 @@ mojom("mojo_bindings") {
 
   deps = [
     "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

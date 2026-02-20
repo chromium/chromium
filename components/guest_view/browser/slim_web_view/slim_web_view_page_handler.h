@@ -33,8 +33,6 @@ class SlimWebViewPageHandler
   // mojom::PageHandler implementation.
   void CreateGuest(base::DictValue create_params,
                    CreateGuestCallback callback) override;
-  void SetSize(int32_t guest_instance_id,
-               mojom::SetSizeParamsPtr size_params) override;
   void Navigate(int32_t guest_instance_id, const GURL& url) override;
 
  private:
