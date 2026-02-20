@@ -738,6 +738,29 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testInvocationSource) {
+  for (const auto source : {
+           mojom::InvocationSource::kOsHotkey,
+           mojom::InvocationSource::kOsButton,
+           mojom::InvocationSource::kNudge,
+       }) {
+    RunTestSequence(CloseGlic(), WaitForGlicClose(),
+                    ToggleGlicWindowFromSource(GlicWindowMode::kDetached,
+                                               ui::ElementIdentifier(), source),
+                    WaitForGlicOpen());
+    ExecuteJsTest({.params = base::Value(static_cast<int>(source))});
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDefaultInvocationSource) {
+  RunTestSequence(CloseGlic(), WaitForGlicClose(),
+                  ToggleGlicWindowFromSource(
+                      GlicWindowMode::kAttached, kGlicButtonElementId,
+                      mojom::InvocationSource::kTopChromeButton),
+                  WaitForGlicOpen());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnFullLoad) {
   // Opening the glic window will trigger the bootstrap, which should transition

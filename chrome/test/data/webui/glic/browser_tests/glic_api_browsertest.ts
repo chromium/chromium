@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {CaptureRegionErrorReason, FormFactor, HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CaptureRegionErrorReason, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -49,6 +49,20 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testDoNothing() {}
+
+  async testInvocationSource() {
+    const expectedSource = this.testParams as number;
+    const panelOpenData =
+        checkDefined(this.client.panelOpenData.getCurrentValue());
+    assertEquals(panelOpenData.invocationSource, expectedSource);
+  }
+
+  async testDefaultInvocationSource() {
+    const panelOpenData =
+        checkDefined(this.client.panelOpenData.getCurrentValue());
+    assertEquals(
+        panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
+  }
 
   async testWebClientReadyOnFullLoad() {}
 
