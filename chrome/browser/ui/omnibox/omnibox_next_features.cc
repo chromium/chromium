@@ -222,10 +222,6 @@ bool IsCreateImagesEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get()) {
-    return true;
-  }
-
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   return kShowToolsAndModels.Get() && aim_eligibility_service &&
@@ -239,10 +235,6 @@ bool IsDeepSearchEnabled(Profile* profile) {
 
   if (!IsAimPopupFeatureEnabled()) {
     return false;
-  }
-
-  if (kShowToolsAndModels.Get()) {
-    return true;
   }
 
   AimEligibilityService* aim_eligibility_service =
