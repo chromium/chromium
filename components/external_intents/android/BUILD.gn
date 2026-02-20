@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/external_intents/ExternalIntentsSwitches.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationDelegate.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationHandler.java",
+    "java/src/org/chromium/components/external_intents/ExternalNavigationHelper.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationParams.java",
     "java/src/org/chromium/components/external_intents/InterceptNavigationDelegateClient.java",
     "java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java",

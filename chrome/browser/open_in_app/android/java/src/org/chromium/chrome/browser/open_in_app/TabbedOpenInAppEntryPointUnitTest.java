@@ -6,13 +6,20 @@ package org.chromium.chrome.browser.open_in_app;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
@@ -24,33 +31,81 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabbedOpenInAppEntryPoint}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 public class TabbedOpenInAppEntryPointUnitTest {
+    private static final String LABEL = "Label";
+    private static final String PACKAGE = "com.example.package";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
     @Mock private OmniboxChipManager mOmniboxChipManager;
 
+    @Mock(extraInterfaces = WebContentsObserver.Observable.class)
+    private WebContents mWebContents;
+
+    @Mock private Intent mIntent;
+    @Mock private ResolveInfo mResolveInfo;
+    @Mock private IntentFilter mIntentFilter;
+    @Mock private Drawable mIcon;
+    @Mock private ActivityInfo mActivityInfo;
+
     private Context mContext;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private TabbedOpenInAppEntryPoint mEntryPoint;
     private UserDataHost mUserDataHost;
+    private final GURL mUrl = JUnitTestGURLs.EXAMPLE_URL;
+    private NavigationHandle mNavigationHandle;
 
     @Before
     public void setUp() {
+        ShadowPostTask.setTestImpl((taskTraits, task, delay) -> {});
         mContext = Robolectric.buildActivity(Activity.class).setup().get();
         mTabSupplier = ObservableSuppliers.createNullable();
         mUserDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mIntentFilter.hasCategory(eq(Intent.CATEGORY_DEFAULT))).thenReturn(true);
+        mResolveInfo.filter = mIntentFilter;
+        mActivityInfo.packageName = PACKAGE;
+        mResolveInfo.activityInfo = mActivityInfo;
+        when(mResolveInfo.loadLabel(any())).thenReturn(LABEL);
+        when(mResolveInfo.loadIcon(any())).thenReturn(mIcon);
+
+        mNavigationHandle = NavigationHandle.createForTesting(mUrl, false, 0, true);
+        mNavigationHandle.didFinish(
+                mUrl,
+                /* isErrorPage= */ false,
+                /* hasCommitted= */ true,
+                /* isPrimaryMainFrameFragmentNavigation= */ false,
+                /* isDownload= */ false,
+                /* isValidSearchFormUrl= */ false,
+                /* transition= */ 0,
+                /* errorCode= */ 0,
+                /* errorDescription= */ "",
+                /* httpStatuscode= */ 200,
+                /* isExternalProtocol= */ false,
+                /* isPdf= */ false,
+                /* mimeType= */ "",
+                Page.createForTesting());
 
         mEntryPoint = new TabbedOpenInAppEntryPoint(mTabSupplier, mOmniboxChipManager, mContext);
         mTabSupplier.set(mTab);
@@ -59,21 +114,29 @@ public class TabbedOpenInAppEntryPointUnitTest {
     @Test
     public void showAndDismissChip() {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
-        Drawable icon = mock(Drawable.class);
-        Runnable action = () -> {};
-        OpenInAppDelegate.OpenInAppInfo info =
-                new OpenInAppDelegate.OpenInAppInfo(action, "app", icon);
 
-        delegate.updateOpenInAppInfo(info);
+        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
+        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+
+        // New navigation committed; the app info should be null.
+        assertNull(delegate.getCurrentOpenInAppInfo());
+
+        // Simulate receiving resolve infos.
+        var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
+        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl);
+
+        // Resolve infos received; the app info should be non-null.
+        assertNonNull(delegate.getCurrentOpenInAppInfo());
 
         ArgumentCaptor<OmniboxChipManager.ChipCallback> callbackCaptor =
                 ArgumentCaptor.forClass(OmniboxChipManager.ChipCallback.class);
         verify(mOmniboxChipManager)
                 .showChip(
                         eq(mContext.getString(R.string.open_in_app)),
-                        eq(icon),
+                        eq(mIcon),
                         eq(mContext.getString(R.string.open_in_app)),
-                        eq(action),
+                        any(Runnable.class),
                         callbackCaptor.capture());
         when(mOmniboxChipManager.isChipShown()).thenReturn(true);
 
@@ -83,10 +146,18 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         // When chip is hidden, it should be in the menu.
         callbackCaptor.getValue().onChipHidden();
-        assertEquals(info, mEntryPoint.getOpenInAppInfoForMenuItem());
+        var appInfo = mEntryPoint.getOpenInAppInfoForMenuItem();
+        assertNonNull(mEntryPoint.getOpenInAppInfoForMenuItem());
+        assertEquals(LABEL, appInfo.appName);
+        assertEquals(mIcon, appInfo.appIcon);
 
-        // When info is null, chip should be dismissed.
-        delegate.updateOpenInAppInfo(null);
+        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
         verify(mOmniboxChipManager).dismissChip();
+
+        // Empty resolve infos; the app info should be null.
+        mEntryPoint.onResolveInfosFetched(
+                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl);
+        assertNull(delegate.getCurrentOpenInAppInfo());
+        verify(mOmniboxChipManager, times(2)).dismissChip();
     }
 }

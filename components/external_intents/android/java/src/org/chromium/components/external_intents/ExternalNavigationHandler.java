@@ -92,7 +92,7 @@ import java.util.function.Supplier;
  * clicking on a http(s) link to their native app.
  */
 @NullMarked
-public class ExternalNavigationHandler {
+public class ExternalNavigationHandler implements ExternalNavigationHelper {
     private static final String TAG = "UrlHandler";
 
     private static final String WTAI_URL_PREFIX = "wtai://wp/";
@@ -666,6 +666,7 @@ public class ExternalNavigationHandler {
         mDelegate = delegate;
         WindowAndroid windowAndroid = assumeNonNull(mDelegate.getWindowAndroid());
         mModalDialogManager = assumeNonNull(windowAndroid.getModalDialogManager());
+        mDelegate.setExternalNavigationHelper(this);
     }
 
     private static boolean debug() {
@@ -733,6 +734,11 @@ public class ExternalNavigationHandler {
             params.onAsyncActionStarted();
         }
         return result;
+    }
+
+    @Override
+    public void launchExternalApp(Intent intent, Context context) {
+        doStartActivity(intent, context);
     }
 
     private OverrideUrlLoadingResult handleFallbackUrl(
@@ -813,7 +819,7 @@ public class ExternalNavigationHandler {
         Log.i(TAG, "shouldOverrideUrlLoading result: " + resultString);
     }
 
-    private boolean resolversSubsetOf(
+    private static boolean resolversSubsetOf(
             List<ResolveInfo> infos, @Nullable List<ResolveInfo> container) {
         if (container == null) return false;
         HashSet<ComponentName> containerSet = new HashSet<>();
@@ -1351,7 +1357,7 @@ public class ExternalNavigationHandler {
 
         // We don't want the user seeing the chooser and choosing the browser, but resolving to
         // another app is fine.
-        if (resolvesToChooser(intentResolveInfo, resolvingInfos)) {
+        if (resolvesToChooser(intentResolveInfo, resolvingInfos.get())) {
             if (debug()) Log.i(TAG, "Navigation to chooser including self.");
             return true;
         }
@@ -1414,7 +1420,7 @@ public class ExternalNavigationHandler {
         return browserPackages.contains(intentResolveInfo.activityInfo.packageName);
     }
 
-    private static Set<String> getInstalledBrowserPackages() {
+    public static Set<String> getInstalledBrowserPackages() {
         List<ResolveInfo> browsers = PackageManagerUtils.queryAllWebBrowsersInfo();
 
         Set<String> packageNames = new HashSet<>();
@@ -1872,16 +1878,10 @@ public class ExternalNavigationHandler {
 
         boolean shouldReturnAsResult = mDelegate.shouldReturnAsActivityResult(intentTargetUrl);
 
-        // TODO(crbug.com/450253146): Revisit the logic here because we're not handling everything
-        // correctly yet.
-        if (maybeSetAppForCurrentPage(
-                mDelegate.shouldSetAppForCurrentPage(),
-                params,
-                shouldReturnAsResult,
-                targetIntent)) {
+        if (allowExternalNavigationForHttpProtocols(
+                mDelegate.allowExternalNavigationForHttpProtocols(params.getUrl()),
+                shouldReturnAsResult)) {
             return OverrideUrlLoadingResult.forNoOverride();
-        } else {
-            clearAppForCurrentPage();
         }
 
         @NavigationChainResult
@@ -2005,48 +2005,9 @@ public class ExternalNavigationHandler {
                 intentTargetUrl);
     }
 
-    private boolean maybeSetAppForCurrentPage(
-            boolean shouldSetAppForCurrentPage,
-            ExternalNavigationParams params,
-            boolean shouldReturnAsResult,
-            Intent targetIntent) {
-        if (!shouldSetAppForCurrentPage
-                || !UrlUtilities.isHttpOrHttps(params.getUrl())
-                || shouldReturnAsResult) {
-            return false;
-        }
-
-        var resolveActivity = new ResolveActivitySupplier(targetIntent).get();
-        if (resolveActivity == null) return false;
-
-        Context context = mDelegate.getContext();
-        if (context == null) return false;
-
-        var targetPackage = resolveActivity.activityInfo.packageName;
-
-        // We're setting the package explicitly to make sure the app that this intent launches
-        // matches what's expected based on the other data in resolveActivity.
-        targetIntent.setPackage(targetPackage);
-
-        Context activity = ContextUtils.activityFromContext(context);
-        if (activity == null) {
-            context = ContextUtils.getApplicationContext();
-            targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        if (debug()) {
-            Log.i(TAG, "Setting app for current page to package: " + targetPackage);
-        }
-        var finalContext = context;
-        mDelegate.setAppForCurrentPage(
-                resolveActivity, () -> doStartActivity(targetIntent, finalContext));
-        return true;
-    }
-
-    private void clearAppForCurrentPage() {
-        if (debug()) {
-            Log.i(TAG, "Clearing app for current page.");
-        }
-        mDelegate.clearAppForCurrentPage();
+    private boolean allowExternalNavigationForHttpProtocols(
+            boolean allowExternalNavigation, boolean shouldReturnAsResult) {
+        return allowExternalNavigation && !shouldReturnAsResult;
     }
 
     // https://crbug.com/1249964
@@ -2084,7 +2045,7 @@ public class ExternalNavigationHandler {
 
         if (resolveActivity == null) return true;
 
-        boolean result = resolvesToChooser(resolveActivity, resolvingInfosSupplier);
+        boolean result = resolvesToChooser(resolveActivity, resolvingInfosSupplier.get());
         if (debug() && result) Log.i(TAG, "Avoiding disambiguation dialog.");
         return result;
     }
@@ -2513,11 +2474,16 @@ public class ExternalNavigationHandler {
         return OverrideUrlLoadingResult.forNoOverride();
     }
 
-    // If the |resolvingInfos| from queryIntentActivities don't contain the result of
-    // resolveActivity, it means the intent is resolving to the ResolverActivity.
-    private boolean resolvesToChooser(
-            ResolveInfo resolveActivity, QueryIntentActivitiesSupplier resolvingInfos) {
-        return !resolversSubsetOf(Arrays.asList(resolveActivity), resolvingInfos.get());
+    /**
+     * Checks if the intent is resolving to the ResolverActivity, which means the {@code
+     * resolvingInfos} do not contain the result of {@code resolveActivity}.
+     *
+     * @param resolveActivity The {@link ResolveInfo} for the activity that would handle the intent.
+     * @param resolvingInfos A list of {@link ResolveInfo} objects that can handle the intent.
+     */
+    public static boolean resolvesToChooser(
+            ResolveInfo resolveActivity, List<ResolveInfo> resolvingInfos) {
+        return !resolversSubsetOf(Arrays.asList(resolveActivity), resolvingInfos);
     }
 
     // looking up resources from other apps requires the use of getIdentifier()
@@ -2539,7 +2505,7 @@ public class ExternalNavigationHandler {
         // target app (as there will be multiple options) and we don't need to do anything.
         // Otherwise we have to make a fake option in the chooser dialog that loads the URL in the
         // embedding app.
-        if (resolvesToChooser(intentResolveInfo, resolvingInfos)) {
+        if (resolvesToChooser(intentResolveInfo, resolvingInfos.get())) {
             return doStartActivity(intent, context);
         }
 
@@ -2672,7 +2638,7 @@ public class ExternalNavigationHandler {
         // when the external navigation was otherwise blocked. In this case, we should just continue
         // to block the navigation, and sites hoping to prompt the user when navigation fails should
         // make sure to correctly target their app.
-        if (resolvesToChooser(intentResolveInfo, resolvingInfos)) {
+        if (resolvesToChooser(intentResolveInfo, resolvingInfos.get())) {
             if (debug()) Log.i(TAG, "Message resolves to multiple apps.");
             return OverrideUrlLoadingResult.forNoOverride();
         }

@@ -209,24 +209,17 @@ public interface ExternalNavigationDelegate {
     boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params);
 
     /**
-     * Returns whether an app should be set for the current page to be opened by the user on demand
-     * at a later time.
-     */
-    boolean shouldSetAppForCurrentPage();
-
-    /**
-     * Set the app for the current page and stay in the embedder app. The provided runnable is going
-     * to be used to open the current page in the app when the user requests it.
+     * Sets the {@link ExternalNavigationHelper} to use.
      *
-     * @param resolveInfo The {@link ResolveInfo} to retrieve the name and icon for the app that
-     *     will open the page, null if multiple apps can open the page.
-     * @param openInApp A {@link Runnable} to be run to open the current page in the app.
+     * @param helper The {@link ExternalNavigationHelper} to set.
      */
-    void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp);
+    void setExternalNavigationHelper(ExternalNavigationHelper helper);
 
     /**
-     * Clears the app set for the page. This should be called when the app becomes invalid for the
-     * current page, e.g. navigation to another domain.
+     * Returns whether the external navigation should be blocked now because an app should be set
+     * for the current page to be opened by the user on demand at a later time.
+     *
+     * @param url The {@link GURL} of the current page.
      */
-    void clearAppForCurrentPage();
+    boolean allowExternalNavigationForHttpProtocols(GURL url);
 }

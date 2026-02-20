@@ -42,7 +42,9 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
+import org.chromium.components.external_intents.ExternalNavigationHelper;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -327,30 +329,13 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean shouldSetAppForCurrentPage() {
-        return OpenInAppUtils.isOpenInAppAvailable();
+    public void setExternalNavigationHelper(ExternalNavigationHelper delegate) {
+        OpenInAppDelegate.from(mTab).setExternalNavigationHelper(delegate);
     }
 
     @Override
-    public void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp) {
-        if (!OpenInAppUtils.isOpenInAppAvailable()) return;
-        if (!hasValidTab()) return;
-
-        // TODO(crbug.com/450253146): Share code with ExternalNavigationHandler#maybeAskToLaunchApp.
-        var pm = mApplicationContext.getPackageManager();
-        var name = resolveInfo != null ? resolveInfo.loadLabel(pm).toString() : null;
-        var icon = resolveInfo != null ? resolveInfo.loadIcon(pm) : null;
-        var info = new OpenInAppDelegate.OpenInAppInfo(openInApp, name, icon);
-
-        OpenInAppDelegate.from(mTab).updateOpenInAppInfo(info);
-    }
-
-    @Override
-    public void clearAppForCurrentPage() {
-        if (!OpenInAppUtils.isOpenInAppAvailable()) return;
-        if (!hasValidTab()) return;
-
-        OpenInAppDelegate.from(mTab).updateOpenInAppInfo(null);
+    public boolean allowExternalNavigationForHttpProtocols(GURL url) {
+        return OpenInAppUtils.isOpenInAppAvailable() && UrlUtilities.isHttpOrHttps(url);
     }
 
     /**

@@ -275,7 +275,9 @@ public class CustomTabExternalNavigationTest {
                 new ExternalNavigationParams.Builder(testUrl, false)
                         .setRedirectHandler(redirectHandler)
                         .build();
-        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        OverrideUrlLoadingResult result =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mUrlHandler.shouldOverrideUrlLoading(params));
         assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
     }
 

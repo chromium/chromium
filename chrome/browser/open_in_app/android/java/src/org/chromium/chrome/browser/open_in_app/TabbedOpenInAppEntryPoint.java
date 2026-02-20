@@ -38,9 +38,7 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
     }
 
     @Override
-    public void onOpenInAppInfoChanged(OpenInAppDelegate.@Nullable OpenInAppInfo openInAppInfo) {
-        super.onOpenInAppInfoChanged(openInAppInfo);
-
+    protected void onOpenInAppInfoChanged(OpenInAppDelegate.@Nullable OpenInAppInfo openInAppInfo) {
         if (openInAppInfo == null && mOmniboxChipManager.isChipShown()) {
             mOmniboxChipManager.dismissChip();
         } else if (openInAppInfo != null) {
