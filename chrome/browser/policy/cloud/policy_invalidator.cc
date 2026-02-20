@@ -123,8 +123,7 @@ void PolicyInvalidator::OnRefreshSchedulerStarted(CloudPolicyCore* core) {
   CHECK(!store_observation_.IsObserving());
   CHECK(!invalidation_listener_observation_.IsObserving());
 
-  auto* cloud_policy_store =
-      policy_invalidation_handler_->GetCloudPolicyStore();
+  auto* cloud_policy_store = core->store();
   CHECK(cloud_policy_store);
   // Policy stack is connected and is ready for invalidations.
   store_observation_.Observe(cloud_policy_store);
@@ -149,7 +148,7 @@ void PolicyInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
 }
 
 void PolicyInvalidator::OnStoreLoaded(CloudPolicyStore* store) {
-  CHECK_EQ(store, policy_invalidation_handler_->GetCloudPolicyStore());
+  CHECK_EQ(store, policy_invalidation_handler_->core()->store());
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -184,12 +183,7 @@ PolicyInvalidator::PolicyInvalidationHandler::~PolicyInvalidationHandler() =
 
 void PolicyInvalidator::PolicyInvalidationHandler::HandlePolicyRefresh(
     CloudPolicyStore* store) {
-  // There are exactly two stores that `HandlePolicyRefresh` can be called on.
-  CHECK(store == core_->store() || store == core_->extension_install_store());
-  // If the store is not handled by this invalidator, do nothing.
-  if (store != GetCloudPolicyStore()) {
-    return;
-  }
+  CHECK(store == core_->store());
   const auto new_policy_hash = CalculatePolicyHash(store->policy());
 
   if (!policy_hash_value_.has_value()) {
@@ -285,7 +279,7 @@ void PolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   }
 
   // Ignore the invalidation if it is expired.
-  const auto* policy = GetCloudPolicyStore()->policy();
+  const auto* policy = core_->store()->policy();
   const auto last_fetch_time =
       policy ? base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp())
              : base::Time();

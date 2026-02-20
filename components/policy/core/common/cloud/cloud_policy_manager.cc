@@ -19,8 +19,10 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
 #include "device_management_backend.pb.h"
@@ -40,6 +42,16 @@ const enterprise_management::PolicyData* GetPolicyData(
   return store && store->has_policy() ? store->policy() : nullptr;
 }
 
+std::string PolicyTypeToExtensionInstallPolicyType(
+    const std::string& policy_type) {
+  if (policy_type == dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+    return dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType;
+  }
+  if (policy_type == dm_protocol::GetChromeUserPolicyType()) {
+    return dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+  }
+  NOTREACHED() << "Unsupported policy type: " << policy_type;
+}
 }  // namespace
 
 BASE_FEATURE(kPublishPolicyWithoutWaiting, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -56,10 +68,8 @@ CloudPolicyManager::CloudPolicyManager(
       core_(policy_type,
             settings_entity_id,
             store_.get(),
-            extension_install_store_.get(),
             task_runner,
-            std::move(network_connection_tracker_getter)),
-      waiting_for_policy_refresh_(false) {
+            std::move(network_connection_tracker_getter)) {
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
   CHECK(!extension_install_store_.get());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -87,6 +97,36 @@ bool CloudPolicyManager::IsClientRegistered() const {
   return client() && client()->is_registered();
 }
 
+void CloudPolicyManager::InitExtensionInstallPolicies(
+    PrefService* local_state,
+    std::unique_ptr<CloudPolicyClient> client,
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter) {
+  CHECK(IsClientRegistered());
+  CHECK(extension_install_store_);
+
+  extension_install_store_observation_.Observe(extension_install_store());
+  if (extension_install_store()->is_initialized()) {
+    OnStoreLoaded(extension_install_store());
+  } else {
+    extension_install_store()->Load();
+  }
+
+  extension_install_core_ = std::make_unique<CloudPolicyCore>(
+      PolicyTypeToExtensionInstallPolicyType(core_.policy_type()),
+      core_.settings_entity_id(), extension_install_store(),
+      core_.GetTaskRunner(), std::move(network_connection_tracker_getter));
+
+  bool has_service = client->service() != nullptr;
+  extension_install_core()->Connect(std::move(client));
+
+  // In tests the client might not always have a real device management service.
+  if (has_service) {
+    extension_install_core()->StartRefreshScheduler();
+    extension_install_core()->TrackRefreshDelayPref(
+        local_state, policy_prefs::kUserPolicyRefreshRate);
+  }
+}
+
 void CloudPolicyManager::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
 
@@ -99,24 +139,16 @@ void CloudPolicyManager::Init(SchemaRegistry* registry) {
     OnStoreLoaded(store());
   else
     store()->Load();
-  if (!extension_install_store()) {
-    return;
-  }
-  extension_install_store()->AddObserver(this);
-  if (extension_install_store()->is_initialized()) {
-    OnStoreLoaded(extension_install_store());
-  } else {
-    extension_install_store()->Load();
-  }
 }
 
 void CloudPolicyManager::Shutdown() {
   component_policy_service_.reset();
   core_.Disconnect();
   store()->RemoveObserver(this);
-  if (extension_install_store()) {
-    extension_install_store()->RemoveObserver(this);
+  if (extension_install_core_) {
+    extension_install_core_->Disconnect();
   }
+  extension_install_store_observation_.Reset();
   ConfigurationPolicyProvider::Shutdown();
 }
 
@@ -128,7 +160,7 @@ bool CloudPolicyManager::IsInitializationComplete(PolicyDomain domain) const {
     return component_policy_service_->is_initialized();
   }
   if (domain == POLICY_DOMAIN_EXTENSION_INSTALL) {
-    return !extension_install_store() ||
+    return !extension_install_core() ||
            extension_install_store()->is_initialized();
   }
   return true;
@@ -143,16 +175,25 @@ bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
 }
 
 void CloudPolicyManager::RefreshPolicies(PolicyFetchReason reason) {
-  // Both services trigger the same flow, so we can use either one.
-  auto* service_to_use = service() ? service() : extension_install_service();
-  if (service_to_use) {
-    waiting_for_policy_refresh_ = true;
-    service_to_use->RefreshPolicy(
+  std::array<CloudPolicyService*, 2> services = {service(),
+                                                 extension_install_service()};
+  waiting_for_policy_refresh_count_ =
+      std::ranges::count_if(services, std::identity{});
+  if (waiting_for_policy_refresh_count_ == 0) {
+    OnRefreshComplete(false);
+    return;
+  }
+  if (service()) {
+    service()->RefreshPolicy(
         base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
                        base::Unretained(this)),
         reason);
-  } else {
-    OnRefreshComplete(false);
+  }
+  if (extension_install_service()) {
+    extension_install_service()->RefreshPolicy(
+        base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
+                       base::Unretained(this)),
+        reason);
   }
 }
 
@@ -186,15 +227,15 @@ bool CloudPolicyManager::CanPublishPolicy() const {
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  if (!waiting_for_policy_refresh_) {
+  if (waiting_for_policy_refresh_count_ == 0) {
     return true;
   }
 
   // Component policy service initializaion is async. Its first publish might be
   // blocked by first cloud policy refresh.
   //
-  // Skip the `waiting_for_policy_refresh_` check if component policies are
-  // ready but never published.
+  // Skip the `waiting_for_policy_refresh_count_` check if component policies
+  // are ready but never published.
   if (base::FeatureList::IsEnabled(kPublishPolicyWithoutWaiting) &&
       component_policy_service_ &&
       component_policy_service_->is_initialized() &&
@@ -279,7 +320,9 @@ void CloudPolicyManager::ClearAndDestroyComponentCloudPolicyService() {
 }
 
 void CloudPolicyManager::OnRefreshComplete(bool success) {
-  waiting_for_policy_refresh_ = false;
+  if (waiting_for_policy_refresh_count_ > 0) {
+    waiting_for_policy_refresh_count_--;
+  }
   CheckAndPublishPolicy();
 }
 

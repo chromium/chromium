@@ -75,7 +75,6 @@ class ExtensionInstallPolicyInvalidator : public PolicyInvalidator {
 
     ~ExtensionInstallPolicyInvalidationHandler() override;
 
-    CloudPolicyStore* GetCloudPolicyStore() const override;
     const char* GetPolicyRefreshMetricName(
         PolicyInvalidationScope scope) override;
     const char* GetPolicyInvalidationMetricName(

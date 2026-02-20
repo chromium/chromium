@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
@@ -58,8 +59,17 @@ class POLICY_EXPORT CloudPolicyManager
 
   CloudPolicyCore* core() { return &core_; }
   const CloudPolicyCore* core() const { return &core_; }
+  CloudPolicyCore* extension_install_core() {
+    return extension_install_core_.get();
+  }
+  const CloudPolicyCore* extension_install_core() const {
+    return extension_install_core_.get();
+  }
   ComponentCloudPolicyService* component_policy_service() const {
     return component_policy_service_.get();
+  }
+  bool IsSupportingExtensionInstallPolicies() const {
+    return extension_install_store_ != nullptr;
   }
 
   // Returns the DM Token, if it exists.
@@ -74,6 +84,12 @@ class POLICY_EXPORT CloudPolicyManager
 
   virtual void Connect(PrefService* local_state,
                        std::unique_ptr<CloudPolicyClient> client) {}
+
+  virtual void InitExtensionInstallPolicies(
+      PrefService* local_state,
+      std::unique_ptr<CloudPolicyClient> client,
+      network::NetworkConnectionTrackerGetter
+          network_connection_tracker_getter);
 
   // Shuts down the CloudPolicyManager (removes and stops refreshing any
   // cached cloud policy).
@@ -135,10 +151,12 @@ class POLICY_EXPORT CloudPolicyManager
   const CloudPolicyService* service() const { return core_.service(); }
 
   CloudPolicyService* extension_install_service() {
-    return core_.extension_install_service();
+    return extension_install_core_ ? extension_install_core_->service()
+                                   : nullptr;
   }
   const CloudPolicyService* extension_install_service() const {
-    return core_.extension_install_service();
+    return extension_install_core_ ? extension_install_core_->service()
+                                   : nullptr;
   }
 
  private:
@@ -148,7 +166,11 @@ class POLICY_EXPORT CloudPolicyManager
   std::unique_ptr<CloudPolicyStore> store_;
   std::unique_ptr<CloudPolicyStore> extension_install_store_;
   CloudPolicyCore core_;
+  std::unique_ptr<CloudPolicyCore> extension_install_core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
+
+  base::ScopedObservation<CloudPolicyStore, CloudPolicyStore::Observer>
+      extension_install_store_observation_{this};
 
   // Has component policy ever been published.
   //
@@ -159,7 +181,7 @@ class POLICY_EXPORT CloudPolicyManager
 
   // Whether there's a policy refresh operation pending, in which case all
   // policy update notifications are deferred until after it completes.
-  bool waiting_for_policy_refresh_;
+  size_t waiting_for_policy_refresh_count_ = 0;
 };
 
 }  // namespace policy

@@ -113,11 +113,8 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_User) {
 
   policy::MockUserCloudPolicyStore store{
       dm_protocol::GetChromeUserPolicyType()};
-  policy::MockUserCloudPolicyStore extension_install_store{
-      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
-      &extension_install_store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 
@@ -141,11 +138,8 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_Device) {
 
   policy::MockUserCloudPolicyStore store{
       dm_protocol::GetChromeUserPolicyType()};
-  policy::MockUserCloudPolicyStore extension_install_store{
-      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
-      &extension_install_store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 
@@ -169,11 +163,8 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_NoClient) {
 
   policy::MockUserCloudPolicyStore store{
       dm_protocol::GetChromeUserPolicyType()};
-  policy::MockUserCloudPolicyStore extension_install_store{
-      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
-      &extension_install_store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 
@@ -194,11 +185,8 @@ TEST(CloudManagementAffiliationTest,
 
   policy::MockUserCloudPolicyStore store{
       dm_protocol::GetChromeUserPolicyType()};
-  policy::MockUserCloudPolicyStore extension_install_store{
-      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
-      &extension_install_store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 

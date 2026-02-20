@@ -118,7 +118,6 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
         core_(dm_protocol::GetChromeUserPolicyType(),
               std::string(),
               &store_,
-              /*extension_install_store=*/nullptr,
               base::SingleThreadTaskRunner::GetCurrentDefault(),
               network::TestNetworkConnectionTracker::CreateGetter()) {
     builder_.SetDefaultSigningKey();

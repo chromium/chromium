@@ -1155,6 +1155,9 @@ message DevicePolicyRequest {
     // Policy fetch triggered by the ExtensionInstallPolicyService before an
     // extension is installed.
     EXTENSION_INSTALL = 103;
+    // Policy fetch triggered by the ExtensionInstallPolicyService during
+    // initialization.
+    EXTENSION_INSTALL_INITIALIZATION = 104;
   }
   optional Reason reason = 4;
 }

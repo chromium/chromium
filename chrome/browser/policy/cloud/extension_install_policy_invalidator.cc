@@ -114,11 +114,6 @@ ExtensionInstallPolicyInvalidator::ExtensionInstallPolicyInvalidationHandler::
 ExtensionInstallPolicyInvalidator::ExtensionInstallPolicyInvalidationHandler::
     ~ExtensionInstallPolicyInvalidationHandler() = default;
 
-CloudPolicyStore* ExtensionInstallPolicyInvalidator::
-    ExtensionInstallPolicyInvalidationHandler::GetCloudPolicyStore() const {
-  return core()->extension_install_store();
-}
-
 const char* ExtensionInstallPolicyInvalidator::
     ExtensionInstallPolicyInvalidationHandler::GetPolicyRefreshMetricName(
         PolicyInvalidationScope scope) {

@@ -84,9 +84,6 @@ class CloudPolicyInvalidator : public PolicyInvalidator {
         PolicyInvalidationScope scope) override;
     const char* GetPolicyInvalidationMetricName(
         PolicyInvalidationScope scope) override;
-
-    // Returns the cloud policy store that is handled by this invalidator.
-    CloudPolicyStore* GetCloudPolicyStore() const override;
   };
 };
 

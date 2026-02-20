@@ -48,7 +48,6 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
       : core_(dm_protocol::kChromeDevicePolicyType,
               /*settings_entity_id=*/std::string(),
               &mock_store_,
-              &mock_extension_install_store_,
               task_environment_.GetMainThreadTaskRunner(),
               network::TestNetworkConnectionTracker::CreateGetter()) {}
 
@@ -103,8 +102,6 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 
   NiceMock<MockCloudPolicyStore> mock_store_{
       dm_protocol::GetChromeUserPolicyType()};
-  NiceMock<MockCloudPolicyStore> mock_extension_install_store_{
-      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType};
   CloudPolicyCore core_;
 
   invalidation::FakeInvalidationListener fake_invalidation_listener_;

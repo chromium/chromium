@@ -109,9 +109,6 @@ void MachineLevelUserCloudPolicyManager::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
 
   store()->AddObserver(this);
-  if (extension_install_store()) {
-    extension_install_store()->AddObserver(this);
-  }
 
   // Load the policy from disk synchronously once the manager is initalized
   // during Chrome launch if the cache and the global dm token exist.

@@ -78,6 +78,10 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
   // initialization with empty policy data.
   void InitWithoutToken();
 
+  const std::string& machine_client_id() const { return machine_client_id_; }
+
+  const DMToken& machine_dm_token() const { return machine_dm_token_; }
+
  private:
   // Function used as a PolicyLoadFilter to use external policies if they are
   // newer than the ones previously written by the browser.

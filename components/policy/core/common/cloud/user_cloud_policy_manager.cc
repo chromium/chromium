@@ -153,6 +153,9 @@ void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   if (external_data_manager_)
     external_data_manager_->Disconnect();
   core()->Disconnect();
+  if (extension_install_core()) {
+    extension_install_core()->Disconnect();
+  }
 
   // store_->Clear() will publish the updated, empty policy. The component
   // policy service must be cleared before OnStoreLoaded() is issued, so that
