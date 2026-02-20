@@ -87,6 +87,8 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
         when(mExtensionsMenuButton.getRootView()).thenReturn(mockRootView);
 
         when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mExtensionsToolbarBridge.getExtensionsMenuButtonState(any()))
+                .thenReturn(ExtensionsToolbarBridge.ExtensionsToolbarButtonState.DEFAULT);
         mBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask, mProfile).setInitialized(true);
 
         mCoordinator =

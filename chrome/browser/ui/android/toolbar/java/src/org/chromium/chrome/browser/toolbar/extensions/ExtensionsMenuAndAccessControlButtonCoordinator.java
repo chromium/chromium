@@ -57,7 +57,8 @@ public class ExtensionsMenuAndAccessControlButtonCoordinator implements Destroya
                         task,
                         profile,
                         currentTabSupplier,
-                        tabCreator);
+                        tabCreator,
+                        extensionsToolbarBridge);
 
         mExtensionAccessControlButtonCoordinator =
                 new ExtensionAccessControlButtonCoordinator(

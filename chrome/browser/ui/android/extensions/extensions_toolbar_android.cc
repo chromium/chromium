@@ -143,6 +143,11 @@ void ExtensionsToolbarAndroid::OnActiveWebContentsChanged() {
                                                           java_object_);
 }
 
+void ExtensionsToolbarAndroid::OnToolbarControlStateUpdated() {
+  Java_ExtensionsToolbarBridge_onToolbarControlStateUpdated(
+      AttachCurrentThread(), java_object_);
+}
+
 void ExtensionsToolbarAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
@@ -196,6 +201,12 @@ std::vector<ToolbarActionsModel::ActionId>
 ExtensionsToolbarAndroid::GetPinnedActionIds(JNIEnv* env) {
   const auto& ids = toolbar_view_model_->GetPinnedActionIds();
   return std::vector(ids.begin(), ids.end());
+}
+
+int ExtensionsToolbarAndroid::GetExtensionsMenuButtonState(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  return static_cast<int>(toolbar_view_model_->GetButtonState(*web_contents));
 }
 
 void ExtensionsToolbarAndroid::ExecuteUserAction(

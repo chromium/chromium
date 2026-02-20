@@ -48,6 +48,7 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPinnedActionsChanged() override;
   void OnActiveWebContentsChanged() override;
+  void OnToolbarControlStateUpdated() override;
   void OnRequestAccessButtonParamsChanged(
       content::WebContents* web_contents) override;
 
@@ -68,6 +69,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       float scale_factor);
   std::vector<ToolbarActionsModel::ActionId> GetAllActionIds(JNIEnv* env);
   std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
+  int GetExtensionsMenuButtonState(JNIEnv* env,
+                                   content::WebContents* web_contents);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,

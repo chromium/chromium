@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -67,6 +68,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private ChromeAndroidTask mTask;
     @Mock private Tab mTab;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -115,6 +117,8 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Set the current tab.
         mCurrentTabSupplier.set(mTab);
+        when(mExtensionsToolbarBridge.getExtensionsMenuButtonState(any()))
+                .thenReturn(ExtensionsToolbarBridge.ExtensionsToolbarButtonState.DEFAULT);
 
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(
@@ -124,7 +128,8 @@ public class ExtensionsMenuCoordinatorTest {
                         mTask,
                         mProfile,
                         mCurrentTabSupplier,
-                        mTabCreator);
+                        mTabCreator,
+                        mExtensionsToolbarBridge);
 
         // Clear invocations from initialization to ensure tests start fresh.
         Mockito.clearInvocations(mExtensionsMenuBridgeJniMock);

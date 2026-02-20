@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -46,7 +47,7 @@ import org.chromium.ui.widget.RectProvider;
  * responsible for the button and the menu.
  */
 @NullMarked
-public class ExtensionsMenuCoordinator implements Destroyable {
+public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbarBridge.Observer {
     private final Context mContext;
     private final ListMenu mExtensionsMenu;
     private final ListMenuButton mExtensionsMenuButton;
@@ -59,6 +60,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final PropertyModelChangeProcessor mChangeProcessor;
     private final ModelList mExtensionModels;
     private final ChromeAndroidTask mTask;
+    private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
 
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
 
@@ -81,12 +83,14 @@ public class ExtensionsMenuCoordinator implements Destroyable {
             ChromeAndroidTask task,
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
-            TabCreator tabCreator) {
+            TabCreator tabCreator,
+            ExtensionsToolbarBridge extensionsToolbarBridge) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mProfile = profile;
         mTabCreator = tabCreator;
         mTask = task;
+        mExtensionsToolbarBridge = extensionsToolbarBridge;
 
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.extensions_menu, null, false);
 
@@ -142,6 +146,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
 
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(mTintObserver);
+        mExtensionsToolbarBridge.addObserver(this);
 
         mPropertyModel = createMenuPropertyModel();
 
@@ -151,6 +156,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
 
         mExtensionModels = new ModelList();
         setUpExtensionsRecyclerView(mContentView, mContext, mExtensionModels);
+        updateButtonState();
     }
 
     /**
@@ -250,6 +256,72 @@ public class ExtensionsMenuCoordinator implements Destroyable {
 
         extensionRecyclerView.setAdapter(extensionsAdapter);
         extensionRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+    }
+
+    private void updateButtonState() {
+        Tab currentTab = mCurrentTabSupplier.get();
+        if (currentTab == null || currentTab.getWebContents() == null) return;
+
+        @ExtensionsToolbarBridge.ExtensionsToolbarButtonState
+        int state =
+                mExtensionsToolbarBridge.getExtensionsMenuButtonState(currentTab.getWebContents());
+
+        int iconResId;
+        int tooltipResId;
+        int accNameResId;
+
+        switch (state) {
+            case ExtensionsToolbarBridge.ExtensionsToolbarButtonState.ALL_EXTENSIONS_BLOCKED:
+                iconResId = R.drawable.chrome_extension_off;
+                tooltipResId = R.string.tooltip_extensions_button_all_extensions_blocked;
+                accNameResId = R.string.acc_name_extensions_button_all_extensions_blocked;
+                break;
+            case ExtensionsToolbarBridge.ExtensionsToolbarButtonState.ANY_EXTENSION_HAS_ACCESS:
+                iconResId = R.drawable.chrome_extension_on;
+                tooltipResId = R.string.tooltip_extensions_button_any_extension_has_access;
+                accNameResId = R.string.acc_name_extensions_button_any_extension_has_access;
+                break;
+            case ExtensionsToolbarBridge.ExtensionsToolbarButtonState.DEFAULT:
+            default:
+                iconResId = R.drawable.chrome_extension;
+                tooltipResId = R.string.accessibility_btn_extensions;
+                accNameResId = R.string.accessibility_btn_extensions;
+                break;
+        }
+
+        mExtensionsMenuButton.setImageResource(iconResId);
+        mExtensionsMenuButton.setTooltipText(mContext.getString(tooltipResId));
+        mExtensionsMenuButton.setContentDescription(mContext.getString(accNameResId));
+    }
+
+    @Override
+    public void onToolbarControlStateUpdated() {
+        updateButtonState();
+    }
+
+    @Override
+    public void onActiveWebContentsChanged() {
+        updateButtonState();
+    }
+
+    @Override
+    public void onActionsInitialized() {
+        updateButtonState();
+    }
+
+    @Override
+    public void onActionAdded(String actionId) {
+        updateButtonState();
+    }
+
+    @Override
+    public void onActionRemoved(String actionId) {
+        updateButtonState();
+    }
+
+    @Override
+    public void onActionUpdated(String actionId) {
+        updateButtonState();
     }
 
     @Override
