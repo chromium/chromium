@@ -1253,6 +1253,8 @@ enum InvocationSource {
   [MinVersion=5] kSharedImage = 13,
   // From the handoff button.
   [MinVersion=6] kHandoffButton = 14,
+  // Automatically opened from contextual cueing.
+  [MinVersion=8] kAutoOpenedByContextualCue = 16,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)

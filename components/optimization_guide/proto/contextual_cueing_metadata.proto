@@ -77,6 +77,11 @@ message GlicCueingConfiguration {
   //
   // If this list is empty, this cueing configuration is always eligible.
   repeated ContextualCueingConditions conditions = 2;
+
+  // If true, this configuration is eligible for auto-opening the side panel.
+  // The client will auto-open if enabled and conditions are met, otherwise
+  // falls back to standard nudge behavior with cue_label/default_text.
+  bool auto_open_eligible = 6;
 }
 
 message GlicZeroStateSuggestionsMetadata {

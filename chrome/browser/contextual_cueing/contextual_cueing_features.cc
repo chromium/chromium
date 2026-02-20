@@ -22,6 +22,8 @@ BASE_FEATURE(kGlicZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kZeroStateSuggestionsUseLegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableAutoOpenGlicSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsContextualCueingEnabled() {
 #if BUILDFLAG(ENABLE_GLIC)
   // If the feature is overridden (e.g. via server-side config or command-line),

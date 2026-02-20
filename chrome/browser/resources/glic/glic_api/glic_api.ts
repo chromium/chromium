@@ -2588,6 +2588,8 @@ export enum InvocationSource {
   SHARED_IMAGE = 13,
   // From the handoff button.
   HANDOFF_BUTTON = 14,
+  // Automatically opened from contextual cueing.
+  AUTO_OPENED_BY_CONTEXTUAL_CUE = 16,
 }
 
 ///////////////////////////////////////////////
