@@ -1127,7 +1127,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"reading_mode", "true"},
     {"save_payments", "true"},
     {"sharing_hub", "true"},
-    {"translate", "true"},
     {"virtual_card", "true"},
     {"zoom", "true"},
 };

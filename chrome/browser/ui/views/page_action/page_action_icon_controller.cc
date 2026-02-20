@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
-#include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -225,13 +224,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kTranslate:
-        DCHECK(params.command_updater);
-        add_page_action_icon(
-            type, std::make_unique<TranslateIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
-        break;
       case PageActionIconType::kVirtualCardEnroll:
         add_page_action_icon(
             type, std::make_unique<autofill::VirtualCardEnrollIconView>(
@@ -279,6 +271,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
+      case PageActionIconType::kTranslate:
       case PageActionIconType::kReadingMode:
       case PageActionIconType::kContextualSidePanel:
       case PageActionIconType::kJsOptimizations:

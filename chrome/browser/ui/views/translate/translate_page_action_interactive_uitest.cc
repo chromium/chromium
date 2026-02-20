@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
-#include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -29,23 +28,18 @@
 
 namespace translate {
 
-class TranslateIconViewTest : public InProcessBrowserTest,
-                              public ::testing::WithParamInterface<bool> {
+class TranslatePageActionInteractiveUiTest : public InProcessBrowserTest {
  public:
-  TranslateIconViewTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationTranslate.name,
-          IsMigrationEnabled() ? "true" : "false"}});
-  }
+  TranslatePageActionInteractiveUiTest() = default;
 
-  TranslateIconViewTest(const TranslateIconViewTest&) = delete;
-  TranslateIconViewTest& operator=(const TranslateIconViewTest&) = delete;
+  TranslatePageActionInteractiveUiTest(
+      const TranslatePageActionInteractiveUiTest&) = delete;
+  TranslatePageActionInteractiveUiTest& operator=(
+      const TranslatePageActionInteractiveUiTest&) = delete;
 
-  ~TranslateIconViewTest() override = default;
+  ~TranslatePageActionInteractiveUiTest() override = default;
 
-  // Returns the page action view that should be enabled for the current
-  // feature flag state.
+  // Returns the page action view.
   IconLabelBubbleView* GetTranslateIcon() {
     ToolbarButtonProvider* provider =
         BrowserView::GetBrowserViewForBrowser(browser())
@@ -80,24 +74,12 @@ class TranslateIconViewTest : public InProcessBrowserTest,
 
     return widget;
   }
-
-  bool IsMigrationEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TranslateIconViewTest,
-                         ::testing::Values(false, true),
-                         [](const ::testing::TestParamInfo<bool>& info) {
-                           return info.param ? "MigrationEnabled"
-                                             : "MigrationDisabled";
-                         });
 
 // Verifies that clicking the Translate icon closes the Partial Translate bubble
 // and results in neither of the two Translate bubbles being shown.
-IN_PROC_BROWSER_TEST_P(TranslateIconViewTest, ClosePartialTranslateBubble) {
+IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
+                       ClosePartialTranslateBubble) {
   // Show the Translate icon.
   ChromeTranslateClient::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents())
@@ -130,15 +112,11 @@ IN_PROC_BROWSER_TEST_P(TranslateIconViewTest, ClosePartialTranslateBubble) {
   EXPECT_THAT(GetBubble(), ::testing::IsNull());
 }
 
-IN_PROC_BROWSER_TEST_P(TranslateIconViewTest, IconViewAccessibleName) {
-  if (IsMigrationEnabled()) {
-    EXPECT_EQ(GetTranslateIcon()->GetViewAccessibility().GetCachedName(),
-              BrowserActions::GetCleanTitleAndTooltipText(
-                  l10n_util::GetStringUTF16(IDS_SHOW_TRANSLATE)));
-  } else {
-    EXPECT_EQ(GetTranslateIcon()->GetViewAccessibility().GetCachedName(),
-              l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
-  }
+IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
+                       IconViewAccessibleName) {
+  EXPECT_EQ(GetTranslateIcon()->GetViewAccessibility().GetCachedName(),
+            BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_SHOW_TRANSLATE)));
   EXPECT_EQ(GetTranslateIcon()->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }

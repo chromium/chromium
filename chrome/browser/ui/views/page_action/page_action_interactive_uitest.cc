@@ -125,7 +125,6 @@ class PageActionUiTestBase {
                 features::kPageActionsMigration,
                 {
                     {features::kPageActionsMigrationZoom.name, "true"},
-                    {features::kPageActionsMigrationTranslate.name, "true"},
                     {features::kPageActionsMigrationMemorySaver.name, "true"},
                 },
             },

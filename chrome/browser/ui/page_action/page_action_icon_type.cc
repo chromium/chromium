@@ -16,8 +16,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationLensOverlay;
     case PageActionIconType::kMemorySaver:
       return &features::kPageActionsMigrationMemorySaver;
-    case PageActionIconType::kTranslate:
-      return &features::kPageActionsMigrationTranslate;
     case PageActionIconType::kIntentPicker:
       return &features::kPageActionsMigrationIntentPicker;
     case PageActionIconType::kZoom:
@@ -79,7 +77,8 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
 
   // Page actions on the new framework that don't have an implementation on the legacy path
   // and don't have a feature param.
-  if (page_action == PageActionIconType::kContextualSidePanel ||
+  if (page_action == PageActionIconType::kTranslate ||
+      page_action == PageActionIconType::kContextualSidePanel ||
       page_action == PageActionIconType::kJsOptimizations ||
       page_action == PageActionIconType::kRecordReplay ||
       page_action == PageActionIconType::kIndigo) {
