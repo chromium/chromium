@@ -112,7 +112,6 @@ suite('SkillsDialogAppPage', function() {
     };
     await setupDialogWithSkill(testSkill);
 
-    assertEquals('⚡', skillsDialogApp.$.emojiTrigger.value);
     assertEquals(testSkill.name, skillsDialogApp.$.nameText.value);
     assertEquals(testSkill.prompt, skillsDialogApp.$.instructionsText.value);
   });
@@ -302,6 +301,41 @@ suite('SkillsDialogAppPage', function() {
     assertFalse(skillsDialogApp.$.saveErrorContainer.hidden);
   });
 
+
+  test('EmojiZeroStateVisibility', async function() {
+    // 1. Setup with empty icon
+    const emptyIconSkill: Skill = {
+      id: '',
+      sourceSkillId: '',
+      name: 'test skill',
+      icon: '',
+      prompt: 'test prompt',
+      description: 'test description',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    await setupDialogWithSkill(emptyIconSkill);
+
+    const zeroStateIcon = skillsDialogApp.$.emojiZeroStateIcon;
+    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+
+    // Verify initial state: Icon should be visible (hidden=false) because icon
+    // is empty.
+    assertTrue(!!zeroStateIcon);
+    assertFalse(zeroStateIcon.hidden);
+    assertEquals('', emojiTrigger.value);
+
+    // 2. Set an icon
+    emojiTrigger.value = '🐶';
+    emojiTrigger.dispatchEvent(new InputEvent('input'));
+    await microtasksFinished();
+
+    // Verify state: Icon should be hidden
+    assertTrue(zeroStateIcon.hidden);
+    assertEquals('🐶', emojiTrigger.value);
+  });
+
   test('EmojiTriggerOpensPicker', async function() {
     const emojiTrigger = skillsDialogApp.$.emojiTrigger;
 
@@ -328,15 +362,24 @@ suite('SkillsDialogAppPage', function() {
     assertEquals('🐶', submittedSkill.icon);
   });
 
-  test('EmojiInputHandlesEmpty', async function() {
-    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+  test('EmojiInputHandlesEmptyAndAppliesDefaultOnSubmit', async function() {
+    const emptyIconSkill: Skill = {
+      id: 'empty-icon-skill',
+      sourceSkillId: 'sourceSkillId',
+      name: 'test skill',
+      icon: '',
+      prompt: 'test prompt',
+      description: 'test description',
+      source: SkillSource.kFirstParty,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    await setupDialogWithSkill(emptyIconSkill);
 
-    emojiTrigger.value = '';
-    emojiTrigger.dispatchEvent(new InputEvent('input'));
-
-    await microtasksFinished();
-
-    assertEquals('⚡', emojiTrigger.value);
+    // Click the save button and verify the proxy call.
+    skillsDialogApp.$.saveButton.click();
+    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    assertEquals('⚡', submittedSkill.icon);
   });
 
   test('EmojiPreventsManualTyping', async function() {

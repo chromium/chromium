@@ -36,11 +36,15 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
         <cr-input class="stroked" id="nameText" type="text"
             placeholder="$i18n{namePlaceholder}" .value="${this.skill_.name}"
             @value-changed="${this.onNameChanged_}" aria-labelledby="nameLabel">
-          <input id="emojiTrigger" class="emoji-trigger" type="text"
+          <div class="emoji-prefix-container" slot="inline-prefix">
+            <cr-icon id="emojiZeroStateIcon" icon="skills:add-reaction"
+                ?hidden="${this.skill_.icon}" aria-hidden="true">
+            </cr-icon>
+            <input id="emojiTrigger" class="emoji-trigger" type="text"
               .value="${this.skill_.icon}" @click="${this.onEmojiBtnClick_}"
               @input="${this.onEmojiChanged_}" @keydown="${this.onEmojiKeyDown_}"
-              title="$i18n{chooseIcon}" aria-label="$i18n{chooseIcon}"
-              slot="inline-prefix">
+              title="$i18n{chooseIcon}" aria-label="$i18n{chooseIcon}">
+          </div>
         </cr-input>
         `}
     </div>

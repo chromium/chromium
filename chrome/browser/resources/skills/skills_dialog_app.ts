@@ -15,6 +15,7 @@ import './icons.html.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -68,6 +69,7 @@ export interface SkillsDialogAppElement {
     textareaWrapper: HTMLElement,
     nameLoaderContainer: HTMLElement,
     saveErrorContainer: HTMLElement,
+    emojiZeroStateIcon: CrIconElement,
   };
 }
 
@@ -142,7 +144,6 @@ export class SkillsDialogAppElement extends CrLitElement {
         ({skill}) => {
           if (skill) {
             this.skill_ = skill;
-            this.skill_.icon = skill.icon || DEFAULT_EMOJI;
             this.skill_.source = skill.source || SkillSource.kUserCreated;
             // TODO(marissashen): Update to passing in dialogType from dialog
             // creation
@@ -373,6 +374,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     const isFirstParty = this.skill_.source === SkillSource.kFirstParty;
     const skill = {
       ...this.skill_,
+      icon: this.skill_.icon || DEFAULT_EMOJI,
       prompt: this.skill_.prompt.substring(0, MAX_PROMPT_CHAR_COUNT),
 
       // If remixing first party skill, set parent and clear ID.

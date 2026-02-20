@@ -207,6 +207,25 @@ textarea::placeholder {
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.emoji-prefix-container {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+#emojiZeroStateIcon {
+  position: absolute;
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+  left: 0;
+  color: var(--color-sys-state-disabled);
+}
+
 /* Hides the blue selection background if text gets selected */
 .emoji-trigger::selection {
   background: transparent;
