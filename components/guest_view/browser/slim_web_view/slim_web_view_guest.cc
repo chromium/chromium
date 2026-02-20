@@ -249,6 +249,10 @@ void SlimWebViewGuest::GuestViewDocumentOnLoadCompleted() {
       slim_web_view::kEventContentLoad, base::DictValue()));
 }
 
+bool SlimWebViewGuest::IsAutoSizeSupported() const {
+  return true;
+}
+
 void SlimWebViewGuest::GuestSizeChangedDueToAutoSize(
     const gfx::Size& old_size,
     const gfx::Size& new_size) {

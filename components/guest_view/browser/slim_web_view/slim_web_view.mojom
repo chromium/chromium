@@ -5,6 +5,7 @@
 module guest_view.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // Bootstraps the PageHandler for communicating a SlimWebView to the browser.
@@ -14,12 +15,21 @@ interface PageHandlerFactory {
                     pending_remote<Page> page);
 };
 
+struct SetSizeParams {
+  bool enable_auto_size;
+  gfx.mojom.Size min;
+  gfx.mojom.Size max;
+};
+
 // Interface that implements page-to-browser messages for a SlimWebView.
 interface PageHandler {
   // Creates the GuestView from `create_params` and returns the created guest's
   // ID on success.
   CreateGuest(mojo_base.mojom.DictionaryValue create_params)
       => (int32 guest_instance_id);
+
+  // Sets the sizing parameters of the GuestView.
+  SetSize(int32 guest_instance_id, SetSizeParams size_params);
 
   // Navigates the GuestView to the given URL. URL must be valid and either
   // https or about:blank.
