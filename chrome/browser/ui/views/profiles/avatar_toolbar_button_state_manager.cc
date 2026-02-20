@@ -915,34 +915,64 @@ class PromoStateProviderCoordinator
     }
   }
 
-  // IdentityManager::Observer:
+  // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& /*event*/) override {
-    if (signin_util::ShouldShowHistorySyncOptinScreen(profile_.get()) !=
-        signin_util::ShouldShowHistorySyncOptinResult::kShow) {
-      // Needed to prevent the promo from showing when it is already triggered
-      // and the user sign out or turns on sync without dismissing the promo.
+      const signin::PrimaryAccountChangeEvent& event_details) override {
+    for (signin::ConsentLevel consent_level :
+         {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+      switch (event_details.GetEventTypeFor(consent_level)) {
+        case signin::PrimaryAccountChangeEvent::Type::kSet:
+        case signin::PrimaryAccountChangeEvent::Type::kCleared:
+          // Setting or clearing any consent level should remove any promo that
+          // is showing.
+          Collapse();
+          break;
+        case signin::PrimaryAccountChangeEvent::Type::kNone:
+          break;
+      }
+    }
+  }
+
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override {
+    if (error.IsPersistentError() &&
+        identity_manager_->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin) == account_info) {
       Collapse();
     }
   }
 
-  void OnIdentityManagerShutdown(signin::IdentityManager*) override {
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override {
+    identity_manager_ = nullptr;
     identity_manager_observation_.Reset();
   }
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override {
-    if (sync_service->GetTransportState() ==
+    if (sync_service->GetTransportState() !=
         syncer::SyncService::TransportState::ACTIVE) {
-      sync_service_observation_.Reset();
+      return;
+    }
+
+    if (waiting_sync_service_active_on_trigger_) {
+      CHECK(!promo_type_.has_value());
       TriggerWithSyncServiceTransportStateActive();
+      return;
+    }
+
+    if (promo_type_.has_value()) {
+      // Trigger validity checks when the `SyncService` gets changes while a
+      // promo is showing.
+      ValidateCurrentPromoComputation();
     }
   }
 
   void OnSyncShutdown(syncer::SyncService* sync_service) override {
-    if (sync_service_observation_.IsObserving()) {
-      sync_service_observation_.Reset();
-    }
+    sync_service_observation_.Reset();
   }
 
  private:
@@ -951,10 +981,13 @@ class PromoStateProviderCoordinator
 
   explicit PromoStateProviderCoordinator(Profile& profile)
       : profile_(profile),
-        promo_manager_(IdentityManagerFactory::GetForProfile(&profile),
-                       profile.GetPrefs()) {
-    identity_manager_observation_.Observe(
-        IdentityManagerFactory::GetForProfile(&profile));
+        identity_manager_(IdentityManagerFactory::GetForProfile(&profile)),
+        promo_manager_(identity_manager_, profile.GetPrefs()) {
+    identity_manager_observation_.Observe(identity_manager_);
+    if (syncer::SyncService* sync_service =
+            SyncServiceFactory::GetForProfile(&profile)) {
+      sync_service_observation_.Observe(sync_service);
+    }
   }
 
   void Trigger() {
@@ -974,9 +1007,7 @@ class PromoStateProviderCoordinator
     // state is not active.
     if (sync_service->GetTransportState() !=
         syncer::SyncService::TransportState::ACTIVE) {
-      if (!sync_service_observation_.IsObserving()) {
-        sync_service_observation_.Observe(sync_service);
-      }
+      waiting_sync_service_active_on_trigger_ = true;
       return;
     }
 
@@ -987,6 +1018,8 @@ class PromoStateProviderCoordinator
     CHECK_EQ(
         SyncServiceFactory::GetForProfile(&profile_.get())->GetTransportState(),
         syncer::SyncService::TransportState::ACTIVE);
+
+    waiting_sync_service_active_on_trigger_ = false;
 
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
         profile_.get(),
@@ -1040,6 +1073,35 @@ class PromoStateProviderCoordinator
                        base::Unretained(this)));
   }
 
+  void ValidateCurrentPromoComputation() {
+    CHECK(promo_type_.has_value());
+
+    // A promo is showing; ensure that the promo should still be shown despite
+    // state changes that occurred. This would allow to have a better
+    // consistency between the promo showing and the subsequent ProfileMenu
+    // opening in case of state changes that lead to a different promo result.
+    signin::ComputeProfileMenuAvatarButtonPromoInfo(
+        profile_.get(),
+        base::BindOnce(
+            &PromoStateProviderCoordinator::MaybeCollapsePromoAfterValidation,
+            base::Unretained(this)));
+  }
+
+  // Callback to the validation promo calculation.
+  void MaybeCollapsePromoAfterValidation(
+      signin::ProfileMenuAvatarButtonPromoInfo computed_promo_info) {
+    // Current promo is not showing anymore.
+    if (!promo_type_.has_value()) {
+      return;
+    }
+
+    // If the new computed promo does not match with the currently showing
+    // promo, collapse.
+    if (promo_type_.value() != computed_promo_info.type) {
+      Collapse();
+    }
+  }
+
   // Type of the promo currently showing - std::nullopt if no promo.
   std::optional<signin::ProfileMenuAvatarButtonPromoInfo::Type> promo_type_;
   bool has_been_shown_since_startup_ = false;
@@ -1049,11 +1111,14 @@ class PromoStateProviderCoordinator
   std::optional<base::ElapsedTimer> before_promo_used_elapsed_timer_;
 
   const raw_ref<Profile> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   signin::AvatarButtonPromoManager promo_manager_;
 
   // Callbacks to be triggered when `promo_type_` changes.
   base::RepeatingCallbackList<void()> promo_type_changed_callbacks_;
+
+  bool waiting_sync_service_active_on_trigger_ = false;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

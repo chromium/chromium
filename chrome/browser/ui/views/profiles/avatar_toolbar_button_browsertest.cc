@@ -1923,14 +1923,6 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
                              MAYBE_AvatarToolbarButtonPromoBrowserTest,
                              CollapsesOnPromoNoLongerElligible) {
-  // TODO(crbug.com/465718425): Support the rest of the promos.
-  if (GetAvatarPromoType() !=
-          signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo &&
-      GetAvatarPromoType() !=
-          signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
-    GTEST_SKIP() << "Collapsing is not yet supported for the other promos";
-  }
-
   SetupRequirementsForPromoType(GetAvatarPromoType());
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
@@ -1943,15 +1935,16 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
 
   switch (GetAvatarPromoType()) {
     case signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-      // TODO(crbug.com/465718425): Change to enabling history sync instead of
-      // sync.
-      EnableSync(test_email(), test_given_name());
+      // Enabling history should suppress the promo.
+      SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
+      GetTestSyncService()->FireStateChanged();
       break;
     case signin::ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
     case signin::ProfileMenuAvatarButtonPromoInfo::Type::
         kBatchUploadBookmarksPromo:
     case signin::ProfileMenuAvatarButtonPromoInfo::Type::
         kBatchUploadWindows10DepreciationPromo:
+      // Removing the local data should suppress the promo.
       batch_upload_test_helper().ClearReturnDescriptions();
       GetTestSyncService()->FireStateChanged();
       break;
