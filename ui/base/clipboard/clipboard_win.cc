@@ -423,7 +423,7 @@ std::vector<std::u16string> ClipboardWin::GetStandardFormatsInternal(
 void ClipboardWin::ReadText(ClipboardBuffer buffer,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadTextCallback callback) const {
-  ReadAsync(base::BindOnce(&ClipboardWin::ReadTextInternal, buffer),
+  ReadAsync(base::BindOnce(&ClipboardWin::ReadTextInternal, buffer, data_dst),
             std::move(callback));
 }
 
@@ -433,8 +433,9 @@ void ClipboardWin::ReadAsciiText(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAsciiTextCallback callback) const {
-  ReadAsync(base::BindOnce(&ClipboardWin::ReadAsciiTextInternal, buffer),
-            std::move(callback));
+  ReadAsync(
+      base::BindOnce(&ClipboardWin::ReadAsciiTextInternal, buffer, data_dst),
+      std::move(callback));
 }
 
 void ClipboardWin::ReadAvailableTypes(
@@ -452,14 +453,17 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadHtmlCallback callback) const {
   ReadAsync(base::BindOnce(
-                [](ClipboardBuffer buffer, HWND owner_window) {
+                [](ClipboardBuffer buffer,
+                   const std::optional<DataTransferEndpoint>& data_dst,
+                   HWND owner_window) {
                   ReadHTMLResult result;
-                  ReadHTMLInternal(owner_window, buffer, &result.markup,
-                                   &result.src_url, &result.fragment_start,
+                  ReadHTMLInternal(owner_window, buffer, data_dst,
+                                   &result.markup, &result.src_url,
+                                   &result.fragment_start,
                                    &result.fragment_end);
                   return result;
                 },
-                buffer),
+                buffer, data_dst),
             base::BindOnce(
                 [](ReadHtmlCallback callback, ReadHTMLResult result) {
                   std::move(callback).Run(
@@ -475,8 +479,9 @@ void ClipboardWin::ReadFilenames(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadFilenamesCallback callback) const {
-  ReadAsync(base::BindOnce(ClipboardWin::ReadFilenamesInternal, buffer),
-            std::move(callback));
+  ReadAsync(
+      base::BindOnce(ClipboardWin::ReadFilenamesInternal, buffer, data_dst),
+      std::move(callback));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -529,14 +534,16 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::u16string* result) const {
   CHECK(result);
-
-  result->clear();
-  *result = ReadTextInternal(buffer, GetClipboardWindow());
+  *result = ReadTextInternal(buffer, base::OptionalFromPtr(data_dst),
+                             GetClipboardWindow());
 }
 
 // static
-std::u16string ClipboardWin::ReadTextInternal(ClipboardBuffer buffer,
-                                              HWND owner_window) {
+// |data_dst| is not used, but is kept as it may be used in the future.
+std::u16string ClipboardWin::ReadTextInternal(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
 
@@ -566,12 +573,16 @@ void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
                                  const DataTransferEndpoint* data_dst,
                                  std::string* result) const {
   CHECK(result);
-  *result = ReadAsciiTextInternal(buffer, GetClipboardWindow());
+  *result = ReadAsciiTextInternal(buffer, base::OptionalFromPtr(data_dst),
+                                  GetClipboardWindow());
 }
 
 // static
-std::string ClipboardWin::ReadAsciiTextInternal(ClipboardBuffer buffer,
-                                                HWND owner_window) {
+// |data_dst| is not used, but is kept as it may be used in the future.
+std::string ClipboardWin::ReadAsciiTextInternal(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
   std::string result;
@@ -601,17 +612,21 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             std::string* src_url,
                             uint32_t* fragment_start,
                             uint32_t* fragment_end) const {
-  ReadHTMLInternal(GetClipboardWindow(), buffer, markup, src_url,
+  ReadHTMLInternal(GetClipboardWindow(), buffer,
+                   base::OptionalFromPtr(data_dst), markup, src_url,
                    fragment_start, fragment_end);
 }
 
 // static
-void ClipboardWin::ReadHTMLInternal(HWND owner_window,
-                                    ClipboardBuffer buffer,
-                                    std::u16string* markup,
-                                    std::string* src_url,
-                                    uint32_t* fragment_start,
-                                    uint32_t* fragment_end) {
+// |data_dst| is not used, but is kept as it may be used in the future.
+void ClipboardWin::ReadHTMLInternal(
+    HWND owner_window,
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    std::u16string* markup,
+    std::string* src_url,
+    uint32_t* fragment_start,
+    uint32_t* fragment_end) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kHtml);
 
@@ -760,14 +775,15 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
                                  const DataTransferEndpoint* data_dst,
                                  std::vector<ui::FileInfo>* result) const {
   CHECK(result);
-
-  result->clear();
-  *result = ReadFilenamesInternal(buffer, GetClipboardWindow());
+  *result = ReadFilenamesInternal(buffer, base::OptionalFromPtr(data_dst),
+                                  GetClipboardWindow());
 }
 
 // static
+// |data_dst| is not used, but is kept as it may be used in the future.
 std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
     ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kFilenames);

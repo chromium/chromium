@@ -140,10 +140,14 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   template <typename Result>
   void ReadAsync(base::OnceCallback<Result(HWND)> read_func,
                  base::OnceCallback<void(Result)> reply_func) const;
-  static std::u16string ReadTextInternal(ClipboardBuffer buffer,
-                                         HWND owner_window);
-  static std::string ReadAsciiTextInternal(ClipboardBuffer buffer,
-                                           HWND owner_window);
+  static std::u16string ReadTextInternal(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      HWND owner_window);
+  static std::string ReadAsciiTextInternal(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      HWND owner_window);
   static std::vector<std::u16string> ReadAvailableTypesInternal(
       ClipboardBuffer buffer,
       const std::optional<DataTransferEndpoint>& data_dst,
@@ -163,14 +167,18 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   };
   // TODO(crbug.com/458194647): Return ReadHTMLResult instead of using
   // out-params.
-  static void ReadHTMLInternal(HWND owner_window,
-                               ClipboardBuffer buffer,
-                               std::u16string* markup,
-                               std::string* src_url,
-                               uint32_t* fragment_start,
-                               uint32_t* fragment_end);
-  static std::vector<ui::FileInfo> ReadFilenamesInternal(ClipboardBuffer buffer,
-                                                         HWND owner_window);
+  static void ReadHTMLInternal(
+      HWND owner_window,
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      std::u16string* markup,
+      std::string* src_url,
+      uint32_t* fragment_start,
+      uint32_t* fragment_end);
+  static std::vector<ui::FileInfo> ReadFilenamesInternal(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      HWND owner_window);
   std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
   SkBitmap ReadBitmapInternal(ClipboardBuffer buffer) const;
 
