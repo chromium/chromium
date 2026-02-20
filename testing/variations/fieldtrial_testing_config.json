@@ -17157,6 +17157,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true"
+                    },
                     "enable_features": [
                         "MobilePromoOnDesktopWithReminder"
                     ]
