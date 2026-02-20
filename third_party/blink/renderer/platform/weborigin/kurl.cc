@@ -782,10 +782,7 @@ String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
 String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
   std::string utf8 = Utf8Encoding().Encode(
       not_encoded_string, UnencodableHandling::kNoUnencodables);
-
-  url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(utf8, &buffer);
-  String escaped(base::span(buffer.view()));
+  String escaped(base::span(url::UriComponentEncoder(utf8).view()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");
   return escaped;

@@ -375,8 +375,7 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::OnURLLoadComplete(
 
   // A character may be encoded into a maximum of 4 characters.
   constexpr int kEncodedLength = kTruncatedLength * 4;
-  url::RawCanonOutputT<char, kEncodedLength> encoded_data;
-  url::EncodeURIComponent(data, &encoded_data);
+  url::UriComponentEncoder<kEncodedLength> encoded_data(data);
   results_[it->second] = std::string(encoded_data.view());
 
   // Clean up tracking of this fetcher.  The rest will be cleaned up after

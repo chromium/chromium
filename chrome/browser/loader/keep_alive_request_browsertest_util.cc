@@ -22,9 +22,7 @@
 
 std::string EncodeRelativeURL(std::string_view relative_url) {
   CHECK(relative_url.starts_with("/")) << relative_url;
-  url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(relative_url, &buffer);
-  return std::string(buffer.view());
+  return url::EncodeUriComponent(relative_url);
 }
 
 ChromeKeepAliveRequestBrowserTestBase::ChromeKeepAliveRequestBrowserTestBase()

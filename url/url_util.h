@@ -297,11 +297,44 @@ void DecodeURLEscapeSequences(std::string_view input,
 COMPONENT_EXPORT(URL)
 void EncodeURIComponent(std::string_view input, CanonOutput* output);
 
+// A helper class to perform URI component encoding, potentially without heap
+// allocation. This is an alternative to `url::EncodeUriComponent()` which
+// always allocates a `std::string`. This class uses a stack-allocated buffer
+// up to `fixed_capacity` and avoids heap allocation if the encoded result fits
+// in it.
+//
+// Examples:
+//
+//   url::UriComponentEncoder encoder(input);
+//   FunctionAcceptsStringView(encoder.view());
+//
+//   FunctionAcceptsStringView(url::UriComponentEncoder(input).view());
+//
+// The following code doesn't work because the view() result can't outlive the
+// UriComponentEncoder instance.
+//   std::string_view view = url::UriComponentEncoder(input).view();
+template <size_t fixed_capacity = 1024>
+class UriComponentEncoder {
+ public:
+  // Constructs an encoder and encodes the given `input` string.
+  explicit UriComponentEncoder(std::string_view input) {
+    EncodeURIComponent(input, &output_);
+  }
+
+  // Returns a view of the encoded string. The returned `std::string_view` is
+  // valid only for the lifetime of this `UriComponentEncoder` instance.
+  std::string_view view() const LIFETIME_BOUND { return output_.view(); }
+
+ private:
+  RawCanonOutputT<char, fixed_capacity> output_;
+};
+
 // Escapes the given string as defined by the JS method encodeURIComponent. See
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURIComponent
 //
-// This function is less efficient than EncodeURIComponent(input, output)
-// because this allocates a std::string instance and copies the content to it.
+// This function is less efficient than EncodeURIComponent(input, output) and
+// UriComponentEncoder because this allocates a std::string instance and
+// copies the content to it.
 COMPONENT_EXPORT(URL)
 std::string EncodeUriComponent(std::string_view input);
 

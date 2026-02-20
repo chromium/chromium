@@ -1307,17 +1307,16 @@ void NewTabPageUI::OnColorProviderChanged() {
 
 void NewTabPageUI::OnCustomBackgroundImageUpdated() {
   base::DictValue update;
-  url::RawCanonOutputT<char> encoded_url;
   auto custom_background_url =
       (ntp_custom_background_service_
            ? ntp_custom_background_service_->GetCustomBackground()
            : std::optional<CustomBackground>())
           .value_or(CustomBackground())
           .custom_background_url;
-  url::EncodeURIComponent(custom_background_url.spec(), &encoded_url);
+  url::UriComponentEncoder encoded_url(custom_background_url.spec());
   update.Set(
       "backgroundImageUrl",
-      encoded_url.length() > 0
+      encoded_url.view().length() > 0
           ? base::StrCat(
                 {"chrome-untrusted://new-tab-page/custom_background_image?url=",
                  encoded_url.view()})

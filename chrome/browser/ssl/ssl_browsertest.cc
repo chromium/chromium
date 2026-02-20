@@ -353,12 +353,6 @@ class ChromeContentBrowserClientForMixedContentTest
   bool strictly_block_blockable_mixed_content_ = false;
 };
 
-std::string EncodeQuery(const std::string& query) {
-  url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(query, &buffer);
-  return std::string(buffer.view());
-}
-
 // Returns the Sha256 hash of the SPKI of |cert|.
 std::array<uint8_t, crypto::hash::kSha256Size> GetSPKIHash(
     const CRYPTO_BUFFER* cert) {
@@ -2847,15 +2841,15 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWaitForDOMNotification,
   // Be sure to use a non-localhost name for the mixed content request,
   // since local hostnames are not considered mixed content.
   http_url_replacements.SetHostStr("example.test");
-  std::string http_url_query =
-      EncodeQuery(https_server_.GetURL("/ssl/google_files/logo.gif").spec());
-  http_url_replacements.SetQueryStr(http_url_query);
+  url::UriComponentEncoder http_url_query(
+      https_server_.GetURL("/ssl/google_files/logo.gif").spec());
+  http_url_replacements.SetQueryStr(http_url_query.view());
   http_url = http_url.ReplaceComponents(http_url_replacements);
 
   GURL https_url = https_server_.GetURL("/server-redirect?");
   GURL::Replacements https_url_replacements;
-  std::string https_url_query = EncodeQuery(http_url.spec());
-  https_url_replacements.SetQueryStr(https_url_query);
+  url::UriComponentEncoder https_url_query(http_url.spec());
+  https_url_replacements.SetQueryStr(https_url_query.view());
   https_url = https_url.ReplaceComponents(https_url_replacements);
 
   base::RunLoop run_loop;

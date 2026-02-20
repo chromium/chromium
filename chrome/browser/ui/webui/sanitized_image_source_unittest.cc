@@ -238,9 +238,8 @@ TEST_P(SanitizedImageSourceSigninPromoTest, GooglePhotosImage) {
           net::HttpRequestHeaders::kAuthorization));
 
   // Encode a URL so that it can be used as a param value.
-  url::RawCanonOutputT<char> encoded_url;
-  url::EncodeURIComponent(kImageUrl, &encoded_url);
-  EXPECT_GT(encoded_url.length(), 0u);
+  url::UriComponentEncoder encoded_url(kImageUrl);
+  EXPECT_GT(encoded_url.view().length(), 0u);
 
   // Verify that param-formatted requests can be sent with auth tokens.
   sanitized_image_source_->StartDataRequest(
@@ -293,9 +292,8 @@ TEST_P(SanitizedImageSourceSigninPromoTest, GooglePhotosImage) {
 
   // Verify that no auth token is sent for URLs not served by Google Photos.
   constexpr char kBadImageUrl[] = "https://foo.com/img.png";
-  url::RawCanonOutputT<char> encoded_bad_url;
-  url::EncodeURIComponent(kBadImageUrl, &encoded_bad_url);
-  EXPECT_GT(encoded_bad_url.length(), 0u);
+  url::UriComponentEncoder encoded_bad_url(kBadImageUrl);
+  EXPECT_GT(encoded_bad_url.view().length(), 0u);
 
   sanitized_image_source_->StartDataRequest(
       GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=",
