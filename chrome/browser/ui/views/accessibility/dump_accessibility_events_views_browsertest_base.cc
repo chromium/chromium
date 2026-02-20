@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -147,15 +146,6 @@ void DumpAccessibilityEventsViewsTestBase::SetUpOnMainThread() {
   SetUpTestWidget();
   SetUpTestViews();
 
-  // When ViewsAX is enabled, view additions and property changes during
-  // SetUpTestViews() are queued as async tasks via WidgetAXManager. Flush
-  // them now so BrowserAccessibilityManager has the complete initial tree
-  // before the test body runs. Without this, the first SendPendingUpdate()
-  // would batch initial node additions together with test-triggered changes,
-  // and AXEventGenerator wouldn't detect attribute changes on newly-added
-  // nodes (since there's no previous state to compare against).
-  base::RunLoop().RunUntilIdle();
-
 #if BUILDFLAG(IS_LINUX)
   // On Wayland, widget activation is asynchronous (compositor-controlled).
   // FocusManager::SetFocusedViewWithReason() defers focus changes when
@@ -289,11 +279,6 @@ void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
     CHECK(root_view);
     root_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kEndOfTest,
                                                   true);
-
-    // Flush any pending async WidgetAXManager updates so that
-    // BrowserAccessibilityManager fires the corresponding platform events
-    // before we stop listening.
-    base::RunLoop().RunUntilIdle();
 
     event_recorder_->StopListeningToEvents();
     event_recorder_->WaitForDoneRecording();
