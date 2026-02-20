@@ -156,6 +156,9 @@ namespace pdfViewerPrivate {
     static void setPdfPluginAttributes(
         PdfPluginAttributes attributes,
         optional VoidCallback callback);
+
+    // Notifies the browser to summarize the PDF via Glic.
+    static void glicSummarize();
   };
 
   interface Events {

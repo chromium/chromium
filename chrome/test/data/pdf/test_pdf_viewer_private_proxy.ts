@@ -26,6 +26,10 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     this.onSaveToDriveProgress = new FakeChromeEvent();
   }
 
+  glicSummarize(): void {
+    this.methodCalled('glicSummarize');
+  }
+
   sendSaveToDriveProgress(
       progress: chrome.pdfViewerPrivate.SaveToDriveProgress): void {
     this.onSaveToDriveProgress.callListeners(this.streamUrl_, progress);
