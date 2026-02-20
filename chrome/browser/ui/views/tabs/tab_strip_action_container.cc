@@ -83,7 +83,7 @@ constexpr int kLargeSpaceBetweenSeparatorRight = 8;
 constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
 #if !BUILDFLAG(IS_ANDROID)
-void PrewarmLegionSession(Profile* profile) {
+void EstablishLegionConnection(Profile* profile) {
   if (!profile) {
     return;
   }
@@ -95,14 +95,8 @@ void PrewarmLegionSession(Profile* profile) {
     if (private_ai_service) {
       private_ai::Client* client = private_ai_service->GetClient();
       if (client) {
-        // Prewarm the session.
-        client->EstablishSession(base::BindOnce(
-            [](base::expected<void, private_ai::ErrorCode> result) {
-              if (!result.has_value()) {
-                LOG(ERROR) << "Failed to prewarm Legion session: "
-                           << static_cast<int>(result.error());
-              }
-            }));
+        // Eagerly establish the connection.
+        client->EstablishConnection();
       }
     }
   }
@@ -475,7 +469,7 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 void TabStripActionContainer::OnGlicButtonHovered() {
   Profile* const profile = browser_window_interface_->GetProfile();
 #if !BUILDFLAG(IS_ANDROID)
-  PrewarmLegionSession(profile);
+  EstablishLegionConnection(profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);

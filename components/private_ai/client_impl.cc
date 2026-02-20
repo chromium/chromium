@@ -84,10 +84,8 @@ ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
 
 ClientImpl::~ClientImpl() = default;
 
-void ClientImpl::EstablishSession(
-    OnEstablishSessionCompletedCallback callback) {
+void ClientImpl::EstablishConnection() {
   GetOrCreateConnection();
-  std::move(callback).Run(base::ok());
 }
 
 Connection* ClientImpl::GetOrCreateConnection() {

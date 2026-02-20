@@ -40,10 +40,6 @@ class Client {
   using OnPaicMessageRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::PaicMessage, ErrorCode> result)>;
 
-  // Callback for when a `EstablishSession` operation completes.
-  using OnEstablishSessionCompletedCallback =
-      base::OnceCallback<void(base::expected<void, ErrorCode>)>;
-
   struct RequestOptions {
     base::TimeDelta timeout = kDefaultTimeout;
   };
@@ -77,11 +73,10 @@ class Client {
   // Takes a URL without scheme and an api_key and returns a URL.
   static GURL FormatUrl(const std::string& url, const std::string& api_key);
 
-  // Establishes a secure session without sending a request. The callback will
-  // be invoked upon completion. Calling this function is optional as a session
-  // will be established automatically when needed/first request is sent.
-  virtual void EstablishSession(
-      OnEstablishSessionCompletedCallback callback) = 0;
+  // Establishes a secure connection without sending a request. Calling this
+  // function is optional as a connection will be established automatically
+  // when needed/first request is sent.
+  virtual void EstablishConnection() = 0;
 
   // Sends a request with a single text content.
   virtual void SendTextRequest(proto::FeatureName feature_name,

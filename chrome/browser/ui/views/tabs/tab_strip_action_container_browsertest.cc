@@ -600,7 +600,7 @@ class TabStripActionContainerLegionBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
-                       PrewarmsLegionOnGlicButtonHover) {
+                       EstablishesLegionConnectionOnGlicButtonHover) {
   auto* legion_service = private_ai::PrivateAiServiceFactory::GetForProfile(
       browser()->GetProfile());
   ASSERT_TRUE(legion_service);
@@ -609,49 +609,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
   auto* mock_client_ptr = mock_client.get();
   legion_service->SetClientForTesting(std::move(mock_client));
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*mock_client_ptr, EstablishSession(::testing::_))
-      .WillOnce(
-          [&run_loop](private_ai::Client::OnEstablishSessionCompletedCallback
-                          callback) {
-            std::move(callback).Run(base::ok());
-            run_loop.Quit();
-          });
+  EXPECT_CALL(*mock_client_ptr, EstablishConnection());
 
   // Hover over the glic button.
   ui::MouseEvent mouse_enter(ui::EventType::kMouseEntered, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), 0, 0);
   GlicNudgeButton()->OnMouseEntered(mouse_enter);
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
-                       PrewarmsLegionOnGlicButtonHoverFails) {
-  auto* legion_service = private_ai::PrivateAiServiceFactory::GetForProfile(
-      browser()->GetProfile());
-  ASSERT_TRUE(legion_service);
-  auto mock_client =
-      std::make_unique<testing::StrictMock<private_ai::MockLegionClient>>();
-  auto* mock_client_ptr = mock_client.get();
-  legion_service->SetClientForTesting(std::move(mock_client));
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*mock_client_ptr, EstablishSession(::testing::_))
-      .WillOnce(
-          [&run_loop](private_ai::Client::OnEstablishSessionCompletedCallback
-                          callback) {
-            std::move(callback).Run(
-                base::unexpected(private_ai::ErrorCode::kError));
-            run_loop.Quit();
-          });
-
-  // Hover over the glic button.
-  ui::MouseEvent mouse_enter(ui::EventType::kMouseEntered, gfx::Point(),
-                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
-  GlicNudgeButton()->OnMouseEntered(mouse_enter);
-
-  run_loop.Run();
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

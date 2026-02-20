@@ -267,9 +267,9 @@ void SecureChannelImplTest::SetUpHandshake() {
       });
 }
 
-// Tests the successful establishment of a secure session and sending a single
-// request.
-TEST_F(SecureChannelImplTest, WriteAndEstablishSessionSucceeds) {
+// Tests the successful establishment of a secure connection and sending a
+// single request.
+TEST_F(SecureChannelImplTest, WriteAndEstablishConnectionSucceeds) {
   SetUpAttestation();
   SetUpHandshake();
 

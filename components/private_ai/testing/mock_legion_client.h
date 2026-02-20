@@ -12,10 +12,7 @@ namespace private_ai {
 
 class MockLegionClient : public Client {
  public:
-  MOCK_METHOD(void,
-              EstablishSession,
-              (OnEstablishSessionCompletedCallback callback),
-              (override));
+  MOCK_METHOD(void, EstablishConnection, (), (override));
   MOCK_METHOD(void,
               SendTextRequest,
               (proto::FeatureName feature_name,

@@ -55,7 +55,7 @@ void LegionInternalsPageHandler::Connect(const std::string& url,
       token_manager_, content::GetNetworkService(),
       std::make_unique<private_ai::LegionLogger>());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
-  webui_client_->EstablishSession(base::DoNothing());
+  webui_client_->EstablishConnection();
   std::move(callback).Run();
 }
 
