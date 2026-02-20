@@ -18,6 +18,7 @@ source_set("pdf_viewer_private") {
 
   deps = [
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
@@ -25,6 +26,7 @@ source_set("pdf_viewer_private") {
     "//chrome/common/extensions/api",
     "//components/pdf/common:constants",
     "//components/prefs",
+    "//components/tabs:public",
     "//extensions/browser",
     "//url",
   ]
@@ -35,4 +37,20 @@ source_set("pdf_viewer_private") {
       "//chrome/browser/ui/save_to_drive",
     ]
   }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+
+  # intentionally commented out as base class does not exist.
+  # sources = [ "pdf_viewer_private_browsertest.cc" ]
+  deps = [
+    ":pdf_viewer_private",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
 }

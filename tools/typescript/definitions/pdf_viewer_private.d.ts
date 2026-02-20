@@ -96,6 +96,7 @@ declare global {
       export function setPdfDocumentTitle(title: string): void;
       export function setPdfPluginAttributes(attributes: PdfPluginAttributes):
           void;
+      export function glicSummarize(): void;
       export const onSave: ChromeEvent<(url: string) => void>;
       // <if expr="enable_pdf_save_to_drive">
       export const onSaveToDriveProgress:
