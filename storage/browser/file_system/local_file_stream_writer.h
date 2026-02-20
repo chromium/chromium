@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
   // Opens |file_path_| and if it succeeds, proceeds to InitiateSeek().
   // If failed, the error code is returned by calling |error_callback|.
   int InitiateOpen(base::OnceClosure main_operation);
-  void DidOpen(base::OnceClosure main_operation, int result);
+  void DidOpen(base::OnceClosure main_operation, net::Error result);
 
   // Seeks to |initial_offset_| and proceeds to |main_operation| if it succeeds.
   // If failed, the error code is returned by calling |error_callback|.
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
 
   // Flushes asynchronously to the file.
   int InitiateFlush(net::CompletionOnceCallback callback);
-  void DidFlush(net::CompletionOnceCallback callback, int result);
+  void DidFlush(net::CompletionOnceCallback callback, net::Error result);
 
   // Stops the in-flight operation and calls |cancel_callback_| if it has been
   // set by Cancel() for the current operation.

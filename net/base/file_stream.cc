@@ -32,6 +32,12 @@ void RunReadWriteCallback(FileStream::ReadWriteCallback callback, int result) {
   std::move(callback).Run(IntToReadWriteResult(result));
 }
 
+// Adapts an ErrorCallback to a CompletionOnceCallback for internal use.
+// Casts the int result to net::Error.
+void RunErrorCallback(FileStream::ErrorCallback callback, int result) {
+  std::move(callback).Run(static_cast<net::Error>(result));
+}
+
 }  // namespace
 
 FileStream::FileStream(const scoped_refptr<base::TaskRunner>& task_runner)
@@ -47,19 +53,20 @@ FileStream::~FileStream() {
 
 int FileStream::Open(const base::FilePath& path,
                      int open_flags,
-                     CompletionOnceCallback callback) {
+                     ErrorCallback callback) {
   if (IsOpen()) {
     DLOG(FATAL) << "File is already open!";
     return ERR_UNEXPECTED;
   }
 
   DCHECK(open_flags & base::File::FLAG_ASYNC);
-  context_->Open(path, open_flags, std::move(callback));
+  context_->Open(path, open_flags,
+                 base::BindOnce(&RunErrorCallback, std::move(callback)));
   return ERR_IO_PENDING;
 }
 
-int FileStream::Close(CompletionOnceCallback callback) {
-  context_->Close(std::move(callback));
+int FileStream::Close(ErrorCallback callback) {
+  context_->Close(base::BindOnce(&RunErrorCallback, std::move(callback)));
   return ERR_IO_PENDING;
 }
 
@@ -105,25 +112,27 @@ FileStream::Write(IOBuffer* buf, int buf_len, ReadWriteCallback callback) {
 }
 
 int FileStream::GetFileInfo(base::File::Info* file_info,
-                            CompletionOnceCallback callback) {
+                            ErrorCallback callback) {
   if (!IsOpen())
     return ERR_UNEXPECTED;
 
-  context_->GetFileInfo(file_info, std::move(callback));
+  context_->GetFileInfo(file_info,
+                        base::BindOnce(&RunErrorCallback, std::move(callback)));
   return ERR_IO_PENDING;
 }
 
-int FileStream::Flush(CompletionOnceCallback callback) {
+int FileStream::Flush(ErrorCallback callback) {
   if (!IsOpen())
     return ERR_UNEXPECTED;
 
-  context_->Flush(std::move(callback));
+  context_->Flush(base::BindOnce(&RunErrorCallback, std::move(callback)));
   return ERR_IO_PENDING;
 }
 
 #if BUILDFLAG(IS_WIN)
-int FileStream::ConnectNamedPipe(CompletionOnceCallback callback) {
-  return IsOpen() ? context_->ConnectNamedPipe(std::move(callback))
+int FileStream::ConnectNamedPipe(ErrorCallback callback) {
+  return IsOpen() ? context_->ConnectNamedPipe(
+                        base::BindOnce(&RunErrorCallback, std::move(callback)))
                   : ERR_UNEXPECTED;
 }
 #endif  // BUILDFLAG(IS_WIN)

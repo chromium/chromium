@@ -40,6 +40,10 @@ class NET_EXPORT FileStream {
   using ReadWriteCallback =
       base::OnceCallback<void(base::expected<base::ByteSize, net::Error>)>;
 
+  // Callback type for operations that only report success (net::OK) or an
+  // error code: Open(), Close(), Flush(), GetFileInfo(), ConnectNamedPipe().
+  using ErrorCallback = base::OnceCallback<void(net::Error)>;
+
   // Uses |task_runner| for asynchronous operations.
   explicit FileStream(const scoped_refptr<base::TaskRunner>& task_runner);
 
@@ -72,13 +76,13 @@ class NET_EXPORT FileStream {
   // know when).
   virtual int Open(const base::FilePath& path,
                    int open_flags,
-                   CompletionOnceCallback callback);
+                   ErrorCallback callback);
 
   // Returns ERR_IO_PENDING and closes the file asynchronously, calling
   // |callback| when done.
   // It is invalid to request any asynchronous operations while there is an
   // in-flight asynchronous operation.
-  virtual int Close(CompletionOnceCallback callback);
+  virtual int Close(ErrorCallback callback);
 
   // Returns true if Open succeeded and Close has not been called.
   virtual bool IsOpen() const;
@@ -142,8 +146,7 @@ class NET_EXPORT FileStream {
   // in-flight asynchronous operation.
   //
   // |file_info| must remain valid until |callback| is invoked.
-  virtual int GetFileInfo(base::File::Info* file_info,
-                          CompletionOnceCallback callback);
+  virtual int GetFileInfo(base::File::Info* file_info, ErrorCallback callback);
 
   // Forces out a filesystem sync on this file to make sure that the file was
   // written out to disk and is not currently sitting in the buffer. This does
@@ -164,7 +167,7 @@ class NET_EXPORT FileStream {
   // in-flight asynchronous operation.
   //
   // This method should not be called if the stream was opened READ_ONLY.
-  virtual int Flush(CompletionOnceCallback callback);
+  virtual int Flush(ErrorCallback callback);
 
 #if BUILDFLAG(IS_WIN)
   // Waits for a client to connect to the named pipe provided to the two-arg
@@ -172,7 +175,7 @@ class NET_EXPORT FileStream {
   // `ERR_IO_PENDING` if `callback` will be run later with the result of the
   // operation once the client connects, or another `Error` value in case of
   // failure.
-  int ConnectNamedPipe(CompletionOnceCallback callback);
+  int ConnectNamedPipe(ErrorCallback callback);
 #endif  // BUILDFLAG(IS_WIN)
 
  private:

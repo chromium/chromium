@@ -168,7 +168,7 @@ void LocalFileStreamReader::DidVerifyForOpen(
 
 void LocalFileStreamReader::DidOpenFileStream(
     file_access::ScopedFileAccess /*scoped_file_access*/,
-    int result) {
+    net::Error result) {
   if (result != net::OK) {
     std::move(callback_).Run(result);
     return;
@@ -178,11 +178,11 @@ void LocalFileStreamReader::DidOpenFileStream(
     std::move(callback_).Run(net::OK);
     return;
   }
-  result = stream_impl_->Seek(
+  const int seek_rv = stream_impl_->Seek(
       initial_offset_, base::BindOnce(&LocalFileStreamReader::DidSeekFileStream,
                                       weak_factory_.GetWeakPtr()));
-  if (result != net::ERR_IO_PENDING) {
-    std::move(callback_).Run(result);
+  if (seek_rv != net::ERR_IO_PENDING) {
+    std::move(callback_).Run(seek_rv);
   }
 }
 

@@ -316,7 +316,7 @@ void LaunchContext::ConnectPipes(base::ScopedPlatformFile read_file,
   process_watcher_.StartWatchingOnce(native_process_.Handle(), this);
 }
 
-void LaunchContext::OnReadStreamConnectResult(int net_error) {
+void LaunchContext::OnReadStreamConnectResult(net::Error net_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (net_error != net::OK) {
     // Failed to connect.
@@ -328,7 +328,7 @@ void LaunchContext::OnReadStreamConnectResult(int net_error) {
   OnPipeConnected();
 }
 
-void LaunchContext::OnWriteStreamConnectResult(int net_error) {
+void LaunchContext::OnWriteStreamConnectResult(net::Error net_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (net_error != net::OK) {
     // Failed to connect.

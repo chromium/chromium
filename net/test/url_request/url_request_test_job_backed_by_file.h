@@ -113,7 +113,7 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
   void DidFetchMetaInfo(std::unique_ptr<FileMetaInfo> meta_info);
 
   // Callback after opening file on a background thread.
-  void DidOpen(int result);
+  void DidOpen(net::Error result);
 
   // Callback after seeking to the beginning of |byte_range_| in the file
   // on a background thread.

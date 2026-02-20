@@ -200,10 +200,10 @@ void URLRequestTestJobBackedByFile::DidFetchMetaInfo(
                          base::BindOnce(&URLRequestTestJobBackedByFile::DidOpen,
                                         weak_ptr_factory_.GetWeakPtr()));
   if (rv != ERR_IO_PENDING)
-    DidOpen(rv);
+    DidOpen(static_cast<net::Error>(rv));
 }
 
-void URLRequestTestJobBackedByFile::DidOpen(int result) {
+void URLRequestTestJobBackedByFile::DidOpen(net::Error result) {
   OnOpenComplete(result);
   if (result != OK) {
     NotifyStartError(result);

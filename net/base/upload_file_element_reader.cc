@@ -202,8 +202,14 @@ int UploadFileElementReader::DoOpen() {
   int result = file_stream_->Open(
       path_,
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC,
-      base::BindOnce(&UploadFileElementReader::OnIOComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          [](base::WeakPtr<UploadFileElementReader> weak_this,
+             net::Error error) {
+            if (weak_this) {
+              weak_this->OnIOComplete(error);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
   DCHECK_GT(0, result);
   return result;
 }
@@ -253,11 +259,11 @@ int UploadFileElementReader::DoGetFileInfo(int result) {
       file_info_ptr,
       base::BindOnce(
           [](base::WeakPtr<UploadFileElementReader> weak_this,
-             std::unique_ptr<base::File::Info> file_info, int result) {
+             std::unique_ptr<base::File::Info> file_info, net::Error error) {
             if (!weak_this)
               return;
             weak_this->file_info_ = *file_info;
-            weak_this->OnIOComplete(result);
+            weak_this->OnIOComplete(error);
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(file_info)));
   // GetFileInfo() can't succeed synchronously.

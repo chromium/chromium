@@ -509,7 +509,11 @@ void OfflinePageRequestHandler::OpenFile(
 #if BUILDFLAG(IS_WIN)
   flags |= base::File::FLAG_WIN_EXCLUSIVE_READ;
 #endif  // BUILDFLAG(IS_WIN)
-  int result = stream_->Open(file_path, flags, callback);
+  int result =
+      stream_->Open(file_path, flags,
+                    base::BindOnce([](base::RepeatingCallback<void(int)> cb,
+                                      net::Error error) { cb.Run(error); },
+                                   callback));
   if (result != net::ERR_IO_PENDING)
     callback.Run(result);
 }

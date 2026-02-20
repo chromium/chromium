@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
+#include "net/base/net_errors.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -158,10 +159,10 @@ class LaunchContext
   // completion port monitored by the IO thread.
 
   // Handles the result of connecting to the host's stdout pipe.
-  void OnReadStreamConnectResult(int net_error);
+  void OnReadStreamConnectResult(net::Error net_error);
 
   // Handles the result of connecting to the host's stdin pipe.
-  void OnWriteStreamConnectResult(int net_error);
+  void OnWriteStreamConnectResult(net::Error net_error);
 
   // Continues processing once a pipe has connected.
   void OnPipeConnected();

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -83,6 +84,17 @@ class TestReadWriteCallback : public internal::TestCompletionCallbackTemplate<
   }
 };
 
+// Adapts a CompletionOnceCallback for use as a FileStream::ErrorCallback
+// by casting the net::Error result to int. This is a migration aid for tests
+// that still use TestCompletionCallback.
+FileStream::ErrorCallback AsErrorCallback(CompletionOnceCallback callback) {
+  return base::BindOnce(
+      [](CompletionOnceCallback cb, net::Error result) {
+        std::move(cb).Run(static_cast<int>(result));
+      },
+      std::move(callback));
+}
+
 // Creates an IOBuffer that contains kTestData.
 scoped_refptr<IOBuffer> CreateTestDataBuffer() {
   return base::MakeRefCounted<VectorIOBuffer>(base::as_byte_span(kTestData));
@@ -121,11 +133,13 @@ TEST_F(FileStreamTest, OpenExplicitClose) {
   int flags = base::File::FLAG_OPEN |
               base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
-  int rv = stream.Open(temp_file_path(), flags, callback.callback());
+  int rv = stream.Open(temp_file_path(), flags,
+                       AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_TRUE(stream.IsOpen());
-  EXPECT_THAT(stream.Close(callback.callback()), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(stream.Close(AsErrorCallback(callback.callback())),
+              IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_FALSE(stream.IsOpen());
 }
@@ -136,11 +150,13 @@ TEST_F(FileStreamTest, OpenExplicitCloseOrphaned) {
       base::SingleThreadTaskRunner::GetCurrentDefault());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
-  int rv = stream->Open(temp_file_path(), flags, callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_TRUE(stream->IsOpen());
-  EXPECT_THAT(stream->Close(callback.callback()), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(stream->Close(AsErrorCallback(callback.callback())),
+              IsError(ERR_IO_PENDING));
   stream.reset();
   // File isn't actually closed yet.
   base::RunLoop runloop;
@@ -229,7 +245,8 @@ TEST_F(FileStreamTest, Read) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream.Open(temp_file_path(), flags, callback.callback());
+  int rv = stream.Open(temp_file_path(), flags,
+                       AsErrorCallback(callback.callback()));
   EXPECT_THAT(callback.GetResult(rv), IsOk());
 
   uint64_t total_bytes_read = 0;
@@ -261,7 +278,8 @@ TEST_F(FileStreamTest, Read_EarlyDelete) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream->Open(temp_file_path(), flags, callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -290,7 +308,8 @@ TEST_F(FileStreamTest, Read_FromOffset) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream.Open(temp_file_path(), flags, callback.callback());
+  int rv = stream.Open(temp_file_path(), flags,
+                       AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -327,7 +346,8 @@ TEST_F(FileStreamTest, Write) {
   int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream.Open(temp_file_path(), flags, callback.callback());
+  int rv = stream.Open(temp_file_path(), flags,
+                       AsErrorCallback(callback.callback()));
   EXPECT_THAT(callback.GetResult(rv), IsOk());
 
   std::optional<int64_t> file_size = base::GetFileSize(temp_file_path());
@@ -355,7 +375,8 @@ TEST_F(FileStreamTest, Write_EarlyDelete) {
   int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream->Open(temp_file_path(), flags, callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -388,7 +409,8 @@ TEST_F(FileStreamTest, Write_FromOffset) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_WRITE |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream.Open(temp_file_path(), flags, callback.callback());
+  int rv = stream.Open(temp_file_path(), flags,
+                       AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -431,7 +453,8 @@ TEST_F(FileStreamTest, BasicReadWrite) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream->Open(temp_file_path(), flags, callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -489,7 +512,8 @@ TEST_F(FileStreamTest, BasicWriteRead) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream->Open(temp_file_path(), flags, callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -660,7 +684,8 @@ TEST_F(FileStreamTest, WriteRead) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback open_callback;
-  int rv = stream->Open(temp_file_path(), flags, open_callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(open_callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(open_callback.WaitForResult(), IsOk());
 
@@ -775,7 +800,8 @@ TEST_F(FileStreamTest, WriteClose) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback open_callback;
-  int rv = stream->Open(temp_file_path(), flags, open_callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(open_callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(open_callback.WaitForResult(), IsOk());
 
@@ -817,7 +843,8 @@ TEST_F(FileStreamTest, OpenAndDelete) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_WRITE |
               base::File::FLAG_ASYNC;
   TestCompletionCallback open_callback;
-  int rv = stream->Open(temp_file_path(), flags, open_callback.callback());
+  int rv = stream->Open(temp_file_path(), flags,
+                        AsErrorCallback(open_callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Delete the stream without waiting for the open operation to be
@@ -827,7 +854,8 @@ TEST_F(FileStreamTest, OpenAndDelete) {
   // Force an operation through the worker.
   auto stream2 = std::make_unique<FileStream>(worker_thread.task_runner());
   TestCompletionCallback open_callback2;
-  rv = stream2->Open(temp_file_path(), flags, open_callback2.callback());
+  rv = stream2->Open(temp_file_path(), flags,
+                     AsErrorCallback(open_callback2.callback()));
   EXPECT_THAT(open_callback2.GetResult(rv), IsOk());
   stream2.reset();
 
@@ -931,7 +959,7 @@ TEST_F(FileStreamTest, DISABLED_ContentUriRead) {
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
-  int rv = stream.Open(path, flags, callback.callback());
+  int rv = stream.Open(path, flags, AsErrorCallback(callback.callback()));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -1018,9 +1046,9 @@ TEST_F(FileStreamPipeTest, ConnectNamedPipeAfterClient) {
   // Connecting should be synchronous and should not run the callback, but
   // handle both cases anyway for the sake of robustness against the unexpected.
   TestCompletionCallback callback;
-  ASSERT_THAT(
-      callback.GetResult(pipe_stream.ConnectNamedPipe(callback.callback())),
-      IsOk());
+  ASSERT_THAT(callback.GetResult(pipe_stream.ConnectNamedPipe(
+                  AsErrorCallback(callback.callback()))),
+              IsOk());
 
   // Send some data over the pipe to be sure it works.
   TestReadWriteCallback rw_callback;
@@ -1054,8 +1082,9 @@ TEST_F(FileStreamPipeTest, ConnectNamedPipeBeforeClient) {
   // The client hasn't opened yet, so the connect request should wait for an
   // IO completion packet.
   TestCompletionCallback callback;
-  ASSERT_THAT(pipe_stream.ConnectNamedPipe(callback.callback()),
-              IsError(ERR_IO_PENDING));
+  ASSERT_THAT(
+      pipe_stream.ConnectNamedPipe(AsErrorCallback(callback.callback())),
+      IsError(ERR_IO_PENDING));
 
   // Open the client end of the pipe.
   base::File client(OpenPipe());
@@ -1085,7 +1114,7 @@ TEST_F(FileStreamPipeTest, CloseBeforeConnect) {
     // destroyed.
     ASSERT_THAT(pipe_stream.ConnectNamedPipe(base::BindLambdaForTesting(
                     [loop_quitter = base::ScopedClosureRunner(QuitClosure())](
-                        int error) { FAIL(); })),
+                        net::Error error) { FAIL(); })),
                 IsError(ERR_IO_PENDING));
 
     // Delete the FileStream; thereby cancelling the pending IO operation.
@@ -1119,7 +1148,7 @@ TEST_F(FileStreamPipeDeathTest, CannotConnectFile) {
   ASSERT_TRUE(file_stream.IsOpen());
 
   ASSERT_CHECK_DEATH(
-      { file_stream.ConnectNamedPipe(CompletionOnceCallback()); });
+      { file_stream.ConnectNamedPipe(FileStream::ErrorCallback()); });
 }
 #endif  // BUILDFLAG(IS_WIN)
 

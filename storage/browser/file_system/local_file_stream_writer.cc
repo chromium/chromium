@@ -145,7 +145,7 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
 }
 
 void LocalFileStreamWriter::DidOpen(base::OnceClosure main_operation,
-                                    int result) {
+                                    net::Error result) {
   DCHECK(has_pending_operation_);
   DCHECK(stream_impl_.get());
 
@@ -247,7 +247,7 @@ int LocalFileStreamWriter::InitiateFlush(net::CompletionOnceCallback callback) {
 }
 
 void LocalFileStreamWriter::DidFlush(net::CompletionOnceCallback callback,
-                                     int result) {
+                                     net::Error result) {
   DCHECK(has_pending_operation_);
 
   if (CancelIfRequested())
