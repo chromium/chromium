@@ -56,9 +56,10 @@ void HTMLInstallElement::UpdateAppearance() {
 
   // If no attributes provided, check if current document is already installed.
   if (InstallUrl().empty() && ManifestId().empty()) {
-    WebInstallService()->IsInstalled(
-        /*options=*/nullptr, BindOnce(&HTMLInstallElement::OnIsInstalledResult,
-                                      WrapWeakPersistent(this)));
+    // TODO(crbug.com/485281836): For now, always return false while we discuss
+    // the appropriate long-term mitigation for width-based side channel
+    // attacks. ("Launch" is slightly wider than "Install").
+    OnIsInstalledResult(false);
     return;
   }
 
@@ -74,9 +75,10 @@ void HTMLInstallElement::UpdateAppearance() {
   }
 
   // Query installation status to update button text ("Install" vs "Launch").
-  WebInstallService()->IsInstalled(
-      std::move(options), BindOnce(&HTMLInstallElement::OnIsInstalledResult,
-                                   WrapWeakPersistent(this)));
+  // TODO(crbug.com/485281836): For now, always return false while we discuss
+  // the appropriate long-term mitigation for width-based side channel attacks.
+  // ("Launch" is slightly wider than "Install").
+  OnIsInstalledResult(false);
 }
 
 mojom::blink::EmbeddedPermissionRequestDescriptorPtr

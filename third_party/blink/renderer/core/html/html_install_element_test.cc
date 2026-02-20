@@ -238,7 +238,7 @@ TEST_F(HTMLInstallElementTestBase, RenderedText) {
 
     WaitForElementRegistration(element);
 
-    CheckInnerText(element, "Install");
+    CheckInnerText(element, kInstallString);
   }
 
   {
@@ -265,8 +265,10 @@ TEST_F(HTMLInstallElementTestBase, RenderedTextWhenInstalled) {
 
     WaitForElementRegistration(element);
 
-    CheckInnerText(element, kLaunchString);
-    EXPECT_TRUE(element->show_as_launch());
+    // TODO(crbug.com/485281836): Update expectations once a mitigation is in
+    // place for width-based side channel attacks.
+    CheckInnerText(element, kInstallString);
+    EXPECT_FALSE(element->show_as_launch());
   }
 
   {
@@ -280,8 +282,10 @@ TEST_F(HTMLInstallElementTestBase, RenderedTextWhenInstalled) {
 
     // TODO(crbug.com/467103133): Update when site-specific information is
     // rendered.
-    CheckInnerText(element, kLaunchString);
-    EXPECT_TRUE(element->show_as_launch());
+    // TODO(crbug.com/485281836): Update expectations once a mitigation is in
+    // place for width-based side channel attacks.
+    CheckInnerText(element, kInstallString);
+    EXPECT_FALSE(element->show_as_launch());
   }
 }
 
