@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 

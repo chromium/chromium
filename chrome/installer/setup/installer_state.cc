@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
-#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/google_update_settings.h"

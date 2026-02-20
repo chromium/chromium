@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FLAG_DESCRIPTIONS_H_
 
 #include "base/debug/debugging_buildflags.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/common/buildflags.h"

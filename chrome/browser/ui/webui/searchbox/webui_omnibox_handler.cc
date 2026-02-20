@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

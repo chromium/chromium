@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "build/branding_buildflags.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"

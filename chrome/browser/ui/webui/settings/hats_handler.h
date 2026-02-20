@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_HATS_HANDLER_H_
 
 #include "base/gtest_prod_util.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 

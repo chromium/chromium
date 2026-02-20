@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"

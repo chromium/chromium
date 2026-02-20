@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"

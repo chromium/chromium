@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/passwords/manage_passwords_list_view.h"
 
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/layout_constants.h"

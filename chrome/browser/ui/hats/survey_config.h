@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
 #include "components/compose/buildflags.h"
 #include "pdf/buildflags.h"
 

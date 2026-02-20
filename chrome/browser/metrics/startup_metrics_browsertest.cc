@@ -9,7 +9,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"

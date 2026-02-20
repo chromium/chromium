@@ -8,7 +8,6 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"

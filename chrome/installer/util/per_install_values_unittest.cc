@@ -9,7 +9,6 @@
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
-#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

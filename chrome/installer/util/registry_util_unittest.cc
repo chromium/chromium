@@ -19,7 +19,6 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/install_util.h"

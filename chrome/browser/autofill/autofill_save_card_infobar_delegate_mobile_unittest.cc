@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

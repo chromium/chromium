@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
-#include "build/branding_buildflags.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting_utils.h"
 
 namespace credential_provider {

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"

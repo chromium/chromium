@@ -8,7 +8,6 @@
 #include "base/debug/leak_annotations.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
-#include "build/branding_buildflags.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporter_client.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting_utils.h"

@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
 #include "components/policy/core/common/schema_registry.h"

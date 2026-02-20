@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"

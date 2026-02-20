@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 
 #include "ash/constants/ash_features.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/about/about_section.h"

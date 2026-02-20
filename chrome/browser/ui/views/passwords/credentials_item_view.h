@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
