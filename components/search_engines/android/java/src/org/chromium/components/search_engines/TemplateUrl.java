@@ -48,12 +48,25 @@ public class TemplateUrl {
         return TemplateUrlJni.get().getPrepopulatedId(mTemplateUrlPtr);
     }
 
-    /** @return Whether a search engine is prepopulated or created by policy. */
+    /**
+     * @return Whether a search engine is prepopulated or created by policy. See {@link
+     *     #getIsPrepopulatedOrProgramProvided} for a variant that does not include policies.
+     */
     public boolean getIsPrepopulated() {
         return TemplateUrlJni.get().isPrepopulatedOrDefaultProviderByPolicy(mTemplateUrlPtr);
     }
 
-    /** @return The keyword of the search engine. */
+    /**
+     * @return Whether a search engine is prepopulated but not created by policies. See {@link
+     *     #getIsPrepopulated} for a variant that includes policies.
+     */
+    public boolean getIsPrepopulatedOrProgramProvided() {
+        return TemplateUrlJni.get().isPrepopulatedOrProgramProvided(mTemplateUrlPtr);
+    }
+
+    /**
+     * @return The keyword of the search engine.
+     */
     public String getKeyword() {
         return TemplateUrlJni.get().getKeyword(mTemplateUrlPtr);
     }
@@ -134,6 +147,8 @@ public class TemplateUrl {
         String getShortName(long templateUrlPtr);
 
         String getKeyword(long templateUrlPtr);
+
+        boolean isPrepopulatedOrProgramProvided(long templateUrlPtr);
 
         boolean isPrepopulatedOrDefaultProviderByPolicy(long templateUrlPtr);
 
