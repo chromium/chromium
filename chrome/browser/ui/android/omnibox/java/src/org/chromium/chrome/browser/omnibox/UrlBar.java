@@ -1187,21 +1187,6 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     @Override
-    public void setTranslationY(float translationY) {
-        // Certain locale (e.g. Burmese) use particularly tall glyphs, which, combined with
-        // font_scale set to 2.0, render outside the Omnibox. We scale these fonts down (see
-        // enforceMaxTextHeight() call below). Despite the computation, Android's ElegantTextHeight
-        // feature imposes an extra margins around the text, forcing the already tall text to
-        // receive additional wide space on top and bottom, shifting the content upwards.
-        // We suppress Y translation here, as the Omnibox is not a vertically scrollable view, and
-        // our font height computation logic appears to produce correct glyph sizes.
-        //
-        // Allows translation in CCT that has to animate URL bar text for branding.
-        // TODO(crbug.com/357399658): Consider a new approach to remove this exception for CCT.
-        if (mIsInCct) super.setTranslationY(translationY);
-    }
-
-    @Override
     public Editable getText() {
         if (mRequestingAutofillStructure) {
             // crbug.com/1109186: mTextForAutofillServices must not be null here, but Autofill
