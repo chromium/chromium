@@ -11,6 +11,7 @@
 
 #include "base/sequence_checker.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,14 +21,16 @@ namespace content {
 
 // Implementation of MemoryCoordinatorPolicy that bridges memory coordinator
 // signals between the browser process and the child process.
-class BrowserMemoryCoordinatorBridge : public MemoryCoordinatorPolicy,
-                                       public mojom::ChildMemoryCoordinator {
+class BrowserMemoryCoordinatorBridge
+    : public MemoryCoordinatorPolicy,
+      public MemoryCoordinatorPolicyManager::Observer,
+      public mojom::ChildMemoryCoordinator {
  public:
   explicit BrowserMemoryCoordinatorBridge(
       MemoryCoordinatorPolicyManager& manager);
   ~BrowserMemoryCoordinatorBridge() override;
 
-  // MemoryCoordinatorPolicy:
+  // MemoryCoordinatorPolicyManager::Observer:
   void OnConsumerGroupAdded(std::string_view consumer_id,
                             base::MemoryConsumerTraits traits,
                             ProcessType process_type,

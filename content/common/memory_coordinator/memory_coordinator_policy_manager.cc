@@ -75,17 +75,25 @@ MemoryCoordinatorPolicyManager::MemoryCoordinatorPolicyManager() = default;
 
 MemoryCoordinatorPolicyManager::~MemoryCoordinatorPolicyManager() = default;
 
+void MemoryCoordinatorPolicyManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+
+  for (auto const& [child_id, host_state] : hosts_) {
+    for (auto const& [consumer_id, group_state] : host_state->groups) {
+      observer->OnConsumerGroupAdded(consumer_id, group_state->traits(),
+                                     group_state->process_type(), child_id);
+    }
+  }
+}
+
+void MemoryCoordinatorPolicyManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void MemoryCoordinatorPolicyManager::AddPolicy(
     MemoryCoordinatorPolicy* policy) {
   auto [_, inserted] = policies_.insert(policy);
   CHECK(inserted);
-
-  for (auto const& [child_id, host_state] : hosts_) {
-    for (auto const& [consumer_id, group_state] : host_state->groups) {
-      policy->OnConsumerGroupAdded(consumer_id, group_state->traits(),
-                                   group_state->process_type(), child_id);
-    }
-  }
 }
 
 void MemoryCoordinatorPolicyManager::RemovePolicy(
@@ -151,17 +159,17 @@ void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
       consumer_id, std::make_unique<GroupState>(traits, process_type));
   CHECK(inserted);
 
-  for (auto& policy : policies_) {
-    policy->OnConsumerGroupAdded(consumer_id, traits, process_type,
-                                 child_process_id);
+  for (auto& observer : observers_) {
+    observer.OnConsumerGroupAdded(consumer_id, traits, process_type,
+                                  child_process_id);
   }
 }
 
 void MemoryCoordinatorPolicyManager::OnConsumerGroupRemoved(
     std::string_view consumer_id,
     ChildProcessId child_process_id) {
-  for (auto& policy : policies_) {
-    policy->OnConsumerGroupRemoved(consumer_id, child_process_id);
+  for (auto& observer : observers_) {
+    observer.OnConsumerGroupRemoved(consumer_id, child_process_id);
   }
 
   HostState& host_state = GetHostState(child_process_id);

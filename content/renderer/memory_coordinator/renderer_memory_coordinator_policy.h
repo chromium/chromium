@@ -11,7 +11,6 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace content {
 
@@ -32,14 +31,6 @@ class CONTENT_EXPORT RendererMemoryCoordinatorPolicy
   explicit RendererMemoryCoordinatorPolicy(ChildMemoryCoordinator& coordinator);
   ~RendererMemoryCoordinatorPolicy() override;
 
-  // MemoryCoordinatorPolicy:
-  void OnConsumerGroupAdded(std::string_view consumer_id,
-                            base::MemoryConsumerTraits traits,
-                            ProcessType process_type,
-                            ChildProcessId child_process_id) override;
-  void OnConsumerGroupRemoved(std::string_view consumer_id,
-                              ChildProcessId child_process_id) override;
-
   // Notifies the policy that V8 is about to run its last resort GC.
   void OnV8HeapLastResortGC();
 
@@ -50,8 +41,6 @@ class CONTENT_EXPORT RendererMemoryCoordinatorPolicy
   raw_ref<ChildMemoryCoordinator> coordinator_;
 
   base::OneShotTimer restore_limit_timer_;
-
-  absl::flat_hash_set<std::string> consumer_ids_;
 };
 
 }  // namespace content

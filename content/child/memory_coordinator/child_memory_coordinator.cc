@@ -23,15 +23,9 @@ ChildMemoryCoordinator& ChildMemoryCoordinator::Get() {
 ChildMemoryCoordinator::ChildMemoryCoordinator() {
   CHECK(!g_instance);
   g_instance = this;
-
-  policy_manager_.AddPolicy(&browser_memory_coordinator_bridge_);
-  policy_manager_.AddPolicy(&memory_pressure_listener_policy_);
 }
 
 ChildMemoryCoordinator::~ChildMemoryCoordinator() {
-  policy_manager_.RemovePolicy(&memory_pressure_listener_policy_);
-  policy_manager_.RemovePolicy(&browser_memory_coordinator_bridge_);
-
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }

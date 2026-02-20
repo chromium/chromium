@@ -26,14 +26,6 @@ class CONTENT_EXPORT MemoryPressureListenerPolicy
       MemoryCoordinatorPolicyManager& manager);
   ~MemoryPressureListenerPolicy() override;
 
-  // MemoryCoordinatorPolicy:
-  void OnConsumerGroupAdded(std::string_view consumer_id,
-                            base::MemoryConsumerTraits traits,
-                            ProcessType process_type,
-                            ChildProcessId child_process_id) override {}
-  void OnConsumerGroupRemoved(std::string_view consumer_id,
-                              ChildProcessId child_process_id) override {}
-
   // base::MemoryPressureListener:
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
 

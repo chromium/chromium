@@ -14,6 +14,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "content/public/common/child_process_id.h"
@@ -39,6 +40,20 @@ struct GlobalMemoryConsumerUpdate {
 class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     : public MemoryConsumerGroupController {
  public:
+  // An interface for observing the lifecycle of memory consumers.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when a new consumer group is added/removed.
+    virtual void OnConsumerGroupAdded(std::string_view consumer_id,
+                                      base::MemoryConsumerTraits traits,
+                                      ProcessType process_type,
+                                      ChildProcessId child_process_id) = 0;
+    virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
+                                        ChildProcessId child_process_id) = 0;
+  };
+
   MemoryCoordinatorPolicyManager();
   ~MemoryCoordinatorPolicyManager() override;
 
@@ -46,6 +61,10 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
       delete;
   MemoryCoordinatorPolicyManager& operator=(
       const MemoryCoordinatorPolicyManager&) = delete;
+
+  // Adds/removes an observer.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Registers a policy with the manager. `policy` must remain valid until it is
   // removed with a call to RemovePolicy().
@@ -143,6 +162,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   void UpdateConsumersForProcess(MemoryCoordinatorPolicy* policy,
                                  ChildProcessId child_process_id,
                                  std::vector<MemoryConsumerUpdate> updates);
+
+  base::ObserverList<Observer> observers_;
 
   base::flat_set<MemoryCoordinatorPolicy*> policies_;
 

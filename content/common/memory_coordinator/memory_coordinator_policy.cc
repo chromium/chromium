@@ -12,4 +12,28 @@ MemoryCoordinatorPolicy::MemoryCoordinatorPolicy(
     MemoryCoordinatorPolicyManager& manager)
     : manager_(manager) {}
 
+namespace internal {
+
+MemoryCoordinatorPolicyRegistrationInternal::
+    MemoryCoordinatorPolicyRegistrationInternal(
+        MemoryCoordinatorPolicyManager& manager,
+        MemoryCoordinatorPolicy* policy,
+        MemoryCoordinatorPolicyManager::Observer* observer)
+    : manager_(manager), policy_(policy), observer_(observer) {
+  manager_->AddPolicy(policy_);
+  if (observer_) {
+    manager_->AddObserver(observer_);
+  }
+}
+
+MemoryCoordinatorPolicyRegistrationInternal::
+    ~MemoryCoordinatorPolicyRegistrationInternal() {
+  if (observer_) {
+    manager_->RemoveObserver(observer_);
+  }
+  manager_->RemovePolicy(policy_);
+}
+
+}  // namespace internal
+
 }  // namespace content
