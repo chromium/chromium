@@ -1,6 +1,3 @@
-# https://crbug.com/483439467
--FormControlsBrowserTest.Checkbox
-
 # https://crbug.com/483438557
 -TextFragmentAnchorBrowserTest.HistoryDoesntGenerateToken
 -TextFragmentAnchorBrowserTest.UserGestureConsumed

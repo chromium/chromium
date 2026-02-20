@@ -8,6 +8,3 @@
 -Default/MediaTest.VideoBearRotated180/1
 -Default/MediaTest.VideoBearRotated270/1
 -Default/MediaTest.VideoBearRotated90/1
-
-# crbug.com/343335591
--FormControlsBrowserTest.MultiSelect

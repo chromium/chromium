@@ -1,22 +1,11 @@
 # crbug.com/353818063
 -CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
 
-# crbug.com/343335591
--FormControlsBrowserTest.Button
--FormControlsBrowserTest.Checkbox
--FormControlsBrowserTest.MultiSelect
--FormControlsBrowserTest.Select
-
 # crbug.com/354214032
 -BackgroundTracingManagerBrowserTest.RunStartupTracing
 
 # crbug.com/354786936
 -TouchActionBrowserTest.PanXAtYAreaWithTimeout
-
-# crbug.com/461515925
-# Real result on Android looks a bit "smoother" than the reference but
-# is fundamentally correct.
--FormControlsBrowserTest.Checkbox
 
 # crbug.com/468408601
 -CaptureScreenshotTest.SetDefaultBackgroundColorOverride
