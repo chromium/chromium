@@ -2184,6 +2184,20 @@ domain Network
       FailedToUnwrapKey
       SessionDeletedDuringRefresh
 
+  # Details about a failed device bound session network request.
+  experimental type DeviceBoundSessionFailedRequest extends object
+    properties
+      # The failed request URL.
+      string requestUrl
+      # The net error of the response if it was not OK.
+      optional string netError
+      # The response code if the net error was OK and the response code was not
+      # 200.
+      optional integer responseError
+      # The body of the response if the net error was OK, the response code was
+      # not 200, and the response body was not empty.
+      optional string responseErrorBody
+
   # Session event details specific to creation.
   experimental type CreationEventDetails extends object
     properties
@@ -2192,6 +2206,9 @@ domain Network
       # The session if there was a newly created session. This is populated for
       # all successful creation events.
       optional DeviceBoundSession newSession
+      # Details about a failed device bound session network request if there was
+      # one.
+      optional DeviceBoundSessionFailedRequest failedRequest
 
   # Session event details specific to refresh.
   experimental type RefreshEventDetails extends object
@@ -2212,6 +2229,9 @@ domain Network
       optional DeviceBoundSession newSession
       # See comments on `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
       boolean wasFullyProactiveRefresh
+      # Details about a failed device bound session network request if there was
+      # one.
+      optional DeviceBoundSessionFailedRequest failedRequest
 
   # Session event details specific to termination.
   experimental type TerminationEventDetails extends object

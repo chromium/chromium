@@ -147,6 +147,55 @@ Termination event: {
     }
 }
 
+Running test: testFailedRequestEvents
+
+--- Creation failed request event ---
+Creation failed request event: {
+    creationEventDetails : {
+        failedRequest : {
+            requestUrl : https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/registration.php?session_id=dbsc-session-id-fail&cookie_name=dbsc-cookie-fail&domain_prefix=dbsc&error_code=404
+            responseError : 404
+            responseErrorBody : Error body for 404
+        }
+        fetchResult : PersistentHttpError
+    }
+    eventId : <string>
+    site : https://dbsc.test
+    succeeded : false
+}
+
+--- Refresh failed request event ---
+Refresh failed request event: {
+    eventId : <string>
+    refreshEventDetails : {
+        failedRequest : {
+            requestUrl : https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/refresh.php?cookie_name=dbsc-cookie-fail-refresh-fail&domain_prefix=dbsc&error_code=500
+            responseError : 500
+            responseErrorBody : Error body for refresh 500
+        }
+        fetchResult : TransientHttpError
+        refreshResult : ServerError
+        wasFullyProactiveRefresh : false
+    }
+    sessionId : dbsc-session-id-fail-refresh-fail
+    site : https://dbsc.test
+    succeeded : false
+}
+
+--- Net error failed request event ---
+Failed request with net error event: {
+    creationEventDetails : {
+        failedRequest : {
+            netError : net::ERR_UNSAFE_PORT
+            requestUrl : https://dbsc.test:1/registration.php
+        }
+        fetchResult : NetError
+    }
+    eventId : <string>
+    site : https://dbsc.test
+    succeeded : false
+}
+
 Running test: testFetchSchemefulSite
 {
     schemefulSite : https://google.com

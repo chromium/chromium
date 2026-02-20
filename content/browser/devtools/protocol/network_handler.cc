@@ -1817,6 +1817,28 @@ BuildProtocolDeviceBoundSession(
   return protocol_session;
 }
 
+std::unique_ptr<protocol::Network::DeviceBoundSessionFailedRequest>
+BuildProtocolDeviceBoundSessionFailedRequest(
+    const net::device_bound_sessions::FailedRequest& failed_request) {
+  auto protocol_failed_request =
+      protocol::Network::DeviceBoundSessionFailedRequest::Create()
+          .SetRequestUrl(failed_request.request_url.spec())
+          .Build();
+  if (failed_request.net_error.has_value()) {
+    protocol_failed_request->SetNetError(
+        net::ErrorToString(failed_request.net_error.value()));
+  }
+  if (failed_request.response_error.has_value()) {
+    protocol_failed_request->SetResponseError(
+        failed_request.response_error.value());
+  }
+  if (failed_request.response_error_body.has_value()) {
+    protocol_failed_request->SetResponseErrorBody(
+        failed_request.response_error_body.value());
+  }
+  return protocol_failed_request;
+}
+
 String BuildProtocolDeviceBoundSessionFetchResult(
     net::device_bound_sessions::SessionError::ErrorType type) {
   switch (type) {
@@ -2190,6 +2212,11 @@ void NetworkHandler::OnDeviceBoundSessionEventReceived(
                   BuildProtocolDeviceBoundSession(
                       details.new_session_display.value()));
             }
+            if (details.failed_request.has_value()) {
+              creationEventDetails->SetFailedRequest(
+                  BuildProtocolDeviceBoundSessionFailedRequest(
+                      details.failed_request.value()));
+            }
           },
           [&refreshEventDetails](
               const net::device_bound_sessions::RefreshEventDetails& details) {
@@ -2210,6 +2237,11 @@ void NetworkHandler::OnDeviceBoundSessionEventReceived(
               refreshEventDetails->SetNewSession(
                   BuildProtocolDeviceBoundSession(
                       details.new_session_display.value()));
+            }
+            if (details.failed_request.has_value()) {
+              refreshEventDetails->SetFailedRequest(
+                  BuildProtocolDeviceBoundSessionFailedRequest(
+                      details.failed_request.value()));
             }
           },
           [&terminationEventDetails](

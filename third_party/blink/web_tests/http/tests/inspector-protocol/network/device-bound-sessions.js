@@ -87,6 +87,63 @@
       await dp.Network.enableDeviceBoundSessions({enable: false});
     },
 
+    async function testFailedRequestEvents() {
+      dp.Network.enableDeviceBoundSessions({enable: true});
+      await dp.Network.onceDeviceBoundSessionsAdded();
+
+      const sessionId = 'dbsc-session-id-fail';
+      const cookieName = 'dbsc-cookie-fail';
+
+      testRunner.log('\n--- Creation failed request event ---');
+      {
+        const errorCode = 404;
+        page.navigate(
+            `https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/initiate-dbsc.php?session_id=${
+                sessionId}&cookie_name=${
+                cookieName}&domain_prefix=dbsc&error_code=${errorCode}`);
+        const creationEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(
+            creationEvent.params,
+            'Creation failed request event: ', ['eventId']);
+      }
+
+      testRunner.log('\n--- Refresh failed request event ---');
+      {
+        page.navigate(`https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/initiate-dbsc.php?session_id=${
+            sessionId}-refresh-fail&cookie_name=${
+            cookieName}-refresh-fail&domain_prefix=dbsc&refresh_error_code=500`);
+        await dp.Network.onceDeviceBoundSessionEventOccurred();
+        session.evaluate(
+            'fetch("/inspector-protocol/network/resources/dbsc/protected-resource.php")');
+        const refreshEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(
+            refreshEvent.params, 'Refresh failed request event: ', ['eventId']);
+      }
+
+      testRunner.log('\n--- Net error failed request event ---');
+      {
+        page.navigate(
+            `https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/initiate-dbsc.php?session_id=${
+                sessionId}-net-err&cookie_name=${
+                cookieName}-net-err&domain_prefix=dbsc&reg_url=${
+                encodeURIComponent('https://dbsc.test:1/registration.php')}`);
+        const creationEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(
+            creationEvent.params,
+            'Failed request with net error event: ', ['eventId']);
+      }
+
+      // Clear sessions.
+      session.evaluate(
+          'fetch("/inspector-protocol/network/resources/dbsc/termination.php")');
+      await dp.Network.onceDeviceBoundSessionEventOccurred();
+
+      await dp.Network.enableDeviceBoundSessions({enable: false});
+    },
+
     async function testFetchSchemefulSite() {
       const testCases = [
         'https://www.google.com/path',
