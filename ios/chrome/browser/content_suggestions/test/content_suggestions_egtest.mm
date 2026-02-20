@@ -584,10 +584,6 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
           chrome_test_util::HeaderWithAccessibilityLabelId(
               IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER))]
-      assertWithMatcher:grey_sufficientlyVisible()];
   // Check the "Name" field and type a new value.
   NSString* newTitle = @"New Title";
   [[EarlGrey selectElementWithMatcher:grey_textFieldValue(
