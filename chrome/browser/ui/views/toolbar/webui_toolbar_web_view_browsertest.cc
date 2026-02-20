@@ -124,22 +124,18 @@ void EnableSplitTabsButton(Browser* browser, views::WebView* web_view) {
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 }
 
-bool ClickSplitTabsButton(content::WebContents* web_contents) {
-  return content::ExecJs(
-      web_contents, base::StrCat({GetSplitTabsButtonIconJS(), "?.click();"}));
-}
-
-bool RightClickSplitTabsButton(content::WebContents* web_contents) {
-  static constexpr char kRightClickScript[] = R"(
-      ?.dispatchEvent(new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          view: window
-      }));
-  )";
-
-  return content::ExecJs(web_contents, base::StrCat({GetSplitTabsButtonIconJS(),
-                                                     kRightClickScript}));
+// Dispatches an event to the Split Tabs Button.
+// `event_class`: The JS event class (e.g. 'MouseEvent', 'PointerEvent').
+// `type`: The event type string (e.g. 'click', 'contextmenu').
+// `options`: JS object string for event options (e.g. "detail: 1, button: 2").
+std::string DispatchEventScript(const std::string& event_class,
+                                const std::string& type,
+                                const std::string& options = "") {
+  return base::StringPrintf(
+      "%s?.dispatchEvent(new %s('%s', "
+      "{bubbles: true, cancelable: true, view: window, %s}));",
+      GetSplitTabsButtonIconJS().c_str(), event_class.c_str(), type.c_str(),
+      options.c_str());
 }
 
 class NavigationCounter : public content::WebContentsObserver {
@@ -815,6 +811,73 @@ class WebUIToolbarWebViewSplitTabsBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
+                       CheckSplitTabsButtonSourceType) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  WebUISplitTabsControl* split_tabs_control =
+      &webui_toolbar_view->split_tabs_control_;
+
+  // Create split [A, B].
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  auto* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
+
+  // Wait for the button to know it is in split state.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_view->GetWebContents(),
+                           base::StrCat({GetSplitTabsButtonAppJS(),
+                                         ".state.isCurrentTabSplit"}))
+        .ExtractBool();
+  }));
+
+  const struct {
+    const char* name;
+    std::string script;
+    ui::mojom::MenuSourceType expected_source;
+  } kTestCases[] = {
+      {"Keyboard Click",
+       DispatchEventScript("MouseEvent", "click", "detail: 0"),
+       ui::mojom::MenuSourceType::kKeyboard},
+      {"Mouse Click", DispatchEventScript("MouseEvent", "click", "detail: 1"),
+       ui::mojom::MenuSourceType::kMouse},
+      {"Touch Click",
+       DispatchEventScript("PointerEvent", "click",
+                           "pointerType: 'touch', detail: 1"),
+       ui::mojom::MenuSourceType::kTouch},
+      {"Pen Click",
+       DispatchEventScript("PointerEvent", "click",
+                           "pointerType: 'pen', detail: 1"),
+       ui::mojom::MenuSourceType::kTouch},
+      {"Keyboard Context Menu",
+       DispatchEventScript("MouseEvent", "contextmenu", "detail: 0"),
+       ui::mojom::MenuSourceType::kKeyboard},
+      {"Mouse Context Menu",
+       DispatchEventScript("MouseEvent", "contextmenu", "button: 2"),
+       ui::mojom::MenuSourceType::kMouse},
+      {"Touch Context Menu",
+       DispatchEventScript("PointerEvent", "contextmenu",
+                           "pointerType: 'touch'"),
+       ui::mojom::MenuSourceType::kTouch},
+      {"Pen Context Menu",
+       DispatchEventScript("PointerEvent", "contextmenu", "pointerType: 'pen'"),
+       ui::mojom::MenuSourceType::kTouch},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), test_case.script));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return split_tabs_control->last_source_type_for_testing_ ==
+             test_case.expected_source;
+    }));
+    split_tabs_control->menu_runner_->Cancel();
+  }
+}
+
 class WebUIToolbarWebViewSplitTabsWithReloadBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -888,7 +951,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   auto* tab_strip_model = browser()->tab_strip_model();
   EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
 
-  EXPECT_TRUE(ClickSplitTabsButton(web_view->GetWebContents()));
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchEventScript("MouseEvent", "click", "detail: 1")));
 
   // Verify entered split view. This might take a moment, so need to wait.
   ASSERT_TRUE(base::test::RunUntil(
@@ -910,7 +975,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                     "?.getAttribute('aria-haspopup') || 'false'"});
   EXPECT_EQ("false", content::EvalJs(web_contents, kGetAriaHasPopup));
 
-  EXPECT_TRUE(ClickSplitTabsButton(web_contents));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, DispatchEventScript("MouseEvent", "click", "detail: 1")));
 
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(
@@ -936,7 +1002,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   EnableSplitTabsButton(browser(), web_view);
   EXPECT_TRUE(WaitForSplitTabsButtonVisible(web_view->GetWebContents()));
-  EXPECT_TRUE(RightClickSplitTabsButton(web_view->GetWebContents()));
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchEventScript("MouseEvent", "contextmenu", "button: 2")));
 
   // Verify no crash.
 }
@@ -963,7 +1031,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
   // Click the button while in split mode.
-  EXPECT_TRUE(ClickSplitTabsButton(web_view->GetWebContents()));
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchEventScript("MouseEvent", "click", "detail: 1")));
 
   // Verify no crash.
 }

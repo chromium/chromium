@@ -81,6 +81,8 @@ class WebUIToolbarWebView
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckSplitTabsButtonColor);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
+                           CheckSplitTabsButtonSourceType);
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
 

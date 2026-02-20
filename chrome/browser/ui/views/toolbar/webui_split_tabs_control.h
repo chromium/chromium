@@ -11,6 +11,7 @@
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 class WebUIToolbarWebView;
@@ -46,12 +47,13 @@ class WebUISplitTabsControl : public TabStripModelObserver {
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckSplitTabsButtonColor);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
+                           CheckSplitTabsButtonSourceType);
 
   void UpdateVisibility(
       const browser_controls_api::mojom::SplitTabsControlState* state);
   void UpdateState();
-  void RunMenuAt(int x, int y);
-  void OnMenuClosed();
+  void RunMenuAt(int x, int y, ui::mojom::MenuSourceType source_type);
 
   raw_ptr<WebUIToolbarWebView> toolbar_view_;
   BooleanPrefMember pin_state_;
@@ -59,6 +61,8 @@ class WebUISplitTabsControl : public TabStripModelObserver {
 
   browser_controls_api::mojom::ContextMenuType current_menu_type_ =
       browser_controls_api::mojom::ContextMenuType::kUnspecified;
+  ui::mojom::MenuSourceType last_source_type_for_testing_ =
+      ui::mojom::MenuSourceType::kNone;
 
   std::unique_ptr<ui::MenuModel> split_tab_menu_;
   std::unique_ptr<views::MenuRunner> menu_runner_;

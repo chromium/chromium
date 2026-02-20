@@ -59,7 +59,7 @@ bool WebUISplitTabsControl::IsVisible() const {
 void WebUISplitTabsControl::HandleContextMenu(
     browser_controls_api::mojom::ContextMenuType menu_type,
     const gfx::Point& screen_location,
-    ui::mojom::MenuSourceType source) {
+    ui::mojom::MenuSourceType source_type) {
   BrowserWindowInterface* browser = toolbar_view_->browser_;
   current_menu_type_ = menu_type;
   if (menu_type ==
@@ -75,7 +75,7 @@ void WebUISplitTabsControl::HandleContextMenu(
     menu_runner_.reset();
     split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
         tab_strip_model, SplitTabMenuModel::MenuSource::kToolbarButton);
-    RunMenuAt(screen_location.x(), screen_location.y());
+    RunMenuAt(screen_location.x(), screen_location.y(), source_type);
   } else if (menu_type ==
              browser_controls_api::mojom::ContextMenuType::kSplitTabsContext) {
     Browser* actual_browser =
@@ -86,12 +86,15 @@ void WebUISplitTabsControl::HandleContextMenu(
       menu_runner_.reset();
       split_tab_menu_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
           actual_browser, kActionSplitTab);
-      RunMenuAt(screen_location.x(), screen_location.y());
+      RunMenuAt(screen_location.x(), screen_location.y(), source_type);
     }
   }
 }
 
-void WebUISplitTabsControl::RunMenuAt(int x, int y) {
+void WebUISplitTabsControl::RunMenuAt(int x,
+                                      int y,
+                                      ui::mojom::MenuSourceType source_type) {
+  last_source_type_for_testing_ = source_type;
   menu_runner_ = std::make_unique<views::MenuRunner>(
       split_tab_menu_.get(), views::MenuRunner::HAS_MNEMONICS,
       base::BindRepeating(&WebUISplitTabsControl::UpdateState,
@@ -99,8 +102,7 @@ void WebUISplitTabsControl::RunMenuAt(int x, int y) {
 
   menu_runner_->RunMenuAt(toolbar_view_->GetWidget(), nullptr,
                           gfx::Rect(gfx::Point(x, y), gfx::Size()),
-                          views::MenuAnchorPosition::kTopLeft,
-                          ui::mojom::MenuSourceType::kMouse);
+                          views::MenuAnchorPosition::kTopLeft, source_type);
   UpdateState();
 }
 
