@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -203,8 +205,15 @@ void WebSocketStream::UnderlyingSource::DidReceiveBinaryMessage(
            << " DidReceiveBinaryMessage()";
 
   DCHECK(!closed_);
-  auto* buffer = DOMArrayBuffer::Create(data);
-  Controller()->Enqueue(buffer);
+
+  if (RuntimeEnabledFeatures::WebSocketStreamStandardBinaryChunkTypeEnabled()) {
+    auto* uint8Array = DOMUint8Array::Create(data);
+    Controller()->Enqueue(uint8Array);
+  } else {
+    auto* buffer = DOMArrayBuffer::Create(data);
+    Controller()->Enqueue(buffer);
+  }
+
   creator_->channel_->ApplyBackpressure();
 }
 

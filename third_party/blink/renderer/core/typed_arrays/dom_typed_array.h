@@ -41,6 +41,23 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return typed_array;
   }
 
+  static ThisType* Create(const Vector<base::span<const ValueType>>& data)
+    requires std::is_trivially_copyable_v<ValueType>
+  {
+    size_t size = 0;
+    for (const auto& span : data) {
+      size += span.size();
+    }
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::CreateUninitialized(size, sizeof(ValueType));
+    ThisType* typed_array = Create(buffer, 0, size);
+    auto type_span = typed_array->AsSpan();
+    for (const auto& span : data) {
+      type_span.take_first(span.size()).copy_from(span);
+    }
+    return typed_array;
+  }
+
   static ThisType* CreateOrNull(size_t length) {
     DOMArrayBuffer* buffer =
         DOMArrayBuffer::CreateOrNull(length, sizeof(ValueType));

@@ -6245,6 +6245,10 @@
       status: "stable",
     },
     {
+      name: "WebSocketStreamStandardBinaryChunkType",
+      status: "experimental",
+    },
+    {
       name: "WebSpeechRecognitionContext",
       status: {
         "Win": "stable",
