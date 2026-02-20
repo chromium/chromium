@@ -298,14 +298,13 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
     _headerViewTrailingConstraint,
   ]];
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
   __weak __typeof(self) weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                    UITraitCollection* previousCollection) {
     [weakSelf resetHeaderViewOnTraitChange];
   };
-  [self registerForTraitChanges:traits withHandler:handler];
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                    withHandler:handler];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

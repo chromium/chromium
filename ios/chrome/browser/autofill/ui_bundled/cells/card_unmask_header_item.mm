@@ -119,8 +119,7 @@ const CGFloat kGooglePayBadgeHeight = 16;
                          constant:-kTableViewLargeVerticalSpacing],
     ]];
 
-    [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.class ])
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(userInterfaceStyleDidChange)];
   }
   return self;
