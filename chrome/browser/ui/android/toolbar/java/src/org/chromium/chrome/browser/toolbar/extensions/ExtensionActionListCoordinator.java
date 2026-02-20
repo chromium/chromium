@@ -49,6 +49,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
     private final DragReorderableRecyclerViewAdapter mAdapter;
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
+    private boolean mIsDragging;
+
     public ExtensionActionListCoordinator(
             Context context,
             ExtensionActionListRecyclerView container,
@@ -103,6 +105,11 @@ public class ExtensionActionListCoordinator implements Destroyable {
         dragTouchHandler.addDragListener(
                 new DragListener() {
                     @Override
+                    public void onDragStateChange(boolean drag) {
+                        mIsDragging = drag;
+                    }
+
+                    @Override
                     public void onSwap(int targetIndex) {
                         mMediator.onActionsSwapped(targetIndex);
                     }
@@ -147,11 +154,27 @@ public class ExtensionActionListCoordinator implements Destroyable {
                     // action popup.
                     return null;
                 }
-
                 return holder.itemView;
             }
         }
         return null;
+    }
+
+    /**
+     * Updates the list of displayed actions to fit within the provided width constraint.
+     *
+     * @param availableWidth The maximum width available for the action list in pixels.
+     * @return The actual width of the action list after fitting the items.
+     */
+    public int fitActionsWithinWidth(int availableWidth) {
+        if (mIsDragging) {
+            // This method gets called when icons are being dragged, but we don't want width update
+            // to happen then.
+            return mContainer.getWidth();
+        }
+
+        mMediator.fitActionsWithinWidth(availableWidth);
+        return mContainer.getWidth();
     }
 
     private void bindDragProperties(

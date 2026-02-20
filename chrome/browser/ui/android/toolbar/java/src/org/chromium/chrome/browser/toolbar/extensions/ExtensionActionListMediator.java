@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
@@ -56,6 +57,10 @@ class ExtensionActionListMediator implements Destroyable {
     @Nullable private ExtensionActionPopup mCurrentPopup;
     @Nullable private String mCurrentPopupActionId;
 
+    // The maximum width that the icons can take up. It is set when the toolbar requests us to be a
+    // certain size. Until then, we assume we have infinite space.
+    private @Nullable Integer mAvailableWidth;
+
     public ExtensionActionListMediator(
             Context context,
             WindowAndroid windowAndroid,
@@ -88,9 +93,10 @@ class ExtensionActionListMediator implements Destroyable {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
-    // Reconciles the current list of models with the list of IDs from the
-    // bridge. This handles additions, removals, and reordering without
-    // rebuilding the whole list.
+    /**
+     * Reconciles the current list of models with the list of IDs from the bridge. This handles
+     * additions, removals, and reordering without rebuilding the whole list.
+     */
     @VisibleForTesting
     void reconcileActionItems() {
         String[] actionIds = mExtensionsToolbarBridge.getPinnedActionIds();
@@ -111,9 +117,21 @@ class ExtensionActionListMediator implements Destroyable {
             }
         }
 
+        int maxNumberOfItems = Integer.MAX_VALUE;
+        if (mAvailableWidth != null) {
+            int itemWidth =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            assert itemWidth > 0;
+            maxNumberOfItems = mAvailableWidth / itemWidth;
+        }
+
         // O(N) for removals/no-ops; O(N^2) for reordering/insertions.
         int currentModelIndex = 0;
         for (String actionId : actionIds) {
+            if (currentModelIndex >= maxNumberOfItems) {
+                break;
+            }
+
             ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
             if (action == null) {
                 continue;
@@ -174,18 +192,6 @@ class ExtensionActionListMediator implements Destroyable {
                         mContext, mExtensionsToolbarBridge, actionId, webContents);
         assert icon != null;
         return icon;
-    }
-
-    @VisibleForTesting
-    void removeActionItem(String actionId) {
-        if (mCurrentPopupActionId != null && mCurrentPopupActionId.equals(actionId)) {
-            closePopup();
-        }
-
-        int index = findIndexForId(actionId, 0);
-        if (index != -1) {
-            mModels.removeAt(index);
-        }
     }
 
     // Updates model properties while keeping it in place.
@@ -303,6 +309,15 @@ class ExtensionActionListMediator implements Destroyable {
         mCurrentPopupActionId = null;
     }
 
+    /** Updates the list of displayed actions to fit within the provided width constraint. */
+    public void fitActionsWithinWidth(int availableWidth) {
+        mAvailableWidth = availableWidth;
+
+        // If this is called during an animation (e.g. the user resizes window during pinning /
+        // unpinning animation), we abandon the animation and update to the new state instantly.
+        reconcileActionItems();
+    }
+
     /**
      * Communicates the move to the native side via the bridge to commit.
      *
@@ -327,7 +342,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         @Override
         public void onActionRemoved(String actionId) {
-            removeActionItem(actionId);
+            reconcileActionItems();
         }
 
         @Override

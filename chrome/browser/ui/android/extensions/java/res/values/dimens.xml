@@ -7,10 +7,4 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="extension_menu_max_width">400dp</dimen>
-    <!--
-        The width of the toolbar reserved for everything *except* extension
-        action buttons. Currently it is set to the minimum width for the tablet
-        toolbar UI with the assumption that the UI is usable with the width.
-    -->
-    <dimen name="extension_toolbar_baseline_width">600dp</dimen>
 </resources>

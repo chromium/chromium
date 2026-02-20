@@ -180,20 +180,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
         @Override
         public int updateVisibility(int availableWidth) {
-            // TODO(crbug.com/483194547): Hide icons partially.
-            int puzzleButtonWidth =
-                    mContainer
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    org.chromium.chrome.browser.toolbar.R.dimen
-                                            .toolbar_button_width);
-            int toolbarDividerWidth =
-                    mContainer
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    org.chromium.chrome.browser.toolbar.R.dimen
-                                            .toolbar_divider_width);
-            return mContainer.getWidth() - puzzleButtonWidth - toolbarDividerWidth;
+            return mExtensionActionListCoordinator.fitActionsWithinWidth(availableWidth);
         }
 
         @Override

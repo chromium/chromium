@@ -187,6 +187,7 @@ public class ExtensionActionListMediatorTest {
                     }
                 };
 
+        mMediator.fitActionsWithinWidth(1000);
         verify(mExtensionsToolbarBridge).setDelegate(mBridgeDelegateCaptor.capture());
 
         shadowOf(Looper.getMainLooper()).idle();
@@ -290,29 +291,6 @@ public class ExtensionActionListMediatorTest {
     }
 
     @Test
-    public void testUpdateModels_onActionRemoved() {
-        mMediator.reconcileActionItems();
-
-        // The models should be updated.
-        assertEquals(2, mModels.size());
-        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
-        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
-
-        // Save the {@link ListItem} instance.
-        ListItem itemForAction1 = mModels.get(0);
-
-        // Remove action 2 from the list of IDs.
-        mMediator.removeActionItem(ACTION2_ID);
-
-        // The models should have the additional item.
-        assertEquals(1, mModels.size());
-        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
-
-        // The same model should be used for existing actions.
-        assertSame("The item object should be reused", itemForAction1, mModels.get(0));
-    }
-
-    @Test
     public void testUpdateModels_onActionUpdated() {
         mMediator.reconcileActionItems();
 
@@ -336,6 +314,42 @@ public class ExtensionActionListMediatorTest {
         // The same models should be used for existing actions.
         assertSame("The item object should be reused", itemForAction1, mModels.get(0));
         assertSame("The item object should be reused", itemForAction2, mModels.get(1));
+    }
+
+    @Test
+    public void testFitActionsWithinWidth_HidesExtraItems() {
+        mMediator.reconcileActionItems();
+
+        // The models should be updated.
+        assertEquals(2, mModels.size());
+
+        Context context = ApplicationProvider.getApplicationContext();
+        int itemWidth =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.toolbar.R.dimen.toolbar_button_width);
+
+        // Test ample width.
+        mMediator.fitActionsWithinWidth(itemWidth * 5);
+        assertEquals(2, mModels.size());
+
+        // Test width for 2 items.
+        mMediator.fitActionsWithinWidth(itemWidth * 2);
+        assertEquals(2, mModels.size());
+
+        // Test width for more than 1 item but less than 2 items.
+        mMediator.fitActionsWithinWidth(itemWidth + (int) (itemWidth / 2));
+        assertEquals(1, mModels.size());
+
+        // Test width for exactly 1 item.
+        mMediator.fitActionsWithinWidth(itemWidth);
+        assertEquals(1, mModels.size());
+
+        // Test width insufficient for 1 item.
+        mMediator.fitActionsWithinWidth(itemWidth - 1);
+
+        // There should be 0 items.
+        assertEquals(0, mModels.size());
     }
 
     private static Bitmap createSimpleIcon(int color) {
