@@ -31,6 +31,7 @@ import {
 } from './on_device_model_utils.js';
 import {
   FormatFeature,
+  InputSource,
   LoadModelResult as MojoLoadModelResult,
   ModelInfo,
   ModelState as MojoModelState,
@@ -159,6 +160,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
       {
         maxTokens: 0,
         input: inputPieces,
+        inputSource: InputSource.kUserInput,
       },
       null,
     );

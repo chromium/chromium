@@ -223,6 +223,15 @@ using ChromeMLScoreFn = std::function<void(float)>;
 using ChromeMLGetProbabilitiesBlockingFn =
     std::function<void(const std::vector<float>&)>;
 
+// Enum to identify the origin of the input being processed. The input can
+// either be from the user or output feedback from the model being fed back into
+// the model as input. This is used to tag UMA metrics appropriately.
+enum class InputSource {
+  kUnknown,             // Unknown input source.
+  kUserInput,           // Input directly from the user.
+  kModelOutputFeedback  // Input that is the model's own previous output.
+};
+
 // Arguments to SessionAppend().
 struct ChromeMLAppendOptions {
   // The content to append to the context.
@@ -234,6 +243,8 @@ struct ChromeMLAppendOptions {
   uint32_t max_tokens;
   // How to return the result on completion.
   const ChromeMLContextSavedFn* context_saved_fn;
+  // The source of the input.
+  InputSource input_source;
 };
 
 // Arguments to SessionGenerate()

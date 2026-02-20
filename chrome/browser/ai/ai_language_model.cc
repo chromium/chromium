@@ -119,9 +119,11 @@ on_device_model::mojom::InputPtr ConvertToInputForExecute(
 }
 
 on_device_model::mojom::AppendOptionsPtr MakeAppendOptions(
-    on_device_model::mojom::InputPtr input) {
+    on_device_model::mojom::InputPtr input,
+    on_device_model::mojom::InputSource input_source) {
   auto append_options = on_device_model::mojom::AppendOptions::New();
   append_options->input = std::move(input);
+  append_options->input_source = input_source;
   return append_options;
 }
 
@@ -314,8 +316,10 @@ class AILanguageModel::PromptState
 
     // Append() will call the on_device_model::mojom::ContextClient::OnComplete
     // override when finished.
-    session_->Append(MakeAppendOptions(input_.Clone()),
-                     context_receiver_.BindNewPipeAndPassRemote());
+    session_->Append(
+        MakeAppendOptions(input_.Clone(),
+                          on_device_model::mojom::InputSource::kUserInput),
+        context_receiver_.BindNewPipeAndPassRemote());
     context_receiver_.set_disconnect_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
@@ -776,7 +780,10 @@ void AILanguageModel::InitializeSafetyChecksComplete(
     initial_input_ = input.Clone();
     // No ContextClient is passed here since this operation should never be
     // cancelled unless the session is destroyed.
-    initial_session_->Append(MakeAppendOptions(std::move(input)), {});
+    initial_session_->Append(
+        MakeAppendOptions(std::move(input),
+                          on_device_model::mojom::InputSource::kUserInput),
+        {});
   }
   initial_session_->Clone(current_session_.BindNewPipeAndPassReceiver());
 
@@ -933,7 +940,11 @@ void AILanguageModel::OnPromptOutputComplete() {
     // Add the output to the session since this is not added automatically from
     // the Generate() call. The previous token will be a kModel token from
     // ConvertToInputForExecute().
-    current_session_->Append(MakeAppendOptions(std::move(model_output)), {});
+    current_session_->Append(
+        MakeAppendOptions(
+            std::move(model_output),
+            on_device_model::mojom::InputSource::kModelOutputFeedback),
+        {});
   }
   uint32_t total_tokens =
       context_->non_evictable_tokens() + context_->evictable_tokens();
@@ -992,7 +1003,10 @@ void AILanguageModel::HandleOverflow() {
   if (!input->pieces.empty()) {
     // No ContextClient is passed here since this operation should never be
     // cancelled unless the session is destroyed.
-    current_session_->Append(MakeAppendOptions(std::move(input)), {});
+    current_session_->Append(
+        MakeAppendOptions(std::move(input),
+                          on_device_model::mojom::InputSource::kUserInput),
+        {});
   }
 }
 
@@ -1021,7 +1035,10 @@ void AILanguageModel::EnsureSessionConnected() {
   initial_session_.reset_on_disconnect();
   initial_session_->SetPriority(context_bound_object_set_->priority());
   if (initial_input_) {
-    initial_session_->Append(MakeAppendOptions(initial_input_.Clone()), {});
+    initial_session_->Append(
+        MakeAppendOptions(initial_input_.Clone(),
+                          on_device_model::mojom::InputSource::kUserInput),
+        {});
   }
   HandleOverflow();
 }

@@ -13,6 +13,12 @@ histograms along with a detailed description for each histogram.
 
 <histograms>
 
+<variants name="InputSource">
+  <variant name="" summary="Input provided directly by the user."/>
+  <variant name=".ModelFeedback"
+      summary="Input that is the model's own output from a previous turn."/>
+</variants>
+
 <variants name="OnDeviceModelExecutionFeature">
   <variant name="" summary="all features"/>
   <variant name=".ScamDetection" summary="Scam Detection"/>
@@ -257,17 +263,18 @@ histograms along with a detailed description for each histogram.
   </token>
 </histogram>
 
-<histogram name="OnDeviceModel.TokenCount.Input{Type}" units="tokens"
-    expires_after="2026-08-09">
+<histogram name="OnDeviceModel.TokenCount.Input{InputSource}{Type}"
+    units="tokens" expires_after="2026-08-09">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
     The number of {Type} tokens processed by the OnDeviceModel as a chunk of
-    input. Note that for some types of input (e.g. images and audio) there is
-    considerably more work done than just processing the tokens. Logged each
-    time a {Type} chunk is processed.
+    input. This is for {InputSource}. Note that for some types of input (e.g.
+    images and audio) there is considerably more work done than just processing
+    the tokens. Logged each time a {Type} chunk is processed.
   </summary>
+  <token key="InputSource" variants="InputSource"/>
   <token key="Type">
     <variant name="" summary="total"/>
     <variant name=".Audio" summary="audio"/>
@@ -292,17 +299,18 @@ histograms along with a detailed description for each histogram.
   </token>
 </histogram>
 
-<histogram name="OnDeviceModel.TokensPerSecond.Input{Type}" units="tk/s"
-    expires_after="2026-08-09">
+<histogram name="OnDeviceModel.TokensPerSecond.Input{InputSource}{Type}"
+    units="tk/s" expires_after="2026-08-09">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
-    The tokens per second seen when processing a chunk of {Type} input. Note
-    that for some types of input (e.g. images and audio) there is considerably
-    more work done than just processing the tokens. Logged each time a {Type}
-    chunk is processed.
+    The tokens per second seen when processing a chunk of {Type} input. This is
+    for {InputSource}. Note that for some types of input (e.g. images and audio)
+    there is considerably more work done than just processing the tokens. Logged
+    each time a {Type} chunk is processed.
   </summary>
+  <token key="InputSource" variants="InputSource"/>
   <token key="Type">
     <variant name="" summary="total"/>
     <variant name=".Audio" summary="audio"/>
@@ -327,17 +335,18 @@ histograms along with a detailed description for each histogram.
   </token>
 </histogram>
 
-<histogram name="OnDeviceModel.TotalTime.Input{Type}" units="ms"
+<histogram name="OnDeviceModel.TotalTime.Input{InputSource}{Type}" units="ms"
     expires_after="2026-08-09">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>
   <summary>
-    The total time taken when processing a chunk of {Type} input. Note that for
-    some types of input (e.g. images and audio) there is considerably more work
-    done than just processing the tokens. Logged each time a {Type} chunk is
-    processed.
+    The total time taken when processing a chunk of {Type} input. This is for
+    {InputSource}. Note that for some types of input (e.g. images and audio)
+    there is considerably more work done than just processing the tokens. Logged
+    each time a {Type} chunk is processed.
   </summary>
+  <token key="InputSource" variants="InputSource"/>
   <token key="Type">
     <variant name="" summary="total"/>
     <variant name=".Audio" summary="audio"/>

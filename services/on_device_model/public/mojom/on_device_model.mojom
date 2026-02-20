@@ -177,6 +177,14 @@ struct Input {
   array<InputPiece> pieces;
 };
 
+// Enum to distinguish the origin of the input.
+[Stable, Extensible]
+enum InputSource {
+  [Default] kUnknown, // Default value for unrecognized enum values.
+  kUserInput,  // Input directly from the user.
+  kModelOutputFeedback,  // Input that is the model's own previous output.
+};
+
 [Stable]
 struct AppendOptions {
   // The input for the model.
@@ -185,6 +193,10 @@ struct AppendOptions {
   // The maximum number of tokens that should be processed. If zero, will
   // process all tokens from this input.
   uint32 max_tokens = 0;
+
+  // The source of the input.
+  [MinVersion=1]
+  InputSource input_source;
 };
 
 [Stable, Extensible]

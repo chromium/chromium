@@ -9,6 +9,7 @@
  */
 
 export {
+  InputSource,
   LoadModelResult,
   OnDeviceModelRemote,
   type ResponseChunk,

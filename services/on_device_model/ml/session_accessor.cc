@@ -258,11 +258,27 @@ void SessionAccessor::AppendInternal(
     scoped_refptr<Canceler> canceler) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::AppendInternal");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  InputSource source;
+  switch (append_options->input_source) {
+    case on_device_model::mojom::InputSource::kUserInput:
+      source = InputSource::kUserInput;
+      break;
+    case on_device_model::mojom::InputSource::kModelOutputFeedback:
+      source = InputSource::kModelOutputFeedback;
+      break;
+    case on_device_model::mojom::InputSource::kUnknown:
+      source = InputSource::kUnknown;
+      ABSL_LOG(WARNING) << "AppendOptions called with kUnknown InputSource";
+      break;
+  }
+
   ChromeMLAppendOptions options{
       .input = append_options->input->pieces.data(),
       .input_size = append_options->input->pieces.size(),
       .max_tokens = append_options->max_tokens,
       .context_saved_fn = &context_saved_fn,
+      .input_source = source,
   };
   chrome_ml_->api().SessionAppend(session_, &options, canceler->get());
 }
