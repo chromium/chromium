@@ -93,12 +93,15 @@ def main():
             continue
         test_file_path = os.path.join(TESTS_PATH, file)
         for test_name, test_text in CreateTestEdits(test_file_path):
-            with tempfile.NamedTemporaryFile(mode='w',
-                                             prefix=test_name,
-                                             suffix='.ts',
-                                             delete=not DEBUG) as f:
+            # Note: check_api.py needs to open the file, so we must
+            # close it before calling DoTest.
+            f = tempfile.NamedTemporaryFile(mode='w',
+                                            prefix=test_name,
+                                            suffix='.ts',
+                                            delete=False)
+            try:
                 f.write(test_text)
-                f.flush()
+                f.close()
                 if test_name.startswith('Error'):
                     expected_pass = False
                 elif test_name.startswith('Ok'):
@@ -111,6 +114,9 @@ def main():
                     passed_tests += 1
                 else:
                     failed_tests += 1
+            finally:
+                if not DEBUG:
+                    os.remove(f.name)
 
     if failed_tests == 0:
         print(f'All {passed_tests} tests passed!')
