@@ -476,6 +476,10 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   return NO;
 }
 
+- (CGRect)accessibilityFrame {
+  return CGRectZero;
+}
+
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
