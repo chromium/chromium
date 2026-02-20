@@ -358,16 +358,9 @@ void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
   database_->DeleteStorageKeysFromSession(
       namespace_id, /*metadata_to_delete=*/{storage_key},
       std::move(maps_to_delete),
-      base::BindOnce(
-          [](base::OnceClosure callback,
-             base::OnceCallback<void(DbStatus)> status_result_callback,
-             DbStatus status) {
-            std::move(status_result_callback).Run(status);
-            std::move(callback).Run();
-          },
-          std::move(callback),
-          base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                         weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&SessionStorageImpl::OnCommitResult,
+                     weak_ptr_factory_.GetWeakPtr())
+          .Then(std::move(callback)));
 }
 
 void SessionStorageImpl::CleanUpStorage(CleanUpStorageCallback callback) {
