@@ -125,6 +125,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   void SetMediaPosition(const media_session::MediaPosition& media_position);
 
+  // Called to show or hide the playback controls.
+  void SetPlaybackControlsVisibility(bool is_visible);
+
   // Called by PictureInPictureServiceImpl when a session request is received.
   // The call should return the |session_remote| and |window_size| as out
   // params. A failure to create the session should be expressed with an empty

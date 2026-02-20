@@ -99,6 +99,7 @@ class TestOverlayWindow : public VideoOverlayWindow {
   void SetFaviconImages(
       const std::vector<media_session::MediaImage>& images) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
+  void SetPlaybackControlsVisibility(bool is_visible) override {}
 
  private:
   gfx::Size size_;

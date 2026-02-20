@@ -1568,6 +1568,32 @@ TEST_F(VideoOverlayWindowViewsTest, MouseHoverShowsAllControls) {
   EXPECT_TRUE(overlay_window().AreControlsVisible());
 }
 
+TEST_F(VideoOverlayWindowViewsTest, PlaybackControlsContainerVisibility) {
+  overlay_window().ShowInactive();
+  overlay_window().ForceControlsVisibleForTesting(true);
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  WaitForLayout();
+
+  views::View* playback_controls_container =
+      overlay_window().playback_controls_container_for_testing();
+  ASSERT_NE(nullptr, playback_controls_container);
+
+  // Initially, the playback_controls_container should be drawn.
+  EXPECT_TRUE(playback_controls_container->IsDrawn());
+
+  // Verify that the playback_controls_container is hidden.
+  overlay_window().SetPlaybackControlsVisibility(false);
+  WaitForLayout();
+  EXPECT_FALSE(playback_controls_container->IsDrawn());
+
+  // Providing a new surface should restore the playback_controls_container.
+  const viz::SurfaceId surface_id(viz::FrameSinkId(1, 1),
+                                  viz::LocalSurfaceId());
+  overlay_window().SetSurfaceId(surface_id);
+  WaitForLayout();
+  EXPECT_TRUE(playback_controls_container->IsDrawn());
+}
+
 TEST_F(VideoOverlayWindowViewsTest, TopControlsAreAlwaysOnTheRight) {
   const gfx::Rect work_area(0, 0, 4000, 4000);
   SetDisplayWorkArea(work_area);

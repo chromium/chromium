@@ -77,6 +77,7 @@ class VideoOverlayWindow {
       const std::vector<media_session::MediaImage>& images) = 0;
 
   virtual void SetSurfaceId(const viz::SurfaceId& surface_id) = 0;
+  virtual void SetPlaybackControlsVisibility(bool is_visible) = 0;
 };
 
 }  // namespace content

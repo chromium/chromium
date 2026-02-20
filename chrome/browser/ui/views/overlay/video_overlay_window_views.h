@@ -105,6 +105,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetFaviconImages(
       const std::vector<media_session::MediaImage>& images) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
+  void SetPlaybackControlsVisibility(bool is_visible) override;
 
   // views::Widget:
   bool IsActive() const override;
@@ -223,6 +224,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   ui::Layer* video_layer_for_testing() const;
   views::View* window_background_view_for_testing() const {
     return window_background_view_;
+  }
+  views::View* playback_controls_container_for_testing() const {
+    return playback_controls_container_view_;
   }
   views::View* title_view_for_testing() const;
   views::View* controls_top_scrim_view_for_testing() const;
@@ -566,6 +570,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Set to true if the user interacts with the window before the
   // `initial_title_hide_timer_` fires.
   bool user_interacted_before_timer_fired_ = false;
+
+  // True if the playback controls should be visible.
+  bool show_playback_controls_ = true;
 
   base::WeakPtrFactory<VideoOverlayWindowViews> weak_factory_{this};
 };

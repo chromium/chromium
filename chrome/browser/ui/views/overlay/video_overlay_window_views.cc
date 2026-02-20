@@ -1602,7 +1602,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     playback_controls_container_view_->SetVisible(false);
     return;
   }
-  playback_controls_container_view_->SetVisible(true);
+  playback_controls_container_view_->SetVisible(show_playback_controls_);
   vc_controls_container_view_->SetVisible(false);
 
   play_pause_controls_view_->SetPosition(center_control_position);
@@ -1952,6 +1952,11 @@ void VideoOverlayWindowViews::SetFaviconImages(
 }
 
 void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
+  if (!show_playback_controls_) {
+    show_playback_controls_ = true;
+    OnUpdateControlsBounds();
+  }
+
   // The PiP window may have a previous surface set. If the window stays open
   // since then, we need to unregister the previous frame sink; otherwise the
   // surface frame sink should already be removed when the window closed.
@@ -1965,6 +1970,15 @@ void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
       GetColorProvider()->GetColor(kColorPipWindowBackground),
       cc::DeadlinePolicy::UseDefaultDeadline(),
       true /* stretch_content_to_fill_bounds */);
+}
+
+void VideoOverlayWindowViews::SetPlaybackControlsVisibility(bool is_visible) {
+  if (show_playback_controls_ == is_visible) {
+    return;
+  }
+
+  show_playback_controls_ = is_visible;
+  OnUpdateControlsBounds();
 }
 
 void VideoOverlayWindowViews::OnNativeWidgetDestroying() {
