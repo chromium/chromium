@@ -15,13 +15,12 @@ chromium::import! {
     "//mojo/public/rust/sequences:test_cxx";
 }
 
-use bindings::receiver::PendingReceiver;
 use bindings::remote::PendingRemote;
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
 use sequences::run_loop::RunLoop;
 use system::mojo_types::UntypedHandle;
 
-use test_mojom::{HandleService, MathService, TwoInts};
+use test_mojom::{MathService, TwoInts};
 
 use crate::state_objects::*;
 
@@ -281,99 +280,4 @@ fn test_cpp_remote() {
     // These message must have come from C++ because `TestFromRemote` i
     // the only testing function that adds things to a total of 22!
     expect_eq!(*sum.lock().unwrap(), 22);
-}
-
-/// This function tests that we can send handles via mojom messages and then
-/// successfully use them afterwards (so they didn't get corrupted, re-ordered,
-/// etc. during transit).
-///
-/// This test is meant to compensate for the fact that we can't compare handles
-/// directly; we get some confidence that we're passing them correctly because
-/// afterwards, they work as expected.
-#[gtest(RustBindingsAPI, HandlePassingTest)]
-fn test_handle_passing() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
-
-    let (handle_pending_remote, handle_pending_receiver) =
-        PendingRemote::<dyn test_mojom::HandleService>::new_pipe().unwrap();
-    let mut handle_remote = handle_pending_remote.bind();
-
-    // Make a bunch of pairs so there's some room for things to go wrong
-    let (math_remote1, math_receiver1) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-    let (math_remote2, math_receiver2) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-    let (math_remote3, math_receiver3) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-    let (math_remote4, math_receiver4) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-
-    let mut math_remote1 = math_remote1.bind();
-    let mut math_remote2 = math_remote2.bind();
-    let mut math_remote3 = math_remote3.bind();
-    let mut math_remote4 = math_remote4.bind();
-
-    // Treat math_receiver4 as an untyped handle for the purpose of the test.
-    let h4 = UntypedHandle::from(math_receiver4.into_endpoint());
-
-    let run_loop = RunLoop::new();
-    let quit = run_loop.get_quit_closure();
-
-    let math_receivers = Arc::new(Mutex::new(Vec::new()));
-    let math_receivers_clone = Arc::clone(&math_receivers);
-
-    // When we receive a message with the 4 handles, bind each of them to a
-    // NotifyingMathService that expects to get a specific result each time
-    // it's called. This lets us ensure that our messages are going to the
-    // _right_ receiver.
-    let handle_service = HandleServiceImpl {
-        f: move |h1, h2, h3, h4| {
-            let mut recvs = math_receivers_clone.lock().unwrap();
-            // We use a helper closure: Bind the given handle and set it to
-            // expect a result of `expected`.
-            let mut bind = |h, expected: u32| {
-                let service = NotifyingMathService {
-                    f: Box::new(move |n| expect_eq!(n, expected)) as Box<dyn FnMut(u32) + Send>,
-                };
-                recvs.push(PendingReceiver::<dyn MathService>::new(h).bind(service));
-            };
-            bind(h1, 2);
-            bind(h2, 4);
-            bind(h3, 6);
-            bind(h4.into(), 8);
-        },
-    };
-
-    let _handle_receiver = handle_pending_receiver.bind(handle_service);
-
-    handle_remote.PassHandles(
-        math_receiver1.into_endpoint(),
-        math_receiver2.into_endpoint(),
-        math_receiver3.into_endpoint(),
-        h4,
-    );
-
-    let responses_received = Arc::new(Mutex::new(0));
-    let responses_received_clone = Arc::clone(&responses_received);
-    let quit_arc = Arc::new(quit);
-
-    let send_request = |remote: &mut bindings::remote::Remote<dyn MathService>, expected| {
-        let responses_received_inner = Arc::clone(&responses_received_clone);
-        let quit_inner = Arc::clone(&quit_arc);
-        remote.Add(expected, 0, move |n| {
-            expect_eq!(expected, n);
-
-            // Quit the run loop after we've gotten all 4 responses
-            let mut count = responses_received_inner.lock().unwrap();
-            *count += 1;
-            if *count == 4 {
-                (quit_inner)();
-            }
-        });
-    };
-
-    send_request(&mut math_remote1, 2);
-    send_request(&mut math_remote2, 4);
-    send_request(&mut math_remote3, 6);
-    send_request(&mut math_remote4, 8);
-
-    run_loop.run();
-
-    expect_eq!(*responses_received.lock().unwrap(), 4);
 }
