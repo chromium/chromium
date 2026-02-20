@@ -195,6 +195,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
   FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase, RenderedText);
   FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
                            DataErrorMakesElementInvalid);
+  FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
+                           InvalidUrlMakesElementInvalid);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseClickingEnabledTest,
                            UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseIntersectionTest,

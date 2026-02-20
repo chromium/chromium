@@ -187,10 +187,11 @@ void HTMLInstallElement::OnActivated() {
 
   mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
   if (!options) {
-    // TODO(crbug.com/462493894): Decide how to surface kDataError. For now,
-    // fire promptdismiss for all error cases.
     // TODO(crbug.com/481519343): Add long-term solution for error handling (a
     // separate error attribute linked to the install result, etc.).
+    // Disable the element to prevent future activations and inform the
+    // developer.
+    HandleInstallDataError();
     DispatchEvent(
         *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
     return;
