@@ -20,6 +20,18 @@ using media::cast::CastEnvironment;
 
 }
 
+MirroringGpuFactoriesFactory::UniquePtr MirroringGpuFactoriesFactory::Create(
+    scoped_refptr<CastEnvironment> cast_environment,
+    viz::Gpu& gpu,
+    base::OnceClosure context_lost_cb,
+    ContextConfiguredCallback context_configured_cb) {
+  return UniquePtr(new MirroringGpuFactoriesFactory(
+                       cast_environment, gpu, std::move(context_lost_cb),
+                       std::move(context_configured_cb)),
+                   base::OnTaskRunnerDeleter(cast_environment->GetTaskRunner(
+                       CastEnvironment::ThreadId::kVideo)));
+}
+
 MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
     scoped_refptr<CastEnvironment> cast_environment,
     viz::Gpu& gpu,
@@ -30,16 +42,9 @@ MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
       context_lost_cb_(std::move(context_lost_cb)),
       context_configured_cb_(std::move(context_configured_cb)) {}
 
-MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
-    MirroringGpuFactoriesFactory&&) = default;
-MirroringGpuFactoriesFactory& MirroringGpuFactoriesFactory::operator=(
-    MirroringGpuFactoriesFactory&&) = default;
-
 MirroringGpuFactoriesFactory::~MirroringGpuFactoriesFactory() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
-  if (instance_) {
-    DestroyInstanceOnVideoThread();
-  }
+  ResetGpuFactories();
 }
 
 media::GpuVideoAcceleratorFactories&
@@ -102,14 +107,9 @@ void MirroringGpuFactoriesFactory::BindOnVideoThread() {
 
   auto* command_buffer_proxy = context_provider_->GetCommandBufferProxy();
   if (command_buffer_proxy) {
-    // The `base::Unretained(this)` is safe because if `OnContextLost()` is
-    // called before `OnChannelTokenReady()` executes, `context_provider_`
-    // (which owns the `CommandBufferProxy`) will be reset, implicitly
-    // cancelling any pending `GetChannelToken` callbacks. Thus,
-    // `OnChannelTokenReady()` will not be invoked on a destroyed `this`.
     command_buffer_proxy->GetGpuChannel().GetChannelToken(base::BindOnce(
         &MirroringGpuFactoriesFactory::OnChannelTokenReady,
-        base::Unretained(this), command_buffer_proxy->route_id()));
+        weak_factory_.GetWeakPtr(), command_buffer_proxy->route_id()));
   }
 }
 
@@ -127,24 +127,23 @@ void MirroringGpuFactoriesFactory::OnChannelTokenReady(
 
 void MirroringGpuFactoriesFactory::OnContextLost() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
+  ResetGpuFactories();
   if (context_lost_cb_) {
-    if (instance_) {
-      DestroyInstanceOnVideoThread();
-    }
     // `context_lost_cb_` may destroy `this`, so it is important that it is
     // called last in this method.
     std::move(context_lost_cb_).Run();
   }
 }
 
-void MirroringGpuFactoriesFactory::DestroyInstanceOnVideoThread() {
+void MirroringGpuFactoriesFactory::ResetGpuFactories() {
   // The GPU factories object, after construction, must only be accessed on the
   // video encoding thread (including for deletion).
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
-  CHECK(instance_);
   instance_.reset();
-  context_provider_->RemoveObserver(this);
-  context_provider_ = nullptr;
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+    context_provider_ = nullptr;
+  }
 }
 
 }  // namespace mirroring

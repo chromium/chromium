@@ -469,9 +469,15 @@ void OpenscreenSessionHost::OnNegotiated(
     resource_provider_->GetVideoEncoderMetricsProvider(
         metrics_provider_pending_remote.InitWithNewPipeAndPassReceiver());
 
+    // We cannot reasonably use a hardware encoder if there is no GPU, and can
+    // attempt to fallback to software (if available).
+    if (video_config->use_hardware_encoder && !gpu_) {
+      video_config->use_hardware_encoder = false;
+    }
+
     media::GpuVideoAcceleratorFactories* gpu_factories = nullptr;
     if (video_config->use_hardware_encoder) {
-      gpu_factories_factory_ = std::make_unique<MirroringGpuFactoriesFactory>(
+      gpu_factories_factory_ = MirroringGpuFactoriesFactory::Create(
           cast_environment_, *gpu_,
           base::BindPostTask(
               base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -481,7 +487,7 @@ void OpenscreenSessionHost::OnNegotiated(
               base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(&OpenscreenSessionHost::OnGpuFactoriesConfigured,
                              weak_factory_.GetWeakPtr())));
-      gpu_factories = &gpu_factories_factory_->GetInstance();
+      gpu_factories = &(gpu_factories_factory_.value()->GetInstance());
     }
 
     auto video_encoder = media::cast::VideoEncoder::Create(
@@ -823,14 +829,7 @@ void OpenscreenSessionHost::StopStreaming() {
   PauseCapturingVideo();
   audio_stream_.reset();
   video_stream_.reset();
-
-  // The factory should be deleted on the VIDEO thread to ensure it is not
-  // deleted before BindOnVideoThread() can be called.
-  if (gpu_factories_factory_) {
-    cast_environment_
-        ->GetTaskRunner(media::cast::CastEnvironment::ThreadId::kVideo)
-        ->DeleteSoon(FROM_HERE, std::move(gpu_factories_factory_));
-  }
+  gpu_factories_factory_.reset();
 }
 
 void OpenscreenSessionHost::StopSession() {
@@ -990,9 +989,6 @@ void OpenscreenSessionHost::OnGpuFactoryContextLost(
   CHECK(config.use_hardware_encoder);
   CHECK_EQ(state_, State::kMirroring);
 
-  // The factory's instance is no longer valid.
-  // TODO(crbug.com/402802379): instead of deleting the factory, we could just
-  // call GetInstance again and do a partial re-setup of the video stream stack.
   gpu_factories_factory_.reset();
   channel_token_ = base::UnguessableToken();
   route_id_ = 0;

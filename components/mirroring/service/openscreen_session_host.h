@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_SESSION_HOST_H_
 #define COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_SESSION_HOST_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -351,7 +352,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   std::unique_ptr<viz::Gpu> gpu_;
   SupportedProfiles supported_profiles_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
-  std::unique_ptr<MirroringGpuFactoriesFactory> gpu_factories_factory_;
+  std::optional<MirroringGpuFactoriesFactory::UniquePtr> gpu_factories_factory_;
   std::vector<media::cast::ReceiveVideoEncodeAcceleratorCallback>
       pending_vea_requests_;
   base::UnguessableToken channel_token_;
