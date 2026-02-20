@@ -38,7 +38,9 @@ CdmFileAdapter::~CdmFileAdapter() {
   CHECK(!open_cb_);
   CHECK(!read_cb_);
   CHECK(!write_cb_);
-  file_io_->Close();
+  if (file_io_) {
+    file_io_.ExtractAsDangling()->Close();
+  }
 }
 
 void CdmFileAdapter::Open(const std::string& name, FileOpenedCB open_cb) {

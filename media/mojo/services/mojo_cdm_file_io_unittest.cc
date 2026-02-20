@@ -96,10 +96,10 @@ class MojoCdmFileIOTest : public testing::Test, public MojoCdmFileIO::Delegate {
   void ReportFileReadSize(int file_size_bytes) override {}
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MojoCdmFileIO> file_io_;
   std::unique_ptr<MockFileIOClient> client_;
   std::unique_ptr<MockCdmStorage> cdm_storage_;
   MockCdmFile cdm_file_;
+  std::unique_ptr<MojoCdmFileIO> file_io_;
 };
 
 TEST_F(MojoCdmFileIOTest, OpenFile) {
