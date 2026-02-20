@@ -60,6 +60,13 @@ class DesktopBrowserWindowCapabilities {
   // //components/web_modal. See crbug.com/377820808.
   void SetWebContentsBlocked(content::WebContents* web_contents, bool blocked);
 
+  // Returns true if keyboard lock should be allowed for the given inner
+  // WebContents hosted in this window. Currently only returns true for tab
+  // WebContents in WebUI browser windows.
+  // TODO(crbug.com/480028270): Remove when SurfaceEmbed is enabled in webium.
+  bool AllowKeyboardLockForInnerContents(
+      content::WebContents* web_contents) const;
+
  private:
   // The associated delegate. Must outlive this class.
   raw_ptr<DesktopBrowserWindowCapabilitiesDelegate> delegate_ = nullptr;

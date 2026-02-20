@@ -614,6 +614,16 @@ class CONTENT_EXPORT WebContentsDelegate {
   // pointer lock permission request dialog.
   virtual bool IsWaitingForPointerLockPrompt(WebContents* web_contents);
 
+  // Returns true if keyboard lock should be allowed for |web_contents| when
+  // it is an inner WebContents (i.e. GetOuterWebContents() is non-null).
+  // Defaults to false, which blocks keyboard lock for most inner WebContents.
+  // Override to return true for embedders that host top-level browser tabs
+  // as inner WebContents.
+  // TODO(crbug.com/480028270): Remove this when tab WebContents are embedded
+  // via SurfaceEmbed in webium, for which GetOuterWebContents() will be null
+  // and keyboard lock will work without this opt-in.
+  virtual bool AllowKeyboardLockForInnerContents(WebContents* web_contents);
+
   // Requests keyboard lock. Once the request is approved or rejected,
   // GotResponseToKeyboardLockRequest() will be called on |web_contents|.
   virtual void RequestKeyboardLock(WebContents* web_contents,

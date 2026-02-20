@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -95,6 +96,28 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, StartupAndShutdown) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+}
+
+// Verifies that WebUIBrowserWindow allows keyboard lock for tab WebContents.
+// Tabs in WebUIBrowserWindow are inner WebContents, so this must return true
+// for keyboard lock to work.
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+#define MAYBE_AllowKeyboardLockForInnerContents \
+  DISABLED_AllowKeyboardLockForInnerContents
+#else
+#define MAYBE_AllowKeyboardLockForInnerContents \
+  AllowKeyboardLockForInnerContents
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
+                       MAYBE_AllowKeyboardLockForInnerContents) {
+  auto* capabilities = DesktopBrowserWindowCapabilities::From(browser());
+  ASSERT_TRUE(capabilities);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(capabilities->AllowKeyboardLockForInnerContents(web_contents));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

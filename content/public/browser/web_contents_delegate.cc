@@ -233,6 +233,11 @@ void WebContentsDelegate::RequestPointerLock(WebContents* web_contents,
       blink::mojom::PointerLockResult::kUnknownError);
 }
 
+bool WebContentsDelegate::AllowKeyboardLockForInnerContents(
+    WebContents* web_contents) {
+  return false;
+}
+
 void WebContentsDelegate::RequestKeyboardLock(WebContents* web_contents,
                                               bool esc_key_locked) {
   // Notify `web_contents` that the request is accepted and the JavaScript

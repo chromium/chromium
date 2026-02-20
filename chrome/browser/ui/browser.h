@@ -994,6 +994,8 @@ class Browser : public TabStripModelObserver,
   void LostPointerLock() override;
   bool IsWaitingForPointerLockPrompt(
       content::WebContents* web_contents) override;
+  bool AllowKeyboardLockForInnerContents(
+      content::WebContents* web_contents) override;
   void RequestKeyboardLock(content::WebContents* web_contents,
                            bool esc_key_locked) override;
   void CancelKeyboardLockRequest(content::WebContents* web_contents) override;

@@ -2765,6 +2765,10 @@ bool Browser::IsWaitingForPointerLockPrompt(WebContents* web_contents) {
       ->IsWaitingForPointerLockPrompt(web_contents);
 }
 
+bool Browser::AllowKeyboardLockForInnerContents(WebContents* web_contents) {
+  return capabilities()->AllowKeyboardLockForInnerContents(web_contents);
+}
+
 void Browser::RequestKeyboardLock(WebContents* web_contents,
                                   bool esc_key_locked) {
   browser_window_features()

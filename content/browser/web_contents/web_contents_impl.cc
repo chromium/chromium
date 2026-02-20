@@ -5184,8 +5184,12 @@ bool WebContentsImpl::RequestKeyboardLock(
   }
 
   // KeyboardLock is only supported when called by the top-level browsing
-  // context and is not supported in embedded content scenarios.
-  if (GetOuterWebContents()) {
+  // context and is not supported in embedded content scenarios such as
+  // GuestView guests (<webview> tags, PDF viewer). However, some embedders
+  // (e.g. WebUIBrowserWindow) attach top-level tabs as inner WebContents and
+  // opt in via AllowKeyboardLockForInnerContents().
+  if (GetOuterWebContents() &&
+      (!delegate_ || !delegate_->AllowKeyboardLockForInnerContents(this))) {
     render_widget_host->GotResponseToKeyboardLockRequest(false);
     return false;
   }
@@ -7016,8 +7020,12 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
     return false;
   }
   // KeyboardLock is only supported when called by the top-level browsing
-  // context and is not supported in embedded content scenarios.
-  if (GetOuterWebContents()) {
+  // context and is not supported in embedded content scenarios such as
+  // GuestView guests (<webview> tags, PDF viewer). However, some embedders
+  // (e.g. WebUIBrowserWindow) attach top-level tabs as inner WebContents and
+  // opt in via AllowKeyboardLockForInnerContents().
+  if (GetOuterWebContents() &&
+      (!delegate_ || !delegate_->AllowKeyboardLockForInnerContents(this))) {
     keyboard_lock_widget_->GotResponseToKeyboardLockRequest(false);
     return false;
   }
