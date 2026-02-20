@@ -89,7 +89,7 @@ class DriveFilePickerCollection {
   std::unique_ptr<DriveFilePickerCollection> GetSharedWithMe() const;
 
  private:
-  // The identity of the user.
+  // The identity of the user. Non-nil.
   const id<SystemIdentity> identity_;
   // The title of the collection.
   NSString* const title_;

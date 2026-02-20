@@ -20,6 +20,7 @@ NSString* const kMyDriveFolderIdentifier = @"root";
 
 std::unique_ptr<DriveFilePickerCollection> DriveFilePickerCollection::GetRoot(
     id<SystemIdentity> root_identity) {
+  CHECK(root_identity);
   return std::make_unique<DriveFilePickerCollection>(
       root_identity, nil, DriveFilePickerCollectionType::kRoot, nil,
       std::nullopt);

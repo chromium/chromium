@@ -105,6 +105,7 @@
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
 
+  CHECK(_currentIdentity);
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
                  collection:DriveFilePickerCollection::GetRoot(_currentIdentity)
@@ -181,6 +182,7 @@
     return;
   }
   CHECK(_mediator);
+  CHECK(selectedIdentity);
   [_metricsHelper reportAccountChangeWithSuccess:YES isAccountNew:NO];
   [self updateCurrentIdentityWithIdentity:selectedIdentity];
 }
@@ -305,6 +307,7 @@
                              (id<SystemIdentity>)completionIdentity {
   CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   if (result == SigninCoordinatorResultSuccess) {
+    CHECK(completionIdentity);
     [self addAndSelectNewIdentity:completionIdentity];
   } else {
     [self reportAddingIdentityFailure];
@@ -399,6 +402,7 @@
 // already registered or a newly added identity.
 - (void)updateCurrentIdentityWithIdentity:(id<SystemIdentity>)identity {
   _currentIdentity = identity;
+  CHECK(identity);
   [_navigationController popToRootViewControllerAnimated:YES];
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
@@ -408,6 +412,7 @@
 // Adds a new identity to be the current identity.
 - (void)addAndSelectNewIdentity:(id<SystemIdentity>)identity {
   CHECK(_mediator);
+  CHECK(identity);
   [_metricsHelper reportAccountChangeWithSuccess:YES isAccountNew:YES];
   [self updateCurrentIdentityWithIdentity:identity];
 }

@@ -1114,6 +1114,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 
   __weak __typeof(self) weakSelf = self;
   auto actionResult = ^(id<SystemIdentity> identity) {
+    CHECK(identity);
     [weakSelf.driveFilePickerHandler
         setDriveFilePickerSelectedIdentity:identity];
   };
