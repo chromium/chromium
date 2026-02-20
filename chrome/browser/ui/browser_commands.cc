@@ -2196,14 +2196,7 @@ void ToggleVerticalTabs(Browser* browser) {
   if (!controller) {
     return;
   }
-
-  bool initial_tab_orientation = controller->ShouldDisplayVerticalTabs();
-
-  controller->SetVerticalTabsEnabled(!initial_tab_orientation);
-
-  base::RecordAction(UserMetricsAction(initial_tab_orientation
-                                           ? "SwitchToHorizontalTabStrip"
-                                           : "SwitchToVerticalTabStrip"));
+  controller->SetVerticalTabsEnabled(!controller->ShouldDisplayVerticalTabs());
 }
 
 void ShowTabDeclutter(Browser* browser) {

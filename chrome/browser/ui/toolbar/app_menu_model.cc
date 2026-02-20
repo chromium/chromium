@@ -1875,6 +1875,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS);
       break;
+    case IDC_TOGGLE_VERTICAL_TABS:
+      if (auto* controller =
+              tabs::VerticalTabStripStateController::From(browser_)) {
+        base::RecordAction(
+            UserMetricsAction(controller->ShouldDisplayVerticalTabs()
+                                  ? "SwitchToHorizontalTabStrip_FromAppMenu"
+                                  : "SwitchToVerticalTabStrip_FromAppMenu"));
+      }
+      break;
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {

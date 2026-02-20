@@ -167,6 +167,12 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
       base::RecordAction(
           base::UserMetricsAction("SystemContextMenu_NameWindow"));
       break;
+    case IDC_TOGGLE_VERTICAL_TABS:
+      base::RecordAction(base::UserMetricsAction(
+          tabs::VerticalTabStripStateController::From(browser_)
+              ? "SwitchToHorizontalTabStrip_FromSystemContextMenu"
+              : "SwitchToVerticalTabStrip_FromSystemContextMenu"));
+      break;
   }
   chrome::ExecuteCommand(browser_, command_id);
 }

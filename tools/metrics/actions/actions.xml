@@ -48920,12 +48920,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SwitchToHorizontalTabStrip">
-  <owner>agale@chromium.org</owner>
+<action name="SwitchToHorizontalTabStrip_FromAppMenu">
+  <owner>kunaldaftari@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    Recorded when the user switches to horizontal tab strip mode via the frame
-    context menu. This user action only applies to Desktop.
+    Recorded when the user switches to horizontal tab strip mode via the app
+    menu. This user action only applies to Desktop.
   </description>
 </action>
 
@@ -48938,12 +48938,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SwitchToVerticalTabStrip">
-  <owner>agale@chromium.org</owner>
+<action name="SwitchToHorizontalTabStrip_FromSystemContextMenu">
+  <owner>kunaldaftari@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    Recorded when the user switches to vertical tab strip mode via the frame
+    Recorded when the user switches to horizontal tab strip mode via the system
     context menu. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToHorizontalTabStrip_FromTabContextMenu">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to horizontal tab strip mode via the tab
+    context menu. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip_FromAppMenu">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode via the app menu.
+    This user action only applies to Desktop.
   </description>
 </action>
 
@@ -48953,6 +48971,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user switches to vertical tab strip mode via the settings
     page. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip_FromSystemContextMenu">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode via the system
+    context menu. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip_FromTabContextMenu">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode via the tab
+    context menu. This user action only applies to Desktop.
   </description>
 </action>
 
