@@ -67,6 +67,34 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
     }
 
     /**
+     * DO NOT USE
+     *
+     * @deprecated This is only kept for the sake of backward compatibility with downstream
+     *     consumers.
+     */
+    @Deprecated
+    public UrlResponseInfoImpl(
+            List<String> urlChain,
+            int httpStatusCode,
+            String httpStatusText,
+            List<Map.Entry<String, String>> allHeadersList,
+            boolean wasCached,
+            String negotiatedProtocol,
+            String proxyServer,
+            long receivedByteCount) {
+        this(
+                urlChain,
+                httpStatusCode,
+                httpStatusText,
+                allHeadersList,
+                wasCached,
+                negotiatedProtocol,
+                proxyServer,
+                receivedByteCount,
+                /* isProxied= */ false);
+    }
+
+    /**
      * Creates an implementation of {@link UrlResponseInfo}.
      *
      * @param urlChain the URL chain. The first entry is the originally requested URL; the following
