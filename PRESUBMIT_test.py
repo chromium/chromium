@@ -6252,5 +6252,82 @@ class TestCheckSettingsChanges(unittest.TestCase):
         self.assertEqual(len(self.mock_output.more_cc), 0)
 
 
+class CheckNoMainLayoutSwitcherTest(unittest.TestCase):
+
+    def testPositive(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('some/other/File.java', ['something']),
+        ]
+        results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
+                                                      MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testNegative(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java',
+                ['something']),
+        ]
+        results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
+                                                      MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+
+    def testNegativeWithWindowsPath(self):
+        # Simulate Windows path with backslashes
+        windows_path = 'chrome\\android\\java\\src\\org\\chromium\\chrome\\browser\\app\\MainLayoutSwitcher.java'
+
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(windows_path, ['something']),
+        ]
+        results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
+                                                      MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+
+    def testBypassTagTrue(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java',
+                ['something']),
+        ]
+        mock_input_api.change.footers = {
+            'Allow-MainLayoutSwitcher-Changes': ['true']
+        }
+        results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
+                                                      MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testBypassTagFalse(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java',
+                ['something']),
+        ]
+        mock_input_api.change.footers = {
+            'Allow-MainLayoutSwitcher-Changes': ['false']
+        }
+        results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
+                                                      MockOutputApi())
+        self.assertEqual(1, len(results))
+
+    def testDelete(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java',
+                ['something'],
+                action='D'),
+        ]
+        results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
+                                                      MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
 if __name__ == '__main__':
     unittest.main()
