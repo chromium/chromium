@@ -182,7 +182,8 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
   // CSSParserLocalContext with custom property name just to keep it consistent
   // in case we need it in the future.
   CSSParserLocalContext local_context(CSSPropertyName(name),
-                                      CSSPropertyID::kInvalid);
+                                      CSSPropertyID::kInvalid,
+                                      /*custom_function_name=*/g_null_atom);
   std::optional<const CSSValue*> initial = ConvertInitial(
       rule.GetInitialValue(), *syntax, *parser_context, local_context);
   if (!initial.has_value()) {
@@ -237,7 +238,8 @@ void PropertyRegistration::registerProperty(
     // This is called in JS `resolveValues` and we don't have a property context
     // at that time.
     CSSParserLocalContext local_context(CSSPropertyName(atomic_name),
-                                        CSSPropertyID::kInvalid);
+                                        CSSPropertyID::kInvalid,
+                                        /*custom_function_name=*/g_null_atom);
     initial = syntax_definition->Parse(property_definition->initialValue(),
                                        *parser_context, local_context,
                                        is_animation_tainted);

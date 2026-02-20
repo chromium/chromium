@@ -65,6 +65,10 @@ const AtomicString CSSParserLocalContext::PropertyNameAndRandomCount() const {
     // [0] https://drafts.csswg.org/css-values-5/#random-caching-key
     // [1] https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
     str.Append("PROPERTY ");
+    if (custom_function_name_) {
+      str.Append(custom_function_name_);
+      str.Append(" ");
+    }
     CSSPropertyName resolved_property_name = *unresolved_property_name_;
     if (current_shorthand_ != CSSPropertyID::kInvalid) {
       resolved_property_name = CSSPropertyName(current_shorthand_);

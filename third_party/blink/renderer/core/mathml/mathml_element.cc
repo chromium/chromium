@@ -154,7 +154,8 @@ const CSSPrimitiveValue* MathMLElement::ParseMathLength(
   // specified.
   CSSParserLocalContext local_context(
       CSSPropertyName(AtomicString(attr_name.ToString())),
-      CSSPropertyID::kInvalid);
+      CSSPropertyID::kInvalid,
+      /*custom_function_name=*/g_null_atom);
   const CSSPrimitiveValue* parsed_value = CSSParser::ParseLengthPercentage(
       value,
       StrictCSSParserContext(GetExecutionContext()->GetSecureContextMode()),

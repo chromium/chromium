@@ -91,10 +91,14 @@ class CORE_EXPORT CSSParserLocalContext {
 
   // For standard CSS properties, need to pass CSSPropertyName with unresolved
   // property id.
+  // `custom_function` parameter is used for values defined in CSS @function
+  // arguments, result values and local variables.
   explicit CSSParserLocalContext(CSSPropertyName property_name,
-                                 CSSPropertyID current_shorthand)
+                                 CSSPropertyID current_shorthand,
+                                 const AtomicString& custom_function_name)
       : current_shorthand_(current_shorthand),
-        unresolved_property_name_(property_name) {}
+        unresolved_property_name_(property_name),
+        custom_function_name_(custom_function_name) {}
 
   void SetCurrentShorthand(CSSPropertyID current_shorthand) {
     current_shorthand_ = current_shorthand;
@@ -102,6 +106,10 @@ class CORE_EXPORT CSSParserLocalContext {
 
   void SetUnresolvedProperty(CSSPropertyName property_name) {
     unresolved_property_name_ = property_name;
+  }
+
+  void SetCustomFunctionName(const AtomicString& custom_function_name) {
+    custom_function_name_ = custom_function_name;
   }
 
   void IncrementRandomValueCount() { ++random_value_count_; }
@@ -172,6 +180,11 @@ class CORE_EXPORT CSSParserLocalContext {
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
   std::optional<CSSPropertyName> unresolved_property_name_;
   HeapVector<CSSValueID> functions_stack_;
+
+  // TODO(crbug.com/413385732): We might have the same function name between
+  // different tree scopes, then we need to make CSSParserLocalContext aware
+  // of tree scope name.
+  AtomicString custom_function_name_ = g_null_atom;
 
   wtf_size_t random_value_count_ = 0;
 };
