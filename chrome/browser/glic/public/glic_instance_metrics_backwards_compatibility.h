@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_METRICS_BACKWARDS_COMPATIBILITY_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_METRICS_BACKWARDS_COMPATIBILITY_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace glic {
 
@@ -16,6 +21,14 @@ namespace glic {
 class GlicInstanceMetricsBackwardsCompatibility {
  public:
   virtual ~GlicInstanceMetricsBackwardsCompatibility() = default;
+
+  virtual void OnUserInputSubmitted(mojom::WebClientMode mode) = 0;
+  virtual void DidRequestContextFromTab(tabs::TabInterface& tab) = 0;
+  virtual void OnResponseStarted() = 0;
+  virtual void OnResponseStopped(mojom::ResponseStopCause cause) = 0;
+  virtual void OnTurnCompleted(mojom::WebClientModel model,
+                               base::TimeDelta duration) = 0;
+  virtual void OnReaction(mojom::MetricUserInputReactionType reaction_type) = 0;
 
   // Called when glic requests a scroll.
   virtual void OnGlicScrollAttempt() = 0;

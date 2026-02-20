@@ -131,6 +131,14 @@ class EmptyInstanceDelegate : public Host::InstanceDelegate {
   class MetricsBackwardsCompatibilityStub
       : public GlicInstanceMetricsBackwardsCompatibility {
    public:
+    void OnUserInputSubmitted(mojom::WebClientMode mode) override {}
+    void DidRequestContextFromTab(tabs::TabInterface& tab) override {}
+    void OnResponseStarted() override {}
+    void OnResponseStopped(mojom::ResponseStopCause cause) override {}
+    void OnTurnCompleted(mojom::WebClientModel model,
+                         base::TimeDelta duration) override {}
+    void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
+    }
     void OnGlicScrollAttempt() override {}
     void OnGlicScrollComplete(bool success) override {}
   };

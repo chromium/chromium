@@ -130,6 +130,13 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   GlicInstanceMetrics& operator=(const GlicInstanceMetrics&) = delete;
 
   // `GlicInstanceMetricsBackwardsCompatibility`:
+  void OnUserInputSubmitted(mojom::WebClientMode mode) override;
+  void DidRequestContextFromTab(tabs::TabInterface& tab) override;
+  void OnResponseStarted() override;
+  void OnResponseStopped(mojom::ResponseStopCause cause) override;
+  void OnTurnCompleted(mojom::WebClientModel model,
+                       base::TimeDelta duration) override;
+  void OnReaction(mojom::MetricUserInputReactionType reaction_type) override;
   void OnGlicScrollAttempt() override;
   void OnGlicScrollComplete(bool success) override;
 
@@ -222,11 +229,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when GlicInstanceImpl::ResumeActorTask is called.
   void OnResumeActorTask();
 
-  // Called when GlicInstanceImpl::InterruptActorTask is called.
-  void InterruptActorTask();
-
   // Called when GlicInstanceImpl::UninterruptActorTask is called.
   void UninterruptActorTask();
+
+  // Called when GlicInstanceImpl::InterruptActorTask is called.
+  void InterruptActorTask();
 
   // Called when GlicInstanceImpl::WebUiStateChanged is called.
   void OnWebUiStateChanged(mojom::WebUiState state);
@@ -234,17 +241,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the client is ready to show.
   void OnClientReady(EmbedderType type);
 
-  // Turn metrics.
-  void OnUserInputSubmitted(mojom::WebClientMode mode);
-  void DidRequestContextFromFocusedTab();
-  void OnResponseStarted();
-  void OnResponseStopped(mojom::ResponseStopCause cause);
-  void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
-
   void OnUserResizeStarted(const gfx::Size& start_size);
   void OnUserResizeEnded(const gfx::Size& end_size);
-
-  void OnReaction(mojom::MetricUserInputReactionType reaction_type);
 
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
@@ -277,6 +275,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     EmbedderType ui_mode_ = EmbedderType::kUnknown;
     mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
     bool pending_scroll_complete_ = false;
+    ukm::SourceId chosen_source_id_ = ukm::NoURLSourceId();
   };
 
   // Logs the given event to the EventTotals histogram, and if the count is 0,

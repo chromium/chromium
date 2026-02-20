@@ -213,6 +213,37 @@ TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   metrics_.OnResponseStarted();
   metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseInputSubmit"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseStart"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponse"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseStop"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseStopByUser"));
+}
+
+TEST_F(GlicInstanceMetricsTest, OnTurnCompleted_LogsHistograms) {
+  metrics_.OnTurnCompleted(mojom::WebClientModel::kDefault,
+                           base::Milliseconds(100));
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Turn.Duration.Default",
+                                           base::Milliseconds(100), 1);
+
+  metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
+                           base::Milliseconds(200));
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Turn.Duration.Actor",
+                                           base::Milliseconds(200), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, OnReaction_LogsUserActions) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  metrics_.OnReaction(mojom::MetricUserInputReactionType::kCanned);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicReactionCanned"));
+
+  metrics_.OnReaction(mojom::MetricUserInputReactionType::kModel);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicReactionModelled"));
 }
 
 TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {
