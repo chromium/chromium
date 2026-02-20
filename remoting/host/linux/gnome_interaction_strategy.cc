@@ -15,7 +15,6 @@
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/curtain_mode.h"
-#include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/desktop_resizer_proxy.h"
@@ -30,6 +29,7 @@
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
+#include "remoting/protocol/desktop_capturer_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -105,8 +105,6 @@ std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto proxy = std::make_unique<DesktopCapturerProxy>(
       base::SequencedTaskRunner::GetCurrentDefault());
-  proxy->set_supports_frame_callbacks(
-      PipewireDesktopCapturer::kSupportsFrameCallbacks);
   base::WeakPtr<CaptureStream> stream =
       remote_desktop_session_->capture_stream_manager()->GetStream(id);
   if (stream) {

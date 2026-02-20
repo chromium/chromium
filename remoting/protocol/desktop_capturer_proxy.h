@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_DESKTOP_CAPTURER_PROXY_H_
-#define REMOTING_HOST_DESKTOP_CAPTURER_PROXY_H_
+#ifndef REMOTING_PROTOCOL_DESKTOP_CAPTURER_PROXY_H_
+#define REMOTING_PROTOCOL_DESKTOP_CAPTURER_PROXY_H_
 
 #include <cstdint>
 #include <memory>
@@ -25,7 +25,7 @@
 
 namespace remoting {
 
-// DesktopCapturerProxy is responsible for calling webrtc::DesktopCapturer on
+// DesktopCapturerProxy is responsible for calling remoting::DesktopCapturer on
 // the capturer thread and then returning results to the caller's thread.
 // GetSourceList() is not implemented by this class, it always returns false.
 class DesktopCapturerProxy : public DesktopCapturer {
@@ -41,16 +41,16 @@ class DesktopCapturerProxy : public DesktopCapturer {
   // CreateCapturer() should be used if the capturer needs to be created on the
   // capturer thread. Otherwise, the capturer can be passed to set_capturer().
   void CreateCapturer(
-      base::OnceCallback<std::unique_ptr<webrtc::DesktopCapturer>()> creator);
+      base::OnceCallback<std::unique_ptr<DesktopCapturer>()> creator);
   base::WeakPtr<DesktopCapturerProxy> GetWeakPtr();
-  void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer);
+  void set_capturer(std::unique_ptr<DesktopCapturer> capturer);
 
   // Returns a callback that can be used to safely set the capturer from any
   // thread.
-  base::OnceCallback<void(std::unique_ptr<webrtc::DesktopCapturer>)>
+  base::OnceCallback<void(std::unique_ptr<DesktopCapturer>)>
   GetSetCapturerCallback();
 
-  // webrtc::DesktopCapturer interface.
+  // DesktopCapturer interface.
   void Start(Callback* callback) override;
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
                                   shared_memory_factory) override;
@@ -58,16 +58,14 @@ class DesktopCapturerProxy : public DesktopCapturer {
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;
+  void Pause(bool pause) override;
+  void BoostCaptureRate(base::TimeDelta capture_interval,
+                        base::TimeDelta duration) override;
+
 #if defined(WEBRTC_USE_GIO)
   void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
                             callback) override;
 #endif
-
-  bool SupportsFrameCallbacks() const override;
-
-  void set_supports_frame_callbacks(bool supports_frame_callbacks) {
-    supports_frame_callbacks_ = supports_frame_callbacks;
-  }
 
  private:
   class Core;
@@ -82,8 +80,6 @@ class DesktopCapturerProxy : public DesktopCapturer {
       webrtc::DesktopCaptureMetadata metadata);
 #endif
 
-  bool supports_frame_callbacks_ = false;
-
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SequencedTaskRunner> capture_task_runner_;
 
@@ -96,4 +92,4 @@ class DesktopCapturerProxy : public DesktopCapturer {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_DESKTOP_CAPTURER_PROXY_H_
+#endif  // REMOTING_PROTOCOL_DESKTOP_CAPTURER_PROXY_H_

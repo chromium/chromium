@@ -14,11 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_interaction_strategy.h"
 #include "remoting/host/linux/gnome_capture_stream_manager.h"
 #include "remoting/host/linux/gnome_remote_desktop_session.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/desktop_capturer_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -80,9 +80,8 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
   // Map to allow capturers pending initialization to be initialized after the
   // corresponding pipewire stream is created, which may happen before or after
   // the capturer is created.
-  base::flat_map<
-      webrtc::ScreenId,
-      base::OnceCallback<void(std::unique_ptr<webrtc::DesktopCapturer>)>>
+  base::flat_map<webrtc::ScreenId,
+                 base::OnceCallback<void(std::unique_ptr<DesktopCapturer>)>>
       pending_set_desktop_capturer_callbacks_
           GUARDED_BY_CONTEXT(sequence_checker_);
 

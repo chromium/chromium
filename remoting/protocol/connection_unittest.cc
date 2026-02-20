@@ -24,6 +24,7 @@
 #include "remoting/protocol/audio_stream.h"
 #include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/desktop_capturer_wrapper.h"
 #include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/ice_connection_to_client.h"
@@ -389,6 +390,18 @@ class ConnectionTest : public testing::Test,
     }
   }
 
+  std::unique_ptr<DesktopCapturer> WrapTestCapturer(
+      std::unique_ptr<TestScreenCapturer> capturer) {
+    if (is_using_webrtc()) {
+      return std::make_unique<DesktopCapturerWrapper>(std::move(capturer));
+    }
+    return capturer;
+  }
+
+  std::unique_ptr<DesktopCapturer> CreateTestCapturer() {
+    return WrapTestCapturer(std::make_unique<TestScreenCapturer>());
+  }
+
   void WaitNextVideoFrame() {
     size_t received_frames =
         is_using_webrtc()
@@ -568,8 +581,7 @@ TEST_P(ConnectionTest, MAYBE_Video) {
   Connect();
 
   std::unique_ptr<VideoStream> video_stream =
-      host_connection_->StartVideoStream(
-          0, std::make_unique<TestScreenCapturer>());
+      host_connection_->StartVideoStream(0, CreateTestCapturer());
 
   // Receive 5 frames.
   for (int i = 0; i < 5; ++i) {
@@ -593,8 +605,7 @@ TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
   Connect();
 
   std::unique_ptr<VideoStream> video_stream =
-      host_connection_->StartVideoStream(
-          0, base::WrapUnique(new TestScreenCapturer()));
+      host_connection_->StartVideoStream(0, CreateTestCapturer());
 
   WaitNextVideoFrame();
 }
@@ -640,14 +651,13 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
 
   scoped_refptr<InputEventTimestampsSourceImpl> input_event_timestamps_source =
       new InputEventTimestampsSourceImpl();
+
   input_event_timestamps_source->OnEventReceived(
       InputEventTimestamps{event_timestamp, start_time});
 
   std::unique_ptr<VideoStream> video_stream =
-      host_connection_->StartVideoStream(
-          0, std::make_unique<TestScreenCapturer>());
+      host_connection_->StartVideoStream(0, CreateTestCapturer());
   video_stream->SetEventTimestampsSource(input_event_timestamps_source);
-
   WaitNextVideoFrame();
 
   base::TimeTicks finish_time = base::TimeTicks::Now();
@@ -705,10 +715,10 @@ TEST_P(ConnectionTest, MAYBE_Audio) {
 TEST_P(ConnectionTest, DISABLED_FirstCaptureFailed) {
   Connect();
 
-  auto capturer = std::make_unique<TestScreenCapturer>();
-  capturer->FailNthFrame(0);
-  auto video_stream =
-      host_connection_->StartVideoStream(0, std::move(capturer));
+  auto test_capturer = std::make_unique<TestScreenCapturer>();
+  test_capturer->FailNthFrame(0);
+  auto video_stream = host_connection_->StartVideoStream(
+      0, WrapTestCapturer(std::move(test_capturer)));
 
   WaitNextVideoFrame();
 }
@@ -718,10 +728,10 @@ TEST_P(ConnectionTest, DISABLED_FirstCaptureFailed) {
 TEST_P(ConnectionTest, DISABLED_SecondCaptureFailed) {
   Connect();
 
-  auto capturer = std::make_unique<TestScreenCapturer>();
-  capturer->FailNthFrame(1);
-  auto video_stream =
-      host_connection_->StartVideoStream(0, std::move(capturer));
+  auto test_capturer = std::make_unique<TestScreenCapturer>();
+  test_capturer->FailNthFrame(1);
+  auto video_stream = host_connection_->StartVideoStream(
+      0, WrapTestCapturer(std::move(test_capturer)));
 
   WaitNextVideoFrame();
   WaitNextVideoFrame();

@@ -95,8 +95,14 @@ void DesktopAndCursorConditionalComposer::SetMaxFrameRate(
   capturer_->SetMaxFrameRate(max_frame_rate);
 }
 
-bool DesktopAndCursorConditionalComposer::SupportsFrameCallbacks() const {
-  return desktop_capturer_->SupportsFrameCallbacks();
+void DesktopAndCursorConditionalComposer::Pause(bool pause) {
+  desktop_capturer_->Pause(pause);
+}
+
+void DesktopAndCursorConditionalComposer::BoostCaptureRate(
+    base::TimeDelta capture_interval,
+    base::TimeDelta duration) {
+  desktop_capturer_->BoostCaptureRate(capture_interval, duration);
 }
 
 #if defined(WEBRTC_USE_GIO)

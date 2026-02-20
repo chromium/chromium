@@ -20,7 +20,6 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
-#include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/fake_active_display_monitor.h"
@@ -34,6 +33,7 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/desktop_capturer_proxy.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 

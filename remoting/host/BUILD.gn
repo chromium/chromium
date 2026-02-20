@@ -323,20 +323,6 @@ source_set("mojo_caller_security_checker") {
   }
 }
 
-source_set("desktop_capturer") {
-  sources = [
-    "desktop_capturer_proxy.cc",
-    "desktop_capturer_proxy.h",
-    "desktop_capturer_wrapper.cc",
-    "desktop_capturer_wrapper.h",
-  ]
-  deps = [
-    "//base",
-    "//remoting/protocol",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-}
-
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -509,7 +495,6 @@ static_library("common") {
     ":chromoting_host_services_server",
     ":client_session_control",
     ":clipboard",
-    ":desktop_capturer",
     ":display_layout",
     ":host_main_headers",
     ":ipc_constants",
@@ -776,7 +761,6 @@ static_library("test_support") {
   deps = [
     ":chromoting_host_services_client",
     ":client_session_control",
-    ":desktop_capturer",
     ":platform_interfaces",
     "//remoting/base:errors",
     "//remoting/base:session_policies",

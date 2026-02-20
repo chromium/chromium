@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
@@ -28,10 +29,6 @@ PipewireDesktopCapturer::~PipewireDesktopCapturer() {
   }
 }
 
-bool PipewireDesktopCapturer::SupportsFrameCallbacks() const {
-  return kSupportsFrameCallbacks;
-}
-
 void PipewireDesktopCapturer::Start(Callback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
@@ -47,6 +44,7 @@ void PipewireDesktopCapturer::CaptureFrame() {
 
 void PipewireDesktopCapturer::SetMaxFrameRate(std::uint32_t max_frame_rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_frame_rate_ = max_frame_rate;
   if (stream_) {
     stream_->SetMaxFrameRate(max_frame_rate);
   }
@@ -58,6 +56,18 @@ bool PipewireDesktopCapturer::GetSourceList(SourceList* sources) {
 
 bool PipewireDesktopCapturer::SelectSource(SourceId id) {
   NOTREACHED();
+}
+
+void PipewireDesktopCapturer::Pause(bool pause) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (stream_) {
+    stream_->SetMaxFrameRate(pause ? 0u : last_frame_rate_);
+  }
+}
+
+void PipewireDesktopCapturer::BoostCaptureRate(base::TimeDelta capture_interval,
+                                               base::TimeDelta duration) {
+  NOTIMPLEMENTED() << "Boosting frame rate is not supported for wayland";
 }
 
 void PipewireDesktopCapturer::OnFrameCaptureStart() {

@@ -40,7 +40,9 @@ class DesktopAndCursorConditionalComposer : public DesktopCapturer {
       std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
   void SetMaxFrameRate(uint32_t max_frame_rate) override;
-  bool SupportsFrameCallbacks() const override;
+  void Pause(bool pause) override;
+  void BoostCaptureRate(base::TimeDelta capture_interval,
+                        base::TimeDelta duration) override;
 #if defined(WEBRTC_USE_GIO)
   void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
                             callback) override;

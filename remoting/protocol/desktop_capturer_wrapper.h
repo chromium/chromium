@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_DESKTOP_CAPTURER_WRAPPER_H_
-#define REMOTING_HOST_DESKTOP_CAPTURER_WRAPPER_H_
+#ifndef REMOTING_PROTOCOL_DESKTOP_CAPTURER_WRAPPER_H_
+#define REMOTING_PROTOCOL_DESKTOP_CAPTURER_WRAPPER_H_
 
 #include <cstdint>
 #include <memory>
@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/webrtc_frame_scheduler_constant_rate.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
 
@@ -21,20 +22,19 @@
 
 namespace remoting {
 
-// Simple wrapper class which holds a webrtc::DesktopCapturer and exposes a
-// remoting::DesktopCapturer interface for interacting with it.
+// Wrapper class that adapts a webrtc::DesktopCapturer into a
+// remoting::DesktopCapturer. It calls CaptureFrame() on the underlying capturer
+// at the target frame rate.
 class DesktopCapturerWrapper : public DesktopCapturer,
                                public webrtc::DesktopCapturer::Callback {
  public:
-  DesktopCapturerWrapper();
+  explicit DesktopCapturerWrapper(
+      std::unique_ptr<webrtc::DesktopCapturer> capturer);
   DesktopCapturerWrapper(const DesktopCapturerWrapper&) = delete;
   DesktopCapturerWrapper& operator=(const DesktopCapturerWrapper&) = delete;
   ~DesktopCapturerWrapper() override;
 
-  void CreateCapturer(
-      base::OnceCallback<std::unique_ptr<webrtc::DesktopCapturer>()> creator);
-
-  // webrtc::DesktopCapturer interface.
+  // DesktopCapturer interface.
   void Start(Callback* callback) override;
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
                                   shared_memory_factory) override;
@@ -42,6 +42,10 @@ class DesktopCapturerWrapper : public DesktopCapturer,
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;
+  void Pause(bool pause) override;
+  void BoostCaptureRate(base::TimeDelta capture_interval,
+                        base::TimeDelta duration) override;
+
 #if defined(WEBRTC_USE_GIO)
   void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
                             callback) override;
@@ -53,12 +57,15 @@ class DesktopCapturerWrapper : public DesktopCapturer,
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
+  void CaptureFrameInternal();
+
   raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
+  std::unique_ptr<protocol::WebrtcFrameSchedulerConstantRate> scheduler_;
 
   THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_DESKTOP_CAPTURER_WRAPPER_H_
+#endif  // REMOTING_PROTOCOL_DESKTOP_CAPTURER_WRAPPER_H_

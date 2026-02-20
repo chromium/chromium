@@ -25,8 +25,6 @@
 #include "remoting/host/curtain_mode.h"
 #include "remoting/host/delegating_desktop_display_info_monitor.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
-#include "remoting/host/desktop_capturer_proxy.h"
-#include "remoting/host/desktop_capturer_wrapper.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_interaction_strategy.h"
@@ -36,6 +34,8 @@
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 #include "remoting/host/webrtc_mouse_cursor_monitor_adaptor.h"
+#include "remoting/protocol/desktop_capturer_proxy.h"
+#include "remoting/protocol/desktop_capturer_wrapper.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -111,7 +111,8 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 #endif  // REMOTING_USE_X11
 
   auto creator = base::BindOnce(
-      [](webrtc::DesktopCaptureOptions options, webrtc::ScreenId id) {
+      [](webrtc::DesktopCaptureOptions options,
+         webrtc::ScreenId id) -> std::unique_ptr<remoting::DesktopCapturer> {
         std::unique_ptr<webrtc::DesktopCapturer> capturer;
 #if BUILDFLAG(IS_CHROMEOS)
         capturer = std::make_unique<FrameSinkDesktopCapturer>();
@@ -120,16 +121,14 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
         if (capturer) {
           capturer->SelectSource(id);
+          return std::make_unique<DesktopCapturerWrapper>(std::move(capturer));
         }
-        return capturer;
+        return nullptr;
       },
       *options_.desktop_capture_options(), id);
-
   std::unique_ptr<DesktopCapturer> desktop_capturer;
   if (options_.capture_video_on_dedicated_thread()) {
-    auto desktop_capturer_wrapper = std::make_unique<DesktopCapturerWrapper>();
-    desktop_capturer_wrapper->CreateCapturer(std::move(creator));
-    desktop_capturer = std::move(desktop_capturer_wrapper);
+    desktop_capturer = std::move(creator).Run();
   } else {
     auto desktop_capturer_proxy =
         std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));

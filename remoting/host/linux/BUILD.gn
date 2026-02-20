@@ -263,7 +263,6 @@ source_set("platform_impls") {
     "//remoting/host:client_session_control",
     "//remoting/host:clipboard",
     "//remoting/host:common_headers",
-    "//remoting/host:desktop_capturer",
     "//remoting/host:display_layout",
     "//remoting/host:ipc_constants",
     "//remoting/host:mojo_caller_security_checker",
