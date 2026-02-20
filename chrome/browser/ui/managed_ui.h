@@ -18,20 +18,6 @@ namespace gfx {
 struct VectorIcon;
 }
 
-class ScopedDeviceManagerForTesting {
- public:
-  explicit ScopedDeviceManagerForTesting(const char* manager);
-  ~ScopedDeviceManagerForTesting();
-
- private:
-  const char* previous_manager_ = nullptr;
-};
-
-// Returns the enterprise domain of `profile` if one was found.
-// This function will try to get the hosted domain and fallback on the domain
-// of the email of the signed in account.
-std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile);
-
 // Returns true if a 'Managed by <...>' message should appear in
 // Chrome's App Menu, and on the following chrome:// pages:
 // - chrome://bookmarks
@@ -96,20 +82,5 @@ std::u16string GetManagementBubbleTitle(Profile* profile);
 // Returns trus if the profile and browser are managed and both entities are
 // known and different.
 bool AreProfileAndBrowserManagedBySameEntity(Profile* profile);
-
-// Returns nullopt if the device is not managed, the UTF8-encoded string
-// representation of the manager identity if available and an empty string if
-// the device is managed but the manager is not known or if the policy store
-// hasn't been loaded yet.
-std::optional<std::string> GetDeviceManagerIdentity();
-
-// Returns the UTF8-encoded string representation of the the entity that manages
-// `profile` or nullopt if unmanaged. For standard dasher domains, this will be
-// a domain name (ie foo.com). For FlexOrgs, this will be the email address of
-// the admin of the FlexOrg (ie user@foo.com). If DMServer does not provide this
-// information, this function defaults to the domain of the account.
-// TODO(crbug.com/40130449): Refactor localization hints for all strings that
-// depend on this function.
-std::optional<std::string> GetAccountManagerIdentity(Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_MANAGED_UI_H_

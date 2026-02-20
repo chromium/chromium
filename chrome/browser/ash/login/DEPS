@@ -69,7 +69,7 @@ include_rules = [
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",
   "+chrome/browser/ui/exclusive_access",
-  "+chrome/browser/ui/managed_ui.h",
+  "+chrome/browser/enterprise/browser_management/management_identity.h",
   "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/tabs",

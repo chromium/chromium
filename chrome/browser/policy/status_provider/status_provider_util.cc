@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/user_manager.h"
 #else

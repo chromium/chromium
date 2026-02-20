@@ -64,7 +64,7 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings",
   "+chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h",
   "+chrome/browser/ui/chrome_pages.h",
-  "+chrome/browser/ui/managed_ui.h",
+  "+chrome/browser/enterprise/browser_management/management_identity.h",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/ui/webui/signin/ash",
   "+chrome/browser/unified_consent",

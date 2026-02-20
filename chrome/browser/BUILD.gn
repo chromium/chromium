@@ -1524,6 +1524,16 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_factory_impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once the
+    # following headers get componentized:
+    # c/b/enterprise/browser_management/management_service_factory.h
+    # c/b/enterprise/util/managed_browser_utils.h
+    # c/b/policy/chrome_browser_policy_connector.h
+    # c/b/policy/profile_policy_connector.h
+    # c/b/profiles/profile_manager.h
+    # c/b/browser_process_platform_part.h
+    "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback",
@@ -1803,6 +1813,8 @@ static_library("browser") {
     "//chrome/browser/download",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/engagement",
+    "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",

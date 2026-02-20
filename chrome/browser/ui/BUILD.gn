@@ -296,6 +296,7 @@ static_library("ui") {
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",
+    "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access",
