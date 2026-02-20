@@ -32,7 +32,11 @@ TEST(FaviconUtilUnittest, Parse) {
       {true, "chrome-extension://id/_favicon/?pageUrl=https://ok.com&size=16"},
       {true,
        "chrome-extension://id/_favicon/?pageUrl=https://"
-       "ok.com&size=16&scaleFactor=1.0x&server_fallback=1"}};
+       "ok.com&size=16&scaleFactor=1.0x&server_fallback=1"},
+      {true,
+       "chrome-extension://id/_favicon/?pageUrl=https://"
+       "ok.com&size=16&fallbackToHost=1"},
+  };
   for (const auto& test_case : test_cases) {
     GURL url(test_case.url);
     chrome::ParsedFaviconPath parsed;
