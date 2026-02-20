@@ -62,6 +62,8 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
   base::RepeatingClosureList on_bubble_destroyed_callback_list;
 
 #if BUILDFLAG(ENABLE_GLIC)
+  void OnStateUpdateImpl();
+
   std::vector<base::CallbackListSubscription>
       bubble_state_change_callback_subscription_;
 #endif

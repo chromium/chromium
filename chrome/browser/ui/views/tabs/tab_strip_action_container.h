@@ -106,9 +106,6 @@ class TabStripActionContainer : public views::View,
     return glic_actor_task_icon_;
   }
 
-  // views::View:
-  void AddedToWidget() override;
-
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
 
