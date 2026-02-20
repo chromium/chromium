@@ -29,13 +29,11 @@ ${this.shouldShowNoSearchResults_() ? html`
 </div>
 ${this.filteredSkills_().length === 0 ? html`
   <div id="emptyState">
-    <picture>
-      <source srcset="images/skills_empty_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img src="images/skills_empty.svg" alt="No skills">
-    </picture>
-    <p class="headline">$i18n{emptyStateTitle}</p>
-    <p class="body-text">$i18n{emptyStateDescription}</p>
+    <skills-empty></skills-empty>
+    <div id="emptyStateText">
+      <p class="headline">$i18n{emptyStateTitle}</p>
+      <p class="body-text">$i18n{emptyStateDescription}</p>
+    </div>
     <cr-button id="browseSkillsButton" class="floating-button"
         @click="${this.onExploreButtonClick_}">
       <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>

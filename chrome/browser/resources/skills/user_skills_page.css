@@ -53,3 +53,7 @@
 #addSkillButton {
   flex-shrink: 0;
 }
+
+#emptyStateText {
+  max-width: 288px;
+}
