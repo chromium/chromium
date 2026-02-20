@@ -114,7 +114,7 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
         // entries with the same domain. If this is the first URL for a domain,
         // then `it` will point to the newly inserted entry, otherwise it will
         // point to an already existing entry.
-        auto [it, found] =
+        auto [it, _] =
             domain_to_url_index.emplace(urls[i].GetWithEmptyPath(), i);
         const GURL& url = urls[it->second];
 
