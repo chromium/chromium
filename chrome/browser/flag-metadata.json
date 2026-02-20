@@ -8566,6 +8566,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "send-tab-to-self-enhanced-handoff",
+    "owners": ["mastiz@chromium.org", "treib@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "sensitive-content",
     "owners": ["jkeitel@google.com"],
     "expiry_milestone": 145

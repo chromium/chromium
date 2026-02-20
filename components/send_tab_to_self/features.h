@@ -24,6 +24,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfEnableNotificationTimeOut);
 // notifications as a push notification to their target iOS device.
 BASE_DECLARE_FEATURE(kSendTabToSelfIOSPushNotifications);
 
+// If this feature is enabled, form fields will be extracted from the outgoing
+// tab and propagated to the target device.
+BASE_DECLARE_FEATURE(kSendTabToSelfPropagateFormFields);
+
 // Param for whether or not to include the URL image in the push notification
 // for the kSendTabToSelfIOSPushNotifications feature.
 extern const char kSendTabIOSPushNotificationsURLImageParam[];

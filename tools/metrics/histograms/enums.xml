@@ -16495,6 +16495,7 @@ from previous Chrome versions.
   <int value="706280254" label="StoragePressureEvent:enabled"/>
   <int value="707243920" label="OnDeviceModelPerformanceParams:enabled"/>
   <int value="707463326" label="DynamicSafeAreaInsets:enabled"/>
+  <int value="707704853" label="SendTabToSelfPropagateFormFields:enabled"/>
   <int value="707757879" label="FedCmNonceInParams:enabled"/>
   <int value="708015891"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:enabled"/>
@@ -20428,6 +20429,7 @@ from previous Chrome versions.
   <int value="2032801941" label="SpeakOnMuteOptInNudgePrefsReset:disabled"/>
   <int value="2032880973" label="U2FSecurityKeyAPI:disabled"/>
   <int value="2034198538" label="TabHoverCards:enabled"/>
+  <int value="2034528146" label="SendTabToSelfPropagateFormFields:disabled"/>
   <int value="2034874546" label="TabStripCollectionStorage:disabled"/>
   <int value="2035351945" label="lacros-selection-policy-ignore"/>
   <int value="2035415906" label="Win11StyleMenus:enabled"/>

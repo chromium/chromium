@@ -10076,6 +10076,11 @@ const FeatureEntry kFeatureEntries[] = {
          kSendTabIOSPushNotificationsVariations,
          "SendTabToSelfIOSPushNotifications")},
 
+    {"send-tab-to-self-enhanced-handoff",
+     flag_descriptions::kSendTabToSelfEnhancedHandoffName,
+     flag_descriptions::kSendTabToSelfEnhancedHandoffDescription, kOsAll,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfPropagateFormFields)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-display-performance-mode",
      flag_descriptions::kEnableDisplayPerformanceModeName,

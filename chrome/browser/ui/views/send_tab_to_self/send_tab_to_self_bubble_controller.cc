@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/pref_names.h"
@@ -146,8 +147,13 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
     return;
   }
 
+  PageContext page_context;
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+    page_context = ExtractFormFieldsFromWebContents(&GetWebContents());
+  }
+
   model->AddEntry(shared_url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
-                  target_device_guid, PageContext());
+                  target_device_guid, page_context);
 
   // Show confirmation message.
   show_message_ = true;

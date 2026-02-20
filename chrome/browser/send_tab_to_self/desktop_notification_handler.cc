@@ -12,9 +12,11 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -97,6 +99,19 @@ void DesktopNotificationHandler::OnClick(
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
+
+    if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+      const SendTabToSelfEntry* entry =
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+              ->GetSendTabToSelfModel()
+              ->GetEntryByGUID(notification_id);
+      if (entry) {
+        FillWebContents(params.navigated_or_inserted_contents,
+                        url::Origin::Create(entry->GetURL()),
+                        entry->GetPageContext());
+      }
+    }
+
     NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
         NotificationHandler::Type::SEND_TAB_TO_SELF, notification_id);
 

@@ -3726,6 +3726,12 @@ inline constexpr char kQuickShareV2Description[] =
     "visibility, removes the 'Selected Contacts' visibility, removes the Quick "
     "Share On/Off toggle.";
 
+inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
+    "Send Tab To Self enhanced handoff";
+inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =
+    "Enables an enhanced version of Send Tab To Self that propagates more "
+    "information, such as form fields.";
+
 inline constexpr char kSendTabToSelfIOSPushNotificationsName[] =
     "Send tab to self iOS push notifications";
 inline constexpr char kSendTabToSelfIOSPushNotificationsDescription[] =

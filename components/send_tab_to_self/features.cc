@@ -27,6 +27,9 @@ BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
 BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendTabToSelfPropagateFormFields,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSendTabIOSPushNotificationsURLImageParam[] =
     "variant_with_URL_image";
 
