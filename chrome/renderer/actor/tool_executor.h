@@ -44,9 +44,11 @@ class ToolExecutor {
   void CancelTool(const actor::TaskId& task_id);
 
  private:
+  mojom::ActionResultPtr InitializeToolImpl(mojom::ToolInvocationPtr request);
   void ToolFinished(mojom::ActionResultPtr result);
 
   bool performed_scroll_into_view_ = false;
+  bool is_split_execution_ = false;
 
   // Raw ref since the executor is owned by the RenderFrameObserver which has
   // the same lifetime as RenderFrame.

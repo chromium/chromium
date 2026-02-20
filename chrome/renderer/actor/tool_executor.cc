@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
@@ -52,6 +53,12 @@ ToolExecutor::~ToolExecutor() {
 }
 
 mojom::ActionResultPtr ToolExecutor::InitializeTool(
+    mojom::ToolInvocationPtr invocation) {
+  is_split_execution_ = true;
+  return InitializeToolImpl(std::move(invocation));
+}
+
+mojom::ActionResultPtr ToolExecutor::InitializeToolImpl(
     mojom::ToolInvocationPtr invocation) {
   auto init_entry = journal_->CreatePendingAsyncEntry(invocation->task_id,
                                                       "InitializeTool", {});
@@ -164,6 +171,16 @@ void ToolExecutor::ExecuteTool(const actor::TaskId& task_id,
   CHECK_EQ(tool_->task_id(), task_id);
   CHECK(!completion_callback_);
   completion_callback_ = std::move(callback);
+  if (is_split_execution_) {
+    tool_->MarkAsRevalidation();
+    ValidationResult revalidation = tool_->Validate();
+    base::UmaHistogramEnumeration("Actor.Tools.RevalidationResult",
+                                  revalidation.result->code);
+    if (!IsOk(*revalidation.result)) {
+      ToolFinished(std::move(revalidation.result));
+      return;
+    }
+  }
   tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -175,10 +192,9 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   // Send the buffer now so the journal shows we received the message. This
   // helps when debugging unresponsive renderers.
   journal_->SendLogBuffer();
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kGlicActorSplitValidateAndExecute));
+  is_split_execution_ = false;
   actor::TaskId task_id = invocation->task_id;
-  mojom::ActionResultPtr result = InitializeTool(std::move(invocation));
+  mojom::ActionResultPtr result = InitializeToolImpl(std::move(invocation));
   if (!IsOk(*result)) {
     CHECK(!completion_callback_);
     completion_callback_ = std::move(callback);

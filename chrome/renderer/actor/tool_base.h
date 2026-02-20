@@ -105,6 +105,8 @@ class ToolBase {
   // interactions.
   virtual bool SupportsPaintStability() const;
 
+  void MarkAsRevalidation() { is_revalidation_ = true; }
+
   content::RenderFrame* frame() const { return &frame_.get(); }
   const TaskId& task_id() const { return task_id_; }
 
@@ -133,6 +135,8 @@ class ToolBase {
   // observation.
   mojom::ActionResultPtr ValidateTimeOfUse(
       const ResolvedTarget& resolved_target) const;
+
+  bool is_revalidation_ = false;
 };
 }  // namespace actor
 
