@@ -28,6 +28,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeButtonPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeExpandableSwitchPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ClickableSpansTextMessagePreference.java",
@@ -90,6 +91,7 @@ android_resources("java_resources") {
     "java/res/layout/card_preference.xml",
     "java/res/layout/card_with_button_preference_layout.xml",
     "java/res/layout/checkable_image_view_widget.xml",
+    "java/res/layout/chrome_expandable_switch_preference.xml",
     "java/res/layout/clickable_spans_text_message_preference_layout.xml",
     "java/res/layout/image_button_widget.xml",
     "java/res/layout/long_summary_text_message_preference.xml",
@@ -131,6 +133,7 @@ android_library("unit_device_javatests") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeButtonPreferenceTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeExpandableSwitchPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreferenceTest.java",
@@ -229,6 +232,7 @@ android_resources("java_test_resources") {
     "widget/java_test_resources/res/layout/chrome_managed_preference_with_custom_layout.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_checkbox_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_preference_screen.xml",
+    "widget/java_test_resources/res/xml/test_chrome_expandable_switch_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_switch_preference_screen.xml",
   ]
   deps = [
