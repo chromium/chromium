@@ -368,8 +368,8 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColor
 ###############################
 
 # Test is slow enough on some Android devices to hit heartbeat timeouts.
-[ android android-pixel-2 ] Pixel_SVGHuge [ Slow ]
-[ android android-pixel-4 ] Pixel_SVGHuge [ Slow ]
+[ android android-pixel-2 ] Pixel_SVGHuge [ Skip ]
+[ android android-pixel-4 ] Pixel_SVGHuge [ Skip ]
 [ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a137f ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a236b ] Pixel_SVGHuge [ Slow ]
@@ -377,8 +377,16 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColor
 [ win qualcomm-0x41333430 ] Pixel_SVGHuge [ Slow ]
 # Doesn't hit heartbeat timeouts, but can time out when trying to execute
 # JavaScript after the SVG is loaded.
-[ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
+[ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Skip ]
 [ mac apple release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
+
+# Rust XML Parser is slow. Leading to timeouts in this test.
+crbug.com/486121429 [ linux amd-0x7480 ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ linux nvidia-0x2783 release ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ mac intel-0x3e9b release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ mac apple-angle-metal-renderer:-apple-m1 graphite-enabled ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ win10 intel-0x4680 ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ win10 nvidia-0x2184 release ] Pixel_SVGHuge [ Slow ]
 
 # Context recovery can be slow on these devices.
 # On Win11 Adreno 690 it can also not have a context lost recorded.
