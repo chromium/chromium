@@ -87,7 +87,7 @@ content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
 }
 
 // The minimum window size that is still considered to be a shareable window.
-// Windows with smaller height or widht are filtered out.
+// Windows with smaller height or width are filtered out.
 constexpr int kThumbnailCapturerMacMinWindowSize = 40;
 
 // The maximum number of sources that can be captured in each capture cycle
