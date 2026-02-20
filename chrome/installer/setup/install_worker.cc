@@ -29,6 +29,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
@@ -64,6 +65,7 @@
 #include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
+#include "chrome/installer/util/move_tree_work_item.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -224,16 +226,27 @@ void AddChromeWorkItems(const InstallParams& install_params,
     delete_old_archive_work_item->set_rollback_enabled(false);
   }
 
-  // Delete any new_chrome.exe if present (we will end up creating a new one
-  // if required) and then copy chrome.exe
+  // Move chrome.exe to new_chrome.exe if the target is in use; otherwise,
+  // delete a pre-existing new_chrome.exe and overwrite the target.
   base::FilePath new_chrome_exe(target_path.Append(installer::kChromeNewExe));
 
-  install_list->AddDeleteTreeWorkItem(new_chrome_exe, temp_path);
+  auto not_in_use_list = base::WrapUnique(WorkItem::CreateWorkItemList());
+  not_in_use_list->AddDeleteTreeWorkItem(new_chrome_exe, temp_path);
+  // Allow items in `src_path` to be left behind. It is in a temporary directory
+  // that will eventually be cleaned up.
+  not_in_use_list->AddMoveTreeWorkItem(
+      src_path.Append(installer::kChromeExe),
+      target_path.Append(installer::kChromeExe), temp_path,
+      WorkItem::MoveTreeOptions{.lenient_deletion = true});
 
-  install_list->AddCopyTreeWorkItem(src_path.Append(installer::kChromeExe),
-                                    target_path.Append(installer::kChromeExe),
-                                    temp_path, WorkItem::NEW_NAME_IF_IN_USE,
-                                    new_chrome_exe);
+  install_list->AddWorkItem(WorkItem::CreateConditionalWorkItem(
+      std::make_unique<ConditionFileInUse>(
+          target_path.Append(installer::kChromeExe)),
+      /*if_item=*/
+      base::WrapUnique(WorkItem::CreateMoveTreeWorkItem(
+          src_path.Append(installer::kChromeExe), new_chrome_exe, temp_path,
+          WorkItem::MoveTreeOptions{.lenient_deletion = true})),
+      /*else_item=*/std::move(not_in_use_list)));
 
   // In the past, we copied rather than moved for system level installs so that
   // the permissions of %ProgramFiles% would be picked up.  Now that |temp_path|

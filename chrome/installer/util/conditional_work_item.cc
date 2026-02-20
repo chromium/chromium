@@ -4,9 +4,12 @@
 
 #include "chrome/installer/util/conditional_work_item.h"
 
+#include <windows.h>
+
 #include <utility>
 
 #include "base/check.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/to_string.h"
@@ -49,4 +52,35 @@ void ConditionalWorkItem::RollbackImpl() {
 //------------------------------------------------------------------------------
 bool ConditionFileExists::ShouldRun() const {
   return base::PathExists(key_path_);
+}
+
+bool ConditionFileInUse::ShouldRun() const {
+  // A running executable is open with exclusive write access, so attempting to
+  // write to it will fail with a sharing violation. A more precise method would
+  // be to open the file with DELETE access and attempt to set the delete
+  // disposition on the handle. This would fail if the file was mapped into a
+  // process's address space, but succeed otherwise. This seems like overkill,
+  // however.
+  base::File file(::CreateFile(
+      file_path_.value().c_str(), FILE_WRITE_DATA,
+      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+      /*lpSecurityAttributes=*/nullptr, /*dwCreationDisposition=*/OPEN_EXISTING,
+      /*dwFlagsAndAttributes=*/0, /*hTemplateFile=*/nullptr));
+  if (file.IsValid()) {
+    // The file could be opened for writing, so it is not in use.
+    return false;
+  }
+
+  if (const auto error = ::GetLastError();
+      error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
+    // The file does not exist, so it cannot be in use.
+    return false;
+  }
+
+  // By and large, we expect the error to be ERROR_SHARING_VIOLATION if the
+  // file is being executed (see above). It may also be something like
+  // ERROR_ACCESS_DENIED; e.g., if the file was deleted but open handles to it
+  // remain. Consider any failure to open the file to mean that it's in-use
+  // and shouldn't be replaced.
+  return true;
 }

@@ -53,4 +53,17 @@ class ConditionFileExists : public WorkItem::Condition {
   base::FilePath key_path_;
 };
 
+class ConditionFileInUse : public WorkItem::Condition {
+ public:
+  explicit ConditionFileInUse(const base::FilePath& file_path)
+      : file_path_(file_path) {}
+
+  // Returns true if the given path names a file that appears to be in use in
+  // the same way that an executable is when it is running.
+  bool ShouldRun() const override;
+
+ private:
+  base::FilePath file_path_;
+};
+
 #endif  // CHROME_INSTALLER_UTIL_CONDITIONAL_WORK_ITEM_H_
