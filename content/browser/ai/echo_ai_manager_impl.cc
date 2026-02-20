@@ -374,7 +374,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
-    uint32_t initial_input_usage) {
+    uint32_t initial_context_usage) {
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
   auto model_sampling_params =
       sampling_params
@@ -387,12 +387,12 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(
           model_sampling_params->Clone(), enabled_input_types,
-          std::move(initial_prompts), initial_input_usage),
+          std::move(initial_prompts), initial_context_usage),
       language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(
-          kMaxContextSizeInTokens, initial_input_usage,
+          kMaxContextSizeInTokens, initial_context_usage,
           std::move(model_sampling_params),
           std::vector<blink::mojom::AILanguageModelPromptType>(
               enabled_input_types.begin(), enabled_input_types.end()),

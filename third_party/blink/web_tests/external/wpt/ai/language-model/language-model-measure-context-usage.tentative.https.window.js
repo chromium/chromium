@@ -12,8 +12,8 @@ promise_test(async t => {
   // Start a new session.
   const session = await createLanguageModel();
 
-  // Test the measureInputUsage() API.
-  let result = await session.measureInputUsage("This is a prompt.");
+  // Test the measureContextUsage() API.
+  let result = await session.measureContextUsage('This is a prompt.');
   assert_true(
     typeof result === "number" && result > 0,
     "The counting result should be a positive number."

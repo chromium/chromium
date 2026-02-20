@@ -81,11 +81,18 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
                                      const V8LanguageModelPrompt* input,
                                      const LanguageModelAppendOptions* options,
                                      ExceptionState& exception_state);
+  ScriptPromise<IDLDouble> measureContextUsage(
+      ScriptState* script_state,
+      const V8LanguageModelPrompt* input,
+      const LanguageModelPromptOptions* options,
+      ExceptionState& exception_state);
   ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
       const V8LanguageModelPrompt* input,
       const LanguageModelPromptOptions* options,
       ExceptionState& exception_state);
+  double contextUsage() const { return info_->input_usage; }
+  double contextWindow() const { return info_->input_quota; }
   double inputQuota() const { return info_->input_quota; }
   double inputUsage() const { return info_->input_usage; }
   uint32_t topK() const { return info_->sampling_params->top_k; }

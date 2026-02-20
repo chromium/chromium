@@ -264,6 +264,33 @@
       ],
     },
     {
+      "name": "LanguageModel_InputQuota",
+      "message": "LanguageModel.inputQuota is deprecated. Please use LanguageModel.contextWindow instead. This alias is only available in extensions.",
+      "translation_note": "Warning for using deprecated 'inputQuota' attribute.",
+      "web_features": [
+        "kLanguageModel_InputQuota"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
+      "name": "LanguageModel_InputUsage",
+      "message": "LanguageModel.inputUsage is deprecated. Please use LanguageModel.contextUsage instead. This alias is only available in extensions.",
+      "translation_note": "Warning for using deprecated 'inputUsage' attribute.",
+      "web_features": [
+        "kLanguageModel_InputUsage"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
+      "name": "LanguageModel_MeasureInputUsage",
+      "message": "LanguageModel.measureInputUsage() is deprecated. Please use LanguageModel.measureContextUsage() instead. This alias is only available in extensions.",
+      "translation_note": "Warning for using deprecated 'measureInputUsage' method.",
+      "web_features": [
+        "kLanguageModel_MeasureInputUsage"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
       "name": "LanguageModelParams",
       "message": "LanguageModel.params() is deprecated and now only available in extension contexts. The topK and temperature related fields within its result are also deprecated.",
       "translation_note": "Warning message for web developers when they call the deprecated LanguageModel.params() method.",

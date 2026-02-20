@@ -4066,8 +4066,8 @@ enum WebFeature {
   kEffectiveAlignContentForTableCell = 4774,
   kUserFeatureNgOptimizedImage = 4775,
   kCSSAtRulePageMargin = 4776,
-  kOBSOLETE_ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls =
-      4777,
+  kOBSOLETE_ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls
+      = 4777,
   kUserFeatureNgAfterRender = 4778,
   kUserFeatureNgHydration = 4779,
   kCapturedSurfaceControl = 4780,
@@ -5096,7 +5096,8 @@ enum WebFeature {
   kAudioContextAsyncTransitionToRunningStateRead = 5780,
   kAudioContextAsyncTransitionToSuspendedStateRead = 5781,
   kGetComputedStylePseudoElementWithoutColon = 5782,
-  kGeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition = 5783,
+  kGeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition =
+      5783,
   kAnchorCaseSensitiveMatch = 5784,
   kAnchorCaseInsensitiveMatch = 5785,
   kPrerenderActivationByFormSubmission = 5786,
@@ -5106,6 +5107,9 @@ enum WebFeature {
   kNonParentOriginInitiatedNavigationOfSubframe = 5790,
   kModelContextRegisterTool = 5791,
   kModelContextRegisterDeclarativeTool = 5792,
+  kLanguageModel_ContextUsage = 5793,
+  kLanguageModel_ContextWindow = 5794,
+  kLanguageModel_MeasureContextUsage = 5795,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

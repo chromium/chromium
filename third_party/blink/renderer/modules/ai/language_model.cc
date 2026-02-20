@@ -888,6 +888,14 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     const V8LanguageModelPrompt* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
+  return measureContextUsage(script_state, input, options, exception_state);
+}
+
+ScriptPromise<IDLDouble> LanguageModel::measureContextUsage(
+    ScriptState* script_state,
+    const V8LanguageModelPrompt* input,
+    const LanguageModelPromptOptions* options,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return EmptyPromise();

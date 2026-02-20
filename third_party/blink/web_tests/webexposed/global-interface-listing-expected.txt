@@ -5920,14 +5920,14 @@ interface LanguageModel : EventTarget
     static method availability
     static method create
     attribute @@toStringTag
-    getter inputQuota
-    getter inputUsage
+    getter contextUsage
+    getter contextWindow
     getter onquotaoverflow
     method append
     method clone
     method constructor
     method destroy
-    method measureInputUsage
+    method measureContextUsage
     method prompt
     method promptStreaming
     setter onquotaoverflow

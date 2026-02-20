@@ -84,7 +84,21 @@ interface LanguageModel : EventTarget {
   );
 
   [
-    MeasureAs=LanguageModel_MeasureInputUsage,
+    MeasureAs=LanguageModel_MeasureContextUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureContextUsage(
+    LanguageModelPrompt input,
+    optional LanguageModelPromptOptions options = {}
+  );
+
+  // LanguageModel.measureContextUsage has been renamed to
+  // LanguageModel.measureInputUsage. It is deprecated for non-extension
+  // contexts and will be removed in a future version.
+  [
+    RuntimeEnabled=LanguageModelLegacyParamsAndAttributes,
+    DeprecateAs=LanguageModel_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -93,9 +107,24 @@ interface LanguageModel : EventTarget {
     optional LanguageModelPromptOptions options = {}
   );
 
-  [MeasureAs=LanguageModel_InputUsage]
+  [MeasureAs=LanguageModel_ContextUsage]
+  readonly attribute double contextUsage;
+  [MeasureAs=LanguageModel_ContextWindow]
+  readonly attribute unrestricted double contextWindow;
+
+  // LanguageModel.inputUsage and LanguageModel.inputQuota are renamed to
+  // LanguageModel.contextUsage and LanguageModel.contextWindow. They are
+  // deprecated for non-extension contexts and will be removed in a future
+  // version.
+  [
+    RuntimeEnabled=LanguageModelLegacyParamsAndAttributes,
+    DeprecateAs=LanguageModel_InputUsage
+  ]
   readonly attribute double inputUsage;
-  [MeasureAs=LanguageModel_InputQuota]
+  [
+    RuntimeEnabled=LanguageModelLegacyParamsAndAttributes,
+    DeprecateAs=LanguageModel_InputQuota
+  ]
   readonly attribute unrestricted double inputQuota;
 
   // LanguageModel.topK and LanguageModel.temperature are deprecated for
