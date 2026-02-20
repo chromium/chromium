@@ -13,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "remoting/signaling/jingle_data_structures.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "remoting/signaling/xmpp_constants.h"
@@ -73,6 +75,11 @@ std::unique_ptr<IqRequest> IqSender::SendIq(
     ReplyCallback callback) {
   return SendIq(MakeIqStanza(type, addressee, std::move(iq_body)),
                 std::move(callback));
+}
+
+std::unique_ptr<IqRequest> IqSender::SendIq(const JingleMessage& message,
+                                            ReplyCallback callback) {
+  return SendIq(JingleMessageToXml(message), std::move(callback));
 }
 
 void IqSender::RemoveRequest(IqRequest* request) {

@@ -694,6 +694,9 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
 
   DCHECK(!message.to.empty());
   root->SetAttr(kQNameType, "set");
+  if (!message.message_id.empty()) {
+    root->SetAttr(kQNameId, message.message_id);
+  }
 
   auto jingle_el =
       std::make_unique<XmlElement>(kQNameJingle, /*useDefaultNs=*/true);
@@ -820,6 +823,8 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     *error = "Missing signaling address";
     return false;
   }
+
+  message->message_id = stanza->Attr(kQNameId);
 
   message->initiator = jingle_tag->Attr(kQNameInitiator);
 

@@ -386,15 +386,12 @@ void JingleSession::SendTransportInfo(
 
   auto message = std::make_unique<JingleMessage>(
       peer_address_, std::move(*transport_info), session_id_);
+  message->message_id = GetNextOutgoingId();
   AddPluginAttachments(message.get());
 
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
-      JingleMessageToXml(*message);
-  stanza->AddAttr(kQNameId, GetNextOutgoingId());
-
   auto request = session_manager_->iq_sender()->SendIq(
-      std::move(stanza), base::BindOnce(&JingleSession::OnTransportInfoResponse,
-                                        base::Unretained(this)));
+      *message, base::BindOnce(&JingleSession::OnTransportInfoResponse,
+                               base::Unretained(this)));
   if (request) {
     request->SetTimeout(base::Seconds(kTransportInfoTimeout));
     transport_info_requests_.push_back(std::move(request));
@@ -489,26 +486,24 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
     // SESSION_TERMINATE message.
     AddPluginAttachments(message.get());
   }
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
-      JingleMessageToXml(*message);
-  stanza->AddAttr(kQNameId, GetNextOutgoingId());
+  message->message_id = GetNextOutgoingId();
 
+  JingleMessage::ActionType action = message->action();
   auto request = session_manager_->iq_sender()->SendIq(
-      std::move(stanza),
-      base::BindOnce(&JingleSession::OnMessageResponse, base::Unretained(this),
-                     message->action()));
+      *message, base::BindOnce(&JingleSession::OnMessageResponse,
+                               base::Unretained(this), action));
 
   int timeout = kDefaultMessageTimeout;
-  if (message->action() == JingleMessage::ActionType::kSessionInitiate ||
-      message->action() == JingleMessage::ActionType::kSessionAccept) {
+  if (action == JingleMessage::ActionType::kSessionInitiate ||
+      action == JingleMessage::ActionType::kSessionAccept) {
     timeout = kSessionInitiateAndAcceptTimeout;
   }
   if (request) {
     request->SetTimeout(base::Seconds(timeout));
     pending_requests_.push_back(std::move(request));
   } else {
-    LOG(ERROR) << "Failed to send a "
-               << JingleMessage::GetActionName(message->action()) << " message";
+    LOG(ERROR) << "Failed to send a " << JingleMessage::GetActionName(action)
+               << " message";
   }
 }
 

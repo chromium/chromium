@@ -26,6 +26,7 @@ class XmlElement;
 namespace remoting {
 
 class IqRequest;
+class JingleMessage;
 class SignalStrategy;
 
 // IqSender handles sending iq requests and routing of responses to
@@ -60,6 +61,10 @@ class IqSender : public SignalStrategy::Listener {
       const std::string& addressee,
       std::unique_ptr<jingle_xmpp::XmlElement> iq_body,
       ReplyCallback callback);
+
+  // Same as above, but uses the JingleMessage struct.
+  std::unique_ptr<IqRequest> SendIq(const JingleMessage& message,
+                                    ReplyCallback callback);
 
   // SignalStrategy::Listener implementation.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;

@@ -320,6 +320,8 @@ class JingleMessage {
 
   void SetPayload(Payload payload);
 
+  std::string message_id;
+
   SignalingAddress from;
   SignalingAddress to;
   std::string sid;
