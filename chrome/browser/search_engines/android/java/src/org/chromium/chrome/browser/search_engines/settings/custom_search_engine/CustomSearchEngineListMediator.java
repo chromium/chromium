@@ -79,7 +79,7 @@ public class CustomSearchEngineListMediator
         // TODO: Get only default search engines in template url services after the API is
         // available.
         List<TemplateUrl> urls = mTemplateUrlService.getTemplateUrls();
-
+        TemplateUrl defaultSearchEngine = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         for (TemplateUrl url : urls) {
             PropertyModel model =
                     new PropertyModel.Builder(CustomSearchEngineProperties.ALL_KEYS)
@@ -87,7 +87,9 @@ public class CustomSearchEngineListMediator
                             .with(CustomSearchEngineProperties.URL, url.getKeyword())
                             .with(
                                     CustomSearchEngineProperties.MENU_DELEGATE,
-                                    createMenuDelegate(url))
+                                    url.equals(defaultSearchEngine)
+                                            ? null
+                                            : createMenuDelegate(url))
                             .with(
                                     CustomSearchEngineProperties.ICON,
                                     FaviconUtils.createGenericFaviconBitmap(
