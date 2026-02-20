@@ -50,7 +50,8 @@ export function getHtml(this: TopToolbarElement) {
         iron-icon="contextual_tasks:open_in_full_tab"
         class="no-overlap" title="$i18n{openInNewTab}"
         aria-label="i18n{openInNewTab}"
-        @click="${this.onOpenInNewTabClick_}">
+        @click="${this.onOpenInNewTabClick_}"
+        ?disabled="${!this.isAiPage}">
       </cr-icon-button>
     ` :html`
       <cr-icon-button id="more" iron-icon="cr:more-vert"
