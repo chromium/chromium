@@ -261,7 +261,8 @@ use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
 # Whether the fuzzing engine supports fuzzers which supply their own
 # "main" function.
 fuzzing_engine_supports_custom_main =
-    use_libfuzzer || use_centipede || use_chromium_fuzzilli
+    use_libfuzzer || use_centipede || use_chromium_fuzzilli ||
+    use_external_fuzzing_engine
 
 # Args that are in turn dependent on other args must be in a separate
 # declare_args block. User overrides are only applied at the end of a
