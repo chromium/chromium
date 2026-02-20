@@ -105,9 +105,6 @@ namespace gpu {
 
 namespace {
 
-BASE_FEATURE(kUseCompoundImageBackingAsDefault,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
     case gfx::EMPTY_BUFFER:
@@ -387,7 +384,7 @@ bool SharedImageFactory::CreateSharedImage(
       IsSharedBetweenThreads(usage));
 
   std::unique_ptr<SharedImageBacking> backing =
-      base::FeatureList::IsEnabled(kUseCompoundImageBackingAsDefault)
+      base::FeatureList::IsEnabled(features::kUseCompoundImageBackingAsDefault)
           ? CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
                                                       std::move(temp_backing))
           : std::move(temp_backing);
@@ -497,7 +494,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       IsNativeBufferSupported(format, buffer_usage, gpu_extra_info_);
   std::unique_ptr<SharedImageBacking> backing;
   const bool force_compound_backing =
-      base::FeatureList::IsEnabled(kUseCompoundImageBackingAsDefault);
+      base::FeatureList::IsEnabled(features::kUseCompoundImageBackingAsDefault);
 
   if (native_buffer_supported) {
     auto* factory = GetFactoryByUsage(usage, format, size,
@@ -612,7 +609,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 #endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<SharedImageBacking> backing =
-      base::FeatureList::IsEnabled(kUseCompoundImageBackingAsDefault)
+      base::FeatureList::IsEnabled(features::kUseCompoundImageBackingAsDefault)
           ? CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
                                                       std::move(temp_backing))
           : std::move(temp_backing);
@@ -672,7 +669,8 @@ bool SharedImageFactory::CreateSharedImage(
         std::move(debug_label), IsSharedBetweenThreads(usage),
         std::move(buffer_handle));
 
-    backing = base::FeatureList::IsEnabled(kUseCompoundImageBackingAsDefault)
+    backing = base::FeatureList::IsEnabled(
+                  features::kUseCompoundImageBackingAsDefault)
                   ? CompoundImageBacking::WrapExternalBacking(
                         this, copy_manager(), std::move(temp_backing))
                   : std::move(temp_backing);

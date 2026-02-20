@@ -129,6 +129,10 @@ BASE_FEATURE(kDefaultEnableGpuRasterization,
 #endif
 );
 
+// Use a compound backing for shared images by default.
+BASE_FEATURE(kUseCompoundImageBackingAsDefault,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
 #if BUILDFLAG(IS_ANDROID)
