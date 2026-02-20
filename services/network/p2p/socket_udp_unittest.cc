@@ -144,17 +144,66 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     }
   }
 
+  int DoSend(bool is_async_send,
+             int send_result,
+             scoped_refptr<net::IOBuffer> buf,
+             int buf_len,
+             const net::IPEndPoint& address,
+             net::CompletionOnceCallback callback) {
+    if (send_result != net::OK) {
+      // Return `send_result` to simulate failure.
+      if (is_async_send) {
+        std::move(callback).Run(send_result);
+      }
+      return send_result;
+    }
+
+    base::span<const uint8_t> to_write =
+        buf->first(base::checked_cast<size_t>(buf_len));
+    std::vector<uint8_t> data_vector(to_write.begin(), to_write.end());
+    sent_packets_->push_back(
+        UDPPacket(address, std::move(data_vector), std::nullopt));
+
+    if (is_async_send) {
+      std::move(callback).Run(buf_len);
+    }
+    return buf_len;
+  }
+
   int SendTo(net::IOBuffer* buf,
              int buf_len,
              const net::IPEndPoint& address,
              net::CompletionOnceCallback callback) override {
-    scoped_refptr<net::IOBuffer> buffer(buf);
-    base::span<const uint8_t> to_write =
-        buffer->first(base::checked_cast<size_t>(buf_len));
-    std::vector<uint8_t> data_vector(to_write.begin(), to_write.end());
-    sent_packets_->push_back(
-        UDPPacket(address, std::move(data_vector), std::nullopt));
-    return buf_len;
+    int send_result = PopNextSendResult();
+    bool is_async_send = send_result == net::ERR_IO_PENDING;
+    if (is_async_send) {
+      scoped_refptr<net::IOBuffer> buffer(buf);
+      send_result = PopNextSendResult();
+
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(&FakeDatagramServerSocket::DoSend),
+                         base::Unretained(this), /*is_async_send=*/true,
+                         send_result, std::move(buffer), buf_len, address,
+                         std::move(callback)));
+      return net::ERR_IO_PENDING;
+    }
+    return DoSend(/*is_async_send=*/false, send_result, buf, buf_len, address,
+                  std::move(callback));
+  }
+
+  base::circular_deque<int>& send_result_queue() { return send_result_queue_; }
+
+  // Returns and pops the front of `send_result_queue_`.  Returns `net::OK` when
+  // `send_result_queue_` is empty.
+  int PopNextSendResult() {
+    if (send_result_queue_.empty()) {
+      return net::OK;
+    }
+
+    int next_send_result = send_result_queue_.front();
+    send_result_queue_.pop_front();
+    return next_send_result;
   }
 
   int SetReceiveBufferSize(int32_t size) override { return net::OK; }
@@ -290,6 +339,11 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   int recv_size_;
   net::CompletionOnceCallback recv_callback_;
   raw_ptr<std::vector<uint16_t>> used_ports_;
+
+  // Tests may push error codes to simulate `SendTo()` failures.  Tests assume
+  // success by default when `send_result_queue_` is empty.  Push
+  // `net::ERR_IO_PENDING` to simulate an async send.
+  base::circular_deque<int> send_result_queue_;
 
   // Owned by |P2PSocketUdpTest|.
   raw_ptr<ScopedFakeClock> fake_clock_ptr_;
@@ -556,6 +610,171 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
 
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(fake_client_->connection_error());
+}
+
+TEST_F(P2PSocketUdpTest, AsyncSend) {
+  // Setup two successful async send operations.
+  socket_->send_result_queue().push_back(net::ERR_IO_PENDING);
+  socket_->send_result_queue().push_back(net::OK);
+  socket_->send_result_queue().push_back(net::ERR_IO_PENDING);
+
+  // Authorize sends to `dest1_` via a STUN request.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
+
+  webrtc::AsyncSocketPacketOptions options;
+  std::vector<uint8_t> packet1;
+  CreateRandomPacket(&packet1);
+  std::vector<uint8_t> packet2;
+  CreateRandomPacket(&packet2);
+
+  // First send returns `net::ERR_IO_PENDING`.
+  socket_impl_->Send(packet1, P2PPacketInfo(dest1_, options, 0));
+  ASSERT_EQ(0U, sent_packets_.size());
+
+  // Second send must be queued because the first is still pending.
+  socket_impl_->Send(packet2, P2PPacketInfo(dest1_, options, 1));
+  ASSERT_EQ(0U, sent_packets_.size());
+
+  // Wait for the async sends to complete.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(2U, sent_packets_.size());
+  EXPECT_EQ(dest1_, std::get<0>(sent_packets_[0]));
+  EXPECT_EQ(packet1, std::get<1>(sent_packets_[0]));
+  EXPECT_EQ(dest1_, std::get<0>(sent_packets_[1]));
+  EXPECT_EQ(packet2, std::get<1>(sent_packets_[1]));
+}
+
+TEST_F(P2PSocketUdpTest, AsyncSendError) {
+  // Setup an async send operation that fails.
+  socket_->send_result_queue().push_back(net::ERR_IO_PENDING);
+  socket_->send_result_queue().push_back(net::ERR_FAILED);
+
+  // Authorize sends to `dest1_` via a STUN request.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  webrtc::AsyncSocketPacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  // The send returns `net::ERR_IO_PENDING` but the async task will invoke the
+  // error callback, which must destroy the socket.
+  socket_ = nullptr;
+  auto* socket_impl_ptr = socket_impl_.get();
+  socket_delegate_.ExpectDestruction(std::move(socket_impl_));
+  socket_impl_ptr->Send(packet, P2PPacketInfo(dest1_, options, 0));
+
+  // No packets should have been sent synchronously.
+  ASSERT_EQ(0U, sent_packets_.size());
+
+  // Run the posted async task which delivers the error.
+  base::RunLoop().RunUntilIdle();
+
+  // The socket should have been destroyed due to the error.
+  EXPECT_TRUE(fake_client_->connection_error());
+  ASSERT_EQ(0U, sent_packets_.size());
+}
+
+TEST_F(P2PSocketUdpTest, AsyncSendThenSyncSend) {
+  // Set up a successful async send operation.
+  socket_->send_result_queue().push_back(net::ERR_IO_PENDING);
+
+  // Authorize sends to `dest1_` via a STUN request.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(0);
+
+  // The async send callback, `P2PSocketUdp::OnSend()`, sends the second packet
+  // and then runs both send completion callbacks.
+  EXPECT_CALL(*fake_client_.get(), SendBatchComplete(_)).Times(1);
+
+  webrtc::AsyncSocketPacketOptions options;
+  std::vector<uint8_t> packet1;
+  CreateRandomPacket(&packet1);
+  std::vector<uint8_t> packet2;
+  CreateRandomPacket(&packet2);
+
+  // First send returns `net::ERR_IO_PENDING`.
+  socket_impl_->Send(packet1, P2PPacketInfo(dest1_, options, 0));
+  ASSERT_EQ(0U, sent_packets_.size());
+
+  // Second send must be queued because the first is still pending.
+  socket_impl_->Send(packet2, P2PPacketInfo(dest1_, options, 1));
+  ASSERT_EQ(0U, sent_packets_.size());
+
+  // Wait for the async sends to complete.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(2U, sent_packets_.size());
+  EXPECT_EQ(dest1_, std::get<0>(sent_packets_[0]));
+  EXPECT_EQ(packet1, std::get<1>(sent_packets_[0]));
+  EXPECT_EQ(dest1_, std::get<0>(sent_packets_[1]));
+  EXPECT_EQ(packet2, std::get<1>(sent_packets_[1]));
+}
+
+TEST_F(P2PSocketUdpTest, AsyncSendThenSyncError) {
+  // Setup a successful async send followed by a sync send that fails.
+  socket_->send_result_queue().push_back(net::ERR_IO_PENDING);
+  socket_->send_result_queue().push_back(net::OK);
+  socket_->send_result_queue().push_back(net::ERR_FAILED);
+
+  // Authorize sends to `dest1_` via a STUN request.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  // The async send callback, `P2PSocketUdp::OnSend()`, fails to send the second
+  // packet, which then errors the connection before running the first send
+  // completion callback.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(0);
+  EXPECT_CALL(*fake_client_.get(), SendBatchComplete(_)).Times(0);
+
+  webrtc::AsyncSocketPacketOptions options;
+  std::vector<uint8_t> packet1;
+  CreateRandomPacket(&packet1);
+  std::vector<uint8_t> packet2;
+  CreateRandomPacket(&packet2);
+
+  // First send returns `net::ERR_IO_PENDING`.
+  socket_impl_->Send(packet1, P2PPacketInfo(dest1_, options, 0));
+  ASSERT_EQ(0U, sent_packets_.size());
+
+  // Second send must be queued because the first is still pending.
+  socket_ = nullptr;
+  auto* socket_impl_ptr = socket_impl_.get();
+  socket_delegate_.ExpectDestruction(std::move(socket_impl_));
+  socket_impl_ptr->Send(packet2, P2PPacketInfo(dest1_, options, 0));
+
+  // Wait for the async sends to complete.
+  base::RunLoop().RunUntilIdle();
+
+  // The first packet must send successfully.
+  ASSERT_EQ(1U, sent_packets_.size());
+  EXPECT_EQ(dest1_, std::get<0>(sent_packets_[0]));
+  EXPECT_EQ(packet1, std::get<1>(sent_packets_[0]));
+
+  // The second packet must fail.
   EXPECT_TRUE(fake_client_->connection_error());
 }
 

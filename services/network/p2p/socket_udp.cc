@@ -506,9 +506,14 @@ void P2PSocketUdp::OnSend(uint64_t packet_id,
   while (!send_queue_.empty() && !send_pending_) {
     P2PPendingPacket packet = send_queue_.front();
     send_queue_.pop_front();
-    if (!DoSend(packet))
+    if (!DoSend(packet)) {
+      // When `DoSend()` fails, `P2PSocket::OnError()` destroys `this` object.
+      // Do not reference `this` afterwards.
       return;
+    }
   }
+
+  ProcessSendCompletions();
 }
 
 bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
