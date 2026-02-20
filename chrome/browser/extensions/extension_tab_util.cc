@@ -1373,8 +1373,14 @@ bool ExtensionTabUtil::IsTabStripEditable() {
 
   // See comments in the header for why we need to check all of them.
   for (WindowController* window : *WindowControllerList::GetInstance()) {
+    BrowserWindowInterface* browser_window_interface =
+        window->GetBrowserWindowInterface();
+    // browser_window_interface can be null for non-browser windows on ChromeOS.
+    if (!browser_window_interface) {
+      continue;
+    }
     TabListInterface* tab_list =
-        TabListInterface::From(window->GetBrowserWindowInterface());
+        TabListInterface::From(browser_window_interface);
     if (tab_list && !tab_list->IsThisTabListEditable()) {
       return false;
     }
