@@ -562,13 +562,17 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheMaxReadBufferTotalSize);
 // Execute the checkpoint serially.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSerialCheckpoint);
+// Whether to use size and priority aware eviction for the SQL disk cache.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kSqlDiskCacheSizeAndPriorityAwareEviction);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreHSTSForLocalhost);
 
 // If enabled, main frame navigation resources will be prioritized in Simple
-// Cache. So they will be less likely to be evicted.
+// Cache and SQL Cache. So they will be less likely to be evicted.
 NET_EXPORT BASE_DECLARE_FEATURE(kSimpleCachePrioritizedCaching);
 // This is a factor by which we divide the size of an entry that has the
 // HINT_HIGH_PRIORITY flag set to prioritize it for eviction to be less likely

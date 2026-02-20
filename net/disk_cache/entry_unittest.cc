@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -5961,7 +5963,26 @@ TEST_F(DiskCacheEntryTest, SqlCacheGiantEntry) {
   CacheGiantEntry();
 }
 
-TEST_F(DiskCacheEntryTest, SqlCacheEvictOldEntries) {
+TEST_F(DiskCacheEntryTest, SqlCacheSizeUnawareEvictOldEntries) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{net::features::kDiskCacheBackendParam.name, "sql"},
+         {net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.name,
+          "false"}}}},
+      {});
+  SetBackendToTest(BackendToTest::kSql);
+  EvictOldEntries();
+}
+
+TEST_F(DiskCacheEntryTest, SqlCacheSizeAwareEvictOldEntries) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{net::features::kDiskCacheBackendParam.name, "sql"},
+         {net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.name,
+          "true"}}}},
+      {});
   SetBackendToTest(BackendToTest::kSql);
   EvictOldEntries();
 }

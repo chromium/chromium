@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/sql/sql_persistent_store_backend.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cstdint>
 #include <limits>
@@ -2280,6 +2281,7 @@ SqlPersistentStore::Backend::OpenNextEntryInternal(
 void SqlPersistentStore::Backend::StartEviction(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
+    std::vector<ResId> high_priority_res_ids,
     bool is_idle_time_eviction,
     scoped_refptr<EvictionCandidateAggregator> aggregator,
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
@@ -2291,9 +2293,13 @@ void SqlPersistentStore::Backend::StartEviction(
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("size_to_be_removed", size_to_be_removed);
                        dict.Add("is_idle_time_eviction", is_idle_time_eviction);
+                       dict.Add("excluded_res_ids", excluded_res_ids.size());
+                       dict.Add("high_priority_res_ids",
+                                high_priority_res_ids.size());
                      });
   auto candidates = SelectEvictionCandidates(
-      size_to_be_removed, std::move(excluded_res_ids), is_idle_time_eviction);
+      size_to_be_removed, std::move(excluded_res_ids),
+      std::move(high_priority_res_ids), is_idle_time_eviction);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.StartEviction", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -2311,6 +2317,7 @@ SqlPersistentStore::Backend::EvictionCandidateList
 SqlPersistentStore::Backend::SelectEvictionCandidates(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
+    std::vector<ResId> high_priority_res_ids,
     bool is_idle_time_eviction) {
   if (is_idle_time_eviction && !IsBrowserIdle()) {
     return {};
@@ -2321,33 +2328,88 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
 
   base::ElapsedTimer timer;
 
-  // Create a list of eviction candidates in this shard until the
-  // `candidates_total_size` exceeds the `size_to_be_removed`.
-  // The EvictionCandidateAggregator merges and sorts eviction candidates from
-  // each shard. It then selects candidates until their total size exceeds
-  // 'size_to_be_removed', and passes the final list to EvictEntries().
+  const bool size_and_priority_aware_eviction =
+      net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.Get();
+  const bool prioritized_caching_enabled = base::FeatureList::IsEnabled(
+      net::features::kSimpleCachePrioritizedCaching);
+  const int caching_prioritization_factor =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationFactor.Get();
+  const uint64_t caching_prioritization_period_in_seconds =
+      static_cast<uint64_t>(
+          net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod
+              .Get()
+              .InSeconds());
+
+  base::flat_set<ResId> high_priority_res_ids_set;
+  if (size_and_priority_aware_eviction) {
+    std::sort(high_priority_res_ids.begin(), high_priority_res_ids.end());
+    high_priority_res_ids_set = base::flat_set<ResId>(
+        base::sorted_unique, std::move(high_priority_res_ids));
+  }
+
   EvictionCandidateList candidates;
-  base::ClampedNumeric<int64_t> candidates_total_size = 0;
+  const base::Time now = base::Time::Now();
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kStartEviction_SelectLiveResources)));
-    while (size_to_be_removed > candidates_total_size && statement.Step()) {
+    base::ClampedNumeric<int64_t> candidates_total_size = 0;
+    while (statement.Step()) {
       if (is_idle_time_eviction && !IsBrowserIdle()) {
         return {};
       }
       const ResId res_id = ResId(statement.ColumnInt64(0));
-      const int64_t bytes_usage = statement.ColumnInt64(1);
-      const base::Time last_used = statement.ColumnTime(2);
       if (excluded_res_ids.contains(res_id)) {
         continue;
       }
-      candidates_total_size += bytes_usage;
-      candidates_total_size += kSqlBackendStaticResourceSize;
+      const int64_t bytes_usage = statement.ColumnInt64(1);
+      const base::Time last_used = statement.ColumnTime(2);
+      const uint64_t time_since_last_used = (now - last_used).InSeconds();
+      uint64_t sort_value = time_since_last_used;
+      if (size_and_priority_aware_eviction) {
+        sort_value *= bytes_usage + kSqlBackendStaticResourceSize;
+        if (prioritized_caching_enabled &&
+            time_since_last_used < caching_prioritization_period_in_seconds &&
+            high_priority_res_ids_set.contains(res_id)) {
+          sort_value /= caching_prioritization_factor;
+        }
+      }
       candidates.emplace_back(res_id, shard_id_,
                               bytes_usage + kSqlBackendStaticResourceSize,
-                              last_used);
+                              sort_value);
+      if (!size_and_priority_aware_eviction) {
+        candidates_total_size += bytes_usage;
+        candidates_total_size += kSqlBackendStaticResourceSize;
+        if (size_to_be_removed <= candidates_total_size) {
+          // Since "ORDER BY last_used" is specified in the
+          // kStartEviction_SelectLiveResources query, for LRU eviction that is
+          // not size and priority aware, there is no need to read more once
+          // the total size exceeds `size_to_be_removed`.
+          break;
+        }
+      }
     }
   }
+
+  // For size and priority aware eviction, all entry information is included in
+  // `candidates` at this point. Since we don't need more than
+  // `size_to_be_removed`, we remove unnecessary candidates before passing them
+  // to the aggregator.
+  if (size_and_priority_aware_eviction) {
+    // Sort candidates by sort_value
+    std::sort(candidates.begin(), candidates.end(),
+              [](const auto& a, const auto& b) {
+                return a.sort_value > b.sort_value;
+              });
+    base::ClampedNumeric<int64_t> candidates_total_size = 0;
+    auto it = candidates.begin();
+    while (it != candidates.end() &&
+           size_to_be_removed > candidates_total_size) {
+      candidates_total_size += it->entry_size_with_overhead;
+      ++it;
+    }
+    candidates.erase(it, candidates.end());
+  }
+
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat(
           {kSqlDiskCacheBackendHistogramPrefix,

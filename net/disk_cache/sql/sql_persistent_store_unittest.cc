@@ -713,6 +713,8 @@ class SqlPersistentStoreTest : public testing::Test {
     store_->SetEvictionHookForTesting(base::DoNothing());
   }
 
+  void RunStartEvictionEvictsOlderEntriesFirstTest();
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
@@ -5579,6 +5581,228 @@ TEST_F(SqlPersistentStoreTest, SetAndGetEntryInMemoryData) {
   auto reloaded_hints = store_->GetInMemoryEntryDataHints(kKey.hash());
   ASSERT_TRUE(reloaded_hints.has_value());
   EXPECT_EQ(reloaded_hints->value(), hints_value);
+}
+
+TEST_F(SqlPersistentStoreTest, StartEvictionEvictsLargerEntriesFirst) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"}});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add 9 entries of 600 bytes body.
+  // Each entry size = 600 + 300 (overhead) + 4 (key size "keyN") = 904.
+  // Total size = 8136.
+  std::vector<CacheEntryKey> keys;
+  for (int i = 0; i < 9; ++i) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i));
+    keys.push_back(key);
+    auto res_id = CreateEntryAndGetResId(key);
+    FillDataInRange(key, res_id, 0, 0, 600, 'a');
+  }
+
+  // Add 1 entry of 1200 bytes body.
+  // Entry size = 1200 + 300 + 9 (key size "large_key") = 1509.
+  // Total size = 8136 + 1509 = 9645 (> 9500).
+  const CacheEntryKey large_key("large_key");
+  auto large_res_id = CreateEntryAndGetResId(large_key);
+  FillDataInRange(large_key, large_res_id, 0, 0, 1200, 'b');
+
+  // Set all entries to the same last_used time.
+  base::Time now = base::Time::Now();
+  for (const auto& key : keys) {
+    ASSERT_EQ(UpdateEntryLastUsedByKey(key, now),
+              SqlPersistentStore::Error::kOk);
+  }
+  ASSERT_EQ(UpdateEntryLastUsedByKey(large_key, now),
+            SqlPersistentStore::Error::kOk);
+
+  // Advance clock so time_since_last_used > 0.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_GT(GetSizeOfAllEntries(), kHighWatermark);
+  EXPECT_EQ(store_->GetEvictionUrgency(),
+            SqlPersistentStore::EvictionUrgency::kNeeded);
+
+  // Start eviction.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // After eviction, size should be <= low watermark (9000).
+  // Target to remove = 9645 - 9000 = 645.
+  // Evicting the 1509-byte entry should be enough.
+  EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+  EXPECT_EQ(GetEntryCount(), 9);
+
+  // Verify the larger entry is gone.
+  auto open_large = OpenEntry(large_key);
+  ASSERT_TRUE(open_large.has_value());
+  EXPECT_FALSE(open_large->has_value());
+
+  // Verify smaller entries are still there.
+  for (const auto& key : keys) {
+    auto open_result = OpenEntry(key);
+    ASSERT_TRUE(open_result.has_value());
+    EXPECT_TRUE(open_result->has_value());
+  }
+}
+
+void SqlPersistentStoreTest::RunStartEvictionEvictsOlderEntriesFirstTest() {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add 10 entries of same size.
+  // Each entry size = 650 + 300 + 4 = 954.
+  // Total size = 9540 (> 9500).
+  std::vector<CacheEntryKey> keys;
+  base::Time now = base::Time::Now();
+  for (int i = 0; i < 10; ++i) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i));
+    keys.push_back(key);
+    auto res_id = CreateEntryAndGetResId(key);
+    FillDataInRange(key, res_id, 0, 0, 650, 'a');
+    // Vary last_used: key0 is oldest, key9 is newest.
+    ASSERT_EQ(UpdateEntryLastUsedByKey(key, now + base::Seconds(i)),
+              SqlPersistentStore::Error::kOk);
+  }
+
+  // Advance clock.
+  task_environment_.FastForwardBy(base::Seconds(20));
+
+  EXPECT_GT(GetSizeOfAllEntries(), kHighWatermark);
+
+  // Start eviction.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // Size should be <= 9000. Target to remove = 9540 - 9000 = 540.
+  // 1 entry (954 bytes) should be evicted.
+  EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+  EXPECT_EQ(GetEntryCount(), 9);
+
+  // Verify the oldest entry (key0) is gone.
+  auto open_oldest = OpenEntry(keys[0]);
+  ASSERT_TRUE(open_oldest.has_value());
+  EXPECT_FALSE(open_oldest->has_value());
+
+  // Verify newest entries are still there.
+  for (int i = 1; i < 10; ++i) {
+    auto open_result = OpenEntry(keys[i]);
+    ASSERT_TRUE(open_result.has_value());
+    EXPECT_TRUE(open_result->has_value());
+  }
+}
+
+TEST_F(SqlPersistentStoreTest,
+       StartEvictionEvictsOlderEntriesFirstSizeAndPriorityAwareEviction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"}});
+
+  RunStartEvictionEvictsOlderEntriesFirstTest();
+}
+
+TEST_F(SqlPersistentStoreTest,
+       StartEvictionEvictsOlderEntriesFirstLeastRecentlyUsedEviction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSizeAndPriorityAwareEviction", "false"}});
+
+  RunStartEvictionEvictsOlderEntriesFirstTest();
+}
+
+TEST_F(SqlPersistentStoreTest, StartEvictionPrioritizesHighPriorityEntries) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"}}},
+       {net::features::kSimpleCachePrioritizedCaching, {}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add 9 low priority entries.
+  // Each entry size = 650 + 300 + 4 = 954. Total = 8586.
+  std::vector<CacheEntryKey> low_priority_keys;
+  for (int i = 0; i < 9; ++i) {
+    const CacheEntryKey key(base::StringPrintf("low%d", i));
+    low_priority_keys.push_back(key);
+    auto res_id = CreateEntryAndGetResId(key);
+    FillDataInRange(key, res_id, 0, 0, 650, 'a');
+  }
+
+  // Add 1 high priority entry, same size and age.
+  // Size = 650 + 300 + 13 ("high_priority") = 963.
+  // Total size = 8586 + 963 = 9549 (> 9500).
+  const CacheEntryKey high_priority_key("high_priority");
+  auto high_priority_res_id = CreateEntryAndGetResId(high_priority_key);
+  FillDataInRange(high_priority_key, high_priority_res_id, 0, 0, 650, 'b');
+
+  // Set hints to HINT_HIGH_PRIORITY.
+  ASSERT_EQ(UpdateEntryHeaderAndLastUsed(
+                high_priority_key, high_priority_res_id, base::Time::Now(),
+                nullptr, 0, MemoryEntryDataHints(HINT_HIGH_PRIORITY)),
+            SqlPersistentStore::Error::kOk);
+
+  // Set all to same age.
+  base::Time now = base::Time::Now();
+  for (const auto& key : low_priority_keys) {
+    ASSERT_EQ(UpdateEntryLastUsedByKey(key, now),
+              SqlPersistentStore::Error::kOk);
+  }
+  ASSERT_EQ(UpdateEntryLastUsedByKey(high_priority_key, now),
+            SqlPersistentStore::Error::kOk);
+
+  // Advance clock.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_GT(GetSizeOfAllEntries(), kHighWatermark);
+
+  // Start eviction.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // One entry should be evicted. Target to remove = 9549 - 9000 = 549.
+  EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+  EXPECT_EQ(GetEntryCount(), 9);
+
+  // Verify the high priority entry is still there.
+  auto open_high = OpenEntry(high_priority_key);
+  ASSERT_TRUE(open_high.has_value());
+  EXPECT_TRUE(open_high->has_value());
+
+  // Verify one of the low priority entries is gone.
+  int gone_count = 0;
+  for (const auto& key : low_priority_keys) {
+    auto open_result = OpenEntry(key);
+    if (open_result.has_value() && !open_result->has_value()) {
+      gone_count++;
+    }
+  }
+  EXPECT_EQ(gone_count, 1);
 }
 
 }  // namespace disk_cache

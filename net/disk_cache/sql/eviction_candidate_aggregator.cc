@@ -16,11 +16,11 @@ EvictionCandidateAggregator::EvictionCandidate::EvictionCandidate(
     SqlPersistentStore::ResId res_id,
     SqlPersistentStore::ShardId shard_id,
     int64_t entry_size_with_overhead,
-    base::Time last_used)
+    int64_t sort_value)
     : res_id(res_id),
       shard_id(shard_id),
       entry_size_with_overhead(entry_size_with_overhead),
-      last_used(last_used) {}
+      sort_value(sort_value) {}
 EvictionCandidateAggregator::EvictionCandidate::~EvictionCandidate() = default;
 EvictionCandidateAggregator::EvictionCandidate::EvictionCandidate(
     EvictionCandidate&&) = default;
@@ -92,10 +92,10 @@ void EvictionCandidateAggregator::AggregateCandidatesAndRunCallbacks(
                           std::make_move_iterator(candidates.begin()),
                           std::make_move_iterator(candidates.end()));
   }
-  // Sort candidates by last_used time, oldest first.
+  // Sort candidates by sort_value
   std::sort(
       all_candidates.begin(), all_candidates.end(),
-      [](const auto& a, const auto& b) { return a.last_used < b.last_used; });
+      [](const auto& a, const auto& b) { return a.sort_value > b.sort_value; });
 
   std::vector<EvictionTargetQueue> eviction_targets_per_shard(
       GetSizeOfShards());

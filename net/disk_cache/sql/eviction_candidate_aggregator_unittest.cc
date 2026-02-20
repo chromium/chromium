@@ -45,31 +45,31 @@ class EvictionCandidateAggregatorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-// Tests that candidates are sorted by last_used time, oldest first.
-TEST_F(EvictionCandidateAggregatorTest, SortsByTime) {
+// Tests that candidates are sorted by sort_value, highest first.
+TEST_F(EvictionCandidateAggregatorTest, SortsBySortValue) {
   const int kNumShards = 2;
   std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners;
   for (int i = 0; i < kNumShards; ++i) {
     task_runners.push_back(base::ThreadPool::CreateSequencedTaskRunner({}));
   }
 
-  // We need to remove 100 bytes, so the two oldest entries should be selected.
+  // We need to remove 100 bytes, so the two entries with highest sort_values
+  // should be selected.
   const int64_t kSizeToBeRemoved = 100;
   auto aggregator = base::MakeRefCounted<EvictionCandidateAggregator>(
       kSizeToBeRemoved, task_runners);
 
-  const base::Time now = base::Time::Now();
   EvictionCandidateList candidates0;
-  // Oldest candidate.
-  candidates0.emplace_back(ResId(1), ShardId(0), 50, now);
-  // 4th oldest candidate.
-  candidates0.emplace_back(ResId(2), ShardId(0), 50, now + base::Seconds(3));
+  // Highest sort_value candidate.
+  candidates0.emplace_back(ResId(1), ShardId(0), 50, 100);
+  // 4th highest sort_value candidate.
+  candidates0.emplace_back(ResId(2), ShardId(0), 50, 70);
 
   EvictionCandidateList candidates1;
-  // 2nd oldest candidate.
-  candidates1.emplace_back(ResId(3), ShardId(1), 60, now + base::Seconds(1));
-  // 3rd oldest candidate.
-  candidates1.emplace_back(ResId(4), ShardId(1), 60, now + base::Seconds(2));
+  // 2nd highest sort_value candidate.
+  candidates1.emplace_back(ResId(3), ShardId(1), 60, 90);
+  // 3rd highest sort_value candidate.
+  candidates1.emplace_back(ResId(4), ShardId(1), 60, 80);
 
   base::RunLoop run_loop;
   auto on_done = base::BarrierClosure(kNumShards, run_loop.QuitClosure());
@@ -78,7 +78,7 @@ TEST_F(EvictionCandidateAggregatorTest, SortsByTime) {
       [](base::OnceClosure on_done,
          SqlPersistentStore::EvictionTargetQueue eviction_targets,
          base::TimeTicks post_task_time) {
-        // This shard had the oldest candidate (ResId(1)).
+        // This shard had the highest sort_value candidate (ResId(1)).
         EXPECT_THAT(QueueToVector(std::move(eviction_targets)),
                     testing::ElementsAre(EvictionTarget(ResId(1), 50)));
         std::move(on_done).Run();
@@ -112,18 +112,18 @@ TEST_F(EvictionCandidateAggregatorTest, SelectsEnoughToRemove) {
   std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners;
   task_runners.push_back(base::ThreadPool::CreateSequencedTaskRunner({}));
 
-  // We need to remove 100 bytes. The oldest two entries sum to 90, so the third
-  // one (50 bytes) must also be selected, bringing the total to 140.
+  // We need to remove 100 bytes. The two entries with highest sort_values sum
+  // to 90 (40+50), so the third one (50 bytes) must also be selected, bringing
+  // the total to 140.
   const int64_t kSizeToBeRemoved = 100;
   auto aggregator = base::MakeRefCounted<EvictionCandidateAggregator>(
       kSizeToBeRemoved, task_runners);
 
-  const base::Time now = base::Time::Now();
   EvictionCandidateList candidates;
-  candidates.emplace_back(ResId(1), ShardId(0), 40, now);
-  candidates.emplace_back(ResId(2), ShardId(0), 50, now + base::Seconds(1));
-  candidates.emplace_back(ResId(3), ShardId(0), 50, now + base::Seconds(2));
-  candidates.emplace_back(ResId(4), ShardId(0), 80, now + base::Seconds(3));
+  candidates.emplace_back(ResId(1), ShardId(0), 40, 100);
+  candidates.emplace_back(ResId(2), ShardId(0), 50, 90);
+  candidates.emplace_back(ResId(3), ShardId(0), 50, 80);
+  candidates.emplace_back(ResId(4), ShardId(0), 80, 70);
 
   base::RunLoop run_loop;
   auto cb = base::BindOnce(
@@ -159,17 +159,16 @@ TEST_F(EvictionCandidateAggregatorTest, HandlesMultipleSequences) {
   auto aggregator = base::MakeRefCounted<EvictionCandidateAggregator>(
       kSizeToBeRemoved, task_runners);
 
-  const base::Time now = base::Time::Now();
   EvictionCandidateList candidates0;
-  candidates0.emplace_back(ResId(1), ShardId(0), 50, now);
-  candidates0.emplace_back(ResId(2), ShardId(0), 50, now + base::Seconds(5));
+  candidates0.emplace_back(ResId(1), ShardId(0), 50, 100);
+  candidates0.emplace_back(ResId(2), ShardId(0), 50, 50);
 
   EvictionCandidateList candidates1;
-  candidates1.emplace_back(ResId(3), ShardId(1), 60, now + base::Seconds(1));
+  candidates1.emplace_back(ResId(3), ShardId(1), 60, 90);
 
   EvictionCandidateList candidates2;
-  candidates2.emplace_back(ResId(4), ShardId(2), 70, now + base::Seconds(2));
-  candidates2.emplace_back(ResId(5), ShardId(2), 10, now + base::Seconds(3));
+  candidates2.emplace_back(ResId(4), ShardId(2), 70, 80);
+  candidates2.emplace_back(ResId(5), ShardId(2), 10, 70);
 
   base::RunLoop run_loop;
   auto on_done = base::BarrierClosure(kNumShards, run_loop.QuitClosure());

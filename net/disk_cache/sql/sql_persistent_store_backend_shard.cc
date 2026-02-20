@@ -17,6 +17,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "net/base/features.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store_backend.h"
@@ -294,10 +296,20 @@ void SqlPersistentStore::BackendShard::StartEviction(
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BackendShard::OnEvictionFinished,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
+
+  std::vector<ResId> high_priority_res_ids;
+  if (net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.Get()) {
+    CHECK(index_);
+    // Retrieve the list of high priority resource IDs from the in-memory index
+    // to pass to the backend for prioritized eviction.
+    high_priority_res_ids =
+        index_->GetResIdsWithHints(MemoryEntryDataHints(HINT_HIGH_PRIORITY));
+  }
   backend_.AsyncCall(&SqlPersistentStore::Backend::StartEviction)
       .WithArgs(size_to_be_removed, std::move(excluded_res_ids),
-                is_idle_time_eviction, std::move(aggregator),
-                std::move(abort_flag), std::move(remaining_mandatory_size),
+                std::move(high_priority_res_ids), is_idle_time_eviction,
+                std::move(aggregator), std::move(abort_flag),
+                std::move(remaining_mandatory_size),
                 std::move(result_callback));
 }
 

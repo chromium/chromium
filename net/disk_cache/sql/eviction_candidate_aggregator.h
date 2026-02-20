@@ -29,7 +29,7 @@ class NET_EXPORT_PRIVATE EvictionCandidateAggregator
     EvictionCandidate(SqlPersistentStore::ResId res_id,
                       SqlPersistentStore::ShardId shard_id,
                       int64_t entry_size_with_overhead,
-                      base::Time last_used);
+                      int64_t sort_value);
     ~EvictionCandidate();
     EvictionCandidate(EvictionCandidate&&);
     EvictionCandidate& operator=(EvictionCandidate&&);
@@ -41,7 +41,7 @@ class NET_EXPORT_PRIVATE EvictionCandidateAggregator
     // The size of the entry in bytes, including the static overhead
     // (kSqlBackendStaticResourceSize).
     int64_t entry_size_with_overhead;
-    base::Time last_used;
+    int64_t sort_value;
   };
   using EvictionTarget = SqlPersistentStore::EvictionTarget;
   using EvictionTargetQueue = SqlPersistentStore::EvictionTargetQueue;

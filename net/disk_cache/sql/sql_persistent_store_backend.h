@@ -123,6 +123,8 @@ class SqlPersistentStore::Backend {
   //                       is used to select candidates.
   // `excluded_res_ids`: A set of resource IDs to exclude from eviction (e.g.,
   //                     currently active entries).
+  // `high_priority_res_ids`: A list of resource IDs that should be prioritized
+  //                          for staying in the cache.
   // `is_idle_time_eviction`: True if this is an eviction triggered by idle
   //                          time. If true, the eviction may be aborted if the
   //                          browser becomes active.
@@ -141,6 +143,7 @@ class SqlPersistentStore::Backend {
   void StartEviction(
       int64_t size_to_be_removed,
       base::flat_set<ResId> excluded_res_ids,
+      std::vector<ResId> high_priority_res_ids,
       bool is_idle_time_eviction,
       scoped_refptr<EvictionCandidateAggregator> aggregator,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
@@ -332,11 +335,13 @@ class SqlPersistentStore::Backend {
   // `res_id`s.
   Error DeleteResourcesByResIds(const std::vector<ResId>& res_ids);
 
-  // Selects a list of eviction candidates from the `resources` table, ordered
-  // by `last_used` time.
+  // Selects a list of eviction candidates from the `resources` table.
+  // Entries in `high_priority_res_ids` are less likely to be selected as
+  // candidates if prioritized caching is enabled.
   EvictionCandidateList SelectEvictionCandidates(
       int64_t size_to_be_removed,
       base::flat_set<ResId> excluded_res_ids,
+      std::vector<ResId> high_priority_res_ids,
       bool is_idle_time_eviction);
   // Called by the `EvictionCandidateAggregator` to evict a list of selected
   // entries.

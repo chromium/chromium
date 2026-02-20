@@ -500,6 +500,11 @@ BASE_FEATURE_PARAM(bool,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSerialCheckpoint",
                    true);
+BASE_FEATURE_PARAM(bool,
+                   kSqlDiskCacheSizeAndPriorityAwareEviction,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheSizeAndPriorityAwareEviction",
+                   true);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
