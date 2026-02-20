@@ -44,12 +44,15 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
   auto* child2_layout = proposed_layout.GetLayoutFor(child2);
   // Expect children to be on the same row.
   EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
-  // Expect children to be next to each other with no gap.
-  EXPECT_EQ(child1_layout->bounds.right(), child2_layout->bounds.x());
+  // Expect children to be next to each other with set gap.
+  EXPECT_EQ(child1_layout->bounds.right() + VerticalSplitTabView::kSplitViewGap,
+            child2_layout->bounds.x());
   // Expect total width to just hold the two children
   EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
   EXPECT_EQ(proposed_layout.host_size.width(),
-            child1_layout->bounds.width() + child2_layout->bounds.width());
+            child1_layout->bounds.width() +
+                VerticalSplitTabView::kSplitViewGap +
+                child2_layout->bounds.width());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
@@ -74,15 +77,20 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
   auto* child2_layout = proposed_layout.GetLayoutFor(child2);
   // Expect children to be on the same row.
   EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
-  // Expect children to be next to each other with no gap.
-  EXPECT_EQ(child1_layout->bounds.right(), child2_layout->bounds.x());
+  // Expect children to be next to each other with set gap.
+  EXPECT_EQ(child1_layout->bounds.right() + VerticalSplitTabView::kSplitViewGap,
+            child2_layout->bounds.x());
   // Expect total width to just hold the two children.
   EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
   EXPECT_EQ(proposed_layout.host_size.width(),
-            child1_layout->bounds.width() + child2_layout->bounds.width());
+            child1_layout->bounds.width() +
+                VerticalSplitTabView::kSplitViewGap +
+                child2_layout->bounds.width());
   // Expect children to share total width.
-  EXPECT_EQ((available_width / 2), child1_layout->bounds.width());
-  EXPECT_EQ((available_width / 2), child2_layout->bounds.width());
+  EXPECT_EQ((available_width - VerticalSplitTabView::kSplitViewGap) / 2,
+            child1_layout->bounds.width());
+  EXPECT_EQ((available_width - VerticalSplitTabView::kSplitViewGap) / 2,
+            child2_layout->bounds.width());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
@@ -107,12 +115,16 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   auto* child2_layout = proposed_layout.GetLayoutFor(child2);
   // Expect children to be on different rows.
   EXPECT_NE(child1_layout->bounds.y(), child2_layout->bounds.y());
-  // Expect children to be next to each other vertically with no gap.
-  EXPECT_EQ(child1_layout->bounds.bottom(), child2_layout->bounds.y());
+  // Expect children to be next to each other vertically with set gap.
+  EXPECT_EQ(
+      child1_layout->bounds.bottom() + VerticalSplitTabView::kSplitViewGap,
+      child2_layout->bounds.y());
   // Expect total height to just hold the two children.
   EXPECT_EQ(proposed_layout.host_size.height(), child2_layout->bounds.bottom());
   EXPECT_EQ(proposed_layout.host_size.height(),
-            child1_layout->bounds.height() + child2_layout->bounds.height());
+            child1_layout->bounds.height() +
+                VerticalSplitTabView::kSplitViewGap +
+                child2_layout->bounds.height());
   // Expect children to fill width.
   EXPECT_EQ(available_width, child1_layout->bounds.width());
   EXPECT_EQ(available_width, child2_layout->bounds.width());

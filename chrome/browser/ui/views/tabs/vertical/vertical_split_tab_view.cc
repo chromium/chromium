@@ -136,12 +136,13 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
       bounds.set_x(x);
       // Fill available width if bounded.
       if (size_bounds.width().is_bounded()) {
-        bounds.set_width(x == 0 ? (std::floor(size_bounds.width().value() +
-                                              2 * border_thickness) /
-                                   2)
-                                : size_bounds.width().value() - x);
+        bounds.set_width(
+            x == 0 ? (std::floor(size_bounds.width().value() +
+                                 2 * border_thickness - kSplitViewGap) /
+                      2)
+                   : size_bounds.width().value() - x);
       }
-      x += bounds.width() - 2 * border_thickness;
+      x += bounds.width() - 2 * border_thickness + (x == 0 ? kSplitViewGap : 0);
       height = std::max(height, bounds.height());
       layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     }
@@ -153,7 +154,8 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
       bounds.set_y(y);
       bounds.set_width(size_bounds.width().value());
       bounds.set_height(bounds.height());
-      y += bounds.height() - 2 * border_thickness;
+      y +=
+          bounds.height() - 2 * border_thickness + (y == 0 ? kSplitViewGap : 0);
       layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     }
     width = size_bounds.width().value();

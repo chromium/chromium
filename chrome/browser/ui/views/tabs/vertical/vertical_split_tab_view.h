@@ -21,6 +21,10 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   METADATA_HEADER(VerticalSplitTabView, views::View)
 
  public:
+  // This represents the gap between the two tabs in a Split View. This might be
+  // vertical or horizontal.
+  static constexpr int kSplitViewGap = 2;
+
   explicit VerticalSplitTabView(TabCollectionNode* collection_node);
   VerticalSplitTabView(const VerticalSplitTabView&) = delete;
   VerticalSplitTabView& operator=(const VerticalSplitTabView&) = delete;
