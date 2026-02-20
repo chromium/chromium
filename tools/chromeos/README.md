@@ -35,27 +35,8 @@ Please use `--help` to show more options.
   $ run_cros.sh --help
 ```
 
-### Lacros support
-
-You can also run lacros in this environment. There is no option to download
-prebuilt Lacros, so you first have to build your own lacros. If you use the
-default build directory `out/lacros`, and then you can simply run
-
-```
-  $ run_cros.sh --enable-lacros
-```
-
-You can override the lacros build directory using `--lacros-build-dir` and you
-can omit `--enable-lacros`.
-
-```
-  $ run_cros.sh --lacros-build-dir=out/lacros_out_dir
-```
-
 ### Environment variables
 You can set the following environment variable instead of using command line
 flag.
 
 `ASH_CHROME_BUILD_DIR` : specifies the directory for --ash-chrome-build-dir
-
-`LACROS_BUILD_DIR` : specifies the directory for --lacros-build-dir
