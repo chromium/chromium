@@ -9,7 +9,7 @@
 <script>
 'use strict';
 
-// Verifies that FormControlRange updates are applied after the value mutation
+// Verifies that OpaqueRange updates are applied after the value mutation
 // but before 'input' event listeners execute. Specifically, offsets remain at
 // their pre-edit positions in 'beforeinput' and reflect the new positions in 'input'.
 
@@ -67,7 +67,7 @@ controls.forEach(control => {
     assert_not_equals(seen.input, null, 'captured input');
     assert_not_equals(seen.beforeinput.start, seen.input.start, 'start changed between events');
     assert_not_equals(seen.beforeinput.end, seen.input.end, 'end changed between events');
-  }, `Event order: FormControlRange updates between beforeinput and input (${control}).`);
+  }, `Event order: OpaqueRange updates between beforeinput and input (${control}).`);
 
   promise_test(async t => {
     const element = setup(control, 'ABCDE');
@@ -100,6 +100,6 @@ controls.forEach(control => {
     assert_equals(element.value, 'ABCDE', 'value unchanged after canceled beforeinput');
     assert_equals(range.startOffset, 1, 'range start unchanged after cancel');
     assert_equals(range.endOffset, 3, 'range end unchanged after cancel');
-  }, `Canceled beforeinput leaves FormControlRange unchanged (${control}).`);
+  }, `Canceled beforeinput leaves OpaqueRange unchanged (${control}).`);
 });
 </script>

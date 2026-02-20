@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/form_control_range.h"
+#include "third_party/blink/renderer/core/dom/opaque_range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -177,11 +177,11 @@ void TextControlElement::DispatchBlurEvent(
 }
 
 void TextControlElement::DefaultEventHandler(Event& event) {
-  // FormControlRange snapshots on beforeinput and commits after the value
+  // OpaqueRange snapshots on beforeinput and commits after the value
   // mutation, ensuring updates are visible before input listeners run.
-  if (RuntimeEnabledFeatures::FormControlRangeEnabled() &&
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
       event.type() == event_type_names::kBeforeinput && event.IsInputEvent()) {
-    CaptureFormControlRangePreEdit();
+    CaptureOpaqueRangePreEdit();
   }
 
   if (event.type() == event_type_names::kWebkitEditableContentChanged &&
@@ -423,14 +423,14 @@ void TextControlElement::setRangeText(const String& replacement,
   text.Append(StringView(original_text, end));
 
   // Suppress SetValue()’s automatic full-value diff within this scope to avoid
-  // emitting a duplicate FormControlRange update; then commit the precise
+  // emitting a duplicate OpaqueRange update; then commit the precise
   // programmatic edit.
   {
     ScopedSkipValueAutoDiff skip_value_auto_diff(*this);
     SetValue(text.ToString(), TextFieldEventBehavior::kDispatchNoEvent,
              TextControlSetValueSelection::kDoNotSet);
-    if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
-      CommitProgrammaticFormControlRangeEdit(original_text, start, end);
+    if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+      CommitProgrammaticOpaqueRangeEdit(original_text, start, end);
     }
   }
 
@@ -1297,7 +1297,7 @@ void TextControlElement::ScheduleSelectionchangeEvent() {
 
 void TextControlElement::Trace(Visitor* visitor) const {
   visitor->Trace(inner_editor_);
-  visitor->Trace(form_control_ranges_);
+  visitor->Trace(opaque_ranges_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
 
@@ -1318,22 +1318,22 @@ TextOverflowData TextControlElement::ValueForTextOverflow() const {
   return ComputedStyleRef().TextOverflow();
 }
 
-void TextControlElement::RegisterFormControlRange(FormControlRange* range) {
-  form_control_ranges_.push_back(range);
+void TextControlElement::RegisterOpaqueRange(OpaqueRange* range) {
+  opaque_ranges_.push_back(range);
 }
 
-void TextControlElement::UnregisterFormControlRange(FormControlRange* range) {
-  auto iter = std::ranges::find(form_control_ranges_, range);
-  if (iter != form_control_ranges_.end()) {
-    form_control_ranges_.erase(iter);
+void TextControlElement::UnregisterOpaqueRange(OpaqueRange* range) {
+  auto iter = std::ranges::find(opaque_ranges_, range);
+  if (iter != opaque_ranges_.end()) {
+    opaque_ranges_.erase(iter);
   }
 }
 
-FormControlRange* TextControlElement::getValueRange(
+OpaqueRange* TextControlElement::getValueRange(
     unsigned start_offset,
     unsigned end_offset,
     ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
+  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
 
   const String value = Value();
   if (start_offset > value.length() || end_offset > value.length()) {
@@ -1348,27 +1348,26 @@ FormControlRange* TextControlElement::getValueRange(
     end_offset = start_offset;
   }
 
-  return FormControlRange::Create(GetDocument(), this, start_offset,
-                                  end_offset);
+  return OpaqueRange::Create(GetDocument(), this, start_offset, end_offset);
 }
 
-void TextControlElement::NotifyFormControlRangesOfTextChange(
+void TextControlElement::NotifyOpaqueRangesOfTextChange(
     unsigned change_offset,
     unsigned deleted_count,
     unsigned inserted_count) const {
-  DCHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
-  if (form_control_ranges_.empty()) {
+  DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  if (opaque_ranges_.empty()) {
     return;
   }
-  for (const auto& range : form_control_ranges_) {
+  for (const auto& range : opaque_ranges_) {
     range->UpdateOffsetsForTextChange(change_offset, deleted_count,
                                       inserted_count);
   }
 }
 
-void TextControlElement::CaptureFormControlRangePreEdit() {
-  DCHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
-  if (form_control_ranges_.empty()) {
+void TextControlElement::CaptureOpaqueRangePreEdit() {
+  DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  if (opaque_ranges_.empty()) {
     return;
   }
   const String old_value = InnerEditorValue();
@@ -1378,24 +1377,24 @@ void TextControlElement::CaptureFormControlRangePreEdit() {
                               std::min(selectionEnd(), old_length)});
 }
 
-void TextControlElement::CommitFormControlRangeEdit() {
-  DCHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
-  if (form_control_ranges_.empty() || !pending_user_edit_) {
+void TextControlElement::CommitOpaqueRangeEdit() {
+  DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  if (opaque_ranges_.empty() || !pending_user_edit_) {
     pending_user_edit_.reset();
     return;
   }
 
   // After observable value mutation and before 'input' listeners, compute and
   // apply a selection-bounded single replace using the pre-edit baseline.
-  ApplyFormControlRangeUpdate(pending_user_edit_->old_value,
-                              pending_user_edit_->selection_start,
-                              pending_user_edit_->selection_end);
+  ApplyOpaqueRangeUpdate(pending_user_edit_->old_value,
+                         pending_user_edit_->selection_start,
+                         pending_user_edit_->selection_end);
   pending_user_edit_.reset();
 }
 
-void TextControlElement::ApplyFormControlRangeUpdate(const String& old_value,
-                                                     unsigned sel_start,
-                                                     unsigned sel_end) {
+void TextControlElement::ApplyOpaqueRangeUpdate(const String& old_value,
+                                                unsigned sel_start,
+                                                unsigned sel_end) {
   const String new_value = InnerEditorValue();
   if (old_value == new_value) {
     return;
@@ -1438,23 +1437,22 @@ void TextControlElement::ApplyFormControlRangeUpdate(const String& old_value,
   const unsigned deleted_count = old_length - prefix - suffix;
   const unsigned inserted_count = new_length - prefix - suffix;
   if (deleted_count || inserted_count) {
-    NotifyFormControlRangesOfTextChange(prefix, deleted_count, inserted_count);
+    NotifyOpaqueRangesOfTextChange(prefix, deleted_count, inserted_count);
   }
 }
 
-void TextControlElement::CommitProgrammaticFormControlRangeEdit(
+void TextControlElement::CommitProgrammaticOpaqueRangeEdit(
     const String& old_value,
     unsigned old_sel_start,
     unsigned old_sel_end) {
-  if (!RuntimeEnabledFeatures::FormControlRangeEnabled() ||
-      form_control_ranges_.empty()) {
+  if (!RuntimeEnabledFeatures::OpaqueRangeEnabled() || opaque_ranges_.empty()) {
     return;
   }
   // Clear any pending user pre-edit snapshot to avoid applying a user-driven
   // diff after a programmatic value change.
   pending_user_edit_.reset();
 
-  ApplyFormControlRangeUpdate(old_value, old_sel_start, old_sel_end);
+  ApplyOpaqueRangeUpdate(old_value, old_sel_start, old_sel_end);
 }
 
 void TextControlElement::SetSkipNextSetValueAutoDiff(bool should_skip) {

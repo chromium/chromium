@@ -39,7 +39,7 @@ namespace blink {
 
 class ExceptionState;
 class V8SelectionMode;
-class FormControlRange;
+class OpaqueRange;
 
 enum TextFieldSelectionDirection {
   kSelectionHasNoDirection,
@@ -196,40 +196,40 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   TextOverflowData ValueForTextOverflow() const;
 
   // Register/unregister ranges that need to be notified of value changes.
-  void RegisterFormControlRange(FormControlRange* range);
-  void UnregisterFormControlRange(FormControlRange* range);
+  void RegisterOpaqueRange(OpaqueRange* range);
+  void UnregisterOpaqueRange(OpaqueRange* range);
 
-  // Creates and returns a new FormControlRange for this element's value.
+  // Creates and returns a new OpaqueRange for this element's value.
   // Throws if offsets are out of bounds.
-  virtual FormControlRange* getValueRange(unsigned start_offset,
-                                          unsigned end_offset,
-                                          ExceptionState&);
+  virtual OpaqueRange* getValueRange(unsigned start_offset,
+                                     unsigned end_offset,
+                                     ExceptionState&);
 
   // Use the pre-edit baseline to compute and apply the edit once an observable
   // value mutation occurs, before 'input' listeners run.
-  void CommitFormControlRangeEdit();
+  void CommitOpaqueRangeEdit();
 
   // Handles programmatic value changes by diffing the previous contents against
   // the current InnerEditorValue(), using a selection-bounded replace model.
   // Used when edits bypass 'beforeinput'.
-  void CommitProgrammaticFormControlRangeEdit(const String& old_value,
-                                              unsigned old_sel_start,
-                                              unsigned old_sel_end);
+  void CommitProgrammaticOpaqueRangeEdit(const String& old_value,
+                                         unsigned old_sel_start,
+                                         unsigned old_sel_end);
 
-  // Update FormControlRanges by diffing the old and current values,
+  // Update OpaqueRanges by diffing the old and current values,
   // constrained to the original selection range.
-  void ApplyFormControlRangeUpdate(const String& old_value,
-                                   unsigned old_sel_start,
-                                   unsigned old_sel_end);
+  void ApplyOpaqueRangeUpdate(const String& old_value,
+                              unsigned old_sel_start,
+                              unsigned old_sel_end);
 
   // Controls whether the next SetValue() call skips its automatic
-  // FormControlRange update. When true, the default full-value diff is
+  // OpaqueRange update. When true, the default full-value diff is
   // suppressed so callers (e.g. setRangeText) can perform their own targeted
   // update. Cleared immediately after that SetValue() call.
   void SetSkipNextSetValueAutoDiff(bool should_skip);
 
   // Returns whether the next SetValue() call should skip its automatic
-  // FormControlRange update.
+  // OpaqueRange update.
   bool ShouldSkipNextSetValueAutoDiff() const;
 
  protected:
@@ -321,13 +321,13 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // Notify observers of a single replace in this element’s value at
   // `change_offset`: removed `deleted_count` and added `inserted_count`
   // characters.
-  void NotifyFormControlRangesOfTextChange(unsigned change_offset,
-                                           unsigned deleted_count,
-                                           unsigned inserted_count) const;
+  void NotifyOpaqueRangesOfTextChange(unsigned change_offset,
+                                      unsigned deleted_count,
+                                      unsigned inserted_count) const;
 
-  // Capture the control’s pre-edit value and selection at 'beforeinput'.
+  // Capture the control's pre-edit value and selection at 'beforeinput'.
   // This baseline is held until the first observable value mutation.
-  void CaptureFormControlRangePreEdit();
+  void CaptureOpaqueRangePreEdit();
 
   // Held directly instead of looked up by ID for speed.
   // Not only is the lookup faster, but for simple text inputs it avoids
@@ -361,10 +361,10 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // observable value mutation occurs.
   std::optional<PendingUserEditSnapshot> pending_user_edit_;
 
-  // Holds FormControlRange instances that observe this text control.
-  HeapVector<Member<FormControlRange>> form_control_ranges_;
+  // Holds OpaqueRange instances that observe this text control.
+  HeapVector<Member<OpaqueRange>> opaque_ranges_;
 
-  // RAII helper that temporarily skips SetValue()’s automatic FormControlRange
+  // RAII helper that temporarily skips SetValue()'s automatic OpaqueRange
   // full-value diff for this scope. The flag is restored on destruction.
   class ScopedSkipValueAutoDiff final {
    public:
@@ -377,7 +377,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
     base::AutoReset<bool> auto_reset_;
   };
 
-  // Skip SetValue's automatic FormControlRange full-value diff on the next
+  // Skip SetValue's automatic OpaqueRange full-value diff on the next
   // call. Used by setRangeText(), which issues its own precise, range-scoped
   // update. Cleared immediately after that SetValue() call.
   bool skip_next_set_value_auto_diff_ = false;

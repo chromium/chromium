@@ -44,7 +44,7 @@ class ComputedStyleBuilder;
 class DragData;
 class ExceptionState;
 class FileList;
-class FormControlRange;
+class OpaqueRange;
 class HTMLDataListElement;
 class HTMLImageLoader;
 class InputType;
@@ -336,9 +336,9 @@ class CORE_EXPORT HTMLInputElement
                     const V8SelectionMode& selection_mode,
                     ExceptionState&) final;
 
-  FormControlRange* getValueRange(unsigned start_offset,
-                                  unsigned end_offset,
-                                  ExceptionState&) final;
+  OpaqueRange* getValueRange(unsigned start_offset,
+                             unsigned end_offset,
+                             ExceptionState&) final;
 
   HTMLImageLoader* ImageLoader() const { return image_loader_.Get(); }
   HTMLImageLoader& EnsureImageLoader();

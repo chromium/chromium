@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/dom/form_control_range.h"
+#include "third_party/blink/renderer/core/dom/opaque_range.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -13,20 +13,19 @@
 
 namespace blink {
 
-class FormControlRangeTest : public PageTestBase {
+class OpaqueRangeTest : public PageTestBase {
  protected:
   void SetUp() override {
     PageTestBase::SetUp();
-    ScopedFormControlRangeForTest scoped_feature(true);
+    ScopedOpaqueRangeForTest scoped_feature(true);
   }
 };
 
-TEST_F(FormControlRangeTest, ConstructionAndInheritance) {
+TEST_F(OpaqueRangeTest, ConstructionAndInheritance) {
   SetBodyContent("<textarea>Hello</textarea>");
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
-  FormControlRange* range =
-      FormControlRange::Create(GetDocument(), textarea, 0, 0);
+  OpaqueRange* range = OpaqueRange::Create(GetDocument(), textarea, 0, 0);
   EXPECT_NE(range, nullptr);
   AbstractRange* abstract_range = range;
   EXPECT_NE(abstract_range, nullptr);
@@ -36,12 +35,11 @@ TEST_F(FormControlRangeTest, ConstructionAndInheritance) {
   EXPECT_EQ(&range->OwnerDocument(), &GetDocument());
 }
 
-TEST_F(FormControlRangeTest, InitialStateValidation) {
+TEST_F(OpaqueRangeTest, InitialStateValidation) {
   SetBodyContent("<textarea>Hello</textarea>");
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
-  FormControlRange* range =
-      FormControlRange::Create(GetDocument(), textarea, 0, 0);
+  OpaqueRange* range = OpaqueRange::Create(GetDocument(), textarea, 0, 0);
   EXPECT_EQ(range->startContainer(), nullptr);
   EXPECT_EQ(range->endContainer(), nullptr);
 
@@ -50,25 +48,25 @@ TEST_F(FormControlRangeTest, InitialStateValidation) {
   EXPECT_TRUE(range->collapsed());
 }
 
-TEST_F(FormControlRangeTest, TraceAndGarbageCollection) {
+TEST_F(OpaqueRangeTest, TraceAndGarbageCollection) {
   SetBodyContent("<textarea>Hello</textarea>");
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
-  auto* range = FormControlRange::Create(GetDocument(), textarea, 1, 4);
+  auto* range = OpaqueRange::Create(GetDocument(), textarea, 1, 4);
   // Create a Persistent to hold the range through GC.
-  Persistent<FormControlRange> persistent(range);
+  Persistent<OpaqueRange> persistent(range);
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   // Range should survive garbage collection.
   EXPECT_NE(range, nullptr);
 }
 
-TEST_F(FormControlRangeTest, DocumentOwnership) {
+TEST_F(OpaqueRangeTest, DocumentOwnership) {
   SetBodyContent("<textarea>Hello</textarea>");
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
   Document& doc = GetDocument();
-  auto* range = FormControlRange::Create(doc, textarea, 0, 5);
+  auto* range = OpaqueRange::Create(doc, textarea, 0, 5);
   // The range should belong to the document that created it.
   EXPECT_EQ(&doc, &range->OwnerDocument());
 
@@ -80,30 +78,30 @@ TEST_F(FormControlRangeTest, DocumentOwnership) {
   EXPECT_NE(other_doc, &range->OwnerDocument());
 }
 
-TEST_F(FormControlRangeTest, ValidRangeOffsets) {
+TEST_F(OpaqueRangeTest, ValidRangeOffsets) {
   SetBodyContent("<textarea>Hello</textarea>");
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
-  auto* range = FormControlRange::Create(GetDocument(), textarea, 1, 4);
+  auto* range = OpaqueRange::Create(GetDocument(), textarea, 1, 4);
   EXPECT_EQ(range->startOffset(), 1u);
   EXPECT_EQ(range->endOffset(), 4u);
   EXPECT_FALSE(range->collapsed());
 }
 
-TEST_F(FormControlRangeTest, CollapsedRange) {
+TEST_F(OpaqueRangeTest, CollapsedRange) {
   SetBodyContent("<textarea>Hello</textarea>");
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
-  auto* range = FormControlRange::Create(GetDocument(), textarea, 2, 2);
+  auto* range = OpaqueRange::Create(GetDocument(), textarea, 2, 2);
   EXPECT_EQ(range->startOffset(), 2u);
   EXPECT_EQ(range->endOffset(), 2u);
   EXPECT_TRUE(range->collapsed());
 }
 
-TEST_F(FormControlRangeTest, InputElementRange) {
+TEST_F(OpaqueRangeTest, InputElementRange) {
   SetBodyContent("<input type='text' value='Test'>");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstElementChild());
-  auto* range = FormControlRange::Create(GetDocument(), input, 1, 3);
+  auto* range = OpaqueRange::Create(GetDocument(), input, 1, 3);
   EXPECT_EQ(range->startOffset(), 1u);
   EXPECT_EQ(range->endOffset(), 3u);
   EXPECT_FALSE(range->collapsed());

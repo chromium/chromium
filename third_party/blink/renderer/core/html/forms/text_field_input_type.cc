@@ -183,13 +183,13 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
   if (!value_changed)
     return;
 
-  // Handles programmatic value changes by updating FormControlRanges as a
+  // Handles programmatic value changes by updating OpaqueRanges as a
   // full-value replace. If the skip flag is set (e.g. by setRangeText), this
   // automatic update is skipped since the caller issues its own targeted range
   // update.
-  if (value_changed && RuntimeEnabledFeatures::FormControlRangeEnabled() &&
+  if (value_changed && RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
       !GetElement().ShouldSkipNextSetValueAutoDiff()) {
-    GetElement().CommitProgrammaticFormControlRangeEdit(
+    GetElement().CommitProgrammaticOpaqueRangeEdit(
         old_value, /*old_sel_start=*/0u, /*old_sel_end=*/old_value.length());
   }
 
@@ -688,8 +688,8 @@ void TextFieldInputType::SubtreeHasChanged() {
   GetElement().PseudoStateChanged(CSSSelector::kPseudoInRange);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
 
-  if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
-    GetElement().CommitFormControlRangeEdit();
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+    GetElement().CommitOpaqueRangeEdit();
   }
 
   DidSetValueByUserEdit();

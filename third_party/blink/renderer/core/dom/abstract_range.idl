@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // https://dom.spec.whatwg.org/#interface-abstractrange
-// Note: This interface diverges from the spec to support FormControlRange
-// (crbug.com/421421332), which when the FormControlRange feature flag is
+// Note: This interface diverges from the spec to support OpaqueRange
+// (crbug.com/421421332), which when the OpaqueRange feature flag is
 // enabled, returns null for startContainer/endContainer to hide internal
 // DOM structure.
 

@@ -49,8 +49,8 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/core/dom/form_control_range.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/opaque_range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -2219,11 +2219,10 @@ void HTMLInputElement::setRangeText(const String& replacement,
                                    exception_state);
 }
 
-FormControlRange* HTMLInputElement::getValueRange(
-    unsigned start_offset,
-    unsigned end_offset,
-    ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
+OpaqueRange* HTMLInputElement::getValueRange(unsigned start_offset,
+                                             unsigned end_offset,
+                                             ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
   if (!InputSupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

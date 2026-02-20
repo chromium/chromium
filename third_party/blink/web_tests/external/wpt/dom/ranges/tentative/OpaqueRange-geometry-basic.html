@@ -27,7 +27,7 @@ function setupControl(control, value) {
   if ('scrollLeft' in element) element.scrollLeft = 0;
   return element;
 }
-function setupFormControlRange(element, startOffset, endOffset){
+function setupOpaqueRange(element, startOffset, endOffset){
   return element.getValueRange(startOffset, endOffset);
 }
 
@@ -42,7 +42,7 @@ controls.forEach(controlType => {
     // Collapsed range (caret): no client rects; bounding rect is a caret box
     // (zero width, non-zero height) positioned within the control.
     const element = setupControl(controlType, 'Hello');
-    const range = setupFormControlRange(element, 2, 2);
+    const range = setupOpaqueRange(element, 2, 2);
     const caretRect = range.getBoundingClientRect();
     assert_equals(range.getClientRects().length, 0, 'collapsed: no client rects');
     assert_approx_equals(caretRect.width, 0, 0.05, 'caret width should be 0');
@@ -53,7 +53,7 @@ controls.forEach(controlType => {
   test(() => {
     // Non-collapsed selection: non-zero geometry, all rects contained in control.
     const element = setupControl(controlType, 'ABCDE');
-    const range = setupFormControlRange(element, 1, 4);
+    const range = setupOpaqueRange(element, 1, 4);
     const boundingRect = range.getBoundingClientRect();
     const clientRects = Array.from(range.getClientRects());
     assert_greater_than(boundingRect.width, 0, 'selection width greater than 0');
@@ -68,7 +68,7 @@ controls.forEach(controlType => {
   test(() => {
     // If the control is removed from the DOM, geometry should be empty.
     const element = setupControl(controlType, 'ABCDE');
-    const range = setupFormControlRange(element, 0, element.value.length);
+    const range = setupOpaqueRange(element, 0, element.value.length);
     assert_greater_than(range.getBoundingClientRect().width,0,'pre removal width greater than 0');
     element.remove();
     const boundingRect = range.getBoundingClientRect();
@@ -80,7 +80,7 @@ controls.forEach(controlType => {
     const value = 'ABCDE';
     const element = setupControl(controlType, value);
     [0, Math.floor(value.length / 2), value.length].forEach(position => {
-      const range = setupFormControlRange(element, position, position);
+      const range = setupOpaqueRange(element, position, position);
       const caretRect = range.getBoundingClientRect();
       assert_equals(range.getClientRects().length, 0, 'collapsed caret has no rects');
       assert_approx_equals(caretRect.width, 0, 0.05, 'caret width should be 0');
@@ -93,7 +93,7 @@ controls.forEach(controlType => {
     // (For textarea, the string includes a hard newline to exercise multi-line.)
     const value = controlType === 'textarea' ? 'First line\nSecond line' : 'ABCDE';
     const element = setupControl(controlType, value);
-    const range = setupFormControlRange(element, 0, element.value.length);
+    const range = setupOpaqueRange(element, 0, element.value.length);
     const boundingRect = range.getBoundingClientRect();
     assert_greater_than(boundingRect.width, 0, 'full width greater than 0');
     assert_greater_than(boundingRect.height, 0, 'full height greater than 0');
@@ -118,7 +118,7 @@ controls.forEach(controlType => {
       ? '<input type="text" id="displayNone" style="display:none" value="hidden">'
       : '<textarea id="displayNone" style="display:none">hidden</textarea>';
     const element = document.getElementById('displayNone');
-    const range = setupFormControlRange(element, 0, element.value.length);
+    const range = setupOpaqueRange(element, 0, element.value.length);
     const boundingRect = range.getBoundingClientRect();
     assert_approx_equals(boundingRect.width, 0, 0.05, 'width should be 0 (display:none)');
     assert_approx_equals(boundingRect.height, 0, 0.05, 'height should be 0 (display:none)');

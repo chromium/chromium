@@ -1,0 +1,16 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=OpaqueRange
+] interface OpaqueRange : AbstractRange {
+    DOMRectList getClientRects();
+    DOMRect getBoundingClientRect();
+};
+
+[RuntimeEnabled=OpaqueRange]
+interface mixin OpaqueRangeCreation {
+    [RaisesException, NewObject] OpaqueRange getValueRange(unsigned long start, unsigned long end);
+};

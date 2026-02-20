@@ -2986,11 +2986,6 @@ interface FontFaceSetLoadEvent : Event
     attribute @@toStringTag
     getter fontfaces
     method constructor
-interface FormControlRange : AbstractRange
-    attribute @@toStringTag
-    method constructor
-    method getBoundingClientRect
-    method getClientRects
 interface FormData
     attribute @@toStringTag
     method @@iterator
@@ -6921,6 +6916,11 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
+interface OpaqueRange : AbstractRange
+    attribute @@toStringTag
+    method constructor
+    method getBoundingClientRect
+    method getClientRects
 interface Option
     attribute @@toStringTag
     getter defaultSelected

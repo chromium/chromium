@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FORM_CONTROL_RANGE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FORM_CONTROL_RANGE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OPAQUE_RANGE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OPAQUE_RANGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
@@ -18,23 +18,25 @@ class Node;
 class Range;
 class TextControlElement;
 
-// A live range over a text-control element (<input>, <textarea>). Containers
-// return null to hide internal DOM structure. startOffset/endOffset are live
-// UTF-16 code unit indices into the element's text content. Created via
-// getValueRange(startOffset, endOffset) on elements that support it.
-class CORE_EXPORT FormControlRange final : public AbstractRange {
+// An OpaqueRange is a live AbstractRange subtype whose boundary points
+// reference encapsulated content within text-control elements (<input>,
+// <textarea>). Containers return null to avoid exposing internal DOM
+// structure. startOffset/endOffset are live UTF-16 code unit indices into the
+// element's value. Created via getValueRange(start, end) on elements that
+// support opaque ranges.
+class CORE_EXPORT OpaqueRange final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static FormControlRange* Create(Document&,
-                                  TextControlElement*,
-                                  unsigned start_offset,
-                                  unsigned end_offset);
+  static OpaqueRange* Create(Document&,
+                             TextControlElement*,
+                             unsigned start_offset,
+                             unsigned end_offset);
 
-  FormControlRange(Document&,
-                   TextControlElement*,
-                   unsigned start_offset,
-                   unsigned end_offset);
+  OpaqueRange(Document&,
+              TextControlElement*,
+              unsigned start_offset,
+              unsigned end_offset);
 
   void Trace(Visitor* visitor) const override;
 
@@ -51,10 +53,10 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
   bool IsStaticRange() const override;
   Document& OwnerDocument() const override;
 
-  // Update `form_control_` after a text replacement at `change_offset`: removes
+  // Update after a text replacement at `change_offset`: removes
   // `deleted_count` code units and adds `inserted_count`.
   // `start_offset_in_value_` and `end_offset_in_value_` are adjusted to reflect
-  // the edit and clamped to the current value of `form_control_`.
+  // the edit and clamped to the element's current value.
   void UpdateOffsetsForTextChange(unsigned change_offset,
                                   unsigned deleted_count,
                                   unsigned inserted_count);
@@ -71,8 +73,8 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
 
   Member<Document> owner_document_;
 
-  // The observed form control.
-  Member<TextControlElement> form_control_;
+  // The observed text-control element.
+  Member<TextControlElement> element_;
 
   // UTF-16 code unit offsets into the element's text content; updated live on
   // text edits.
@@ -80,4 +82,4 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
   unsigned end_offset_in_value_ = 0;
 };
 }  // namespace blink
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FORM_CONTROL_RANGE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OPAQUE_RANGE_H_

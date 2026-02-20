@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/dom/form_control_range.h"
+#include "third_party/blink/renderer/core/dom/opaque_range.h"
 
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -17,57 +17,57 @@
 
 namespace blink {
 
-FormControlRange* FormControlRange::Create(Document& document,
-                                           TextControlElement* element,
-                                           unsigned start_offset,
-                                           unsigned end_offset) {
-  return MakeGarbageCollected<FormControlRange>(document, element, start_offset,
-                                                end_offset);
+OpaqueRange* OpaqueRange::Create(Document& document,
+                                 TextControlElement* element,
+                                 unsigned start_offset,
+                                 unsigned end_offset) {
+  return MakeGarbageCollected<OpaqueRange>(document, element, start_offset,
+                                           end_offset);
 }
 
-FormControlRange::FormControlRange(Document& document,
-                                   TextControlElement* element,
-                                   unsigned start_offset,
-                                   unsigned end_offset)
+OpaqueRange::OpaqueRange(Document& document,
+                         TextControlElement* element,
+                         unsigned start_offset,
+                         unsigned end_offset)
     : owner_document_(&document),
-      form_control_(element),
+      element_(element),
       start_offset_in_value_(start_offset),
       end_offset_in_value_(end_offset) {
-  CHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
-  element->RegisterFormControlRange(this);
+  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  element->RegisterOpaqueRange(this);
 }
 
-void FormControlRange::Trace(Visitor* visitor) const {
+void OpaqueRange::Trace(Visitor* visitor) const {
   visitor->Trace(owner_document_);
-  visitor->Trace(form_control_);
+  visitor->Trace(element_);
   ScriptWrappable::Trace(visitor);
 }
 
-unsigned FormControlRange::startOffset() const {
+unsigned OpaqueRange::startOffset() const {
   return start_offset_in_value_;
 }
 
-unsigned FormControlRange::endOffset() const {
+unsigned OpaqueRange::endOffset() const {
   return end_offset_in_value_;
 }
 
-bool FormControlRange::collapsed() const {
+bool OpaqueRange::collapsed() const {
   return start_offset_in_value_ == end_offset_in_value_;
 }
 
-bool FormControlRange::IsStaticRange() const {
+bool OpaqueRange::IsStaticRange() const {
   return false;
 }
 
-Document& FormControlRange::OwnerDocument() const {
+Document& OpaqueRange::OwnerDocument() const {
   return *owner_document_;
 }
 
-void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
-                                                  unsigned deleted_count,
-                                                  unsigned inserted_count) {
-  DCHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
-  if (!form_control_ || (deleted_count == 0 && inserted_count == 0)) {
+void OpaqueRange::UpdateOffsetsForTextChange(unsigned change_offset,
+                                             unsigned deleted_count,
+                                             unsigned inserted_count) {
+  DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  if (!element_ || (deleted_count == 0 && inserted_count == 0)) {
     return;
   }
 
@@ -120,7 +120,7 @@ void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
   };
 
   // Clamp to the current value length and ensure start does not exceed end.
-  const unsigned value_length = form_control_->Value().length();
+  const unsigned value_length = element_->Value().length();
   unsigned new_start = std::min(calculate_new_offset(pre_start), value_length);
   unsigned new_end = std::min(calculate_new_offset(pre_end), value_length);
 
@@ -133,7 +133,7 @@ void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
   end_offset_in_value_ = new_end;
 }
 
-DOMRectList* FormControlRange::getClientRects() const {
+DOMRectList* OpaqueRange::getClientRects() const {
   Range* range = BuildValueGeometryContext();
   if (!range || range->collapsed()) {
     return MakeGarbageCollected<DOMRectList>();
@@ -141,7 +141,7 @@ DOMRectList* FormControlRange::getClientRects() const {
   return range->getClientRects();
 }
 
-DOMRect* FormControlRange::getBoundingClientRect() const {
+DOMRect* OpaqueRange::getBoundingClientRect() const {
   Range* range = BuildValueGeometryContext();
   if (!range) {
     return DOMRect::Create();
@@ -149,19 +149,19 @@ DOMRect* FormControlRange::getBoundingClientRect() const {
   return range->getBoundingClientRect();
 }
 
-Range* FormControlRange::BuildValueGeometryContext() const {
-  if (!form_control_ || !form_control_->isConnected()) {
+Range* OpaqueRange::BuildValueGeometryContext() const {
+  if (!element_ || !element_->isConnected()) {
     return nullptr;
   }
 
-  Document& doc = form_control_->GetDocument();
+  Document& doc = element_->GetDocument();
   doc.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  if (!form_control_->GetLayoutObject()) {
+  if (!element_->GetLayoutObject()) {
     return nullptr;
   }
 
-  Element* inner = form_control_->InnerEditorElement();
+  Element* inner = element_->InnerEditorElement();
   if (!inner) {
     return nullptr;
   }

@@ -69,4 +69,4 @@
                            optional DOMString direction);
 };
 
-HTMLTextAreaElement includes FormControlRangeCreation;
+HTMLTextAreaElement includes OpaqueRangeCreation;

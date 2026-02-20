@@ -387,8 +387,8 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     CalculateAndAdjustAutoDirectionality();
   }
 
-  if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
-    CommitFormControlRangeEdit();
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+    CommitOpaqueRangeEdit();
   }
 
   if (!IsFocused())
@@ -536,14 +536,14 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
   SetInnerEditorValue(value_);
 
   // Programmatic value changes trigger a full-replace update so
-  // FormControlRange offsets are recomputed against the new text. Callers that
+  // OpaqueRange offsets are recomputed against the new text. Callers that
   // perform a targeted update (e.g., setRangeText) set the skip flag to
   // suppress this pass and prevent redundant notifications or offset
   // adjustments.
-  if (RuntimeEnabledFeatures::FormControlRangeEnabled() &&
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
       !ShouldSkipNextSetValueAutoDiff()) {
-    CommitProgrammaticFormControlRangeEdit(old_value, /*old_sel_start=*/0u,
-                                           /*old_sel_end=*/old_value.length());
+    CommitProgrammaticOpaqueRangeEdit(old_value, /*old_sel_start=*/0u,
+                                      /*old_sel_end=*/old_value.length());
   }
   if (event_behavior == TextFieldEventBehavior::kDispatchNoEvent)
     SetLastChangeWasNotUserEdit();
