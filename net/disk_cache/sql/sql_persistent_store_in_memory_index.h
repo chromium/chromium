@@ -6,6 +6,7 @@
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_IN_MEMORY_INDEX_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/check.h"
 #include "base/types/strong_alias.h"
@@ -64,6 +65,11 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   // available and unique.
   std::optional<MemoryEntryDataHints> GetEntryDataHints(
       CacheEntryKeyHash hash) const;
+
+  // Returns a vector of resource IDs for entries that have all of the hints
+  // specified in `hints_mask`. The result is not sorted.
+  std::vector<SqlPersistentStoreResId> GetResIdsWithHints(
+      MemoryEntryDataHints hints_mask) const;
 
   size_t size() const;
 
@@ -147,6 +153,19 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
         return it->second;
       }
       return std::nullopt;
+    }
+
+    // Appends resource IDs to `out_res_ids` for entries that have all of the
+    // hints specified in `hints_mask`.
+    void GetResIdsWithHints(
+        MemoryEntryDataHints hints_mask,
+        std::vector<SqlPersistentStoreResId>& out_res_ids) const {
+      uint8_t mask_val = hints_mask.value();
+      for (const auto& [res_id, hints] : res_id_to_hints_map_) {
+        if ((hints.value() & mask_val) == mask_val) {
+          out_res_ids.emplace_back(res_id.value());
+        }
+      }
     }
 
     size_t size() const { return hash_res_id_set_.size(); }

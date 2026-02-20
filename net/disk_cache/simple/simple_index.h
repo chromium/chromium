@@ -109,7 +109,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
   uint32_t entry_size_256b_chunks_ : 30;  // in 256-byte blocks, rounded up.
 
   // `in_memory_data_` only uses 2 bits enough to describe
-  // `MemoryEntryDataHints`.
+  // `MemoryEntryDataHintBits`.
   uint32_t in_memory_data_ : 2;
 
   // Note: `entry_size_256b_chunks_` and `in_memory_data_` will be written to

@@ -98,6 +98,17 @@ SqlPersistentStoreInMemoryIndex::GetEntryDataHints(
   return std::nullopt;
 }
 
+std::vector<SqlPersistentStoreResId>
+SqlPersistentStoreInMemoryIndex::GetResIdsWithHints(
+    MemoryEntryDataHints hints_mask) const {
+  std::vector<ResId> res_ids;
+  impl32_.GetResIdsWithHints(hints_mask, res_ids);
+  if (impl64_) {
+    impl64_->GetResIdsWithHints(hints_mask, res_ids);
+  }
+  return res_ids;
+}
+
 // static
 std::optional<SqlPersistentStoreInMemoryIndex::ResId32>
 SqlPersistentStoreInMemoryIndex::ToResId32(ResId res_id) {

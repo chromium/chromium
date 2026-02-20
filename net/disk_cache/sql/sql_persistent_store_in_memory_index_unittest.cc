@@ -340,4 +340,41 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsNoHint) {
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
+TEST(SqlPersistentStoreInMemoryIndexTest, GetResIdsWithHints) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const CacheEntryKeyHash kHashBoth(4);
+  const SqlPersistentStoreResId kResIdBoth(4);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  EXPECT_TRUE(index.Insert(kHash2, kResId2));
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
+  EXPECT_TRUE(index.Insert(kHashBoth, kResIdBoth));
+
+  const MemoryEntryDataHints kHint1(1 << 0);
+  const MemoryEntryDataHints kHint2(1 << 1);
+
+  // Set hints.
+  index.SetEntryDataHints(kResId1, kHint1);
+  index.SetEntryDataHints(kResId2, kHint2);
+  index.SetEntryDataHints(kResIdLarge, kHint1);
+  index.SetEntryDataHints(
+      kResIdBoth, MemoryEntryDataHints(kHint1.value() | kHint2.value()));
+
+  // Entries with kHint1 (at least).
+  EXPECT_THAT(index.GetResIdsWithHints(kHint1),
+              testing::UnorderedElementsAre(kResId1, kResIdLarge, kResIdBoth));
+
+  // Entries with kHint2 (at least).
+  EXPECT_THAT(index.GetResIdsWithHints(kHint2),
+              testing::UnorderedElementsAre(kResId2, kResIdBoth));
+
+  // Entries that have BOTH hints.
+  EXPECT_THAT(index.GetResIdsWithHints(
+                  MemoryEntryDataHints(kHint1.value() | kHint2.value())),
+              testing::UnorderedElementsAre(kResIdBoth));
+}
+
 }  // namespace disk_cache
