@@ -627,11 +627,11 @@ TEST_F(CascadeExpansionTest, Position) {
     ASSERT_EQ(2u, e.size());
 
     EXPECT_EQ(CSSPropertyID::kLeft, e[0].name.Id());
-    EXPECT_EQ(0u, DecodeMatchedPropertiesIndex(e[0].priority.GetPosition()));
-    EXPECT_EQ(0u, DecodeDeclarationIndex(e[0].priority.GetPosition()));
+    EXPECT_EQ(0u, e[0].priority.GetRuleIndex());
+    EXPECT_EQ(0u, e[0].priority.GetDeclarationIndex());
     EXPECT_EQ(CSSPropertyID::kTop, e[1].name.Id());
-    EXPECT_EQ(0u, DecodeMatchedPropertiesIndex(e[1].priority.GetPosition()));
-    EXPECT_EQ(1u, DecodeDeclarationIndex(e[1].priority.GetPosition()));
+    EXPECT_EQ(0u, e[1].priority.GetRuleIndex());
+    EXPECT_EQ(1u, e[1].priority.GetDeclarationIndex());
   }
 
   {
@@ -639,11 +639,11 @@ TEST_F(CascadeExpansionTest, Position) {
     ASSERT_EQ(2u, e.size());
 
     EXPECT_EQ(CSSPropertyID::kBottom, e[0].name.Id());
-    EXPECT_EQ(1u, DecodeMatchedPropertiesIndex(e[0].priority.GetPosition()));
-    EXPECT_EQ(0u, DecodeDeclarationIndex(e[0].priority.GetPosition()));
+    EXPECT_EQ(1u, e[0].priority.GetRuleIndex());
+    EXPECT_EQ(0u, e[0].priority.GetDeclarationIndex());
     EXPECT_EQ(CSSPropertyID::kRight, e[1].name.Id());
-    EXPECT_EQ(1u, DecodeMatchedPropertiesIndex(e[1].priority.GetPosition()));
-    EXPECT_EQ(1u, DecodeDeclarationIndex(e[1].priority.GetPosition()));
+    EXPECT_EQ(1u, e[1].priority.GetRuleIndex());
+    EXPECT_EQ(1u, e[1].priority.GetDeclarationIndex());
   }
 }
 

@@ -136,35 +136,32 @@ const CSSValue* Parse(const CSSProperty& property,
                                              context);
 }
 
-const CSSValue* ValueAt(const MatchResult& result, uint32_t position) {
-  wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
-  wtf_size_t declaration_index = DecodeDeclarationIndex(position);
+const CSSValue* ValueAt(const MatchResult& result,
+                        wtf_size_t rule_index,
+                        wtf_size_t declaration_index) {
   const MatchedPropertiesVector& vector = result.GetMatchedProperties();
-  const CSSPropertyValueSet* set = vector[matched_properties_index].properties;
+  const CSSPropertyValueSet* set = vector[rule_index].properties;
   return &set->PropertyAt(declaration_index).Value();
 }
 
-const TreeScope& TreeScopeAt(const MatchResult& result, uint32_t position) {
-  wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
+const TreeScope& TreeScopeAt(const MatchResult& result, wtf_size_t rule_index) {
   const MatchedProperties& properties =
-      result.GetMatchedProperties()[matched_properties_index];
+      result.GetMatchedProperties()[rule_index];
   DCHECK_EQ(properties.data_.origin, CascadeOrigin::kAuthor);
   return result.ScopeFromTreeOrder(properties.data_.tree_order);
 }
 
 const MixinParameterBindings* MixinParameterBindingsAt(
     const MatchResult& result,
-    uint32_t position) {
-  wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
+    wtf_size_t rule_index) {
   const MatchedProperties& properties =
-      result.GetMatchedProperties()[matched_properties_index];
+      result.GetMatchedProperties()[rule_index];
   return properties.mixin_parameter_bindings;
 }
 
 PropertyHandle ToPropertyHandle(const CSSProperty& property,
                                 CascadePriority priority) {
-  uint32_t position = priority.GetPosition();
-  CSSPropertyID id = DecodeInterpolationPropertyID(position);
+  CSSPropertyID id = static_cast<CSSPropertyID>(priority.GetRuleIndex());
   if (id == CSSPropertyID::kVariable) {
     DCHECK(IsA<CustomProperty>(property));
     return PropertyHandle(property.GetPropertyNameAtomicString());
@@ -385,7 +382,8 @@ StyleCascade::GetCascadedValues() const {
       // should not be observable.
       continue;
     }
-    const CSSValue* cascaded = ValueAt(match_result_, priority.GetPosition());
+    const CSSValue* cascaded = ValueAt(match_result_, priority.GetRuleIndex(),
+                                       priority.GetDeclarationIndex());
     DCHECK(cascaded);
     result.Set(name, cascaded);
   }
@@ -396,7 +394,8 @@ StyleCascade::GetCascadedValues() const {
     if (IsInterpolation(priority)) {
       continue;
     }
-    const CSSValue* cascaded = ValueAt(match_result_, priority.GetPosition());
+    const CSSValue* cascaded = ValueAt(match_result_, priority.GetRuleIndex(),
+                                       priority.GetDeclarationIndex());
     DCHECK(cascaded);
     result.Set(CSSPropertyName(name), cascaded);
   }
@@ -486,14 +485,16 @@ void StyleCascade::CollectFromInterpolations() {
   for (wtf_size_t i = 0; i < entries.size(); ++i) {
     for (const auto& active_interpolation : *entries[i].map) {
       auto name = active_interpolation.key.GetCSSPropertyName();
-      uint32_t position = EncodeInterpolationPosition(name.Id(), i);
+      // NOTE: This uses the CascadePriority's rule and declaration index
+      // variables for CSS property ID and interpolation index.
       CascadePriority priority(entries[i].origin,
                                /* important */ false,
                                /* tree_order */ 0,
                                /* is_inline_style */ false,
                                /* is_try_style */ false,
                                /* is_try_tactics_style */ false,
-                               /* layer_order */ 0, position);
+                               /* layer_order */ 0,
+                               static_cast<uint16_t>(name.Id()), i);
 
       CSSPropertyRef ref(name, GetDocument());
       DCHECK(ref.IsValid());
@@ -820,14 +821,16 @@ void StyleCascade::ApplyInterpolationMap(const ActiveInterpolationsMap& map,
                                          CascadeResolver& resolver) {
   for (const auto& entry : map) {
     auto name = entry.key.GetCSSPropertyName();
-    uint32_t position = EncodeInterpolationPosition(name.Id(), index);
+    // NOTE: This uses the CascadePriority's rule and declaration index
+    // variables for CSS property ID and interpolation index.
     CascadePriority priority(origin,
                              /* important */ false,
                              /* tree_order */ 0,
                              /* is_inline_style */ false,
                              /* is_try_style */ false,
                              /* is_try_tactics_style */ false,
-                             /* layer_order */ 0, position);
+                             /* layer_order */ 0,
+                             static_cast<uint16_t>(name.Id()), index);
     priority = CascadePriority(priority, /*already_applied=*/true);
 
     CSSPropertyRef ref(name, GetDocument());
@@ -938,7 +941,8 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   // see StyleCascade::AddExplicitDefaults.
   const CSSValue* value = (origin == CascadeOrigin::kNone)
                               ? cssvalue::CSSUnsetValue::Create()
-                              : ValueAt(match_result_, priority->GetPosition());
+                              : ValueAt(match_result_, priority->GetRuleIndex(),
+                                        priority->GetDeclarationIndex());
   DCHECK(value);
   const TreeScope* tree_scope = GetTreeScope(*priority);
   const MixinParameterBindings* mixin_parameter_bindings =
@@ -969,7 +973,7 @@ void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
     return;
   }
   DCHECK(priority->GetOrigin() >= CascadeOrigin::kAnimation);
-  wtf_size_t index = DecodeInterpolationIndex(priority->GetPosition());
+  wtf_size_t index = priority->GetDeclarationIndex();
   DCHECK_LE(index, interpolations_.GetEntries().size());
   const ActiveInterpolationsMap& map = *interpolations_.GetEntries()[index].map;
   PropertyHandle handle = ToPropertyHandle(property, *priority);
@@ -1510,9 +1514,11 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
         return cssvalue::CSSUnsetValue::Create();
       }
       origin = p->GetOrigin();
-      return Resolve(property, *ValueAt(match_result_, p->GetPosition()),
-                     GetTreeScope(*p), GetMixinParameterBindings(*p), *p,
-                     origin, resolver);
+      return Resolve(
+          property,
+          *ValueAt(match_result_, p->GetRuleIndex(), p->GetDeclarationIndex()),
+          GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin,
+          resolver);
     }
   }
 }
@@ -1529,9 +1535,10 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
     return cssvalue::CSSUnsetValue::Create();
   }
   origin = p->GetOrigin();
-  return Resolve(property, *ValueAt(match_result_, p->GetPosition()),
-                 GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin,
-                 resolver);
+  return Resolve(
+      property,
+      *ValueAt(match_result_, p->GetRuleIndex(), p->GetDeclarationIndex()),
+      GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin, resolver);
 }
 
 const CSSValue* StyleCascade::ResolveRevertRule(const CSSProperty& property,
@@ -1546,9 +1553,10 @@ const CSSValue* StyleCascade::ResolveRevertRule(const CSSProperty& property,
     return cssvalue::CSSUnsetValue::Create();
   }
   origin = p->GetOrigin();
-  return Resolve(property, *ValueAt(match_result_, p->GetPosition()),
-                 GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin,
-                 resolver);
+  return Resolve(
+      property,
+      *ValueAt(match_result_, p->GetRuleIndex(), p->GetDeclarationIndex()),
+      GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin, resolver);
 }
 
 const CSSValue* StyleCascade::ResolveFlipRevert(const CSSProperty& property,
@@ -2923,7 +2931,8 @@ void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset(
     return;
   }
 
-  const CSSValue* value = ValueAt(match_result_, p->GetPosition());
+  const CSSValue* value =
+      ValueAt(match_result_, p->GetRuleIndex(), p->GetDeclarationIndex());
   const auto* unparsed = DynamicTo<CSSUnparsedDeclarationValue>(value);
   if (!unparsed) {
     return;  // Does not contain env().
@@ -2940,7 +2949,7 @@ void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset(
   // up with a simple calc() sum of literal <length> values.
   CascadeResolver::AutoLock lock(GetCSSPropertyBottom(), resolver);
   TokenSequence sequence;
-  const TreeScope& tree_scope = TreeScopeAt(match_result_, p->GetPosition());
+  const TreeScope& tree_scope = TreeScopeAt(match_result_, p->GetRuleIndex());
   CSSParserTokenStream stream(unparsed->VariableDataValue()->OriginalText());
   if (!ResolveTokensInto(stream, &tree_scope, resolver,
                          *unparsed->ParserContext(),
@@ -2970,7 +2979,7 @@ const Document& StyleCascade::GetDocument() const {
 const TreeScope* StyleCascade::GetTreeScope(CascadePriority priority) const {
   CascadeOrigin origin = priority.GetOrigin();
   if (origin == CascadeOrigin::kAuthor) {
-    return &TreeScopeAt(match_result_, priority.GetPosition());
+    return &TreeScopeAt(match_result_, priority.GetRuleIndex());
   }
   if (origin == CascadeOrigin::kAuthorPresentationalHint) {
     return &GetDocument();
@@ -2982,7 +2991,7 @@ const MixinParameterBindings* StyleCascade::GetMixinParameterBindings(
     CascadePriority priority) const {
   CascadeOrigin origin = priority.GetOrigin();
   if (origin == CascadeOrigin::kAuthor) {
-    return MixinParameterBindingsAt(match_result_, priority.GetPosition());
+    return MixinParameterBindingsAt(match_result_, priority.GetRuleIndex());
   }
   return nullptr;
 }

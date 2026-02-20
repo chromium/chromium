@@ -21,21 +21,4 @@ TEST(CascadeInterpolationsTest, Reset) {
   EXPECT_TRUE(interpolations.IsEmpty());
 }
 
-TEST(CascadeInterpolationsTest, EncodeDecodeInterpolationPropertyID) {
-  for (CSSPropertyID id : CSSPropertyIDList()) {
-    EXPECT_EQ(
-        id, DecodeInterpolationPropertyID(EncodeInterpolationPosition(id, 0u)));
-    EXPECT_EQ(id, DecodeInterpolationPropertyID(
-                      EncodeInterpolationPosition(id, 255u)));
-  }
-}
-
-TEST(CascadeInterpolationsTest, EncodeDecodeInterpolationIndex) {
-  CSSPropertyID id = kLastCSSProperty;
-  for (uint8_t index : Vector<uint8_t>({0u, 1u, 15u, 51u, 254u, 255u})) {
-    EXPECT_EQ(index,
-              DecodeInterpolationIndex(EncodeInterpolationPosition(id, index)));
-  }
-}
-
 }  // namespace blink

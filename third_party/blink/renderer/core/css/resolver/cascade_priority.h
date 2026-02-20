@@ -50,19 +50,6 @@ inline uint64_t EncodeLayerOrder(uint16_t layer_order, bool important) {
   }
 }
 
-inline uint32_t EncodeMatchResultPosition(uint16_t block,
-                                          uint16_t declaration) {
-  return (static_cast<uint32_t>(block) << 16) | declaration;
-}
-
-inline wtf_size_t DecodeMatchedPropertiesIndex(uint32_t position) {
-  return (position >> 16) & 0xFFFF;
-}
-
-inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
-  return position & 0xFFFF;
-}
-
 // The CascadePriority class encapsulates a subset of the cascading criteria
 // described by css-cascade [1], and provides a way to compare priorities
 // quickly by encoding all the information in a single integer.
@@ -90,16 +77,19 @@ class CORE_EXPORT CascadePriority {
   static constexpr uint64_t kIsTryStyleOffset = 50;         // of low_bits_
   static constexpr uint64_t kIsInlineStyleOffset = 49;      // of low_bits_
   static constexpr uint64_t kLayerOrderOffset = 33;         // of low_bits_
-  static constexpr uint64_t kPositionOffset = 1;            // of low_bits_
+  static constexpr uint64_t kDeclarationIndexOffset = 1;    // of low_bits_
+  static constexpr uint64_t kRuleIndexOffset = 17;          // of low_bits_
 
   static constexpr uint64_t kOriginImportanceMask =
       0xF << kOriginImportanceOffset;                 // of high_bits_
   static constexpr uint64_t kTreeOrderMask = 0xFFFF;  // of high_bits_
   static constexpr uint64_t kLayerOrderMask =
       static_cast<uint64_t>(0xFFFF) << kLayerOrderOffset;  // of low_bits_
-  static constexpr uint64_t kPositionMask = static_cast<uint64_t>(0xFFFFFFFF)
-                                            << kPositionOffset;  // of low_bits_
-  static constexpr uint64_t kAlreadyAppliedMask = 0x1;           // of low_bits_
+  static constexpr uint64_t kDeclarationIndexMask =
+      static_cast<uint64_t>(0xFFFF) << kDeclarationIndexOffset;  // of low_bits_
+  static constexpr uint64_t kRuleIndexMask =
+      static_cast<uint64_t>(0xFFFF) << kRuleIndexOffset;  // of low_bits_
+  static constexpr uint64_t kAlreadyAppliedMask = 0x1;    // of low_bits_
 
   CascadePriority() : low_bits_(0), high_bits_(0) {}
   explicit CascadePriority(CascadeOrigin origin)
@@ -110,7 +100,8 @@ class CORE_EXPORT CascadePriority {
                         /* is_try_style */ false,
                         /* is_try_tactics_style */ false,
                         /* layer_order */ 0,
-                        /* position */ 0) {}
+                        /* rule_index */ 0,
+                        /* declaration_index */ 0) {}
   CascadePriority(CascadeOrigin origin, bool important)
       : CascadePriority(origin,
                         important,
@@ -119,7 +110,8 @@ class CORE_EXPORT CascadePriority {
                         /* is_try_style */ false,
                         /* is_try_tactics_style */ false,
                         /* layer_order */ 0,
-                        /* position */ 0) {}
+                        /* rule_index */ 0,
+                        /* declaration_index */ 0) {}
   CascadePriority(CascadeOrigin origin, bool important, uint16_t tree_order)
       : CascadePriority(origin,
                         important,
@@ -128,7 +120,8 @@ class CORE_EXPORT CascadePriority {
                         /* is_try_style */ false,
                         /* is_try_tactics_style */ false,
                         /* layer_order */ 0,
-                        /* position */ 0) {}
+                        /* rule_index */ 0,
+                        /* declaration_index */ 0) {}
 
   // For an explanation of 'tree_order', see css-shadow:
   // https://drafts.csswg.org/css-shadow/#shadow-cascading
@@ -139,9 +132,12 @@ class CORE_EXPORT CascadePriority {
                   bool is_try_style,
                   bool is_try_tactics_style,
                   uint16_t layer_order,
-                  uint32_t position)
+                  uint16_t rule_index,
+                  uint16_t declaration_index)
       : CascadePriority(
-            static_cast<uint64_t>(position) << kPositionOffset |
+            static_cast<uint64_t>(rule_index) << kRuleIndexOffset |
+                static_cast<uint64_t>(declaration_index)
+                    << kDeclarationIndexOffset |
                 EncodeLayerOrder(layer_order, important) << kLayerOrderOffset |
                 static_cast<uint64_t>(is_inline_style) << kIsInlineStyleOffset |
                 static_cast<uint64_t>(is_try_style) << kIsTryStyleOffset |
@@ -162,15 +158,11 @@ class CORE_EXPORT CascadePriority {
                                       kOriginImportanceOffset);
   }
   bool HasOrigin() const { return GetOrigin() != CascadeOrigin::kNone; }
-  // The position consists of two 16-bit parts: the high part is the
-  // "rule index", i.e. the index of a MatchedProperties object within
-  // a MatchResult; the low part is the "declaration index", i.e. the index
-  // of this declaration within its rule.
-  uint32_t GetPosition() const {
-    return (low_bits_ & kPositionMask) >> kPositionOffset;
+  wtf_size_t GetDeclarationIndex() const {
+    return (low_bits_ & kDeclarationIndexMask) >> kDeclarationIndexOffset;
   }
   wtf_size_t GetRuleIndex() const {
-    return DecodeMatchedPropertiesIndex(GetPosition());
+    return (low_bits_ & kRuleIndexMask) >> kRuleIndexOffset;
   }
   bool IsAlreadyApplied() const { return low_bits_ & kAlreadyAppliedMask; }
   bool IsInlineStyle() const { return (low_bits_ >> kIsInlineStyleOffset) & 1; }
@@ -225,7 +217,8 @@ class CORE_EXPORT CascadePriority {
       : low_bits_(low_bits), high_bits_(high_bits) {}
 
   //  Bit     0: already_applied
-  //  Bit  1-32: position
+  //  Bit  1-16: declaration_index
+  //  Bit 17-32: rule_index
   //  Bit 33-48: layer_order (encoded)
   //  Bit    49: is_inline_style
   //  Bit    50: is_try_style
@@ -237,6 +230,9 @@ class CORE_EXPORT CascadePriority {
   //  Bit 16-20: origin/importance (encoded; bit 19 is importance)
   //  (11 free bits)
   uint32_t high_bits_;
+
+  // NOTE: Interpolations use the declaration_index field for CSSPropertyID,
+  // and rule_index for entry index (need only 8 bits).
 };
 
 }  // namespace blink

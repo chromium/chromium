@@ -37,14 +37,14 @@ void ExpandCascade(const MatchedProperties& matched_properties,
   unsigned property_idx = 0;
   for (const CSSPropertyValue& reference : properties) {
     CSSPropertyID id = reference.PropertyID();
-    CascadePriority priority(
-        matched_properties.data_.origin, reference.IsImportant(),
-        matched_properties.data_.tree_order,
-        matched_properties.data_.is_inline_style,
-        matched_properties.data_.is_try_style,
-        matched_properties.data_.is_try_tactics_style,
-        matched_properties.data_.layer_order,
-        EncodeMatchResultPosition(matched_properties_index, property_idx++));
+    CascadePriority priority(matched_properties.data_.origin,
+                             reference.IsImportant(),
+                             matched_properties.data_.tree_order,
+                             matched_properties.data_.is_inline_style,
+                             matched_properties.data_.is_try_style,
+                             matched_properties.data_.is_try_tactics_style,
+                             matched_properties.data_.layer_order,
+                             matched_properties_index, property_idx++);
 
     if (id == CSSPropertyID::kVariable) {
       CustomProperty custom(reference.CustomPropertyName(), document);

@@ -17,27 +17,33 @@ struct Options {
   bool is_try_style = false;
   bool is_try_tactics_style = false;
   uint16_t layer_order = 0;
-  uint32_t position = 0;
+  uint16_t rule_index = 0;
+  uint16_t declaration_index = 0;
 };
 
 CascadePriority Priority(Options o) {
   return CascadePriority(o.origin, o.important, o.tree_order, o.is_inline_style,
                          o.is_try_style, o.is_try_tactics_style, o.layer_order,
-                         o.position);
+                         o.rule_index, o.declaration_index);
 }
 
-CascadePriority AuthorPriority(uint16_t tree_order, uint32_t position) {
+CascadePriority AuthorPriority(uint16_t tree_order,
+                               uint16_t rule_index,
+                               uint16_t declaration_index) {
   return Priority({.origin = CascadeOrigin::kAuthor,
                    .tree_order = tree_order,
-                   .position = position});
+                   .rule_index = rule_index,
+                   .declaration_index = declaration_index});
 }
 
 CascadePriority ImportantAuthorPriority(uint16_t tree_order,
-                                        uint32_t position) {
+                                        uint16_t rule_index,
+                                        uint16_t declaration_index) {
   return Priority({.origin = CascadeOrigin::kAuthor,
                    .important = true,
                    .tree_order = tree_order,
-                   .position = position});
+                   .rule_index = rule_index,
+                   .declaration_index = declaration_index});
 }
 
 }  // namespace
@@ -122,7 +128,8 @@ TEST(CascadePriorityTest, IsImportant) {
                          .important = false,
                          .tree_order = 1024,
                          .layer_order = 2048,
-                         .position = 4096})
+                         .rule_index = 4096,
+                         .declaration_index = 8192})
                    .IsImportant());
 
   EXPECT_TRUE(Priority({.origin = Origin::kUserAgent, .important = true})
@@ -139,7 +146,8 @@ TEST(CascadePriorityTest, IsImportant) {
                         .important = true,
                         .tree_order = 1024,
                         .layer_order = 2048,
-                        .position = 4096})
+                        .rule_index = 4096,
+                        .declaration_index = 8192})
                   .IsImportant());
 }
 
@@ -218,29 +226,31 @@ TEST(CascadePriorityTest, TreeOrderDifferentOrigin) {
 }
 
 TEST(CascadePriorityTest, Position) {
-  // AuthorPriority(tree_order, position)
-  EXPECT_GE(AuthorPriority(0, 0), AuthorPriority(0, 0));
-  EXPECT_GE(AuthorPriority(0, 1), AuthorPriority(0, 1));
-  EXPECT_GE(AuthorPriority(0, 1), AuthorPriority(0, 0));
-  EXPECT_GE(AuthorPriority(0, 2), AuthorPriority(0, 1));
-  EXPECT_GE(AuthorPriority(0, 0xFFFFFFFF), AuthorPriority(0, 0xFFFFFFFE));
-  EXPECT_FALSE(AuthorPriority(0, 2) >= AuthorPriority(0, 3));
+  // AuthorPriority(tree_order, rule_index, declaration_index)
+  EXPECT_GE(AuthorPriority(0, 0, 0), AuthorPriority(0, 0, 0));
+  EXPECT_GE(AuthorPriority(0, 0, 1), AuthorPriority(0, 0, 1));
+  EXPECT_GE(AuthorPriority(0, 0, 1), AuthorPriority(0, 0, 0));
+  EXPECT_GE(AuthorPriority(0, 0, 2), AuthorPriority(0, 0, 1));
+  EXPECT_GE(AuthorPriority(0, 0xFFFF, 0xFFFF),
+            AuthorPriority(0, 0xFFFF, 0xFFFE));
+  EXPECT_FALSE(AuthorPriority(0, 0, 2) >= AuthorPriority(0, 0, 3));
 }
 
 TEST(CascadePriorityTest, PositionAndTreeOrder) {
-  // AuthorPriority(tree_order, position)
-  EXPECT_GE(AuthorPriority(1, 0), AuthorPriority(0, 0));
-  EXPECT_GE(AuthorPriority(1, 1), AuthorPriority(0, 1));
-  EXPECT_GE(AuthorPriority(1, 1), AuthorPriority(0, 3));
-  EXPECT_GE(AuthorPriority(1, 2), AuthorPriority(0, 0xFFFFFFFF));
+  // AuthorPriority(tree_order, rule_index, declaration_index)
+  EXPECT_GE(AuthorPriority(1, 0, 0), AuthorPriority(0, 0, 0));
+  EXPECT_GE(AuthorPriority(1, 0, 1), AuthorPriority(0, 0, 1));
+  EXPECT_GE(AuthorPriority(1, 0, 1), AuthorPriority(0, 0, 3));
+  EXPECT_GE(AuthorPriority(1, 0, 2), AuthorPriority(0, 0xFFFF, 0xFFFF));
 }
 
 TEST(CascadePriorityTest, PositionAndOrigin) {
-  // [Important]AuthorPriority(tree_order, position)
-  EXPECT_GE(ImportantAuthorPriority(0, 0), AuthorPriority(0, 0));
-  EXPECT_GE(ImportantAuthorPriority(0, 1), AuthorPriority(0, 1));
-  EXPECT_GE(ImportantAuthorPriority(0, 1), AuthorPriority(0, 3));
-  EXPECT_GE(ImportantAuthorPriority(0, 2), AuthorPriority(0, 0xFFFFFFFF));
+  // [Important]AuthorPriority(tree_order, rule_index, declaration_index)
+  EXPECT_GE(ImportantAuthorPriority(0, 0, 0), AuthorPriority(0, 0, 0));
+  EXPECT_GE(ImportantAuthorPriority(0, 0, 1), AuthorPriority(0, 0, 1));
+  EXPECT_GE(ImportantAuthorPriority(0, 0, 1), AuthorPriority(0, 0, 3));
+  EXPECT_GE(ImportantAuthorPriority(0, 0, 2),
+            AuthorPriority(0, 0xFFFF, 0xFFFF));
 }
 
 TEST(CascadePriorityTest, Generation) {
@@ -275,20 +285,22 @@ TEST(CascadePriorityTest, AlreadyAppliedOverwrite) {
 
 TEST(CascadePriorityTest, PositionEncoding) {
   // Test 0b0, 0b1, 0b11, 0b111, etc.
-  uint32_t pos = 0;
+  uint16_t pos = 0;
   do {
-    // AuthorPriority(tree_order, position)
-    ASSERT_EQ(pos, AuthorPriority(0, pos).GetPosition());
+    // AuthorPriority(tree_order, rule_index, declaration_index)
+    ASSERT_EQ(pos, AuthorPriority(0, pos, 0).GetRuleIndex());
+    ASSERT_EQ(pos, AuthorPriority(0, 0, pos).GetDeclarationIndex());
     pos = (pos << 1) | 1;
-  } while (pos != ~static_cast<uint32_t>(0));
+  } while (pos != static_cast<uint16_t>(~0));
 
   // Test 0b1, 0b10, 0b100, etc
   pos = 1;
   do {
-    // AuthorPriority(tree_order, position)
-    ASSERT_EQ(pos, AuthorPriority(0, pos).GetPosition());
+    // AuthorPriority(tree_order, rule_index, declaration_index)
+    ASSERT_EQ(pos, AuthorPriority(0, pos, 0).GetRuleIndex());
+    ASSERT_EQ(pos, AuthorPriority(0, 0, pos).GetDeclarationIndex());
     pos <<= 1;
-  } while (pos != ~static_cast<uint32_t>(1) << 31);
+  } while (pos != static_cast<uint16_t>(~1 << 15));
 }
 
 TEST(CascadePriorityTest, EncodeLayerOrder) {
@@ -336,7 +348,8 @@ TEST(CascadePriorityTest, InlineStyle) {
   CascadeOrigin user = CascadeOrigin::kUser;
 
   // Non-important inline style priorities
-  EXPECT_GE(Priority({.is_inline_style = true}), Priority({.position = 1}));
+  EXPECT_GE(Priority({.is_inline_style = true}),
+            Priority({.declaration_index = 1}));
   EXPECT_GE(Priority({.is_inline_style = true}), Priority({.layer_order = 1}));
   EXPECT_GE(Priority({.tree_order = 1, .is_inline_style = true}),
             Priority({.is_inline_style = false}));
@@ -347,7 +360,7 @@ TEST(CascadePriorityTest, InlineStyle) {
 
   // Important inline style priorities
   EXPECT_GE(Priority({.important = true, .is_inline_style = true}),
-            Priority({.important = true, .position = 1}));
+            Priority({.important = true, .declaration_index = 1}));
   EXPECT_GE(Priority({.important = true, .is_inline_style = true}),
             Priority({.important = true, .layer_order = 1}));
   EXPECT_LT(
@@ -369,7 +382,8 @@ TEST(CascadePriorityTest, TryStyle) {
   EXPECT_GE(Priority({.is_try_style = true}),
             Priority({.layer_order = static_cast<uint16_t>(
                           EncodeLayerOrder(1u, /* important */ false))}));
-  EXPECT_GE(Priority({.is_try_style = true}), Priority({.position = 1000}));
+  EXPECT_GE(Priority({.is_try_style = true}),
+            Priority({.declaration_index = 1000}));
 
   EXPECT_LT(Priority({.is_try_style = true}), Priority({.important = true}));
   EXPECT_LT(Priority({.is_try_style = true}),
@@ -414,80 +428,100 @@ TEST(CascadePriorityTest, TryTacticsStyle) {
 TEST(CascadePriorityTest, ForLayerComparison) {
   CascadeOrigin user = CascadeOrigin::kUser;
 
-  EXPECT_EQ(Priority({.layer_order = 1, .position = 2}).ForLayerComparison(),
-            Priority({.layer_order = 1, .position = 8}).ForLayerComparison());
   EXPECT_EQ(
-      Priority(
-          {.important = true, .tree_order = 1, .layer_order = 1, .position = 4})
-          .ForLayerComparison(),
-      Priority(
-          {.important = true, .tree_order = 1, .layer_order = 1, .position = 8})
+      Priority({.layer_order = 1, .declaration_index = 2}).ForLayerComparison(),
+      Priority({.layer_order = 1, .declaration_index = 8})
           .ForLayerComparison());
   EXPECT_EQ(Priority({.important = true,
                       .tree_order = 1,
                       .layer_order = 1,
-                      .position = 16})
+                      .declaration_index = 4})
                 .ForLayerComparison(),
-            Priority({.tree_order = 1, .layer_order = 1, .position = 32})
-                .ForLayerComparison());
-  EXPECT_EQ(Priority({.important = true,
+            Priority({.important = true,
                       .tree_order = 1,
-                      .is_inline_style = true,
-                      .position = 16})
-                .ForLayerComparison(),
-            Priority({.tree_order = 1, .is_inline_style = true, .position = 32})
+                      .layer_order = 1,
+                      .declaration_index = 8})
                 .ForLayerComparison());
+  EXPECT_EQ(
+      Priority({.important = true,
+                .tree_order = 1,
+                .layer_order = 1,
+                .declaration_index = 16})
+          .ForLayerComparison(),
+      Priority({.tree_order = 1, .layer_order = 1, .declaration_index = 32})
+          .ForLayerComparison());
+  EXPECT_EQ(
+      Priority({.important = true,
+                .tree_order = 1,
+                .is_inline_style = true,
+                .declaration_index = 16})
+          .ForLayerComparison(),
+      Priority(
+          {.tree_order = 1, .is_inline_style = true, .declaration_index = 32})
+          .ForLayerComparison());
 
-  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
-            Priority({.origin = user, .layer_order = 1}).ForLayerComparison());
   EXPECT_LT(
-      Priority({.origin = user, .position = 1}).ForLayerComparison(),
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
+      Priority({.origin = user, .layer_order = 1}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
       Priority({.origin = user, .is_inline_style = true}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
-            Priority({.origin = user, .tree_order = 1}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
-            Priority({}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
-                .ForLayerComparison(),
-            Priority({.origin = user, .layer_order = 1}).ForLayerComparison());
   EXPECT_LT(
-      Priority({.origin = user, .important = true, .position = 1})
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
+      Priority({.origin = user, .tree_order = 1}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
+      Priority({}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
+          .ForLayerComparison(),
+      Priority({.origin = user, .layer_order = 1}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
           .ForLayerComparison(),
       Priority({.origin = user, .is_inline_style = true}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
-                .ForLayerComparison(),
-            Priority({.origin = user, .tree_order = 1}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
-                .ForLayerComparison(),
-            Priority({}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
-            Priority({.origin = user, .important = true, .layer_order = 1})
-                .ForLayerComparison());
   EXPECT_LT(
-      Priority({.origin = user, .position = 1}).ForLayerComparison(),
+      Priority({.origin = user, .important = true, .declaration_index = 1})
+          .ForLayerComparison(),
+      Priority({.origin = user, .tree_order = 1}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
+          .ForLayerComparison(),
+      Priority({}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
+      Priority({.origin = user, .important = true, .layer_order = 1})
+          .ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
       Priority({.origin = user, .important = true, .is_inline_style = true})
           .ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
-            Priority({.origin = user, .important = true, .tree_order = 1})
-                .ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
-            Priority({.important = true}).ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
-                .ForLayerComparison(),
-            Priority({.origin = user, .important = true, .layer_order = 1})
-                .ForLayerComparison());
   EXPECT_LT(
-      Priority({.origin = user, .important = true, .position = 1})
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
+      Priority({.origin = user, .important = true, .tree_order = 1})
+          .ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .declaration_index = 1}).ForLayerComparison(),
+      Priority({.important = true}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
+          .ForLayerComparison(),
+      Priority({.origin = user, .important = true, .layer_order = 1})
+          .ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
           .ForLayerComparison(),
       Priority({.origin = user, .important = true, .is_inline_style = true})
           .ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
-                .ForLayerComparison(),
-            Priority({.origin = user, .important = true, .tree_order = 1})
-                .ForLayerComparison());
-  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
-                .ForLayerComparison(),
-            Priority({.important = true}).ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
+          .ForLayerComparison(),
+      Priority({.origin = user, .important = true, .tree_order = 1})
+          .ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .declaration_index = 1})
+          .ForLayerComparison(),
+      Priority({.important = true}).ForLayerComparison());
 }
 
 }  // namespace blink
