@@ -26,7 +26,7 @@ export const HIGHLIGHTED_LINK_CLASS = 'highlighted-link';
 // Reading mode sometimes needs to use a different html tag to display a
 // particular node than the one used in the main panel. This maps the tags
 // received from the renderer to the tag to use in Reading mode.
-const TAG_TO_RM_TAG: Map<string, string> = new Map([
+const SCREEN2X_TAG_TO_RM_TAG: Map<string, string> = new Map([
   // getHtmlTag might return '#document' which is not a valid to pass to
   // createElement.
   ['#document', 'div'],
@@ -46,6 +46,14 @@ const TAG_TO_RM_TAG: Map<string, string> = new Map([
   // Buttons are sometimes distilled but button click logic isn't handled
   // by reading mode, so these shouldn't be distilled as clickable elements.
   ['button', 'div'],
+]);
+
+// Readability doesn't need to replace as many tags as Screen2x. If there's
+// more overlap in the future, the Screen2x map and the Readability map
+// may need to be merged more.
+const READABILITY_TAG_TO_RM_TAG: Map<string, string> = new Map([
+  ['button', 'div'],
+  ['details', 'div'],
 ]);
 
 export interface ContentListener {
@@ -248,6 +256,23 @@ export class ContentController {
       const contentContainer = document.createElement('div');
       contentContainer.innerHTML = this.getTrustedHtml(contentHtml);
 
+      // Replace tags that shouldn't be interactive or have special behavior
+      // in reading mode. This is similar to what happens in `buildSubtree_`
+      // for Screen2x.
+      for (const [tag, replacement] of READABILITY_TAG_TO_RM_TAG) {
+        const elements = contentContainer.querySelectorAll(tag);
+        for (const element of elements) {
+          const replacementEl = document.createElement(replacement);
+          while (element.firstChild) {
+            replacementEl.appendChild(element.firstChild);
+          }
+          for (const attr of element.attributes) {
+            replacementEl.setAttribute(attr.name, attr.value);
+          }
+          element.replaceWith(replacementEl);
+        }
+      }
+
       // Set before updateImages to avoid early return.
       this.setState(ContentType.HAS_CONTENT);
 
@@ -355,8 +380,8 @@ export class ContentController {
       return this.createTextNode_(nodeId);
     }
 
-    if (TAG_TO_RM_TAG.has(htmlTag)) {
-      htmlTag = TAG_TO_RM_TAG.get(htmlTag)!;
+    if (SCREEN2X_TAG_TO_RM_TAG.has(htmlTag)) {
+      htmlTag = SCREEN2X_TAG_TO_RM_TAG.get(htmlTag)!;
     }
 
     const url = chrome.readingMode.getUrl(nodeId);
