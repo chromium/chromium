@@ -12,6 +12,28 @@
 
 namespace autofill::autofill_metrics {
 
+namespace {
+
+using PaymentsRpcResult =
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+const std::tuple<PaymentsRpcResult, SaveAndFillPaymentsRequestResult>
+    kPaymentsRequestResultTestCases[] = {
+        {PaymentsRpcResult::kSuccess,
+         SaveAndFillPaymentsRequestResult::kSuccess},
+        {PaymentsRpcResult::kClientSideTimeout,
+         SaveAndFillPaymentsRequestResult::kTimeout},
+        {PaymentsRpcResult::kTryAgainFailure,
+         SaveAndFillPaymentsRequestResult::kFailure},
+        {PaymentsRpcResult::kPermanentFailure,
+         SaveAndFillPaymentsRequestResult::kFailure},
+        {PaymentsRpcResult::kNetworkError,
+         SaveAndFillPaymentsRequestResult::kFailure},
+        {PaymentsRpcResult::kNone, SaveAndFillPaymentsRequestResult::kFailure},
+};
+
+}  // namespace
+
 class SaveAndFillMetricsTest : public AutofillMetricsBaseTest,
                                public testing::Test {
  public:
@@ -198,6 +220,41 @@ TEST_F(SaveAndFillMetricsTest, LogDialogShown_Local) {
 
   histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown2",
                                       SaveAndFillDialogShown::kLocalDialogShown,
+                                      /*expected_bucket_count=*/1);
+}
+
+class SaveAndFillPaymentsRequestResultMetricsTest
+    : public SaveAndFillMetricsTest,
+      public testing::WithParamInterface<
+          std::tuple<PaymentsRpcResult, SaveAndFillPaymentsRequestResult>> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SaveAndFillPaymentsRequestResultMetricsTest,
+                         testing::ValuesIn(kPaymentsRequestResultTestCases));
+
+TEST_P(SaveAndFillPaymentsRequestResultMetricsTest,
+       LogGetDetailsForCreateCardRequestResult) {
+  base::HistogramTester histogram_tester;
+  auto [request_result, expected_metric_result] = GetParam();
+
+  LogSaveAndFillPaymentsRequestResult(
+      SaveAndFillServerRequestType::kGetDetailsForCreateCard, request_result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.GetDetailsForCreateCard.Result",
+      expected_metric_result, /*expected_bucket_count=*/1);
+}
+
+TEST_P(SaveAndFillPaymentsRequestResultMetricsTest,
+       LogCreateCardRequestResult) {
+  base::HistogramTester histogram_tester;
+  auto [request_result, expected_metric_result] = GetParam();
+
+  LogSaveAndFillPaymentsRequestResult(SaveAndFillServerRequestType::kCreateCard,
+                                      request_result);
+
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.CreateCard.Result",
+                                      expected_metric_result,
                                       /*expected_bucket_count=*/1);
 }
 

@@ -9,6 +9,21 @@
 
 namespace autofill::autofill_metrics {
 
+namespace {
+using PaymentsRpcResult =
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+std::string_view GetSaveAndFillServerRequestTypeString(
+    SaveAndFillServerRequestType type) {
+  switch (type) {
+    case SaveAndFillServerRequestType::kGetDetailsForCreateCard:
+      return "GetDetailsForCreateCard";
+    case SaveAndFillServerRequestType::kCreateCard:
+      return "CreateCard";
+  }
+}
+}  // namespace
+
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event) {
   base::UmaHistogramEnumeration("Autofill.FormEvents.CreditCard.SaveAndFill",
                                 event);
@@ -72,6 +87,28 @@ void LogSaveAndFillFunnelMetrics(bool succeeded,
                     is_for_upload ? ".Upload" : ".Local",
                     succeeded ? ".Success" : ".Failure"}),
       event);
+}
+
+void LogSaveAndFillPaymentsRequestResult(
+    SaveAndFillServerRequestType request_type,
+    PaymentsRpcResult result) {
+  SaveAndFillPaymentsRequestResult metric_result;
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      metric_result = SaveAndFillPaymentsRequestResult::kSuccess;
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      metric_result = SaveAndFillPaymentsRequestResult::kTimeout;
+      break;
+    default:
+      metric_result = SaveAndFillPaymentsRequestResult::kFailure;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.SaveAndFill.",
+                    GetSaveAndFillServerRequestTypeString(request_type),
+                    ".Result"}),
+      metric_result);
 }
 
 }  // namespace autofill::autofill_metrics

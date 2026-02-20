@@ -250,6 +250,9 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
   autofill_metrics::LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
       result == PaymentsRpcResult::kSuccess,
       base::TimeTicks::Now() - request_sent_timestamp);
+  autofill_metrics::LogSaveAndFillPaymentsRequestResult(
+      autofill_metrics::SaveAndFillServerRequestType::kGetDetailsForCreateCard,
+      result);
 
   if (result == PaymentsRpcResult::kSuccess) {
     LegalMessageLines parsed_legal_message_lines;
@@ -408,6 +411,8 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
   autofill_metrics::LogSaveAndFillCreateCardResultAndLatency(
       result == PaymentsRpcResult::kSuccess,
       base::TimeTicks::Now() - request_sent_timestamp);
+  autofill_metrics::LogSaveAndFillPaymentsRequestResult(
+      autofill_metrics::SaveAndFillServerRequestType::kCreateCard, result);
   logging_context_.last_attempt_succeeded =
       result == PaymentsRpcResult::kSuccess;
 

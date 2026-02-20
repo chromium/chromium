@@ -6720,6 +6720,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SaveAndFill.{RequestType}.Result"
+    enum="SaveAndFillPaymentsRequestResult" expires_after="2026-06-01">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the result of the {RequestType} server request in the Save and Fill
+    flow. Logged when the response of the request is received.
+  </summary>
+  <token key="RequestType">
+    <variant name="CreateCard"/>
+    <variant name="GetDetailsForCreateCard"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
     expires_after="2026-08-02">
   <owner>osaul@google.com</owner>

@@ -81,6 +81,23 @@ enum class SaveAndFillDialogShown {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillDialogShown)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SaveAndFillPaymentsRequestResult)
+enum class SaveAndFillPaymentsRequestResult {
+  kSuccess = 0,
+  kFailure = 1,
+  kTimeout = 2,
+  kMaxValue = kTimeout,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillPaymentsRequestResult)
+
+enum class SaveAndFillServerRequestType {
+  kGetDetailsForCreateCard,
+  kCreateCard,
+};
+
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
 
 // Logs the reason why the Save and Fill suggestion was not shown.
@@ -113,6 +130,12 @@ void LogSaveAndFillDialogShown(bool is_upload);
 void LogSaveAndFillFunnelMetrics(bool succeeded,
                                  bool is_for_upload,
                                  SaveAndFillFormEvent event);
+
+// Logs the result of GetDetailsForCreateCard and CreateCard requests when
+// initiated by the Save and Fill flow.
+void LogSaveAndFillPaymentsRequestResult(
+    SaveAndFillServerRequestType request_type,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
 }  // namespace autofill::autofill_metrics
 
