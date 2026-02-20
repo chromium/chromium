@@ -120,7 +120,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
     dialog_host_widget_->CloseNow();
     dialog_host_widget_.reset();
     dialog_host_.reset();
-    dialog_->CloseNow();
+    dialog_.ExtractAsDangling()->CloseNow();
     ViewsTestBase::TearDown();
   }
 
@@ -145,7 +145,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
   raw_ptr<views::View> contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
   std::unique_ptr<views::Widget> dialog_host_widget_;
-  raw_ptr<Widget, DanglingUntriaged> dialog_ = nullptr;
+  raw_ptr<Widget> dialog_ = nullptr;
 };
 
 }  // namespace
