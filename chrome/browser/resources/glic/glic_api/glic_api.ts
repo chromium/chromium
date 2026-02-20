@@ -2015,7 +2015,7 @@ export declare interface Observable<T> {
  *
  * See also comments about Observable.
  */
-export interface ObservableValue<T> extends Observable<T> {
+export declare interface ObservableValue<T> extends Observable<T> {
   /**
    * Provides synchronous access to the current value. Returns undefined if the
    * initial value has not yet been populated.
@@ -2370,6 +2370,15 @@ export declare interface SelectAutofillSuggestionsDialogResponse {
 // Types used in presubmit check.
 //
 
+// Types not intended to be used externally, and therefore may not be
+// backwards compatible.
+export interface PrivateTypes {
+  privateTypes: PrivateTypes;
+  backwardsCompatibleTypes: BackwardsCompatibleTypes;
+  closedEnums: ClosedEnums;
+  extensibleEnums: ExtensibleEnums;
+}
+
 // Types to be checked for backwards compatibility on presubmit, excluding
 // enums.
 export interface BackwardsCompatibleTypes {
@@ -2380,62 +2389,105 @@ export interface BackwardsCompatibleTypes {
   annotatedPageData: AnnotatedPageData;
   autofillSuggestion: AutofillSuggestion;
   browserHost: GlicBrowserHost;
+  capturedRegion: CapturedRegion;
+  captureRegionResult: CaptureRegionResult;
   chromeVersion: ChromeVersion;
+  conversationInfo: ConversationInfo;
+  createActorTabOptions: CreateActorTabOptions;
+  createSkillRequest: CreateSkillRequest;
   createTabOptions: CreateTabOptions;
   credential: Credential;
   documentData: DocumentData;
   draggableArea: DraggableArea;
+  errorReasonTypes: ErrorReasonTypes;
+  errorWithReason: ErrorWithReason<any>;
   focusedTabData: FocusedTabData;
+  focusedTabDataHasFocus: FocusedTabDataHasFocus;
+  focusedTabDataHasNoFocus: FocusedTabDataHasNoFocus;
   formFillingRequest: FormFillingRequest;
   formFillingResponse: FormFillingResponse;
+  frameMetadata: FrameMetadata;
+  getPinCandidatesOptions: GetPinCandidatesOptions;
+  glicApiBootMessage: GlicApiBootMessage;
   glicBrowserHostJournal: GlicBrowserHostJournal;
   glicBrowserHostMetrics: GlicBrowserHostMetrics;
   hostRegistry: GlicHostRegistry;
   imageOriginAnnotations: ImageOriginAnnotations;
+  journal: Journal;
+  metaTag: MetaTag;
   navigationConfirmationRequest: NavigationConfirmationRequest;
   navigationConfirmationResponse: NavigationConfirmationResponse;
+  observable: Observable<any>;
+  observableValue: ObservableValue<any>;
+  observer: Observer<any>;
+  onResponseStoppedDetails: OnResponseStoppedDetails;
   openPanelInfo: OpenPanelInfo;
+  openSettingsOptions: OpenSettingsOptions;
+  osPermissionType: OsPermissionType;
+  pageMetadata: PageMetadata;
   panelOpeningData: PanelOpeningData;
   panelState: PanelState;
   pdfDocumentData: PdfDocumentData;
+  pinCandidate: PinCandidate;
+  pinTabsOptions: PinTabsOptions;
+  rect: Rect;
   resizeWindowOptions: ResizeWindowOptions;
+  resumeActorTaskResult: ResumeActorTaskResult;
+  screenshot: Screenshot;
+  scrollToNodeSelector: ScrollToNodeSelector;
+  scrollToParams: ScrollToParams;
+  scrollToSelector: ScrollToSelector;
+  scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
+  scrollToTextSelector: ScrollToTextSelector;
   selectAutofillSuggestionsDialogRequest:
       SelectAutofillSuggestionsDialogRequest;
   selectAutofillSuggestionsDialogResponse:
       SelectAutofillSuggestionsDialogResponse;
   selectCredentialDialogRequest: SelectCredentialDialogRequest;
   selectCredentialDialogResponse: SelectCredentialDialogResponse;
-  screenshot: Screenshot;
-  scrollToParams: ScrollToParams;
-  scrollToSelector: ScrollToSelector;
-  scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
-  scrollToTextSelector: ScrollToTextSelector;
   skill: Skill;
   skillPreview: SkillPreview;
   subscriber: Subscriber;
+  suggestionContent: SuggestionContent;
   tabContextOptions: TabContextOptions;
   tabContextResult: TabContextResult;
-  resumeActorTaskResult: ResumeActorTaskResult;
   tabData: TabData;
+  taskOptions: TaskOptions;
+  unpinTabsOptions: UnpinTabsOptions;
+  updateSkillRequest: UpdateSkillRequest;
   userConfirmationDialogRequest: UserConfirmationDialogRequest;
   userConfirmationDialogResponse: UserConfirmationDialogResponse;
   userProfileInfo: UserProfileInfo;
+  viewChangedNotification: ViewChangedNotification;
+  viewChangeRequestActuation: ViewChangeRequestActuation;
+  viewChangeRequestConversation: ViewChangeRequestConversation;
   webClient: GlicWebClient;
   webPageData: WebPageData;
-  rect: Rect;
-  captureRegionResult: CaptureRegionResult;
-  capturedRegion: CapturedRegion;
-  openSettingsOptions: OpenSettingsOptions;
-  osPermissionType: OsPermissionType;
+  withGlicApi: WithGlicApi;
   zeroStateSuggestions: ZeroStateSuggestions;
-  zeroStateSuggestionsV2: ZeroStateSuggestionsV2;
   zeroStateSuggestionsOptions: ZeroStateSuggestionsOptions;
+  zeroStateSuggestionsV2: ZeroStateSuggestionsV2;
+  invokeOptions: InvokeOptions;
 }
 
 // Enums that should not be changed.
 export interface ClosedEnums {
   panelStateKind: typeof PanelStateKind;
   webClientMode: typeof WebClientMode;
+
+  // NOTICE: Enums below this line were added here by default, and
+  // may in fact be safe to extend. Please verify safety before moving
+  // them to ExtensibleEnums.
+  webClientModel: typeof WebClientModel;
+  skillSource: typeof SkillSource;
+  switchConversationErrorReason: typeof SwitchConversationErrorReason;
+  clientView: typeof ClientView;
+  pinTrigger: typeof PinTrigger;
+  registerConversationErrorReason: typeof RegisterConversationErrorReason;
+  metricUserInputReactionType: typeof MetricUserInputReactionType;
+  additionalContextSource: typeof AdditionalContextSource;
+  unpinTrigger: typeof UnpinTrigger;
+  responseStopCause: typeof ResponseStopCause;
 }
 
 // Enums that can be extended.
@@ -2457,6 +2509,9 @@ export interface ExtensibleEnums {
   webUseCounter: typeof WebUseCounter;
   platform: typeof Platform;
   cancelActionsResult: typeof CancelActionsResult;
+  featureMode: typeof FeatureMode;
+  microphoneStatus: typeof MicrophoneStatus;
+  formFactor: typeof FormFactor;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
