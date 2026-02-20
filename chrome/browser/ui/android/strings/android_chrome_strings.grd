@@ -485,13 +485,25 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Title shown in the menu item that takes the user to 'Manage search engines and site search' in Settings.">
         Manage search engines and site search
       </message>
-      <message name="IDS_SITE_SEARCH_SEARCH_ENGINES_HEADER" desc="Label for 'Search Engines' section">
+      <message name="IDS_SITE_SEARCH_KEYBOARD_SHORTCUT_HEADER" desc="Header for the 'Keyboard Shortcut' section.">
+        Keyboard shortcut
+      </message>
+      <message name="IDS_SITE_SEARCH_KEYBOARD_SHORTCUT_DESCRIPTION" desc="Explanation for the 'Keyboard Shortcut' section.">
+        In the address bar, use this keyboard shortcut with shortcuts for search engines and site search
+      </message>
+      <message name="IDS_SITE_SEARCH_KEYBOARD_SHORTCUT_SPACE_OR_TAB" desc="Label for the 'Space or Tab' keyboard shortcut option.">
+        Space or Tab
+      </message>
+      <message name="IDS_SITE_SEARCH_KEYBOARD_SHORTCUT_TAB" desc="Label for the 'Tab' keyboard shortcut option.">
+        Tab
+      </message>
+      <message name="IDS_SITE_SEARCH_SEARCH_ENGINES_HEADER" desc="Header for 'Search Engines' section">
         Search engines
       </message>
       <message name="IDS_SITE_SEARCH_SEARCH_ENGINES_DESCRIPTION" desc="Explanation for 'Search Engines' section">
         To use a search engine other than the default, type its shortcut in the address bar followed by your preferred keyboard shortcut. You can also change your default search engine here.
       </message>
-      <message name="IDS_SITE_SEARCH_SITE_SEARCH_HEADER" desc="Label for 'Site Search' section">
+      <message name="IDS_SITE_SEARCH_SITE_SEARCH_HEADER" desc="Header for 'Site Search' section">
         Site search
       </message>
       <message name="IDS_SITE_SEARCH_SITE_SEARCH_DESCRIPTION" desc="Explanation for 'Site Search' section">
