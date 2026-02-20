@@ -1,10 +1,14 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -19,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"

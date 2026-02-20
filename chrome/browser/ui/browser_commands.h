@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"

@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"

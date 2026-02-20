@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 
+#include "build/branding_buildflags.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"

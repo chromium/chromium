@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"

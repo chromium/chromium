@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"

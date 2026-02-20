@@ -10,6 +10,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"

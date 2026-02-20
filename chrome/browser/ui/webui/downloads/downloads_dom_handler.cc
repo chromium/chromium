@@ -23,6 +23,7 @@
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_history.h"

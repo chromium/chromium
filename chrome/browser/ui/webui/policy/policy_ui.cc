@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

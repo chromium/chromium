@@ -27,6 +27,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

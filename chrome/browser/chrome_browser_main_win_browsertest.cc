@@ -5,6 +5,7 @@
 #include "chrome/browser/chrome_browser_main_win.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"

@@ -35,6 +35,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/activity.h"

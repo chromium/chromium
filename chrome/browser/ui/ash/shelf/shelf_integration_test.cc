@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/test/gtest_tags.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"

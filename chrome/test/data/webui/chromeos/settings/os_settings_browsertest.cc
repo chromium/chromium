@@ -6,6 +6,7 @@
 #include "ash/constants/webui_url_constants.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"

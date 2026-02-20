@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"

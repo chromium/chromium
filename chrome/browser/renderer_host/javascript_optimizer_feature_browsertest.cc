@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"

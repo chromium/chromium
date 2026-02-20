@@ -37,6 +37,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"

@@ -32,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"

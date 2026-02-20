@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 
 #include "build/android_buildflags.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"

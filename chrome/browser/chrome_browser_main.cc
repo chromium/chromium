@@ -27,6 +27,7 @@
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/after_startup_task_utils.h"

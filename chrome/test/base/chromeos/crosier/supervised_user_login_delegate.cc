@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"

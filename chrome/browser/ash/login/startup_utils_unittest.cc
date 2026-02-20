@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"

@@ -13,6 +13,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/version_info/version_info.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"

@@ -23,6 +23,7 @@
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"

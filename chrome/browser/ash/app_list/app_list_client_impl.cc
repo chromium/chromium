@@ -31,6 +31,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"

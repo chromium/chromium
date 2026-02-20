@@ -15,6 +15,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/version_info/nix/version_extra_utils.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 
 namespace {

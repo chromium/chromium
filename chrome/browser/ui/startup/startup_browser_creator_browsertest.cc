@@ -26,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version_info/version_info.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"

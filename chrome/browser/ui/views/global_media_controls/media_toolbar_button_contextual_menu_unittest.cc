@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"

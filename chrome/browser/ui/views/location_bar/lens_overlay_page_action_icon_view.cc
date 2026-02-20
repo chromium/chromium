@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 
+#include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/profiles/profile.h"

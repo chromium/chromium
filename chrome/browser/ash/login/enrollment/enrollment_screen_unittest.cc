@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"

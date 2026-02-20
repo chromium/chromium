@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/relaunch_chrome_bubble_controller.h"
 
+#include "build/branding_buildflags.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"

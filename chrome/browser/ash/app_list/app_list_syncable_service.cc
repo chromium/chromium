@@ -24,6 +24,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

@@ -14,6 +14,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"

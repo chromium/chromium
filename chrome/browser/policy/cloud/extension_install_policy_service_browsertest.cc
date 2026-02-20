@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 
 #include "base/test/test_future.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"

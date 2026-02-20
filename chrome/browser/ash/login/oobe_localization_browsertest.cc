@@ -12,6 +12,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"

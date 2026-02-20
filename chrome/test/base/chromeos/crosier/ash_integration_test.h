@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_ASH_INTEGRATION_TEST_H_
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_ASH_INTEGRATION_TEST_H_
 
+#include "build/branding_buildflags.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
