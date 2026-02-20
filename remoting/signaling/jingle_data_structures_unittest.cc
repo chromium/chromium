@@ -444,6 +444,25 @@ TEST(JingleMessageTest, SessionInfo) {
   EXPECT_EQ(session_info->generic_info->body, "TestMessage");
 }
 
+TEST(JingleMessageTest, MessageId) {
+  // clang-format off
+  const char* kTestMessageWithMessageId =
+      "<iq to='user@gmail.com/chromoting016DBB07' id='test_id' type='set' "
+          "from='user@gmail.com/chromiumsy5C6A652D' "
+          "xmlns='jabber:client'>"
+        "<jingle xmlns='urn:xmpp:jingle:1' "
+                "action='session-info' sid='2227053353'>"
+          "<test-info>TestMessage</test-info>"
+        "</jingle>"
+      "</iq>";
+  // clang-format on
+
+  JingleMessage message;
+  ParseFormatAndCompare(kTestMessageWithMessageId, &message);
+
+  EXPECT_EQ(message.message_id, "test_id");
+}
+
 TEST(JingleMessageReplyTest, ToXml) {
   // clang-format off
   const char* kTestIncomingMessage1 =

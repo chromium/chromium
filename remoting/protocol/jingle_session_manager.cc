@@ -108,8 +108,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
             signal_strategy_->GetLocalAddress().id(), message->from.id());
 
     JingleSession* session = new JingleSession(this);
-    session->InitializeIncomingConnection(stanza->Attr(kQNameId), *message,
-                                          std::move(authenticator));
+    session->InitializeIncomingConnection(*message, std::move(authenticator));
     sessions_[session->session_id_] = session;
 
     // Destroy the session if it was rejected due to incompatible protocol.
@@ -158,9 +157,8 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
     return true;
   }
 
-  auto qname_id = stanza->Attr(kQNameId);
   it->second->OnIncomingMessage(
-      qname_id, std::move(message),
+      std::move(message),
       base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this),
                      std::move(stanza)));
   return true;

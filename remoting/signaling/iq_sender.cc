@@ -22,21 +22,6 @@
 
 namespace remoting {
 
-// static
-std::unique_ptr<jingle_xmpp::XmlElement> IqSender::MakeIqStanza(
-    const std::string& type,
-    const std::string& addressee,
-    std::unique_ptr<jingle_xmpp::XmlElement> iq_body) {
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza(
-      new jingle_xmpp::XmlElement(kQNameIq));
-  stanza->AddAttr(kQNameType, type);
-  if (!addressee.empty()) {
-    stanza->AddAttr(kQNameTo, addressee);
-  }
-  stanza->AddElement(iq_body.release());
-  return stanza;
-}
-
 IqSender::IqSender(SignalStrategy* signal_strategy)
     : signal_strategy_(signal_strategy) {
   signal_strategy_->AddListener(this);
@@ -44,6 +29,11 @@ IqSender::IqSender(SignalStrategy* signal_strategy)
 
 IqSender::~IqSender() {
   signal_strategy_->RemoveListener(this);
+}
+
+std::unique_ptr<IqRequest> IqSender::SendIq(const JingleMessage& message,
+                                            ReplyCallback callback) {
+  return SendIq(JingleMessageToXml(message), std::move(callback));
 }
 
 std::unique_ptr<IqRequest> IqSender::SendIq(
@@ -66,20 +56,6 @@ std::unique_ptr<IqRequest> IqSender::SendIq(
     requests_[id] = request.get();
   }
   return request;
-}
-
-std::unique_ptr<IqRequest> IqSender::SendIq(
-    const std::string& type,
-    const std::string& addressee,
-    std::unique_ptr<jingle_xmpp::XmlElement> iq_body,
-    ReplyCallback callback) {
-  return SendIq(MakeIqStanza(type, addressee, std::move(iq_body)),
-                std::move(callback));
-}
-
-std::unique_ptr<IqRequest> IqSender::SendIq(const JingleMessage& message,
-                                            ReplyCallback callback) {
-  return SendIq(JingleMessageToXml(message), std::move(callback));
 }
 
 void IqSender::RemoveRequest(IqRequest* request) {

@@ -64,7 +64,6 @@ class JingleSession : public Session {
 
   // Called by JingleSessionManager for incoming connections.
   void InitializeIncomingConnection(
-      const std::string& message_id,
       const JingleMessage& initiate_message,
       std::unique_ptr<Authenticator> authenticator);
   void AcceptIncomingConnection(const JingleMessage& initiate_message);
@@ -90,8 +89,7 @@ class JingleSession : public Session {
   // Called by JingleSessionManager on incoming |message|. Must call
   // |reply_callback| to send reply message before sending any other
   // messages.
-  void OnIncomingMessage(const std::string& id,
-                         std::unique_ptr<JingleMessage> message,
+  void OnIncomingMessage(std::unique_ptr<JingleMessage> message,
                          ReplyCallback reply_callback);
 
   // Called by OnIncomingMessage() to process the incoming Jingle messages

@@ -37,10 +37,6 @@ namespace remoting {
 namespace {
 
 const char kStanzaId[] = "123";
-const char kNamespace[] = "chromium:testns";
-const char kNamespacePrefix[] = "tes";
-const char kBodyTag[] = "test";
-const char kType[] = "get";
 const char kTo[] = "user@domain.com";
 
 MATCHER_P(XmlEq, expected, "") {
@@ -61,22 +57,19 @@ class IqSenderTest : public testing::Test {
 
  protected:
   void SendTestMessage() {
-    std::unique_ptr<XmlElement> iq_body(
-        new XmlElement(QName(kNamespace, kBodyTag)));
+    JingleMessage message;
+    message.to = SignalingAddress(kTo);
+    message.sid = "test_sid";
+    message.message_id = kStanzaId;
+    message.SetPayload(SessionTerminate());
+
     XmlElement* sent_stanza;
-    EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
     EXPECT_CALL(signal_strategy_, SendStanzaPtr(_))
         .WillOnce(DoAll(SaveArg<0>(&sent_stanza), Return(true)));
-    request_ = sender_->SendIq(kType, kTo, std::move(iq_body), callback_.Get());
+    request_ = sender_->SendIq(message, callback_.Get());
 
-    std::string expected_xml_string = base::StringPrintf(
-        "<cli:iq type=\"%s\" to=\"%s\" id=\"%s\" "
-        "xmlns:cli=\"jabber:client\">"
-        "<%s:%s xmlns:%s=\"%s\"/>"
-        "</cli:iq>",
-        kType, kTo, kStanzaId, kNamespacePrefix, kBodyTag, kNamespacePrefix,
-        kNamespace);
-    EXPECT_EQ(expected_xml_string, sent_stanza->Str());
+    std::unique_ptr<XmlElement> expected_stanza = JingleMessageToXml(message);
+    EXPECT_EQ(expected_stanza->Str(), sent_stanza->Str());
     delete sent_stanza;
   }
 
@@ -112,29 +105,6 @@ class IqSenderTest : public testing::Test {
 
 TEST_F(IqSenderTest, SendIq) {
   ASSERT_NO_FATAL_FAILURE({ SendTestMessage(); });
-
-  std::unique_ptr<XmlElement> response;
-  EXPECT_TRUE(FormatAndDeliverResponse(kTo, &response));
-
-  EXPECT_CALL(callback_, Run(request_.get(), XmlEq(response.get())));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(IqSenderTest, SendJingleIq) {
-  JingleMessage message;
-  message.to = SignalingAddress(kTo);
-  message.sid = "test_sid";
-  message.message_id = kStanzaId;
-  message.SetPayload(SessionTerminate());
-
-  XmlElement* sent_stanza;
-  EXPECT_CALL(signal_strategy_, SendStanzaPtr(_))
-      .WillOnce(DoAll(SaveArg<0>(&sent_stanza), Return(true)));
-  request_ = sender_->SendIq(message, callback_.Get());
-
-  std::unique_ptr<XmlElement> expected_stanza = JingleMessageToXml(message);
-  EXPECT_EQ(expected_stanza->Str(), sent_stanza->Str());
-  delete sent_stanza;
 
   std::unique_ptr<XmlElement> response;
   EXPECT_TRUE(FormatAndDeliverResponse(kTo, &response));

@@ -266,7 +266,6 @@ void JingleSession::StartConnection(
 }
 
 void JingleSession::InitializeIncomingConnection(
-    const std::string& message_id,
     const JingleMessage& initiate_message,
     std::unique_ptr<Authenticator> authenticator) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -280,7 +279,7 @@ void JingleSession::InitializeIncomingConnection(
       &JingleSession::OnAuthenticatorStateChangeAfterAccepted,
       base::Unretained(this)));
   session_id_ = initiate_message.sid;
-  message_queue_->SetInitialId(message_id);
+  message_queue_->SetInitialId(initiate_message.message_id);
 
   SetState(ACCEPTING);
 
@@ -576,12 +575,13 @@ void JingleSession::OnTransportInfoResponse(
   }
 }
 
-void JingleSession::OnIncomingMessage(const std::string& id,
-                                      std::unique_ptr<JingleMessage> message,
+void JingleSession::OnIncomingMessage(std::unique_ptr<JingleMessage> message,
                                       ReplyCallback reply_callback) {
   ProcessIncomingPluginMessage(*message);
+  std::string message_id = message->message_id;
   std::vector<PendingMessage> ordered = message_queue_->OnIncomingMessage(
-      id, PendingMessage{std::move(message), std::move(reply_callback)});
+      message_id,
+      PendingMessage{std::move(message), std::move(reply_callback)});
   base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
   for (auto& pending_message : ordered) {
     ProcessIncomingMessage(std::move(pending_message.message),
