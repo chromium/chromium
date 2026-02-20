@@ -116,16 +116,6 @@ BASE_FEATURE(kCancelCompositionWhenWindowLosesFocus,
 
 #endif  // BUILDFLAG(IS_MAC)
 
-// If Canvas2D Image Chromium is allowed, this feature controls whether it is
-// enabled.
-BASE_FEATURE(kCanvas2DImageChromium,
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // When enabled, CDP method Page.captureScreenshot will increment
 // the LocalSurfaceId instead of waiting for ForceRedraw to complete.
 // This should avoid a possible stall due to frames not being presented.
