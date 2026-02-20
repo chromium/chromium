@@ -50,6 +50,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -850,6 +851,16 @@ void TabStripActionContainer::OnTabStripNudgeButtonTimeout(
   // Hide the button if not pressed. Use locked expansion mode to avoid
   // disrupting the user.
   HideTabStripNudge(button);
+}
+
+void TabStripActionContainer::AddedToWidget() {
+  views::View::AddedToWidget();
+#if BUILDFLAG(ENABLE_GLIC)
+  if (auto* controller =
+          tabs::GlicActorNudgeController::From(browser_window_interface_)) {
+    controller->UpdateCurrentActorNudgeState();
+  }
+#endif
 }
 
 void TabStripActionContainer::MouseMovedOutOfHost() {

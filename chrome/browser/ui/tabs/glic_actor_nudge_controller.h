@@ -38,17 +38,13 @@ class GlicActorNudgeController {
   void OnStateUpdate(bool show_bubble,
                      actor::ui::ActorTaskNudgeState actor_task_nudge_state);
 
- private:
-  // TODO(b/460823634): Remove when PostTask is cleaned up.
-  void OnStateUpdateImpl(bool show_bubble,
-                         actor::ui::ActorTaskNudgeState actor_task_nudge_state);
+  // Get the current actor nudge state and update the UI. Called when
+  // TabStripActionContainer is added to the native widget.
+  void UpdateCurrentActorNudgeState();
 
+ private:
   // Subscribe to updates from the GlicActorTaskIconManager.
   void RegisterActorNudgeStateCallback();
-
-  // Get the current actor nudge state and update the UI. Called on
-  // window creation to maintain state across multiple windows.
-  void UpdateCurrentActorNudgeState();
 
   // Only update the nudge label if it's already showing, otherwise retrigger
   // the nudge. Shows the task list bubble after if show_bubble is true.
