@@ -14,6 +14,7 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
@@ -331,7 +332,8 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
     base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
                            ResultCode>
         test_future;
-    broker_->SpawnTargetAsync(prog_name, arguments, std::move(policy_),
+    base::CommandLine cmd_line = base::CommandLine::FromString(arguments);
+    broker_->SpawnTargetAsync(cmd_line, std::move(policy_),
                               test_future.GetCallback());
     base::win::ScopedProcessInformation proc_info;
     std::tie(proc_info, last_error, result) = test_future.Take();
@@ -516,6 +518,17 @@ int DispatchCall(int argc, wchar_t **argv) {
   }
 
   return command(argc - 4, UNSAFE_TODO(argv + 4));
+}
+
+base::CommandLine CreateCommandLineForTesting(std::string_view command) {
+  // Get the path to the sandboxed process.
+  base::FilePath prog_name;
+  CHECK(base::PathService::Get(base::FILE_EXE, &prog_name));
+  base::CommandLine cmd_line(prog_name);
+  cmd_line.AppendArg("-child");
+  cmd_line.AppendArg("0");  // Don't care about the state.
+  cmd_line.AppendArg(command);
+  return cmd_line;
 }
 
 }  // namespace sandbox

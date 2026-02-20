@@ -27,6 +27,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/win/scoped_process_information.h"
@@ -110,9 +111,9 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // Creates a new target (child process) in a suspended state and takes
   // ownership of `policy`.
   // Parameters:
-  // * `exe_path`: This is the full path to the target binary.
   // * `command_line`: The arguments to be passed as command line to the new
-  //   process.
+  //   process. Should have the full path to the target binary set as the
+  //   first argument.
   // * `policy`: This is the pointer to the policy object for the sandbox to
   //   be created.
   // * `result_callback`: Accepts these output parameters:
@@ -123,8 +124,7 @@ class [[clang::lto_visibility_public]] BrokerServices {
   //     caller is responsible for closing the handles returned in this
   //     structure.
   // Target creation happens on the thread pool.
-  virtual void SpawnTargetAsync(std::wstring_view exe_path,
-                                std::wstring_view command_line,
+  virtual void SpawnTargetAsync(const base::CommandLine& command_line,
                                 std::unique_ptr<TargetPolicy> policy,
                                 SpawnTargetCallback result_callback) = 0;
 

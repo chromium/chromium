@@ -1019,7 +1019,8 @@ TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
   std::wstring test_command = L"TestChildProcess \"";
   test_command += cmd.value().c_str();
   test_command += L"\" false ";
-  test_command += base::NumberToWString(STATUS_ACCESS_VIOLATION);
+  test_command +=
+      base::NumberToWString(static_cast<unsigned int>(STATUS_ACCESS_VIOLATION));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }

@@ -273,13 +273,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
 
   ASSERT_TRUE(broker);
 
-  // Get the path to the sandboxed app.
-  wchar_t prog_name[MAX_PATH];
-  GetModuleFileNameW(nullptr, prog_name, MAX_PATH);
-
-  std::wstring arguments(L"\"");
-  arguments += prog_name;
-  arguments += L"\" -child 0 wait";  // Don't care about the "state" argument.
+  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
@@ -292,7 +286,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
                                                             USER_LOCKDOWN));
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
+  broker->SpawnTargetAsync(cmd_line, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
   EXPECT_EQ(SBOX_ALL_OK, result);
@@ -327,13 +321,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
 
   ASSERT_TRUE(broker);
 
-  // Get the path to the sandboxed app.
-  wchar_t prog_name[MAX_PATH];
-  GetModuleFileNameW(nullptr, prog_name, MAX_PATH);
-
-  std::wstring arguments(L"\"");
-  arguments += prog_name;
-  arguments += L"\" -child 0 wait";  // Don't care about the "state" argument.
+  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
@@ -349,7 +337,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
       broker->GetDesktopName(Desktop::kAlternateDesktop);
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
+  broker->SpawnTargetAsync(cmd_line, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
 
@@ -392,13 +380,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
 
   ASSERT_TRUE(broker);
 
-  // Get the path to the sandboxed app.
-  wchar_t prog_name[MAX_PATH];
-  GetModuleFileNameW(nullptr, prog_name, MAX_PATH);
-
-  std::wstring arguments(L"\"");
-  arguments += prog_name;
-  arguments += L"\" -child 0 wait";  // Don't care about the "state" argument.
+  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
@@ -414,7 +396,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
       broker->GetDesktopName(Desktop::kAlternateWinstation);
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
+  broker->SpawnTargetAsync(cmd_line, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
 
@@ -509,11 +491,11 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   auto policy = broker->CreatePolicy();
   policy->AddHandleToShare(read_only_region.GetPlatformHandle());
 
-  std::wstring arguments(L"\"");
-  arguments += prog_name;
-  arguments += L"\" -child 0 shared_memory_handle ";
-  arguments += base::AsWString(base::NumberToString16(
-      base::win::HandleToUint32(read_only_region.GetPlatformHandle())));
+  base::CommandLine cmd_line =
+      sandbox::CreateCommandLineForTesting("shared_memory_handle");
+  auto handle_str = base::NumberToString(
+      base::win::HandleToUint32(read_only_region.GetPlatformHandle()));
+  cmd_line.AppendArg(handle_str);
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
@@ -524,7 +506,7 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   DWORD last_error = ERROR_SUCCESS;
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
+  broker->SpawnTargetAsync(cmd_line, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
 

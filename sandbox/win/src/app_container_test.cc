@@ -214,8 +214,9 @@ class AppContainerTest : public ::testing::Test {
  protected:
   void CreateProcess() {
     // Get the path to the sandboxed app.
-    wchar_t prog_name[MAX_PATH] = {};
-    ASSERT_NE(DWORD{0}, ::GetModuleFileNameW(nullptr, prog_name, MAX_PATH));
+    base::FilePath prog_name;
+    ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &prog_name));
+    base::CommandLine cmd_line(prog_name);
 
     DWORD last_error = 0;
     ResultCode result;
@@ -223,7 +224,7 @@ class AppContainerTest : public ::testing::Test {
     base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
                            ResultCode>
         test_future;
-    broker_services_->SpawnTargetAsync(prog_name, prog_name, std::move(policy_),
+    broker_services_->SpawnTargetAsync(cmd_line, std::move(policy_),
                                        test_future.GetCallback());
     std::tie(scoped_process_info_, last_error, result) = test_future.Take();
     ASSERT_EQ(SBOX_ALL_OK, result) << "Last Error: " << last_error;

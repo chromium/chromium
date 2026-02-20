@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
@@ -184,6 +185,9 @@ std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path);
 
 // Runs the given test on the target process.
 int DispatchCall(int argc, wchar_t **argv);
+
+// Create a command line object for directly calling `SpawnTargetAsync`.
+base::CommandLine CreateCommandLineForTesting(std::string_view command);
 
 }  // namespace sandbox
 

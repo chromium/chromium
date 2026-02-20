@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -59,8 +60,7 @@ class BrokerServicesBase final : public BrokerServices,
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
   std::unique_ptr<TargetPolicy> CreatePolicy(std::string_view key) override;
 
-  void SpawnTargetAsync(std::wstring_view exe_path,
-                        std::wstring_view command_line,
+  void SpawnTargetAsync(const base::CommandLine& command_line,
                         std::unique_ptr<TargetPolicy> policy,
                         SpawnTargetCallback result_callback) override;
   ResultCode GetPolicyDiagnostics(
@@ -92,20 +92,16 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Creates the suspended target process and returns the new process handle in
   // the result.
-  CreateTargetResult CreateTarget(std::wstring exe_path,
-                                  std::wstring command_line,
+  CreateTargetResult CreateTarget(base::CommandLine cmd_line,
                                   CreateTargetInfo target_info);
 
   // Helper for initializing the CreateTargetInfo for CreateTarget.
   base::expected<CreateTargetInfo, ResultCode> PreSpawnTarget(
-      std::wstring_view exe_path,
-      std::wstring_view command_line,
       PolicyBase* policy_base);
 
   // Implementation for SpawnTarget and SpawnTargetAsync. The target creation
   // result is returned to `result_callback`.
-  void SpawnTargetAsyncImpl(std::wstring_view exe_path,
-                            std::wstring_view command_line,
+  void SpawnTargetAsyncImpl(const base::CommandLine& command_line,
                             std::unique_ptr<PolicyBase> policy_base,
                             SpawnTargetCallback result_callback);
 

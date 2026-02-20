@@ -86,13 +86,7 @@ TEST_F(ParallelLaunchTest, SingleLaunch) {
   static_cast<BrokerServicesBase*>(broker)->SetBrokerServicesDelegateForTesting(
       std::unique_ptr<BrokerServicesDelegate>(delegate));
 
-  // Get the path to the sandboxed app.
-  wchar_t prog_name[MAX_PATH];
-  GetModuleFileNameW(nullptr, prog_name, MAX_PATH);
-
-  std::wstring arguments(L"\"");
-  arguments += prog_name;
-  arguments += L"\" -child 0 wait";  // Don't care about the "state" argument.
+  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
 
   auto policy = broker->CreatePolicy();
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
@@ -104,7 +98,7 @@ TEST_F(ParallelLaunchTest, SingleLaunch) {
   base::RunLoop run_loop;
   int launches_remaining_count = 1;
   broker->SpawnTargetAsync(
-      prog_name, arguments, std::move(policy),
+      cmd_line, std::move(policy),
       base::BindOnce(&FinishSpawnTargetAsync, base::Unretained(&spawn_result),
                      base::Unretained(&run_loop),
                      base::Unretained(&launches_remaining_count)));
@@ -165,13 +159,7 @@ TEST_F(ParallelLaunchTest, ParallelLaunch) {
   static_cast<BrokerServicesBase*>(broker)->SetBrokerServicesDelegateForTesting(
       std::unique_ptr<BrokerServicesDelegate>(delegate));
 
-  // Get the path to the sandboxed app.
-  wchar_t prog_name[MAX_PATH];
-  GetModuleFileNameW(nullptr, prog_name, MAX_PATH);
-
-  std::wstring arguments(L"\"");
-  arguments += prog_name;
-  arguments += L"\" -child 0 wait";  // Don't care about the "state" argument.
+  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
 
   base::RunLoop run_loop;
   int launches_remaining_count = 2;
@@ -190,7 +178,7 @@ TEST_F(ParallelLaunchTest, ParallelLaunch) {
                                                               USER_LOCKDOWN));
 
     broker->SpawnTargetAsync(
-        prog_name, arguments, std::move(policy),
+        cmd_line, std::move(policy),
         base::BindOnce(&FinishSpawnTargetAsync,
                        base::Unretained(&first_spawn_result),
                        base::Unretained(&run_loop),
@@ -208,7 +196,7 @@ TEST_F(ParallelLaunchTest, ParallelLaunch) {
                                                               USER_LOCKDOWN));
 
     broker->SpawnTargetAsync(
-        prog_name, arguments, std::move(policy),
+        cmd_line, std::move(policy),
         base::BindOnce(&FinishSpawnTargetAsync,
                        base::Unretained(&second_spawn_result),
                        base::Unretained(&run_loop),
