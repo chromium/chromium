@@ -19,7 +19,7 @@
 #include "base/types/expected.h"
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/attestation/handler_impl.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto/legion.pb.h"
 #include "components/private_ai/proto_utils/attestation_evidence_utils.h"
 #include "components/private_ai/secure_session.h"

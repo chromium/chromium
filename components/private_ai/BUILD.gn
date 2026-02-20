@@ -60,7 +60,7 @@ source_set("private_ai") {
     "connection_token_attestation.cc",
     "connection_token_attestation.h",
     "error_code.h",
-    "legion_common.h",
+    "private_ai_common.h",
     "secure_channel.h",
     "secure_channel_impl.cc",
     "secure_channel_impl.h",

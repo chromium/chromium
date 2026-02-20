@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 
 namespace private_ai {
 

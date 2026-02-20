@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 
 namespace oak::session::v1 {
 class SessionResponse;

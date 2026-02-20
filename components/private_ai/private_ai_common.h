@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_AI_LEGION_COMMON_H_
-#define COMPONENTS_PRIVATE_AI_LEGION_COMMON_H_
+#ifndef COMPONENTS_PRIVATE_AI_PRIVATE_AI_COMMON_H_
+#define COMPONENTS_PRIVATE_AI_PRIVATE_AI_COMMON_H_
 
 #include <cstdint>
 #include <vector>
@@ -18,4 +18,4 @@ using Response = std::vector<uint8_t>;
 
 }  // namespace private_ai
 
-#endif  // COMPONENTS_PRIVATE_AI_LEGION_COMMON_H_
+#endif  // COMPONENTS_PRIVATE_AI_PRIVATE_AI_COMMON_H_

@@ -15,7 +15,7 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/connection_factory.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto/legion.pb.h"
 
 namespace private_ai {

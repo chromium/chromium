@@ -15,7 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto/legion.pb.h"
 #include "components/private_ai/secure_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"

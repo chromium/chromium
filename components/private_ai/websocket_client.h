@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto_utils/google_rpc_code.h"
 #include "components/private_ai/transport.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/secure_channel.h"
 
 namespace private_ai {

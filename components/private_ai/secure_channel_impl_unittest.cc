@@ -15,7 +15,7 @@
 #include "base/test/test_future.h"
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/attestation/server_evidence.h"
-#include "components/private_ai/legion_common.h"
+#include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/secure_session.h"
 #include "components/private_ai/transport.h"
 #include "testing/gmock/include/gmock/gmock.h"
