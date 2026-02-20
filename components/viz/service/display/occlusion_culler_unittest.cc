@@ -173,10 +173,6 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithBlending) {
 // Currently, quad cutting for AggregatedRenderPassDrawQuad is not supported.
 // Only fully occluded AggregatedRenderPassDrawQuad are removed from the frame.
 TEST_F(OcclusionCullerTest, OcclusionCullingForAggregatedRenderPass) {
-  if (!features::IsRenderPassDrawQuadCullingOptimizationEnabled()) {
-    GTEST_SKIP();
-  }
-
   // z-order: quad > render_pass_1 > render_pass_2
   InitOcclusionCuller();
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/3);
@@ -264,10 +260,6 @@ TEST_F(OcclusionCullerTest, OcclusionCullingForAggregatedRenderPass) {
 
 TEST_F(OcclusionCullerTest,
        OcclusionCullingForAggregatedRenderPassWithExpandedDamage) {
-  if (!features::IsRenderPassDrawQuadCullingOptimizationEnabled()) {
-    GTEST_SKIP();
-  }
-
   InitOcclusionCuller();
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/3);
 

@@ -459,9 +459,7 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         }
       }
 
-      if ((!features::IsRenderPassDrawQuadCullingOptimizationEnabled() &&
-           rpdq) ||
-          !current_sqs_intersects_occlusion) {
+      if (!current_sqs_intersects_occlusion) {
         ++quad;
         continue;
       }

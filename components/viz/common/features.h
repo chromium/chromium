@@ -32,9 +32,6 @@ VIZ_COMMON_EXPORT extern const char kDrawQuadSplit[];
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawQuadSplitLimit);
 
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEnableRenderPassDrawQuadCullingOptimization);
-
 enum class DelegatedCompositingMode {
   // Enable delegated compositing.
   kFull,
