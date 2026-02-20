@@ -25364,7 +25364,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "FullscreenSmoothScrollingDefault",
                         "SmoothScrollingUseDelegate"
                     ]
                 }
