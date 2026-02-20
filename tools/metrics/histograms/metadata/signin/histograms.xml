@@ -1573,16 +1573,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.ExplicitSigninMigration.FromSync" enum="BooleanSuccess"
-    expires_after="2026-08-02">
-  <owner>droger@chromium.org</owner>
-  <owner>rsult@google.com</owner>
-  <summary>
-    Logs a record in the &quot;Success&quot; bucket when a sync profile is
-    migrated to explicit browser sign-in. Recorded on profile load.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Extensions.AccountExtensionsSignoutChoice"
     enum="AccountExtensionsSignoutChoice" expires_after="2026-08-24">
   <owner>kelvinjiang@chromium.org</owner>

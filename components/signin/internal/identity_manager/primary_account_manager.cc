@@ -243,7 +243,6 @@ PrimaryAccountManager::PrimaryAccountManager(
   // level are loaded.
   CHECK(primary_account_.has_value());
 
-  bool migrated_sync_user_to_explicit_sign_in = false;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
       HasPrimaryAccount(signin::ConsentLevel::kSync)) {
@@ -251,12 +250,8 @@ PrimaryAccountManager::PrimaryAccountManager(
     // sign-in as the user has explicitly signed in to the browser when they
     // opted in to sync.
     scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
-    migrated_sync_user_to_explicit_sign_in = true;
   }
 #endif
-
-  base::UmaHistogramBoolean("Signin.ExplicitSigninMigration.FromSync",
-                            migrated_sync_user_to_explicit_sign_in);
 
   // `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is set for sync
   // users and new signed in users. It is not cleared on sign out.
