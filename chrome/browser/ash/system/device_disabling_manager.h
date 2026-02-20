@@ -20,6 +20,7 @@ class PrefService;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
+class DeviceRestrictionScheduleController;
 }
 
 namespace user_manager {
@@ -84,12 +85,19 @@ class DeviceDisablingManager
     virtual void ShowDeviceDisabledScreen() = 0;
   };
 
-  // `local_state` must be non-null, and must outlive `this`.
+  // Following pointers must be non-null, and must outlive `this`:
+  // - `local_state`
+  // - `browser_policy_connector_ash`
+  // - `device_restriction_schedule_controller`
   // `delegate` must outlive `this`.
-  DeviceDisablingManager(PrefService* local_state,
-                         Delegate* delegate,
-                         CrosSettings* cros_settings,
-                         user_manager::UserManager* user_manager);
+  DeviceDisablingManager(
+      const PrefService* local_state,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      policy::DeviceRestrictionScheduleController*
+          device_restriction_schedule_controller,
+      Delegate* delegate,
+      CrosSettings* cros_settings,
+      user_manager::UserManager* user_manager);
 
   DeviceDisablingManager(const DeviceDisablingManager&) = delete;
   DeviceDisablingManager& operator=(const DeviceDisablingManager&) = delete;
@@ -138,9 +146,13 @@ class DeviceDisablingManager
 
   void Update();
 
-  const raw_ref<PrefService> local_state_;
+  const raw_ref<const PrefService> local_state_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
+  const raw_ref<policy::DeviceRestrictionScheduleController>
+      device_restriction_schedule_controller_;
+
   raw_ptr<Delegate> delegate_;
-  raw_ptr<policy::BrowserPolicyConnectorAsh> browser_policy_connector_;
   raw_ptr<CrosSettings> cros_settings_;
   raw_ptr<user_manager::UserManager> user_manager_;
 

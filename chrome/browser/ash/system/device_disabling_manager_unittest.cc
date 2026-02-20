@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -60,6 +61,7 @@ class DeviceDisablingManagerTestBase : public testing::Test,
       const DeviceDisablingManagerTestBase&) = delete;
 
   // testing::Test:
+  void SetUp() override;
   void TearDown() override;
 
   virtual void CreateDeviceDisablingManager();
@@ -91,14 +93,34 @@ DeviceDisablingManagerTestBase::DeviceDisablingManagerTestBase() {
   StatisticsProvider::SetTestProvider(&statistics_provider_);
 }
 
+void DeviceDisablingManagerTestBase::SetUp() {
+  // DeviceRestrictionScheduleController depends on LoginState.
+  LoginState::Initialize();
+  // DeviceDisablingManager depends on DeviceRestrictionScheduleController.
+  TestingBrowserProcess::GetGlobal()
+      ->platform_part()
+      ->InitializeDeviceRestrictionScheduleController();
+}
+
 void DeviceDisablingManagerTestBase::TearDown() {
   DestroyDeviceDisablingManager();
+
+  TestingBrowserProcess::GetGlobal()
+      ->platform_part()
+      ->ShutdownDeviceRestrictionScheduleController();
+  LoginState::Shutdown();
 }
 
 void DeviceDisablingManagerTestBase::CreateDeviceDisablingManager() {
   device_disabling_manager_ = std::make_unique<DeviceDisablingManager>(
-      TestingBrowserProcess::GetGlobal()->local_state(), this,
-      CrosSettings::Get(), &fake_user_manager_);
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->browser_policy_connector_ash(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->device_restriction_schedule_controller(),
+      this, CrosSettings::Get(), &fake_user_manager_);
   device_disabling_manager_->Init();
 }
 
@@ -159,6 +181,7 @@ DeviceDisablingManagerOOBETest::DeviceDisablingManagerOOBETest() {
 }
 
 void DeviceDisablingManagerOOBETest::SetUp() {
+  DeviceDisablingManagerTestBase::SetUp();
   CreateDeviceDisablingManager();
   StatisticsProvider::SetTestProvider(&statistics_provider_);
 }
