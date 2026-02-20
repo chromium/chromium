@@ -72,6 +72,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
@@ -94,6 +96,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/port_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -867,23 +870,21 @@ void SyncTest::TearDownOnMainThread() {
       profiles_[index]->RemoveObserver(this);
 
 #if BUILDFLAG(IS_ANDROID)
-      // A profile could have backend tasks from the associate sync engine.
-      // In browser tests, on non-Android platforms, these tasks are cancelled
-      // during the browser process shutdown.
-      // On Android, however, browser process is not shutdown after test run.
-      // As a result, these backend tasks could keep running and cause timeout
-      // error during test shutdown.
-      // To fix this issue, we explicitly mimic a dashboard reset to cancel
-      // any ongoing sync engine's backend tasks.
-      // Skip cleanup for PRE_ tests to allow data persistence.
-      // TODO(crbug.com/479828012): Find a better solution that doesn't require
-      // explicitly disabling sync.
-      if (!content::IsPreTest()) {
-        if (auto* service = GetSyncService(index)) {
-          service->OnActionableProtocolError(
-              {.error_type = syncer::NOT_MY_BIRTHDAY,
-               .action = syncer::DISABLE_SYNC_ON_CLIENT});
-        }
+      // In Android browser tests, the Profile and thus the SyncService does not
+      // get shut down in an orderly fashion. This can interfere with subsequent
+      // tests. To work around that, produce an auth error here, which results
+      // in the engine being shut down. (Note that auth errors are not
+      // persisted, so this does not interfere with PRE_ tests.)
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profiles_[index]);
+      CoreAccountId primary_account =
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+      if (!primary_account.empty()) {
+        signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+            identity_manager, primary_account,
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_CLIENT));
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }
