@@ -22,6 +22,11 @@ int MultiplexedHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
 }
 
 void MultiplexedHttpStream::GetSSLInfo(SSLInfo* ssl_info) {
+  // Refresh from the live session to pick up state that may have changed
+  // after the initial cache (e.g., early_data_accepted is only known after
+  // the TLS/QUIC handshake completes, but the cache is populated at stream
+  // creation time before the handshake finishes).
+  session_->SaveSSLInfo();
   session_->GetSSLInfo(ssl_info);
 }
 

@@ -1151,6 +1151,54 @@ TEST_P(QuicHttpStreamTest, GetSSLInfoAfterSessionClosed) {
   EXPECT_TRUE(ssl_info2.is_valid());
 }
 
+// Regression test for https://crbug.com/484218878.
+// Verify that GetSSLInfo() refreshes from the live session, so that
+// early_data_accepted reflects the post-handshake state rather than the
+// stale value cached at stream creation time. In the mock, ZERO_RTT mode
+// reports early_data_accepted=true before the handshake confirms and
+// early_data_accepted=false after; real BoringSSL does the opposite, but
+// both directions prove GetSSLInfo() is not returning stale data.
+TEST_P(QuicHttpStreamTest, GetSSLInfoRefreshesEarlyDataAccepted) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+
+  SetRequest("GET", "/", DEFAULT_PRIORITY);
+  size_t spdy_request_headers_frame_length;
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  int packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  AddWrite(InnerConstructRequestHeadersPacket(
+      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0), kFin,
+      DEFAULT_PRIORITY, &spdy_request_headers_frame_length));
+  Initialize();
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+
+  // During 0-RTT (before handshake confirmed), the mock reports
+  // early_data_accepted = true.
+  SSLInfo ssl_info_before;
+  stream_->GetSSLInfo(&ssl_info_before);
+  EXPECT_TRUE(ssl_info_before.is_valid());
+  EXPECT_TRUE(ssl_info_before.early_data_accepted);
+
+  // Confirm the handshake. The mock now reports early_data_accepted = false.
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+
+  // GetSSLInfo() must reflect the updated state from the live session,
+  // not the stale cached value from stream creation time.
+  SSLInfo ssl_info_after;
+  stream_->GetSSLInfo(&ssl_info_after);
+  EXPECT_TRUE(ssl_info_after.is_valid());
+  EXPECT_FALSE(ssl_info_after.early_data_accepted);
+}
+
 TEST_P(QuicHttpStreamTest, GetAlternativeService) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
