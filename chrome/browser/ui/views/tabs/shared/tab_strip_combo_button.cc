@@ -35,6 +35,7 @@
 
 namespace {
 constexpr base::TimeDelta kHideTabSearchButtonDelay = base::Seconds(2);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
@@ -47,6 +48,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
 TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
     : browser_(browser),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
+  start_button_animation_.SetSlideDuration(kAnimationDuration);
+  end_button_animation_.SetSlideDuration(kAnimationDuration);
   SetProperty(views::kElementIdentifierKey, kTabStripComboButtonElementId);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -104,30 +107,36 @@ void TabStripComboButton::UpdateButtonsVisibility() {
   if (!browser_ || !browser_->GetActions()) {
     return;
   }
+  auto update_button_visibility = [&](actions::ActionItem* action_item,
+                                      gfx::SlideAnimation& animation,
+                                      bool target_visible) {
+    if (!action_item) {
+      return;
+    }
+
+    if (target_visible) {
+      action_item->SetVisible(true);
+      animation.Show();
+    } else {
+      animation.Hide();
+    }
+    if (!animation.is_animating() && animation.GetCurrentValue() == 0.0) {
+      action_item->SetVisible(false);
+    }
+  };
 
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
-  const actions::ActionId start_action_id =
-      tab_groups::IsProjectsPanelFeatureEnabled() ? kActionToggleProjectsPanel
-                                                  : kActionTabGroupsMenu;
   const std::string_view pref_name =
       tab_groups::IsProjectsPanelFeatureEnabled()
           ? prefs::kProjectsPanelPinnedToTabstrip
           : prefs::kEverythingMenuPinnedToTabstrip;
-  actions::ActionItem* start_action_item =
-      actions::ActionManager::Get().FindAction(
-          start_action_id, browser_->GetActions()->root_action_item());
-  if (start_action_item) {
-    start_action_item->SetVisible(prefs->GetBoolean(pref_name));
-  }
+  update_button_visibility(GetStartButtonActionItem(), start_button_animation_,
+                           prefs->GetBoolean(pref_name));
 
-  actions::ActionItem* end_action_item =
-      actions::ActionManager::Get().FindAction(
-          kActionTabSearch, browser_->GetActions()->root_action_item());
-  if (end_action_item) {
-    end_action_item->SetVisible(
-        prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip) ||
-        show_tab_search_ephemerally_);
-  }
+  update_button_visibility(
+      GetEndButtonActionItem(), end_button_animation_,
+      prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip) ||
+          show_tab_search_ephemerally_);
 }
 
 void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {
@@ -179,10 +188,6 @@ TabStripComboButton::CreateFlatEdgeButtonFor(actions::ActionId action_id,
   action_view_controller_->CreateActionViewRelationship(
       button.get(), action_item->GetAsWeakPtr());
   button->SetProperty(views::kElementIdentifierKey, element_id);
-
-  const int raw_button_size = GetLayoutConstant(
-      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
-  button->SetPreferredSize(gfx::Size(raw_button_size, raw_button_size));
 
   return button;
 }
@@ -347,6 +352,66 @@ void TabStripComboButton::MaybeHideTabSearchButton() {
 
   show_tab_search_ephemerally_ = false;
   UpdateButtonsVisibility();
+}
+
+actions::ActionItem* TabStripComboButton::GetStartButtonActionItem() {
+  const actions::ActionId start_action_id =
+      tab_groups::IsProjectsPanelFeatureEnabled() ? kActionToggleProjectsPanel
+                                                  : kActionTabGroupsMenu;
+  return actions::ActionManager::Get().FindAction(
+      start_action_id, browser_->GetActions()->root_action_item());
+}
+
+actions::ActionItem* TabStripComboButton::GetEndButtonActionItem() {
+  return actions::ActionManager::Get().FindAction(
+      kActionTabSearch, browser_->GetActions()->root_action_item());
+}
+
+void TabStripComboButton::AnimationProgressed(const gfx::Animation* animation) {
+  const double value = animation->GetCurrentValue();
+
+  // Mapping overlapping stages where each lasts for 1/2 of the total duration.
+  // 1. Expansion: Starts at 0.0, Ends at 0.5.
+  // 2. Opacity: Starts at 0.25, Ends at 0.75.
+  // 3. Radius: Starts at 0.5, Ends at 1.0.
+  // These formulas work for both appearing (0.0 -> 1.0) and disappearing (1.0
+  // -> 0.0).
+  const float expansion_factor =
+      std::clamp(static_cast<float>(value * 2.0), 0.0f, 1.0f);
+  const float opacity_factor =
+      std::clamp(static_cast<float>((value - 0.25) * 2.0), 0.0f, 1.0f);
+  const float radius_factor =
+      std::clamp(static_cast<float>((value - 0.5) * 2.0), 0.0f, 1.0f);
+
+  auto update_buttons = [&](TabStripFlatEdgeButton* primary_button,
+                            TabStripFlatEdgeButton* sibling_button) {
+    if (!primary_button) {
+      return;
+    }
+    primary_button->SetExpansionFactor(expansion_factor);
+    primary_button->SetIconOpacity(opacity_factor);
+    primary_button->SetFlatEdgeFactor(radius_factor);
+    if (sibling_button) {
+      sibling_button->SetFlatEdgeFactor(radius_factor);
+    }
+  };
+
+  if (animation == &start_button_animation_) {
+    update_buttons(start_button_, end_button_);
+  } else if (animation == &end_button_animation_) {
+    update_buttons(end_button_, start_button_);
+  }
+}
+
+void TabStripComboButton::AnimationEnded(const gfx::Animation* animation) {
+  AnimationProgressed(animation);
+  if (animation->GetCurrentValue() == 0.0) {
+    if (animation == &start_button_animation_) {
+      GetStartButtonActionItem()->SetVisible(false);
+    } else if (animation == &end_button_animation_) {
+      GetEndButtonActionItem()->SetVisible(false);
+    }
+  }
 }
 
 void TabStripComboButton::OnMenuClosed() {

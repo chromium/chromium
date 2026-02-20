@@ -12,6 +12,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/layout_types.h"
@@ -37,7 +39,8 @@ class TabStripFlatEdgeButton;
 class TabStripComboButton : public views::View,
                             public views::ContextMenuController,
                             public ui::SimpleMenuModel::Delegate,
-                            public TabSearchBubbleHostObserver {
+                            public TabSearchBubbleHostObserver,
+                            public gfx::AnimationDelegate {
   METADATA_HEADER(TabStripComboButton, views::View)
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabSearchUnpinMenuItem);
@@ -70,6 +73,10 @@ class TabStripComboButton : public views::View,
 
   void SetTabSearchBubbleHost(TabSearchBubbleHost* host);
 
+  // gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+
  protected:
   // views::View:
   void ChildVisibilityChanged(views::View* child) override;
@@ -89,9 +96,16 @@ class TabStripComboButton : public views::View,
 
   void MaybeHideTabSearchButton();
 
+  actions::ActionItem* GetStartButtonActionItem();
+  actions::ActionItem* GetEndButtonActionItem();
+
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<TabStripFlatEdgeButton> start_button_ = nullptr;
   raw_ptr<TabStripFlatEdgeButton> end_button_ = nullptr;
+
+  gfx::SlideAnimation start_button_animation_{this};
+  gfx::SlideAnimation end_button_animation_{this};
+
   views::LayoutOrientation orientation_ = views::LayoutOrientation::kHorizontal;
 
   bool show_tab_search_ephemerally_ = false;
