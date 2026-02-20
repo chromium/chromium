@@ -17,17 +17,6 @@
 {%- import "mojolpm_macros.tmpl" as util %}
 {%- import "mojolpm_from_proto_macros.tmpl" as from_proto %}
 {%- import "mojolpm_to_proto_macros.tmpl" as to_proto %}
-{%- import "mojolpm_traits_specialization_macros.tmpl" as traits_specialization %}
-
-namespace mojo {
-{%- for struct in structs %}
-{{- traits_specialization.define_struct(struct) }}
-{%- endfor %}
-
-{%- for union in unions %}
-{{ traits_specialization.define_union(union) }}
-{%- endfor %}
-} // namespace mojo
 
 namespace mojolpm {
 {%- for enum in all_enums %}

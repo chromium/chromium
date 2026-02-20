@@ -95,7 +95,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/mojolpm_templates/mojolpm_from_proto_macros.tmpl",
     "$mojom_generator_root/generators/mojolpm_templates/mojolpm_macros.tmpl",
     "$mojom_generator_root/generators/mojolpm_templates/mojolpm_to_proto_macros.tmpl",
-    "$mojom_generator_root/generators/mojolpm_templates/mojolpm_traits_specialization_macros.tmpl",
     "$mojom_generator_root/generators/rust_templates/enum.tmpl",
     "$mojom_generator_root/generators/rust_templates/interface.tmpl",
     "$mojom_generator_root/generators/rust_templates/module.tmpl",

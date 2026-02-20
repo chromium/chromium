@@ -63,7 +63,6 @@ bool ToProto(
 {%- for struct in structs %}
 {%-   set mojom_in_type = struct|cpp_wrapper_param_type(add_same_module_namespaces=true) %}
 {%-   set mojom_out_type = struct|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
-{%-   set maybe_const = "const " if not struct|contains_handles_or_interfaces else "" %}
 {%-   set proto_type = "::mojolpm" ~ (struct|get_qualified_name_for_kind(flatten_nested_kind=True)) %}
 {%-   set struct_type = proto_type ~ "_ProtoStruct" %}
 // struct {{struct.name}}
@@ -87,12 +86,8 @@ bool ToProto(
 {%- for union in unions %}
 {%-   set mojom_in_type = union|cpp_wrapper_param_type(add_same_module_namespaces=true) %}
 {%-   set mojom_out_type = union|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
-{%-   set maybe_const = "const " if not union|contains_handles_or_interfaces else "" %}
 {%-   set proto_type = "::mojolpm" ~ (union|get_qualified_name_for_kind(flatten_nested_kind=True)) %}
 {%-   set union_type = proto_type ~ "_ProtoUnion" %}
-{%-   if union|is_native_only_kind %}
-#error "Mojo native-only union {{union.name}} - don't think this is possible"
-{%-   else %}
 // union {{union.name}}
 bool FromProto(
   const {{proto_type}}& input,
@@ -101,7 +96,6 @@ bool FromProto(
 bool ToProto(
   {{mojom_in_type}} input,
   {{proto_type}}& output);{{"\n"-}}
-{%-   endif %}
 {%-   for field in union.fields %}
 {%-     set name = field.name %}
 {%-     set kind = field.kind %}

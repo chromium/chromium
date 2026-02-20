@@ -7,7 +7,7 @@ import sys
 from functools import partial
 from generators.mojom_cpp_generator import _NameFormatter as CppNameFormatter
 from generators.mojom_cpp_generator import Generator as CppGenerator
-from generators.mojom_cpp_generator import IsNativeOnlyKind, NamespaceToArray
+from generators.mojom_cpp_generator import IsNativeOnlyKind, NamespaceToArray, UseCustomSerializer
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 import mojom.generate.pack as pack
@@ -265,7 +265,8 @@ class Generator(CppGenerator):
         "is_typemapped_kind": self._IsTypemappedKind,
         "is_union_kind": mojom.IsUnionKind,
         "to_unnullable_kind": self._ToUnnullableKind,
-        "under_to_camel": partial(self._UnderToCamel, digits_split=True)
+        "under_to_camel": partial(self._UnderToCamel, digits_split=True),
+        "use_custom_serializer": UseCustomSerializer,
     }
     return cpp_filters
 
