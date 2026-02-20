@@ -187,9 +187,9 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
     while (!rfm_observer.LastRenderFrameMetadata()
                 .local_surface_id.value_or(viz::LocalSurfaceId())
                 .is_valid() ||
-           target !=
-               rfm_observer.LastRenderFrameMetadata().local_surface_id.value_or(
-                   viz::LocalSurfaceId::MaxSequenceId())) {
+           !rfm_observer.LastRenderFrameMetadata()
+                .local_surface_id.value_or(viz::LocalSurfaceId())
+                .IsSameOrNewerThan(target)) {
       rfm_observer.WaitForMetadataChange();
     }
 
