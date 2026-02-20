@@ -535,6 +535,30 @@ TEST_F(AutocompleteHistoryManagerTest,
   run_loop.Run();
 }
 
+// Tests that no suggestions are queried if the field name is 'mfa_text_box'.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_FilterMfaTextBox) {
+  test_field_ = CreateTestFormField(/*label=*/"", "mfa_text_box", /*value=*/"",
+                                    FormControlType::kInputText);
+
+  // Only expect a call when the name is not filtered out.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
+      .Times(0);
+
+  MockSuggestionsReturnedCallback mock_callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), IsEmpty()))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  // Simulate request for suggestions.
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_form_data_, /*form_structure=*/nullptr, test_field_,
+      /*trigger_autofill_field=*/nullptr, autofill_client_,
+      mock_callback.Get());
+  run_loop.Run();
+}
+
 // Tests that the suggestions are queried if the field has meaningless substring
 // which is not allowed for substring matches.
 TEST_F(AutocompleteHistoryManagerTest,
