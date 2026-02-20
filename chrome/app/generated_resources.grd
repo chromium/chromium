@@ -19825,10 +19825,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Chrome-specific PDF strings -->
     <if expr="enable_glic and enable_pdf">
-      <message name="IDS_PDF_GLIC_SUMMARIZE" desc="Button label for the button to summarize PDFs.">
+      <message name="IDS_PDF_GLIC_SUMMARIZE" translateable="false" desc="Button label for the button to summarize PDFs.">
         Summarize
       </message>
-      <message name="IDS_PDF_GLIC_SUMMARIZE_TOOLTIP" desc="Tooltip for the button to summarize PDFs with Gemini.">
+      <message name="IDS_PDF_GLIC_SUMMARIZE_TOOLTIP" translateable="false" desc="Tooltip for the button to summarize PDFs with Gemini.">
         Summarize with Gemini
       </message>
     </if>
