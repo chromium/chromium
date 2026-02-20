@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
   // descriptor specified, or when the printing operation failed. On success,
   // the PDF has `page_count` pages. Non-positive `page_count` indicates
   // failure.
-  static void PdfWritingDone(int page_count);
+  static void PdfWritingDone(int page_count, ui::WindowAndroid* window);
 
   static void SetPendingPrint(
       ui::WindowAndroid* window,

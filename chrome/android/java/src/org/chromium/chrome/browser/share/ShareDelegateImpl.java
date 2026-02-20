@@ -382,7 +382,9 @@ public class ShareDelegateImpl implements ShareDelegate {
     private void printTab(Tab tab) {
         var tabProviderTab = assumeNonNull(mTabProvider.get());
         Activity activity = assumeNonNull(tabProviderTab.getWindowAndroid()).getActivity().get();
-        PrintingController printingController = PrintingControllerImpl.getInstance();
+        PrintingController printingController =
+                PrintingControllerImpl.getInstance(
+                        assumeNonNull(tabProviderTab.getWindowAndroid()));
         if (printingController != null && !printingController.isBusy()) {
             assert activity != null;
             printingController.startPrint(

@@ -104,7 +104,6 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.printing.Printable;
-import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -135,7 +134,7 @@ public class ContextMenuTest {
 
     @Mock private TabContextMenuItemDelegate mItemDelegate;
     @Mock private ShareDelegate mShareDelegate;
-    @Mock private PrintingController mPrintingController;
+    @Mock private PrintingControllerImpl mPrintingController;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
     @Mock private MenuModelBridge mMenuModelBridge;
 
@@ -1397,7 +1396,9 @@ public class ContextMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 // Set printing controller to use the mock instance.
                 () -> {
-                    PrintingControllerImpl.setInstanceForTesting(mPrintingController);
+                    PrintingControllerImpl.setPrintingControllerForTesting(
+                            mActivityTestRule.getActivity().getWindowAndroid(),
+                            mPrintingController);
                 });
 
         ContextMenuUtils.selectContextMenuItem(
@@ -1425,7 +1426,9 @@ public class ContextMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 // Set printing controller to use the mock instance.
                 () -> {
-                    PrintingControllerImpl.setInstanceForTesting(mPrintingController);
+                    PrintingControllerImpl.setPrintingControllerForTesting(
+                            mActivityTestRule.getActivity().getWindowAndroid(),
+                            mPrintingController);
                 });
 
         ContextMenuUtils.selectContextMenuItemFromRightClick(

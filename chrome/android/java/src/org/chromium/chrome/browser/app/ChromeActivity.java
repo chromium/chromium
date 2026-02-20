@@ -40,7 +40,6 @@ import android.widget.FrameLayout;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -2310,7 +2309,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
      *     use {@link BrowserControlsManagerSupplier}.
      */
-    @NonNull
     @Deprecated
     public BrowserControlsManager getBrowserControlsManager() {
         var browserControlsManager = mBrowserControlsManagerSupplier.get();
@@ -2326,7 +2324,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     /**
      * @return Fullscreen manager object.
      */
-    public @NonNull FullscreenManager getFullscreenManager() {
+    public FullscreenManager getFullscreenManager() {
         return getBrowserControlsManager().getFullscreenManager();
     }
 
@@ -3163,7 +3161,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     /** Returns whether the print action was successfully started. */
     private boolean doPrintShare(Activity activity, Supplier<Tab> currentTabSupplier) {
-        PrintingController printingController = PrintingControllerImpl.getInstance();
+        PrintingController printingController =
+                PrintingControllerImpl.getInstance(getWindowAndroid());
 
         Tab currentTab = currentTabSupplier.get();
         if (currentTab == null) return false;

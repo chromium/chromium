@@ -23,6 +23,7 @@
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
+#include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -70,10 +71,10 @@ std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
   return std::make_unique<PrintingContextAndroid>(delegate);
 }
 
-// static
-void PrintingContextAndroid::PdfWritingDone(int page_count) {
+void PrintingContextAndroid::PdfWritingDone(int page_count,
+                                            ui::WindowAndroid* window) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PrintingContext_pdfWritingDone(env, page_count);
+  Java_PrintingContext_pdfWritingDone(env, page_count, window->GetJavaObject());
 }
 
 // static
@@ -104,8 +105,12 @@ void PrintingContextAndroid::AskUserForSettings(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (j_printing_context_.is_null()) {
-    j_printing_context_.Reset(
-        Java_PrintingContext_create(env, reinterpret_cast<intptr_t>(this)));
+    ui::WindowAndroid* window =
+        static_cast<ui::ViewAndroid*>(delegate_->GetParentView())
+            ->GetWindowAndroid();
+    CHECK(window);
+    j_printing_context_.Reset(Java_PrintingContext_create(
+        env, reinterpret_cast<intptr_t>(this), window->GetJavaObject()));
   }
 
   if (is_scripted) {

@@ -31,15 +31,15 @@ public class PrintingContext {
     /** The pointer to the native PrintingContextAndroid object. */
     private final long mNativeObject;
 
-    private PrintingContext(long ptr) {
-        mController = PrintingControllerImpl.getInstance();
+    private PrintingContext(long ptr, WindowAndroid window) {
+        mController = PrintingControllerImpl.getInstance(window);
         mNativeObject = ptr;
     }
 
     @CalledByNative
-    public static PrintingContext create(long nativeObjectPointer) {
+    public static PrintingContext create(long nativeObjectPointer, WindowAndroid window) {
         ThreadUtils.assertOnUiThread();
-        return new PrintingContext(nativeObjectPointer);
+        return new PrintingContext(nativeObjectPointer, window);
     }
 
     @CalledByNative
@@ -77,10 +77,10 @@ public class PrintingContext {
     }
 
     @CalledByNative
-    public static void pdfWritingDone(int pageCount) {
+    public static void pdfWritingDone(int pageCount, WindowAndroid window) {
         ThreadUtils.assertOnUiThread();
 
-        PrintingControllerImpl.getInstance().pdfWritingDone(pageCount);
+        PrintingControllerImpl.getInstance(window).pdfWritingDone(pageCount);
     }
 
     @CalledByNative
@@ -89,7 +89,7 @@ public class PrintingContext {
         Activity activity = window.getActivity().get();
         if (activity == null) return;
 
-        PrintingController printingController = PrintingControllerImpl.getInstance();
+        PrintingController printingController = PrintingControllerImpl.getInstance(window);
         printingController.setPendingPrint(
                 printable, new PrintManagerDelegateImpl(activity), renderProcessId, renderFrameId);
     }

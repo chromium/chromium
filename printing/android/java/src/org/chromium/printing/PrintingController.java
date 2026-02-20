@@ -12,7 +12,11 @@ import org.chromium.build.annotations.Nullable;
 /**
  * This interface describes a class which is responsible of talking to the printing backend.
  *
- * Such class communicates with a {@link PrintingContext}, which in turn talks to the native side.
+ * <p>Such class communicates with a {@link PrintingContext}, which in turn talks to the native
+ * side.
+ *
+ * <p>Implementations are typically scoped to a specific {@link org.chromium.ui.base.WindowAndroid}
+ * to allow concurrent printing operations in different windows.
  */
 @NullMarked
 public interface PrintingController {
@@ -55,7 +59,7 @@ public interface PrintingController {
      *     Tab.
      * @param printManager The print manager that manages the print job.
      */
-    void startPrint(final Printable printable, PrintManagerDelegate printManager);
+    void startPrint(Printable printable, PrintManagerDelegate printManager);
 
     /**
      * This method is called by the native side to signal PDF writing process is completed.
@@ -81,10 +85,10 @@ public interface PrintingController {
      *     out which frame is going to be printed in native side.
      */
     void setPendingPrint(
-            final Printable printable,
-            final PrintManagerDelegate printManager,
-            final int renderProcessId,
-            final int renderFrameId);
+            Printable printable,
+            PrintManagerDelegate printManager,
+            int renderProcessId,
+            int renderFrameId);
 
     /**
      * Starts printing, provided that the current object already has sufficient data to start the

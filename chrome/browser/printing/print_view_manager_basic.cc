@@ -8,7 +8,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "printing/printing_context_android.h"
+#include "ui/android/window_android.h"
 #endif
 
 namespace printing {
@@ -17,8 +19,26 @@ PrintViewManagerBasic::PrintViewManagerBasic(content::WebContents* web_contents)
     : PrintViewManagerBase(web_contents),
       content::WebContentsUserData<PrintViewManagerBasic>(*web_contents) {
 #if BUILDFLAG(IS_ANDROID)
-  set_pdf_writing_done_callback(
-      base::BindRepeating(&PrintingContextAndroid::PdfWritingDone));
+  // When printing completes, it ultimately triggers this callback.
+  // The print dialog is modal, so user cannot move the tab to another window,
+  // hence it is safe to assume the window is the same one as when printing
+  // started.
+  set_pdf_writing_done_callback(base::BindRepeating(
+      [](PrintViewManagerBasic* manager, int page_count) {
+        if (manager->web_contents()) {
+          if (auto* window =
+                  manager->web_contents()->GetTopLevelNativeWindow()) {
+            PrintingContextAndroid::PdfWritingDone(page_count, window);
+            return;
+          }
+        }
+        LOG(ERROR)
+            << "Could not notify PdfWritingDone: Native window not found";
+      },
+      // Safe to skip memory management because `this` (via
+      // PrintViewManagerBase) owns the callback, guaranteeing it won't be
+      // executed after this object is destroyed.
+      base::Unretained(this)));
 #endif
 }
 

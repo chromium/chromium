@@ -62,6 +62,7 @@ import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
@@ -158,9 +159,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     /** Initiates the printing process of the current page. */
     public void startPrint() {
-        PrintingController printingController = PrintingControllerImpl.getInstance();
-        printingController.startPrint(
-                new TabPrinter(mTab), new PrintManagerDelegateImpl(mActivity));
+        WindowAndroid windowAndroid = mTab.getWindowAndroid();
+        if (windowAndroid != null) {
+            PrintingController printingController =
+                    PrintingControllerImpl.getInstance(windowAndroid);
+            printingController.startPrint(
+                    new TabPrinter(mTab), new PrintManagerDelegateImpl(mActivity));
+        }
     }
 
     @Override

@@ -51,7 +51,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.printing.PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper;
 import org.chromium.printing.PrintDocumentAdapterWrapper.WriteResultCallbackWrapper;
 import org.chromium.printing.PrintManagerDelegate;
+import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
 
@@ -149,9 +151,11 @@ public class PrintingControllerTest {
     private static class PrintingControllerImplPdfWritingDone extends PrintingControllerImpl {
         private final WaitForOnWriteHelper mWaitForOnWrite;
 
-        public PrintingControllerImplPdfWritingDone(WaitForOnWriteHelper waitForOnWrite) {
+        public PrintingControllerImplPdfWritingDone(
+                WindowAndroid window, WaitForOnWriteHelper waitForOnWrite) {
+            super(window);
             mWaitForOnWrite = waitForOnWrite;
-            sInstance = this;
+            setPrintingControllerForTesting(window, this);
         }
 
         @Override
@@ -315,7 +319,10 @@ public class PrintingControllerTest {
         final WaitForOnWriteHelper onWriteHelper = new WaitForOnWriteHelper();
         final PrintingControllerImpl printingController =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new PrintingControllerImplPdfWritingDone(onWriteHelper));
+                        () ->
+                                new PrintingControllerImplPdfWritingDone(
+                                        mActivityTestRule.getActivity().getWindowAndroid(),
+                                        onWriteHelper));
 
         startControllerOnUiThread(printingController, currentTab);
         callStartOnUiThread(printingController);
@@ -441,6 +448,32 @@ public class PrintingControllerTest {
         Assert.assertEquals("This page can't be printed", toastCaptor.getValue().getText());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"Printing"})
+    public void testMultiWindowPrinting() {
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WindowAndroid window1 = page.getTab().getWindowAndroid();
+
+                    PrintingController controller1 = PrintingControllerImpl.getInstance(window1);
+                    Assert.assertNotNull(controller1);
+                    Assert.assertSame(controller1, PrintingControllerImpl.getInstance(window1));
+
+                    // fake a new window
+                    WindowAndroid window2 =
+                            new WindowAndroid(mActivityTestRule.getActivity(), false);
+                    PrintingController controller2 = PrintingControllerImpl.getInstance(window2);
+
+                    // ensure we can have more than one print controller
+                    Assert.assertNotNull(controller2);
+                    Assert.assertNotSame(controller1, controller2);
+                    window2.destroy();
+                });
+    }
+
     /**
      * Test a basic printing flow by emulating the corresponding system calls to the printing
      * controller: onStart, onLayout, onWrite, onFinish. Each one is called once, and in this order,
@@ -505,7 +538,10 @@ public class PrintingControllerTest {
 
     private PrintingControllerImpl createControllerOnUiThread() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> (PrintingControllerImpl) PrintingControllerImpl.getInstance());
+                () ->
+                        (PrintingControllerImpl)
+                                PrintingControllerImpl.getInstance(
+                                        mActivityTestRule.getActivity().getWindowAndroid()));
     }
 
     private PrintAttributes createPlaceholderPrintAttributes() {
@@ -559,5 +595,34 @@ public class PrintingControllerTest {
 
     private void callFinishOnUiThread(final PrintingControllerImpl controller) {
         ThreadUtils.runOnUiThreadBlocking(() -> controller.onFinish());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Printing"})
+    public void testCleanupOnWindowContextCleanup() {
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+
+        // Used in our callback to verify that cleanup occurred
+        final java.util.concurrent.atomic.AtomicBoolean called =
+                new java.util.concurrent.atomic.AtomicBoolean(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Set up a callback to verify that cleanup occurred
+                    PrintingControllerImpl.setOnDetachCallbackForTesting(() -> called.set(true));
+                    WindowAndroid window = page.getTab().getWindowAndroid();
+                    PrintingController controller1 = PrintingControllerImpl.getInstance(window);
+
+                    Assert.assertNotNull(controller1);
+                    Assert.assertFalse(controller1.hasPrintingFinished());
+
+                    // Simulate host destruction
+                    window.getUnownedUserDataHost().destroy();
+                });
+
+        // Expect cleanup to be called
+        CriteriaHelper.pollInstrumentationThread(
+                () -> called.get(), "onDetachedFromHost not called");
     }
 }
