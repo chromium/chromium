@@ -213,13 +213,7 @@ class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/458161947): Re-enable flaky test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_HistoryAppTest DISABLED_HistoryAppTest
-#else
-#define MAYBE_HistoryAppTest HistoryAppTest
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, MAYBE_HistoryAppTest) {
+IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, HistoryAppTest) {
   RunTest("history/history_app_test.js", "runMochaSuite('HistoryAppTest')");
 }
 
