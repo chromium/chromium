@@ -3871,6 +3871,19 @@ void MediaStreamManager::WillDestroyCurrentMessageLoop() {
     audio_input_device_manager_->UnregisterListener(this);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // SystemEventMonitorImpl and JpegAcceleratorProviderImpl are created on the
+  // UI thread and must be destroyed there before the UI message loop stops.
+  if (system_event_monitor_) {
+    GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                          std::move(system_event_monitor_));
+  }
+  if (jpeg_accelerator_provider_) {
+    GetUIThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, std::move(jpeg_accelerator_provider_));
+  }
+#endif
+
   audio_input_device_manager_ = nullptr;
   video_capture_manager_ = nullptr;
   media_devices_manager_ = nullptr;
