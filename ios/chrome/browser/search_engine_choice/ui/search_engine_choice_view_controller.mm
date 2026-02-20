@@ -608,10 +608,10 @@ CGFloat GetSubtitleMarginDistance() {
          selector:@selector(accessibilityElementFocusedNotification:)
              name:UIAccessibilityElementFocusedNotification
            object:nil];
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+  NSArray<UITrait>* traits = @[
     UITraitPreferredContentSizeCategory.class, UITraitVerticalSizeClass.class,
     UITraitHorizontalSizeClass.class
-  ]);
+  ];
   [self registerForTraitChanges:traits
                      withAction:@selector(updateUIOnTraitChange)];
 }

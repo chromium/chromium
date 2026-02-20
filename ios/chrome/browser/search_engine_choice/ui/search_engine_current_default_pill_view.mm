@@ -38,9 +38,7 @@ constexpr CGFloat kCurrentDefaultPillBorderWidth = 1.;
         NSDirectionalEdgeInsetsMake(0, kCurrentDefaultPillHorizontalMargin, 0,
                                     kCurrentDefaultPillHorizontalMargin));
     self.layer.borderWidth = kCurrentDefaultPillBorderWidth;
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(applyTraitUserInterfaceStyle)];
     [self applyTraitUserInterfaceStyle];
   }
