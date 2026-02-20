@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -130,8 +131,7 @@ void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
 }
 
 std::string HexEncodeHash(const std::string& name) {
-  uint32_t hash = base::PersistentHash(name);
-  return base::HexEncode(&hash, sizeof(uint32_t));
+  return base::HexEncode(base::byte_span_from_ref(base::PersistentHash(name)));
 }
 
 // Returns a nullopt if storage was created successfully.
