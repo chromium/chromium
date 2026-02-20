@@ -209,6 +209,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // SecurityPrincipal overrides.
   ~SiteInfo() override;
   bool IsSandboxed() const override;
+  bool IsGuest() const override;
 
   // This function returns a new SiteInfo which is equivalent to the original,
   // except that its AgentClusterKey is made site-keyed if it had been created
@@ -329,7 +330,6 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
     return web_exposed_isolation_level_;
   }
 
-  bool is_guest() const { return is_guest_; }
   bool is_error_page() const;
   bool is_jit_disabled() const { return is_jit_disabled_; }
   bool are_v8_optimizations_disabled() const {

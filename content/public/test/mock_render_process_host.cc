@@ -685,7 +685,8 @@ std::unique_ptr<MockRenderProcessHost>
 MockRenderProcessHostFactory::BuildRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstance* site_instance) {
-  const bool is_for_guests_only = site_instance && site_instance->IsGuest();
+  const bool is_for_guests_only =
+      site_instance && site_instance->GetSecurityPrincipal().IsGuest();
   StoragePartitionConfig storage_partition_config =
       GetOrCreateStoragePartitionConfig(browser_context, site_instance);
   return std::make_unique<MockRenderProcessHost>(

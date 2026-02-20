@@ -321,7 +321,10 @@ bool IsValidURLForNavigation(FrameTreeNode* node,
   // for defense-in-depth to ensure that no other places in the codebase
   // accidentally navigate guests to schemes such as WebUI, which is not
   // supported.  See https://crbug.com/1444221.
-  if (node->current_frame_host()->GetSiteInstance()->IsGuest()) {
+  if (node->current_frame_host()
+          ->GetSiteInstance()
+          ->GetSecurityPrincipal()
+          .IsGuest()) {
     auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
     if (!cpsp->IsWebSafeScheme(dest_url.GetScheme()) &&
         !dest_url.SchemeIs(url::kAboutScheme)) {

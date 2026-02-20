@@ -60,7 +60,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       site_instance->HasSite()
           ? std::make_optional(site_instance->GetSiteInfo().site_url())
           : std::nullopt;
-  frame_info->site_instance->is_guest = site_instance->IsGuest();
+  frame_info->site_instance->is_guest =
+      site_instance->GetSecurityPrincipal().IsGuest();
   frame_info->site_instance->is_pdf = site_instance->IsPdf();
   frame_info->site_instance->is_sandbox_for_iframes =
       site_instance->GetSecurityPrincipal().IsSandboxed();

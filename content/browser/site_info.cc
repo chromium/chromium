@@ -513,6 +513,10 @@ bool SiteInfo::IsSandboxed() const {
   return is_sandboxed_;
 }
 
+bool SiteInfo::IsGuest() const {
+  return is_guest_;
+}
+
 GURL SiteInfo::GetProcessLockURL() const {
   return agent_cluster_key_.GetURL();
 }

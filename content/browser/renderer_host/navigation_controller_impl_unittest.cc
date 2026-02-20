@@ -1526,7 +1526,7 @@ TEST_F(NavigationControllerTest, ReloadWithGuest) {
   NavigationEntryImpl* entry1 = controller.GetVisibleEntry();
   ASSERT_EQ(entry1->site_instance()->GetStoragePartitionConfig(),
             kGuestPartitionConfig);
-  ASSERT_TRUE(entry1->site_instance()->IsGuest());
+  ASSERT_TRUE(entry1->site_instance()->GetSecurityPrincipal().IsGuest());
   ASSERT_TRUE(entry1->site_instance()->GetProcess()->IsForGuestsOnly());
 
   // And reload.

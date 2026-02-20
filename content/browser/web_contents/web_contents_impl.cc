@@ -5321,7 +5321,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
           : IsGuest();
   // While some guest types do not have a guest SiteInstance, the ones that
   // don't all override WebContents creation above.
-  CHECK_EQ(source_site_instance->IsGuest(), is_guest);
+  CHECK_EQ(source_site_instance->GetSecurityPrincipal().IsGuest(), is_guest);
 
   // We usually create the new window in the same BrowsingInstance (group of
   // script-related windows), by passing in the current SiteInstance.  However,

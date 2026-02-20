@@ -16,6 +16,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 
@@ -69,7 +70,7 @@ SecurityInterstitialControllerClient::InterstitialRenderFrameHost() const {
   // found, then default to the WebContents' NavigationController.
   web_contents_->ForEachRenderFrameHostWithAction(
       [&render_frame_host, helper, this](content::RenderFrameHost* rfh) {
-        if (rfh->GetSiteInstance()->IsGuest()) {
+        if (rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
           // Only consider `rfh` if it's for a guest.
           if (auto* blocking_page =
                   helper->GetBlockingPageForFrame(rfh->GetFrameTreeNodeId())) {
@@ -103,9 +104,10 @@ void SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted() {
     // default safe page. This is because unlike a normal WebContents, guests
     // cannot load pages like WebUI, including the NTP, which is often used as
     // the default safe page here.
-    GURL url_to_load = render_frame_host->GetSiteInstance()->IsGuest()
-                           ? GURL(url::kAboutBlankURL)
-                           : default_safe_page_;
+    GURL url_to_load =
+        render_frame_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest()
+            ? GURL(url::kAboutBlankURL)
+            : default_safe_page_;
     controller.LoadURL(url_to_load, content::Referrer(),
                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   }

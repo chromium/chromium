@@ -202,7 +202,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
                                       /* allow_default_instance */ false);
 
   DCHECK(!site_instance->GetSiteInfo().is_error_page());
-  DCHECK_EQ(site_instance->IsGuest(), is_guest);
+  DCHECK_EQ(site_instance->GetSecurityPrincipal().IsGuest(), is_guest);
   site_instance->is_for_service_worker_ = true;
 
   // Attempt to reuse a renderer process if possible. Note that in the
@@ -265,7 +265,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
   scoped_refptr<SiteInstanceImpl> site_instance =
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
           browser_context, embedder_site_instance->GetWebExposedIsolationInfo(),
-          embedder_site_instance->IsGuest(),
+          embedder_site_instance->GetSecurityPrincipal().IsGuest(),
           /*is_fenced=*/should_isolate_fenced_frames,
           embedder_site_instance->IsFixedStoragePartition())));
 
@@ -281,7 +281,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
   // have a SiteInfo with is_fenced set to true).
   if (!embedder_site_instance->IsDefaultSiteInstance()) {
     site_instance->SetSite(embedder_site_instance->GetSiteInfo());
-  } else if (embedder_site_instance->IsGuest()) {
+  } else if (embedder_site_instance->GetSecurityPrincipal().IsGuest()) {
     // For guests, in the case where the embedder is not a default SiteInstance,
     // we reuse the embedder's SiteInfo above. When the embedder is
     // a default SiteInstance, we explicitly create a SiteInfo through
@@ -294,7 +294,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
     site_instance->SetSite(SiteInfo::CreateForGuest(
         browser_context, embedder_site_instance->GetStoragePartitionConfig()));
   }
-  DCHECK_EQ(embedder_site_instance->IsGuest(), site_instance->IsGuest());
+  DCHECK_EQ(embedder_site_instance->GetSecurityPrincipal().IsGuest(),
+            site_instance->GetSecurityPrincipal().IsGuest());
   if (embedder_site_instance->HasProcess()) {
     site_instance->ReuseExistingProcessIfPossible(
         embedder_site_instance->GetProcess());
@@ -971,7 +972,7 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
     // special case because we need to be consistent with the HasProcess() path
     // and the IsSuitableHost() call below always returns false for guests.
     if (site_info_ == site_info)
-      return !IsGuest();
+      return !site_info_.IsGuest();
 
     // If the site URLs do not match, but neither this SiteInstance nor the
     // destination site_url require dedicated processes, then it is safe to use
@@ -1100,14 +1101,10 @@ bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
       url_info, true /* should_compare_effective_urls */);
 }
 
-bool SiteInstanceImpl::IsGuest() {
-  return site_info_.is_guest();
-}
-
 bool SiteInstanceImpl::IsFixedStoragePartition() {
   bool is_fixed_storage_partition =
       browsing_instance_->is_fixed_storage_partition();
-  if (IsGuest()) {
+  if (site_info_.IsGuest()) {
     CHECK(is_fixed_storage_partition);
   }
   return is_fixed_storage_partition;

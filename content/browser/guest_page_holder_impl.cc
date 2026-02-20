@@ -18,8 +18,8 @@ std::unique_ptr<GuestPageHolder> GuestPageHolder::Create(
     scoped_refptr<SiteInstance> site_instance,
     base::WeakPtr<GuestPageHolder::Delegate> delegate) {
   CHECK(owner_web_contents);
-  // Note that `site_instance->IsGuest()` would only be true for <webview>, not
-  // other guest types.
+  // Note that `site_instance->GetSecurityPrincipal().IsGuest()` would only be
+  // true for <webview>, not other guest types.
   CHECK(site_instance);
   CHECK(delegate);
 
@@ -37,8 +37,8 @@ std::unique_ptr<GuestPageHolder> GuestPageHolder::CreateWithOpener(
     scoped_refptr<SiteInstance> site_instance,
     base::WeakPtr<GuestPageHolder::Delegate> delegate) {
   CHECK(owner_web_contents);
-  // Note that `site_instance->IsGuest()` would only be true for <webview>, not
-  // other guest types.
+  // Note that `site_instance->GetSecurityPrincipal().IsGuest()` would only be
+  // true for <webview>, not other guest types.
   CHECK(site_instance);
   CHECK(delegate);
 

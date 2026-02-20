@@ -173,7 +173,8 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
     // logic at upper layers.  Similarly, whether this StoragePartition is for
     // a guest should remain constant over a BrowsingInstance's lifetime.
     CHECK_EQ(storage_partition_config_.value(), storage_partition_config);
-    CHECK_EQ(isolation_context_.is_guest(), site_instance->IsGuest());
+    CHECK_EQ(isolation_context_.is_guest(),
+             site_instance->GetSecurityPrincipal().IsGuest());
   } else {
     storage_partition_config_ = storage_partition_config;
   }

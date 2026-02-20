@@ -144,7 +144,7 @@ class CONTENT_EXPORT ProcessLock {
   // Returns whether this ProcessLock is used for a <webview> guest process.
   // This may be false for other types of GuestView.
   bool is_guest() const {
-    return site_info_.has_value() && site_info_->is_guest();
+    return site_info_.has_value() && site_info_->IsGuest();
   }
 
   // Returns whether this ProcessLock is used for a process that exclusively

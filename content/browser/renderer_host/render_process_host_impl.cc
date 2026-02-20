@@ -1537,7 +1537,7 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 
   int flags = RenderProcessFlags::kNone;
 
-  if (site_instance && site_instance->IsGuest()) {
+  if (site_instance && site_instance->GetSecurityPrincipal().IsGuest()) {
     flags |= RenderProcessFlags::kForGuestsOnly;
 
     // If we've made a StoragePartition for guests (e.g., for the <webview>
@@ -4700,8 +4700,9 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // Do not allow sharing of guest and non-guest hosts.  Note that we also
   // enforce that `host` and `site_info` must belong to the same
   // StoragePartition via the InSameStoragePartition() check below.
-  if (host->IsForGuestsOnly() != site_info.is_guest())
+  if (host->IsForGuestsOnly() != site_info.IsGuest()) {
     return false;
+  }
 
   // If this process has a different JIT policy to the site then it can't be
   // reused.

@@ -2085,7 +2085,7 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   const StoragePartitionConfig kGuestConfig = StoragePartitionConfig::Create(
       context(), "appid", "partition_name", /*in_memory=*/false);
   auto instance2 = SiteInstanceImpl::CreateForGuest(context(), kGuestConfig);
-  EXPECT_TRUE(instance2->IsGuest());
+  EXPECT_TRUE(instance2->GetSecurityPrincipal().IsGuest());
   EXPECT_EQ(instance2->GetStoragePartitionConfig(), kGuestConfig);
 }
 
@@ -2222,7 +2222,7 @@ TEST_F(SiteInstanceTest, ErrorPage) {
       /*cross_origin_isolation_key=*/std::nullopt, context()->UniqueId());
   EXPECT_TRUE(error_site_info.is_error_page());
   EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
-  EXPECT_FALSE(error_site_info.is_guest());
+  EXPECT_FALSE(error_site_info.IsGuest());
 
   // Verify that non-error URLs don't generate error page SiteInfos.
   const auto instance =

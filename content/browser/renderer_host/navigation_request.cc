@@ -646,9 +646,10 @@ void RecordReadyToCommitMetrics(
 
   // Guest (<webview> tag) metrics.
   {
-    base::UmaHistogramBoolean("Navigation.IsGuest",
-                              new_rfh->GetSiteInstance()->IsGuest());
-    if (new_rfh->GetSiteInstance()->IsGuest()) {
+    base::UmaHistogramBoolean(
+        "Navigation.IsGuest",
+        new_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+    if (new_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
       base::UmaHistogramBoolean("Navigation.Guest.IsHTTPOrHTTPS",
                                 common_params.url.SchemeIsHTTPOrHTTPS());
       base::UmaHistogramBoolean("Navigation.Guest.IsMainFrame", is_main_frame);

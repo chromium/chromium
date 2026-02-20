@@ -617,7 +617,8 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       // 3. The SiteInstance is a guest SiteInstance.
       // 4. The SiteInstance is a initial WebUI SiteInstance.
       site_instance->HasProcess() ||
-      !site_instance->CanAssociateWithSpareProcess() || site_instance->IsGuest()
+      !site_instance->CanAssociateWithSpareProcess() ||
+      site_instance->GetSecurityPrincipal().IsGuest()
 #if !BUILDFLAG(IS_ANDROID)
       || GetContentClient()->browser()->IsInitialWebUIURL(
              site_instance->GetSiteURL())

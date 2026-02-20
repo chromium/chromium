@@ -234,8 +234,9 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   // always stay in their original SiteInstance, regardless of COOP. Assumption
   // made below about COOP:same-origin and unsafe-none never being in the same
   // BrowsingInstance does not hold. See https://crbug.com/1243711.
-  if (rfh->GetSiteInstance()->IsGuest())
+  if (rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
     return;
+  }
 
   // Check if the navigation resulted in having same-origin documents in pages
   // with different COOP status inside the browsing context group.

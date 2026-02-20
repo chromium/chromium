@@ -43,6 +43,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
@@ -1446,12 +1447,13 @@ void WebViewGuest::RenderFrameCreated(
     return;
   }
 
-  CHECK_EQ(render_frame_host->GetProcess()->IsForGuestsOnly(),
-           render_frame_host->GetSiteInstance()->IsGuest());
+  CHECK_EQ(
+      render_frame_host->GetProcess()->IsForGuestsOnly(),
+      render_frame_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
 
   // TODO(mcnee): Throughout this file, many of the SiteInstance `IsGuest()`
   // checks appear redundant. Could they be CHECKs instead?
-  if (!render_frame_host->GetSiteInstance()->IsGuest()) {
+  if (!render_frame_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
     return;
   }
 
@@ -1471,7 +1473,7 @@ void WebViewGuest::RenderFrameDeleted(
     return;
   }
 
-  if (!render_frame_host->GetSiteInstance()->IsGuest()) {
+  if (!render_frame_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
     return;
   }
 
@@ -1486,12 +1488,13 @@ void WebViewGuest::RenderFrameHostChanged(content::RenderFrameHost* old_host,
     return;
   }
 
-  if (!old_host || !old_host->GetSiteInstance()->IsGuest()) {
+  if (!old_host ||
+      !old_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
     return;
   }
 
   // A guest RenderFrameHost cannot navigate to a non-guest RenderFrameHost.
-  DCHECK(new_host->GetSiteInstance()->IsGuest());
+  DCHECK(new_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
 
   // If we've swapped from a non-live guest RenderFrameHost, we won't hear a
   // RenderFrameDeleted for that RenderFrameHost.  This ensures that it's
@@ -1515,7 +1518,7 @@ void WebViewGuest::ReportFrameNameChange(const std::string& name) {
 
 void WebViewGuest::PushWebViewStateToIOThread(
     content::RenderFrameHost* guest_host) {
-  if (!guest_host->GetSiteInstance()->IsGuest()) {
+  if (!guest_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
     NOTREACHED();
   }
   auto storage_partition_config =

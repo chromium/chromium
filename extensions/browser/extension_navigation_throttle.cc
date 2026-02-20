@@ -14,6 +14,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -268,14 +269,19 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 
     content::StoragePartitionConfig storage_partition_config =
         content::StoragePartitionConfig::CreateDefault(browser_context);
-    bool is_guest = navigation_handle()->GetStartingSiteInstance()->IsGuest();
+    bool is_guest = navigation_handle()
+                        ->GetStartingSiteInstance()
+                        ->GetSecurityPrincipal()
+                        .IsGuest();
     if (is_guest) {
       storage_partition_config = navigation_handle()
                                      ->GetStartingSiteInstance()
                                      ->GetStoragePartitionConfig();
     }
-    CHECK_EQ(is_guest,
-             navigation_handle()->GetStartingSiteInstance()->IsGuest());
+    CHECK_EQ(is_guest, navigation_handle()
+                           ->GetStartingSiteInstance()
+                           ->GetSecurityPrincipal()
+                           .IsGuest());
 
     bool allowed = true;
     url_request_util::AllowCrossRendererResourceLoadHelper(

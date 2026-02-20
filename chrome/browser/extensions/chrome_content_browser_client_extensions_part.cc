@@ -787,7 +787,8 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
   constexpr bool is_oopif_pdf_extension = false;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  if (site_instance->IsGuest() && !is_oopif_pdf_extension) {
+  if (site_instance->GetSecurityPrincipal().IsGuest() &&
+      !is_oopif_pdf_extension) {
     return;
   }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -839,7 +840,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // after a navigation, we can remove this case so that extension settings can
   // apply to webview accessible resources without impacting web pages
   // subsequently loaded in the webview.
-  if (main_frame_site.IsGuest()) {
+  if (main_frame_site.GetSecurityPrincipal().IsGuest()) {
     return false;
   }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)

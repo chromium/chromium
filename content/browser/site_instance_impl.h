@@ -180,7 +180,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   size_t GetRelatedActiveContentsCount() override;
   bool RequiresDedicatedProcess() override;
   bool IsSameSiteWithURL(const GURL& url) override;
-  bool IsGuest() override;
   SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) override;
   int EstimateOriginAgentClusterOverheadForMetrics() override;

@@ -35,6 +35,9 @@ class CONTENT_EXPORT SecurityPrincipal {
   // Returns true if this SecurityPrincipal is for process-isolated sandboxed
   // documents only.
   virtual bool IsSandboxed() const = 0;
+
+  // Returns true if this SecurityPrincipal is used for a <webview> guest.
+  virtual bool IsGuest() const = 0;
 };
 
 }  // namespace content
