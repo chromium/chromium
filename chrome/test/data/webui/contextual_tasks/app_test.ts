@@ -713,7 +713,8 @@ suite('ContextualTasksAppTest', function() {
 
     // Verify styles applied
     assertEquals('fixed', crComposebox.style.position);
-    assertEquals('10px', crComposebox.style.top);
+    assertEquals(
+        `${window.innerHeight - rect.bottom}px`, crComposebox.style.bottom);
     assertEquals('20px', crComposebox.style.left);
     assertEquals('100px', crComposebox.style.width);
     assertEquals('', crComposebox.style.height);

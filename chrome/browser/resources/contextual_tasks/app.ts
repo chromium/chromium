@@ -312,6 +312,9 @@ export class ContextualTasksAppElement extends CrLitElement {
         // both thread/AIM cases for zero state, we clear input.
         if (isZeroState && !wasZeroState) {
           this.$.composebox.clearInputAndFocus();
+          // Reset the forced composebox bounds since the zero state position
+          // is controlled natively.
+          this.forcedComposeboxBounds_ = null;
         }
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
@@ -467,6 +470,10 @@ export class ContextualTasksAppElement extends CrLitElement {
             type: 'composebox-height-update',
             height: e.detail.height,
           });
+          // Update the height of the forced composebox bounds if it is set.
+          if (this.forcedComposeboxBounds_) {
+            this.forcedComposeboxBounds_.height = e.detail.height;
+          }
         });
   }
 
@@ -512,20 +519,29 @@ export class ContextualTasksAppElement extends CrLitElement {
     }
   }
 
-  private onInputPlateBoundsUpdate_(inputRect: Rect, occluders: Rect[]) {
-    this.forcedComposeboxBounds_ = inputRect;
-    this.occluders_ = occluders;
+  private onInputPlateBoundsUpdate_(inputRect?: Rect, occluders?: Rect[]) {
+    if (inputRect !== undefined) {
+      this.forcedComposeboxBounds_ = inputRect;
+    }
+    if (occluders !== undefined) {
+      this.occluders_ = occluders;
+    }
   }
 
   getThreadFrameStyles(): string {
-    if (!this.forcedComposeboxBounds_ || this.occluders_ == null) {
+    if (this.occluders_ == null) {
       return '';
     }
+
+    // If the forced composebox bounds are set, use those since its cheaper
+    // than calling getBoundingClientRect();
+    const composeboxBounds = this.forcedComposeboxBounds_ ??
+        this.$.composebox.getBoundingClientRect();
+
     // If occluders are present, set the clip path and a z-index that ensures
     // the thread frame is above the occluders.
     return getNonOccludedClipPath(
-               this.forcedComposeboxBounds_, this.occluders_,
-               OCCLUDER_EXTRA_PADDING_PX) +
+               composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX) +
         'z-index: 100;';
   }
 
