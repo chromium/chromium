@@ -458,31 +458,32 @@ net::Error ServiceWorkerCacheWriter::Resume(OnWriteCompleteCallback callback) {
   return result >= 0 ? net::OK : static_cast<net::Error>(result);
 }
 
-net::Error ServiceWorkerCacheWriter::StartCopy(
-    OnWriteCompleteCallback callback) {
+void ServiceWorkerCacheWriter::StartCopy(OnWriteCompleteCallback callback) {
   DCHECK(IsCopying());
 
-  if (!copy_reader_.is_connected())
-    return net::ERR_FAILED;
+  if (!copy_reader_.is_connected()) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
 
-  pending_callback_ = std::move(callback);
   int result = DoLoop(net::OK);
 
-  // Synchronous completions are always STATE_DONE.
-  if (result != net::ERR_IO_PENDING)
-    DCHECK_EQ(STATE_DONE, state_);
-
-  // Asynchronous completion means the state machine must be waiting in one of
-  // the Done states for an IO operation to complete:
   if (result == net::ERR_IO_PENDING) {
+    // Asynchronous completion means the state machine must be waiting in one of
+    // the Done states for an IO operation to complete:
     DCHECK(state_ == STATE_READ_HEADERS_FOR_COPY_DONE ||
            state_ == STATE_WRITE_HEADERS_FOR_COPY_DONE ||
            state_ == STATE_READ_DATA_FOR_COPY_DONE ||
            state_ == STATE_WRITE_DATA_FOR_COPY_DONE)
         << "Unexpected state: " << state_;
+    pending_callback_ = std::move(callback);
+    return;
   }
 
-  return result >= 0 ? net::OK : static_cast<net::Error>(result);
+  // Synchronous completions are always STATE_DONE.
+  DCHECK_EQ(STATE_DONE, state_);
+  std::move(callback).Run(result >= 0 ? net::OK
+                                      : static_cast<net::Error>(result));
 }
 
 bool ServiceWorkerCacheWriter::IsCopying() const {

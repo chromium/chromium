@@ -234,15 +234,8 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
   version->script_cache_map()->NotifyStartedCaching(url, new_resource_id);
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  net::Error error = cache_writer_->StartCopy(
-      base::BindOnce(std::move(split_callback.first), new_resource_id));
-
-  // Run the callback directly if the operation completed or failed
-  // synchronously.
-  if (net::ERR_IO_PENDING != error) {
-    std::move(split_callback.second).Run(new_resource_id, error);
-  }
+  cache_writer_->StartCopy(
+      base::BindOnce(std::move(callback), new_resource_id));
 }
 
 void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(

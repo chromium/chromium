@@ -140,8 +140,9 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // Start to copy a script in storage to a new position. |callback| is
   // called when the work is done. This is used when an installed script
   // is used by a new service worker with no content change, thus downloading
-  // could be avoided.
-  net::Error StartCopy(OnWriteCompleteCallback callback);
+  // could be avoided. The callback is always invoked (synchronously if the
+  // operation completes immediately, asynchronously otherwise).
+  void StartCopy(OnWriteCompleteCallback callback);
 
   // Returns true when the cache writer is created by CreateForCopy().
   bool IsCopying() const;
