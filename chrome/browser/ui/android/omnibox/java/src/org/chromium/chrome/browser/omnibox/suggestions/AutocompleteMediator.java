@@ -123,6 +123,7 @@ class AutocompleteMediator
             this::onToolbarPositionChanged;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
+    private final Callback<@Nullable String> mOnKeywordChanged = this::onKeywordChanged;
     private final Callback<Integer> mOnFuseboxStateChanged = this::onFuseboxStateChanged;
 
     private @Nullable AutocompleteController mAutocomplete;
@@ -535,12 +536,14 @@ class AutocompleteMediator
             mAutocompleteInput
                     .getRequestTypeSupplier()
                     .removeObserver(mOnAutocompleteRequestTypeChanged);
+            mAutocompleteInput.getKeywordSupplier().removeObserver(mOnKeywordChanged);
         }
         mAutocompleteInput = input;
         if (mAutocompleteInput != null) {
             mAutocompleteInput
                     .getRequestTypeSupplier()
                     .addSyncObserver(mOnAutocompleteRequestTypeChanged);
+            mAutocompleteInput.getKeywordSupplier().addSyncObserver(mOnKeywordChanged);
         }
     }
 
@@ -1040,6 +1043,10 @@ class AutocompleteMediator
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
         if (!isInInputSession()) return;
         onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
+    }
+
+    private void onKeywordChanged(@Nullable String keyword) {
+        mUrlBarEditingTextProvider.setSiteSearchChip(keyword);
     }
 
     private void onFuseboxStateChanged(@FuseboxState int fuseboxState) {

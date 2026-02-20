@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Provider of editing text state from the UrlBar/Omnibox. */
 @NullMarked
@@ -26,4 +27,11 @@ public interface UrlBarEditingTextStateProvider {
 
     /** Return the text excluding any inline autocomplete. */
     String getTextWithoutAutocomplete();
+
+    /**
+     * Sets the site search chip text.
+     *
+     * @param keyword The keyword to set.
+     */
+    void setSiteSearchChip(@Nullable String keyword);
 }

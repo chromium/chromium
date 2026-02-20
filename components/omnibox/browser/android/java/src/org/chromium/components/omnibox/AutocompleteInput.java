@@ -11,8 +11,10 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -66,6 +68,8 @@ public class AutocompleteInput implements UserData {
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
+    private final SettableNullableObservableSupplier<String> mCurrentKeyword =
+            ObservableSuppliers.createNullable();
 
     public AutocompleteInput() {
         reset();
@@ -187,6 +191,27 @@ public class AutocompleteInput implements UserData {
      */
     public NonNullObservableSupplier<@AutocompleteRequestType Integer> getRequestTypeSupplier() {
         return mRequestTypeSupplier;
+    }
+
+    /** Set the current keyword */
+    public AutocompleteInput setKeyword(@Nullable String keyword) {
+        mCurrentKeyword.set(keyword);
+        return this;
+    }
+
+    /** Returns the current keyword. */
+    public @Nullable String getKeyword() {
+        return mCurrentKeyword.get();
+    }
+
+    /**
+     * Returns the supplier for the current keyword.
+     *
+     * <p>Use sparingly - to install/remove observers. Readers should use {@see getKeyword()}.
+     * Writers should use {@see setKeyword()}.
+     */
+    public NullableObservableSupplier<String> getKeywordSupplier() {
+        return mCurrentKeyword;
     }
 
     /**

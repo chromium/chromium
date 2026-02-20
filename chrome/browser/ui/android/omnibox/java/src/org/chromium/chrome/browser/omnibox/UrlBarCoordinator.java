@@ -232,6 +232,11 @@ public class UrlBarCoordinator
         return mUrlBar.getTextWithoutAutocomplete();
     }
 
+    @Override
+    public void setSiteSearchChip(@Nullable String keyword) {
+        // TODO(crbug.com/459590224): Trigger site search chip.
+    }
+
     /** Returns the {@link ViewRectProvider} for the UrlBar. */
     public ViewRectProvider getViewRectProvider() {
         return new ViewRectProvider(mUrlBar);
