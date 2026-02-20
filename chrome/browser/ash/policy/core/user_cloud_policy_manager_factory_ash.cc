@@ -256,7 +256,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
           base::SingleThreadTaskRunner::GetCurrentDefault());
 
   bool wildcard_match = false;
-  if (connector->IsDeviceEnterpriseManaged() &&
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
       ash::UserLoginPermissionTracker::Get()->IsUserAllowlisted(
           account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
       wildcard_match &&
