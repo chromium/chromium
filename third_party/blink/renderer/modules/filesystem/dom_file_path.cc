@@ -113,13 +113,13 @@ bool DOMFilePath::IsValidPath(const String& path) {
     return true;
 
   // Embedded NULs are not allowed.
-  if (path.find(static_cast<UChar>(0)) != kNotFound) {
+  if (path.contains('\0')) {
     return false;
   }
 
   // While not [yet] restricted by the spec, '\\' complicates implementation for
   // Chromium.
-  if (path.find('\\') != kNotFound) {
+  if (path.contains('\\')) {
     return false;
   }
 

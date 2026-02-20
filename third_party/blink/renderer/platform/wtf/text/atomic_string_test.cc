@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
@@ -82,6 +83,21 @@ TEST(AtomicStringTest, Contains) {
   EXPECT_TRUE(AtomicString("foo").contains(""));
   EXPECT_TRUE(AtomicString("foo").contains("f"));
   EXPECT_FALSE(AtomicString("foo").contains("F"));
+}
+
+TEST(AtomicStringTest, ContainsChar) {
+  EXPECT_FALSE(AtomicString().contains('\0'));
+  EXPECT_FALSE(AtomicString("").contains('\0'));
+  EXPECT_FALSE(AtomicString(u"").contains('\0'));
+  EXPECT_FALSE(AtomicString("ascii").contains('\0'));
+  EXPECT_FALSE(AtomicString(u"ascii").contains('\0'));
+  EXPECT_TRUE(
+      AtomicString(base::byte_span_from_cstring("as\0cii")).contains('\0'));
+  EXPECT_TRUE(AtomicString(base::span_from_cstring(u"asci\0i")).contains('\0'));
+
+  EXPECT_FALSE(AtomicString("ascii").contains(uchar::kBlackSquare));
+  EXPECT_FALSE(AtomicString(u"ascii").contains(uchar::kBlackSquare));
+  EXPECT_TRUE(AtomicString(u"ascii\u25A0").contains(uchar::kBlackSquare));
 }
 
 TEST(AtomicStringTest, ContainsIgnoringAsciiCase) {

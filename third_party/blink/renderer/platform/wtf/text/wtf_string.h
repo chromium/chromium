@@ -260,6 +260,8 @@ class WTF_EXPORT String {
     return impl_ ? impl_->FindIgnoringAsciiCase(value, start) : kNotFound;
   }
 
+  bool contains(UChar c) const { return find(c) != kNotFound; }
+  bool contains(LChar c) const { return find(c) != kNotFound; }
   bool contains(char c) const { return find(c) != kNotFound; }
   bool contains(const StringView& value) const { return find(value) != npos; }
 

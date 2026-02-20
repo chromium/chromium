@@ -143,7 +143,7 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
 }
 
 void InsertTextCommand::DoApply(EditingState* editing_state) {
-  DCHECK_EQ(text_.find('\n'), kNotFound);
+  DCHECK(!text_.contains('\n'));
 
   // TODO(editing-dev): We shouldn't construct an InsertTextCommand with none or
   // invalid selection.

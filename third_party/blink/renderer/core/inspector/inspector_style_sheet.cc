@@ -157,9 +157,9 @@ String FindMagicComment(const String& content, const String& name) {
   }
   match = match.StripWhiteSpace();
 
-  String disallowed_chars("\"' \t");
+  const StringView disallowed_chars("\"' \t");
   for (uint32_t i = 0; i < match.length(); ++i) {
-    if (disallowed_chars.find(match[i]) != kNotFound) {
+    if (disallowed_chars.contains(match[i])) {
       return g_empty_string;
     }
   }

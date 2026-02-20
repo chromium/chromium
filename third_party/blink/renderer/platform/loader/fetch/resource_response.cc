@@ -457,7 +457,7 @@ AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
   if (kSupportedContentEncodingValues.contains(content_encoding.Ascii())) {
     return AtomicString(content_encoding);
   }
-  if (content_encoding.find(',') != kNotFound) {
+  if (content_encoding.contains(',')) {
     return multiple_value;
   }
   return unknown_value;

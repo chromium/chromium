@@ -138,6 +138,8 @@ class WTF_EXPORT AtomicString {
   }
 
   // Returns `true` if this string contains the specified `c`.
+  bool contains(UChar c) const { return find(c) != kNotFound; }
+  bool contains(LChar c) const { return find(c) != kNotFound; }
   bool contains(char c) const { return find(c) != kNotFound; }
   // Returns `true` if this string contains the specified `value`.
   // If `value` is empty, this returns `true`.

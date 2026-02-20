@@ -253,7 +253,7 @@ void DateTimeFormat::QuoteAndappend(const String& literal,
     return;
   }
 
-  if (literal.find('\'') == kNotFound) {
+  if (!literal.contains('\'')) {
     buffer.Append('\'');
     buffer.Append(literal);
     buffer.Append('\'');

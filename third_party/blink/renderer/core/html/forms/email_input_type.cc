@@ -135,7 +135,7 @@ static bool IsInvalidLocalPartCharacter(UChar ch) {
   if (!IsASCII(ch))
     return true;
   DEFINE_STATIC_LOCAL(const String, valid_characters, (kLocalPartCharacters));
-  return valid_characters.find(ToASCIILower(ch)) == kNotFound;
+  return !valid_characters.contains(ToASCIILower(ch));
 }
 
 static bool IsInvalidDomainCharacter(UChar ch) {

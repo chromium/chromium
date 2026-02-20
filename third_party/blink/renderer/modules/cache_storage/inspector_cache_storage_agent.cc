@@ -77,7 +77,7 @@ namespace {
 String BuildCacheId(const String& storage_key,
                     const std::optional<String>& storage_bucket_name,
                     const String& cache_name) {
-  DCHECK(storage_key.find('|') == kNotFound);
+  DCHECK(!storage_key.contains('|'));
   StringBuilder id;
   id.Append(storage_key);
   if (storage_bucket_name.has_value()) {

@@ -304,7 +304,7 @@ void ReplacementFragment::UpdateFragmentForTextArea() {
       continue;
     }
     String value = node->textContent();
-    if (value.find('\n') == kNotFound) {
+    if (!value.contains('\n')) {
       if (new_fragment) {
         new_fragment->AppendChild(node);
       }

@@ -282,7 +282,7 @@ void RTCRtpTransceiver::setCodecPreferences(
     }
     if (codec->hasSdpFmtpLine()) {
       auto sdpFmtpLine = codec->sdpFmtpLine();
-      if (sdpFmtpLine.find('=') == kNotFound) {
+      if (!sdpFmtpLine.contains('=')) {
         // Some parameters don't follow the key=value form.
         webrtc_codec.parameters.emplace("", sdpFmtpLine.Ascii());
       } else {
