@@ -1078,11 +1078,9 @@ void VariationsService::GetStudiesAvailableToForceFromSeed(
     std::move(done_callback).Run({});
     return;
   }
-  // TODO(crbug.com/41492213): chrome://metrics-internals/#field-trials will not
-  // support studies that are constrained to a layer with LIMITED entropy mode
-  // before limited entropy randomization fully lands.
+
   auto entropy_providers = state_manager_->CreateEntropyProviders(
-      /*enable_limited_entropy_mode=*/false);
+      /*enable_limited_entropy_mode=*/true);
   auto studies = variations::GetStudiesAvailableToForce(
       seed, *entropy_providers, *GetClientFilterableStateForVersion());
   std::move(done_callback).Run(std::move(studies));
