@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_TITLE;
 
 import android.content.Context;
@@ -29,15 +30,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProviderFactory;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link EducationalTipBottomSheetCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,34 +49,31 @@ import java.util.List;
         shadows = {ShadowAppCompatResources.class})
 public class EducationalTipBottomSheetCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private static final List<Integer> sRankedModuleTypes =
-            new ArrayList<>(
-                    List.of(
-                            ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
-                            ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
-                            ModuleType.SIGN_IN_PROMO,
-                            ModuleType.SAVE_PASSWORDS_PROMO,
-                            ModuleType.DEFAULT_BROWSER_PROMO));
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
+    @Mock private Supplier<List<EducationalTipCardProvider>> mEducationalTipCardProviderSupplier;
 
     private Context mContext;
     private EducationalTipBottomSheetCoordinator mEducationalTipBottomSheetCoordinator;
+    private List<EducationalTipCardProvider> mListOfEducationalTipCardProvider;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
+        mListOfEducationalTipCardProvider = createListOfEducationalTipCardProvider();
+        when(mEducationalTipCardProviderSupplier.get())
+                .thenReturn(mListOfEducationalTipCardProvider);
     }
 
     @Test
     @SmallTest
     public void testShowBottomSheet() {
-        SetupListModuleUtils.setRankedModuleTypesForTesting(sRankedModuleTypes);
         mEducationalTipBottomSheetCoordinator =
-                new EducationalTipBottomSheetCoordinator(mActionDelegate);
+                new EducationalTipBottomSheetCoordinator(
+                        mActionDelegate, mEducationalTipCardProviderSupplier);
         PropertyModel model = mEducationalTipBottomSheetCoordinator.getModelForTesting();
         mEducationalTipBottomSheetCoordinator.showBottomSheet();
 
@@ -85,6 +85,24 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
                 "Bottom sheet description should be set",
                 model.get(BOTTOM_SHEET_DESCRIPTION),
                 mContext.getString(R.string.educational_tip_see_more_bottom_sheet_description));
+        Assert.assertEquals(
+                "Bottom sheet list items should be set",
+                model.get(BOTTOM_SHEET_LIST_ITEMS),
+                mListOfEducationalTipCardProvider);
         verify(mBottomSheetController).requestShowContent(any(), /* animate= */ eq(true));
+    }
+
+    private List<EducationalTipCardProvider> createListOfEducationalTipCardProvider() {
+        List<EducationalTipCardProvider> output = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            output.add(
+                    EducationalTipCardProviderFactory.createInstance(
+                            ModuleType.DEFAULT_BROWSER_PROMO,
+                            () -> {},
+                            null,
+                            mActionDelegate,
+                            () -> {}));
+        }
+        return output;
     }
 }

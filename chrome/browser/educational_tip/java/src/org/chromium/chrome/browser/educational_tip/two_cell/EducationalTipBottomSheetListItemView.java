@@ -5,18 +5,48 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import android.content.Context;
-import android.widget.RelativeLayout;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.educational_tip.R;
 
 /**
  * The list item view within a {@link EducationalTipBottomSheetListContainerView} that is in a
  * bottom sheet.
  */
 @NullMarked
-public class EducationalTipBottomSheetListItemView extends RelativeLayout {
-    public EducationalTipBottomSheetListItemView(Context context) {
-        super(context);
+public class EducationalTipBottomSheetListItemView extends ConstraintLayout {
+    private ImageView mIcon;
+    private TextView mTitle;
+    private TextView mDescription;
+
+    public EducationalTipBottomSheetListItemView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mIcon = findViewById(R.id.list_item_icon);
+        mTitle = findViewById(R.id.list_item_title);
+        mDescription = findViewById(R.id.list_item_description);
+    }
+
+    void setIcon(int resId) {
+        mIcon.setImageResource(resId);
+    }
+
+    void setTitle(String text) {
+        mTitle.setText(text);
+    }
+
+    void setDescription(String text) {
+        mDescription.setText(text);
     }
 
     // TODO(crbug.com/479597724): Implement title, description, icon, and button for a list item.

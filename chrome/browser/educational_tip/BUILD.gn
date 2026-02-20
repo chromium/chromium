@@ -85,6 +85,7 @@ android_library("java") {
     "//components/sync/android:sync_java",
     "//third_party/android_deps:com_airbnb_android_lottie_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.educational_tip"
@@ -153,6 +154,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupSyncPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/cards/SavePasswordsPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetListContainerViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellViewBinderUnitTest.java",

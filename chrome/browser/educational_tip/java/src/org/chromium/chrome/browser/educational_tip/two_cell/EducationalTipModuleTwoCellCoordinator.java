@@ -41,8 +41,12 @@ import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Coordinator for a generic two-cell educational tip container. It is responsible for fetching and
@@ -50,6 +54,19 @@ import java.util.Objects;
  */
 @NullMarked
 public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
+    private final Supplier<List<EducationalTipCardProvider>> mEducationalTipCardProviderSupplier =
+            new Supplier<>() {
+                @Override
+                public List<EducationalTipCardProvider> get() {
+                    List<EducationalTipCardProvider> output = new ArrayList<>();
+                    for (int i = 0; i < mCurrentRankedModuleTypes.size(); i++) {
+                        output.add(
+                                mEducationalTipCardProviderBottomSheetMap.get(
+                                        mCurrentRankedModuleTypes.get(i)));
+                    }
+                    return output;
+                }
+            };
     private final @ModuleType int mModuleType;
     private final ModuleDelegate mModuleDelegate;
     private final EducationTipModuleActionDelegate mActionDelegate;
@@ -57,6 +74,9 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
     private final CallbackController mCallbackController = new CallbackController();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final BottomSheetObserver mBottomSheetObserver;
+    private final Map<Integer, EducationalTipCardProvider>
+            mEducationalTipCardProviderBottomSheetMap = new HashMap<>();
+    private List<Integer> mCurrentRankedModuleTypes = new ArrayList<>();
     private @Nullable EducationalTipCardProvider mItem1Provider;
     private @Nullable EducationalTipCardProvider mItem2Provider;
     private @ModuleType int mItem1Type;
@@ -96,14 +116,17 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
      * on the top items.
      */
     private void refreshSlots() {
-        List<Integer> setupListModuleTypes = SetupListModuleUtils.getRankedModuleTypes();
-        assert setupListModuleTypes.size() >= 2 : "Two cell layout requires at least two items";
+        mCurrentRankedModuleTypes = SetupListModuleUtils.getRankedModuleTypes();
+        populateEducationalTipCardProviderMap();
+        assert mCurrentRankedModuleTypes.size() >= 2
+                : "Two cell layout requires at least two items";
 
-        mItem1Type = setupListModuleTypes.get(0);
-        mItem2Type = setupListModuleTypes.get(1);
+        mItem1Type = mCurrentRankedModuleTypes.get(0);
+        mItem2Type = mCurrentRankedModuleTypes.get(1);
 
         EducationalTipBottomSheetCoordinator educationalTipBottomSheetCoordinator =
-                new EducationalTipBottomSheetCoordinator(mActionDelegate);
+                new EducationalTipBottomSheetCoordinator(
+                        mActionDelegate, mEducationalTipCardProviderSupplier);
         mModel.set(SEE_MORE_CLICK_HANDLER, educationalTipBottomSheetCoordinator::showBottomSheet);
 
         Runnable removeModuleCallback = () -> mModuleDelegate.removeModule(getModuleType());
@@ -247,5 +270,23 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
     @Override
     public int getModuleType() {
         return mModuleType;
+    }
+
+    /** Sets the map used to obtain {@EducationalTipCardProvider} based on a {@ModuleType} */
+    public void populateEducationalTipCardProviderMap() {
+        for (int i = 0; i < mCurrentRankedModuleTypes.size(); i++) {
+            @ModuleType int type = mCurrentRankedModuleTypes.get(i);
+            mEducationalTipCardProviderBottomSheetMap.putIfAbsent(
+                    type,
+                    EducationalTipCardProviderFactory.createInstance(
+                            type,
+                            () -> {
+                                mModuleDelegate.onModuleClicked(mModuleType);
+                                SetupListModuleUtils.setModuleCompleted(type);
+                            },
+                            mCallbackController,
+                            mActionDelegate,
+                            /* removeModuleCallback= */ () -> {}));
+        }
     }
 }

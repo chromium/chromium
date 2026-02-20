@@ -19,6 +19,10 @@ public class EducationalTipBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Context mContext;
 
+    /**
+     * @param context Context of the bottom sheet.
+     * @param contentView Main view for the bottom sheet.
+     */
     public EducationalTipBottomSheetContent(Context context, View contentView) {
         mContext = context;
         mContentView = contentView;
@@ -44,8 +48,18 @@ public class EducationalTipBottomSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
+    public float getHalfHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
     public int getPriority() {
-        return BottomSheetContent.ContentPriority.HIGH;
+        return ContentPriority.LOW;
     }
 
     @Override
