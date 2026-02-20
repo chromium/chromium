@@ -8,7 +8,7 @@ This is a testharness.js-based test.
 [FAIL] [required] averagePool2d float32 4D tensor options.roundingType=ceil
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
 [FAIL] [required] averagePool2d float32 4D tensor options.roundingType=ceil and no padding
-  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 50.63130569458008 should be close enough to expected 40.29140853881836 by ULP distance: expected a number less than or equal to 11n but got 2710542n
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 26.860942840576172 should be close enough to expected 40.29140853881836 by ULP distance: expected a number less than or equal to 11n but got 4867889n
 [FAIL] [required] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
 [FAIL] [required] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
@@ -28,7 +28,7 @@ This is a testharness.js-based test.
 [FAIL] [required] averagePool2d float16 4D tensor options.roundingType=ceil
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
 [FAIL] [required] averagePool2d float16 4D tensor options.roundingType=ceil and no padding
-  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 50.625 should be close enough to expected 40.28125 by ULP distance: expected a number less than or equal to 11 but got 331
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 26.859375 should be close enough to expected 40.28125 by ULP distance: expected a number less than or equal to 11 but got 594
 [FAIL] [required] averagePool2d float16 4D tensor options.layout=nhwc and options.roundingType=floor
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
 [FAIL] [required] averagePool2d float16 4D tensor options.layout=nhwc and options.roundingType=ceil
