@@ -105,6 +105,12 @@ class StorageLoadedData {
         TabStateStorageDatabase* database);
 
    private:
+    // Returns the set of nodes that are referenced as children but were not
+    // loaded.
+    absl::flat_hash_set<StorageId> BuildDeletedNodesSet();
+
+    // Reconciles the differences between the divergent nodes and canonical
+    // nodes in the database.
     void ReconcileDivergentNodes(base::PassKey<Builder>,
                                  TabStateStorageDatabase* database);
 

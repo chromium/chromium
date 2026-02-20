@@ -223,6 +223,8 @@ void StorageLoadedData::Builder::ReconcileDivergentNodes(
     }
   }
 
+  absl::flat_hash_set<StorageId> deleted_nodes = BuildDeletedNodesSet();
+
   TabStateStorageDatabase::OpenTransaction* transaction =
       database->CreateTransaction();
   for (auto& [id, divergent_children] : divergent_children_map_) {
@@ -233,14 +235,14 @@ void StorageLoadedData::Builder::ReconcileDivergentNodes(
       bool found_divergent_match = false;
 
       // Append canonical children starting from the first that is not in any
-      // divergent vector.
+      // divergent vector and not deleted.
       for (const auto& canonical_child : canonical_it->second) {
-        if (found_divergent_match) {
+        if (deleted_nodes.contains(canonical_child)) {
+          continue;
+        } else if (found_divergent_match) {
           reconciled_children.push_back(canonical_child);
         } else if (all_divergent_children.find(canonical_child) ==
-                   all_divergent_children.end()) {
-          // TODO(crbug.com/483984954): Needs to handle cases where a deletion
-          // has occurred.
+                       all_divergent_children.end()) {
           found_divergent_match = true;
         }
       }
@@ -266,6 +268,20 @@ void StorageLoadedData::Builder::ReconcileDivergentNodes(
   database->ClearDivergentNodesForWindow(window_tag_, is_off_the_record_);
 
   database->CloseTransaction(transaction);
+}
+
+absl::flat_hash_set<StorageId>
+StorageLoadedData::Builder::BuildDeletedNodesSet() {
+  absl::flat_hash_set<StorageId> deleted_nodes;
+  for (const auto& [_, children] : children_map_) {
+    for (const auto& child_id : children) {
+      if (!children_map_.contains(child_id) &&
+          !loaded_tabs_map_.contains(child_id)) {
+        deleted_nodes.insert(child_id);
+      }
+    }
+  }
+  return deleted_nodes;
 }
 
 std::optional<tabs_pb::Children> StorageLoadedData::Builder::ParseChildren(
