@@ -177,7 +177,6 @@ bool ImageBitmapRenderingContext::PushFrame() {
       return false;
     }
 
-    gfx::Size surface_size(Host()->width(), Host()->height());
     const SkAlphaType alpha_type = GetAlphaType();
     const viz::SharedImageFormat format = GetSharedImageFormat();
     const gfx::ColorSpace color_space = GetColorSpace();
