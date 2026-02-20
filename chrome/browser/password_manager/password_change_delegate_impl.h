@@ -34,6 +34,7 @@ class PasswordFormManager;
 }  // namespace password_manager
 
 class CrossOriginNavigationObserver;
+class DetachedWebContents;
 enum class LoginCheckResult;
 class LoginStateChecker;
 class Profile;
@@ -79,9 +80,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OnOtpFieldDetected();
 
   // Returns the web contents, on which the password change is run.
-  content::WebContents* executor() {
-    return hidden_executor_ ? hidden_executor_.get() : visible_executor_.get();
-  }
+  content::WebContents* executor() const;
 
  private:
   // PasswordChangeDelegate Impl
@@ -136,7 +135,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   raw_ptr<content::WebContents> originator_ = nullptr;
   // If the password change tab is visible to the user, hidden_executor_ will be
   // null, if it's hidden, visible_executor_ will be null.
-  std::unique_ptr<content::WebContents> hidden_executor_;
+  std::unique_ptr<DetachedWebContents> hidden_executor_;
   raw_ptr<content::WebContents> visible_executor_ = nullptr;
 
   const raw_ptr<Profile> profile_ = nullptr;

@@ -14,14 +14,13 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
+#include "chrome/browser/password_manager/password_change/detached_web_contents.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
@@ -106,37 +105,31 @@ std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
   return nullptr;
 }
 
-std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
-                                                        const GURL& url) {
-  scoped_refptr<content::SiteInstance> initial_site_instance_for_new_contents =
-      tab_util::GetSiteInstanceForNewTab(profile, url);
-  std::unique_ptr<content::WebContents> new_web_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          profile, initial_site_instance_for_new_contents));
+std::unique_ptr<DetachedWebContents> CreateDetachedWebContents(
+    Profile* profile,
+    const GURL& url) {
+  auto detached_web_contents =
+      std::make_unique<DetachedWebContents>(profile, url);
 
+  // Manually create ChromeAutofillClient and ChromePasswordManagerClient
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
-  autofill_client_provider.CreateClientForWebContents(new_web_contents.get());
-  ChromePasswordManagerClient::CreateForWebContents(new_web_contents.get());
+  autofill_client_provider.CreateClientForWebContents(
+      detached_web_contents->GetWebContents());
+  ChromePasswordManagerClient::CreateForWebContents(
+      detached_web_contents->GetWebContents());
 
   // Apply client side predictions for WebContents where password change is
   // happening. This helps with correctly identifying change password form.
-  ChromePasswordManagerClient::FromWebContents(new_web_contents.get())
+  ChromePasswordManagerClient::FromWebContents(
+      detached_web_contents->GetWebContents())
       ->ApplyClientSidePredictionOverride();
-
-  new_web_contents->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(url));
-  // Provide more height so that the change password button is visible on
-  // screen.
-  new_web_contents->Resize({0, 0, 1024, 768 * 2});
-
-  return new_web_contents;
+  return detached_web_contents;
 }
 
 void AddPasswordChangeToTabStrip(
     content::WebContents* originator,
-    std::unique_ptr<content::WebContents> password_change_contents,
-    bool is_foreground) {
+    std::unique_ptr<content::WebContents> password_change_contents) {
   CHECK(originator);
   auto* tab_interface = tabs::TabInterface::GetFromContents(originator);
   CHECK(tab_interface);
@@ -144,7 +137,7 @@ void AddPasswordChangeToTabStrip(
       tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
   CHECK(tab_strip_model);
   tab_strip_model->AppendWebContents(std::move(password_change_contents),
-                                     /*foreground=*/is_foreground);
+                                     /*foreground=*/true);
 }
 
 void FocusPasswordChangeTab(content::WebContents* executor) {
@@ -321,6 +314,11 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
           password_manager::prefs::kLastNegativePasswordChangeTimestamp,
           base::Time::Now());
   }
+}
+
+content::WebContents* PasswordChangeDelegateImpl::executor() const {
+  return hidden_executor_ ? hidden_executor_->GetWebContents()
+                          : visible_executor_.get();
 }
 
 void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
@@ -503,8 +501,9 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
         /*navigation_handle_callback=*/{});
     CHECK(web_contents);
   } else if (!visible_executor_) {
-    AddPasswordChangeToTabStrip(originator_, std::move(hidden_executor_),
-                                /*is_foreground=*/true);
+    AddPasswordChangeToTabStrip(
+        originator_,
+        DetachedWebContents::ReleaseWebContents(std::move(hidden_executor_)));
   } else {
     FocusPasswordChangeTab(web_contents);
   }
@@ -589,19 +588,19 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
   login_state_checker_.reset();
   UpdateState(State::kWaitingForChangePasswordForm);
 
-  std::unique_ptr<content::WebContents> change_password_contents =
-      CreateWebContents(profile_, change_password_url_);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kRunPasswordChangeInBackgroundTab)) {
-    visible_executor_ = change_password_contents.get();
-    AddPasswordChangeToTabStrip(originator_,
-                                std::move(change_password_contents),
-                                /*is_foreground=*/false);
+    visible_executor_ = originator_->OpenURL(
+        content::OpenURLParams(GURL(change_password_url_), content::Referrer(),
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK,
+                               /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
   } else {
-    hidden_executor_ = std::move(change_password_contents);
-    CHECK(hidden_executor_);
+    hidden_executor_ =
+        CreateDetachedWebContents(profile_, change_password_url_);
   }
-
+  CHECK(executor());
   auto* client = ChromePasswordManagerClient::FromWebContents(executor());
 
   navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(

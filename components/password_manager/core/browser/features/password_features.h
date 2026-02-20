@@ -203,10 +203,10 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 // the button, which opens the password change form.
 BASE_DECLARE_FEATURE(kUseActionablesForImprovedPasswordChange);
 
-// Improves PSL matching capabilities by utilizing PSL-extension list from
-// affiliation service. It fixes problem with incorrect password suggestions on
-// websites like slack.com.
-BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
+// The feature enables the use of detached Widget during password change
+// to which WebContents is attached. This helps to resolve the problem
+// that requestAnimationFrame() is not fired on a detached WebContents.
+BASE_DECLARE_FEATURE(kUseDetachedWidget);
 
 // Handles user intervention in the Password Change flow for all steps except
 // IS_LOGGED_IN_STEP.

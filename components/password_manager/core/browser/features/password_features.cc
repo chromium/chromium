@@ -179,6 +179,8 @@ BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
 BASE_FEATURE(kUseActionablesForImprovedPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseDetachedWidget, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUserInterventionForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -16,6 +16,8 @@ source_set("password_change") {
     "change_password_form_waiter.h",
     "cross_origin_navigation_observer.cc",
     "cross_origin_navigation_observer.h",
+    "detached_web_contents.cc",
+    "detached_web_contents.h",
     "form_filling_helper.cc",
     "form_filling_helper.h",
     "login_state_checker.cc",
