@@ -1531,7 +1531,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.DiceTokenBindingOutcome" enum="DiceTokenBindingOutcome"
     expires_after="2026-07-05">
   <owner>alexilin@chromium.org</owner>
-  <owner>msalama@chromium.org</owner>
+  <owner>ahijazi@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Outcome of the token binding in Dice signin. Recorded upon a successful
@@ -3718,6 +3718,7 @@ kept as long as profile signout is possible -->
 <histogram name="Signin.TokenBinding.BoundTokenPrevalence"
     enum="TokenBindingBoundTokenPrevalence" expires_after="2026-07-05">
   <owner>alexilin@chromium.org</owner>
+  <owner>ahijazi@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Value indicating how the number of the bound refresh tokens relates to the
@@ -3730,6 +3731,7 @@ kept as long as profile signout is possible -->
 <histogram name="Signin.TokenBinding.BoundToTheSameKey"
     enum="BooleanBoundToTheSameKey" expires_after="2026-07-05">
   <owner>alexilin@chromium.org</owner>
+  <owner>ahijazi@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Whether all refresh tokens in a single profile are bound to the same key.
@@ -3743,6 +3745,7 @@ kept as long as profile signout is possible -->
 <histogram name="Signin.TokenBinding.GenerateAssertionResult"
     enum="TokenBindingGenerateAssertionResult" expires_after="2026-07-05">
   <owner>alexilin@chromium.org</owner>
+  <owner>ahijazi@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the result of the assertion generation for a bound token exchange
@@ -3753,8 +3756,9 @@ kept as long as profile signout is possible -->
 
 <histogram name="Signin.TokenBinding.GenerateRegistrationTokenResult"
     enum="BoundSessionCredentialsRegistrationTokenResult"
-    expires_after="2026-03-01">
+    expires_after="2026-07-05">
   <owner>alexilin@chromium.org</owner>
+  <owner>ahijazi@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the result of generating a registration token for obtaining a bound
