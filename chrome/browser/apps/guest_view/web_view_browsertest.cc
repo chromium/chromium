@@ -3002,10 +3002,11 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
   EXPECT_EQ(GURL(url::kAboutBlankURL), new_guest_rfh->GetLastCommittedURL());
 }
 
-// Verify that we handle gracefully having two webviews in the same
-// BrowsingInstance with COOP values that would normally make it impossible
-// (meaning outside of webviews special case) to group them together.
-// This is a regression test for https://crbug.com/1243711.
+// Before site isolation was supported in webviews, this was a regression
+// test for https://crbug.com/1243711 which verified that we handle having
+// two webviews in the same BrowsingInstance with conflicting COOP values.
+// Now that site isolation is supported, this simply tests that a COOP page
+// can load normally.
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
                        NewWindow_DifferentCoopStatesInRelatedWebviews) {
   // Reusing testNewWindowAndUpdateOpener because it is a convenient way to

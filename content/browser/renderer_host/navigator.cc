@@ -230,14 +230,6 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
         rfh->active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone);
   }
 
-  // Webview tag guests do not follow regular process model decisions. They
-  // always stay in their original SiteInstance, regardless of COOP. Assumption
-  // made below about COOP:same-origin and unsafe-none never being in the same
-  // BrowsingInstance does not hold. See https://crbug.com/1243711.
-  if (rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
-    return;
-  }
-
   // Check if the navigation resulted in having same-origin documents in pages
   // with different COOP status inside the browsing context group.
   RenderFrameHostImpl* top_level_document =
