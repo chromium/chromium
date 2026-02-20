@@ -295,13 +295,6 @@ by a child template that "extends" this file.
                 <data android:mimeType="text/plain"/>
                 <data android:mimeType="application/xhtml+xml"/>
             </intent-filter>
-            <!-- PDF viewing support. -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/pdf" />
-                <data android:scheme="content" />
-            </intent-filter>
             <!-- MHTML support, used for snapshots -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
