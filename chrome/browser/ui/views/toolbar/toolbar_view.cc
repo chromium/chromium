@@ -114,7 +114,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/media_switches.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -416,11 +415,11 @@ void ToolbarView::Init() {
   }
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
-    media_button = std::make_unique<MediaToolbarButtonView>(
-        browser_view_,
-        std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
-  }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  media_button = std::make_unique<MediaToolbarButtonView>(
+      browser_view_,
+      std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
+#endif
 
   // Always add children in order from left to right, for accessibility.
 

@@ -84,18 +84,17 @@ class NoRoutesObserver : public MediaRoutesObserver {
 MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest(
     UiForBrowserTest test_ui_type)
     : test_ui_type_(test_ui_type) {
+#if BUILDFLAG(IS_CHROMEOS)
   feature_list_.InitWithFeatures(
       {
-          media::kGlobalMediaControls,
-#if BUILDFLAG(IS_CHROMEOS)
           // Without this flag, SodaInstaller::GetInstance() fails a DCHECK
           // on Chrome OS. The call to SodaInstaller::GetInstance() is in
           // MediaDialogView::AddedToWidget(), which is called indirectly
           // from MediaDialogView::ShowDialogForPresentationRequest().
           ash::features::kOnDeviceSpeechRecognition,
-#endif
       },
       {});
+#endif
 }
 
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
