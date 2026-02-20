@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -208,9 +210,7 @@ public class TabItemPickerCoordinator {
             return;
         }
 
-        List<Tab> allTabs =
-                TabModelUtils.convertTabListToListOfTabs(
-                        mTabModelSelector.getModel(profile.isIncognitoBranded()));
+        TabModel tabModel = mTabModelSelector.getModel(profile.isIncognitoBranded());
 
         List<Tab> tabsToShow = new ArrayList<>();
         for (long id : cachedTabIds) {
@@ -220,9 +220,12 @@ public class TabItemPickerCoordinator {
         int activeTabCount = 0;
         int cachedTabCount = 0;
         int backgroundTabCount = 0;
+        // We cannot load background tabs in headless mode since the tabs are not attached to an
+        // activity and thus cannot be loaded.
         boolean allowBackgroundTabContextCapture =
-                ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled();
-        for (Tab tab : allTabs) {
+                ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled()
+                        && tabModel.getTabModelType() == TabModelType.STANDARD;
+        for (Tab tab : tabModel) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActive = FuseboxTabUtils.isTabActive(tab);
             boolean isCached = mCachedTabIdsSet.contains(tab.getId());
