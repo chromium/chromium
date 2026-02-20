@@ -11,13 +11,16 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 
+class PrefService;
+
 namespace ash {
 
 // Creates and owns `ash::AuthParts` instance and provides it with
 // browser-specific implementations.
 class ChromeAuthParts : public ash::SessionTerminationManager::Observer {
  public:
-  ChromeAuthParts();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit ChromeAuthParts(PrefService* local_state);
   ~ChromeAuthParts() override;
 
  private:

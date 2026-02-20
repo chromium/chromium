@@ -911,7 +911,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   auth_events_recorder_ =
       base::WrapUnique<AuthEventsRecorder>(new AuthEventsRecorder());
 
-  auth_parts_ = std::make_unique<ChromeAuthParts>();
+  auth_parts_ =
+      std::make_unique<ChromeAuthParts>(g_browser_process->local_state());
 
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }

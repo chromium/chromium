@@ -4,14 +4,15 @@
 
 #include "chrome/browser/ash/login/osauth/chrome_auth_parts.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 
 namespace ash {
 
-ChromeAuthParts::ChromeAuthParts() {
-  auth_parts_ = AuthParts::Create(g_browser_process->local_state());
+ChromeAuthParts::ChromeAuthParts(PrefService* local_state) {
+  CHECK(local_state);
+  auth_parts_ = AuthParts::Create(local_state);
   observation_.Observe(ash::SessionTerminationManager::Get());
 }
 
