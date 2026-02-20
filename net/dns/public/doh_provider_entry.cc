@@ -68,6 +68,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   // The provider names in these entries should be kept in sync with the
   // DohProviderId variant list in
   // tools/metrics/histograms/metadata/net/histograms.xml.
+  //
+  // LINT.IfChange(DohProviderId)
   static const auto entries(base::NoDestructor(std::to_array<DohProviderEntry>(
       {{"CleanBrowsingAdult",
         MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(DohProviderCleanBrowsingAdult,
@@ -117,6 +119,28 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
         /*display_globally=*/true,
         /*display_countries=*/{},
         LoggingLevel::kExtra},
+       {"CloudflareFamily",
+        MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+            DohProviderCloudflareFamily, base::FEATURE_DISABLED_BY_DEFAULT),
+        {"1.1.1.3", "1.0.0.3", "2606:4700:4700::1113", "2606:4700:4700::1003"},
+        {"family.cloudflare-dns.com"},
+        "https://family.cloudflare-dns.com/dns-query",
+        /*ui_name=*/"",
+        /*privacy_policy=*/"",
+        /*display_globally=*/false,
+        /*display_countries=*/{},
+        LoggingLevel::kNormal},
+       {"CloudflareSecurity",
+        MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+            DohProviderCloudflareSecurity, base::FEATURE_DISABLED_BY_DEFAULT),
+        {"1.1.1.2", "1.0.0.2", "2606:4700:4700::1112", "2606:4700:4700::1002"},
+        {"security.cloudflare-dns.com"},
+        "https://security.cloudflare-dns.com/dns-query",
+        /*ui_name=*/"",
+        /*privacy_policy=*/"",
+        /*display_globally=*/false,
+        /*display_countries=*/{},
+        LoggingLevel::kNormal},
        {"Comcast",
         MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(DohProviderComcast,
                                               base::FEATURE_ENABLED_BY_DEFAULT),
@@ -331,6 +355,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
         /*display_globally=*/false,
         /*display_countries=*/{},
         LoggingLevel::kNormal}})));
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:DohProviderId)
 
   static const base::NoDestructor<DohProviderEntry::List> providers(
       base::ToVector(*entries, [](const DohProviderEntry& entry) {
