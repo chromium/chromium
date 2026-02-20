@@ -35,8 +35,6 @@ constexpr CGFloat kPaddingHeight = 50;
   // Override the accessibility ID defined in LaunchScreenViewController.
   self.view.accessibilityIdentifier =
       first_run::kEnterpriseLoadingScreenAccessibilityIdentifier;
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
   __weak EnterpriseLoadScreenViewController* weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                    UITraitCollection* previousCollection) {
@@ -46,7 +44,8 @@ constexpr CGFloat kPaddingHeight = 50;
         weakSelf.traitCollection.preferredContentSizeCategory,
         UIContentSizeCategoryExtraExtraExtraLarge);
   };
-  [self registerForTraitChanges:traits withHandler:handler];
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                    withHandler:handler];
 }
 
 #pragma mark - Private
