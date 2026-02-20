@@ -515,6 +515,9 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
             // Unretained is safe because web_client is calling us.
             base::Unretained(web_client)));
   }
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+  skills_manager().UpdateSkillPreviews(std::nullopt);
+#endif
 }
 
 void Host::WebClientInitializeFailed(GlicWebClientAccess* web_client) {
