@@ -742,6 +742,18 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
 
     base::flat_set<base::UnguessableToken> file_tokens(
         session_handle->GetUploadedContextTokens());
+    // Injected inputs are removed on query submit, so send delete updates.
+    for (const auto& token : file_tokens) {
+      const contextual_search::FileInfo* file_info =
+          session_handle->GetController()->GetFileInfo(token);
+      if (!file_info) {
+        continue;
+      }
+      auto injected_input_id = file_info->GetInjectedInputId();
+      if (injected_input_id.has_value()) {
+        SendDeleteInjectedInputUpdate(injected_input_id.value());
+      }
+    }
     if (overlay_token) {
       file_tokens.insert(*overlay_token);
       // When an overlay token is present, it implies a recent Lens Overlay
@@ -1025,6 +1037,10 @@ void ContextualTasksComposeboxHandler::DeleteContext(
         contextual_session_handle->GetController()->GetFileInfo(file_token);
     if (file_info) {
       deleted_tab_url = file_info->tab_url;
+      auto injected_input_id = file_info->GetInjectedInputId();
+      if (injected_input_id.has_value()) {
+        SendDeleteInjectedInputUpdate(injected_input_id.value());
+      }
     }
   }
 
@@ -1208,4 +1224,16 @@ void ContextualTasksComposeboxHandler::OnSingleTabProcessed(
   pending_delayed_tab_ids_.erase(tab_id);
 
   barrier_closure.Run();
+}
+
+void ContextualTasksComposeboxHandler::SendDeleteInjectedInputUpdate(
+    const std::string& id) {
+  lens::ClientToAimMessage client_to_aim_message;
+  lens::InjectedInputUpdate* injected_input_update =
+      client_to_aim_message.mutable_injected_input_update();
+  injected_input_update->mutable_payload()->set_id(id);
+  injected_input_update->mutable_payload()->set_update_type(
+      lens::InjectedInputUpdatePayload::UpdateType::
+          InjectedInputUpdatePayload_UpdateType_REMOVED);
+  web_ui_interface_->PostMessageToWebview(client_to_aim_message);
 }

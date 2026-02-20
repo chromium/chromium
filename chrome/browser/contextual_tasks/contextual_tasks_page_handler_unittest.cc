@@ -4,13 +4,14 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
-#include <cstdint>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -84,6 +85,16 @@ class MockPage : public mojom::Page {
               (override));
   MOCK_METHOD(void, LockInput, (), (override));
   MOCK_METHOD(void, UnlockInput, (), (override));
+  MOCK_METHOD(void,
+              InjectInput,
+              (const std::string& title,
+               const std::string& thumbnail,
+               const base::UnguessableToken& file_token),
+              (override));
+  MOCK_METHOD(void,
+              RemoveInjectedInput,
+              (const base::UnguessableToken& file_token),
+              (override));
 
   mojo::Receiver<mojom::Page> receiver_{this};
 };

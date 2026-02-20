@@ -13,6 +13,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -290,6 +291,16 @@ export class ContextualTasksAppElement extends CrLitElement {
 
         this.isInBasicMode_ = false;
       }),
+      callbackRouter.injectInput.addListener(
+          (title: string, thumbnail: string, fileToken: UnguessableToken) => {
+            this.$.composebox.injectInput(
+                title, 'chrome://image?url=' + encodeURIComponent(thumbnail),
+                fileToken);
+          }),
+      callbackRouter.removeInjectedInput.addListener(
+          (fileToken: UnguessableToken) => {
+            this.$.composebox.deleteFile(fileToken);
+          }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.setAimUrl.addListener(updateAimUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {

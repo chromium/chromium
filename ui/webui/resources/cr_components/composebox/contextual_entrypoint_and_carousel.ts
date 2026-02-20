@@ -696,19 +696,23 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected onDeleteFile_(
       e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
-    if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
+    this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
+  }
+
+  deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean) {
+    if (!uuidToDelete || !this.files_.has(uuidToDelete)) {
       return;
     }
 
-    const file = this.files_.get(e.detail.uuid);
+    const file = this.files_.get(uuidToDelete);
     if (file?.tabId) {
       this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
           ([id, _]) => id !== file.tabId));
     }
 
     const fromAutoSuggestedChip =
-        e.detail.uuid === this.automaticActiveTabChipToken_ &&
-        (e.detail.fromUserAction === true);
+        uuidToDelete === this.automaticActiveTabChipToken_ &&
+        (fromUserAction === true);
     if (fromAutoSuggestedChip) {
       const metricName = 'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
           this.composeboxSource_;
@@ -718,10 +722,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
-        ([uuid, _]) => uuid !== e.detail.uuid));
+        ([uuid, _]) => uuid !== uuidToDelete));
     this.fire(
         'delete-context',
-        {uuid: e.detail.uuid, fromAutoSuggestedChip: fromAutoSuggestedChip});
+        {uuid: uuidToDelete, fromAutoSuggestedChip: fromAutoSuggestedChip});
   }
 
   private handleProcessFilesError_(error: ProcessFilesError) {

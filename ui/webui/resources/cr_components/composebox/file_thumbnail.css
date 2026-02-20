@@ -114,6 +114,18 @@
   width: var(--file-chip-thumbnail-full-size, 16px);
 }
 
+.injected-input-thumbnail {
+  padding: 0;
+}
+
+.injected-input-img {
+  border-radius: 4px;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
 .pdf-icon {
   background-color: var(--color-composebox-pdf-chip-icon-background,
       --color-composebox-background);

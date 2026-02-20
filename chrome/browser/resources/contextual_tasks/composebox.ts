@@ -15,6 +15,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -399,6 +400,14 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;
     }
+  }
+
+  injectInput(title: string, thumbnail: string, fileToken: UnguessableToken) {
+    this.$.composebox.injectInput(title, thumbnail, fileToken);
+  }
+
+  deleteFile(fileToken: UnguessableToken) {
+    this.$.composebox.deleteFile(fileToken);
   }
 
   get isComposeboxFocusedForTesting() {

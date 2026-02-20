@@ -5,6 +5,7 @@
 module contextual_tasks.mojom;
 
 import "mojo/public/mojom/base/uuid.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 
@@ -182,6 +183,18 @@ interface Page {
   // Called by the browser process (C++) when the AIM server sends a
   // RestoreInput command to show the compose box.
   RestoreInput();
+
+  // Called by the browser process (C++) when the AIM server sends an
+  // InjectInput command to inject an input into the compose box.
+  InjectInput(
+    string title,
+    string thumbnail,
+    mojo_base.mojom.UnguessableToken file_token);
+
+  // Called by the browser process (C++) when the AIM server sends a
+  // RemoveInjectedInput command to remove an injected input from the compose
+  // box.
+  RemoveInjectedInput(mojo_base.mojom.UnguessableToken file_token);
 
   // Communicates to WebUI that the AIM page that is loaded is the zero state.
   // Zero state means no queries have been submitted yet in this thread.
