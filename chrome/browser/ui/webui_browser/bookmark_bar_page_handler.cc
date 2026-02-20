@@ -116,9 +116,7 @@ void WebUIBrowserBookmarkBarPageHandler::GetBookmarkBar(
     // to the WebUI? For now just pick a random number.
     const int max_bookmarks = 20;
     const int bookmark_model_count =
-        bookmark_model_->loaded()
-            ? bookmark_model_->bookmark_bar_node()->children().size()
-            : 0;
+        bookmark_model_->bookmark_bar_node()->children().size();
     int bookmark_count = std::min(max_bookmarks, bookmark_model_count);
     for (int i = 0; i < bookmark_count; i++) {
       bookmarks.push_back(GetBookmarkData(
