@@ -10,11 +10,12 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_delegate.h"
 
-class GURL;
+class WebStateList;
 enum class PasswordSuggestionBottomSheetExitReason;
 
 @class FormSuggestion;
 @protocol CredentialSuggestionBottomSheetConsumer;
+@protocol CredentialSuggestionBottomSheetPresenter;
 
 // Base class for the mediators responsible for fetching and handling the
 // password and passkey suggestions shown in the Credential Suggestion Bottom
@@ -25,9 +26,13 @@ enum class PasswordSuggestionBottomSheetExitReason;
 // The consumer for this mediator.
 @property(nonatomic, weak) id<CredentialSuggestionBottomSheetConsumer> consumer;
 
-// Designated initializer. `URL` is the origin for which the credentials will be
-// fetched for.
-- (instancetype)initWithURL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
+// Presenter that controls the presentation of the bottom sheet.
+@property(nonatomic, weak) id<CredentialSuggestionBottomSheetPresenter>
+    presenter;
+
+// Designated initializer. `webStateList` is the list of web states to observe.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

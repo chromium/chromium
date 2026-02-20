@@ -360,8 +360,7 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
           profilePasswordStore:store_
           accountPasswordStore:nullptr
         sharedURLLoaderFactory:nullptr
-             engagementTracker:nil
-                     presenter:nil];
+             engagementTracker:nil];
 
     // Run the queued JS feature callback.
     base::RunLoop().RunUntilIdle();

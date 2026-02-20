@@ -31,7 +31,6 @@ class PasswordStoreInterface;
 class FaviconLoader;
 class PrefService;
 class WebStateList;
-class GURL;
 
 @class FormSuggestion;
 
@@ -59,11 +58,9 @@ class GURL;
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
-                 presenter:
-                     (id<CredentialSuggestionBottomSheetPresenter>)presenter
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithURL:(const GURL&)URL NS_UNAVAILABLE;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 

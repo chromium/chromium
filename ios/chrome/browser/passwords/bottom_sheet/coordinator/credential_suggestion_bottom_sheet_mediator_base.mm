@@ -4,15 +4,21 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
-@interface CredentialSuggestionBottomSheetMediatorBase ()
+@interface CredentialSuggestionBottomSheetMediatorBase () <
+    WebStateListObserving>
 
 // Origin to fetch credentials for.
 @property(nonatomic, assign) GURL URL;
@@ -23,14 +29,30 @@
 // List of suggestions to be shown in the bottom sheet.
 @property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
+// The WebStateList observed by this mediator.
+@property(nonatomic, readonly) WebStateList* webStateList;
+
 @end
 
-@implementation CredentialSuggestionBottomSheetMediatorBase
+@implementation CredentialSuggestionBottomSheetMediatorBase {
+  // Bridge for observing WebStateList events.
+  std::optional<WebStateListObserverBridge> _webStateListObserver;
+  std::optional<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
+      _webStateListObservation;
+}
 
-- (instancetype)initWithURL:(const GURL&)URL {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
-    _URL = URL;
+    _webStateList = webStateList;
+
+    // Create and register the observers.
+    _webStateListObserver.emplace(self);
+    _webStateListObservation.emplace(&(*_webStateListObserver));
+    _webStateListObservation->Observe(_webStateList);
+
+    _URL = _webStateList->GetActiveWebState()->GetLastCommittedURL();
 
     _domain = @"";
     if (!_URL.is_empty()) {
@@ -55,6 +77,9 @@
 }
 
 - (void)disconnect {
+  _webStateListObservation.reset();
+  _webStateListObserver.reset();
+  _webStateList = nullptr;
 }
 
 - (BOOL)hasSuggestions {
@@ -79,6 +104,35 @@
 
 - (void)loadFaviconWithBlockHandler:
     (FaviconLoader::FaviconAttributesCompletionBlock)faviconLoadedBlock {
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (status.active_web_state_change()) {
+    [self onWebStateChanged];
+  }
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  DCHECK_EQ(webStateList, _webStateList);
+  [self onWebStateChanged];
+}
+
+#pragma mark - Private
+
+// Closes the current bottom sheet when the web state changes.
+- (void)onWebStateChanged {
+  // Disconnect so anything that relies on the webstate behind the mediator can
+  // avoid using the mediator's objects once the webstate is destroyed.
+  [self disconnect];
+
+  // As there is no more context for showing the bottom sheet, end the
+  // presentation.
+  [self.presenter endPresentation];
 }
 
 @end

@@ -20,6 +20,9 @@
 // List of suggestions to be shown in the bottom sheet.
 @property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
+// The WebStateList observed by this mediator.
+@property(nonatomic, readonly) WebStateList* webStateList;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_BASE_SUBCLASSING_H_

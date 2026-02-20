@@ -16,11 +16,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation PasskeySuggestionBottomSheetMediator {
-  // The WebStateList observed by this mediator and the observer bridge.
-  // TODO(crbug.com/464290670): Make this mediator observe the WebStateList via
-  // CredentialSuggestionBottomSheetMediatorBase.
-  raw_ptr<WebStateList> _webStateList;
-
   // Information of the passkey request which triggered the bottom sheet.
   std::unique_ptr<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
 
@@ -32,16 +27,14 @@
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)
                                          requestInfo {
-  self = [super
-      initWithURL:webStateList->GetActiveWebState()->GetLastCommittedURL()];
+  self = [super initWithWebStateList:webStateList];
   if (self) {
-    _webStateList = webStateList;
     _requestInfo = std::make_unique<webauthn::IOSPasskeyClient::RequestInfo>(
         std::move(requestInfo));
 
     _webAuthnCredentialsDelegate =
         webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
-            _webStateList->GetActiveWebState())
+            webStateList->GetActiveWebState())
             ->GetDelegateForFrame(_requestInfo->frame_id);
     if (_webAuthnCredentialsDelegate) {
       base::expected<const std::vector<password_manager::PasskeyCredential>*,
@@ -75,7 +68,8 @@
 }
 
 - (void)disconnect {
-  _webStateList = nullptr;
+  [super disconnect];
+
   _requestInfo.reset();
   _webAuthnCredentialsDelegate = nullptr;
 }

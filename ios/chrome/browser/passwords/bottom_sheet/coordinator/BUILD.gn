@@ -28,7 +28,6 @@ source_set("coordinator") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",
     "//components/password_manager/ios:features",
     "//components/prefs",

@@ -145,8 +145,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
           profilePasswordStore:profilePasswordStore
           accountPasswordStore:accountPasswordStore
         sharedURLLoaderFactory:sharedURLLoaderFactory
-             engagementTracker:engagementTracker
-                     presenter:self];
+             engagementTracker:engagementTracker];
   } else {
     CHECK(_requestInfo.has_value());
 
@@ -154,6 +153,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
         initWithWebStateList:webStateList
                  requestInfo:std::move(*_requestInfo)];
   }
+  _mediator.presenter = self;
 
   _viewController = [[CredentialSuggestionBottomSheetViewController alloc]
       initWithHandler:self
