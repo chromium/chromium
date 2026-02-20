@@ -19,10 +19,6 @@ namespace signin {
 class ActivePrimaryAccountsMetricsRecorder;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-extern const char kExplicitSigninMigrationHistogramName[];
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 // This class should be used to records metrics related to sign in events.
 // Some metrics might not be session bound, needing some information to be
 // stored through prefs.
@@ -30,23 +26,6 @@ extern const char kExplicitSigninMigrationHistogramName[];
 class SigninMetricsService : public KeyedService,
                              public signin::IdentityManager::Observer {
  public:
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(ExplicitSigninMigration)
-  enum class ExplicitSigninMigration {
-    kMigratedSignedOut = 0,
-    kMigratedSignedIn = 1,
-    kMigratedSyncing = 2,
-
-    kNotMigratedSignedIn = 3,
-    kNotMigratedSyncing = 4,
-
-    kMaxValue = kNotMigratedSyncing,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ExplicitSigninMigration)
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
   // `active_primary_accounts_metrics_recorder` may be null (this should happen
   // only in tests).
   explicit SigninMetricsService(signin::IdentityManager& identity_manager,
@@ -83,7 +62,6 @@ class SigninMetricsService : public KeyedService,
       signin_metrics::SourceForRefreshTokenOperation token_operation_source);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void RecordExplicitSigninMigrationStatus();
 
   // Returns the time of the web signin for the given account, or
   // `std::nullopt` if the `account_id` was not previously signed in on the web.

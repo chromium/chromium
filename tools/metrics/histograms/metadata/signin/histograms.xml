@@ -1573,24 +1573,13 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.ExplicitSigninMigration" enum="ExplicitSigninMigration"
-    expires_after="2026-07-12">
-  <owner>droger@chromium.org</owner>
-  <owner>rsult@google.com</owner>
-  <summary>
-    Migration status for the explicit signin migration from Dice automatic
-    signin. Recorded for each profile when it is loaded.
-  </summary>
-</histogram>
-
 <histogram name="Signin.ExplicitSigninMigration.FromSync" enum="BooleanSuccess"
     expires_after="2026-08-02">
   <owner>droger@chromium.org</owner>
   <owner>rsult@google.com</owner>
   <summary>
     Logs a record in the &quot;Success&quot; bucket when a sync profile is
-    migrated to explicit browser sign-in. Recorded on profile load, before
-    histogram Signin.ExplicitSigninMigration is recorded.
+    migrated to explicit browser sign-in. Recorded on profile load.
   </summary>
 </histogram>
 

@@ -551,51 +551,6 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
       signin_metrics::AccessPoint::kWebSignin, 1);
 }
 
-TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
-  {
-    base::HistogramTester histogram_tester;
-    CreateSigninMetricsService();
-    histogram_tester.ExpectUniqueSample(
-        kExplicitSigninMigrationHistogramName,
-        SigninMetricsService::ExplicitSigninMigration::kMigratedSignedOut,
-        /*expected_bucket_count=*/1);
-  }
-
-  Signin("test@gmail.com", signin_metrics::AccessPoint::kWebSignin);
-  ASSERT_FALSE(pref_service().GetBoolean(prefs::kExplicitBrowserSignin));
-
-  {
-    base::HistogramTester histogram_tester;
-    CreateSigninMetricsService();
-    histogram_tester.ExpectUniqueSample(
-        kExplicitSigninMigrationHistogramName,
-        SigninMetricsService::ExplicitSigninMigration::kNotMigratedSignedIn,
-        /*expected_bucket_count=*/1);
-  }
-
-  pref_service().SetBoolean(prefs::kExplicitBrowserSignin, true);
-
-  {
-    base::HistogramTester histogram_tester;
-    CreateSigninMetricsService();
-    histogram_tester.ExpectUniqueSample(
-        kExplicitSigninMigrationHistogramName,
-        SigninMetricsService::ExplicitSigninMigration::kMigratedSignedIn,
-        /*expected_bucket_count=*/1);
-  }
-
-  EnableSync("test@gmail.com");
-
-  {
-    base::HistogramTester histogram_tester;
-    CreateSigninMetricsService();
-    histogram_tester.ExpectUniqueSample(
-        kExplicitSigninMigrationHistogramName,
-        SigninMetricsService::ExplicitSigninMigration::kMigratedSyncing,
-        /*expected_bucket_count=*/1);
-  }
-}
-
 TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();

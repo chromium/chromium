@@ -27,11 +27,6 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kExplicitSigninMigrationHistogramName[] =
-    "Signin.ExplicitSigninMigration";
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 namespace {
 
 const char kSigingPendingResolutionTimeBaseHistogram[] =
@@ -241,10 +236,6 @@ SigninMetricsService::SigninMetricsService(
           active_primary_accounts_metrics_recorder),
       management_type_recorder_(identity_manager) {
   identity_manager_scoped_observation_.Observe(&identity_manager_.get());
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  RecordExplicitSigninMigrationStatus();
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   UpdateIsManagedForAllAccounts();
 }
@@ -482,26 +473,6 @@ void SigninMetricsService::OnRefreshTokensLoaded() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-void SigninMetricsService::RecordExplicitSigninMigrationStatus() {
-  ExplicitSigninMigration explicit_signin_migration =
-      ExplicitSigninMigration::kMigratedSignedOut;
-  const bool explicit_signin_pref =
-      pref_service_->GetBoolean(prefs::kExplicitBrowserSignin);
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    explicit_signin_migration =
-        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSyncing
-                             : ExplicitSigninMigration::kNotMigratedSyncing;
-  } else if (identity_manager_->HasPrimaryAccount(
-                 signin::ConsentLevel::kSignin)) {
-    explicit_signin_migration =
-        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSignedIn
-                             : ExplicitSigninMigration::kNotMigratedSignedIn;
-  }
-
-  base::UmaHistogramEnumeration(kExplicitSigninMigrationHistogramName,
-                                explicit_signin_migration);
-}
 
 void SigninMetricsService::MaybeRecordMetricsForPromoShowCountAtSignin(
     const CoreAccountInfo& account_info,
