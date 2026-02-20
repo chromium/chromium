@@ -25,36 +25,46 @@ found in the LICENSE file.
         android:src="@drawable/drag_handlebar"
         app:tint="@macro/drag_handle_color" />
 
-<!--    TODO(crbug.com/479597724): Implement bottom sheet layout.-->
-
-    <ImageView
-        android:id="@+id/setup_list_bottom_sheet_icon"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/educational_tip_setup_list_see_more_bottom_sheet_icon_height"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="@dimen/educational_tip_setup_list_see_more_bottom_sheet_icon_margin"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/chrome_sync_logo" />
-
-    <TextView
-        android:id="@+id/setup_list_bottom_sheet_title"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+        android:orientation="vertical"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/setup_list_bottom_sheet_icon"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/educational_tip_setup_list_see_more_bottom_sheet_icon_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="@dimen/educational_tip_setup_list_see_more_bottom_sheet_icon_margin"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/chrome_sync_logo" />
 
-    <TextView
-        android:id="@+id/setup_list_bottom_sheet_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/educational_tip_setup_list_see_more_description_margin_top"
-        android:layout_marginBottom="@dimen/educational_tip_setup_list_see_more_description_margin_bottom"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+            <TextView
+                android:id="@+id/setup_list_bottom_sheet_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"/>
 
-    <org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView
-        android:id="@+id/setup_list_bottom_sheet_container_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView>
+            <TextView
+                android:id="@+id/setup_list_bottom_sheet_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/educational_tip_setup_list_see_more_description_margin_top"
+                android:layout_marginBottom="@dimen/educational_tip_setup_list_see_more_description_margin_bottom"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+            <org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView
+                android:id="@+id/setup_list_bottom_sheet_container_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

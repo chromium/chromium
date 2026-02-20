@@ -20,12 +20,12 @@ import org.chromium.chrome.browser.educational_tip.R;
  * bottom sheet.
  */
 @NullMarked
-public class EducationalTipBottomSheetListItemView extends ConstraintLayout {
+public class EducationalTipSetupListBottomSheetListItemView extends ConstraintLayout {
     private ImageView mIcon;
     private TextView mTitle;
     private TextView mDescription;
 
-    public EducationalTipBottomSheetListItemView(Context context, @Nullable AttributeSet attrs) {
+    public EducationalTipSetupListBottomSheetListItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -48,6 +48,4 @@ public class EducationalTipBottomSheetListItemView extends ConstraintLayout {
     void setDescription(String text) {
         mDescription.setText(text);
     }
-
-    // TODO(crbug.com/479597724): Implement title, description, icon, and button for a list item.
 }

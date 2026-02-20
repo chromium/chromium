@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.educational_tip.R;
 import java.util.List;
 
 /**
- * The container view holding multiple {@link EducationalTipBottomSheetListItemView} in a bottom
- * sheet.
+ * The container view holding multiple {@link EducationalTipSetupListBottomSheetListItemView} in a
+ * bottom sheet.
  */
 @NullMarked
 public class EducationalTipBottomSheetListContainerView extends LinearLayout {
@@ -39,8 +39,8 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
 
         for (int i = 0; i < rankedEducationalTips.size(); i++) {
             EducationalTipCardProvider educationalTip = rankedEducationalTips.get(i);
-            EducationalTipBottomSheetListItemView listItemView =
-                    (EducationalTipBottomSheetListItemView) createListItemView();
+            EducationalTipSetupListBottomSheetListItemView listItemView =
+                    (EducationalTipSetupListBottomSheetListItemView) createListItemView();
             listItemView.setIcon(educationalTip.getCardImage());
             listItemView.setTitle(educationalTip.getCardTitle());
             listItemView.setDescription(educationalTip.getCardDescription());
@@ -52,6 +52,20 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
                             mDismissBottomSheetRunnable.run();
                         }
                     });
+            // Set the custom border radius for first and last list items.
+            if (i == 0) {
+                listItemView.setBackground(
+                        getContext()
+                                .getDrawable(
+                                        R.drawable
+                                                .educational_tip_setup_list_bottom_sheet_first_list_item_background));
+            } else if (i == rankedEducationalTips.size() - 1) {
+                listItemView.setBackground(
+                        getContext()
+                                .getDrawable(
+                                        R.drawable
+                                                .educational_tip_setup_list_bottom_sheet_last_list_item_background));
+            }
 
             addView(listItemView);
         }
@@ -63,7 +77,10 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
 
     View createListItemView() {
         return LayoutInflater.from(getContext())
-                .inflate(R.layout.educational_tip_bottom_sheet_list_item_view, this, false);
+                .inflate(
+                        R.layout.educational_tip_setup_list_bottom_sheet_list_item_view,
+                        this,
+                        false);
     }
 
     /** Clears {@link View.OnClickListener} of each list item inside this container view. */

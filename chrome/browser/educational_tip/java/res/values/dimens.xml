@@ -49,6 +49,14 @@ found in the LICENSE file.
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_height">36dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_description_margin_top">4dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_description_margin_bottom">24dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_container_corner_radius">16dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_height">84dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_padding">16dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_icon_height">40dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_icon_width">40dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_margin">12dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_margin_bottom">2dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_corner_radius">4dp</dimen>
 
   <!-- Educational tip setup list celebratory promo dimens -->
   <dimen name="setup_list_celebratory_promo_padding_bottom">34dp</dimen>
