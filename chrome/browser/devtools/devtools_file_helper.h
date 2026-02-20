@@ -180,7 +180,7 @@ class DevToolsFileHelper {
   void OnOpenItemComplete(const base::FilePath& path,
                           platform_util::OpenOperationResult result);
   void SaveToFileSelected(const std::string& url,
-                          const std::string& content,
+                          std::string content,
                           bool is_base64,
                           SaveCallback callback,
                           const ui::SelectedFileInfo& file_info);
