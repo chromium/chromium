@@ -4072,7 +4072,6 @@ crbug.com/347071495 external/wpt/svg/animations/conditional-processing-01.html [
 crbug.com/347071495 external/wpt/svg/animations/switch-animation-02.html [ Failure ]
 crbug.com/347804255 [ Mac14 ] virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
 crbug.com/347804255 [ Win11-arm64 ] virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
-crbug.com/347055177 external/wpt/geolocation/getCurrentPosition_permission_allow.https.html [ Timeout ]
 crbug.com/347055177 external/wpt/geolocation/non-fully-active.https.html [ Timeout ]
 crbug.com/345936780 [ Mac12 ] external/wpt/editing/other/exec-command-with-text-editor.tentative.html?type=text [ Timeout ]
 crbug.com/346368803 [ Mac12 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-not-found.html [ Timeout ]
