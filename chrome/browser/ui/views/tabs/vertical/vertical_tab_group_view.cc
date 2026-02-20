@@ -390,6 +390,45 @@ void VerticalTabGroupView::OnTabDragExited(const gfx::Point& point_in_screen) {
   VerticalDraggedTabsContainer::OnTabDragExited(point_in_screen);
 }
 
+std::optional<BrowserRootView::DropIndex>
+VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
+  if (!collection_node_) {
+    return std::nullopt;
+  }
+  // Use the vertical position to find the child view being dragged over.
+  if (loc_in_group.y() < group_header_->bounds().bottom()) {
+    // Determine whether the drop is on the leading (top) or trailing
+    // (bottom) half of the header. If in the top half, then we the drag
+    // is considered to be above the group.
+    const bool is_leading =
+        loc_in_group.y() < group_header_->bounds().CenterPoint().y();
+    return GetDragHandler().GetLinkDropIndexForNode(
+        *collection_node_,
+        is_leading ? std::make_optional(DragPositionHint::kTop) : std::nullopt);
+  }
+
+  for (const auto& child_node : collection_node_->children()) {
+    const auto* view = child_node->view();
+    CHECK(view);
+    if (loc_in_group.y() > view->bounds().bottom()) {
+      continue;
+    }
+
+    gfx::Point loc_in_child = loc_in_group;
+    views::View::ConvertPointToTarget(this, view, &loc_in_child);
+    // Determine whether the drop is on the leading (top) or trailing
+    // (bottom) half of the view.
+    const bool is_leading = loc_in_child.y() < view->height() / 2;
+    return GetDragHandler().GetLinkDropIndexForNode(
+        *child_node,
+        is_leading ? DragPositionHint::kTop : DragPositionHint::kBottom);
+  }
+
+  // Fallback to the end of the group.
+  return GetDragHandler().GetLinkDropIndexForNode(*collection_node_,
+                                                  DragPositionHint::kBottom);
+}
+
 void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
   CHECK(collection_node_);
   GetDragHandler().InitializeDrag(*collection_node_, event);

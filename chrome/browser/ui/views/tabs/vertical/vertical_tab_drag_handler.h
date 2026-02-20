@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -20,6 +21,7 @@
 
 class TabCollectionNode;
 class TabStripModel;
+class VerticalTabLinkDropHandler;
 
 enum class DragPositionHint {
   kTop,    // The drag is at the top of the drag target.
@@ -72,13 +74,15 @@ class VerticalTabDragHandler {
   // view. This method converts `view` to its actual tab view, or nullptr
   // if this handler doesn't manage it.
   virtual views::View* ViewFromTabSlot(TabSlotView* view) const = 0;
+
+  // Returns the DropIndex for a given node and position hint.
+  virtual std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForNode(
+      const TabCollectionNode& node,
+      std::optional<DragPositionHint> position_hint) const = 0;
 };
 
 // Implements a minimal drag context to interact with the central
 // `TabDragController`.
-// TODO(crbug.com/439963720): The following is an incremental checklist of
-// support that needs to be added:
-// - Dragging pinned tab (split tabs, tab group, multi-selection).
 class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    public TabDragContext {
   METADATA_HEADER(VerticalTabDragHandlerImpl, TabDragContext)
@@ -107,6 +111,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   bool IsDraggingPinnedTabs() const override;
   bool IsDraggingGroups() const override;
   views::View* ViewFromTabSlot(TabSlotView* view) const override;
+  std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForNode(
+      const TabCollectionNode& node,
+      std::optional<DragPositionHint> position_hint) const override;
 
   // TabDragContext
   bool CanAcceptEvent(const ui::Event& event) override;
@@ -189,6 +196,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   const raw_ref<TabStripModel> tab_strip_model_;
   const raw_ref<TabCollectionNode> root_node_;
+
+  std::unique_ptr<VerticalTabLinkDropHandler> link_drop_handler_;
 
   // Null if this handler is not managing a dragging session.
   std::unique_ptr<TabDragController> drag_controller_ = nullptr;

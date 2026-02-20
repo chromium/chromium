@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_dragged_tabs_container.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -48,6 +49,9 @@ class VerticalUnpinnedTabContainerView
   // VerticalDraggedTabsContainer:
   VerticalDraggedTabsContainer& GetTabDragTarget(
       const gfx::Point& point_in_screen) override;
+
+  std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
+      const gfx::Point& point_in_local_coords);
 
  private:
   // VerticalDraggedTabsContainer:

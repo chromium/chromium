@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_link_drop_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_collection.h"
@@ -93,7 +94,10 @@ const TabGroup& TabGroupDataFromNode(const TabCollectionNode& node) {
 VerticalTabDragHandlerImpl::VerticalTabDragHandlerImpl(
     TabStripModel& tab_strip_model,
     TabCollectionNode& root_node)
-    : tab_strip_model_(tab_strip_model), root_node_(root_node) {}
+    : tab_strip_model_(tab_strip_model),
+      root_node_(root_node),
+      link_drop_handler_(
+          std::make_unique<VerticalTabLinkDropHandler>(tab_strip_model)) {}
 
 VerticalTabDragHandlerImpl::~VerticalTabDragHandlerImpl() = default;
 
@@ -514,6 +518,13 @@ views::View* VerticalTabDragHandlerImpl::ViewFromTabSlot(
   }
 
   return node.view();
+}
+
+std::optional<BrowserRootView::DropIndex>
+VerticalTabDragHandlerImpl::GetLinkDropIndexForNode(
+    const TabCollectionNode& node,
+    std::optional<DragPositionHint> position_hint) const {
+  return link_drop_handler_->GetDropIndexForNode(node, position_hint);
 }
 
 bool VerticalTabDragHandlerImpl::CanAcceptEvent(const ui::Event& event) {

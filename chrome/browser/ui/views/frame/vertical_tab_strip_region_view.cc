@@ -382,18 +382,46 @@ TabDragContext* VerticalTabStripRegionView::GetDragContext() {
   return drag_handler_->GetDragContext();
 }
 
-std::optional<BrowserRootView::DropIndex>
-VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
-  return std::nullopt;
-}
-
 BrowserRootView::DropTarget* VerticalTabStripRegionView::GetDropTarget(
     gfx::Point loc_in_local_coords) {
+  if (tab_strip_view_) {
+    if (tab_strip_view_->bounds().Contains(loc_in_local_coords)) {
+      return this;
+    }
+  }
   return nullptr;
 }
 
 views::View* VerticalTabStripRegionView::GetViewForDrop() {
-  return nullptr;
+  return this;
+}
+
+std::optional<BrowserRootView::DropIndex>
+VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
+  gfx::Point loc_in_tab_strip = event.location();
+  views::View::ConvertPointToTarget(this, tab_strip_view_, &loc_in_tab_strip);
+
+  // Check unpinned tabs.
+  VerticalUnpinnedTabContainerView* unpinned_container =
+      GetUnpinnedTabsContainer();
+  if (unpinned_container) {
+    gfx::Point loc_in_unpinned = views::View::ConvertPointToTarget(
+        this, unpinned_container, event.location());
+    if (loc_in_unpinned.y() >= 0 &&
+        loc_in_unpinned.y() < unpinned_container->height()) {
+      return unpinned_container->GetLinkDropIndex(loc_in_unpinned);
+    }
+  }
+
+  // If it's between containers or at the end, return the end of the unpinned
+  // container.
+  if (unpinned_container) {
+    return unpinned_container->GetLinkDropIndex(
+        gfx::Point(0, unpinned_container->height()));
+  }
+
+  // TODO(crbug.com/485262103): Handle dragging over pinned tabs.
+  return std::nullopt;
 }
 
 void VerticalTabStripRegionView::SetTabStripObserver(

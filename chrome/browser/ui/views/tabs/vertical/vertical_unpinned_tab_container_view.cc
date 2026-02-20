@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scroll_view.h"
@@ -161,6 +163,52 @@ gfx::Size VerticalUnpinnedTabContainerView::GetMinimumSize() const {
       (num_children > 1 ? kTabVerticalPadding : 0);
   return gfx::Size(GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
                    min_height);
+}
+
+std::optional<BrowserRootView::DropIndex>
+VerticalUnpinnedTabContainerView::GetLinkDropIndex(
+    const gfx::Point& loc_in_container) {
+  if (!collection_node_) {
+    return std::nullopt;
+  }
+  for (auto& child_node : collection_node_->children()) {
+    auto* view = child_node->view();
+    CHECK(view);
+    if (loc_in_container.y() >= view->bounds().bottom()) {
+      continue;
+    }
+
+    if (child_node->type() == TabCollectionNode::Type::GROUP) {
+      auto* group_view = views::AsViewClass<VerticalTabGroupView>(view);
+      if (group_view->IsCollapsed()) {
+        gfx::Point loc_in_group = loc_in_container;
+        views::View::ConvertPointToTarget(this, group_view, &loc_in_group);
+        const bool is_leading =
+            loc_in_group.y() <
+            group_view->group_header()->bounds().CenterPoint().y();
+        return GetDragHandler().GetLinkDropIndexForNode(
+            *group_view->collection_node(),
+            is_leading ? DragPositionHint::kTop : DragPositionHint::kBottom);
+      }
+      // Recursive call into the group view.
+      gfx::Point loc_in_group =
+          views::View::ConvertPointToTarget(this, group_view, loc_in_container);
+      return group_view->GetLinkDropIndex(loc_in_group);
+    }
+
+    gfx::Point loc_in_child =
+        views::View::ConvertPointToTarget(this, view, loc_in_container);
+    // Determine whether the drop is on the leading (top) or trailing
+    // (bottom) half of the view.
+    const bool is_leading = loc_in_child.y() < view->height() / 2;
+    return GetDragHandler().GetLinkDropIndexForNode(
+        *child_node,
+        is_leading ? DragPositionHint::kTop : DragPositionHint::kBottom);
+  }
+
+  // Fallback to the end of the container.
+  return GetDragHandler().GetLinkDropIndexForNode(*collection_node_,
+                                                  std::nullopt);
 }
 
 bool VerticalUnpinnedTabContainerView::IsViewDragging(

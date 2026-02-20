@@ -28,6 +28,7 @@ source_set("vertical") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/tabs/shared",
     "//components/tabs",
@@ -53,6 +54,8 @@ source_set("impl") {
     "vertical_tab_group_header_view.h",
     "vertical_tab_group_view.cc",
     "vertical_tab_group_view.h",
+    "vertical_tab_link_drop_handler.cc",
+    "vertical_tab_link_drop_handler.h",
     "vertical_tab_strip_bottom_container.cc",
     "vertical_tab_strip_scroll_bar.cc",
     "vertical_tab_strip_top_container.cc",
@@ -109,6 +112,7 @@ source_set("browser_tests") {
     "tab_collection_node_browsertest.cc",
     "vertical_split_tab_view_browsertest.cc",
     "vertical_tab_group_view_browsertest.cc",
+    "vertical_tab_strip_link_drag_browsertest.cc",
     "vertical_tab_view_browsertest.cc",
   ]
   deps = [
