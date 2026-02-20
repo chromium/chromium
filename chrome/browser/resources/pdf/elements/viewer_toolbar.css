@@ -170,10 +170,23 @@ cr-progress,
 }
 
 <if expr="enable_glic">
+#glic-controls {
+  align-items: center;
+  display: flex;
+}
+
+#glic-controls .vertical-separator {
+  margin-inline: 6px;
+}
+
 #glic-summarize-button {
-  background-color: #a6c6fa;
-  color: #0e326f;
-  margin-inline-end: 16px;
+  --cr-button-text-color: #e3e3e3;
+  --cr-focus-outline-color:var(--viewer-icon-focus-outline-color);
+  --cr-hover-background-color: rgba(253, 252, 251, 0.10);
+  border: none;
+  font-weight: 400;
+  height: 36px;
+  padding: 0 8px;
 }
 </if>
 
