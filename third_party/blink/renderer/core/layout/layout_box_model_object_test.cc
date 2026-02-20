@@ -218,7 +218,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
   )HTML");
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -260,7 +260,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLConstraints) {
   )HTML");
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -308,7 +308,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineConstraints) {
 
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   EXPECT_EQ(50.f, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -365,7 +365,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   //                         sticky
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   EXPECT_EQ(50.f, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -406,7 +406,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTransforms) {
   )HTML");
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -443,7 +443,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionPercentageStyles) {
   )HTML");
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -485,7 +485,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionContainerIsScroller) {
   )HTML");
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -520,7 +520,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionAnonymousContainer) {
   )HTML");
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
@@ -917,7 +917,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNested) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, scrollable_area->ScrollPosition().y());
 
@@ -948,7 +948,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionChildHasLargerTop) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, scrollable_area->ScrollPosition().y());
 
@@ -979,7 +979,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionParentHasLargerTop) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, scrollable_area->ScrollPosition().y());
 
@@ -1010,7 +1010,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionChildPushingOutsideParent) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, scrollable_area->ScrollPosition().y());
 
@@ -1046,7 +1046,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTripleNestedDiv) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, scrollable_area->ScrollPosition().y());
 
@@ -1085,7 +1085,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 150));
   ASSERT_EQ(150.0, scrollable_area->ScrollPosition().y());
 
@@ -1099,7 +1099,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
   // the table headers should continue to stick to the top of the scrollable
   // area until they run out of <table> space to move in.
 
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 275));
   ASSERT_EQ(275.0, scrollable_area->ScrollPosition().y());
 
@@ -1109,7 +1109,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
   // Finally, if we scroll so that the table is off the top of the page, the
   // sticky header should travel as far as it can (i.e. the table height) then
   // move off the top with it.
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 350));
   ASSERT_EQ(350.0, scrollable_area->ScrollPosition().y());
 
@@ -1146,7 +1146,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionComplexTableNesting) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 150));
   ASSERT_EQ(150.0, scrollable_area->ScrollPosition().y());
 
@@ -1184,7 +1184,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedInlineElements) {
   // Scroll the page down.
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
 
@@ -1270,7 +1270,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedFixedPos) {
       inner_constraints_bottom->nearest_sticky_layer_shifting_containing_block);
 
   // Scroll the scroller down.
-  scroller_scrollable_area->ScrollToAbsolutePosition(
+  scroller_scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scroller_scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, scroller_scrollable_area->ScrollPosition().y());
 
@@ -1281,7 +1281,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedFixedPos) {
 
   // Scroll the page down. No StickyPositionOffset() should change because
   // none of the sticky elements scroll with the view.
-  view_scrollable_area->ScrollToAbsolutePosition(
+  view_scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(view_scrollable_area->ScrollPosition().x(), 100));
   ASSERT_EQ(100.0, view_scrollable_area->ScrollPosition().y());
 
@@ -1590,7 +1590,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusUnderContain) {
                        AtomicString("top: 1px; position: sticky"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(target->GetLayoutBox()->StickyConstraints());
-  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePositionForTest(
       gfx::PointF(0, 50));
 
   target->setAttribute(html_names::kStyleAttr, g_empty_atom);
@@ -1598,7 +1598,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusUnderContain) {
   EXPECT_FALSE(target->GetLayoutBox()->StickyConstraints());
 
   // This should not crash.
-  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePositionForTest(
       gfx::PointF(0, 100));
   UpdateAllLifecyclePhasesForTest();
 }
@@ -1619,7 +1619,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusKeepLayerUnderContain) {
                        AtomicString("top: 1px; position: sticky"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(target->GetLayoutBox()->StickyConstraints());
-  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePositionForTest(
       gfx::PointF(0, 50));
 
   target->setAttribute(html_names::kStyleAttr, g_empty_atom);
@@ -1627,7 +1627,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusKeepLayerUnderContain) {
   EXPECT_FALSE(target->GetLayoutBox()->StickyConstraints());
 
   // This should not crash.
-  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePositionForTest(
       gfx::PointF(0, 100));
   UpdateAllLifecyclePhasesForTest();
 }
@@ -1661,7 +1661,7 @@ TEST_P(LayoutBoxModelObjectTest,
       container,
       child_constraints->nearest_sticky_layer_shifting_containing_block.Get());
 
-  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePositionForTest(
       gfx::PointF(0, 50));
 
   container_element->setAttribute(html_names::kStyleAttr,
@@ -1678,7 +1678,7 @@ TEST_P(LayoutBoxModelObjectTest,
       child_constraints->nearest_sticky_layer_shifting_containing_block.Get());
 
   // This should not crash.
-  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePositionForTest(
       gfx::PointF(0, 0));
   UpdateAllLifecyclePhasesForTest();
 }

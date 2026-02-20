@@ -1038,7 +1038,10 @@ bool PaintLayerScrollableArea::ScrollByPageWithSnap(
   gfx::PointF new_position = GetSnapPositionAndSetTarget(*strategy).value_or(
       current_position + displacement);
 
-  return ScrollToAbsolutePosition(new_position, scroll_behavior);
+  return SetScrollOffset(
+      ScrollOffset(new_position - gfx::PointF(ScrollOrigin())),
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone,
+      scroll_behavior);
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {

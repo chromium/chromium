@@ -137,7 +137,7 @@ TEST_P(VisualRectMappingTest, LayoutText) {
   auto* text = GetLayoutObjectByElementId("text")->SlowFirstChild();
 
   auto* scrollable_area = GetScrollableArea(container);
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   UpdateAllLifecyclePhasesForTest();
 
@@ -176,7 +176,7 @@ TEST_P(VisualRectMappingTest, LayoutTextContainerFlippedWritingMode) {
   auto* text = GetLayoutObjectByElementId("text")->SlowFirstChild();
 
   auto* scrollable_area = GetScrollableArea(container);
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   UpdateAllLifecyclePhasesForTest();
 
@@ -213,7 +213,7 @@ TEST_P(VisualRectMappingTest, LayoutInline) {
   LayoutObject* leaf = container->LastChild();
 
   auto* scrollable_area = GetScrollableArea(container);
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   UpdateAllLifecyclePhasesForTest();
 
@@ -252,7 +252,7 @@ TEST_P(VisualRectMappingTest, LayoutInlineContainerFlippedWritingMode) {
   LayoutObject* leaf = container->LastChild();
 
   auto* scrollable_area = GetScrollableArea(container);
-  scrollable_area->ScrollToAbsolutePosition(
+  scrollable_area->ScrollToAbsolutePositionForTest(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   UpdateAllLifecyclePhasesForTest();
 
@@ -733,7 +733,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowScroll) {
   auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().y());
   EXPECT_EQ(0, scrollable_area->ScrollPosition().x());
-  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(8, 7));
+  scrollable_area->ScrollToAbsolutePositionForTest(gfx::PointF(8, 7));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
@@ -795,7 +795,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowScroll) {
   // 150 = total_scrollable_overflow(100 + 100) - width(50)
   EXPECT_EQ(150, scrollable_area->ScrollPosition().x());
   // Scroll to the right by 8 pixels.
-  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(142, 7));
+  scrollable_area->ScrollToAbsolutePositionForTest(gfx::PointF(142, 7));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
@@ -853,7 +853,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowHidden) {
   auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().y());
   EXPECT_EQ(0, scrollable_area->ScrollPosition().x());
-  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(28, 27));
+  scrollable_area->ScrollToAbsolutePositionForTest(gfx::PointF(28, 27));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
@@ -889,7 +889,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowHidden) {
   // writing mode.
   // 150 = total_scrollable_overflow(100 + 100) - width(50)
   EXPECT_EQ(150, scrollable_area->ScrollPosition().x());
-  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(82, 7));
+  scrollable_area->ScrollToAbsolutePositionForTest(gfx::PointF(82, 7));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
@@ -929,7 +929,7 @@ TEST_P(VisualRectMappingTest, ContainerAndTargetDifferentFlippedWritingMode) {
   // 150 = total_scrollable_overflow(100 + 100) - width(50)
   EXPECT_EQ(150, scrollable_area->ScrollPosition().x());
   // Scroll to the right by 8 pixels.
-  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(142, 7));
+  scrollable_area->ScrollToAbsolutePositionForTest(gfx::PointF(142, 7));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
@@ -971,7 +971,8 @@ TEST_P(VisualRectMappingTest,
   )HTML");
 
   auto* scroller = To<LayoutBlock>(GetLayoutObjectByElementId("scroller"));
-  GetScrollableArea(scroller)->ScrollToAbsolutePosition(gfx::PointF(88, 77));
+  GetScrollableArea(scroller)->ScrollToAbsolutePositionForTest(
+      gfx::PointF(88, 77));
   UpdateAllLifecyclePhasesForTest();
 
   auto* normal_flow =
@@ -1641,7 +1642,7 @@ TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
 
   auto* scrollable_area =
       GetScrollableArea(To<LayoutBlock>(GetLayoutBoxByElementId("scroller")));
-  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(400, 0));
+  scrollable_area->ScrollToAbsolutePositionForTest(gfx::PointF(400, 0));
 
   // Simulates a frame to update snapshotted scroll offset.
   GetPage().Animator().ServiceScriptedAnimations(

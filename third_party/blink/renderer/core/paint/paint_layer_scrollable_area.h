@@ -363,15 +363,12 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
-  bool ScrollToAbsolutePosition(
-      const gfx::PointF& position,
-      mojom::blink::ScrollBehavior scroll_behavior =
-          mojom::blink::ScrollBehavior::kInstant,
-      mojom::blink::ScrollType scroll_type =
-          mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType source_type = cc::ScrollSourceType::kNone) {
+  // This is used only in tests.
+  bool ScrollToAbsolutePositionForTest(const gfx::PointF& position) {
     return SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
-                           scroll_type, source_type, scroll_behavior);
+                           mojom::blink::ScrollType::kProgrammatic,
+                           cc::ScrollSourceType::kNone,
+                           mojom::blink::ScrollBehavior::kInstant);
   }
 
   // Scrolls by one page in the given direction, using PageScrollSnapStrategy

@@ -3069,9 +3069,10 @@ bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
   new_position =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy).value_or(
           new_position);
-  return scrollable_area->ScrollToAbsolutePosition(
-      new_position, scroll_behavior, mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kRelativeScroll);
+  return scrollable_area->SetScrollOffset(
+      ScrollOffset(new_position - gfx::PointF(scrollable_area->ScrollOrigin())),
+      mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior);
 }
 
 bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {

@@ -147,8 +147,7 @@ void ScrollSnapTest::SetInitialScrollOffset(double x, double y) {
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   scroller->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(gfx::PointF(x, y),
-                                 mojom::blink::ScrollBehavior::kAuto);
+      ->ScrollToAbsolutePositionForTest(gfx::PointF(x, y));
   ASSERT_EQ(scroller->scrollLeft(), x);
   ASSERT_EQ(scroller->scrollTop(), y);
 }
