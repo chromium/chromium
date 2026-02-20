@@ -157,6 +157,11 @@ bool ImageBitmapRenderingContext::PushFrame() {
     return false;
   }
 
+  scoped_refptr<StaticBitmapImage> image = image_layer_bridge_->GetImage();
+  if (!image) {
+    return false;
+  }
+
   if (resource_provider_for_offscreen_canvas_) {
     if (!resource_provider_for_offscreen_canvas_->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
@@ -215,10 +220,6 @@ bool ImageBitmapRenderingContext::PushFrame() {
     return false;
   }
 
-  scoped_refptr<StaticBitmapImage> image = image_layer_bridge_->GetImage();
-  if (!image) {
-    return false;
-  }
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
   resource_provider_for_offscreen_canvas_->Canvas().drawImage(
