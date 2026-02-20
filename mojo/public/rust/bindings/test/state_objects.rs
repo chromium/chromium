@@ -9,7 +9,7 @@
 
 chromium::import! {
     "//mojo/public/rust/bindings";
-    "//mojo/public/rust/bindings/test:bindings_unittests_mojom_rust";
+    "//mojo/public/rust/bindings:bindings_unittests_mojom_rust";
 }
 
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;

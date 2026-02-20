@@ -96,22 +96,12 @@ impl<T> PendingRemote<T>
 where
     T: DynMojomInterface + ?Sized,
 {
-    /// Create a new PendingRemote from a raw pipe endpoint.
-    ///
-    /// If you want to create a new remote/receiver pair, use
-    /// `new_pipe` instead. This function is mostly useful for creating a new
-    /// `Remote` from an endpoint received via mojo or FFI.
-    ///
-    /// Note that the caller is responsible for ensuring that `Self` has the
-    /// right instantiation of `T` as the other endpoint, or else incoming
-    /// messages will be incomprehensible.
-    pub fn new(endpoint: MessageEndpoint) -> Self {
+    /// Create a new PendingRemote from a raw pipe endpoint
+    // This function isn't `pub` because users should always get their
+    // `PendingRemote`s from API functions like `new_pipe`, or from
+    // `unbind`ing a `Remote`.
+    pub(crate) fn new(endpoint: MessageEndpoint) -> Self {
         Self { endpoint, _phantom: PhantomData }
-    }
-
-    /// Consume this PendingRemote and return the underlying endpoint.
-    pub fn into_endpoint(self) -> MessageEndpoint {
-        self.endpoint
     }
 
     /// Bind this pending remote to the current default sequence.

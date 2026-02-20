@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 
 chromium::import! {
     "//mojo/public/rust/bindings";
-    "//mojo/public/rust/bindings/test:bindings_unittests_mojom_rust";
+    "//mojo/public/rust/bindings:bindings_unittests_mojom_rust";
     "//mojo/public/rust/system";
     "//mojo/public/rust/system/test_util";
     "//mojo/public/rust/sequences";
@@ -18,7 +18,6 @@ chromium::import! {
 use bindings::remote::PendingRemote;
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
 use sequences::run_loop::RunLoop;
-use system::mojo_types::UntypedHandle;
 
 use test_mojom::{MathService, TwoInts};
 
@@ -224,60 +223,4 @@ fn test_remote_receiver_notifying() {
 
     // 1 + 2 + 3 + 4 + 7 + 12 = 31
     expect_eq!(Arc::into_inner(sum).unwrap().into_inner().unwrap(), 31);
-}
-
-#[gtest(RustBindingsAPI, CppReceiverTest)]
-fn test_cpp_receiver() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
-
-    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-
-    let run_loop = RunLoop::new();
-    let quit = run_loop.get_quit_closure();
-
-    // Pass the receiver handle to C++ and bind it there
-    let receiver_handle = UntypedHandle::from(pending_receiver.into_endpoint()).into_raw_value();
-    crate::cxx::ffi::BindPlusSevenMathService(receiver_handle);
-
-    let mut remote = pending_remote.bind();
-
-    // These message must have been processed in C++ because the C++
-    // implementation is the only one that adds 7 to all its results!
-    remote.Add(1, 2, |n| expect_eq!(n, 10));
-    remote.Add(10, 20, |n| expect_eq!(n, 37));
-    remote.AddTwoInts(TwoInts { a: 100, b: 50 }, move |n| {
-        expect_eq!(n, 157);
-        quit();
-    });
-
-    run_loop.run();
-}
-
-#[gtest(RustBindingsAPI, CppRemoteTest)]
-fn test_cpp_remote() {
-    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
-
-    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-
-    // Track the running sum of all additions we perform.
-    let sum = Arc::new(Mutex::new(0));
-    let sum_clone = Arc::clone(&sum);
-
-    let notifying_service = NotifyingMathService {
-        f: move |n| {
-            let mut sum = sum_clone.lock().unwrap();
-            *sum += n;
-        },
-    };
-
-    let _receiver = pending_receiver.bind(notifying_service);
-
-    // Pass the remote handle to C++ and have it send messages.
-    // This call blocks until all responses are received.
-    let remote_handle = UntypedHandle::from(pending_remote.into_endpoint()).into_raw_value();
-    crate::cxx::ffi::TestRemoteFromCpp(remote_handle);
-
-    // These message must have come from C++ because `TestFromRemote` i
-    // the only testing function that adds things to a total of 22!
-    expect_eq!(*sum.lock().unwrap(), 22);
 }
