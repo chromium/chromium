@@ -355,12 +355,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationLensOverlay,
-                   &kPageActionsMigration,
-                   "lens_overlay",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationMemorySaver,
                    &kPageActionsMigration,
                    "memory_saver",

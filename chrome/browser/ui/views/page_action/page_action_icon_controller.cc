@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
@@ -241,12 +240,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<ZoomView>(params.icon_label_bubble_delegate,
                                              params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kLensOverlay:
-        add_page_action_icon(
-            type, std::make_unique<LensOverlayPageActionIconView>(
-                      params.browser, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
       case PageActionIconType::kAiMode:
         add_page_action_icon(
             type, std::make_unique<AiModePageActionIconView>(
@@ -271,13 +264,15 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
+      case PageActionIconType::kLensOverlay:
       case PageActionIconType::kTranslate:
       case PageActionIconType::kReadingMode:
       case PageActionIconType::kContextualSidePanel:
       case PageActionIconType::kJsOptimizations:
       case PageActionIconType::kRecordReplay:
       case PageActionIconType::kIndigo:
-        // Do nothing as these actions were added after the migration.
+        // Do nothing as these actions were added after the migration, or
+        // have launched the migration.
         break;
     }
   }

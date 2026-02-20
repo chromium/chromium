@@ -452,7 +452,7 @@ class LocationBarViewPageActionsMigrationTest
   LocationBarViewPageActionsMigrationTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kPageActionsMigration,
-          {{::features::kPageActionsMigrationLensOverlay.name, "true"}}},
+          {{::features::kPageActionsMigrationBookmarkStar.name, "false"}}},
          {lens::features::kLensOverlayOmniboxEntryPoint, {}}},
         {omnibox::kAiModeOmniboxEntryPoint});
   }

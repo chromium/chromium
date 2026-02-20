@@ -363,9 +363,6 @@ actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
 }
 
 void LensOverlayEntryPointController::UpdatePageActionState() {
-  if (!IsPageActionMigrated(PageActionIconType::kLensOverlay)) {
-    return;
-  }
   // This may not have been initialized (e.g. for non-normal browser types).
   if (!location_bar_) {
     return;

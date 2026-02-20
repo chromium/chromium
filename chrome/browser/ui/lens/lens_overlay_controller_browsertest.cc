@@ -4587,8 +4587,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
 }
 
 class LensOverlayControllerEntrypointsBrowserTest
-    : public LensOverlayControllerBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+    : public LensOverlayControllerBrowserTest {
  public:
   LensOverlayControllerEntrypointsBrowserTest() = default;
   ~LensOverlayControllerEntrypointsBrowserTest() override = default;
@@ -4600,13 +4599,6 @@ class LensOverlayControllerEntrypointsBrowserTest
         {lens::features::kLensOverlayOmniboxEntryPoint, {}},
         {lens::features::kLensOverlaySurvey, {}},
         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}};
-    if (IsPageActionsMigrationEnabled()) {
-      enabled_features.push_back(
-          {::features::kPageActionsMigration,
-           {
-               {::features::kPageActionsMigrationLensOverlay.name, "true"},
-           }});
-    }
     // TODO(crbug.com/441102004): Update OverlayHidesEntrypoints to support
     //   kAiModeOmniboxEntryPoint.
     feature_list_.InitWithFeaturesAndParameters(
@@ -4652,20 +4644,9 @@ class LensOverlayControllerEntrypointsBrowserTest
     EXPECT_TRUE(toolbar_entry_point->GetVisible());
     EXPECT_TRUE(toolbar_entry_point->GetEnabled());
   }
-
- private:
-  bool IsPageActionsMigrationEnabled() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LensOverlayControllerEntrypointsBrowserTest,
-                         ::testing::Values(false, true),
-                         [](const ::testing::TestParamInfo<bool>& info) {
-                           return info.param ? "PageActionsMigrationEnabled"
-                                             : "PageActionsMigrationDisabled";
-                         });
-
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerEntrypointsBrowserTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerEntrypointsBrowserTest,
                        OverlayHidesEntrypoints) {
   WaitForPaint();
 
