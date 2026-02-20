@@ -63,7 +63,6 @@ import java.io.IOException;
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
@@ -77,7 +76,7 @@ public class TabGroupDialogPTTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
                     .build();
 

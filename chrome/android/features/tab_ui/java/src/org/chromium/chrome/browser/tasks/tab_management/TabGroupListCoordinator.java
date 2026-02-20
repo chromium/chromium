@@ -218,7 +218,6 @@ public class TabGroupListCoordinator {
     }
 
     private static boolean enableContainment() {
-        return ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()
-                && ChromeFeatureList.sTabGroupListContainment.getValue();
+        return ChromeFeatureList.sTabGroupListContainment.getValue();
     }
 }

@@ -110,7 +110,6 @@ import java.util.concurrent.Callable;
 @Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
 })
 @DisableIf.Build(sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE, message = "crbug.com/350393662")
 @DoNotBatch(reason = "Test start up behaviors.")
