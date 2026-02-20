@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_source_element.h"
+#include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/html/media/audio_output_device_controller.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
@@ -97,6 +98,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_media.h"
+#include "third_party/blink/renderer/core/loader/lazy_media_helper.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -480,7 +482,7 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       autoplay_policy_(MakeGarbageCollected<AutoplayPolicy>(this)),
       media_controls_(nullptr),
       controls_list_(MakeGarbageCollected<HTMLMediaElementControlsList>(this)),
-      lazy_load_intersection_observer_(nullptr) {
+      player_lazy_load_intersection_observer_(nullptr) {
   DVLOG(1) << "HTMLMediaElement(" << *this << ")";
 
   ResetMojoState();
@@ -808,6 +810,16 @@ void HTMLMediaElement::ParseAttribute(
     if (params.reason == AttributeModificationReason::kByParser) {
       muted_ = true;
     }
+  } else if (name == html_names::kLoadingAttr &&
+             RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled()) {
+    // If the loading attribute is changed to eager while deferred, load now.
+    LoadingAttributeValue loading = GetLoadingAttributeValue(params.new_value);
+    LoadingAttributeValue old_loading =
+        GetLoadingAttributeValue(params.old_value);
+    if (loading == LoadingAttributeValue::kEager &&
+        old_loading != LoadingAttributeValue::kEager) {
+      LoadDeferredMediaIfNeeded();
+    }
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -847,9 +859,14 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   if (insertion_point.isConnected()) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementInDocument);
-    if ((!FastGetAttribute(html_names::kSrcAttr).empty() ||
-         src_object_stream_descriptor_ || src_object_media_source_handle_) &&
-        network_state_ == kNetworkEmpty) {
+    // If the element was deferred due to lazy loading while disconnected,
+    // start IntersectionObserver monitoring now that it's in the document.
+    if (lazy_media_load_state_ == LazyMediaLoadState::kDeferred) {
+      LazyMediaHelper::StartMonitoring(this);
+    } else if ((!FastGetAttribute(html_names::kSrcAttr).empty() ||
+                src_object_stream_descriptor_ ||
+                src_object_media_source_handle_) &&
+               network_state_ == kNetworkEmpty) {
       ignore_preload_none_ = false;
       InvokeLoadAlgorithm();
     }
@@ -1233,6 +1250,32 @@ void HTMLMediaElement::SelectMediaResource() {
     UpdateLayoutObject();
 
     DVLOG(3) << "selectMediaResource(" << *this << "), nothing to load";
+    return;
+  }
+
+  // Check for lazy loading - defer resource selection if loading=lazy.
+  // We only defer when `lazy_media_load_state_` is kNone, which is the initial
+  // state before any lazy loading decision has been made. Once the element
+  // has been deferred (kDeferred) or has started full loading (kFullMedia),
+  // we should not re-enter the deferred state. This handles cases like
+  // load() being called after the element was already deferred and loaded.
+  if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
+      lazy_media_load_state_ == LazyMediaLoadState::kNone &&
+      GetDocument().GetFrame() &&
+      LazyMediaHelper::ShouldDeferMediaLoad(*GetDocument().GetFrame(), this)) {
+    DVLOG(3) << "selectMediaResource(" << *this
+             << "), deferring due to lazy loading";
+    lazy_media_load_state_ = LazyMediaLoadState::kDeferred;
+    // Only start IntersectionObserver monitoring if the element is connected
+    // to the document. Disconnected elements remain deferred until they are
+    // inserted into the document (handled in InsertedInto).
+    if (isConnected()) {
+      LazyMediaHelper::StartMonitoring(this);
+    }
+    // Note: Autoplay is handled by existing AutoplayPolicy which already
+    // uses IntersectionObserver to defer muted autoplay until visible.
+    SetNetworkState(kNetworkIdle);
+    SetShouldDelayLoadEvent(false);
     return;
   }
 
@@ -2834,6 +2877,66 @@ void HTMLMediaElement::setPreload(const AtomicString& preload) {
   setAttribute(html_names::kPreloadAttr, preload);
 }
 
+bool HTMLMediaElement::HasLazyLoadingAttribute() const {
+  return GetLoadingAttributeValue(FastGetAttribute(html_names::kLoadingAttr)) ==
+         LoadingAttributeValue::kLazy;
+}
+
+void HTMLMediaElement::LoadDeferredMediaIfNeeded() {
+  DCHECK(RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled());
+  if (lazy_media_load_state_ != LazyMediaLoadState::kDeferred) {
+    return;
+  }
+
+  DVLOG(3) << "LoadDeferredMediaIfNeeded(" << *this << ")";
+
+  lazy_media_load_state_ = LazyMediaLoadState::kFullMedia;
+  LazyMediaHelper::StopMonitoring(this);
+
+  // Post the resource selection to a microtask to avoid re-entrancy issues
+  // when the IntersectionObserver callback fires during SelectMediaResource.
+  GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
+      BindOnce(&HTMLMediaElement::LoadDeferredMediaIfNeededInternal,
+               WrapWeakPersistent(this)));
+}
+
+void HTMLMediaElement::LoadDeferredMediaIfNeededInternal() {
+  DCHECK(RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled());
+  // Check that we're still in the right state (element may have been removed
+  // or state changed since the microtask was queued).
+  if (lazy_media_load_state_ != LazyMediaLoadState::kFullMedia) {
+    return;
+  }
+
+  // Notify subclass (e.g., HTMLVideoElement for poster loading).
+  OnLazyLoadResumed();
+
+  // Continue with normal resource selection.
+  // Note: Autoplay is handled by existing AutoplayPolicy which already
+  // uses IntersectionObserver to defer muted autoplay until visible.
+  SelectMediaResource();
+
+  // Load any deferred track elements.
+  LoadDeferredTracks();
+}
+
+bool HTMLMediaElement::IsLazyLoadDeferred() const {
+  return lazy_media_load_state_ == LazyMediaLoadState::kDeferred;
+}
+
+void HTMLMediaElement::LoadDeferredTracks() {
+  for (HTMLTrackElement& track_element :
+       Traversal<HTMLTrackElement>::ChildrenOf(*this)) {
+    track_element.LoadIfDeferredForLazyMedia();
+  }
+}
+
+bool HTMLMediaElement::HasMediaSources() const {
+  return FastHasAttribute(html_names::kSrcAttr) ||
+         src_object_stream_descriptor_ || src_object_media_source_handle_ ||
+         Traversal<HTMLSourceElement>::FirstChild(*this);
+}
+
 WebMediaPlayer::Preload HTMLMediaElement::PreloadType() const {
   const AtomicString& preload = FastGetAttribute(html_names::kPreloadAttr);
   if (EqualIgnoringASCIICase(preload, "none")) {
@@ -2969,9 +3072,9 @@ void HTMLMediaElement::PlayInternal() {
   }
 
   // Playback aborts any lazy loading.
-  if (lazy_load_intersection_observer_) {
-    lazy_load_intersection_observer_->disconnect();
-    lazy_load_intersection_observer_ = nullptr;
+  if (player_lazy_load_intersection_observer_) {
+    player_lazy_load_intersection_observer_->disconnect();
+    player_lazy_load_intersection_observer_ = nullptr;
   }
 
   // 4.8.12.8. Playing the media resource
@@ -4065,9 +4168,9 @@ void HTMLMediaElement::UpdatePlayState(
 void HTMLMediaElement::StopPeriodicTimers() {
   progress_event_timer_.Stop();
   playback_progress_timer_.Stop();
-  if (lazy_load_intersection_observer_) {
-    lazy_load_intersection_observer_->disconnect();
-    lazy_load_intersection_observer_ = nullptr;
+  if (player_lazy_load_intersection_observer_) {
+    player_lazy_load_intersection_observer_->disconnect();
+    player_lazy_load_intersection_observer_ = nullptr;
   }
 }
 
@@ -4573,7 +4676,7 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(autoplay_policy_);
   visitor->Trace(media_controls_);
   visitor->Trace(controls_list_);
-  visitor->Trace(lazy_load_intersection_observer_);
+  visitor->Trace(player_lazy_load_intersection_observer_);
   visitor->Trace(media_player_host_remote_);
   visitor->Trace(media_player_observer_remote_set_);
   visitor->Trace(media_player_receiver_set_);

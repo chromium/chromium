@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/track/loadable_text_track.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #define TRACK_LOG_LEVEL 3
@@ -159,8 +160,17 @@ void HTMLTrackElement::ScheduleLoad() {
 
   // 3. If the text track's track element does not have a media element as a
   // parent, abort these steps.
-  if (!MediaElement())
+  HTMLMediaElement* media_element = MediaElement();
+  if (!media_element) {
     return;
+  }
+
+  if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
+      (media_element->IsLazyLoadDeferred() ||
+       media_element->HasLazyLoadingAttribute())) {
+    load_deferred_for_lazy_media_ = true;
+    return;
+  }
 
   // 4. Run the remainder of these steps in parallel, allowing whatever caused
   // these steps to run to continue.
@@ -170,6 +180,14 @@ void HTMLTrackElement::ScheduleLoad() {
   // following steps. (The steps in the synchronous section are marked with [X])
   // FIXME: We use a timer to approximate a "stable state" - i.e. this is not
   // 100% per spec.
+}
+
+void HTMLTrackElement::LoadIfDeferredForLazyMedia() {
+  if (!load_deferred_for_lazy_media_) {
+    return;
+  }
+  load_deferred_for_lazy_media_ = false;
+  ScheduleLoad();
 }
 
 void HTMLTrackElement::LoadTimerFired(TimerBase*) {

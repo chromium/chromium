@@ -421,7 +421,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
   bool HasLazyLoadObserver() const {
-    return !!Media()->lazy_load_intersection_observer_;
+    return !!Media()->player_lazy_load_intersection_observer_;
   }
 
   bool ControlsVisible() const { return Media()->ShouldShowControls(); }

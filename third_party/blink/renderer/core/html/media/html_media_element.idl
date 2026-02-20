@@ -46,6 +46,7 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
     const unsigned short NETWORK_NO_SOURCE = 3;
     [ImplementedAs=getNetworkState] readonly attribute unsigned short networkState;
     [CEReactions] attribute DOMString preload;
+    [RuntimeEnabled=LazyLoadVideoAndAudio, CEReactions, Reflect, ReflectOnly=("lazy","eager"), ReflectMissing="eager", ReflectInvalid="eager"] attribute DOMString loading;
     readonly attribute TimeRanges buffered;
     void load();
     CanPlayTypeResult canPlayType(DOMString type);

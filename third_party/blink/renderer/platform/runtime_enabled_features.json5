@@ -3330,6 +3330,13 @@
       status: "stable",
     },
     {
+      // Enables the loading attribute for video and audio elements,
+      // allowing lazy loading similar to images.
+      // https://crbug.com/469111735
+      name: "LazyLoadVideoAndAudio",
+      status: "experimental",
+    },
+    {
       // Allow triggering the word suggestion from left click.
       // From crbug.com/433209485
       name: "LeftClickToHandleSuggestion",

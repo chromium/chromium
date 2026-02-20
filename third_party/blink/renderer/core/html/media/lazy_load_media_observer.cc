@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
+#include "third_party/blink/renderer/core/html/media/lazy_load_media_observer.h"
 
 #include <limits>
 
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
@@ -25,27 +26,6 @@ namespace blink {
 
 namespace {
 
-// Returns if the element or its ancestors are invisible, due to their style or
-// attribute or due to themselves not connected to the main document tree.
-bool IsElementInInvisibleSubTree(const Element& element) {
-  if (!element.isConnected())
-    return true;
-  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(element)) {
-    auto* ancestor_element = DynamicTo<Element>(ancestor);
-    if (!ancestor_element)
-      continue;
-    // Return true if the whole frame is not rendered.
-    if (ancestor.IsHTMLElement() && !ancestor.GetLayoutObject())
-      return true;
-    const ComputedStyle* style = ancestor_element->EnsureComputedStyle();
-    if (style && (style->Visibility() != EVisibility::kVisible ||
-                  style->Display() == EDisplay::kNone)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool IsDescendantOrSameDocument(Document& subject, Document& root) {
   for (Document* doc = &subject; doc; doc = doc->ParentDocument()) {
     if (doc == root) {
@@ -57,10 +37,10 @@ bool IsDescendantOrSameDocument(Document& subject, Document& root) {
 
 }  // namespace
 
-void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
+void LazyLoadMediaObserver::StartMonitoringNearViewport(Document* root_document,
                                                         Element* element) {
   if (!lazy_load_intersection_observer_) {
-    int margin = GetLazyLoadingImageMarginPx(*root_document);
+    int margin = GetLazyLoadingMarginPx(*root_document);
     IntersectionObserver::Params params = {
         .scroll_margin = {{/* top & bottom */ Length::Fixed(margin),
                            /* right & left */ Length::Fixed(margin / 2)}},
@@ -68,7 +48,7 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
     };
     lazy_load_intersection_observer_ = IntersectionObserver::Create(
         *root_document,
-        BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+        BindRepeating(&LazyLoadMediaObserver::LoadIfNearViewport,
                       WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
         std::move(params));
@@ -77,13 +57,13 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
   lazy_load_intersection_observer_->observe(element);
 }
 
-void LazyLoadImageObserver::StopMonitoring(Element* element) {
+void LazyLoadMediaObserver::StopMonitoring(Element* element) {
   if (lazy_load_intersection_observer_) {
     lazy_load_intersection_observer_->unobserve(element);
   }
 }
 
-bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent(
+bool LazyLoadMediaObserver::LoadAllImagesAndBlockLoadEvent(
     Document& for_document) {
   if (!lazy_load_intersection_observer_) {
     return false;
@@ -103,20 +83,22 @@ bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent(
     }
     to_be_unobserved.push_back(element);
   }
-  for (Element* element : to_be_unobserved)
+  for (Element* element : to_be_unobserved) {
     lazy_load_intersection_observer_->unobserve(element);
+  }
   return resources_have_started_loading;
 }
 
-void LazyLoadImageObserver::LoadIfNearViewport(
+void LazyLoadMediaObserver::LoadIfNearViewport(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(!entries.empty());
 
   for (auto entry : entries) {
     Element* element = entry->target();
     auto* image_element = DynamicTo<HTMLImageElement>(element);
-    // If the loading_attr is 'lazy' explicitly, we'd better to wait for
-    // intersection.
+
+    // For images: if the loading_attr is 'lazy' explicitly, we'd better to
+    // wait for intersection.
     if (!entry->isIntersecting() && image_element &&
         !image_element->HasLazyLoadingAttribute()) {
       // Fully load the invisible image elements. The elements can be invisible
@@ -128,26 +110,35 @@ void LazyLoadImageObserver::LoadIfNearViewport(
           style->Display() == EDisplay::kNone) {
         // Check that style was null because it was not computed since the
         // element was in an invisible subtree.
-        DCHECK(style || IsElementInInvisibleSubTree(*element));
+        DCHECK(style || !element->checkVisibility(
+                            MakeGarbageCollected<CheckVisibilityOptions>()));
         image_element->LoadDeferredImageFromMicrotask();
         lazy_load_intersection_observer_->unobserve(element);
       }
     }
-    if (!entry->isIntersecting())
+    if (!entry->isIntersecting()) {
       continue;
-    if (image_element)
+    }
+
+    // Handle image elements.
+    if (image_element) {
       image_element->LoadDeferredImageFromMicrotask();
+    }
+
+    // Handle video and audio elements.
+    if (auto* media_element = DynamicTo<HTMLMediaElement>(element)) {
+      media_element->LoadDeferredMediaIfNeeded();
+    }
 
     lazy_load_intersection_observer_->unobserve(element);
   }
 }
 
-void LazyLoadImageObserver::Trace(Visitor* visitor) const {
+void LazyLoadMediaObserver::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_intersection_observer_);
 }
 
-int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
-    const Document& document) {
+int LazyLoadMediaObserver::GetLazyLoadingMarginPx(const Document& document) {
   const Settings* settings = document.GetSettings();
   if (!settings) {
     return 0;

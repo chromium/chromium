@@ -798,7 +798,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     // shouldn't fire this <img loading="lazy">'s load event at this time,
     // because in the spec this <img> is still in Step 25 of
     // https://html.spec.whatwg.org/#update-the-image-data.
-    // When LazyLoadImageObserver reports it to be intersecting (or close to)
+    // When LazyLoadMediaObserver reports it to be intersecting (or close to)
     // the viewport later (i.e. this <img> proceeds to Step 26 of the spec),
     // actual load/error event will be fired, by going through the loading
     // process again from `UpdateFromElement()`. Note that in Chromium

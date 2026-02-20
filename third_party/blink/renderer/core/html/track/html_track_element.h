@@ -53,6 +53,10 @@ class HTMLTrackElement final : public HTMLElement,
 
   TextTrack* track();
 
+  // Called when parent media element's lazy loading completes.
+  // Triggers deferred track loading if this track was waiting.
+  void LoadIfDeferredForLazyMedia();
+
   void Trace(Visitor*) const override;
 
  private:
@@ -84,6 +88,9 @@ class HTMLTrackElement final : public HTMLElement,
   Member<TextTrackLoader> loader_;
   HeapTaskRunnerTimer<HTMLTrackElement> load_timer_;
   KURL url_;
+
+  // True if loading was deferred because parent media element has loading=lazy.
+  bool load_deferred_for_lazy_media_ = false;
 };
 
 }  // namespace blink

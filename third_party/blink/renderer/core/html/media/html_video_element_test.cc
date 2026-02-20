@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::_;
@@ -460,6 +461,78 @@ TEST_P(HTMLVideoElementTest, VideoVisibilityTrackerVideoElementRectDimensions) {
   const auto intersection = Intersection(VisualRectInDocument(*box),
                                          occlusion_state.video_element_rect);
   EXPECT_EQ(occlusion_state.video_element_rect, intersection);
+}
+
+TEST_P(HTMLVideoElementTest, PosterDeferredForLazyLoad) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  // Set loading=lazy on the video element.
+  video()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+  video()->setAttribute(html_names::kPosterAttr,
+                        AtomicString("http://example.com/poster.jpg"));
+
+  // Trigger poster update.
+  video()->setAttribute(html_names::kSrcAttr,
+                        AtomicString("http://example.com/video.mp4"));
+  test::RunPendingTasks();
+
+  // Verify that poster loading was deferred due to lazy loading.
+  EXPECT_TRUE(video()->poster_deferred_for_lazy_load_for_tests());
+}
+
+TEST_P(HTMLVideoElementTest, PosterDeferredViaUpdatePosterImageInternal) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  // Set poster BEFORE loading=lazy to exercise the microtask path
+  // (UpdatePosterImageInternal). This mimics the HTML parser attribute order:
+  // <video poster="..." loading="lazy">
+  // When poster is set without loading=lazy, UpdatePosterImage() enqueues a
+  // microtask to UpdatePosterImageInternal(). Then loading=lazy is set before
+  // the microtask fires.
+  video()->setAttribute(html_names::kPosterAttr,
+                        AtomicString("http://example.com/poster.jpg"));
+  // Now set loading=lazy. The microtask hasn't fired yet.
+  video()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+
+  // Run the microtask - UpdatePosterImageInternal sees loading=lazy and defers.
+  test::RunPendingTasks();
+
+  // Verify that poster loading was deferred via the microtask path.
+  EXPECT_TRUE(video()->poster_deferred_for_lazy_load_for_tests());
+}
+
+TEST_P(HTMLVideoElementTest, PosterNotDeferredWithoutLazyLoad) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  // Set loading=eager (or no loading attribute) on the video element.
+  video()->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
+  video()->setAttribute(html_names::kPosterAttr,
+                        AtomicString("http://example.com/poster.jpg"));
+
+  // Trigger poster update.
+  video()->setAttribute(html_names::kSrcAttr,
+                        AtomicString("http://example.com/video.mp4"));
+  test::RunPendingTasks();
+
+  // Verify that poster loading was NOT deferred.
+  EXPECT_FALSE(video()->poster_deferred_for_lazy_load_for_tests());
+}
+
+TEST_P(HTMLVideoElementTest, PosterNotDeferredWhenFeatureDisabled) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(false);
+
+  // Set loading=lazy on the video element.
+  video()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+  video()->setAttribute(html_names::kPosterAttr,
+                        AtomicString("http://example.com/poster.jpg"));
+
+  // Trigger poster update.
+  video()->setAttribute(html_names::kSrcAttr,
+                        AtomicString("http://example.com/video.mp4"));
+  test::RunPendingTasks();
+
+  // Verify that poster loading was NOT deferred when feature is disabled.
+  EXPECT_FALSE(video()->poster_deferred_for_lazy_load_for_tests());
 }
 
 }  // namespace blink

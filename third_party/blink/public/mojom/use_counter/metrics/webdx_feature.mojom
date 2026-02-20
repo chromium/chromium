@@ -487,6 +487,7 @@ enum WebDXFeature {
   kLanguageDetector = 425,
   kTranslator = 426,
   kDRAFT_WebMCP = 427,
+  kDRAFT_LoadingLazyMedia = 428,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

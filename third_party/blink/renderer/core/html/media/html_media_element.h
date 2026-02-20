@@ -216,6 +216,16 @@ class CORE_EXPORT HTMLMediaElement
   String EffectivePreload() const;
   WebMediaPlayer::Preload EffectivePreloadType() const;
 
+  // Lazy loading support.
+  bool HasLazyLoadingAttribute() const;
+  bool IsLazyLoadDeferred() const;
+  void LoadDeferredMediaIfNeeded();
+  void LoadDeferredTracks();
+
+  // Returns true if the element has a src attribute, srcObject, or <source>
+  // child elements that could provide media.
+  bool HasMediaSources() const;
+
   WebTimeRanges BufferedInternal() const;
   TimeRanges* buffered() const;
   void load();
@@ -488,12 +498,30 @@ class CORE_EXPORT HTMLMediaElement
   virtual void RecordVideoOcclusionState(
       std::string_view occlusion_state) const {}
 
+  // "Lazy loading" state (for loading=lazy).
+  enum class LazyMediaLoadState {
+    // Not using lazy loading.
+    kNone,
+    // Deferred, waiting for viewport intersection.
+    kDeferred,
+    // Full media loading initiated.
+    kFullMedia,
+  };
+  void SetLazyMediaLoadState(LazyMediaLoadState state) {
+    lazy_media_load_state_ = state;
+  }
+  LazyMediaLoadState GetLazyMediaLoadState() const {
+    return lazy_media_load_state_;
+  }
+
  private:
   // Friend class for testing.
   friend class ContextMenuControllerTest;
   friend class HTMLMediaElementTest;
   friend class PictureInPictureControllerTestWithWidget;
   friend class VideoWakeLockTest;
+
+  void LoadDeferredMediaIfNeededInternal();
 
   class SourceMetadata {
     DISALLOW_NEW();
@@ -545,6 +573,7 @@ class CORE_EXPORT HTMLMediaElement
   virtual void OnPlay() {}
   virtual void OnLoadStarted() {}
   virtual void OnLoadFinished() {}
+  virtual void OnLazyLoadResumed() {}
 
   // Updates the `MediaVideoVisibilityTracker` state whenever the media play
   // state is updated. This is typically handled during `UpdatePlayState`.
@@ -842,6 +871,8 @@ class CORE_EXPORT HTMLMediaElement
   DeferredLoadState deferred_load_state_;
   HeapTaskRunnerTimer<HTMLMediaElement> deferred_load_timer_;
 
+  LazyMediaLoadState lazy_media_load_state_ = LazyMediaLoadState::kNone;
+
   std::unique_ptr<WebMediaPlayer> web_media_player_;
   cc::Layer* cc_layer_;
 
@@ -1033,7 +1064,9 @@ class CORE_EXPORT HTMLMediaElement
   Member<MediaControls> media_controls_;
   Member<HTMLMediaElementControlsList> controls_list_;
 
-  Member<IntersectionObserver> lazy_load_intersection_observer_;
+  // Used by WebMediaPlayer's lazy load to notify when the element becomes
+  // visible. Distinct from LazyLoadMediaObserver which handles loading=lazy.
+  Member<IntersectionObserver> player_lazy_load_intersection_observer_;
 
   Member<DisallowNewWrapper<
       HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>>>

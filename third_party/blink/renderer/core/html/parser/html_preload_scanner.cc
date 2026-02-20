@@ -347,6 +347,13 @@ class TokenPreloadScanner::StartTagScanner {
                                  is_potentially_lcp_element)) {
       return nullptr;
     }
+    // Don't preload video poster if loading="lazy" is set.
+    if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
+        type == ResourceType::kImage &&
+        Match(tag_impl_, html_names::kVideoTag) &&
+        loading_attr_value_ == LoadingAttributeValue::kLazy) {
+      return nullptr;
+    }
     // Do not set integrity metadata for <link> elements for destinations not
     // supporting SRI (crbug.com/1058045).
     // A corresponding check for non-preload-scanner code path is in
@@ -576,10 +583,15 @@ class TokenPreloadScanner::StartTagScanner {
 
   void ProcessVideoAttribute(const AtomicString& attribute_name,
                              const String& attribute_value) {
-    if (Match(attribute_name, html_names::kPosterAttr))
+    if (Match(attribute_name, html_names::kPosterAttr)) {
       SetUrlToLoad(attribute_value, kDisallowURLReplacement);
-    else if (Match(attribute_name, html_names::kCrossoriginAttr))
+    } else if (Match(attribute_name, html_names::kCrossoriginAttr)) {
       SetCrossOrigin(attribute_value);
+    } else if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
+               loading_attr_value_ == LoadingAttributeValue::kAuto &&
+               Match(attribute_name, html_names::kLoadingAttr)) {
+      loading_attr_value_ = GetLoadingAttributeValue(attribute_value);
+    }
   }
 
   void ProcessAttribute(const AtomicString& attribute_name,

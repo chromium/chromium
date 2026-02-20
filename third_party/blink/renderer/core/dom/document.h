@@ -216,7 +216,7 @@ class InvalidateNodeListCachesScope;
 class ImportNodeOptions;
 class LayoutUpgrade;
 class LayoutView;
-class LazyLoadImageObserver;
+class LazyLoadMediaObserver;
 class ListedElement;
 class LiveNodeListBase;
 class LocalDOMWindow;
@@ -1953,7 +1953,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
   bool IsFocusAllowed(FocusTrigger trigger) const;
 
-  LazyLoadImageObserver& EnsureLazyLoadImageObserver();
+  LazyLoadMediaObserver& EnsureLazyLoadMediaObserver();
 
   void IncrementNumberOfCanvases();
   unsigned GetNumberOfCanvases() const { return num_canvases_; }
@@ -3091,7 +3091,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // opposed to a PluginView.
   bool is_for_external_handler_;
 
-  Member<LazyLoadImageObserver> lazy_load_image_observer_;
+  Member<LazyLoadMediaObserver> lazy_load_media_observer_;
 
   // Tracks which document policies have already been parsed, so as not to
   // count them multiple times. The size of this vector is 0 until

@@ -1563,6 +1563,20 @@ TEST_F(HTMLPreloadScannerTest, LazyLoadImage) {
     Test(test_case);
 }
 
+TEST_F(HTMLPreloadScannerTest, LazyLoadVideoPoster) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+  RunSetUp(kViewportEnabled);
+  LazyLoadImageTestCase test_cases[] = {
+      {"<video poster='foo.jpg'>", true},
+      {"<video poster='foo.jpg' loading='lazy'>", false},
+      {"<video poster='foo.jpg' loading='eager'>", true},
+      {"<video poster='foo.jpg' loading='auto'>", true},
+  };
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
 // https://crbug.com/1087854
 TEST_F(HTMLPreloadScannerTest, CSSImportWithSemicolonInUrl) {
   PreloadScannerTestCase test_cases[] = {

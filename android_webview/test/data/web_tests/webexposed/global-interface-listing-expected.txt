@@ -4573,6 +4573,7 @@ interface HTMLMediaElement : HTMLElement
     getter ended
     getter error
     getter latencyHint
+    getter loading
     getter loop
     getter mediaKeys
     getter muted
@@ -4610,6 +4611,7 @@ interface HTMLMediaElement : HTMLElement
     setter defaultMuted
     setter defaultPlaybackRate
     setter latencyHint
+    setter loading
     setter loop
     setter muted
     setter onencrypted

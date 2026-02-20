@@ -264,7 +264,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
-#include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
+#include "third_party/blink/renderer/core/html/media/lazy_load_media_observer.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
@@ -9561,7 +9561,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(policy_);
   visitor->Trace(slot_assignment_engine_);
   visitor->Trace(viewport_data_);
-  visitor->Trace(lazy_load_image_observer_);
+  visitor->Trace(lazy_load_media_observer_);
   visitor->Trace(mime_handler_view_before_unload_event_listener_);
   visitor->Trace(cookie_jar_);
   visitor->Trace(fragment_directive_);
@@ -9631,11 +9631,11 @@ bool Document::IsFocusAllowed(FocusTrigger trigger) const {
                  kFocusWithoutUserActivation);
 }
 
-LazyLoadImageObserver& Document::EnsureLazyLoadImageObserver() {
-  if (!lazy_load_image_observer_) {
-    lazy_load_image_observer_ = MakeGarbageCollected<LazyLoadImageObserver>();
+LazyLoadMediaObserver& Document::EnsureLazyLoadMediaObserver() {
+  if (!lazy_load_media_observer_) {
+    lazy_load_media_observer_ = MakeGarbageCollected<LazyLoadMediaObserver>();
   }
-  return *lazy_load_image_observer_;
+  return *lazy_load_media_observer_;
 }
 
 void Document::IncrementNumberOfCanvases() {
