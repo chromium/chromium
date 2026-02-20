@@ -50,8 +50,9 @@ class MemorySaverChipViewBrowserTest
     : public MemorySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
   MemorySaverChipViewBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kPageActionsMigration,
-                                              false);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationMemorySaver.name, "false"}});
   }
 
   void SetUpOnMainThread() override {

@@ -175,39 +175,24 @@ class PriceInsightsIconViewWithLabelBrowserTest
  public:
   PriceInsightsIconViewWithLabelBrowserTest()
       : PriceInsightsIconViewBaseBrowserTest(GetParam()) {
-    if (GetParam()) {
-      test_features_.InitAndEnableFeaturesWithParameters(
-          /*allow_and_enable_features=*/
-          {
-              {commerce::kPriceInsights,
-               {{commerce::kPriceInsightsChipLabelExpandOnHighPriceParam,
-                 "true"}}},
-              {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature,
-               {}},
-              {
-                  ::features::kPageActionsMigration,
-                  {
-                      {::features::kPageActionsMigrationPriceInsights.name,
-                       "true"},
-                  },
-              },
+    test_features_.InitAndEnableFeaturesWithParameters(
+        /*allow_and_enable_features=*/
+        {
+            {commerce::kPriceInsights,
+             {{commerce::kPriceInsightsChipLabelExpandOnHighPriceParam,
+               "true"}}},
+            {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature,
+             {}},
+            {
+                ::features::kPageActionsMigration,
+                {
+                    {::features::kPageActionsMigrationPriceInsights.name,
+                     GetParam() ? "true" : "false"},
+                },
+            },
 
-          },
-          /*disable_features=*/{});
-    } else {
-      test_features_.InitAndEnableFeaturesWithParameters(
-          /*allow_and_enable_features=*/
-          {
-              {
-                  commerce::kPriceInsights,
-                  {{commerce::kPriceInsightsChipLabelExpandOnHighPriceParam,
-                    "true"}},
-              },
-              {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature,
-               {}},
-          },
-          /*disable_features=*/{::features::kPageActionsMigration});
-    }
+        },
+        /*disable_features=*/{});
   }
 
   // UiBrowserTest:
