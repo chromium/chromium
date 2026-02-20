@@ -10,12 +10,11 @@
 
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -43,8 +42,8 @@ namespace {
 class TestScreenWin : public ScreenWin {
  public:
   TestScreenWin(const std::vector<internal::DisplayInfo>& display_infos,
-                const std::unordered_map<HMONITOR, MONITORINFOEX>& hmonitor_map,
-                const std::unordered_map<HWND, gfx::Rect>& hwnd_map)
+                const base::flat_map<HMONITOR, MONITORINFOEX>& hmonitor_map,
+                const base::flat_map<HWND, gfx::Rect>& hwnd_map)
       : ScreenWin(false), hmonitor_map_(hmonitor_map), hwnd_map_(hwnd_map) {
     UpdateFromDisplayInfos(display_infos);
   }
@@ -137,8 +136,8 @@ class TestScreenWin : public ScreenWin {
   }
 
   raw_ptr<Screen> old_screen_ = Screen::SetScreenInstance(this);
-  std::unordered_map<HMONITOR, MONITORINFOEX> hmonitor_map_;
-  std::unordered_map<HWND, gfx::Rect> hwnd_map_;
+  base::flat_map<HMONITOR, MONITORINFOEX> hmonitor_map_;
+  base::flat_map<HWND, gfx::Rect> hwnd_map_;
 };
 
 Screen* GetScreen() {
@@ -190,13 +189,17 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
 
   HWND CreateFakeHwnd(const gfx::Rect& bounds) override {
     EXPECT_EQ(screen_win_, nullptr);
-    hwnd_map_.emplace(UNSAFE_TODO(++hwndLast_), bounds);
+    intptr_t handle_val = reinterpret_cast<intptr_t>(hwndLast_);
+    hwndLast_ = reinterpret_cast<HWND>(++handle_val);
+    hwnd_map_.emplace(hwndLast_, bounds);
     return hwndLast_;
   }
 
   HMONITOR CreateFakeHMONITOR(const MONITORINFOEX& info) override {
     EXPECT_EQ(screen_win_, nullptr);
-    hmonitor_map_.emplace(UNSAFE_TODO(++hmonitorLast_), info);
+    intptr_t handle_val = reinterpret_cast<intptr_t>(hmonitorLast_);
+    hmonitorLast_ = reinterpret_cast<HMONITOR>(++handle_val);
+    hmonitor_map_.emplace(hmonitorLast_, info);
     return hmonitorLast_;
   }
 
@@ -215,8 +218,8 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
   HMONITOR hmonitorLast_ = nullptr;
   std::unique_ptr<ScreenWin> screen_win_;
   std::vector<internal::DisplayInfo> display_infos_;
-  std::unordered_map<HMONITOR, MONITORINFOEX> hmonitor_map_;
-  std::unordered_map<HWND, gfx::Rect> hwnd_map_;
+  base::flat_map<HMONITOR, MONITORINFOEX> hmonitor_map_;
+  base::flat_map<HWND, gfx::Rect> hwnd_map_;
 };
 
 class ScreenWinTest : public ::testing::TestWithParam<bool> {
