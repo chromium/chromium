@@ -175,9 +175,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       historyEmbeddingsDisclaimerLinkClicked_: {type: Boolean},
       includeActorVisits_: {type: Boolean},
       includeUserVisits_: {type: Boolean},
-      isBrowsingHistoryActorIntegrationM3Enabled_: {
-        type: Boolean,
-      },
+      isBrowsingHistoryActorIntegrationM3Enabled_: {type: Boolean},
+      isGlicWebActuationAvailable_: {type: Boolean},
     };
   }
 
@@ -244,6 +243,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor includeUserVisits_: boolean = true;
   protected accessor isBrowsingHistoryActorIntegrationM3Enabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryActorIntegrationM3Enabled');
+  protected accessor isGlicWebActuationAvailable_: boolean =
+      loadTimeData.getBoolean('isGlicWebActuationAvailable');
 
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter =
@@ -908,7 +909,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   protected showFilterChips_(): boolean {
     return this.isBrowsingHistoryActorIntegrationM3Enabled_ &&
-        !this.getShowResultsByGroup_();
+        this.isGlicWebActuationAvailable_ && !this.getShowResultsByGroup_();
   }
 }
 
