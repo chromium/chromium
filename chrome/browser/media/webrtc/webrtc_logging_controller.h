@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/origin.h"
 
 class WebRtcLogUploader;
 class WebRtcRtpDumpHandler;
@@ -62,6 +64,11 @@ class WebRtcLoggingController
       void(bool, const std::string&, const std::string&)>
       StartEventLoggingCallback;
 
+  struct WebApiSettings {
+    bool should_upload_on_stop = false;
+    url::Origin origin;
+  };
+
   static void AttachToRenderProcessHost(content::RenderProcessHost* host);
   static WebRtcLoggingController* FromRenderProcessHost(
       content::RenderProcessHost* host);
@@ -76,7 +83,9 @@ class WebRtcLoggingController
                    GenericDoneCallback callback);
 
   // Opens a log and starts logging. Must be called on the IO thread.
-  void StartLogging(GenericDoneCallback callback);
+  void StartLogging(
+      GenericDoneCallback callback,
+      std::optional<WebApiSettings> web_api_settings = std::nullopt);
 
   // Stops logging. Log will remain open until UploadLog or DiscardLog is
   // called. Must be called on the IO thread.
@@ -92,10 +101,10 @@ class WebRtcLoggingController
 
   // Stores the log locally using a hash of log_id + security origin.
   void StoreLog(const std::string& log_id, GenericDoneCallback callback);
-  // May be called on any thread. |upload_log_on_render_close_| is used
-  // for decision making and it's OK if it changes before the execution based
-  // on that decision has finished.
+  // |upload_log_on_render_close_| is used for decision making and it's OK if
+  // it changes before the execution based on that decision has finished.
   void set_upload_log_on_render_close(bool should_upload) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     upload_log_on_render_close_ = should_upload;
   }
 
@@ -139,14 +148,21 @@ class WebRtcLoggingController
                         LogsDirectoryErrorCallback error_callback);
 #endif
 
+  const std::optional<WebApiSettings>& web_api_settings() {
+    return web_api_settings_;
+  }
+
   // chrome::mojom::WebRtcLoggingClient methods:
   void OnAddMessages(
       std::vector<chrome::mojom::WebRtcLoggingMessagePtr> messages) override;
   void OnStopped() override;
 
   // Checks whether WebRTC text-logs is permitted by
-  // the relevant policy (prefs::kWebRtcTextLogCollectionAllowed).
-  static bool IsWebRtcTextLogAllowed(content::BrowserContext* browser_context);
+  // the relevant policies (prefs::kWebRtcTextLogCollectionAllowed).
+  static bool IsWebRtcTextLogAllowed(
+      content::BrowserContext* browser_context,
+      webrtc_logging::ApiType api_type = webrtc_logging::ApiType::kExtension,
+      const url::Origin& origin = url::Origin());
 
  private:
   friend class base::RefCounted<WebRtcLoggingController>;
@@ -194,6 +210,7 @@ class WebRtcLoggingController
   content::BrowserContext* GetBrowserContext() const;
 
   webrtc_logging::ApiType GetApiType() const;
+  std::string GetContentName() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Grants the render process access to the 'WebRTC Logs' directory, and
@@ -234,6 +251,8 @@ class WebRtcLoggingController
 
   // The callback to call when StopRtpDump is called.
   content::RenderProcessHost::WebRtcStopRtpDumpCallback stop_rtp_dump_callback_;
+
+  std::optional<WebApiSettings> web_api_settings_;
 
   // Web app id used for statistics. Created as the hash of the value of a
   // "client" meta data key, if exists. 0 means undefined, and is the hash of

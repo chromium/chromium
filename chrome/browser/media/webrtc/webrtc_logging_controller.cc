@@ -22,9 +22,12 @@
 #include "chrome/browser/media/webrtc/webrtc_rtp_dump_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/browser/render_process_host.h"
+#include "net/base/schemeful_site.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/child_process_security_policy.h"
@@ -80,24 +83,33 @@ void WebRtcLoggingController::SetMetaData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  // Set the web app ID if there's a "client" key, otherwise leave it unchanged.
-  for (const auto& it : *meta_data) {
-    if (it.first == "client") {
-      web_app_id_ = static_cast<int>(base::PersistentHash(it.second));
-      text_log_handler_->SetWebAppId(web_app_id_);
-      break;
+  if (GetApiType() == webrtc_logging::ApiType::kExtension) {
+    // Set the web app ID if there's a "client" key, otherwise leave it
+    // unchanged.
+    for (const auto& it : *meta_data) {
+      if (it.first == "client") {
+        web_app_id_ = static_cast<int>(base::PersistentHash(it.second));
+        text_log_handler_->SetWebAppId(web_app_id_);
+        break;
+      }
     }
   }
 
   text_log_handler_->SetMetaData(std::move(meta_data), std::move(callback));
 }
 
-void WebRtcLoggingController::StartLogging(GenericDoneCallback callback) {
+void WebRtcLoggingController::StartLogging(
+    GenericDoneCallback callback,
+    std::optional<WebApiSettings> web_api_settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   // Request a log_slot from the LogUploader and start logging.
   if (text_log_handler_->StartLogging(std::move(callback))) {
+    web_api_settings_ = std::move(web_api_settings);
+    if (web_api_settings_.has_value()) {
+      set_upload_log_on_render_close(web_api_settings_->should_upload_on_stop);
+    }
     // Start logging in the renderer. The callback has already been fired since
     // there is no acknowledgement when the renderer actually starts.
     content::RenderProcessHost* host =
@@ -396,6 +408,12 @@ void WebRtcLoggingController::OnAgentDisconnected() {
     return;
 
   WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
+  if (!log_uploader) {
+    text_log_handler_->ChannelClosing();
+    text_log_handler_->DiscardLog();
+    return;
+  }
+
   switch (text_log_handler_->GetState()) {
     case WebRtcTextLogHandler::STARTING:
     case WebRtcTextLogHandler::STARTED:
@@ -471,6 +489,13 @@ void WebRtcLoggingController::StoreLogInDirectory(
                           << ", uorc=" << upload_log_on_render_close_;
 
   WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
+  if (!log_uploader) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(done_callback), false,
+                                  "Log uploader not available."));
+    return;
+  }
+
   log_uploader->background_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](WebRtcLogPaths paths, const std::string& log_id,
@@ -479,6 +504,11 @@ void WebRtcLoggingController::StoreLogInDirectory(
                         GenericDoneCallback done_callback) {
                        WebRtcLogUploader* uploader =
                            WebRtcLogUploader::GetInstance();
+                       if (!uploader) {
+                         std::move(done_callback)
+                             .Run(false, "Log uploader not available.");
+                         return;
+                       }
                        uploader->LoggingStoppedDoStore(
                            paths, log_id, std::move(log_buffer),
                            std::move(meta_data), std::move(done_callback));
@@ -522,6 +552,16 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
     return;
   }
 
+  WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
+  if (!log_uploader) {
+    if (!callback.is_null()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false, "",
+                                    "Log uploader not available."));
+    }
+    return;
+  }
+
   WebRtcLogUploader::UploadDoneData upload_done_data;
   upload_done_data.paths.directory = log_directory;
   upload_done_data.callback = std::move(callback);
@@ -535,22 +575,31 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
                           << ", uorc=" << upload_log_on_render_close_;
 
   content::BrowserContext* browser_context = GetBrowserContext();
-  bool is_text_log_upload_allowed = IsWebRtcTextLogAllowed(browser_context);
-
-  WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
+  bool is_text_log_upload_allowed = IsWebRtcTextLogAllowed(
+      browser_context, GetApiType(),
+      web_api_settings_.has_value() ? web_api_settings_->origin
+                                    : url::Origin());
   log_uploader->background_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](std::unique_ptr<WebRtcLogBuffer> log_buffer,
+          [](const std::string& content_name,
+             std::unique_ptr<WebRtcLogBuffer> log_buffer,
              std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
              WebRtcLogUploader::UploadDoneData upload_done_data,
              bool is_text_log_upload_allowed) {
             WebRtcLogUploader* uploader = WebRtcLogUploader::GetInstance();
+            if (!uploader) {
+              if (!upload_done_data.callback.is_null()) {
+                std::move(upload_done_data.callback)
+                    .Run(false, "", "Log uploader not available.");
+              }
+              return;
+            }
             uploader->OnLoggingStopped(
-                "webrtc_log", std::move(log_buffer), std::move(meta_data),
+                content_name, std::move(log_buffer), std::move(meta_data),
                 std::move(upload_done_data), is_text_log_upload_allowed);
           },
-          std::move(log_buffer), std::move(meta_data),
+          GetContentName(), std::move(log_buffer), std::move(meta_data),
           std::move(upload_done_data), is_text_log_upload_allowed));
 }
 
@@ -616,23 +665,70 @@ content::BrowserContext* WebRtcLoggingController::GetBrowserContext() const {
 }
 
 webrtc_logging::ApiType WebRtcLoggingController::GetApiType() const {
-  // TODO(crbug.com/481412281): Support webrtc_logging::ApiType::kWeb.
-  return webrtc_logging::ApiType::kExtension;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return web_api_settings_.has_value() ? webrtc_logging::ApiType::kWeb
+                                       : webrtc_logging::ApiType::kExtension;
+}
+
+std::string WebRtcLoggingController::GetContentName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kUploadSiteContentName[] = "webrtc_log";
+  static constexpr char kNonUploadSiteContentName[] = "other_webrtc_log";
+  WebRtcLogUploader* uploader = WebRtcLogUploader::GetInstance();
+  if (!uploader) {
+    return kNonUploadSiteContentName;
+  }
+  const url::Origin upload_site_origin =
+      url::Origin::Create(uploader->upload_url());
+  switch (GetApiType()) {
+    case webrtc_logging::ApiType::kExtension:
+      return kUploadSiteContentName;
+    case webrtc_logging::ApiType::kWeb:
+      return net::SchemefulSite::IsSameSite(web_api_settings_->origin,
+                                            upload_site_origin)
+                 ? kUploadSiteContentName
+                 : kNonUploadSiteContentName;
+  }
 }
 
 // static
 bool WebRtcLoggingController::IsWebRtcTextLogAllowed(
-    content::BrowserContext* browser_context) {
-  // Historically by default webrtc text logs are always uploaded.
+    content::BrowserContext* browser_context,
+    webrtc_logging::ApiType api_type,
+    const url::Origin& origin) {
   if (!browser_context) {
-    return true;
+    return false;
   }
 
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile);
+  if (profile->IsIncognitoProfile()) {
+    return false;
+  }
+  const PrefService* prefs = profile->GetPrefs();
+  if (!prefs->GetBoolean(prefs::kWebRtcTextLogCollectionAllowed)) {
+    return false;
+  }
+  if (api_type == webrtc_logging::ApiType::kExtension) {
+    return true;
+  }
+  if (origin.opaque()) {
+    return false;
+  }
 
-  return profile->GetPrefs()->GetBoolean(
-      prefs::kWebRtcTextLogCollectionAllowed);
+  const base::ListValue& allowed_origins =
+      prefs->GetList(prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins);
+  for (const auto& value : allowed_origins) {
+    if (value.is_string()) {
+      ContentSettingsPattern pattern =
+          ContentSettingsPattern::FromString(value.GetString());
+      if (pattern.IsValid() && pattern.Matches(origin.GetURL())) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 base::FilePath WebRtcLoggingController::GetLogDirectoryAndEnsureExists(

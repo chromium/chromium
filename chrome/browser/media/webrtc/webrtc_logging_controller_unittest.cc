@@ -82,16 +82,17 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
         WebRtcLoggingController::FromRenderProcessHost(rph_.get());
   }
 
-  void CreateUnManagedProfile() {
-    browser_context_ =
-        CreateBrowserContext("browser_context_", false, std::nullopt);
+  void CreateUnmanagedProfile() {
+    browser_context_ = CreateBrowserContext(
+        "browser_context_", /*is_managed_profile=*/false,
+        /*text_log_collection_allowed_by_global_policy=*/std::nullopt);
     CreateRenderHost();
   }
 
   std::unique_ptr<TestingProfile> CreateBrowserContext(
       std::string profile_name,
       bool is_managed_profile,
-      std::optional<bool> text_log_collection_allowed) {
+      std::optional<bool> text_log_collection_allowed_by_global_policy) {
     // If profile name not specified, select a unique name.
     if (profile_name.empty()) {
       static size_t index = 0;
@@ -119,9 +120,10 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
     // Set the preference associated with the policy for
     // WebRtcTextLogCollectionAllowed
     RegisterUserProfilePrefs(registry.get());
-    if (text_log_collection_allowed.has_value()) {
-      regular_prefs->SetBoolean(prefs::kWebRtcTextLogCollectionAllowed,
-                                text_log_collection_allowed.value());
+    if (text_log_collection_allowed_by_global_policy.has_value()) {
+      regular_prefs->SetBoolean(
+          prefs::kWebRtcTextLogCollectionAllowed,
+          text_log_collection_allowed_by_global_policy.value());
     }
 
     // Build the profile.
@@ -177,19 +179,63 @@ TEST_F(WebRtcLoggingControllerTest, IncognitoWithUnsetPolicy) {
   Profile* incognito_profile =
       browser_context_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       webrtc_logging_controller_->IsWebRtcTextLogAllowed(incognito_profile));
 
   browser_context_->DestroyOffTheRecordProfile(incognito_profile);
 }
 
 TEST_F(WebRtcLoggingControllerTest, UnmanagedProfileWithUnsetPolicy) {
-  CreateUnManagedProfile();
+  CreateUnmanagedProfile();
   EXPECT_TRUE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
       browser_context_.get()));
 }
 
 TEST_F(WebRtcLoggingControllerTest, NullBrowserContext) {
-  EXPECT_TRUE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(nullptr));
+  EXPECT_FALSE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(nullptr));
+}
+
+TEST_F(WebRtcLoggingControllerTest, NullBrowserContextWeb) {
+  EXPECT_FALSE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
+      nullptr, webrtc_logging::ApiType::kWeb));
+}
+
+TEST_F(WebRtcLoggingControllerTest, WebApiOriginPolicy) {
+  LoadMainTestProfile(true);
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+
+  // No origins allowed by default.
+  EXPECT_FALSE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
+      browser_context_.get(), webrtc_logging::ApiType::kWeb, origin));
+
+  // Allow origin.
+  base::ListValue allowed_origins;
+  allowed_origins.Append("https://example.com");
+  browser_context_->GetPrefs()->SetList(
+      prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+      std::move(allowed_origins));
+
+  EXPECT_TRUE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
+      browser_context_.get(), webrtc_logging::ApiType::kWeb, origin));
+
+  // Different origin still blocked.
+  url::Origin other_origin =
+      url::Origin::Create(GURL("https://other-example.com"));
+  EXPECT_FALSE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
+      browser_context_.get(), webrtc_logging::ApiType::kWeb, other_origin));
+}
+
+TEST_F(WebRtcLoggingControllerTest, WebApiPatternPolicy) {
+  LoadMainTestProfile(true);
+  url::Origin origin = url::Origin::Create(GURL("https://sub.example.com"));
+
+  base::ListValue allowed_origins;
+  allowed_origins.Append("https://[*.]example.com");
+  browser_context_->GetPrefs()->SetList(
+      prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+      std::move(allowed_origins));
+
+  EXPECT_TRUE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
+      browser_context_.get(), webrtc_logging::ApiType::kWeb, origin));
 }
 }  // namespace webrtc_text_log
