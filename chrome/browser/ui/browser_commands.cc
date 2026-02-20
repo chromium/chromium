@@ -740,6 +740,19 @@ Browser* OpenEmptyWindow(Profile* profile,
   Browser::CreateParams params =
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
   params.should_trigger_session_restore = should_trigger_session_restore;
+
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile);
+    if (last_active_browser) {
+      if (auto* controller = tabs::VerticalTabStripStateController::From(
+              last_active_browser)) {
+        params.vertical_tab_strip_collapsed = controller->IsCollapsed();
+        params.vertical_tab_strip_uncollapsed_width =
+            controller->GetUncollapsedWidth();
+      }
+    }
+  }
+
   base::TimeTicks now = base::TimeTicks::Now();
   Browser* browser = Browser::Create(params);
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
