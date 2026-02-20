@@ -15,6 +15,8 @@ source_set("model") {
     "gemini_page_state_change_delegate.h",
     "gemini_page_state_change_handler.h",
     "gemini_page_state_change_handler.mm",
+    "gemini_scroll_observer.h",
+    "gemini_scroll_observer.mm",
     "gemini_session_delegate.h",
     "gemini_suggestion_delegate.h",
     "gemini_suggestion_handler.h",

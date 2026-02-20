@@ -829,7 +829,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Tab Grid"/>
   <int value="4" label="Non-Web Context Menu (e.g. Toolbar long press)"/>
   <int value="5" label="Web Context Menu"/>
-  <int value="6" label="Forced From Fullscreen"/>
+  <int value="6" label="Forced From Scrolling"/>
   <int value="7" label="Overlay (e.g. Lens Overlay)"/>
   <int value="8" label="Ineligible Site"/>
   <int value="9" label="Forced From Query Response"/>
