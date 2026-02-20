@@ -40,7 +40,7 @@ void GlicInvokeHandler::SendToClient() {
 void GlicInvokeHandler::OnSendToClientComplete(base::OnceClosure callback) {
   std::move(callback).Run();
   if (invoke_complete_callback_) {
-    std::move(invoke_complete_callback_).Run(instance_->id(), this);
+    std::move(invoke_complete_callback_).Run(&*instance_, this);
   }
 }
 
