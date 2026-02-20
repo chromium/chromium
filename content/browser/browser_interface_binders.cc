@@ -826,15 +826,6 @@ void PopulateBinderMapWithContext(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateMdnsResponder>);
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-  // BrowserMainLoop::GetInstance() may be null on unit tests.
-  if (BrowserMainLoop::GetInstance()) {
-    map->Add<midi::mojom::MidiSessionProvider>(
-        base::BindRepeating(&MidiHost::BindReceiver,
-                            host->GetProcess()->GetID(),
-                            BrowserMainLoop::GetInstance()->midi_service()),
-        GetIOThreadTaskRunner({}));
-  }
-
   map->Add<media::mojom::MediaPlayerObserverClient>(
       &BindMediaPlayerObserverClientHandler);
 
@@ -871,12 +862,6 @@ void PopulateBinderMapWithContext(
       &CreateReportingServiceProxyForFrame);
 
   map->Add<blink::mojom::SharedWorkerConnector>(&BindSharedWorkerConnector);
-
-  map->Add<media::mojom::SpeechRecognizer>(
-      base::BindRepeating(&SpeechRecognitionDispatcherHost::Create,
-                          host->GetProcess()->GetDeprecatedID(),
-                          host->GetRoutingID()),
-      GetIOThreadTaskRunner({}));
 
   map->Add<blink::mojom::SpeechSynthesis>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetSpeechSynthesis>);
@@ -938,34 +923,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::WebTransportConnector>(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::CreateWebTransportConnector>);
-
-  // BrowserMainLoop::GetInstance() may be null on unit tests.
-  if (BrowserMainLoop::GetInstance()) {
-    // BrowserMainLoop, which owns MediaStreamManager, is alive for the lifetime
-    // of Mojo communication (see BrowserMainLoop::ShutdownThreadsAndCleanUp(),
-    // which shuts down Mojo). Hence, passing that MediaStreamManager instance
-    // as a raw pointer here is safe.
-    MediaStreamManager* media_stream_manager =
-        BrowserMainLoop::GetInstance()->media_stream_manager();
-
-    map->Add<blink::mojom::MediaDevicesDispatcherHost>(
-        base::BindRepeating(&MediaDevicesDispatcherHost::Create,
-                            host->GetMainFrame()->GetGlobalFrameToken(),
-                            host->GetGlobalId(),
-                            base::Unretained(media_stream_manager)),
-        GetIOThreadTaskRunner({}));
-
-    map->Add<blink::mojom::MediaStreamDispatcherHost>(
-        base::BindRepeating(&MediaStreamDispatcherHost::Create,
-                            host->GetGlobalId(),
-                            base::Unretained(media_stream_manager)),
-        GetIOThreadTaskRunner({}));
-
-    map->Add<media::mojom::VideoCaptureHost>(
-        base::BindRepeating(&VideoCaptureHost::Create, host->GetGlobalId(),
-                            base::Unretained(media_stream_manager)),
-        GetIOThreadTaskRunner({}));
-  }
 
   map->Add<blink::mojom::RendererAudioInputStreamFactory>(
       &BindRenderFrameHostImpl<
@@ -1263,6 +1220,53 @@ void PopulateBinderMapWithContext(
 }
 
 void PopulateBinderMap(RenderFrameHostImpl* host, mojo::BinderMap* map) {
+  // PopulateBinderMapWithContext is broken with a raw pointer context and
+  // bound TaskRunner because the context can become dangling. Keep these here
+  // until the underlying bug is fixed. See internal crbug.com/485280283.
+
+  // BrowserMainLoop::GetInstance() may be null on unit tests.
+  if (BrowserMainLoop::GetInstance()) {
+    map->Add<midi::mojom::MidiSessionProvider>(
+        base::BindRepeating(&MidiHost::BindReceiver,
+                            host->GetProcess()->GetID(),
+                            BrowserMainLoop::GetInstance()->midi_service()),
+        GetIOThreadTaskRunner({}));
+  }
+
+  map->Add<media::mojom::SpeechRecognizer>(
+      base::BindRepeating(&SpeechRecognitionDispatcherHost::Create,
+                          host->GetProcess()->GetDeprecatedID(),
+                          host->GetRoutingID()),
+      GetIOThreadTaskRunner({}));
+
+  // BrowserMainLoop::GetInstance() may be null on unit tests.
+  if (BrowserMainLoop::GetInstance()) {
+    // BrowserMainLoop, which owns MediaStreamManager, is alive for the lifetime
+    // of Mojo communication (see BrowserMainLoop::ShutdownThreadsAndCleanUp(),
+    // which shuts down Mojo). Hence, passing that MediaStreamManager instance
+    // as a raw pointer here is safe.
+    MediaStreamManager* media_stream_manager =
+        BrowserMainLoop::GetInstance()->media_stream_manager();
+
+    map->Add<blink::mojom::MediaDevicesDispatcherHost>(
+        base::BindRepeating(&MediaDevicesDispatcherHost::Create,
+                            host->GetMainFrame()->GetGlobalFrameToken(),
+                            host->GetGlobalId(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+
+    map->Add<blink::mojom::MediaStreamDispatcherHost>(
+        base::BindRepeating(&MediaStreamDispatcherHost::Create,
+                            host->GetGlobalId(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+
+    map->Add<media::mojom::VideoCaptureHost>(
+        base::BindRepeating(&VideoCaptureHost::Create, host->GetGlobalId(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+  }
+
   // This function is here for compatibility, it is deprecated to allow
   // RegisterBrowserInterfaceBindersForFrame to override base implementations.
   // Please do not add any interfaces here.
