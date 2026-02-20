@@ -342,7 +342,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   friend class OffscreenCanvasRenderingContext2D;
 
   // The returned instance will have been cleared at creation.
-  static std::unique_ptr<Canvas2DResourceProviderBitmap> Create(
+  static std::unique_ptr<Canvas2DResourceProviderBitmap> CreateWithClear(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
