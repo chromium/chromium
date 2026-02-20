@@ -2816,11 +2816,20 @@ message ResponseInfo {
   optional bool was_http_cache = 2;
 };
 
+message MemoryDumpProvider {
+  // The name of the MemoryDumpProvider object, from the static list in
+  // `kMemoryDumpProviderNameAllowList` (see
+  // https://source.chromium.org/chromium/chromium/src/+/main:out/android-Debug/gen/base/trace_event/memory_dump_provider_name_variants.h).
+  // The provider name is validated against the static list at compile time, at
+  // https://source.chromium.org/chromium/chromium/src/+/main:base/trace_event/memory_dump_provider.h;l=65;drc=d36832392d30b9cbbd3a6ae8a37e11b92853f041.
+  optional string name = 1;
+};
+
 message ChromeTrackEvent {
   reserved 1045;
 
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1079
+  // Next ID: 1080
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2987,5 +2996,9 @@ message ChromeTrackEvent {
     optional ResponseInfo response_info = 1077;
 
     optional EventLatency.ScrollJankV4Result scroll_jank_v4 = 1078;
+
+    // Identifies the MemoryDumpProvider object that runs in the scope of a
+    // trace event, to identify which objects cause delays in a trace.
+    optional MemoryDumpProvider memory_dump_provider = 1079;
   }
 }

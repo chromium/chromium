@@ -38,6 +38,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
@@ -470,8 +471,12 @@ void MemoryDumpManager::InvokeOnMemoryDump(
   DCHECK(!mdpinfo->task_runner ||
          mdpinfo->task_runner->RunsTasksInCurrentSequence());
 
-  TRACE_EVENT1(kTraceCategory, "MemoryDumpManager::InvokeOnMemoryDump",
-               "dump_provider.name", mdpinfo->name.static_name());
+  TRACE_EVENT(kTraceCategory, "MemoryDumpManager::InvokeOnMemoryDump",
+              [&](perfetto::EventContext ctx) {
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                    ->set_memory_dump_provider()
+                    ->set_name(mdpinfo->name.histogram_name());
+              });
 
   // Do not add any other TRACE_EVENT macro (or function that might have them)
   // below this point. Under some rare circunstances, they can re-initialize
