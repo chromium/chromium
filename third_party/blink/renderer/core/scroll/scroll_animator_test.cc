@@ -260,7 +260,7 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
 
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
 
-  ScrollResult result = scroll_animator->UserScroll(
+  ScrollConsumption result = scroll_animator->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(-100, 0),
       cc::ScrollSourceType::kNone, ScrollableArea::ScrollCallback());
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
@@ -353,7 +353,7 @@ TEST(ScrollAnimatorTest, AnimatedScrollAborted) {
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
 
   // Smooth scroll.
-  ScrollResult result = scroll_animator->UserScroll(
+  ScrollConsumption result = scroll_animator->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 0),
       cc::ScrollSourceType::kNone, ScrollableArea::ScrollCallback());
   EXPECT_TRUE(scroll_animator->HasAnimationThatRequiresService());
@@ -409,7 +409,7 @@ TEST(ScrollAnimatorTest, AnimatedScrollTakeover) {
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
 
   // Smooth scroll.
-  ScrollResult result = scroll_animator->UserScroll(
+  ScrollConsumption result = scroll_animator->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 0),
       cc::ScrollSourceType::kNone, ScrollableArea::ScrollCallback());
   EXPECT_TRUE(scroll_animator->HasAnimationThatRequiresService());
@@ -721,7 +721,7 @@ TEST(ScrollAnimatorTest, CancellingCompositorAnimation) {
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
 
   // First user scroll.
-  ScrollResult result = scroll_animator->UserScroll(
+  ScrollConsumption result = scroll_animator->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 0),
       cc::ScrollSourceType::kNone, ScrollableArea::ScrollCallback());
   EXPECT_TRUE(scroll_animator->HasAnimationThatRequiresService());

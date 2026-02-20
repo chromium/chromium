@@ -119,10 +119,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Used to scale a length in dip units into a length in layout/paint units.
   virtual float ScaleFromDIP() const;
 
-  virtual ScrollResult UserScroll(ui::ScrollGranularity,
-                                  const ScrollOffset&,
-                                  cc::ScrollSourceType source_type,
-                                  ScrollCallback on_finish);
+  virtual ScrollConsumption UserScroll(ui::ScrollGranularity,
+                                       const ScrollOffset&,
+                                       cc::ScrollSourceType source_type,
+                                       ScrollCallback on_finish);
 
   // A non-virtual wrapper that allows default arguments over the virtual method
   // `SetScrollOffsetInternal`.

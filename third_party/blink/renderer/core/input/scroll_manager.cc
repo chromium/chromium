@@ -279,7 +279,7 @@ LogicalScrollResult ScrollManager::LogicalScroll(
         WrapWeakPersistent(
             &(frame_->GetEventHandler().GetKeyboardEventManager())),
         scrolling_via_key));
-    ScrollResult result = scrollable_area->UserScroll(
+    ScrollConsumption result = scrollable_area->UserScroll(
         granularity, ToScrollDelta(physical_direction, 1), source_type,
         std::move(callback));
 

@@ -540,7 +540,7 @@ cc::Layer* RootFrameViewport::LayerForScrollCorner() const {
 }
 
 // This method distributes the scroll between the visual and layout viewport.
-ScrollResult RootFrameViewport::UserScroll(
+ScrollConsumption RootFrameViewport::UserScroll(
     ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
     cc::ScrollSourceType source_type,
@@ -599,7 +599,7 @@ ScrollResult RootFrameViewport::UserScroll(
       std::move(on_finish).Run(
           ScrollableArea::ScrollCompletionMode::kZeroDelta);
     }
-    return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
+    return ScrollConsumption(false, false, pixel_delta.x(), pixel_delta.y());
   }
 
   CancelProgrammaticScrollAnimation();
@@ -607,7 +607,7 @@ ScrollResult RootFrameViewport::UserScroll(
   // TODO(bokan): Why do we call userScroll on the animators directly and
   // not through the ScrollableAreas?
   if (visual_consumed_delta == pixel_delta) {
-    ScrollResult visual_result =
+    ScrollConsumption visual_result =
         GetVisualViewport().GetScrollAnimator().UserScroll(
             granularity, visual_consumed_delta, source_type,
             std::move(on_finish));
@@ -619,7 +619,7 @@ ScrollResult RootFrameViewport::UserScroll(
   }
 
   if (layout_consumed_delta == pixel_delta) {
-    ScrollResult layout_result =
+    ScrollConsumption layout_result =
         LayoutViewport().GetScrollAnimator().UserScroll(
             granularity, scrollable_axis_delta, source_type,
             std::move(on_finish));
@@ -628,18 +628,19 @@ ScrollResult RootFrameViewport::UserScroll(
 
   auto all_done = MakeViewportScrollCompletion(std::move(on_finish));
 
-  ScrollResult visual_result =
+  ScrollConsumption visual_result =
       GetVisualViewport().GetScrollAnimator().UserScroll(
           granularity, visual_consumed_delta, source_type, all_done);
 
-  ScrollResult layout_result = LayoutViewport().GetScrollAnimator().UserScroll(
-      granularity, scrollable_axis_delta, source_type, all_done);
+  ScrollConsumption layout_result =
+      LayoutViewport().GetScrollAnimator().UserScroll(
+          granularity, scrollable_axis_delta, source_type, all_done);
 
   // Remember to add any delta not used because of !userInputScrollable to the
   // unusedScrollDelta in the result.
   ScrollOffset unscrollable_axis_delta = layout_delta - scrollable_axis_delta;
 
-  return ScrollResult(
+  return ScrollConsumption(
       visual_result.did_scroll_x || layout_result.did_scroll_x,
       visual_result.did_scroll_y || layout_result.did_scroll_y,
       layout_result.unused_scroll_delta_x + unscrollable_axis_delta.x(),

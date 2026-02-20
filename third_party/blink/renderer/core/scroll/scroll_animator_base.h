@@ -59,14 +59,16 @@ class CORE_EXPORT ScrollAnimatorBase
 
   // A possibly animated scroll. The base class implementation always scrolls
   // immediately, never animates. If the scroll is animated and currently the
-  // animator has an in-progress animation, the ScrollResult will always return
-  // no unusedDelta and didScroll=true, i.e. fully consuming the scroll request.
-  // This makes animations latch to a single scroller. Note, the semantics are
-  // currently somewhat different on Mac - see ScrollAnimatorMac.mm.
-  virtual ScrollResult UserScroll(ui::ScrollGranularity,
-                                  const ScrollOffset& delta,
-                                  cc::ScrollSourceType,
-                                  ScrollableArea::ScrollCallback on_finish);
+  // animator has an in-progress animation, the ScrollConsumption will always
+  // return no unusedDelta and didScroll=true, i.e. fully consuming the scroll
+  // request. This makes animations latch to a single scroller. Note, the
+  // semantics are currently somewhat different on Mac - see
+  // ScrollAnimatorMac.mm.
+  virtual ScrollConsumption UserScroll(
+      ui::ScrollGranularity,
+      const ScrollOffset& delta,
+      cc::ScrollSourceType,
+      ScrollableArea::ScrollCallback on_finish);
 
   virtual void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
                                               cc::ScrollSourceType);

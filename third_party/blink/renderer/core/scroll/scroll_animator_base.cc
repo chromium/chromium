@@ -48,7 +48,7 @@ ScrollOffset ScrollAnimatorBase::ComputeDeltaToConsume(
   return new_pos - current_offset_;
 }
 
-ScrollResult ScrollAnimatorBase::UserScroll(
+ScrollConsumption ScrollAnimatorBase::UserScroll(
     ui::ScrollGranularity,
     const ScrollOffset& delta,
     cc::ScrollSourceType source_type,
@@ -62,7 +62,7 @@ ScrollResult ScrollAnimatorBase::UserScroll(
       std::move(on_finish).Run(
           ScrollableArea::ScrollCompletionMode::kZeroDelta);
     }
-    return ScrollResult(false, false, delta.x(), delta.y());
+    return ScrollConsumption(false, false, delta.x(), delta.y());
   }
 
   SetCurrentOffset(new_pos);
@@ -73,9 +73,9 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   if (on_finish) {
     std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
   }
-  return ScrollResult(consumed_delta.x(), consumed_delta.y(),
-                      delta.x() - consumed_delta.x(),
-                      delta.y() - consumed_delta.y());
+  return ScrollConsumption(consumed_delta.x(), consumed_delta.y(),
+                           delta.x() - consumed_delta.x(),
+                           delta.y() - consumed_delta.y());
 }
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(

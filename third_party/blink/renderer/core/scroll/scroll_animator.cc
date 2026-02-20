@@ -90,7 +90,7 @@ void ScrollAnimator::ResetAnimationState() {
     std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
 }
 
-ScrollResult ScrollAnimator::UserScroll(
+ScrollConsumption ScrollAnimator::UserScroll(
     ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
     cc::ScrollSourceType source_type,
@@ -141,7 +141,7 @@ ScrollResult ScrollAnimator::UserScroll(
     // comment below regarding scroll latching.
     // TODO(bokan): Need to standardize how ScrollAnimators report
     // unusedDelta. This differs from ScrollAnimatorMac currently.
-    return ScrollResult(true, true, 0, 0);
+    return ScrollConsumption(true, true, 0, 0);
   }
 
   // If the run state when this method was called was PostAnimationCleanup and
@@ -157,7 +157,7 @@ ScrollResult ScrollAnimator::UserScroll(
     std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
 
   std::move(run_on_return).Run(ScrollableArea::ScrollCompletionMode::kFinished);
-  return ScrollResult(false, false, delta.x(), delta.y());
+  return ScrollConsumption(false, false, delta.x(), delta.y());
 }
 
 bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {

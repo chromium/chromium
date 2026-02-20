@@ -227,10 +227,10 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(
   return gfx::ScaleVector2d(delta, step.width(), step.height());
 }
 
-ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
-                                        const ScrollOffset& delta,
-                                        cc::ScrollSourceType source_type,
-                                        ScrollCallback on_finish) {
+ScrollConsumption ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
+                                             const ScrollOffset& delta,
+                                             cc::ScrollSourceType source_type,
+                                             ScrollCallback on_finish) {
   TRACE_EVENT2("input", "ScrollableArea::UserScroll", "x", delta.x(), "y",
                delta.y());
 
@@ -246,12 +246,12 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
     if (on_finish) {
       std::move(on_finish).Run(ScrollCompletionMode::kZeroDelta);
     }
-    return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
+    return ScrollConsumption(false, false, pixel_delta.x(), pixel_delta.y());
   }
 
   CancelProgrammaticScrollAnimation();
 
-  ScrollResult result = GetScrollAnimator().UserScroll(
+  ScrollConsumption result = GetScrollAnimator().UserScroll(
       granularity, scrollable_axis_delta, source_type, std::move(on_finish));
   if (result.DidScroll()) {
     if (ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup()) {
