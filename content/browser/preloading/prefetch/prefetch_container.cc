@@ -273,9 +273,7 @@ PrefetchContainer::PrefetchContainer(
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(request_->preload_pipeline_info());
 
-  redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
-      *this, GetURL(), IsCrossSiteRequest(url::Origin::Create(GetURL())),
-      request_->preload_pipeline_info().GetFlow()));
+  AddRedirectHop(GetURL());
 
   // Disallow prefetching ServiceWorker-controlled responses for isolated
   // network contexts.
@@ -902,11 +900,10 @@ void PrefetchContainer::UpdateResourceRequest(
   AddXClientDataHeader(*resource_request_.get());
 }
 
-void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
+void PrefetchContainer::AddRedirectHop(const GURL& url) {
   redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
-      *this, redirect_info.new_url,
-      IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url)),
-      request_->preload_pipeline_info().GetFlow()));
+      *this, url, request().IsCrossSiteRequest(url::Origin::Create(url)),
+      request().preload_pipeline_info().GetFlow()));
 }
 
 bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {

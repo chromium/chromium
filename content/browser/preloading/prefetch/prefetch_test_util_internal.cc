@@ -293,7 +293,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
       std::move(redirects), network::TestURLLoaderFactory::kResponseDefault);
   auto [redirect_info, redirect_head] = on_receive_redirect.Take();
 
-  prefetch_container->AddRedirectHop(redirect_info);
+  prefetch_container->AddRedirectHop(redirect_info.new_url);
 
   CHECK(weak_streaming_loader);
   weak_streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
@@ -355,7 +355,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       network::TestURLLoaderFactory::kResponseOnlyRedirectsNoDestination);
   auto [redirect_info, redirect_head] = on_receive_redirect.Take();
 
-  prefetch_container->AddRedirectHop(redirect_info);
+  prefetch_container->AddRedirectHop(redirect_info.new_url);
 
   CHECK(weak_first_streaming_loader);
   weak_first_streaming_loader->HandleRedirect(

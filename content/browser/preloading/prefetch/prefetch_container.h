@@ -344,8 +344,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // Whether or not the prefetch was determined to be eligibile.
   void OnEligibilityCheckComplete(PreloadingEligibility eligibility);
 
-  // Adds a the new URL to |redirect_chain_|.
-  void AddRedirectHop(const net::RedirectInfo& redirect_info);
+  // Adds `url` (the next URL to prefetch) to |redirect_chain_|.
+  void AddRedirectHop(const GURL& url);
 
   // Returns a tuple of `PrefetchUpdateHeadersParams`s that indicates the header
   // modification upon redirect, to be passed to `UpdateResourceRequest()` and

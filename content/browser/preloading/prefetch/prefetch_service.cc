@@ -1759,7 +1759,7 @@ void PrefetchService::OnPrefetchRedirect(
     return;
   }
 
-  prefetch_container->AddRedirectHop(redirect_info);
+  prefetch_container->AddRedirectHop(redirect_info.new_url);
 
   auto params = CheckEligibilityParams(
       {.prefetch_container_internal = prefetch_container,
