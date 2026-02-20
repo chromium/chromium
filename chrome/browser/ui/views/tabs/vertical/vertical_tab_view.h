@@ -116,8 +116,8 @@ class VerticalTabView : public views::View,
                               std::optional<int> fill_id) const;
   bool ShouldPaintTabBackgroundColor(
       TabStyle::TabSelectionState selection_state,
-      bool has_custom_background) const;
-  void PaintBackgroundHover(gfx::Canvas* canvas) const;
+      bool has_custom_background,
+      bool hovered) const;
 
   struct TabChildConfig {
     raw_ptr<views::View> view;

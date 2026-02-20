@@ -510,7 +510,8 @@ void VerticalTabView::PaintTabBackgroundFill(
     TabStyle::TabSelectionState selection_state,
     bool hovered,
     std::optional<int> fill_id) const {
-  if (ShouldPaintTabBackgroundColor(selection_state, fill_id.has_value())) {
+  if (ShouldPaintTabBackgroundColor(selection_state, fill_id.has_value(),
+                                    hovered)) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
@@ -524,15 +525,12 @@ void VerticalTabView::PaintTabBackgroundFill(
         GetThemeProvider()->GetImageSkiaNamed(fill_id.value());
     canvas->TileImageInt(*image, 0, 0, 0, 0, width(), height());
   }
-
-  if (hovered) {
-    PaintBackgroundHover(canvas);
-  }
 }
 
 bool VerticalTabView::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
-    bool has_custom_background) const {
+    bool has_custom_background,
+    bool hovered) const {
   if (selection_state == TabStyle::TabSelectionState::kActive) {
     return true;
   }
@@ -541,19 +539,12 @@ bool VerticalTabView::ShouldPaintTabBackgroundColor(
     return false;
   }
 
+  if (hovered) {
+    return true;
+  }
+
   return GetThemeProvider()->GetDisplayProperty(
       ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
-}
-
-void VerticalTabView::PaintBackgroundHover(gfx::Canvas* canvas) const {
-  const SkColor hover_color = tab_style_->GetCurrentTabBackgroundColor(
-      GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
-      IsFrameActive(), GetColorProvider());
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(hover_color);
-  canvas->DrawRect(GetContentsBounds(), flags);
 }
 
 void VerticalTabView::AddedToWidget() {
