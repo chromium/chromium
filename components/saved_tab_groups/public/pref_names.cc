@@ -53,6 +53,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kHasShownAnyVersionOutOfDateMessage,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kSavedTabGroupPinnedPositionToProjectsPositionMigration, false);
 }
 
 void KeepAccountSettingsPrefsOnlyForUsers(

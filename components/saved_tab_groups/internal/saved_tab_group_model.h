@@ -249,8 +249,14 @@ class SavedTabGroupModel {
   void AddObserver(SavedTabGroupModelObserver* observer);
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 
-  // One time migration of saved tab groups from v1 to v2.
-  void MigrateTabGroupSavesUIUpdate();
+  // One time migration of all tab group's pinned_position to projects_position.
+  // In Tab Groups V2, groups had an optional pinned_position field that
+  // determined their position in the bookmarks bar on Desktop. The projects
+  // panel on Desktop replaces the tab groups UI in the bookmarks bar and
+  // displays the groups in a flat, reorderable list. For migration, we copy the
+  // old pinned_position field over for groups that have one and order the rest
+  // from most to least recent creation time.
+  void MigratePinnedPositionToProjectsPosition();
 
   // Start transitioning a shared tab group to a saved group. `shared_group_id`
   // is the ID of the shared group.

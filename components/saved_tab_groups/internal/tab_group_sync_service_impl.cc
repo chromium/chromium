@@ -1655,6 +1655,15 @@ void TabGroupSyncServiceImpl::SavedTabGroupTabLastSeenTimeUpdated(
 
 void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Migrate tab groups from the pinned_position field to the projects_position
+  // field.
+  if (tab_groups::IsProjectsPanelFeatureEnabled() &&
+      !IsTabGroupPinnedPositionToProjectsPositionMigrated(pref_service_)) {
+    SetTabGroupPinnedPositionToProjectsPositionMigrated(pref_service_);
+    model_->MigratePinnedPositionToProjectsPosition();
+  }
+
   // Store a snapshot of shared tab groups before notifying anyone else that
   // the service is initialized.
   // It is not safe to use observers to listen for Observer::OnInitialized and

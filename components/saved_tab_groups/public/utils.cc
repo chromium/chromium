@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
+#include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/gfx/text_constants.h"
@@ -150,6 +152,18 @@ std::string TabGroupIdsToShortLogString(
       base::StringPrintf(kDebugTabGroupIdLogEventString, prefix,
                          group_id.AsLowercaseString(), collab_id_str);
   return log;
+}
+
+bool IsTabGroupPinnedPositionToProjectsPositionMigrated(
+    PrefService* pref_service) {
+  return pref_service->GetBoolean(
+      prefs::kSavedTabGroupPinnedPositionToProjectsPositionMigration);
+}
+
+void SetTabGroupPinnedPositionToProjectsPositionMigrated(
+    PrefService* pref_service) {
+  pref_service->SetBoolean(
+      prefs::kSavedTabGroupPinnedPositionToProjectsPositionMigration, true);
 }
 
 }  // namespace tab_groups

@@ -93,6 +93,12 @@ inline constexpr char kEligibleForVersionUpdatedMessage[] =
 inline constexpr char kHasShownAnyVersionOutOfDateMessage[] =
     "data_sharing.has_shown_any_version_out_of_date_message";
 
+// Whether the pinned_position field has been migrated to projects_position for
+// the projects panel.
+inline constexpr char
+    kSavedTabGroupPinnedPositionToProjectsPositionMigration[] =
+        "saved_tab_groups.pinned_position_to_projects_position_migration";
+
 // Registers the Clear Browsing Data UI prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

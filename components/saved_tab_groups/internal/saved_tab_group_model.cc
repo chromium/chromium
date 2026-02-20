@@ -929,11 +929,28 @@ void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
-  constexpr size_t kMaxNumberOfGroupToPin = 4;
-  // Pin the first 4 saved tab groups from V1.
-  for (size_t i = 0;
-       i < std::min(saved_tab_groups_.size(), kMaxNumberOfGroupToPin); ++i) {
+void SavedTabGroupModel::MigratePinnedPositionToProjectsPosition() {
+  CHECK(tab_groups::IsProjectsPanelFeatureEnabled());
+
+  // Keep the ordering of pinned groups. For any unpinned groups, order them by
+  // most to least recent creation time after the pinned groups.
+  std::stable_sort(
+      saved_tab_groups_.begin(), saved_tab_groups_.end(),
+      [](const tab_groups::SavedTabGroup& left,
+         const tab_groups::SavedTabGroup& right) {
+        bool left_pinned = left.pinned_position_for_migration().has_value();
+        bool right_pinned = right.pinned_position_for_migration().has_value();
+        if (left_pinned != right_pinned) {
+          return left_pinned;
+        }
+        if (left_pinned) {
+          return left.pinned_position_for_migration().value() <
+                 right.pinned_position_for_migration().value();
+        }
+        return left.creation_time() > right.creation_time();
+      });
+
+  for (size_t i = 0; i < saved_tab_groups_.size(); ++i) {
     saved_tab_groups_[i].SetPosition(i);
     for (auto& observer : observers_) {
       observer.SavedTabGroupUpdatedLocally(saved_tab_groups_[i].saved_guid(),
