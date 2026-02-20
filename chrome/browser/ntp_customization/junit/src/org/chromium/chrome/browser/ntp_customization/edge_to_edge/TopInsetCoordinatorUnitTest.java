@@ -39,7 +39,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -130,9 +129,6 @@ public class TopInsetCoordinatorUnitTest {
         mTopInsetCoordinator.destroy();
     }
 
-    // TODO(crbug.com/481750031): Fix failure on SDK 30+ due to window inset consumption
-    // differences.
-    @Config(sdk = 29)
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnApplyWindowInsets_ConsumeTopInset() {
@@ -464,7 +460,8 @@ public class TopInsetCoordinatorUnitTest {
         Insets systemInsets = Insets.of(0, top, 0, 0);
         Insets displayCutoutInsets = Insets.of(0, top, 0, 0);
         var builder = new WindowInsetsCompat.Builder();
-        return builder.setInsets(WindowInsetsCompat.Type.systemBars(), systemInsets)
+        return builder.setInsets(WindowInsetsCompat.Type.statusBars(), systemInsets)
+                .setInsets(WindowInsetsCompat.Type.captionBar(), systemInsets)
                 .setInsets(WindowInsetsCompat.Type.displayCutout(), displayCutoutInsets)
                 .build();
     }
