@@ -76,26 +76,11 @@ BASE_EXPORT bool ReadUnicodeCharacter(std::u16string_view src,
                                       size_t* char_index,
                                       base_icu::UChar32* code_point);
 
-// TODO(crbug.com/40284755): migrate usage to spanified version.
-// Deprecated. Use span version instead.
-BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
-                                      size_t src_len,
-                                      size_t* char_index,
-                                      base_icu::UChar32* code_point);
-
 #if defined(WCHAR_T_IS_32_BIT)
 // Reads UTF-32 character. The usage is the same as the 8-bit version above.
 BASE_EXPORT bool ReadUnicodeCharacter(std::wstring_view src,
                                       size_t* char_index,
                                       base_icu::UChar32* code_point);
-
-// TODO(crbug.com/40284755): migrate usage to spanified version.
-// Deprecated. Use span version instead.
-UNSAFE_BUFFER_USAGE BASE_EXPORT bool ReadUnicodeCharacter(
-    const wchar_t* src,
-    size_t src_len,
-    size_t* char_index,
-    base_icu::UChar32* code_point);
 #endif  // defined(WCHAR_T_IS_32_BIT)
 // WriteUnicodeCharacter -------------------------------------------------------
 

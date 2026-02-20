@@ -204,8 +204,7 @@ void AppendStringOfType(std::u16string_view source,
 bool ReadUtfCharLossy(std::string_view str,
                       size_t* begin,
                       base_icu::UChar32* code_point_out) {
-  if (!base::ReadUnicodeCharacter(str.data(), str.length(), begin,
-                                  code_point_out)) {
+  if (!base::ReadUnicodeCharacter(str, begin, code_point_out)) {
     *code_point_out = kUnicodeReplacementCharacter;
     return false;
   }
@@ -215,8 +214,7 @@ bool ReadUtfCharLossy(std::string_view str,
 bool ReadUtfCharLossy(std::u16string_view str,
                       size_t* begin,
                       base_icu::UChar32* code_point_out) {
-  if (!base::ReadUnicodeCharacter(str.data(), str.length(), begin,
-                                  code_point_out)) {
+  if (!base::ReadUnicodeCharacter(str, begin, code_point_out)) {
     *code_point_out = kUnicodeReplacementCharacter;
     return false;
   }
