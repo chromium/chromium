@@ -883,6 +883,11 @@ const char kIdentityConfirmationSnackbarName[] =
 const char kIdentityConfirmationSnackbarDescription[] =
     "When enabled, the identity confirmation snackbar will show on startup.";
 
+const char kInFlowTrustedVaultKeyRetrievalIosName[] =
+    "In-flow Trusted Vault key retrieval";
+const char kInFlowTrustedVaultKeyRetrievalIosDescription[] =
+    "Starts the key retrieval flow after offering to save a password.";
+
 const char kInProductHelpDemoModeName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeDescription[] =
     "When enabled, in-product help promotions occur exactly once per cold "

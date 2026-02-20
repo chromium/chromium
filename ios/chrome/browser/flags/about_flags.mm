@@ -2741,6 +2741,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiRichAPCExtractionName,
      flag_descriptions::kGeminiRichAPCExtractionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiRichAPCExtraction)},
+    {"in-flow-trusted-vault-key-retrieval-ios",
+     flag_descriptions::kInFlowTrustedVaultKeyRetrievalIosName,
+     flag_descriptions::kInFlowTrustedVaultKeyRetrievalIosDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kInFlowTrustedVaultKeyRetrievalIos)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

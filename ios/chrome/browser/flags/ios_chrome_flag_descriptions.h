@@ -546,6 +546,9 @@ extern const char kIOSWebContextMenuNewTitleDescription[];
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 
+extern const char kInFlowTrustedVaultKeyRetrievalIosName[];
+extern const char kInFlowTrustedVaultKeyRetrievalIosDescription[];
+
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 

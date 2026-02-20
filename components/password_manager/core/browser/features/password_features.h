@@ -116,6 +116,9 @@ BASE_DECLARE_FEATURE(kInFlowTrustedVaultKeyRetrievalAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
+// When enabled, the user can be prompted to retrieve the trusted vault key
+// during a password saving flow.
+BASE_DECLARE_FEATURE(kInFlowTrustedVaultKeyRetrievalIos);
 
 // Enables the clean up of hanging form extraction requests made by the
 // password suggestion helper. This is to fix the cases where the suggestions

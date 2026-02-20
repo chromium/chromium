@@ -107,6 +107,9 @@ BASE_FEATURE(kInFlowTrustedVaultKeyRetrievalAndroid,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kInFlowTrustedVaultKeyRetrievalIos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
