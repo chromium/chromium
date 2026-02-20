@@ -291,7 +291,8 @@ class GetGeminiCliArgumentsUnittest(fake_filesystem_unittest.TestCase):
             provider_vars, provider_config, user_prompt)
 
         self.assertEqual(error, '')
-        self.assertEqual(args.command, ['gemini', '-y'])
+        self.assertEqual(args.command,
+                         ['gemini', '-y', '--model', 'gemini-2.5-pro'])
         self.assertIsNone(args.home_dir)
         self.assertEqual(args.timeout_seconds,
                          gemini_provider.DEFAULT_TIMEOUT_SECONDS)
@@ -311,7 +312,8 @@ class GetGeminiCliArgumentsUnittest(fake_filesystem_unittest.TestCase):
             provider_vars, provider_config, user_prompt)
 
         self.assertEqual(error, '')
-        self.assertEqual(args.command, ['/custom/gemini', '-y'])
+        self.assertEqual(args.command,
+                         ['/custom/gemini', '-y', '--model', 'gemini-2.5-pro'])
 
     def test_sandbox_enabled(self):
         """Tests that sandbox flags are added when sandbox is enabled."""
@@ -324,7 +326,9 @@ class GetGeminiCliArgumentsUnittest(fake_filesystem_unittest.TestCase):
             provider_vars, provider_config, user_prompt)
 
         self.assertEqual(error, '')
-        self.assertEqual(args.command, ['gemini', '-y', '--sandbox'])
+        self.assertEqual(
+            args.command,
+            ['gemini', '-y', '--model', 'gemini-2.5-pro', '--sandbox'])
         self.assertIn('SANDBOX_FLAGS', args.env)
         self.assertEqual(args.env['SANDBOX_FLAGS'], '--sandbox-flag')
 
