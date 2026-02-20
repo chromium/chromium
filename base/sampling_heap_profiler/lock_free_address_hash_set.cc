@@ -20,7 +20,7 @@
 
 namespace base {
 
-BASE_FEATURE(kUseLockFreeBloomFilter, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseLockFreeBloomFilter, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
