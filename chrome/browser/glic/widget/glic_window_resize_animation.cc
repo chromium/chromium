@@ -15,7 +15,6 @@
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/common/chrome_features.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/views/win/hwnd_util.h"
 #endif

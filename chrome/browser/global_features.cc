@@ -20,7 +20,6 @@
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/common/chrome_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"

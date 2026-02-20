@@ -6,7 +6,6 @@
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"

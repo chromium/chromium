@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "components/tab_groups/tab_group_id.h"
 
 #if BUILDFLAG(ENABLE_GLIC)

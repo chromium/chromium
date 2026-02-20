@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"

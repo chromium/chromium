@@ -7,7 +7,6 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 
 namespace web_app {

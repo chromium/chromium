@@ -8,7 +8,6 @@
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/model/data_type_store_service.h"
 
 namespace web_app {

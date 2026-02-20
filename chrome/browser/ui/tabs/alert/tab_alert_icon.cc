@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
-#include "chrome/common/chrome_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
 

@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_thread.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"

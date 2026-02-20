@@ -14,7 +14,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"

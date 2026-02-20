@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/common/buildflags.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"

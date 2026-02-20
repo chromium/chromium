@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/test/base/testing_profile.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/google_accounts_private_api_extension.h"
 
-#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/google_accounts_private_api_util.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"

@@ -13,7 +13,6 @@
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"

@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/common/actor/task_id.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/journal.h"
 #include "third_party/blink/public/web/web_interaction_effects_monitor_observer.h"
 

@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/scheme.h"

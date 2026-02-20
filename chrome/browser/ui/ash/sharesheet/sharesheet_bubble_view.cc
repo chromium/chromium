@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "chromeos/constants/chromeos_features.h"

@@ -20,7 +20,6 @@
 #include "base/win/scoped_variant.h"
 #include "chrome/browser/win/automation_controller.h"
 #include "chrome/browser/win/ui_automation_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/installer/util/install_util.h"
 
 namespace {

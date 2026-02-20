@@ -35,7 +35,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/cryptohome/constants.h"

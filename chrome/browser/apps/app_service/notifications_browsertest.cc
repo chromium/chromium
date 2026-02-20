@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

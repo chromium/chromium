@@ -18,7 +18,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"

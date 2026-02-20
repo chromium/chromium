@@ -69,7 +69,6 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"

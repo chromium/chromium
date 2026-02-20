@@ -9,7 +9,6 @@
 #include "ash/constants/chrome_custom_icon_catalog.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_chromeos.h"
-#include "chrome/common/chrome_features.h"
 
 namespace {
 

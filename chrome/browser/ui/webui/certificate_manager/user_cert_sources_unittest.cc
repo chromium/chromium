@@ -11,7 +11,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/resources/certificate_manager/certificate_manager.mojom-forward.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"

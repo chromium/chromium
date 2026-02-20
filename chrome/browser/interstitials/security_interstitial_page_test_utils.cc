@@ -5,7 +5,6 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 
 #include "base/strings/stringprintf.h"
-#include "chrome/common/chrome_features.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"

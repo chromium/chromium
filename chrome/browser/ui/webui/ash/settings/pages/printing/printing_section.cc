@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/printing/printer_configuration.h"

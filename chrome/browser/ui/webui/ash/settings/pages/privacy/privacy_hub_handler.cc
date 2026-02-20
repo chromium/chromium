@@ -14,7 +14,6 @@
 #include "base/synchronization/condition_variable.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_service.h"
 

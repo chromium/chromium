@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"

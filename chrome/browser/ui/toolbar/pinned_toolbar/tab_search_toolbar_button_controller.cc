@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/chrome_features.h"
 
 TabSearchToolbarButtonController::TabSearchToolbarButtonController(
     BrowserView* browser_view)

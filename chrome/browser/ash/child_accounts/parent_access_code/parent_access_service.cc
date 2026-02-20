@@ -15,7 +15,6 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"

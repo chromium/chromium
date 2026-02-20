@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"

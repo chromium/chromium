@@ -25,7 +25,6 @@
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"

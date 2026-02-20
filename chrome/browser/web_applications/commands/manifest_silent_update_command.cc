@@ -48,7 +48,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/image_visual_diff.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

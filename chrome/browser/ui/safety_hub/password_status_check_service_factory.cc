@@ -10,7 +10,6 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
-#include "chrome/common/chrome_features.h"
 
 // static
 PasswordStatusCheckServiceFactory*

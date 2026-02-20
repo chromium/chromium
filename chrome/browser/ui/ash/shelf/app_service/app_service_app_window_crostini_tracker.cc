@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/permission.h"

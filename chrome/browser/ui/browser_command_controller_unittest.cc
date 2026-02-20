@@ -51,10 +51,6 @@
 #endif  // ((BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&
         // BUILDFLAG(ENABLE_EXTENSIONS))
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/common/chrome_features.h"
-#endif
-
 class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
  public:
   BrowserCommandControllerTest() = default;

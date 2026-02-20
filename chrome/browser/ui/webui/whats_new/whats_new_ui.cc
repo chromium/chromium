@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"

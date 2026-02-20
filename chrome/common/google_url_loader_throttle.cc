@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/google/core/common/google_util.h"
 #include "components/safe_search_api/safe_search_util.h"

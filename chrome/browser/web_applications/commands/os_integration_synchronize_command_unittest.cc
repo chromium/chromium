@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"

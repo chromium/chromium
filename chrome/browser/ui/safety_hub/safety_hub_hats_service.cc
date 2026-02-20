@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
-#include "chrome/common/chrome_features.h"
 
 SafetyHubHatsService::SafetyHubHatsService(
     TrustSafetySentimentService* tss_service,

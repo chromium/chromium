@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/webapps/common/web_app_id.h"
 

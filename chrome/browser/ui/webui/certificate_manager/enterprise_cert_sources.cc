@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"

@@ -35,7 +35,6 @@
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
