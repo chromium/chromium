@@ -222,26 +222,6 @@ public class ViewUtils {
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @return An interaction on the matching view.
      */
-    public static ViewInteraction onViewWaiting(
-            Matcher<View> viewMatcher, boolean checkRootDialog) {
-        ViewElement.Options.Builder optionsBuilder = ViewElement.newOptions();
-        if (checkRootDialog) {
-            optionsBuilder = optionsBuilder.inDialog();
-        }
-        ViewPresence<View> viewPresence =
-                ViewFinder.waitForView(viewMatcher, optionsBuilder.build());
-        return viewPresence.onView();
-    }
-
-    /**
-     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
-     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
-     *
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     * @return An interaction on the matching view.
-     */
     public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
         ViewPresence<View> viewPresence = ViewFinder.waitForView(viewMatcher);
         return viewPresence.onView();

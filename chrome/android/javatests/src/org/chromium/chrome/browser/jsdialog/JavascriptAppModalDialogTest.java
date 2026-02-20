@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
@@ -89,7 +90,7 @@ public class JavascriptAppModalDialogTest {
         // Click cancel and verify that the url is the same.
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
-        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true).perform(click());
+        onViewWaiting(withText(R.string.cancel)).perform(click());
 
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
@@ -103,7 +104,7 @@ public class JavascriptAppModalDialogTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageLoaded =
                 getActiveTabTestCallbackHelperContainer().getOnPageFinishedHelper();
         int callCount = onPageLoaded.getCallCount();
-        onViewWaiting(withText(R.string.leave), /* checkRootDialog= */ true).perform(click());
+        onViewWaiting(withText(R.string.leave)).perform(click());
         onPageLoaded.waitForCallback(callCount);
         Assert.assertEquals(
                 EMPTY_PAGE, mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
@@ -155,9 +156,8 @@ public class JavascriptAppModalDialogTest {
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
-        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-        onViewWaiting(withText(R.string.reload), true).check(matches(isDisplayed()));
+        waitForView(withText(R.string.cancel));
+        waitForView(withText(R.string.reload));
     }
 
     /**

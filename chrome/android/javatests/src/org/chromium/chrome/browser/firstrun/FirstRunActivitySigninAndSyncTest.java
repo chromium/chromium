@@ -22,7 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -176,8 +176,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
-        onViewWaiting(withText(R.string.sign_in_managed_account), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.sign_in_managed_account));
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
     }
@@ -315,7 +314,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        onViewWaiting(withId(R.id.button_primary));
+        waitForView(withId(R.id.button_primary));
         clickButton(R.id.button_primary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
@@ -340,7 +339,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        onViewWaiting(withId(R.id.button_primary));
+        waitForView(withId(R.id.button_primary));
         clickButton(R.id.button_primary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
@@ -364,7 +363,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        onViewWaiting(withId(R.id.button_secondary));
+        waitForView(withId(R.id.button_secondary));
         clickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
@@ -389,7 +388,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        onViewWaiting(withId(R.id.button_secondary));
+        waitForView(withId(R.id.button_secondary));
         clickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);

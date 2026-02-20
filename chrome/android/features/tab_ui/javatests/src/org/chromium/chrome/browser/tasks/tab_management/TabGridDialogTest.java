@@ -2477,6 +2477,6 @@ public class TabGridDialogTest {
     private void clickThroughConfirmationDialog() {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true)));
-        onViewWaiting(withText("Delete group"), /* checkRootDialog= */ true).perform(click());
+        onViewWaiting(withText("Delete group")).perform(click());
     }
 }

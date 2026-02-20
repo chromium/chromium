@@ -30,6 +30,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -1556,10 +1557,7 @@ public class SigninFirstRunFragmentTest {
      */
     private void clickOnUmaDialogLinkAndWait() {
         onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
-        ViewUtils.onViewWaiting(
-                        withText(R.string.done),
-                        true) // Sets dialog to be in focus. Needed for API 30+.
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.done));
     }
 
     private ViewAction clickOnUmaDialogLink() {

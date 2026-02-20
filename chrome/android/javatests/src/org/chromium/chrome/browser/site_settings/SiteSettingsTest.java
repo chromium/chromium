@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
@@ -665,11 +666,7 @@ public class SiteSettingsTest {
                 });
         if (type == SiteSettingsCategory.Type.SITE_DATA && !enabled) {
             int id = R.string.website_settings_site_data_page_block_confirm_dialog_confirm_button;
-            onViewWaiting(
-                            withText(id),
-                            // checkRootDialog=true ensures dialog is in focus, avoids flakiness.
-                            true)
-                    .perform(click());
+            onViewWaiting(withText(id)).perform(click());
         }
         settingsActivity.finish();
     }
@@ -1494,8 +1491,8 @@ public class SiteSettingsTest {
 
         // Check that the subpage is shown with the correct origins.
         onView(withText("primary.com")).check(matches(isDisplayed()));
-        onViewWaiting(withText("secondary.com")).check(matches(isDisplayed()));
-        onViewWaiting(withText("secondary3.com")).check(matches(isDisplayed()));
+        waitForView(withText("secondary.com"));
+        waitForView(withText("secondary3.com"));
     }
 
     @Test
@@ -1596,8 +1593,8 @@ public class SiteSettingsTest {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startStorageAccessSettingsActivity(getStorageAccessSite());
 
-        onViewWaiting(withText("secondary1.com")).check(matches(isDisplayed()));
-        onViewWaiting(withText("secondary3.com")).check(matches(isDisplayed()));
+        waitForView(withText("secondary1.com"));
+        waitForView(withText("secondary3.com"));
 
         // Reset first permission.
         getImageViewWidget("secondary1.com").check(matches(isDisplayed())).perform(click());
@@ -1736,7 +1733,7 @@ public class SiteSettingsTest {
                 });
         onView(withText(R.string.privacy_sandbox_snackbar_message)).check(matches(isDisplayed()));
         onView(withText(R.string.more)).perform(click());
-        onViewWaiting(withText(R.string.ad_privacy_page_title)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.ad_privacy_page_title));
     }
 
     private CookieSettingsPreference getCookieToggle(SettingsActivity settingsActivity) {

@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.View;
 
@@ -97,10 +95,7 @@ public class PageInfoViewDarkModeTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(
-                allOf(withId(R.id.page_info_url_wrapper), isDisplayed()),
-                true // Put Focus on dialog to fix flakiness in api 29+ with espresso 3.2.
-                );
+        waitForView(withId(R.id.page_info_url_wrapper));
     }
 
     private View getPageInfoView() {

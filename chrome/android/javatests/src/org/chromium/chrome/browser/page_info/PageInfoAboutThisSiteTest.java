@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -21,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.annotation.SuppressLint;
 
@@ -151,7 +150,7 @@ public class PageInfoAboutThisSiteTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
+        waitForView(withId(R.id.page_info_url_wrapper));
     }
 
     private void dismissPageInfo() throws TimeoutException {
@@ -313,7 +312,7 @@ public class PageInfoAboutThisSiteTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
+        waitForView(withId(R.id.page_info_url_wrapper));
 
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(true);

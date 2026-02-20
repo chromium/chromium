@@ -14,8 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -171,9 +171,6 @@ public class TabSwitcherIncognitoReauthViewTest {
 
         mActivityTestRule.recreateActivity();
 
-        onViewWaiting(
-                        withId(R.id.incognito_reauth_unlock_incognito_button),
-                        true) // checkRootDialog=true ensures dialog is in focus, avoids flakiness.
-                .check(matches(isDisplayed()));
+        waitForView(withId(R.id.incognito_reauth_unlock_incognito_button));
     }
 }

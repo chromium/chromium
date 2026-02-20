@@ -2059,8 +2059,7 @@ public class TabModelImplTest {
                     mTabModelJni.pinTab(
                             tab1.getId(), /* showUngroupDialog= */ true, mTabModelActionListener);
                 });
-        onViewWaiting(withText(R.string.delete_tab_group_action), /* checkRootDialog= */ true)
-                .perform(click());
+        onViewWaiting(withText(R.string.delete_tab_group_action)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2096,7 +2095,7 @@ public class TabModelImplTest {
                     mTabModelJni.pinTab(
                             tab1.getId(), /* showUngroupDialog= */ true, mTabModelActionListener);
                 });
-        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true).perform(click());
+        onViewWaiting(withText(R.string.cancel)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

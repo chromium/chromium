@@ -11,7 +11,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
 
@@ -113,7 +112,7 @@ public class PageInfoStoreInfoViewTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), dialogCheck);
+        waitForView(withId(R.id.page_info_url_wrapper));
     }
 
     @Test
