@@ -26,7 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -35,6 +37,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
 public class PdfPageUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

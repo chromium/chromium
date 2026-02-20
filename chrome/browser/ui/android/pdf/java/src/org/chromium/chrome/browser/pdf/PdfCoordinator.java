@@ -116,6 +116,9 @@ public class PdfCoordinator implements PdfActionsDelegate {
         mIsIncognito = profile.isOffTheRecord();
         mUrl = url;
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
+        if (PdfUtils.isInlinePdfV2Enabled()) {
+            mView.findViewById(R.id.pdf_toolbar).setVisibility(View.VISIBLE);
+        }
         mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
