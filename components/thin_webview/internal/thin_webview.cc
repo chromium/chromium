@@ -90,6 +90,16 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
   ThinWebViewInitializer::GetInstance()->AttachTabHelpers(web_contents);
 }
 
+void ThinWebView::SetContextMenuPopulatorFactory(
+    JNIEnv* env,
+    const JavaRef<jobject>& jpopulator_factory) {
+  if (!web_contents_) {
+    return;
+  }
+  ThinWebViewInitializer::GetInstance()->SetContextMenuPopulatorFactory(
+      web_contents_, jpopulator_factory);
+}
+
 void ThinWebView::SizeChanged(JNIEnv* env, int32_t width, int32_t height) {
   view_size_ = gfx::Size(width, height);
 

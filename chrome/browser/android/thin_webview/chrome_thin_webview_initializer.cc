@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 
+#include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "components/permissions/permission_request_manager.h"
 
@@ -20,6 +21,15 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
   TabHelpers::AttachTabHelpers(web_contents);
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_web_contents_supports_permission_requests(false);
+}
+
+void ChromeThinWebViewInitializer::SetContextMenuPopulatorFactory(
+    content::WebContents* web_contents,
+    const base::android::JavaRef<jobject>& jpopulator_factory) {
+  auto* helper = ContextMenuHelper::FromWebContents(web_contents);
+  if (helper) {
+    helper->SetPopulatorFactory(jpopulator_factory);
+  }
 }
 
 }  // namespace android

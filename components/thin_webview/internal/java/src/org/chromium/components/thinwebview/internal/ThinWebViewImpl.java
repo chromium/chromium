@@ -17,6 +17,7 @@ import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -109,6 +110,16 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             WebContents webContents,
             @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate) {
+        attachWebContents(
+                webContents, contentView, delegate, /* contextMenuPopulatorFactory= */ null);
+    }
+
+    @Override
+    public void attachWebContents(
+            WebContents webContents,
+            @Nullable View contentView,
+            @Nullable WebContentsDelegateAndroid delegate,
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         if (mNativeThinWebViewImpl == 0) return;
         // Native code holds only a weak reference to this object.
         mWebContentsDelegate = delegate;
@@ -119,6 +130,13 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
         controller.setActionModeCallback(new ThinWebViewActionModeCallback(webContents));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
+
+        // Populate context menu.
+        if (contextMenuPopulatorFactory != null) {
+            ThinWebViewImplJni.get()
+                    .setContextMenuPopulatorFactory(
+                            mNativeThinWebViewImpl, contextMenuPopulatorFactory);
+        }
 
         webContents.updateWebContentsVisibility(Visibility.VISIBLE);
     }
@@ -173,6 +191,9 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
                 long nativeThinWebView,
                 WebContents webContents,
                 @Nullable WebContentsDelegateAndroid delegate);
+
+        void setContextMenuPopulatorFactory(
+                long nativeThinWebView, ContextMenuPopulatorFactory factory);
 
         void sizeChanged(long nativeThinWebView, int width, int height);
     }

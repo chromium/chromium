@@ -24,6 +24,10 @@ class ChromeThinWebViewInitializer : public ThinWebViewInitializer {
   ~ChromeThinWebViewInitializer() = default;
 
   void AttachTabHelpers(content::WebContents* web_contents) override;
+
+  void SetContextMenuPopulatorFactory(
+      content::WebContents* web_contents,
+      const base::android::JavaRef<jobject>& jpopulator_factory) override;
 };
 
 }  // namespace android

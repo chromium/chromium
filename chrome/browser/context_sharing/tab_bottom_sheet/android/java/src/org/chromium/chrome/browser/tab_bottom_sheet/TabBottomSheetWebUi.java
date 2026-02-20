@@ -45,7 +45,11 @@ public class TabBottomSheetWebUi {
                     mWindowAndroid,
                     WebContents.createDefaultInternalsHolder());
             contentView.setWebContents(mWebContents);
-            mThinWebView.attachWebContents(mWebContents, contentView, null);
+            mThinWebView.attachWebContents(
+                    mWebContents,
+                    contentView,
+                    /* delegate= */ null,
+                    /* contextMenuPopulatorFactory= */ null);
         } else {
             resetThinWebView();
         }
