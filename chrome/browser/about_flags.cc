@@ -12949,6 +12949,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeFindsInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kChromeFindsInternals)},
 
+    {"devtools-enable-durable-messages",
+     flag_descriptions::kDevToolsEnableDurableMessagesName,
+     flag_descriptions::kDevToolsEnableDurableMessagesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsEnableDurableMessages)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

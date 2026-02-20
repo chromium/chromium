@@ -2196,6 +2196,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "devtools-enable-durable-messages",
+    "owners": [ "alexnj@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "devtools-live-edit",
     "owners": [ "bmeurer@chromium.org", "szuend@chromium.org" ],
     "expiry_milestone": 150

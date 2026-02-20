@@ -1617,6 +1617,12 @@ inline constexpr char kSubAppsDescription[] =
     "Enable IWAs to install sub apps that have their own manifest and can "
     "integrate with the OS, in many ways as if it were a separate app.";
 
+inline constexpr char kDevToolsEnableDurableMessagesName[] =
+    "Preserve HTTP message bodies across navigations for DevTools";
+inline constexpr char kDevToolsEnableDurableMessagesDescription[] =
+    "Enables a durable message storing mechanism, which allows preserving "
+    "HTTP message bodies for debugging.";
+
 inline constexpr char kDevToolsLiveEditName[] =
     "Enable JavaScript live editing in DevTools";
 inline constexpr char kDevToolsLiveEditDescription[] =

@@ -10089,6 +10089,7 @@ from previous Chrome versions.
   <int value="-1480906156" label="IsolatedWebAppUnmanagedInstall:enabled"/>
   <int value="-1480866718" label="ash-disable-login-dim-and-blur"/>
   <int value="-1480606359" label="AssistantIntentPageUrl:enabled"/>
+  <int value="-1480376802" label="DevToolsEnableDurableMessages:enabled"/>
   <int value="-1480112750" label="WebUIOmniboxPopupDebug:enabled"/>
   <int value="-1480040278" label="OmniboxExpandedStateColors:enabled"/>
   <int value="-1478929417" label="MojoLinuxChannelSharedMem:enabled"/>
@@ -12818,6 +12819,7 @@ from previous Chrome versions.
       label="NtpMostRelevantTabResumptionModuleLocal:disabled"/>
   <int value="-552937174"
       label="AccessibilityCaretBlinkIntervalSetting:disabled"/>
+  <int value="-552787766" label="DevToolsEnableDurableMessages:disabled"/>
   <int value="-552565840" label="SplitKeyboardRefactor:enabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
