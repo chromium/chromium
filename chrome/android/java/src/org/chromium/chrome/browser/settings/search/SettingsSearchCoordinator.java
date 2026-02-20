@@ -626,7 +626,7 @@ public class SettingsSearchCoordinator
         KeyboardUtils.showKeyboard(queryEdit);
         mFragmentState = FS_SEARCH;
         mBackActionCallback.setEnabled(true);
-        if (mMultiColumnSettings != null && isShowingMainSettings()) {
+        if (mMultiColumnSettings != null && !mUseMultiColumn && isShowingMainSettings()) {
             mMultiColumnSettings.getSlidingPaneLayout().openPane();
             mPaneOpenedBySearch = true;
         }
@@ -674,6 +674,7 @@ public class SettingsSearchCoordinator
         }
         getSettingsFragmentManager().popBackStack();
         if (mMultiColumnSettings != null
+                && !mUseMultiColumn
                 && mMultiColumnSettings.isLayoutOpen()
                 && mPaneOpenedBySearch) {
             mMultiColumnSettings.getSlidingPaneLayout().closePane();
@@ -891,6 +892,13 @@ public class SettingsSearchCoordinator
         }
 
         View searchBox = mActivity.findViewById(R.id.search_box);
+        if (show) {
+            // Deals with the situation where configuration change occurs while suppressed.
+            var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
+            lp.gravity = Gravity.END;
+            searchBox.setLayoutParams(lp);
+            mHandler.post(this::updateSearchUiWidth);
+        }
         searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
@@ -954,7 +962,9 @@ public class SettingsSearchCoordinator
             setSearchBoxVerticalMargin(searchBox, true);
             assumeNonNull(actionBar).addView(searchBox);
             if (mFragmentState == FS_SETTINGS) {
-                if (!mSuppressUi) {
+                if (mSuppressUi) {
+                    searchBox.setVisibility(View.GONE);
+                } else {
                     searchBox.setVisibility(View.VISIBLE);
                     var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
                     lp.gravity = Gravity.END;
@@ -964,7 +974,9 @@ public class SettingsSearchCoordinator
             if (mFragmentState == FS_RESULTS || mFragmentState == FS_SEARCH) {
                 // Make the query edit UI visible which was hidden in single-column mode.
                 // But not when local search is visible.
-                if (!mSuppressUi) {
+                if (mSuppressUi) {
+                    query.setVisibility(View.GONE);
+                } else {
                     query.setVisibility(View.VISIBLE);
                     var lp = (Toolbar.LayoutParams) query.getLayoutParams();
                     lp.gravity = Gravity.END;
@@ -976,7 +988,14 @@ public class SettingsSearchCoordinator
             ViewGroup appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
             setSearchBoxVerticalMargin(searchBox, false);
             appBarLayout.addView(searchBox);
-            if (!isShowingMainSettings()) {
+            if (isShowingMainSettings()) {
+                // No need to check against |mSuppressUi| here since in single-column mode
+                // search UI is always hidden except at main settings in which the UI is
+                // never suppressed.
+                if (mFragmentState == FS_SETTINGS) {
+                    searchBox.setVisibility(View.VISIBLE);
+                }
+            } else {
                 searchBox.setVisibility(View.GONE);
                 query.setVisibility(View.GONE);
             }
