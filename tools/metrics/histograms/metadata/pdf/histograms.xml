@@ -90,6 +90,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.GlicEnabled" enum="Boolean" expires_after="2027-01-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Emitted once each time a pdf (not print preview) is loaded. The boolean
+    indicates whether glic was enabled for the profile.
+  </summary>
+</histogram>
+
+<histogram name="PDF.GlicSummarizeButtonClicked" enum="Boolean"
+    expires_after="2027-01-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Emitted once each time the glic summarize button is clicked. Records true on
+    success and false on any failure.
+  </summary>
+</histogram>
+
+<histogram name="PDF.GlicSummarizeButtonEnabled" enum="Boolean"
+    expires_after="2027-01-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Emitted once each time a pdf (not print preview) is loaded. The boolean
+    indicates whether the summarize button was enabled for the profile. Note
+    that embedded pdfs if too small may still not show the summarize button.
+  </summary>
+</histogram>
+
 <histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2026-06-07">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
