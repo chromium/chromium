@@ -51,9 +51,8 @@ static void JNI_CommandLine_AppendSwitchWithValue(
 
 static void JNI_CommandLine_AppendSwitchesAndArguments(
     JNIEnv* env,
-    const std::vector<std::string>& vec) {
-  std::vector<std::string> vec_copy(vec);
-  AppendToCommandLine(vec_copy, false);
+    std::vector<std::string>&& vec) {
+  AppendToCommandLine(vec, false);
 }
 
 static void JNI_CommandLine_RemoveSwitch(JNIEnv* env,
@@ -61,11 +60,9 @@ static void JNI_CommandLine_RemoveSwitch(JNIEnv* env,
   CommandLine::ForCurrentProcess()->RemoveSwitch(switch_string);
 }
 
-static void JNI_CommandLine_Init(
-    JNIEnv* env,
-    const std::vector<std::string>& init_command_line) {
-  std::vector<std::string> init_command_line_copy(init_command_line);
-  base::android::CommandLineInit(init_command_line_copy);
+static void JNI_CommandLine_Init(JNIEnv* env,
+                                 std::vector<std::string>&& init_command_line) {
+  base::android::CommandLineInit(init_command_line);
 }
 
 namespace base::android {
