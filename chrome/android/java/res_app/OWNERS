@@ -3,3 +3,5 @@
 set noparent
 
 file://ui/android/java/res/LAYOUT_OWNERS
+
+per-file main_forked_with_secondary_ui_container.xml=file://chrome/browser/ui/side_ui/OWNERS

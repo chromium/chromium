@@ -46,6 +46,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.MainLayoutSwitcher;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
@@ -461,7 +462,9 @@ public class WarmupManager {
             ViewGroup mainView =
                     (ViewGroup)
                             LayoutInflaterUtils.inflate(
-                                    layoutInflater, R.layout.main, contentHolder);
+                                    layoutInflater,
+                                    MainLayoutSwitcher.getMainLayoutRes(),
+                                    contentHolder);
             if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
                 ViewStub stub = mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);

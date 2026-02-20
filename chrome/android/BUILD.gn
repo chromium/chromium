@@ -167,7 +167,10 @@ if (_is_default_toolchain) {
 
   android_resources("chrome_app_java_resources") {
     sources = chrome_java_resources
-    sources += [ "//chrome/android/java/res_app/layout/main.xml" ]
+    sources += [
+      "//chrome/android/java/res_app/layout/main.xml",
+      "//chrome/android/java/res_app/layout/main_forked_with_secondary_ui_container.xml",
+    ]
 
     deps = [
       ":chrome_base_module_resources",

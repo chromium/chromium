@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2015 The Chromium Authors
+Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!--
+This is a copy of main.xml and it was originally created for side panel work.
+For more context, please see http://crbug.com/485934112.
+
+This file should be kept in sync with main.xml, except for side-panel-related
+changes.
+
+TODO(http://crbug.com/485940935): Delete this.
+-->
 <!-- LINT.IfChange -->
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -239,4 +248,4 @@ found in the LICENSE file.
         android:layout_height="0px"
         android:layout_gravity="bottom" />
 </merge>
-<!-- LINT.ThenChange(//chrome/android/java/res_app/layout/main_forked_with_secondary_ui_container.xml) -->
+<!-- LINT.ThenChange(//chrome/android/java/res_app/layout/main.xml) -->
