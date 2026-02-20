@@ -107,6 +107,9 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, GetIntegerv) {
 // marshalled properly over the command buffer. Thorough testing of these
 // commands is done in angle_end2end_tests.
 
+// TODO(anglebug.com/40096838): put this test back in once ANGLE has
+// rolled into Chromium with non-coherent PLS changes.
+#if 0
 TEST_F(ANGLEShaderPixelLocalStorageTest,
        GetFramebufferPixelLocalStorageParameter) {
   if (!gl_.IsInitialized() ||
@@ -163,6 +166,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest,
 
   EXPECT_GL_ERROR(GL_NO_ERROR);
 }
+#endif
 
 // Verifies all LOAD_OP_*_ANGLE and STORE_OP_*_ANGLE tokens are accepted by the
 // command buffer.

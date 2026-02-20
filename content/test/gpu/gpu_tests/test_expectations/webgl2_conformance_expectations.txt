@@ -293,6 +293,10 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# Skipped while noncoherent support is being added to PLS
+# NOTE: re-enable all suppressions for this test below when removing this line!
+crbug.com/angleproject/40096838 conformance2/extensions/webgl-shader-pixel-local-storage.html [ Skip ]
+
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
@@ -608,7 +612,8 @@ crbug.com/408364836 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/data/gles3/sh
 
 # Win / Snapdragon X Elite / D3D11
 crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 graphite-disabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+# TODO(crbug.com/angleproject/40096838): re-enable
+# crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 graphite-disabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/shadertexturefunction/texelfetchoffset.html [ Failure ]
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ Failure ]
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
@@ -629,7 +634,8 @@ crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gle
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
 # Graphite
-crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+# TODO(crbug.com/angleproject/40096838): re-enable
+# crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 
 # Win11 Qualcomm
 crbug.com/476376945 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
@@ -904,7 +910,8 @@ crbug.com/332743717 [ android android-pixel-10 ] conformance2/canvas/drawingbuff
 crbug.com/446941342 [ android android-pixel-10 passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/oes-sample-variables.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/webgl-blend-func-extended.html [ Failure ]
-crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+# TODO(crbug.com/angleproject/40096838): re-enable
+# crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/glsl3/array-complex-indexing.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/glsl3/loops-with-side-effects.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
