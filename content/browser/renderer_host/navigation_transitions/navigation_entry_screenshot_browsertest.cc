@@ -282,17 +282,21 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
     int num_pixel_mismatch = 0;
     gfx::Rect err_bounding_box;
 
-    int row_start = 0;
-    int row_end = bitmap.height();
-    int col_start = 0;
-    int col_end = bitmap.width();
-
+    // Do not compare the borders, because we run tests with a scaled down COR
+    // and the resulting bitmap could have a slightly different color in the
+    // border for some devices or resolutions.
+    int row_start = 1;
+    int row_end = bitmap.height() - 1;
+    int col_start = 1;
+    int col_end = bitmap.width() - 1;
     if (compare_region.has_value()) {
-      row_start = compare_region->y();
-      row_end = compare_region->bottom();
-      col_start = compare_region->x();
-      col_end = compare_region->right();
+      row_start = compare_region->y() + 1;
+      row_end = compare_region->bottom() - 1;
+      col_start = compare_region->x() + 1;
+      col_end = compare_region->right() - 1;
     }
+    ASSERT_LT(row_start, row_end);
+    ASSERT_LT(col_start, col_end);
 
     for (int r = row_start; r < row_end; ++r) {
       for (int c = col_start; c < col_end; ++c) {
