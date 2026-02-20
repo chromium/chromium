@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -20,6 +21,10 @@
 
 namespace syncer {
 namespace {
+
+// A kill switch for validating the access token before sending the request to
+// the server.
+BASE_FEATURE(kSyncValidateAccessToken, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #define ENUM_CASE(x)    \
   case HttpResponse::x: \
@@ -39,6 +44,21 @@ const char* GetServerConnectionCodeString(
 }
 
 #undef ENUM_CASE
+
+bool IsAccessTokenValid(const signin::AccessTokenInfo& access_token_info) {
+  if (access_token_info.token.empty()) {
+    return false;
+  }
+
+  // Assume the token is valid if the expiration time is not set or the
+  // validation feature is disabled.
+  if (access_token_info.expiration_time.is_null() ||
+      !base::FeatureList::IsEnabled(kSyncValidateAccessToken)) {
+    return true;
+  }
+
+  return access_token_info.expiration_time > base::Time::Now();
+}
 
 }  // namespace
 
@@ -100,7 +120,7 @@ bool ServerConnectionManager::SetAccessTokenInfo(
     const signin::AccessTokenInfo& access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!access_token_info.token.empty()) {
+  if (IsAccessTokenValid(access_token_info)) {
     access_token_info_ = access_token_info;
     return true;
   }
@@ -117,8 +137,17 @@ bool ServerConnectionManager::SetAccessTokenInfo(
   return false;
 }
 
+bool ServerConnectionManager::HasInvalidAccessToken() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !IsAccessTokenValid(access_token_info_);
+}
+
 void ServerConnectionManager::ClearAccessToken() {
   access_token_info_ = signin::AccessTokenInfo();
+}
+
+std::string ServerConnectionManager::GetAccessToken() const {
+  return access_token_info_.token;
 }
 
 void ServerConnectionManager::SetServerResponse(
@@ -147,10 +176,9 @@ HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
     std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HttpResponse http_response =
-      PostBuffer(buffer_in, access_token_info_.token, buffer_out);
+  HttpResponse http_response = PostBuffer(buffer_in, buffer_out);
   SetServerResponse(http_response);
-  return http_response;
+  return server_response_;
 }
 
 void ServerConnectionManager::AddListener(

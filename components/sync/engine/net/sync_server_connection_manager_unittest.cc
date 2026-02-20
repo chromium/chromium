@@ -21,6 +21,20 @@
 namespace syncer {
 namespace {
 
+signin::AccessTokenInfo CreateValidAccessTokenInfo() {
+  signin::AccessTokenInfo access_token_info;
+  access_token_info.token = "access_token";
+  access_token_info.expiration_time = base::Time::Now() + base::Hours(1);
+  return access_token_info;
+}
+
+signin::AccessTokenInfo CreateExpiredAccessTokenInfo() {
+  signin::AccessTokenInfo access_token_info;
+  access_token_info.token = "access_token";
+  access_token_info.expiration_time = base::Time::Now() - base::Hours(1);
+  return access_token_info;
+}
+
 class BlockingHttpPost : public HttpPostProvider {
  public:
   BlockingHttpPost()
@@ -62,8 +76,6 @@ class BlockingHttpPostFactory : public HttpPostProviderFactory {
   }
 };
 
-}  // namespace
-
 // Ask the ServerConnectionManager to stop before it is created.
 TEST(SyncServerConnectionManagerTest, VeryEarlyAbortPost) {
   CancelationSignal signal;
@@ -71,9 +83,10 @@ TEST(SyncServerConnectionManagerTest, VeryEarlyAbortPost) {
   SyncServerConnectionManager server(
       GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
       &signal);
+  server.SetAccessTokenInfo(CreateValidAccessTokenInfo());
 
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBufferWithCachedAuth("", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
@@ -85,9 +98,11 @@ TEST(SyncServerConnectionManagerTest, EarlyAbortPost) {
       GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
       &signal);
 
+  server.SetAccessTokenInfo(CreateValidAccessTokenInfo());
+
   signal.Signal();
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBufferWithCachedAuth("", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
@@ -99,6 +114,8 @@ TEST(SyncServerConnectionManagerTest, AbortPost) {
       GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
       &signal);
 
+  server.SetAccessTokenInfo(CreateValidAccessTokenInfo());
+
   base::Thread abort_thread("Test_AbortThread");
   ASSERT_TRUE(abort_thread.Start());
   abort_thread.task_runner()->PostDelayedTask(
@@ -107,13 +124,27 @@ TEST(SyncServerConnectionManagerTest, AbortPost) {
       TestTimeouts::tiny_timeout());
 
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBufferWithCachedAuth("", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
   abort_thread.Stop();
 }
 
-namespace {
+// Fail request with expired credentials. Make sure server status is
+// SYNC_AUTH_ERROR.
+TEST(SyncServerConnectionManagerTest, FailPostWithExpiredCredentials) {
+  CancelationSignal signal;
+  SyncServerConnectionManager server(
+      GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
+      &signal);
+
+  server.SetAccessTokenInfo(CreateExpiredAccessTokenInfo());
+
+  std::string buffer_out;
+  HttpResponse http_response = server.PostBufferWithCachedAuth("", &buffer_out);
+
+  EXPECT_EQ(HttpResponse::SYNC_AUTH_ERROR, http_response.server_status);
+}
 
 class FailingHttpPost : public HttpPostProvider {
  public:
@@ -170,8 +201,10 @@ TEST(SyncServerConnectionManagerTest, FailPostWithTimedOut) {
       GURL("https://server"),
       std::make_unique<FailingHttpPostFactory>(net::ERR_TIMED_OUT), &signal);
 
+  server.SetAccessTokenInfo(CreateValidAccessTokenInfo());
+
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBufferWithCachedAuth("", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }

@@ -63,7 +63,6 @@ void MockConnectionManager::SetMidCommitObserver(
 }
 
 HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
-                                               const std::string& access_token,
                                                std::string* buffer_out) {
   ClientToServerMessage post;
   if (!post.ParseFromString(buffer_in) || !post.has_protocol_version() ||
@@ -79,11 +78,11 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
   sync_pb::ClientToServerResponse client_to_server_response;
   client_to_server_response.Clear();
 
-  if (access_token.empty()) {
+  if (HasInvalidAccessToken()) {
     return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 
-  if (access_token != kValidAccessToken) {
+  if (GetAccessToken() != kValidAccessToken) {
     // Simulate server-side auth failure.
     ClearAccessToken();
     return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);

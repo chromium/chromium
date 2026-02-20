@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -19,13 +20,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace syncer {
+namespace {
+
 using ::testing::_;
 
 using sync_pb::ClientToServerMessage;
 using sync_pb::ClientToServerResponse;
 using sync_pb::CommitResponse_EntryResponse;
 
-namespace syncer {
+signin::AccessTokenInfo CreateValidAccessTokenInfo() {
+  signin::AccessTokenInfo access_token_info;
+  access_token_info.token = "access_token";
+  access_token_info.expiration_time = base::Time::Now() + base::Hours(1);
+  return access_token_info;
+}
+
+}  // namespace
 
 // Builds a ClientToServerResponse with some data type ids, including
 // invalid ones.  GetTypesToMigrate() should return only the valid
@@ -182,7 +193,6 @@ class FakeConnectionManager : public ServerConnectionManager {
       : response_(response) {}
 
   HttpResponse PostBuffer(const std::string& buffer_in,
-                          const std::string& access_token,
                           std::string* buffer_out) override {
     if (send_error_) {
       return HttpResponse::ForNetError(net::ERR_FAILED);
@@ -202,6 +212,7 @@ class FakeConnectionManager : public ServerConnectionManager {
 
 TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
   FakeConnectionManager dcm(ClientToServerResponse{});
+  dcm.SetAccessTokenInfo(CreateValidAccessTokenInfo());
   ClientToServerMessage msg;
   SyncerProtoUtil::SetProtocolVersion(&msg);
   msg.set_share("required");

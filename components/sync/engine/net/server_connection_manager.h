@@ -122,7 +122,9 @@ class ServerConnectionManager {
   // authentication error state.
   bool SetAccessTokenInfo(const signin::AccessTokenInfo& access_token_info);
 
-  bool HasInvalidAccessToken() { return access_token_info_.token.empty(); }
+  // Returns true if the current access token is invalid (e.g. expired or
+  // empty).
+  bool HasInvalidAccessToken() const;
 
  protected:
   // Updates `server_response_` and notifies listeners if the server status
@@ -132,10 +134,13 @@ class ServerConnectionManager {
   // Internal PostBuffer base function which subclasses are expected to
   // implement.
   virtual HttpResponse PostBuffer(const std::string& buffer_in,
-                                  const std::string& access_token,
                                   std::string* buffer_out) = 0;
 
+  // Clears the current access token.
   void ClearAccessToken();
+
+  // Returns the current raw access token, empty if there is no valid token.
+  std::string GetAccessToken() const;
 
  private:
   void NotifyStatusChanged();
