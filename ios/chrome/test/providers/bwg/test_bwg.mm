@@ -6,6 +6,9 @@
 
 namespace ios::provider {
 
+void ConfigureWithStartupConfiguration(
+    GeminiStartupConfiguration* gemini_startup_configuration) {}
+
 void StartBwgOverlay(GeminiConfiguration* gemini_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {

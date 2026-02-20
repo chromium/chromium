@@ -11,7 +11,7 @@ class AuthenticationService;
 
 @protocol BWGGatewayProtocol;
 
-// GeminiStartupConfiguration is a configuration class that holds all the data
+// `GeminiStartupConfiguration` is a configuration class that holds all the data
 // necessary to configure Gemini at startup.
 @interface GeminiStartupConfiguration : NSObject
 
