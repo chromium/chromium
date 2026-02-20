@@ -162,6 +162,8 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
             str(const.SRC_DIR),
         ]).splitlines()
     ]
+    if const.DEBUG:
+      print(f'rg found: {files}')
   else:
     # Use code search.
     files = _CodeSearchFiles(['pcre:true', pattern])

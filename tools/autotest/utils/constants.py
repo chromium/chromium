@@ -1,6 +1,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import os
 import re
 import sys
 
@@ -11,7 +12,8 @@ from pathlib import Path
 # in some environments.
 sys.dont_write_bytecode = True
 
-DEBUG: bool = False
+# Output more verbose logging to aid in debugging autotest.
+DEBUG: bool = os.environ.get('AUTOTEST_DEBUG') == '1'
 
 SRC_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve()
 

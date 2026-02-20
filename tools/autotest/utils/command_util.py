@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 
 import locale
+import shlex
 import subprocess
 import sys
+
+from . import constants as const
 
 from . import telemetry
 
@@ -26,6 +29,11 @@ def StreamCommandOrExit(cmd: list[str], **kwargs: int) -> int:
 
 
 def RunCommand(cmd: list[str], **kwargs: int) -> str:
+  if const.DEBUG:
+    # `shlex` does not support `pathlib.Path`, which `RunCommand` is sometimes
+    # called with. We explicitly convert the args into a `str` to be safe.
+    print(f"Run command: {shlex.join([str(c) for c in cmd])}")
+
   try:
     # Set an encoding to convert the binary output to a string.
     return subprocess.check_output(cmd,
