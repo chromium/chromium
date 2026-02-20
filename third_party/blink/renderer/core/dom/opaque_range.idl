@@ -6,6 +6,7 @@
     Exposed=Window,
     RuntimeEnabled=OpaqueRange
 ] interface OpaqueRange : AbstractRange {
+    undefined disconnect();
     DOMRectList getClientRects();
     DOMRect getBoundingClientRect();
 };

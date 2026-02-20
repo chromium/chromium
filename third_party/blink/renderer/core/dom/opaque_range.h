@@ -61,6 +61,11 @@ class CORE_EXPORT OpaqueRange final : public AbstractRange {
                                   unsigned deleted_count,
                                   unsigned inserted_count);
 
+  // Detaches this range from its element, stopping live offset updates.
+  // After calling disconnect(), startOffset/endOffset return 0 and
+  // getClientRects()/getBoundingClientRect() return empty results.
+  void disconnect();
+
   DOMRectList* getClientRects() const;
   DOMRect* getBoundingClientRect() const;
 

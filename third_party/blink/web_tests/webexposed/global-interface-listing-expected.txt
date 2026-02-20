@@ -7292,6 +7292,7 @@ interface OffscreenCanvasRenderingContext2D
 interface OpaqueRange : AbstractRange
     attribute @@toStringTag
     method constructor
+    method disconnect
     method getBoundingClientRect
     method getClientRects
 interface Option

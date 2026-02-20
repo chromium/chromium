@@ -133,6 +133,15 @@ void OpaqueRange::UpdateOffsetsForTextChange(unsigned change_offset,
   end_offset_in_value_ = new_end;
 }
 
+void OpaqueRange::disconnect() {
+  if (element_) {
+    element_->UnregisterOpaqueRange(this);
+    element_ = nullptr;
+  }
+  start_offset_in_value_ = 0;
+  end_offset_in_value_ = 0;
+}
+
 DOMRectList* OpaqueRange::getClientRects() const {
   Range* range = BuildValueGeometryContext();
   if (!range || range->collapsed()) {
