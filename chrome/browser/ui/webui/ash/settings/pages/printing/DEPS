@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/browser_delegate/browser_controller.h",
   "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/printing",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/local_discovery",
   "+chrome/browser/profiles/profile.h",

@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/office_web_app",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/notifications",
@@ -41,5 +40,9 @@ specific_include_rules = {
   "hats_office_trigger_unittest\\.cc": [
     "+ui/message_center/message_center.h",
     "+ui/message_center/test/message_center_waiter.h",
+  ],
+
+  "drive_upload_handler_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
   ],
 }

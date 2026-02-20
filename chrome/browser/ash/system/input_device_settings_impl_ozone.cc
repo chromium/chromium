@@ -7,8 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"

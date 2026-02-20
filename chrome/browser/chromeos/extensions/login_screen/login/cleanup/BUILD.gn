@@ -34,7 +34,6 @@ static_library("cleanup") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/profiles:profile",

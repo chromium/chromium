@@ -10,7 +10,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/ui/webui/ash/settings/os_settings_identifier.h",
   "+chrome/browser/ui/webui/ash/settings/constants",
   "+chrome/browser/ui/webui/ash/settings/pages",
@@ -18,3 +17,9 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/test_support",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "search_tag_registry_unittest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

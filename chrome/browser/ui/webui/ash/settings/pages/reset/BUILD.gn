@@ -17,7 +17,6 @@ static_library("reset") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/resources:locale_settings",
-    "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",

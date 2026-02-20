@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"

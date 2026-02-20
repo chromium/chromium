@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"

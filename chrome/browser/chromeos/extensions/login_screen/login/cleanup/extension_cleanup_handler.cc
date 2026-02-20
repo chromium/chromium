@@ -9,8 +9,6 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/profiles/profile.h"

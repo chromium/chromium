@@ -30,7 +30,6 @@ static_library("printing") {
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",

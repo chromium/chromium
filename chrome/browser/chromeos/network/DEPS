@@ -12,7 +12,6 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/ash/net",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_finder.h",

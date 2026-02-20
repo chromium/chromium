@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"

@@ -10,8 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/proto/device_management_backend.pb.h"
