@@ -2752,6 +2752,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kInFlowTrustedVaultKeyRetrievalIos)},
+    {"sync-themes-ios", flag_descriptions::kSyncThemesIosName,
+     flag_descriptions::kSyncThemesIosDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncThemesIos)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

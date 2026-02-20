@@ -1561,6 +1561,10 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
+const char kSyncThemesIosName[] = "Enable Sync Themes on iOS";
+const char kSyncThemesIosDescription[] =
+    "Enables syncing of themes across iOS devices.";
+
 const char kSyncTrustedVaultInfobarMessageImprovementsName[] =
     "Trusted vault infobar message improvements";
 const char kSyncTrustedVaultInfobarMessageImprovementsDescription[] =

@@ -948,6 +948,9 @@ extern const char kSyncAutofillWalletCredentialDataDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
+extern const char kSyncThemesIosName[];
+extern const char kSyncThemesIosDescription[];
+
 extern const char kSyncTrustedVaultInfobarMessageImprovementsName[];
 extern const char kSyncTrustedVaultInfobarMessageImprovementsDescription[];
 

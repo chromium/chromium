@@ -8996,6 +8996,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "sync-themes-ios",
+    "owners": [ "bwwilliams@google.com", "jhimawan@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "sync-trusted-vault-infobar-message-improvements",
     "owners": ["ylahodiuk@google.com", "rgod@google.com"],
     "expiry_milestone": 144
