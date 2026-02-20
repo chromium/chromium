@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_VIDEO_FACING_H_
 #define MEDIA_BASE_VIDEO_FACING_H_
 
+#include "base/observer_list_types.h"
+
 namespace media {
 
 // Facing mode for video capture.
@@ -20,11 +22,13 @@ enum VideoFacingMode {
 
 // Clients interested in video capture events can implement this interface
 // and register the observers to MediaStreamManager or VideoCaptureManager.
-class VideoCaptureObserver {
+class VideoCaptureObserver : public base::CheckedObserver {
  public:
-  virtual ~VideoCaptureObserver() {}
   virtual void OnVideoCaptureStarted(VideoFacingMode facing) = 0;
   virtual void OnVideoCaptureStopped(VideoFacingMode facing) = 0;
+
+ protected:
+  ~VideoCaptureObserver() override = default;
 };
 
 }  // namespace media

@@ -436,7 +436,7 @@ class FakeVideoCaptureManager {
   }
 
  private:
-  base::ObserverList<media::VideoCaptureObserver>::Unchecked observers_;
+  base::ObserverList<media::VideoCaptureObserver> observers_;
 };
 
 }  // namespace

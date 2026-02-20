@@ -522,6 +522,7 @@ source_set("base") {
 
 source_set("video_facing") {
   sources = [ "video_facing.h" ]
+  deps = [ "//base" ]
 }
 
 if (is_android) {
