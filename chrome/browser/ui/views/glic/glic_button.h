@@ -357,14 +357,18 @@ class GlicButton : public GlicButtonShim<T>,
     UpdateTextAndBackgroundColors();
     UpdateIcon();
 
-    // Set tooltip and accessibility text based on whether any glic UI (window
-    // or FRE) is open.
+    // The tooltip reflects whether clicking will open or close glic.
     std::u16string tooltip_text =
         l10n_util::GetStringUTF16(open ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
                                        : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
-
     this->SetTooltipText(tooltip_text);
-    this->GetViewAccessibility().SetName(tooltip_text);
+
+    // The accessibility text mirrors the visible label, unless glic is open, in
+    // which case this text should communicate that clicking will close it.
+    this->GetViewAccessibility().SetName(
+        open
+            ? l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE)
+            : GetLabelText());
   }
 
   virtual void SetIsShowingNudge(bool is_showing) {
