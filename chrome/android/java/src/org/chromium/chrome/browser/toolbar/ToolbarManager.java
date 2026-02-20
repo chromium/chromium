@@ -2355,7 +2355,8 @@ public class ToolbarManager
                                 assertNonNull(mTabModelSelector.getCurrentModel().getProfile()),
                                 mActivityTabProvider.asObservable(),
                                 mTabCreatorManager.getTabCreator(false),
-                                getBrowsingModeThemeColorProvider());
+                                getBrowsingModeThemeColorProvider(),
+                                (ToolbarTablet) mToolbarLayout);
                 if (mExtensionToolbarCoordinator != null) {
                     mToolbar.setExtensionToolbarCoordinator(mExtensionToolbarCoordinator);
                 }

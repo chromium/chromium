@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import org.chromium.base.ServiceLoaderUtil;
@@ -47,7 +48,8 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            ViewGroup rootView) {
         // Check if the extension UI is enabled first.
         if (!ExtensionUi.isEnabled(profile)) {
             return null;
@@ -66,7 +68,8 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
                 profile,
                 currentTabSupplier,
                 tabCreator,
-                themeColorProvider);
+                themeColorProvider,
+                rootView);
         return coordinator;
     }
 
@@ -85,7 +88,8 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
-            ThemeColorProvider themeColorProvider);
+            ThemeColorProvider themeColorProvider,
+            ViewGroup rootView);
 
     /**
      * Dispatches the key event to trigger the corresponding extension action if any.

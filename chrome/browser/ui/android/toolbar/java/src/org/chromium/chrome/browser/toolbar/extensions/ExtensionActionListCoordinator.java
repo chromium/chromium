@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -58,7 +58,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ChromeAndroidTask task,
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
-            ExtensionsToolbarBridge extensionsToolbarBridge) {
+            ExtensionsToolbarBridge extensionsToolbarBridge,
+            ViewGroup rootView) {
         mContext = context;
         mContainer = container;
 
@@ -115,15 +116,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
                     }
                 });
 
-        mContainer.setLayoutManager(
-                new LinearLayoutManager(
-                        context, LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false) {
-                    @Override
-                    public boolean canScrollHorizontally() {
-                        return false;
-                    }
-                });
         mContainer.setAdapter(mAdapter);
+        mContainer.setTransitionRoot(rootView);
 
         mAdapter.enableDrag();
     }

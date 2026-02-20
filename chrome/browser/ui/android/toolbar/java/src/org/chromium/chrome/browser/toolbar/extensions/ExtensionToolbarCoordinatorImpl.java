@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
@@ -57,7 +58,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            ViewGroup rootView) {
         mBridge = new ExtensionActionsBridge(task, profile);
 
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
@@ -73,7 +75,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         task,
                         profile,
                         currentTabSupplier,
-                        mExtensionsToolbarBridge);
+                        mExtensionsToolbarBridge,
+                        rootView);
         mExtensionsMenuAndAccessControlButtonCoordinator =
                 new ExtensionsMenuAndAccessControlButtonCoordinator(
                         context,
