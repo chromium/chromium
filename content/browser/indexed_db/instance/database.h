@@ -94,11 +94,9 @@ class CONTENT_EXPORT Database {
   void RegisterAndScheduleTransaction(Transaction* transaction);
 
   // This closes connections and their transactions, and tells the connection
-  // coordinator to cancel pending open requests. However, pending delete
-  // requests are honored (synchronously). This requires an rvalue reference
-  // because it should only be called right before destruction, by its owner
-  // (BucketContext).
-  Status ForceClose(const std::string& message) &&;
+  // coordinator to cancel all currently pending requests. New requests can be
+  // issued after this function returns and will be processed as usual.
+  void ForceCloseConnectionsAndCancelRequests(const std::string& message);
 
   void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection,
                               base::TimeDelta synchronous_duration);
@@ -112,8 +110,6 @@ class CONTENT_EXPORT Database {
 
   // Number of connections that have progressed passed initial open call.
   size_t ConnectionCount() const { return connections_.size(); }
-
-  bool force_closing() const { return force_closing_; }
 
   // Number of active open/delete calls (running or blocked on other
   // connections).
@@ -331,8 +327,9 @@ class CONTENT_EXPORT Database {
   // `list` because iteration order is important.
   std::list<Connection*> connections_;
 
-  // True once `ForceCloseAndRunTasks()` is called.
-  bool force_closing_ = false;
+  // True only while `ForceCloseConnectionsAndCancelRequests()` is
+  // (synchronously) running.
+  bool closing_all_connections_ = false;
 
   ConnectionCoordinator connection_coordinator_;
 

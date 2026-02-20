@@ -3040,4 +3040,70 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
 }
 #endif
 
+// Regression test for crbug.com/484647042.
+TEST_P(IndexedDBTest, ForceCloseWithQueuedDelete) {
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  // Open a database at version 1 and complete the upgrade.
+  {
+    auto connection = std::make_unique<TestDatabaseConnection>(
+        context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+        /*version=*/1, /*upgrade_txn_id=*/1);
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+
+    base::RunLoop open_loop;
+    EXPECT_CALL(*connection->open_callbacks,
+                MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
+                                    IndexedDBDatabaseMetadata::NO_VERSION,
+                                    blink::mojom::IDBDataLoss::None,
+                                    std::string(""), _))
+        .WillOnce(testing::DoAll(MoveArgPointee<0>(&pending_database),
+                                 QuitLoop(&open_loop)));
+    connection->Open(factory_remote_.get());
+    open_loop.Run();
+
+    base::RunLoop commit_loop;
+    base::RepeatingClosure quit_closure =
+        base::BarrierClosure(2, commit_loop.QuitClosure());
+    {
+      ::testing::InSequence dummy;
+      EXPECT_CALL(*connection->connection_callbacks, Complete(1))
+          .WillOnce(RunClosure(quit_closure));
+      EXPECT_CALL(
+          *connection->open_callbacks,
+          MockedOpenSuccess(IsAssociatedInterfacePtrInfoValid(false), _))
+          .WillOnce(RunClosure(std::move(quit_closure)));
+    }
+    connection->database.Bind(std::move(pending_database));
+    connection->version_change_transaction->Commit(0);
+    commit_loop.Run();
+  }
+
+  // Wait for the Database to be destroyed. For SQLite, this starts async
+  // cleanup on a background thread.
+  BucketContext* bucket_context = GetBucketContext(bucket_info.id);
+  ASSERT_TRUE(bucket_context);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return bucket_context->GetDatabasesForTesting().empty(); }));
+
+  // Queue a delete, then force close.
+  MockMojoFactoryClient delete_client;
+  EXPECT_CALL(delete_client, Error(blink::mojom::IDBException::kAbortError, _));
+  factory_remote_->DeleteDatabase(delete_client.CreateInterfacePtrAndBind(),
+                                  kDatabaseName, /*force_close=*/false);
+
+  base::RunLoop force_close_loop;
+  context_->ForceClose(
+      bucket_locator.id,
+      storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
+      force_close_loop.QuitClosure());
+  force_close_loop.Run();
+}
+
 }  // namespace content::indexed_db

@@ -41,9 +41,8 @@ class CONTENT_EXPORT ConnectionCoordinator {
       base::OnceClosure on_deletion_complete,
       base::TimeDelta synchronous_duration);
 
-  // Call this method to prune any tasks that don't want to be run during
-  // force close. Returns any error caused by rolling back changes.
-  Status PruneTasksForForceClose(const std::string& message);
+  // Aborts and removes all pending tasks.
+  void CancelPendingRequests(const std::string& message);
 
   void OnNoConnections();
 

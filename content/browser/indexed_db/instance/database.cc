@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -372,35 +373,19 @@ size_t Database::GetNumTransactionsAcrossAllConnections() const {
   return num_transactions;
 }
 
-Status Database::ForceClose(const std::string& message) && {
-  CHECK(!force_closing_);
-  force_closing_ = true;
+void Database::ForceCloseConnectionsAndCancelRequests(
+    const std::string& message) {
+  base::AutoReset closing(&closing_all_connections_, true);
   for (Connection* connection : connections_) {
     connection->CloseAndReportForceClose(message);
   }
   connections_.clear();
-  IDB_RETURN_IF_ERROR(connection_coordinator_.PruneTasksForForceClose(message));
-  connection_coordinator_.OnNoConnections();
-
-  // Execute any pending tasks in the connection coordinator.
-  ConnectionCoordinator::ExecuteTaskResult task_state;
-  Status status;
-  do {
-    std::tie(task_state, status) = connection_coordinator_.ExecuteTask(false);
-    CHECK(task_state !=
-          ConnectionCoordinator::ExecuteTaskResult::kPendingAsyncWork)
-        << "There are no more connections, so all tasks should be able to "
-           "complete synchronously.";
-  } while (task_state != ConnectionCoordinator::ExecuteTaskResult::kDone &&
-           task_state != ConnectionCoordinator::ExecuteTaskResult::kError);
-  CHECK(connections_.empty());
-  return status;
+  connection_coordinator_.CancelPendingRequests(message);
 }
 
 void Database::ScheduleOpenConnection(
     std::unique_ptr<PendingConnection> connection,
     base::TimeDelta synchronous_duration) {
-  CHECK(!force_closing_);
   connection_coordinator_.ScheduleOpenConnection(std::move(connection),
                                                  synchronous_duration);
 }
@@ -1052,14 +1037,11 @@ void Database::VersionChangeIgnored() {
 }
 
 bool Database::HasNoConnections() const {
-  return force_closing_ || connections().empty();
+  return connections().empty();
 }
 
 void Database::SendVersionChangeToAllConnections(int64_t old_version,
                                                  int64_t new_version) {
-  if (force_closing_) {
-    return;
-  }
   for (auto* connection : connections()) {
     // Before invoking this method, the `ConnectionCoordinator` had
     // set the request state to `kPendingNoConnections`. Now the request will
@@ -1099,8 +1081,7 @@ void Database::SendVersionChangeToAllConnections(int64_t old_version,
 void Database::ConnectionClosed(base::OnceClosure forward_on_close,
                                 Connection& connection) {
   TRACE_EVENT0("IndexedDB", "Database::ConnectionClosed");
-  // Ignore connection closes during force close to prevent re-entry.
-  if (force_closing_) {
+  if (closing_all_connections_) {
     return;
   }
   CHECK(connections_.remove(&connection));

@@ -278,13 +278,11 @@ void BucketContext::ForceClose(bool doom, const std::string& message) {
     if (backing_store()) {
       backing_store()->OnForceClosing();
     }
-    for (auto iter = databases_.begin(); iter != databases_.end();
-         iter = databases_.erase(iter)) {
-      // The result is irrelevant as the database and backing store are already
-      // closing.
-      std::move(*iter->second).ForceClose(SanitizeErrorMessage(message));
+    for (auto& [_, db] : databases_) {
+      db->ForceCloseConnectionsAndCancelRequests(SanitizeErrorMessage(message));
+      CHECK(db->CanBeDestroyed());
     }
-    CHECK(databases_.empty());
+    databases_.clear();
     has_blobs_outstanding_ = false;
     close_timer_.Stop();
     skip_closing_sequence_ = true;
@@ -691,24 +689,22 @@ void BucketContext::DeleteDatabase(
     }
   }
 
-  if (!databases_.contains(name)) {
+  Database* database = nullptr;
+  if (auto it = databases_.find(name); it == databases_.end()) {
     // This adds `Database` in an uninitialized state.
-    CreateAndAddDatabase(name);
-  }
-  auto it = databases_.find(name);
-  it->second->ScheduleDeleteDatabase(std::move(factory_client),
-                                     /*on_deletion_complete=*/
-                                     base::BindOnce(delegate().on_files_written,
-                                                    /*flushed=*/true),
-                                     timer.Elapsed());
-  if (force_close) {
-    std::unique_ptr<Database> database = std::move(it->second);
-    databases_.erase(it);
-    Status status = std::move(*database).ForceClose("The database is deleted.");
-    if (!status.ok() && !IsUsingSqlite()) {
-      OnDatabaseError(nullptr, status, "Error aborting transactions.");
+    database = CreateAndAddDatabase(name);
+  } else {
+    database = it->second.get();
+    if (force_close) {
+      database->ForceCloseConnectionsAndCancelRequests(
+          "The database is deleted.");
     }
   }
+  database->ScheduleDeleteDatabase(std::move(factory_client),
+                                   /*on_deletion_complete=*/
+                                   base::BindOnce(delegate().on_files_written,
+                                                  /*flushed=*/true),
+                                   timer.Elapsed());
 }
 
 storage::mojom::IdbBucketMetadataPtr BucketContext::FillInMetadata(
@@ -921,13 +917,10 @@ void BucketContext::OnDatabaseError(Database* database,
     // problem with the entire bucket, so we just `ForceClose` the one
     // `Database`.
     CHECK(database);
-    // Error during force close; `database` was already removed.
-    if (database->force_closing()) {
-      return;
-    }
     auto iter = databases_.find(database->name());
     CHECK(iter != databases_.end());
-    std::move(*iter->second).ForceClose(error_message);
+    iter->second->ForceCloseConnectionsAndCancelRequests(error_message);
+    CHECK(iter->second->CanBeDestroyed());
     databases_.erase(iter);
   } else {
     if (status.IsCorruption()) {

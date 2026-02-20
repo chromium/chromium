@@ -115,9 +115,9 @@ class ConnectionCoordinator::ConnectionRequest {
   // Called when the upgrade transaction has finished.
   virtual void UpgradeTransactionFinished(bool committed) = 0;
 
-  // Called on all pending tasks during a force close. Returns if the task
-  // should be pruned (removed) from the task queue during the force close.
-  virtual bool ShouldPruneForForceClose(const std::string& message) = 0;
+  // Called on each pending task during a force close, before the task is
+  // removed from the queue.
+  virtual void OnForceClose(const std::string& message) && = 0;
 
   RequestState state() const { return state_; }
 
@@ -441,31 +441,21 @@ class ConnectionCoordinator::OpenRequest
     tasks_available_callback_.Run();
   }
 
-  bool ShouldPruneForForceClose(const std::string& message) override {
-    DCHECK(pending_);
+  void OnForceClose(const std::string& message) && override {
     if (factory_client_) {
       std::move(factory_client_)
           ->Error(blink::mojom::IDBException::kAbortError,
                   u"The connection was closed.");
     }
-    if (state_ != RequestState::kError) {
-      state_ = RequestState::kDone;
-    }
-
     if (upgrade_connection_) {
       // CloseAndReportForceClose calls OnForcedClose on the database callbacks,
       // so we don't need to.
       std::move(upgrade_connection_)->CloseAndReportForceClose(message);
     } else if (pending_->database_callbacks) {
-      pending_->database_callbacks->OnForcedClose();
+      std::move(pending_->database_callbacks)->OnForcedClose();
     }
     // else: `database_callbacks` has been passed to `upgrade_connection_`, in
     // which case the Database will have called `CloseAndReportForceClose()`.
-
-    pending_.reset();
-    // The tasks_available_callback_ is NOT run here, because we are assuming
-    // the caller is doing their own cleanup & execution for ForceClose.
-    return true;
   }
 
  private:
@@ -613,9 +603,12 @@ class ConnectionCoordinator::DeleteRequest
 
   void UpgradeTransactionFinished(bool committed) override { NOTREACHED(); }
 
-  // The delete requests should always be run during force close.
-  bool ShouldPruneForForceClose(const std::string& message) override {
-    return false;
+  void OnForceClose(const std::string& message) && override {
+    if (factory_client_) {
+      std::move(factory_client_)
+          ->Error(blink::mojom::IDBException::kAbortError,
+                  u"The connection was closed.");
+    }
   }
 
  private:
@@ -648,30 +641,13 @@ void ConnectionCoordinator::ScheduleDeleteDatabase(
   bucket_context_->QueueRunTasks();
 }
 
-Status ConnectionCoordinator::PruneTasksForForceClose(
-    const std::string& message) {
-  // Remove all pending requests that don't want to execute during force close
-  // (open requests).
-  base::queue<std::unique_ptr<ConnectionRequest>> requests_to_still_run;
-  Status last_error;
+void ConnectionCoordinator::CancelPendingRequests(const std::string& message) {
   while (!request_queue_.empty()) {
     std::unique_ptr<ConnectionRequest> request =
         std::move(request_queue_.front());
     request_queue_.pop();
-    Status old_error = request->status();
-
-    if (request->ShouldPruneForForceClose(message)) {
-      if (!old_error.ok()) {
-        last_error = old_error;
-      }
-      request.reset();
-    } else {
-      requests_to_still_run.push(std::move(request));
-    }
+    std::move(*request).OnForceClose(message);
   }
-
-  request_queue_ = std::move(requests_to_still_run);
-  return last_error;
 }
 
 void ConnectionCoordinator::OnNoConnections() {

@@ -249,11 +249,9 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   auto non_associated3 = request3.CreateInterfacePtrAndBind();
   non_associated3.EnableUnassociatedUsage();
 
-  // Delete succeeds as the database didn't successfully make it through
-  // creation.
-  base::RunLoop delete_success_loop;
-  EXPECT_CALL(request3, DeleteSuccess)
-      .WillOnce(::base::test::RunClosure(delete_success_loop.QuitClosure()));
+  base::RunLoop delete_loop;
+  EXPECT_CALL(request3, Error)
+      .WillOnce(::base::test::RunClosure(delete_loop.QuitClosure()));
   EXPECT_CALL(request3, Blocked).Times(0);
   db_->ScheduleDeleteDatabase(
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient>(
@@ -268,7 +266,7 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   db_ = nullptr;
 
   bucket_context_->ForceClose(false, kTestForceCloseMessage);
-  delete_success_loop.Run();
+  delete_loop.Run();
 
   // Wait for various mock expectations.
   RunPostedTasks();
