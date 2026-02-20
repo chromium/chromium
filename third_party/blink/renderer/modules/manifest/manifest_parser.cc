@@ -431,8 +431,6 @@ bool ManifestParser::Parse() {
     auto icons_localized = ParseIconsLocalized(root_object.get());
     if (!icons_localized.empty()) {
       manifest_->icons_localized = std::move(icons_localized);
-      UseCounter::Count(execution_context_,
-                        WebFeature::kWebAppManifestIconsLocalized);
     }
   }
   manifest_->screenshots = ParseScreenshots(root_object.get());
@@ -552,22 +550,16 @@ bool ManifestParser::Parse() {
     auto name_localized = ParseNameLocalized(root_object.get());
     if (!name_localized.empty()) {
       manifest_->name_localized = std::move(name_localized);
-      UseCounter::Count(execution_context_,
-                        WebFeature::kWebAppManifestNameLocalized);
     }
 
     auto short_name_localized = ParseShortNameLocalized(root_object.get());
     if (!short_name_localized.empty()) {
       manifest_->short_name_localized = std::move(short_name_localized);
-      UseCounter::Count(execution_context_,
-                        WebFeature::kWebAppManifestShortNameLocalized);
     }
 
     auto description_localized = ParseDescriptionLocalized(root_object.get());
     if (!description_localized.empty()) {
       manifest_->description_localized = std::move(description_localized);
-      UseCounter::Count(execution_context_,
-                        WebFeature::kWebAppManifestDescriptionLocalized);
     }
   }
 
@@ -1198,6 +1190,10 @@ ManifestParser::ParseIconsLocalized(const JSONObject* object) {
     }
   }
 
+  if (!localized_icons.empty()) {
+    UseCounter::CountWebDXFeature(execution_context_,
+                                  WebDXFeature::kManifestLocalization);
+  }
   return localized_icons;
 }
 
@@ -2937,6 +2933,10 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
     localized_text->lang = std::move(lang);
     localized_text->dir = dir;
     result.Set(*locale, std::move(localized_text));
+  }
+  if (!result.empty()) {
+    UseCounter::CountWebDXFeature(execution_context_,
+                                  WebDXFeature::kManifestLocalization);
   }
   return result;
 }

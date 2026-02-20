@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -7822,6 +7823,105 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         "property 'icons_localized' entry for '!!!' ignored, invalid locale "
         "key.",
         errors()[0]);
+  }
+}
+
+TEST_F(ManifestParserTest, ManifestLocalizationUseCounter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebAppManifestLocalization);
+
+  const auto kFeature = blink::mojom::WebDXFeature::kManifestLocalization;
+  UseCounterImpl& use_counter = GetDocument().Loader()->GetUseCounter();
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "name_localized": { "en": "English Name" }
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "short_name_localized": { "en": "EN Short" }
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "description_localized": { "en": "English Description" }
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "icons_localized": {
+        "en": [{ "src": "icon-en.png", "sizes": "32x32", "type": "image/png" }]
+      }
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "shortcuts": [{
+        "name": "Shortcut",
+        "url": "/shortcut",
+        "name_localized": { "en": "English Shortcut" }
+      }]
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "shortcuts": [{
+        "name": "Shortcut",
+        "url": "/shortcut",
+        "short_name_localized": { "en": "EN Shortcut Short" }
+      }]
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "shortcuts": [{
+        "name": "Shortcut",
+        "url": "/shortcut",
+        "description_localized": { "en": "English Shortcut Description" }
+      }]
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({
+      "shortcuts": [{
+        "name": "Shortcut",
+        "url": "/shortcut",
+        "icons_localized": {
+          "en": [{ "src": "icon-en.png", "sizes": "32x32", "type": "image/png" }]
+        }
+      }]
+    })");
+    EXPECT_TRUE(use_counter.IsWebDXFeatureCounted(kFeature));
+  }
+
+  // Counter does not fire when no localized fields are present.
+  {
+    use_counter.ClearMeasurementForTesting(kFeature);
+    ParseManifest(R"({ "name": "Simple App" })");
+    EXPECT_FALSE(use_counter.IsWebDXFeatureCounted(kFeature));
   }
 }
 
