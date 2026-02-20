@@ -50,7 +50,7 @@ class TestSeat : public Seat {
   Surface* GetFocusedSurface() override { return surface_; }
 
  private:
-  raw_ptr<Surface, DanglingUntriaged> surface_ = nullptr;
+  raw_ptr<Surface> surface_ = nullptr;
 };
 
 class DataDeviceTest : public test::ExoTestBase {
@@ -64,6 +64,7 @@ class DataDeviceTest : public test::ExoTestBase {
   }
 
   void TearDown() override {
+    seat_->set_focused_surface(nullptr);
     surface_.reset();
     device_.reset();
     seat_.reset();
