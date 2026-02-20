@@ -25,6 +25,10 @@ size_t EstimateMemoryUsage(const SectionConfig& config) {
   return base::trace_event::EstimateMemoryUsage(config.header());
 }
 
+size_t EstimateMemoryUsage(const InputTypeConfig& config) {
+  return base::trace_event::EstimateMemoryUsage(config.menu_label());
+}
+
 InputState::InputState(const InputState&) = default;
 InputState& InputState::operator=(const InputState&) = default;
 InputState::~InputState() = default;
@@ -40,6 +44,7 @@ size_t InputState::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(disabled_input_types);
   res += base::trace_event::EstimateMemoryUsage(tool_configs);
   res += base::trace_event::EstimateMemoryUsage(model_configs);
+  res += base::trace_event::EstimateMemoryUsage(input_type_configs);
   if (tools_section_config.has_value()) {
     res += omnibox::EstimateMemoryUsage(tools_section_config.value());
   }
