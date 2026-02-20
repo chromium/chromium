@@ -10,6 +10,7 @@ import shutil
 
 import utils.command_util as command
 import utils.constants as const
+from utils.command_error import CommandError
 
 
 def _CodeSearchFiles(query_args: list[str]) -> list[str]:
@@ -147,21 +148,29 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
   # find files containing the tests.
   if not remote_search:
     # Use ripgrep.
-    files = [
-        f for f in command.RunCommand([
-            'rg',
-            '-l',
-            '--multiline',
-            '--multiline-dotall',
-            '-g',
-            const.GTEST_FILE_NAME_GLOB,
-            '-g',
-            const.PREF_MAPPING_FILE_NAME_GLOB,
-            '--glob-case-insensitive',
-            pattern,
-            str(const.SRC_DIR),
-        ]).splitlines()
-    ]
+    try:
+      files = [
+          f for f in command.RunCommand([
+              'rg',
+              '-l',
+              '--multiline',
+              '--multiline-dotall',
+              '-g',
+              const.GTEST_FILE_NAME_GLOB,
+              '-g',
+              const.PREF_MAPPING_FILE_NAME_GLOB,
+              '--glob-case-insensitive',
+              pattern,
+              str(const.SRC_DIR),
+          ]).splitlines()
+      ]
+    except CommandError as e:
+      if e.return_code == 1:
+        # Exit status 1: no matches found.
+        files = []
+      else:
+        # Exit status 2: error (regex syntax error, unable to read file).
+        raise
     if const.DEBUG:
       print(f'rg found: {files}')
   else:
