@@ -466,31 +466,68 @@ std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   return std::nullopt;
 }
 
-std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
+// Enumerates available monitors collecting some of their device capabilities,
+// which can later be retrieved using HMONITOR.
+class MonitorDeviceCapsProvider {
+ public:
+  MonitorDeviceCapsProvider() { CollectMonitorDeviceCaps(); }
+
+  int GetColorDepth(HMONITOR hMonitor) {
+    const auto it = monitors_.find(hMonitor);
+    if (it != monitors_.cend() && it->second.color_depth > 0) {
+      return it->second.color_depth;
+    }
+    return Display::kDefaultBitsPerPixel;
+  }
+
+ private:
+  void CollectMonitorDeviceCaps() {
+    ::EnumDisplayMonitors(
+        ::GetDC(HWND_DESKTOP), /*lprcClip=*/nullptr,
+        [](HMONITOR hMonitor, HDC hdc, LPRECT lpRect, LPARAM lParam) -> BOOL {
+          auto* monitors =
+              reinterpret_cast<base::flat_map<HMONITOR, DeviceCaps>*>(lParam);
+          // The provided hdc is only valid in this context, we won't be able to
+          // query it outside, so grab all the device caps we need here.
+          int color_depth = ::GetDeviceCaps(hdc, BITSPIXEL);
+          monitors->insert({hMonitor, {.color_depth = color_depth}});
+          return TRUE;
+        },
+        reinterpret_cast<LPARAM>(&monitors_));
+  }
+
   struct DeviceCaps {
     int color_depth;
   };
-  base::flat_map<HMONITOR, DeviceCaps> monitors;
+  base::flat_map<HMONITOR, DeviceCaps> monitors_;
+};
 
+std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
+  std::vector<HMONITOR> monitors;
   ::EnumDisplayMonitors(
-      ::GetDC(HWND_DESKTOP), /*lprcClip=*/nullptr,
+      /*hdc=*/nullptr, /*lprcClip=*/nullptr,
       [](HMONITOR hMonitor, HDC hdc, LPRECT lpRect, LPARAM lParam) -> BOOL {
-        auto* monitors =
-            reinterpret_cast<base::flat_map<HMONITOR, DeviceCaps>*>(lParam);
-        // The provided hdc is only valid in this context, we won't be able to
-        // query it outside, so grab all the device caps we need here.
-        int color_depth = ::GetDeviceCaps(hdc, BITSPIXEL);
-        monitors->insert({hMonitor, {.color_depth = color_depth}});
+        auto* monitors = reinterpret_cast<std::vector<HMONITOR>*>(lParam);
+        monitors->push_back(hMonitor);
         return TRUE;
       },
       reinterpret_cast<LPARAM>(&monitors));
+
+  // It is tempting to retrieve monitor device capabilities in the same
+  // ::EnumDisplayMonitors() call where the monitors are collected; however, in
+  // order to receive an HDC in the callback for device capabilities retrieval,
+  // we need to provide the desktop HDC to ::EnumDisplayMonitors(). This changes
+  // its behavior in such a way that, under certain conditions, it can return
+  // the same physical monitor more than once, each time with a different
+  // monitor handle, causing https://crbug.com/476243212.
+  MonitorDeviceCapsProvider monitor_device_caps_provider;
 
   std::vector<internal::DisplayInfo> display_infos;
   display_infos.reserve(monitors.size());
 
   base::flat_set<int64_t> hashed_ids;
   base::flat_set<int64_t> hashed_keys;
-  for (const auto& [monitor, device_caps] : monitors) {
+  for (HMONITOR monitor : monitors) {
     const std::optional<MONITORINFOEX> monitor_info =
         GetMonitorInfoFromHMONITOR(monitor);
     if (!monitor_info) {
@@ -504,16 +541,14 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
         GetMonitorPixelsPerInch(monitor).value_or(
             GetDefaultMonitorPhysicalPixelsPerInch());
     const auto path_info = GetDisplayConfigPathInfo(monitor);
-    const int color_depth = device_caps.color_depth > 0
-                                ? device_caps.color_depth
-                                : Display::kDefaultBitsPerPixel;
     std::optional<HMONITOR> cached_hmonitor;
     if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
       cached_hmonitor = monitor;
     }
     display_infos.emplace_back(
         std::move(cached_hmonitor), *monitor_info,
-        GetMonitorScaleFactor(monitor), color_depth,
+        GetMonitorScaleFactor(monitor),
+        monitor_device_caps_provider.GetColorDepth(monitor),
         GetSDRWhiteLevel(path_info), display_settings.rotation,
         display_settings.frequency, pixels_per_inch,
         GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
