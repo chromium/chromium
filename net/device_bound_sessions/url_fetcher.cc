@@ -75,15 +75,6 @@ void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
     return;
   }
 
-  HttpResponseHeaders* headers = request->response_headers();
-  const int response_code = headers ? headers->response_code() : 0;
-
-  if (response_code < 200 || response_code >= 300) {
-    std::move(callback_).Run();
-    // `this` may be deleted.
-    return;
-  }
-
   // Initiate the first read.
   int bytes_read_or_error = request->Read(buf_.get(), kBufferSize);
   if (bytes_read_or_error >= 0) {
@@ -119,6 +110,10 @@ void URLFetcher::OnReadCompleted(URLRequest* request, int bytes_read_or_error) {
     // `this` may be deleted.
     return;
   }
+}
+
+std::string URLFetcher::TakeDataReceived() {
+  return std::move(data_received_);
 }
 
 }  // namespace net::device_bound_sessions

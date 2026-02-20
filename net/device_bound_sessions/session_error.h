@@ -7,6 +7,8 @@
 
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/deletion_reason.h"
+#include "net/device_bound_sessions/failed_request.h"
+#include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 
@@ -121,6 +123,9 @@ struct NET_EXPORT SessionError {
   bool IsServerError() const;
 
   ErrorType type;
+  // If a network request failed during registration/refresh, details
+  // about that request.
+  std::optional<FailedRequest> failed_request;
 };
 
 }  // namespace net::device_bound_sessions

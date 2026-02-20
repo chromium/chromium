@@ -22,6 +22,7 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
   ~URLFetcher() override;
 
   void Start(base::OnceClosure complete_callback);
+  std::string TakeDataReceived();
 
   URLRequest& request() { return *request_; }
   const std::string& data_received() const { return data_received_; }

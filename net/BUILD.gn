@@ -478,6 +478,8 @@ component("net") {
     "device_bound_sessions/cookie_craving_display.cc",
     "device_bound_sessions/cookie_craving_display.h",
     "device_bound_sessions/deletion_reason.h",
+    "device_bound_sessions/failed_request.cc",
+    "device_bound_sessions/failed_request.h",
     "device_bound_sessions/inclusion_result.h",
     "device_bound_sessions/session_access.cc",
     "device_bound_sessions/session_access.h",

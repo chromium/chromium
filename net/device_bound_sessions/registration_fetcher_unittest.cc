@@ -1229,6 +1229,66 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
             SessionError::kNetError);
 }
 
+TEST_F(RegistrationTest, ResponseErrorCaptured) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, "Not Found Body"));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+
+  RegistrationRequestParam param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  SessionError::ErrorType error =
+      callback.outcome().SessionErrorForTesting()->type;
+  EXPECT_EQ(error, SessionError::kPersistentHttpError);
+  std::optional<FailedRequest> failed_request =
+      callback.outcome().SessionErrorForTesting()->failed_request;
+  EXPECT_EQ(failed_request->request_url, GetBaseURL());
+  EXPECT_EQ(failed_request->net_error, std::nullopt);
+  EXPECT_EQ(failed_request->response_error, 404);
+  EXPECT_EQ(failed_request->response_error_body, "Not Found Body");
+}
+
+TEST_F(RegistrationTest, NetErrorCaptured) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  ASSERT_TRUE(server_.Start());
+  GURL url = server_.GetURL("/");
+  ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
+
+  TestRegistrationCallback callback;
+
+  RegistrationRequestParam param = GetBasicParam(url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  SessionError::ErrorType error =
+      callback.outcome().SessionErrorForTesting()->type;
+  EXPECT_EQ(error, SessionError::kNetError);
+  std::optional<FailedRequest> failed_request =
+      callback.outcome().SessionErrorForTesting()->failed_request;
+  EXPECT_EQ(failed_request->request_url, url);
+  EXPECT_EQ(failed_request->net_error, net::ERR_CONNECTION_REFUSED);
+  EXPECT_EQ(failed_request->response_error, std::nullopt);
+  EXPECT_EQ(failed_request->response_error_body, std::nullopt);
+}
+
 TEST_F(RegistrationTest, ServerError407) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(

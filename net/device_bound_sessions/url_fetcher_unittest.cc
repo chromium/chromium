@@ -112,7 +112,7 @@ TEST_F(URLFetcherTest, Non2xxResponse) {
   run_loop.Run();
 
   EXPECT_EQ(fetcher->net_error(), OK);
-  EXPECT_EQ(fetcher->data_received(), "");
+  EXPECT_EQ(fetcher->data_received(), "not found");
 }
 
 TEST_F(URLFetcherTest, FollowRedirect) {
