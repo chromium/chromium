@@ -17,15 +17,13 @@ found in the LICENSE file.
   <!-- Left part of the view -->
   <ImageView
       android:id="@+id/fre_icon"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="300dp"
+      android:layout_height="match_parent"
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
-      android:layout_marginStart="90dp"
-      android:layout_marginEnd="70dp"
       android:scaleType="fitCenter"
       android:adjustViewBounds="true"
-      android:src="@drawable/fre_product_logo"
+      android:src="@drawable/default_browser_promo_fre_logo_illustration"
       android:importantForAccessibility="no" />
 
   <!-- Right part of the view -->

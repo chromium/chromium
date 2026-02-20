@@ -278,6 +278,7 @@ chrome_java_resources = [
   "java/res/drawable/computer_black_24dp.xml",
   "java/res/drawable/custom_tabs_handle_view_shape.xml",
   "java/res/drawable/custom_tabs_url_bar_omnibox_bg.xml",
+  "java/res/drawable/default_browser_promo_fre_logo_illustration.xml",
   "java/res/drawable/devices_black_24dp.xml",
   "java/res/drawable/distilled_page_prefs_button_bg.xml",
   "java/res/drawable/down_arrow_on_circular_background.xml",

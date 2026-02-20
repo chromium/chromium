@@ -35,13 +35,13 @@ found in the LICENSE file.
 
       <ImageView
           android:id="@+id/fre_icon"
-          android:layout_width="wrap_content"
-          android:layout_height="@dimen/fullscreen_signin_logo_default_height"
+          android:layout_width="match_parent"
+          android:layout_height="240dp"
           android:layout_gravity="center"
           android:layout_marginBottom="24dp"
           android:scaleType="fitCenter"
           android:adjustViewBounds="true"
-          android:src="@drawable/fre_product_logo"
+          android:src="@drawable/default_browser_promo_fre_logo_illustration"
           android:importantForAccessibility="no" />
 
       <TextView
