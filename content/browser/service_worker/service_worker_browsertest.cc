@@ -8037,6 +8037,50 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                      "responseStart) < 2000"));
 }
 
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       WriteToFallbackBodyFails) {
+  if (IsDryRunMode()) {
+    // This test is not for the dry-run mode. In the dry-run mode, the browser
+    // doesn't write the fallback body.
+    return;
+  }
+
+  SetUpMockContentBrowserClient();
+  // Navigate and store the response header.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   kHostname, base::StrCat({kTargetPath, "foo&echo=foo"}))));
+  EXPECT_EQ("[SyntheticResponse] foo", GetInnerText());
+
+  // Start the second navigation that triggers the synthetic response path.
+  // The navigation will be cancelled by the third navigation.
+  GURL mismatch_url = https_server()->GetURL(
+      kHostname,
+      base::StrCat({kTargetPath, "foo&echo=bar&server_slow&header_mismatch"}));
+  TestNavigationManager mismatch_manager(web_contents(), mismatch_url);
+  shell()->LoadURL(mismatch_url);
+
+  // 1. Wait for the navigation to commit headers.
+  // The synthetic response starts immediately with cached headers.
+  EXPECT_TRUE(mismatch_manager.WaitForResponse());
+  mismatch_manager.ResumeNavigation();
+  EXPECT_TRUE(mismatch_manager.WaitForNavigationFinished());
+
+  // 2. Immediately navigate to another URL to cancel the previous navigation's body load.
+  // This closes the consumer end of the data pipe in the renderer.
+  // We use a cross-site URL to ensure a clean cancellation.
+  GURL cancel_url("http://example.com");
+  TestNavigationManager cancel_manager(web_contents(), cancel_url);
+  shell()->LoadURL(cancel_url);
+  EXPECT_TRUE(cancel_manager.WaitForNavigationFinished());
+
+  // 3. The server delay (2s) will eventually expire, triggering the header
+  // mismatch logic. NotifyReloading() will be called, and its write to the
+  // data pipe will fail with MOJO_RESULT_FAILED_PRECONDITION because we
+  // navigated away and the previous document was destroyed.
+  // The test passes if it doesn't crash.
+}
+
 IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest, Redirect) {
   // TODO(crbug.com/450598950): Test is flaky only on the dry-run mode. With the
   // dry-run mode, ServiceWorker doesn't handle actual network requests, so

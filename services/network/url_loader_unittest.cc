@@ -802,6 +802,24 @@ class MockAcceptCHFrameObserver : public mojom::AcceptCHFrameObserver {
   mojo::ReceiverSet<mojom::AcceptCHFrameObserver> receivers_;
 };
 
+class SyntheticResponseFallbackInterceptor : public net::URLRequestInterceptor {
+ public:
+  SyntheticResponseFallbackInterceptor(const std::string& response_headers,
+                                       const std::string& response_data)
+      : response_headers_(response_headers), response_data_(response_data) {}
+  ~SyntheticResponseFallbackInterceptor() override = default;
+
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<net::URLRequestTestJob>(request, response_headers_,
+                                                    response_data_, true);
+  }
+
+ private:
+  std::string response_headers_;
+  std::string response_data_;
+};
+
 class URLLoaderTest : public testing::Test {
  public:
   URLLoaderTest()
@@ -9052,6 +9070,48 @@ TEST_F(URLLoaderTest,
       request_url,
       std::make_unique<ExpectIgnoreUnsafeMethodForSameSiteLax>(false));
   EXPECT_THAT(LoadRequest(request), IsOk());
+}
+
+TEST_F(URLLoaderTest, PerformSyntheticResponseFallbackFailure) {
+  GURL request_url("https://example.com/fallback");
+  ResourceRequest request = CreateResourceRequest("GET", request_url);
+
+  // Set up expected headers for synthetic response.
+  std::string expected_headers_str =
+      "HTTP/1.1 200 OK\n"
+      "Content-type: text/html\n"
+      "\n";
+  request.trusted_params->expected_response_headers_for_synthetic_response =
+      base::MakeRefCounted<net::HttpResponseHeaders>(
+          net::HttpUtil::AssembleRawHeaders(expected_headers_str));
+
+  // Set up an interceptor that returns DIFFERENT headers to trigger fallback.
+  std::string actual_headers_str =
+      "HTTP/1.1 200 OK\n"
+      "Content-type: text/plain\n"
+      "\n";
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      request_url, std::make_unique<SyntheticResponseFallbackInterceptor>(
+                       actual_headers_str, "actual body"));
+
+  // Create a data pipe with a very small buffer to cause
+  // WriteSyntheticResponseFallbackBody to fail.
+  // The fallback body is 45 bytes, so 32 bytes should be enough to cause failure.
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = 32;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, producer, consumer));
+
+  request.trusted_params->response_body_stream =
+      base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+          std::move(producer));
+
+  // Load the request and expect it to fail with net::ERR_INSUFFICIENT_RESOURCES.
+  EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES, LoadRequest(request));
 }
 
 }  // namespace network

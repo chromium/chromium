@@ -155,11 +155,6 @@ WriteSyntheticResponseFallbackResult WriteSyntheticResponseFallbackBody(
   base::UmaHistogramEnumeration(
       "ServiceWorker.SyntheticResponse.WriteFallbackBodyResult",
       mojo::MojoResultToMetricsEnum(result));
-  if (result != MOJO_RESULT_OK) {
-    // TODO(crbug.com/483762288): Remove this dump once the bug is fixed.
-    SCOPED_CRASH_KEY_NUMBER("SyntheticResponse", "WriteFallbackResult", result);
-    base::debug::DumpWithoutCrashing();
-  }
 
   return {result, num_bytes};
 }

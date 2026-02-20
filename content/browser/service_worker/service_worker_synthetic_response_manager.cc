@@ -507,6 +507,10 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
 void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSyntheticResponseManager::OnReceiveRedirect",
+              perfetto::Flow::FromPointer(this));
   if (did_start_synthetic_response_) {
     if (IsServiceWorkerSyntheticResponseNetworkService()) {
       // In the NetworkService mode, the redirect response is managed in the
@@ -544,10 +548,11 @@ void ServiceWorkerSyntheticResponseManager::OnCloneCompleted() {
               "ServiceWorkerSyntheticResponseManager::OnCloneCompleted",
               perfetto::Flow::FromPointer(this));
   write_buffer_manager_->ResetProducer();
-  CHECK(stream_callback_);
-  // Perhaps this assumption is wrong because the write operation may not be
-  // completed at the timing of when the read buffer is empty.
-  stream_callback_->OnCompleted();
+  if (auto callback = std::exchange(stream_callback_, {})) {
+    // Perhaps this assumption is wrong because the write operation may not be
+    // completed at the timing of when the read buffer is empty.
+    callback->OnCompleted();
+  }
 }
 
 bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
@@ -571,6 +576,10 @@ void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
   auto [result, written_bytes] =
       network::WriteSyntheticResponseFallbackBody(producer);
   if (result != MOJO_RESULT_OK) {
+    write_buffer_manager_->ResetProducer();
+    if (auto callback = std::exchange(stream_callback_, {})) {
+      callback->OnAborted();
+    }
     return;
   }
   CHECK_GE(written_bytes, 0u);
