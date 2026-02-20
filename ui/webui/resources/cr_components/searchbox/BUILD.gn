@@ -10,6 +10,7 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_searchbox"
   ts_files = [
+    "placeholder_text_cycler.ts",
     "searchbox.html.ts",
     "searchbox.ts",
     "searchbox_action.html.ts",

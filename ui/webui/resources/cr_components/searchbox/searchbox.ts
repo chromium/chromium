@@ -19,7 +19,7 @@ import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_han
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReachedCase} from '//resources/js/assert.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {isMac} from '//resources/js/platform.js';
@@ -57,110 +57,7 @@ CSS.registerProperty({
   inherits: true,
 });
 
-enum AnimationState {
-  FADE_IN,
-  HOLD,
-  FADE_OUT,
-}
-
-interface AnimationDetails {
-  startOpacity: number;
-  endOpacity: number;
-  duration: number;
-  nextAnimationState: AnimationState;
-}
-
-/**
- * Responsible for cycling placeholder text animations on an HTMLInputElement.
- */
-export class PlaceholderTextCycler {
-  private input_: HTMLInputElement|HTMLTextAreaElement;
-  private animation_: Animation|null = null;
-  private placeholderTexts_: string[] = [];
-  private placeholderTextsCurrentIndex_: number = 0;
-  private changePlaceholderTextIntervalMs_: number = 4000;
-  private fadePlaceholderTextDurationMs_: number = 250;
-
-  constructor(
-      animatedPlaceholderContainer: HTMLInputElement|HTMLTextAreaElement,
-      placeholderTexts: string[], changeTextAnimationIntervalMs: number,
-      fadeTextAnimationDurationMs: number) {
-    assert(placeholderTexts.length > 0);
-
-    this.input_ = animatedPlaceholderContainer;
-    this.placeholderTexts_ = placeholderTexts;
-    this.changePlaceholderTextIntervalMs_ = changeTextAnimationIntervalMs;
-    this.fadePlaceholderTextDurationMs_ = fadeTextAnimationDurationMs;
-  }
-
-  start() {
-    this.stop();
-
-    this.placeholderTextsCurrentIndex_ = 0;
-    this.animate_(AnimationState.HOLD);
-  }
-
-  stop() {
-    if (this.animation_) {
-      this.animation_.cancel();
-      this.animation_ = null;
-    }
-
-    this.placeholderTextsCurrentIndex_ = 0;
-    this.input_.placeholder =
-        this.placeholderTexts_[this.placeholderTextsCurrentIndex_]!;
-  }
-
-  private animate_(state: AnimationState) {
-    let animationDetails: AnimationDetails|null = null;
-    switch (state) {
-      case AnimationState.FADE_IN:
-        this.input_.placeholder =
-            this.placeholderTexts_[this.placeholderTextsCurrentIndex_]!;
-        animationDetails = {
-          startOpacity: 0,
-          endOpacity: 1,
-          duration: this.fadePlaceholderTextDurationMs_,
-          nextAnimationState: AnimationState.HOLD,
-        };
-        break;
-      case AnimationState.HOLD:
-        animationDetails = {
-          startOpacity: 1,
-          endOpacity: 1,
-          duration: this.changePlaceholderTextIntervalMs_,
-          nextAnimationState: AnimationState.FADE_OUT,
-        };
-        break;
-      case AnimationState.FADE_OUT:
-        this.placeholderTextsCurrentIndex_ =
-            (this.placeholderTextsCurrentIndex_ + 1) %
-            this.placeholderTexts_.length;
-        animationDetails = {
-          startOpacity: 1,
-          endOpacity: 0,
-          duration: this.fadePlaceholderTextDurationMs_,
-          nextAnimationState: AnimationState.FADE_IN,
-        };
-        break;
-      default:
-        assertNotReachedCase(state);
-    }
-
-    this.animation_ = this.input_.animate(
-        [
-          {'--placeholder-opacity': animationDetails.startOpacity},
-          {'--placeholder-opacity': animationDetails.endOpacity},
-        ],
-        {duration: animationDetails.duration},
-    );
-    this.animation_.onfinish = () => {
-      if (this.animation_) {
-        this.animate_(animationDetails.nextAnimationState);
-      }
-    };
-  }
-}
+import {PlaceholderTextCycler} from './placeholder_text_cycler.js';
 
 interface Input {
   text: string;
@@ -1168,8 +1065,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
     // Only refresh tab suggestions if the context menu is opened or the recent
     // tab chip is visible.
-    const requiresRefresh = forceRefresh || this.contextMenuOpened_ ||
-        this.recentTabChipVisible_();
+    const requiresRefresh =
+        forceRefresh || this.contextMenuOpened_ || this.recentTabChipVisible_();
     if (!requiresRefresh) {
       return;
     }
@@ -1412,9 +1309,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (!this.ntpRealboxNextEnabled) {
       return false;
     }
-    const recentTabChip =
-        this.shadowRoot.querySelector<RecentTabChipElement>(
-            'composebox-recent-tab-chip') ||
+    const recentTabChip = this.shadowRoot.querySelector<RecentTabChipElement>(
+                              'composebox-recent-tab-chip') ||
         this.$.context.shadowRoot.querySelector<RecentTabChipElement>(
             'composebox-recent-tab-chip');
     return !!recentTabChip;
