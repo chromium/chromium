@@ -143,6 +143,8 @@ columnRuleEdgeInset
 columnRuleEdgeInsetEnd
 columnRuleEdgeInsetStart
 columnRuleInset
+columnRuleInsetEnd
+columnRuleInsetStart
 columnRuleInteriorInset
 columnRuleInteriorInsetEnd
 columnRuleInteriorInsetStart
@@ -439,6 +441,8 @@ rowRuleEdgeInset
 rowRuleEdgeInsetEnd
 rowRuleEdgeInsetStart
 rowRuleInset
+rowRuleInsetEnd
+rowRuleInsetStart
 rowRuleInteriorInset
 rowRuleInteriorInsetEnd
 rowRuleInteriorInsetStart
@@ -453,6 +457,8 @@ ruleBreak
 ruleColor
 ruleEdgeInset
 ruleInset
+ruleInsetEnd
+ruleInsetStart
 ruleInteriorInset
 ruleOverlap
 ruleStyle

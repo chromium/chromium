@@ -11,7 +11,7 @@ namespace blink {
 namespace {
 bool ShorthandMatches(CSSPropertyID expected_shorthand,
                       CSSPropertyID longhand) {
-  Vector<StylePropertyShorthand, 4> shorthands;
+  MatchingShorthandsVector shorthands;
   getMatchingShorthandsForLonghand(longhand, &shorthands);
   for (unsigned i = 0; i < shorthands.size(); ++i) {
     if (shorthands.at(i).id() == expected_shorthand) {

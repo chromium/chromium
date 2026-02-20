@@ -61,13 +61,16 @@ const StylePropertyShorthand& transitionShorthandForParsing();
 // Returns an empty list if the property is not a shorthand.
 CORE_EXPORT const StylePropertyShorthand& shorthandForProperty(CSSPropertyID);
 
+// The maximum number of shorthands a single longhand can belong to.
+using MatchingShorthandsVector = Vector<StylePropertyShorthand, 6>;
+
 // Return the list of shorthands for a given longhand.
 // The client must pass in an empty result vector.
 void getMatchingShorthandsForLonghand(
-    CSSPropertyID, Vector<StylePropertyShorthand, 4>* result);
+    CSSPropertyID, MatchingShorthandsVector* result);
 
 unsigned indexOfShorthandForLonghand(CSSPropertyID,
-                                     const Vector<StylePropertyShorthand, 4>&);
+                                     const MatchingShorthandsVector&);
 
 }  // namespace blink
 

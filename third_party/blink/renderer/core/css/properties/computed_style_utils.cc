@@ -4105,6 +4105,35 @@ ComputedStyleUtils::ValuesForGapDecorationRuleEdgeInteriorInsetShorthand(
   return full_list;
 }
 
+const CSSValue*
+ComputedStyleUtils::ValuesForGapDecorationRuleInsetStartEndShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
+  CHECK_EQ(shorthand.length(), 2u);
+
+  const CSSValue* edge_inset_value =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* interior_inset_value =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+
+  // Both properties must be specified.
+  if (!edge_inset_value || !interior_inset_value) {
+    return nullptr;
+  }
+
+  // The shorthand can only be serialized if both values are equal.
+  if (*edge_inset_value != *interior_inset_value) {
+    return nullptr;
+  }
+
+  return edge_inset_value;
+}
+
 CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleInsetShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
@@ -4563,6 +4592,39 @@ ComputedStyleUtils::ValuesForBidirectionalGapRuleEdgeInteriorInsetShorthand(
   }
 
   return result;
+}
+
+const CSSValue*
+ComputedStyleUtils::ValuesForBidirectionalGapRuleInsetStartEndShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
+  DCHECK_EQ(shorthand.length(), 4u);
+  const CSSValue* column_edge_inset =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* column_interior_inset =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* row_edge_inset =
+      shorthand.properties()[2]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* row_interior_inset =
+      shorthand.properties()[3]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+
+  // The shorthand is bi-directional and all four longhands must be equal.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#inset
+  if (!base::ValuesEquivalent(column_edge_inset, column_interior_inset) ||
+      !base::ValuesEquivalent(column_edge_inset, row_edge_inset) ||
+      !base::ValuesEquivalent(column_edge_inset, row_interior_inset)) {
+    return nullptr;
+  }
+
+  return column_edge_inset;
 }
 
 const CSSValue* ComputedStyleUtils::ValuesForBidirectionalGapRuleShorthand(

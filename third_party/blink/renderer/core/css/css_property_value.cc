@@ -41,7 +41,7 @@ CSSPropertyID CSSPropertyValue::ShorthandID() const {
     return CSSPropertyID::kInvalid;
   }
 
-  Vector<StylePropertyShorthand, 4> shorthands;
+  MatchingShorthandsVector shorthands;
   getMatchingShorthandsForLonghand(PropertyID(), &shorthands);
   DCHECK(shorthands.size());
   DCHECK_GE(index_in_shorthands_vector_, 0u);

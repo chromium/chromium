@@ -8913,6 +8913,18 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "column-rule-inset-end",
+      longhands: ["column-rule-edge-inset-end", "column-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "column-rule-inset-start",
+      longhands: ["column-rule-edge-inset-start", "column-rule-interior-inset-start"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "column-rule-interior-inset",
       longhands: ["column-rule-interior-inset-start", "column-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
@@ -9282,6 +9294,18 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "row-rule-inset-end",
+      longhands: ["row-rule-edge-inset-end", "row-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "row-rule-inset-start",
+      longhands: ["row-rule-edge-inset-start", "row-rule-interior-inset-start"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "row-rule-interior-inset",
       longhands: ["row-rule-interior-inset-start", "row-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
@@ -9318,6 +9342,20 @@
       name: "rule-interior-inset",
       longhands: ["row-rule-interior-inset-start", "row-rule-interior-inset-end",
                   "column-rule-interior-inset-start", "column-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "rule-inset-end",
+      longhands: ["column-rule-edge-inset-end", "column-rule-interior-inset-end",
+                  "row-rule-edge-inset-end", "row-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "rule-inset-start",
+      longhands: ["column-rule-edge-inset-start", "column-rule-interior-inset-start",
+                  "row-rule-edge-inset-start", "row-rule-interior-inset-start"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },

@@ -3710,7 +3710,7 @@ void AddProperty(CSSPropertyID resolved_property,
   bool set_from_shorthand = false;
 
   if (IsValidCSSPropertyID(current_shorthand)) {
-    Vector<StylePropertyShorthand, 4> shorthands;
+    MatchingShorthandsVector shorthands;
     getMatchingShorthandsForLonghand(resolved_property, &shorthands);
     set_from_shorthand = true;
     if (shorthands.size() > 1) {
@@ -7661,9 +7661,8 @@ bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
   rule_end_inset = nullptr;
 
   // Consume the first <length-percentage> value (required).
-  rule_start_inset = ConsumeLengthOrPercent(
-      stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
-  if (!rule_start_inset) {
+  if (!ConsumeGapDecorationsRuleInsetStartEndShorthand(
+          important, context, local_context, stream, rule_start_inset)) {
     return false;
   }
 
@@ -7675,14 +7674,23 @@ bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
   }
 
   // Consume the optional second <length-percentage> value.
-  rule_end_inset = ConsumeLengthOrPercent(stream, context, local_context,
-                                          CSSPrimitiveValue::ValueRange::kAll);
+  return ConsumeGapDecorationsRuleInsetStartEndShorthand(
+      important, context, local_context, stream, rule_end_inset);
+}
 
-  if (!rule_end_inset) {
-    return false;
-  }
+// Consuming the `*-rule-inset-start` and `*-rule-inset-end` shorthands
+// with syntax <length-percentage>
+bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
+    bool important,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    CSSParserTokenStream& stream,
+    CSSValue*& rule_inset_value) {
+  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
-  return true;
+  rule_inset_value = ConsumeLengthOrPercent(
+      stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
+  return rule_inset_value != nullptr;
 }
 
 // Consuming the `rule-inset`, `column-rule-inset`, `row-rule-inset`

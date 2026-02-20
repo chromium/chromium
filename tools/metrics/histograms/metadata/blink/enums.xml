@@ -8275,6 +8275,12 @@ Called by update_use_counter_css.py.-->
   <int value="931" label="timeline-trigger-activation-range-end"/>
   <int value="932" label="timeline-trigger-activation-range"/>
   <int value="933" label="rule-overlap"/>
+  <int value="934" label="column-rule-inset-start"/>
+  <int value="935" label="column-rule-inset-end"/>
+  <int value="936" label="row-rule-inset-start"/>
+  <int value="937" label="row-rule-inset-end"/>
+  <int value="938" label="rule-inset-start"/>
+  <int value="939" label="rule-inset-end"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

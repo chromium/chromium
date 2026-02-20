@@ -662,6 +662,12 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-edge-inset-start
         column-rule-interior-inset-end
         column-rule-interior-inset-start
+    column-rule-inset-end
+        column-rule-edge-inset-end
+        column-rule-interior-inset-end
+    column-rule-inset-start
+        column-rule-edge-inset-start
+        column-rule-interior-inset-start
     column-rule-interior-inset
         column-rule-interior-inset-end
         column-rule-interior-inset-start
@@ -890,6 +896,12 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-edge-inset-start
         row-rule-interior-inset-end
         row-rule-interior-inset-start
+    row-rule-inset-end
+        row-rule-edge-inset-end
+        row-rule-interior-inset-end
+    row-rule-inset-start
+        row-rule-edge-inset-start
+        row-rule-interior-inset-start
     row-rule-interior-inset
         row-rule-interior-inset-end
         row-rule-interior-inset-start
@@ -919,6 +931,16 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-edge-inset-end
         row-rule-edge-inset-start
         row-rule-interior-inset-end
+        row-rule-interior-inset-start
+    rule-inset-end
+        column-rule-edge-inset-end
+        column-rule-interior-inset-end
+        row-rule-edge-inset-end
+        row-rule-interior-inset-end
+    rule-inset-start
+        column-rule-edge-inset-start
+        column-rule-interior-inset-start
+        row-rule-edge-inset-start
         row-rule-interior-inset-start
     rule-interior-inset
         column-rule-interior-inset-end

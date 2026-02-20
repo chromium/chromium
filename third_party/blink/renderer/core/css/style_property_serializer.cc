@@ -361,7 +361,7 @@ String StylePropertySerializer::AsText() const {
       continue;
     }
 
-    Vector<StylePropertyShorthand, 4> shorthands;
+    MatchingShorthandsVector shorthands;
     getMatchingShorthandsForLonghand(property_id, &shorthands);
     bool serialized_as_shorthand = false;
     for (const StylePropertyShorthand& shorthand : shorthands) {
@@ -624,6 +624,18 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kRowRuleInset:
       return GetShorthandValueForGapDecorationsRuleInset(
           rowRuleInsetShorthand(), CSSGapDecorationPropertyDirection::kRow);
+    case CSSPropertyID::kColumnRuleInsetEnd:
+      return GetShorthandValueForGapDecorationsRuleInsetStartEnd(
+          columnRuleInsetEndShorthand());
+    case CSSPropertyID::kColumnRuleInsetStart:
+      return GetShorthandValueForGapDecorationsRuleInsetStartEnd(
+          columnRuleInsetStartShorthand());
+    case CSSPropertyID::kRowRuleInsetEnd:
+      return GetShorthandValueForGapDecorationsRuleInsetStartEnd(
+          rowRuleInsetEndShorthand());
+    case CSSPropertyID::kRowRuleInsetStart:
+      return GetShorthandValueForGapDecorationsRuleInsetStartEnd(
+          rowRuleInsetStartShorthand());
     case CSSPropertyID::kColumnRuleInteriorInset:
       return GetShorthandValueForGapDecorationsRuleEdgeInteriorInset(
           columnRuleInteriorInsetShorthand(),
@@ -722,6 +734,12 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kRuleInset:
       return GetShorthandValueForBidirectionalGapRuleInset(
           ruleInsetShorthand());
+    case CSSPropertyID::kRuleInsetEnd:
+      return GetShorthandValueForBidirectionalGapRuleInsetStartEnd(
+          ruleInsetEndShorthand());
+    case CSSPropertyID::kRuleInsetStart:
+      return GetShorthandValueForBidirectionalGapRuleInsetStartEnd(
+          ruleInsetStartShorthand());
     case CSSPropertyID::kRuleStyle:
       return GetShorthandValueForBidirectionalGapRules(ruleStyleShorthand());
     case CSSPropertyID::kRuleVisibilityItems:
@@ -2238,6 +2256,37 @@ String StylePropertySerializer::
   return result.ReleaseString();
 }
 
+String
+StylePropertySerializer::GetShorthandValueForBidirectionalGapRuleInsetStartEnd(
+    const StylePropertyShorthand& shorthand) const {
+  CHECK_EQ(shorthand.length(), 4u);
+
+  const CSSValue* column_edge_inset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* column_interior_inset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue* row_edge_inset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  const CSSValue* row_interior_inset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
+
+  // The shorthand is bi-directional and all four longhands must be equal.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#inset
+  if (!base::ValuesEquivalent(column_edge_inset_value,
+                              column_interior_inset_value) ||
+      !base::ValuesEquivalent(column_edge_inset_value, row_edge_inset_value) ||
+      !base::ValuesEquivalent(column_edge_inset_value,
+                              row_interior_inset_value)) {
+    return String();
+  }
+
+  if (!column_edge_inset_value->IsInitialValue()) {
+    return column_edge_inset_value->CssText();
+  }
+  return String();
+}
+
 String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(
     const StylePropertyShorthand& shorthand) const {
   DCHECK_EQ(shorthand.length(), 2u);
@@ -2486,6 +2535,28 @@ String StylePropertySerializer::
   }
 
   return result.ReleaseString();
+}
+
+String
+StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInsetStartEnd(
+    const StylePropertyShorthand& shorthand) const {
+  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
+  CHECK_EQ(shorthand.length(), 2u);
+
+  const CSSValue* edge_inset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* interior_inset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+
+  // All values must be specified.
+  CHECK(edge_inset_value && interior_inset_value);
+
+  // The shorthand can only be serialized if both values are equal.
+  if (edge_inset_value != interior_inset_value) {
+    return String();
+  }
+
+  return edge_inset_value->CssText();
 }
 
 String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInset(

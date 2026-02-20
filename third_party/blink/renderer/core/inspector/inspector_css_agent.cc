@@ -4537,7 +4537,7 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
   if (!source_data)
     return protocol::Response::ServerError("Can't find a source to edit");
 
-  Vector<StylePropertyShorthand, 4> shorthands;
+  MatchingShorthandsVector shorthands;
   getMatchingShorthandsForLonghand(css_property_name->Id(), &shorthands);
 
   String shorthand =

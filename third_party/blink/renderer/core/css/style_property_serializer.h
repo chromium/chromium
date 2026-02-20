@@ -70,6 +70,8 @@ class CORE_EXPORT StylePropertySerializer {
       const StylePropertyShorthand&) const;
   String GetShorthandValueForBidirectionalGapRuleEdgeInteriorInset(
       const StylePropertyShorthand&) const;
+  String GetShorthandValueForBidirectionalGapRuleInsetStartEnd(
+      const StylePropertyShorthand&) const;
   String GetShorthandValueForBidirectionalGapRules(
       const StylePropertyShorthand&) const;
   String GetShorthandValueForGapDecorationsRule(
@@ -82,6 +84,8 @@ class CORE_EXPORT StylePropertySerializer {
       const StylePropertyShorthand&,
       CSSGapDecorationPropertyDirection direction,
       bool is_edge) const;
+  String GetShorthandValueForGapDecorationsRuleInsetStartEnd(
+      const StylePropertyShorthand&) const;
   String GetShorthandValueForColumnRule(const StylePropertyShorthand&) const;
   String GetShorthandValueForColumns(const StylePropertyShorthand&) const;
   // foo || bar || ... || baz

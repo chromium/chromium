@@ -1344,6 +1344,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kColumnRule:
     case CSSPropertyID::kColumnRuleEdgeInset:
     case CSSPropertyID::kColumnRuleInset:
+    case CSSPropertyID::kColumnRuleInsetEnd:
+    case CSSPropertyID::kColumnRuleInsetStart:
     case CSSPropertyID::kColumnRuleInteriorInset:
     case CSSPropertyID::kColumns:
     case CSSPropertyID::kContainIntrinsicSize:
@@ -1392,8 +1394,12 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kRowRule:
     case CSSPropertyID::kRowRuleEdgeInset:
     case CSSPropertyID::kRowRuleInset:
+    case CSSPropertyID::kRowRuleInsetEnd:
+    case CSSPropertyID::kRowRuleInsetStart:
     case CSSPropertyID::kRowRuleInteriorInset:
     case CSSPropertyID::kRuleEdgeInset:
+    case CSSPropertyID::kRuleInsetEnd:
+    case CSSPropertyID::kRuleInsetStart:
     case CSSPropertyID::kRuleInteriorInset:
     case CSSPropertyID::kRule:
     case CSSPropertyID::kRuleBreak:

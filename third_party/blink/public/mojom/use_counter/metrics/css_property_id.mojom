@@ -1003,6 +1003,12 @@ enum CSSSampleId {
     kTimelineTriggerActivationRangeEnd = 931,
     kTimelineTriggerActivationRange = 932,
     kRuleOverlap = 933,
+    kColumnRuleInsetStart = 934,
+    kColumnRuleInsetEnd = 935,
+    kRowRuleInsetStart = 936,
+    kRowRuleInsetEnd = 937,
+    kRuleInsetStart = 938,
+    kRuleInsetEnd = 939,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

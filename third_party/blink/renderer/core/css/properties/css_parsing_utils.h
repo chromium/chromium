@@ -698,6 +698,13 @@ bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
     CSSValue*& rule_edge_inset,
     CSSValue*& rule_interior_inset);
 
+bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
+    bool important,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    CSSParserTokenStream& stream,
+    CSSValue*& rule_inset_value);
+
 bool ConsumeGapDecorationsRuleInsetShorthand(
     bool important,
     const CSSParserContext& context,
