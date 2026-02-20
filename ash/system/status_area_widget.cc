@@ -65,6 +65,7 @@
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 namespace {
@@ -689,22 +690,18 @@ bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
   const int64_t icon_id = GetCustomIconId(configuration);
   CHECK(!custom_tray_buttons_ids_.contains(icon_id));
 
-  std::u16string tooltip_text;
-  if (configuration.tool_tip) {
-    tooltip_text = *configuration.tool_tip;
-  }
-
-  ui::ImageModel image_model;
-  if (configuration.image) {
-    image_model = ui::ImageModel::FromImageSkia(*configuration.image);
-  }
+  std::u16string tooltip_text = configuration.tool_tip.value_or(u"");
+  ui::ImageModel image_model =
+      configuration.image ? ui::ImageModel::FromImageSkia(*configuration.image)
+                          : ui::ImageModel();
 
   // TODO(b:463430271): Add a new catalog name for custom icons.
   auto icon = std::make_unique<ImagedTrayIcon>(
-      shelf_, std::move(image_model), std::move(tooltip_text),
+      shelf_, std::move(image_model), tooltip_text,
       TrayBackgroundViewCatalogName::kChromeCustom);
   icon->SetID(icon_id);
   icon->SetCallback(std::move(callback));
+  icon->GetViewAccessibility().SetName(std::move(tooltip_text));
   icon->SetVisiblePreferred(true);
 
   custom_tray_buttons_ids_.insert(icon_id);
@@ -733,9 +730,12 @@ bool StatusAreaWidget::UpdateTrayIcon(
 
   auto* image_view = icon->image_view();
   CHECK(image_view);
-  if (configuration.tool_tip &&
-      configuration.tool_tip != image_view->GetTooltipText()) {
-    image_view->SetTooltipText(*configuration.tool_tip);
+  if (configuration.tool_tip) {
+    const std::u16string& new_tooltip = *configuration.tool_tip;
+    if (new_tooltip != image_view->GetTooltipText()) {
+      image_view->SetTooltipText(new_tooltip);
+      icon->GetViewAccessibility().SetName(new_tooltip);
+    }
   }
 
   if (configuration.image) {
