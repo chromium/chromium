@@ -19,6 +19,10 @@ public class CctPageStation extends BasePageStation<CustomTabActivity> {
     protected CctPageStation(Config config) {
         super(CustomTabActivity.class, config);
 
+        // Allow subclasses because Partial Custom Tabs are launched as
+        // TranslucentCustomTabActivity.
+        mActivityElement.allowSubclasses();
+
         // TODO(crbug.com/413111192): Support native CCT pages, e.g. PDF pages.
         webContentsElement =
                 declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));

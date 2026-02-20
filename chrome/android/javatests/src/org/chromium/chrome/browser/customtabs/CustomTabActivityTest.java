@@ -2300,7 +2300,7 @@ public class CustomTabActivityTest {
         connection.newSession(token.getSessionAsCustomTab());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        mCustomTabActivityTestRule.startActivityCompletely(intent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         // A Normal CCT height is set to MATCH_PARENT while Partial CCT has non-zero value.
         int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -2363,7 +2363,7 @@ public class CustomTabActivityTest {
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 100);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
-        mCustomTabActivityTestRule.startActivityCompletely(intent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         rotateCustomTabActivity(
                 mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
@@ -2424,7 +2424,7 @@ public class CustomTabActivityTest {
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 600);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
-        mCustomTabActivityTestRule.startActivityCompletely(intent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         rotateCustomTabActivity(
                 mCustomTabActivityTestRule.getActivity(), Layout.Orientation.PORTRAIT);
@@ -2466,7 +2466,7 @@ public class CustomTabActivityTest {
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
-        mCustomTabActivityTestRule.startActivityCompletely(intent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         assertThat(mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
                 .isInstanceOf(BaseCustomTabRootUiCoordinator.class);

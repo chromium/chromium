@@ -19,17 +19,24 @@ import java.util.Map;
 /**
  * Represents an {@link Activity} that needs to exist to consider the Station active.
  *
- * <p>Subclasses are treated as a different type.
- *
- * @param <ActivityT> exact type of Activity expected
+ * @param <ActivityT> type of Activity expected
  */
 @NullMarked
 public class ActivityElement<ActivityT extends Activity> extends Element<ActivityT> {
     private final Class<ActivityT> mActivityClass;
+    private boolean mAllowSubclasses;
 
     ActivityElement(Class<ActivityT> activityClass) {
         super("AE/" + activityClass.getCanonicalName());
         mActivityClass = activityClass;
+    }
+
+    /** Allow subclasses of the Activity class to match. */
+    public void allowSubclasses() {
+        if (mOwner != null) {
+            mOwner.assertInPhase(ConditionalState.Phase.NEW);
+        }
+        mAllowSubclasses = true;
     }
 
     @Override
@@ -92,7 +99,9 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
             String reasonForTaskIdDifference = "";
             List<Activity> allActivities = ApplicationStatus.getRunningActivities();
             for (Activity activity : allActivities) {
-                if (mActivityClass.equals(activity.getClass())) {
+                if (mAllowSubclasses
+                        ? mActivityClass.isInstance(activity)
+                        : mActivityClass.equals(activity.getClass())) {
                     ActivityT matched = mActivityClass.cast(activity);
                     candidateMatchingClass = matched;
                     reasonForTaskIdDifference = getReasonForTaskIdDifference(matched);
