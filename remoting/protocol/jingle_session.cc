@@ -107,7 +107,7 @@ ErrorCode AuthRejectionReasonToErrorCode(
 int GetSequentialId(const std::string& id) {
   std::vector<std::string> tokens =
       SplitString(id, "_", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // Legacy endpoints does not encode the IQ ordering in the ID attribute
+  // Legacy endpoints do not encode the IQ ordering in the ID attribute.
   if (tokens.size() != 2) {
     return kInvalid;
   }
@@ -144,7 +144,6 @@ class JingleSession::OrderedMessageQueue {
 
   // Returns the list of messages ordered by their sequential IDs.
   std::vector<PendingMessage> OnIncomingMessage(
-      const std::string& id,
       PendingMessage&& pending_message);
 
   // Sets the initial ID of the session initiate mefssage.
@@ -160,10 +159,10 @@ class JingleSession::OrderedMessageQueue {
 
 std::vector<JingleSession::PendingMessage>
 JingleSession::OrderedMessageQueue::OnIncomingMessage(
-    const std::string& id,
     JingleSession::PendingMessage&& message) {
   std::vector<JingleSession::PendingMessage> result;
-  int current = GetSequentialId(id);
+  int current =
+      message.message ? GetSequentialId(message.message->message_id) : kInvalid;
   // If there is no sequencing order encoded in the id, just return the
   // message.
   if (current == kInvalid) {
@@ -578,9 +577,7 @@ void JingleSession::OnTransportInfoResponse(
 void JingleSession::OnIncomingMessage(std::unique_ptr<JingleMessage> message,
                                       ReplyCallback reply_callback) {
   ProcessIncomingPluginMessage(*message);
-  std::string message_id = message->message_id;
   std::vector<PendingMessage> ordered = message_queue_->OnIncomingMessage(
-      message_id,
       PendingMessage{std::move(message), std::move(reply_callback)});
   base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
   for (auto& pending_message : ordered) {
