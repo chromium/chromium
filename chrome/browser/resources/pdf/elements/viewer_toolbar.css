@@ -168,6 +168,22 @@ cr-progress,
   visibility: visible;
 }
 
+<if expr="enable_glic">
+#glic-controls {
+  align-items: center;
+  display: flex;
+  margin-inline-start: 6px;
+}
+
+#glic-controls #summarize-button {
+  margin-inline-start: 6px;
+}
+
+#glic-controls .vertical-separator {
+  margin-inline: 6px;
+}
+</if>
+
 <if expr="enable_pdf_ink2">
 .annotate-button {
   margin-inline-end: 4px;

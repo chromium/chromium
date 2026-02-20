@@ -19710,6 +19710,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Chrome-specific PDF strings -->
+    <if expr="enable_glic and enable_pdf">
+      <message name="IDS_PDF_GLIC_SUMMARIZE" desc="Button label for the button to summarize PDFs.">
+        Summarize
+      </message>
+    </if>
+
     <!-- Protected content identifiers permission -->
     <if expr="is_win">
       <message name="IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_TITLE" desc="Title of the info bubble shown when a site has been allowed to use identifiers to play protected content.">

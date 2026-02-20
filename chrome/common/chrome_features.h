@@ -18,7 +18,7 @@
 #include "chrome/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 #include "ui/base/buildflags.h"
 
 namespace features {
@@ -757,6 +757,10 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kGlicMetricsSessionStartTimeout;
+
+#if BUILDFLAG(ENABLE_GLIC) && BUILDFLAG(ENABLE_PDF)
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPdfGlicSummarize);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
