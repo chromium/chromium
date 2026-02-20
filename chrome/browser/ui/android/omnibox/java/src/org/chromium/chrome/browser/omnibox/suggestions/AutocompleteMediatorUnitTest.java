@@ -278,7 +278,7 @@ public class AutocompleteMediatorUnitTest {
         autocompleteInput.setPageUrl(url);
         autocompleteInput.setPageTitle(title);
         autocompleteInput.setPageClassification(pageClassification);
-        return new FuseboxSessionState(autocompleteInput);
+        return new FuseboxSessionState(mProfile, autocompleteInput);
     }
 
     private FuseboxSessionState createEmptySession() {

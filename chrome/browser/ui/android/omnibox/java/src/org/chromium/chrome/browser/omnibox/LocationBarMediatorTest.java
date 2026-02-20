@@ -453,7 +453,7 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
-        var state = FuseboxSessionState.from(mLocationBarDataProvider);
+        var state = getSession();
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch, true);
         verify(mStatusCoordinator, times(2)).onDefaultMatchClassified(true);
@@ -1561,7 +1561,7 @@ public class LocationBarMediatorTest {
         doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.onUrlFocusChange(true);
 
-        var state = FuseboxSessionState.from(mLocationBarDataProvider);
+        var state = getSession();
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mNavigateButtonIsVisible);
 
@@ -1710,7 +1710,7 @@ public class LocationBarMediatorTest {
 
         // Prepare a state to be restored for mTab.
         String newText = "new text";
-        var newState = FuseboxSessionState.from(mLocationBarDataProvider);
+        var newState = getSession();
         newState.getAutocompleteInput().setUserText(newText);
         newState.setSessionActive(true);
 
@@ -1724,7 +1724,7 @@ public class LocationBarMediatorTest {
         mTabletMediator.onUrlFocusChange(true);
         String previousText = "previous text";
         // Note: input state is tracked by autocomplete.
-        var previousState = FuseboxSessionState.from(mLocationBarDataProvider);
+        var previousState = getSession();
         previousState.getAutocompleteInput().setUserText(previousText);
 
         // Emulate a tab switch from previousTab to mTab.
@@ -1762,7 +1762,7 @@ public class LocationBarMediatorTest {
         String newText = "new text";
         final int newSelectionStart = 2;
         final int newSelectionEnd = 6;
-        var newState = FuseboxSessionState.from(mLocationBarDataProvider);
+        var newState = getSession();
         newState.getAutocompleteInput().setUserText(newText);
         newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
         newState.setSessionActive(true);
@@ -1780,7 +1780,7 @@ public class LocationBarMediatorTest {
         final int previousSelectionEnd = 5;
 
         // Note: input state is tracked by autocomplete.
-        var previousState = FuseboxSessionState.from(mLocationBarDataProvider);
+        var previousState = getSession();
         previousState.getAutocompleteInput().setUserText(previousText);
         doReturn(previousSelectionStart).when(mUrlCoordinator).getSelectionStart();
         doReturn(previousSelectionEnd).when(mUrlCoordinator).getSelectionEnd();
@@ -2130,5 +2130,9 @@ public class LocationBarMediatorTest {
         zoomButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setZoomButtonVisibility(false);
         Mockito.clearInvocations(mLocationBarTablet);
+    }
+
+    private FuseboxSessionState getSession() {
+        return FuseboxSessionState.from(mLocationBarDataProvider, mProfile);
     }
 }
