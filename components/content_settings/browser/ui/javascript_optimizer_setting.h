@@ -7,6 +7,8 @@
 
 namespace content_settings {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Must be kept in sync with the JavascriptOptimizerSetting enum in
 // chrome/browser/resources/settings/site_settings/constants.ts
 // LINT.IfChange(JavascriptOptimizerSetting)
@@ -14,6 +16,7 @@ enum class JavascriptOptimizerSetting {
   kBlocked = 0,
   kAllowed = 1,
   kBlockedForUnfamiliarSites = 2,
+  kMaxValue = kBlockedForUnfamiliarSites,
 };
 // LINT.ThenChange(//chrome/browser/resources/settings/site_settings/constants.ts:JavascriptOptimizerSetting)
 
