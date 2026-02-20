@@ -687,4 +687,62 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
+                       TestCueNotShownForMismatchedMimeType) {
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+  auto* cueing_config = cueing_metadata.add_cueing_configurations();
+  cueing_config->set_cue_label("pdf cue label");
+  cueing_config->set_dynamic_cue_label("pdf dynamic cue label");
+  // This config only applies to PDF pages.
+  cueing_config->add_allowed_mime_types("application/pdf");
+  SetUpEnabledHints(cueing_metadata);
+
+  FakeGlicNudgeDelegate nudge_delegate;
+  SwapToFakeDelegate(nudge_delegate);
+
+  // Navigate to an HTML page - should NOT trigger the nudge since the
+  // config requires application/pdf.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeDecision.GlicContextualCueing",
+      contextual_cueing::NudgeDecision::kClientConditionsUnmet, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
+                       TestCueShownForMatchingMimeType) {
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+  auto* cueing_config = cueing_metadata.add_cueing_configurations();
+  cueing_config->set_cue_label("html cue label");
+  cueing_config->set_dynamic_cue_label("html dynamic cue label");
+  // This config applies to HTML pages, which matches our test navigation.
+  cueing_config->add_allowed_mime_types("text/html");
+  SetUpEnabledHints(cueing_metadata);
+
+  FakeGlicNudgeDelegate nudge_delegate;
+  SwapToFakeDelegate(nudge_delegate);
+
+  // Navigate to an HTML page - SHOULD trigger the nudge since the
+  // config allows text/html.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeDecision.GlicContextualCueing",
+      contextual_cueing::NudgeDecision::kSuccess, 1);
+}
+
 #endif  // BUILDFLAG(ENABLE_GLIC)

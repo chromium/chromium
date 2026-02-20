@@ -89,6 +89,11 @@ message GlicCueingConfiguration {
 
   // Parameters controlling auto-send behavior for the prompt.
   AutoSendParams auto_send_params = 7;
+
+  // If non-empty, this configuration only applies when the page's MIME type
+  // matches one of these values (e.g., "application/pdf"). If empty, the
+  // configuration applies to any MIME type.
+  repeated string allowed_mime_types = 9;
 }
 
 // Parameters for auto-sending the prompt when the side panel opens.
