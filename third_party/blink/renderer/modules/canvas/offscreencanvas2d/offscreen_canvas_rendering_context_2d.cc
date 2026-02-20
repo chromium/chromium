@@ -223,7 +223,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
   if (use_shared_image) {
-    provider = Canvas2DResourceProviderSharedImage::Create(
+    provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         host->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,

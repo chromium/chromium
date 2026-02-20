@@ -1109,7 +1109,7 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositorBase(
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
-Canvas2DResourceProviderSharedImage::Create(
+Canvas2DResourceProviderSharedImage::CreateWithClear(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -1125,16 +1125,16 @@ Canvas2DResourceProviderSharedImage::Create(
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
-Canvas2DResourceProviderSharedImage::Create(
+Canvas2DResourceProviderSharedImage::CreateWithClear(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
-  return Create(size, color_params.GetSharedImageFormat(),
-                color_params.GetAlphaType(), color_params.GetGfxColorSpace(),
-                std::move(context_provider_wrapper), raster_mode,
-                shared_image_usage_flags);
+  return CreateWithClear(
+      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
+      color_params.GetGfxColorSpace(), std::move(context_provider_wrapper),
+      raster_mode, shared_image_usage_flags);
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>

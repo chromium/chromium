@@ -173,9 +173,9 @@ TEST_F(CanvasResourceProviderTest,
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderSharedImage::Create(
-      gfx::Size(10, 10), color_params,
-      context_provider_wrapper_, RasterMode::kGPU, shared_image_usage_flags);
+  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+      gfx::Size(10, 10), color_params, context_provider_wrapper_,
+      RasterMode::kGPU, shared_image_usage_flags);
 
   // When the backing SI does not support WebGPU, a new backing SI should be
   // created that does so.
@@ -200,10 +200,9 @@ TEST_F(CanvasResourceProviderTest,
   auto shared_image_usages_with_webgpu = shared_image_usage_flags |
                                          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  provider = Canvas2DResourceProviderSharedImage::Create(
-      gfx::Size(10, 10), color_params,
-      context_provider_wrapper_, RasterMode::kGPU,
-      shared_image_usages_with_webgpu);
+  provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+      gfx::Size(10, 10), color_params, context_provider_wrapper_,
+      RasterMode::kGPU, shared_image_usages_with_webgpu);
   client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
       sync_token, was_copy_performed);
   EXPECT_FALSE(was_copy_performed);
@@ -278,7 +277,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderSharedImage::Create(
+  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
       kSize, color_params, context_provider_wrapper_, RasterMode::kCPU,
       shared_image_usage_flags);
 
@@ -303,7 +302,7 @@ std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvas2DResourceProvider(
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  return Canvas2DResourceProviderSharedImage::Create(
+  return Canvas2DResourceProviderSharedImage::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper,
       RasterMode::kGPU, shared_image_usage_flags);
 }

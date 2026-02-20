@@ -1358,7 +1358,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
     }
-    provider = Canvas2DResourceProviderSharedImage::Create(
+    provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, canvas());
@@ -1372,7 +1372,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
-    provider = Canvas2DResourceProviderSharedImage::Create(
+    provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, canvas());
@@ -1386,7 +1386,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // an overlay).
     const gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    provider = Canvas2DResourceProviderSharedImage::Create(
+    provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
         shared_image_usage_flags, canvas());
