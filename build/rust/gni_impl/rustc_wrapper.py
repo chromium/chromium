@@ -344,7 +344,7 @@ def main():
           shlex.join(rustc_args))
   r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
   if r.returncode != 0:
-    RecommendApplyFixesScript(args.rustc, args.rustc_env_and_flags)
+    RecommendApplyFixesScript(args.rustc, args.dump_rustc_env_and_flags)
     sys.exit(r.returncode)
 
   final_depfile_lines = []
