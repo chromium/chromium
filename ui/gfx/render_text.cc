@@ -761,9 +761,22 @@ void RenderText::MoveCursor(BreakType break_type,
   uint32_t max_end = std::max(selection().end(), cursor.selection().end());
   uint32_t current_start = selection().start();
 
+  // Determine if the selection is reversed (i.e., the cursor crossed the
+  // selection start).
+#if BUILDFLAG(IS_MAC)
+  // Use strict inequality to ensure that returning exactly to the selection
+  // start is NOT considered a reversal. This allows the selection to collapse
+  // when the caret returns to the selection start position (see
+  // SELECTION_EXTEND case). See https://issues.chromium.org/issues/396057270.
+  const bool is_min_end_before_start = min_end < current_start;
+  const bool is_max_end_after_start = current_start < max_end;
+#else
+  const bool is_min_end_before_start = min_end <= current_start;
+  const bool is_max_end_after_start = current_start <= max_end;
+#endif
+
   bool selection_reversed = !selection().is_empty() &&
-                            min_end <= current_start &&
-                            current_start <= max_end;
+                            is_min_end_before_start && is_max_end_after_start;
 
   // Take |selection_behavior| into account.
   switch (selection_behavior) {
@@ -775,7 +788,7 @@ void RenderText::MoveCursor(BreakType break_type,
                                                     : current_start);
       break;
     case SELECTION_CARET:
-      if (selection_reversed) {
+      if (selection_reversed && cursor.caret_pos() != current_start) {
         cursor =
             SelectionModel(current_start, selection_model_.caret_affinity());
       } else {

@@ -3015,8 +3015,14 @@ TEST_F(RenderTextTest, MoveCursor_Character) {
       render_text, CHARACTER_BREAK, CURSOR_RIGHT, SELECTION_EXTEND, &expected);
 
   // Move left twice.
+#if BUILDFLAG(IS_MAC)
+  // Mac: Selection collapses when returning to selection start.
+  expected.push_back(Range(6));
+  expected.push_back(Range(6, 5));
+#else
   expected.push_back(Range(7, 6));
   expected.push_back(Range(7, 5));
+#endif
   RunMoveCursorTestAndClearExpectations(
       render_text, CHARACTER_BREAK, CURSOR_LEFT, SELECTION_EXTEND, &expected);
 }
@@ -3285,7 +3291,12 @@ TEST_F(RenderTextTest, MoveCursor_Line) {
                                           SELECTION_EXTEND, &expected);
 
     // Move right.
+#if BUILDFLAG(IS_MAC)
+    // Mac: Selection collapses when returning to selection start.
+    expected.push_back(Range(11));
+#else
     expected.push_back(Range(0, 11));
+#endif
     RunMoveCursorTestAndClearExpectations(render_text, break_type, CURSOR_RIGHT,
                                           SELECTION_EXTEND, &expected);
   }

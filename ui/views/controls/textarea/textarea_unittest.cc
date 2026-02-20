@@ -198,7 +198,11 @@ TEST_F(TextareaTest, LineSelection) {
   SendEndEvent(true);
 
   if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND) {
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(u"", textarea_->GetSelectedText());
+#else
     EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
+#endif  // BUILDFLAG(IS_MAC)
   } else {
     EXPECT_EQ(u"67 89", textarea_->GetSelectedText());
   }

@@ -1385,7 +1385,11 @@ TEST_F(TextfieldTest, LineSelection) {
   // Select line towards right.
   SendEndEvent(true);
 #if BUILDFLAG(IS_MAC)
-  EXPECT_EQ(textfield_->GetText(), textfield_->GetSelectedText());
+  // Mac: Cmd+Shift+Right when whole line is selected (11->0) -> Should collapse
+  // to end (11->11). This matches the behavior fixed in
+  // https://issues.chromium.org/issues/396057270, where returning to the
+  // selection start position should collapse the selection.
+  EXPECT_EQ(u"", textfield_->GetSelectedText());
 #else
   EXPECT_EQ(u"67 89", textfield_->GetSelectedText());
 #endif
@@ -5953,5 +5957,119 @@ TEST_F(TextfieldTest, OnBeforeCutFallbackToClipboard) {
   EXPECT_EQ(textfield_->GetText(), u" bar");
   EXPECT_EQ(GetClipboardText(ui::ClipboardBuffer::kCopyPaste), u"foo");
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(TextfieldTest, SelectionExtensionTest) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* textfield = widget->SetContentsView(std::make_unique<Textfield>());
+  textfield->SetText(u"0123456789");  // Length 10
+  textfield->SetBounds(0, 0, 100, 30);
+  textfield->RequestFocus();
+
+  // Scenario 1: Middle -> Right -> Left -> Expect Whole Line
+  // Start at 5.
+  textfield->SetSelectedRange(gfx::Range(5, 5));
+
+  // Cmd+Shift+Right (Move to End and Modify Selection)
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect Selection 5-10.
+  EXPECT_EQ(gfx::Range(5, 10), textfield->GetSelectedRange());
+
+  // Cmd+Shift+Left (Move to Start and Modify Selection)
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect Selection 0-10 (Whole line).
+  // Selection start should be 10, Caret 0. (Range(10, 0) normalized to (0, 10))
+  EXPECT_EQ(gfx::Range(10, 0), textfield->GetSelectedRange());
+
+  // Cmd+Shift+Right -> Expect Collapsed at End
+
+  // Cmd+Shift+Right
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect Selection 10-10 (Collapsed).
+  // The selection should collapse to the selection start (10) because we are
+  // returning to it.
+  EXPECT_EQ(gfx::Range(10, 10), textfield->GetSelectedRange());
+}
+
+// TODO(crbug.com/396057270): Add test cases for checking a word in the middle
+// of a line and behaviors when the selection range bounds are not at the end of
+// the word. These tests are currently omitted due to issues with
+// Option+Shift+Left/Right handling and will be added after the fix.
+TEST_F(TextfieldTest, SelectionExtensionTestByWord) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* textfield = widget->SetContentsView(std::make_unique<Textfield>());
+  textfield->SetBounds(0, 0, 100, 30);
+  textfield->RequestFocus();
+
+  textfield->SetText(u"12345");
+
+  // Case 1: |12345 => OSR => [12345> => OSL => |12345
+  // Initial: Caret at 0
+  textfield->SetSelectedRange(gfx::Range(0, 0));
+
+  // OSR (Option+Shift+Right) -> Select whole word
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_WORD_RIGHT_AND_MODIFY_SELECTION);
+  // Expect [12345> (0, 5)
+  EXPECT_EQ(gfx::Range(0, 5), textfield->GetSelectedRange());
+
+  // OSL (Option+Shift+Left) -> Collapse to start
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_WORD_LEFT_AND_MODIFY_SELECTION);
+  // Expect |12345 (0, 0)
+  EXPECT_EQ(gfx::Range(0, 0), textfield->GetSelectedRange());
+
+  // Case 2: 12345| => OSL => <12345] => OSR => 12345|
+  // Initial: Caret at 5
+  textfield->SetSelectedRange(gfx::Range(5, 5));
+
+  // OSL -> Select whole word backwards
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_WORD_LEFT_AND_MODIFY_SELECTION);
+  // Expect <12345] (5, 0)
+  EXPECT_EQ(gfx::Range(5, 0), textfield->GetSelectedRange());
+
+  // OSR -> Collapse to end
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_WORD_RIGHT_AND_MODIFY_SELECTION);
+  // Expect 12345| (5, 5)
+  EXPECT_EQ(gfx::Range(5, 5), textfield->GetSelectedRange());
+
+  // Case 3: |12345 => OSD => [12345> => OSU => |12345
+  // Initial: Caret at 0
+  textfield->SetSelectedRange(gfx::Range(0, 0));
+
+  // OSD (Option+Shift+Down) -> Select whole line
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect [12345> (0, 5)
+  EXPECT_EQ(gfx::Range(0, 5), textfield->GetSelectedRange());
+
+  // OSU -> Collapse to start
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect |12345 (0, 0)
+  EXPECT_EQ(gfx::Range(0, 0), textfield->GetSelectedRange());
+
+  // Case 4: 12345| => OSU => <12345] => OSD => 12345|
+  // Initial: Caret at 5
+  textfield->SetSelectedRange(gfx::Range(5, 5));
+
+  // OSU (Option+Shift+Up) -> Select whole line backwards
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect <12345] (5, 0)
+  EXPECT_EQ(gfx::Range(5, 0), textfield->GetSelectedRange());
+
+  // OSD -> Collapse to end
+  TextfieldTestApi(textfield).ExecuteTextEditCommand(
+      ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION);
+  // Expect 12345| (5, 5)
+  EXPECT_EQ(gfx::Range(5, 5), textfield->GetSelectedRange());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace views::test
