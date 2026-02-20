@@ -450,7 +450,7 @@ void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(
   base::UnguessableToken token = base::UnguessableToken::Create();
   ContextualSearchboxHandler::page_->AddFileContext(token,
                                                     std::move(file_info));
-  std::move(callback).Run(token);
+  std::move(callback).Run(base::ok(token));
 }
 
 std::vector<tabs::TabInterface*>
@@ -860,7 +860,8 @@ void ContextualTasksComposeboxHandler::AddFileContext(
     AddFileContextCallback callback) {
   auto* session_handle = GetContextualSessionHandle();
   if (!session_handle) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto token = session_handle->CreateContextToken();
@@ -869,7 +870,7 @@ void ContextualTasksComposeboxHandler::AddFileContext(
   std::string file_name = file_info->file_name;
   ContextualSearchboxHandler::page_->AddFileContext(token,
                                                     std::move(file_info));
-  std::move(callback).Run(token);
+  std::move(callback).Run(base::ok(token));
   session_handle->StartFileContextUploadFlow(token, file_name, mime_type,
                                              std::move(file_bytes),
                                              CreateImageEncodingOptions());
@@ -995,14 +996,19 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
 // Only runs for non-delayed context. DeleteContext here runs
 // ComposeboxHandler::DeleteContext.
 void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
-    const std::optional<base::UnguessableToken>& token) {
+    base::expected<base::UnguessableToken,
+                   contextual_search::FileUploadErrorType> token) {
   // Remove old visual selection if it exists.
   if (visual_selection_token_.has_value()) {
     ComposeboxHandler::DeleteContext(visual_selection_token_.value(),
                                      /*from_automatic_chip=*/false);
   }
   // Replace the visual selection token with the new one.
-  visual_selection_token_ = token;
+  if (token.has_value()) {
+    visual_selection_token_ = token.value();
+  } else {
+    visual_selection_token_ = std::nullopt;
+  }
 }
 
 void ContextualTasksComposeboxHandler::DeleteContext(

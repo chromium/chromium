@@ -197,7 +197,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   addFileContext(fileInfo: SelectedFileInfo, fileBytes: BigBuffer) {
     this.methodCalled('addFileContext', {fileInfo, fileBytes});
-    return Promise.resolve({token: ''});
+    return Promise.resolve('');
   }
 
   addTabContext(tabId: number, delayUpload: boolean) {

@@ -312,7 +312,7 @@ suite('ComposeboxDragAndDrop', () => {
     // Same token for auto inject (mac) and manual (linux/windows)
     const sharedToken = '12345678-1234-1234-1234-123456789abc';
     searchboxHandler.setResultFor(
-        ADD_FILE_CONTEXT_FN, Promise.resolve({token: sharedToken}));
+        ADD_FILE_CONTEXT_FN, Promise.resolve(sharedToken));
 
     const file = new File(['content'], 'foo.pdf', {type: 'application/pdf'});
     // Automatically add file (Mac)
@@ -383,7 +383,7 @@ suite('ComposeboxDragAndDrop', () => {
     await microtasksFinished();
     const sharedToken = '12345678-1234-1234-1234-123456789abc';
     searchboxHandler.setResultFor(
-        ADD_FILE_CONTEXT_FN, Promise.resolve({token: sharedToken}));
+        ADD_FILE_CONTEXT_FN, Promise.resolve(sharedToken));
 
     const file1 = new File(['a'], 'a.pdf', {type: 'application/pdf'});
     const file2 = new File(['b'], 'b.pdf', {type: 'application/pdf'});
@@ -479,7 +479,7 @@ suite('ComposeboxDragAndDrop', () => {
 
     // 2. Drop an image (should be allowed).
     searchboxHandler.setResultFor(
-        ADD_FILE_CONTEXT_FN, Promise.resolve({token: 'image-token'}));
+        ADD_FILE_CONTEXT_FN, Promise.resolve('image-token'));
     const imageFile = new File(['content'], 'test.png', {type: 'image/png'});
     await dispatchDragAndDropEvent(composeboxElement, [imageFile]);
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
@@ -520,7 +520,7 @@ suite('ComposeboxDragAndDrop', () => {
 
     // 1. Drop an image.
     searchboxHandler.setResultFor(
-        ADD_FILE_CONTEXT_FN, Promise.resolve({token: 'image-token'}));
+        ADD_FILE_CONTEXT_FN, Promise.resolve('image-token'));
     const imageFile = new File(['content'], 'test.png', {type: 'image/png'});
     await dispatchDragAndDropEvent(composeboxElement, [imageFile]);
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
@@ -529,7 +529,7 @@ suite('ComposeboxDragAndDrop', () => {
     // 2. Drop a PDF.
     searchboxHandler.reset();
     searchboxHandler.setResultFor(
-        ADD_FILE_CONTEXT_FN, Promise.resolve({token: 'pdf-token'}));
+        ADD_FILE_CONTEXT_FN, Promise.resolve('pdf-token'));
     const pdfFile =
         new File(['content'], 'test.pdf', {type: 'application/pdf'});
     await dispatchDragAndDropEvent(composeboxElement, [pdfFile]);
