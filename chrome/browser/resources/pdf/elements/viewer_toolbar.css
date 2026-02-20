@@ -179,6 +179,10 @@ cr-progress,
   margin-inline: 6px;
 }
 
+#glic-controls cr-icon {
+  margin-bottom: 1px;
+}
+
 #glic-summarize-button {
   --cr-button-text-color: #e3e3e3;
   --cr-focus-outline-color:var(--viewer-icon-focus-outline-color);
@@ -186,9 +190,10 @@ cr-progress,
   border: none;
   font-weight: 400;
   gap: 4px;
-  height: 28px;
-  padding-inline-end: 10px;
-  padding-inline-start: 6px;
+  height: 32px;
+  margin-left: 2px;
+  padding-inline-end: 12px;
+  padding-inline-start: 8px;
 }
 </if>
 
