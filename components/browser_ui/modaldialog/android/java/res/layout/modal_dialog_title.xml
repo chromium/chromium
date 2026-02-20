@@ -5,7 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -40,7 +41,8 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:ellipsize="end"
-        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+        android:textAlignment="viewStart" />
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/title_more_button"
