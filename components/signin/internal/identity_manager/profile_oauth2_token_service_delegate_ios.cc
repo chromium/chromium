@@ -360,7 +360,7 @@ bool ProfileOAuth2TokenServiceIOSDelegate::RefreshTokenIsAvailable(
     const CoreAccountId& account_id) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  return accounts_.count(account_id) > 0;
+  return accounts_.contains(account_id);
 }
 
 bool ProfileOAuth2TokenServiceIOSDelegate::RefreshTokenIsAvailableOnDevice(
@@ -386,8 +386,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::AddOrUpdateAccount(
   DCHECK(!account_tracker_service_->GetAccountInfo(account_id).gaia.empty());
   DCHECK(!account_tracker_service_->GetAccountInfo(account_id).email.empty());
 
-  bool account_present = accounts_.count(account_id) > 0;
-  if (account_present && GetAuthError(account_id) == error) {
+  if (accounts_.contains(account_id) && GetAuthError(account_id) == error) {
     // No need to update the account if it is already a known account and if
     // the error didn't change.
     return;
@@ -419,8 +418,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::RemoveAccount(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!account_id.empty());
 
-  if (accounts_.count(account_id) > 0) {
-    accounts_.erase(account_id);
+  if (auto it = accounts_.find(account_id); it != accounts_.end()) {
+    accounts_.erase(it);
     ClearAuthError(account_id);
     FireRefreshTokenRevoked(account_id);
   }
