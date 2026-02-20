@@ -22,6 +22,9 @@ class PointerReturner {
 
  private:
   int integer_;
+  // `raw_ptr_exclusion` is a Chromium specific attribute to exclude a specific
+  // field from the requirement to use `raw_ptr<T>`. This attribute has no
+  // effect on the Swift compiler. It only suppresses C++ build errors.
   __attribute__((annotate("raw_ptr_exclusion"))) PointerReturner* child_;
 };
 
