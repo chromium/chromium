@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 
@@ -145,13 +144,11 @@ void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
 
       // TODO(crbug.com/485145029): Consider using a type distinguishable from
       // `kAutocompleteEntry`.
-      // TODO(crbug.com/485145029): Avoid downcasting here.
-      static_cast<autofill::BrowserAutofillManager&>(manager)
-          .FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
-                              autofill::mojom::FieldActionType::kReplaceAll,
-                              form.ToFormData(), *field, it->value,
-                              autofill::SuggestionType::kAutocompleteEntry,
-                              std::nullopt);
+      manager.FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
+                                 autofill::mojom::FieldActionType::kReplaceAll,
+                                 form.ToFormData(), *field, it->value,
+                                 autofill::SuggestionType::kAutocompleteEntry,
+                                 std::nullopt);
       pending_fields_.erase(it);
     }
   });

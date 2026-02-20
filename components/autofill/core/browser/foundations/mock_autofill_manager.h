@@ -99,6 +99,16 @@ class MockAutofillManager : public AutofillManager {
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
               (override));
+  MOCK_METHOD(void,
+              FillOrPreviewField,
+              (mojom::ActionPersistence action_persistence,
+               mojom::FieldActionType action_type,
+               const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& value,
+               SuggestionType type,
+               std::optional<FieldType> field_type_used),
+              (override));
   MOCK_METHOD(CreditCardAccessManager*,
               GetCreditCardAccessManager,
               (),

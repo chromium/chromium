@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/is_required.h"
@@ -292,6 +293,17 @@ class AutofillManager
 
   // Invoked when the suggestions are actually hidden.
   void OnSuggestionsHidden();
+
+  // Routes calls from external components to FormFiller::FillOrPreviewField.
+  // Virtual for testing.
+  // TODO(crbug.com/40227496): Replace FormFieldData parameter by FieldGlobalId.
+  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                                  mojom::FieldActionType action_type,
+                                  const FormData& form,
+                                  const FormFieldData& field,
+                                  const std::u16string& value,
+                                  SuggestionType type,
+                                  std::optional<FieldType> field_type_used) = 0;
 
   // Other events.
 

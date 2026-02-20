@@ -263,6 +263,18 @@ void AndroidAutofillManager::FillOrPreviewForm(
   }
 }
 
+void AndroidAutofillManager::FillOrPreviewField(
+    mojom::ActionPersistence action_persistence,
+    mojom::FieldActionType action_type,
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& value,
+    SuggestionType type,
+    std::optional<FieldType> field_type_used) {
+  driver().ApplyFieldAction(action_type, action_persistence, field.global_id(),
+                            value);
+}
+
 void AndroidAutofillManager::StartNewLoggingSession() {
   address_logger_ = std::make_unique<AndroidFormEventLogger>("Address");
   loyalty_card_logger_ =

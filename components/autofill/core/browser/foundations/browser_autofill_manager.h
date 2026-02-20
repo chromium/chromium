@@ -164,15 +164,14 @@ class BrowserAutofillManager : public AutofillManager {
                                  AutofillTriggerSource trigger_source);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
-  // Virtual for testing.
   // TODO(crbug.com/40227496): Replace FormFieldData parameter by FieldGlobalId.
-  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                                  mojom::FieldActionType action_type,
-                                  const FormData& form,
-                                  const FormFieldData& field,
-                                  const std::u16string& value,
-                                  SuggestionType type,
-                                  std::optional<FieldType> field_type_used);
+  void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                          mojom::FieldActionType action_type,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const std::u16string& value,
+                          SuggestionType type,
+                          std::optional<FieldType> field_type_used) override;
 
   // Logs metrics when the user accepts address form filling suggestion. This
   // happens only for already parsed forms (`FormStructure` and `AutofillField`
