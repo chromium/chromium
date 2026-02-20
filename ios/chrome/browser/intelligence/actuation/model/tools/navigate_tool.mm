@@ -75,20 +75,23 @@ void NavigateTool::Execute(ActuationCallback callback) {
     return;
   }
 
-  // TODO(crbug.com/472291687): UrlLoadingBrowserAgent does not support
-  // navigating a background tab, so activate the targeted tab before
-  // navigating.
-  int tab_index = web_state_list_->GetIndexOfWebState(web_state_.get());
-  if (tab_index == WebStateList::kInvalidIndex) {
-    std::move(callback).Run(
-        base::unexpected(ActuationError{ActuationErrorCode::kExecutionFailed,
-                                        "Tab is no longer in the browser."}));
+  // Unrealized WebStates are restored, but not fully functional, tabs that
+  // haven't been activated yet. They do not support navigation.
+  if (!web_state_->IsRealized()) {
+    std::move(callback).Run(base::unexpected(ActuationError{
+        ActuationErrorCode::kExecutionFailed, "Target tab is not realized."}));
     return;
   }
-  web_state_list_->ActivateWebStateAt(tab_index);
+
+  // These params are selected to align with
+  // chrome/browser/actor/tools/navigate_tool.cc.
   UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
   params.from_chrome = true;
-  url_loader_->Load(params);
+  params.user_initiated = false;
+  params.web_params.transition_type =
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  params.web_params.is_renderer_initiated = false;
+  url_loader_->LoadUrlInTab(params, web_state_.get());
   std::move(callback).Run(base::ok());
 }
 

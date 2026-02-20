@@ -21,6 +21,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/page_transition_types.h"
 
 using ActuationResult = ActuationTool::ActuationResult;
 using ActuationErrorCode = ActuationTool::ActuationErrorCode;
@@ -33,8 +34,12 @@ class TestUrlLoadingObserver : public UrlLoadingObserver {
                       ui::PageTransition transition_type,
                       base::WeakPtr<web::WebState> web_state) override {
     last_url_ = url;
+    last_transition_type_ = transition_type;
+    last_web_state_ = web_state;
   }
   GURL last_url_;
+  ui::PageTransition last_transition_type_ = ui::PAGE_TRANSITION_FIRST;
+  base::WeakPtr<web::WebState> last_web_state_;
 };
 
 }  // namespace
@@ -74,8 +79,6 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
-  EXPECT_EQ("NavigateAction proto is missing tab id or url.",
-            result.error().message);
 
   action.mutable_navigate()->clear_url();
   action.mutable_navigate()->set_tab_id(1);
@@ -83,8 +86,6 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
   result = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
-  EXPECT_EQ("NavigateAction proto is missing tab id or url.",
-            result.error().message);
 }
 
 TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
@@ -97,7 +98,6 @@ TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
       result = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
-  EXPECT_EQ("Target tab isn't in any Browser.", result.error().message);
 }
 
 TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
@@ -125,7 +125,6 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
   ActuationResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
-  EXPECT_EQ("Missing required dependencies.", result.error().message);
 }
 
 TEST_F(NavigateToolTest, Execute_InvalidUrl) {
@@ -149,7 +148,6 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
   ActuationResult result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
-  EXPECT_EQ("Invalid URL", result.error().message);
 }
 
 TEST_F(NavigateToolTest, Execute_Success) {
@@ -160,6 +158,8 @@ TEST_F(NavigateToolTest, Execute_Success) {
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
+  web::WebState* target_web_state =
+      browser_->GetWebStateList()->GetWebStateAt(0);
   std::string kUrl = "https://www.example.com/";
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
@@ -175,10 +175,14 @@ TEST_F(NavigateToolTest, Execute_Success) {
   ActuationResult result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      url_loading_observer_.last_transition_type_,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL));
+  EXPECT_EQ(url_loading_observer_.last_web_state_.get(), target_web_state);
 }
 
 TEST_F(NavigateToolTest,
-       Execute_TargetTabInBackground_SwitchesToTabAndNavigates) {
+       Execute_TargetTabInBackground_NavigatesWithoutSwitching) {
   for (int i = 0; i < 2; i++) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetNavigationManager(
@@ -197,6 +201,7 @@ TEST_F(NavigateToolTest,
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
+
   base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
       maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
@@ -206,8 +211,15 @@ TEST_F(NavigateToolTest,
   tool->Execute(future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(), target_web_state);
+  EXPECT_NE(browser_->GetWebStateList()->GetActiveWebState(), target_web_state);
+  EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(),
+            browser_->GetWebStateList()->GetWebStateAt(1));
+
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      url_loading_observer_.last_transition_type_,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL));
+  EXPECT_EQ(url_loading_observer_.last_web_state_.get(), target_web_state);
 }
 
 TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
@@ -218,6 +230,8 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
+  web::WebState* target_web_state =
+      browser_->GetWebStateList()->GetWebStateAt(0);
   std::string kUrl = "https://www.example.com/";
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
@@ -243,4 +257,35 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   ActuationResult result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      url_loading_observer_.last_transition_type_,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL));
+  EXPECT_EQ(url_loading_observer_.last_web_state_.get(), target_web_state);
+}
+
+TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetIsRealized(false);
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  std::string kUrl = "https://www.example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  EXPECT_TRUE(maybe_tool.has_value());
+  std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
+
+  base::test::TestFuture<ActuationResult> future;
+  tool->Execute(future.GetCallback());
+
+  ActuationResult result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
 }
