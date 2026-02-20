@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+class BrowserView;
 class Profile;
 
 namespace syncer {
@@ -37,7 +38,8 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
       const scoped_refptr<user_education::UserEducationContext>& context,
       user_education::FeaturePromoSpecification::BuildHelpBubbleParams params);
 
-  IOSPromoBubbleView(Profile* profile,
+  IOSPromoBubbleView(BrowserView* browser_view,
+                     Profile* profile,
                      desktop_to_mobile_promos::PromoType promo_type,
                      desktop_to_mobile_promos::BubbleType promo_bubble_type,
                      views::View* anchor_view,
@@ -77,6 +79,7 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
   // shown.
   bool ShouldHighlightAnchorButton() const;
 
+  const raw_ptr<BrowserView> browser_view_;
   const raw_ptr<Profile> profile_;
   const desktop_to_mobile_promos::PromoType promo_type_;
   raw_ptr<const syncer::DeviceInfo> ios_device_info_;
