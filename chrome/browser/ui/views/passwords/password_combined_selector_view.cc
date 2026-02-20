@@ -54,7 +54,8 @@ namespace {
 constexpr int kGroupId = 1327;
 
 // The desired width and height in pixels for the Flux UI account avatar.
-constexpr int kFluxAvatarSize = 20;
+constexpr int kFluxFederatedAvatarSize = 28;
+constexpr int kFluxPasswordIconSize = 20;
 
 // The horizontal and vertical padding in pixels for the Flux UI account row.
 constexpr int kHorizontalPadding = 16;
@@ -96,7 +97,8 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
     // Define columns: Icon, Padding, Text
     AddColumn(views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
               views::TableLayout::kFixedSize,
-              views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+              views::TableLayout::ColumnSize::kFixed, kFluxFederatedAvatarSize,
+              0);
     AddPaddingColumn(views::TableLayout::kFixedSize, icon_padding);
     AddColumn(views::LayoutAlignment::kStretch,
               views::LayoutAlignment::kStretch, 1.0f,
@@ -114,7 +116,7 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
     // Icon
     if (is_federated) {
       auto image_view = std::make_unique<CircularImageView>(
-          gfx::Size(kFluxAvatarSize, kFluxAvatarSize));
+          gfx::Size(kFluxFederatedAvatarSize, kFluxFederatedAvatarSize));
       image_view_ = image_view.get();
       gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE);
@@ -130,7 +132,8 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
     } else {
       AddChildView(
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-              GooglePasswordManagerVectorIcon(), ui::kColorIcon, 20)));
+              GooglePasswordManagerVectorIcon(), ui::kColorIcon,
+              kFluxPasswordIconSize)));
     }
 
     // Text Stack
@@ -188,7 +191,7 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
     image_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateResizedImage(
             skia_image, skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(kFluxAvatarSize, kFluxAvatarSize))));
+            gfx::Size(kFluxFederatedAvatarSize, kFluxFederatedAvatarSize))));
   }
 
   // views::TableLayoutView:
