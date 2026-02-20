@@ -610,7 +610,13 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the location permission. */
   getLocationPermissionState?(): ObservableValue<boolean>;
 
-  /** Returns the state of the tab context permission. */
+  /**
+   * Returns the state of the tab context permission for this instance.
+   *
+   * Note: This state may differ from the global default if per-instance
+   * permissions are enabled and the user has toggled access for this specific
+   * instance.
+   */
   getTabContextPermissionState?(): ObservableValue<boolean>;
 
   /** Returns the state of the OS granted location permission. */
@@ -629,8 +635,9 @@ export declare interface GlicBrowserHost {
   getActuationOnWebSetting?(): ObservableValue<boolean>;
 
   /**
-   * Returns the state of the default tab context permission for new sessions.
-   * The returned observable will be updated when the setting changes.
+   * Returns the state of the global default tab context permission set in
+   * Chrome settings. New instances inherit this value upon creation. The
+   * returned observable will be updated when the global setting changes.
    */
   getDefaultTabContextPermissionState?(): ObservableValue<boolean>;
 
@@ -647,8 +654,12 @@ export declare interface GlicBrowserHost {
   setLocationPermissionState(enabled: boolean): Promise<void>;
 
   /**
-   * Set the state of the tab context permission in settings. Returns a promise
-   * that resolves when the browser has stored the new pref value.
+   * Set the state of the tab context permission. Returns a promise that
+   * resolves when the browser has stored the new value.
+   *
+   * Note: If per-instance permissions are enabled, this may only update the
+   * client's local state optimistically and resolve immediately without
+   * modifying a global browser preference.
    */
   setTabContextPermissionState(enabled: boolean): Promise<void>;
 

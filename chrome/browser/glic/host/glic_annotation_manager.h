@@ -128,10 +128,13 @@ class GlicAnnotationManager {
     // GlicFocusedTabManager::FocusedTabChangedCallback
     void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
 
-    // `pref_change_registrar_` callback.
+    // Callback for the legacy global tab context permission preference.
     void OnTabContextPermissionChanged(const std::string& pref_name);
 
     // Host::Observer:
+    // Called when the per-instance context access indicator state changes. This
+    // is the primary permission check when per-instance permissions are
+    // enabled.
     void ContextAccessIndicatorChanged(bool enabled) override;
 
     // Uniquely owns `this`.

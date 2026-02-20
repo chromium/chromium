@@ -29,6 +29,9 @@
 
 namespace glic {
 
+// Returns whether tab context sharing is allowed.
+// If kGlicDefaultTabContextSetting is enabled, this always returns true as
+// permission is managed per-instance/tab rather than via a global preference.
 bool IsGlicTabContextEnabled(PrefService* pref_service) {
   if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
     return true;
