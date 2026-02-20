@@ -468,6 +468,9 @@ void ImportantFileWriter::DoScheduledWrite() {
     }
 
     previous_data_size_ = data->size();
+    // Note: We use UmaHistogramCounts10M() instead of one of the ByteSize
+    // functions because we care about values under 1MB, which the ByteSize
+    // functions currently don't support (crbug.com/40526504).
     UmaHistogramCounts10MWithSuffix("ImportantFile.SerializationSize",
                                     histogram_suffix_,
                                     static_cast<int>(previous_data_size_));
