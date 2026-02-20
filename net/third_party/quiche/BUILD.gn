@@ -518,7 +518,6 @@ source_set("quiche_tests") {
     "src/quiche/common/simple_buffer_allocator_test.cc",
     "src/quiche/common/structured_headers_generated_test.cc",
     "src/quiche/common/structured_headers_test.cc",
-    "src/quiche/common/test_tools/mock_streams_test.cc",
     "src/quiche/common/test_tools/quiche_test_utils_test.cc",
     "src/quiche/common/wire_serialization_test.cc",
     "src/quiche/http2/adapter/event_forwarder_test.cc",
