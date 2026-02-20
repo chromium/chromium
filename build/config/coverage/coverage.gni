@@ -26,6 +26,9 @@ declare_args() {
   # Enables JaCoCo Java code coverage.
   use_jacoco_coverage = false
 
+  # Enables Single-byte coverage.
+  enable_single_byte_coverage = false
+
   # The path to the coverage instrumentation input file should be a source root
   # absolute path (e.g. //out/Release/coverage_instrumentation_input.txt), and
   # the file consists of multiple lines where each line represents a path to a

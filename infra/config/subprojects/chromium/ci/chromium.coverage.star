@@ -1347,6 +1347,9 @@ coverage_builder(
         ),
     ),
     gn_args = gn_args.config(
+        args = {
+            "enable_single_byte_coverage": True,
+        },
         configs = [
             "release_builder",
             "remoteexec",

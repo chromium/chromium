@@ -40,6 +40,13 @@ config("default_coverage") {
       "-limited-coverage-experimental=true",
     ]
 
+    if (is_linux && enable_single_byte_coverage) {
+      cflags += [
+        "-mllvm",
+        "-enable-single-byte-coverage=true",
+      ]
+    }
+
     # Rust coverage is gated on using the Chromium-built Rust toolchain as it
     # needs to have a compatible LLVM version with the C++ compiler and the LLVM
     # tools that will be used to process the coverage output. This is because
