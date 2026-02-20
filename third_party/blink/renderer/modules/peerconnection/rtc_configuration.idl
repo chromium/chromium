@@ -27,7 +27,7 @@ enum RTCRtcpMuxPolicy {
 // https://w3c.github.io/webrtc-pc/#rtcconfiguration-dictionary
 
 dictionary RTCConfiguration {
-    sequence<RTCIceServer> iceServers;
+    sequence<RTCIceServer> iceServers = [];
     // TODO(foolip): |iceTransportPolicy| default should be "all", but it is
     // omitted to allow fallback to |iceTransports| if not specified.
     RTCIceTransportPolicy iceTransportPolicy;
@@ -37,7 +37,7 @@ dictionary RTCConfiguration {
     RTCBundlePolicy bundlePolicy = "balanced";
     RTCRtcpMuxPolicy rtcpMuxPolicy = "require";
     // TODO(foolip): DOMString peerIdentity;
-    sequence<RTCCertificate> certificates;
+    sequence<RTCCertificate> certificates = [];
     [EnforceRange] octet iceCandidatePoolSize = 0;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMaxPackets;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;

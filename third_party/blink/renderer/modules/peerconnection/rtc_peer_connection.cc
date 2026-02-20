@@ -320,74 +320,70 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
       break;
   }
 
-  if (configuration->hasIceServers()) {
-    std::vector<webrtc::PeerConnectionInterface::IceServer>& ice_servers =
-        web_configuration.servers;
-    for (const RTCIceServer* ice_server : configuration->iceServers()) {
-      Vector<String> url_strings;
-      std::vector<std::string> converted_urls;
-      if (ice_server->hasUrls()) {
-        UseCounter::Count(context, WebFeature::kRTCIceServerURLs);
-        switch (ice_server->urls()->GetContentType()) {
-          case V8UnionStringOrStringSequence::ContentType::kString:
-            url_strings.push_back(ice_server->urls()->GetAsString());
-            break;
-          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
-            url_strings = ice_server->urls()->GetAsStringSequence();
-            break;
-        }
-      } else if (ice_server->hasUrl()) {
-        UseCounter::Count(context, WebFeature::kRTCIceServerURL);
-        url_strings.push_back(ice_server->url());
-      } else {
-        exception_state->ThrowTypeError("Malformed RTCIceServer");
+  std::vector<webrtc::PeerConnectionInterface::IceServer>& ice_servers =
+      web_configuration.servers;
+  for (const RTCIceServer* ice_server : configuration->iceServers()) {
+    Vector<String> url_strings;
+    std::vector<std::string> converted_urls;
+    if (ice_server->hasUrls()) {
+      UseCounter::Count(context, WebFeature::kRTCIceServerURLs);
+      switch (ice_server->urls()->GetContentType()) {
+        case V8UnionStringOrStringSequence::ContentType::kString:
+          url_strings.push_back(ice_server->urls()->GetAsString());
+          break;
+        case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+          url_strings = ice_server->urls()->GetAsStringSequence();
+          break;
+      }
+    } else if (ice_server->hasUrl()) {
+      UseCounter::Count(context, WebFeature::kRTCIceServerURL);
+      url_strings.push_back(ice_server->url());
+    } else {
+      exception_state->ThrowTypeError("Malformed RTCIceServer");
+      return {};
+    }
+
+    for (const String& url_string : url_strings) {
+      KURL url(NullURL(), url_string);
+      if (!url.IsValid()) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kSyntaxError,
+            StrCat({"'", url_string, "' is not a valid URL."}));
         return {};
       }
-
-      for (const String& url_string : url_strings) {
-        KURL url(NullURL(), url_string);
-        if (!url.IsValid()) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kSyntaxError,
-              StrCat({"'", url_string, "' is not a valid URL."}));
-          return {};
-        }
-        bool is_valid_turn = IsValidTurnURL(url);
-        if (!is_valid_turn && !IsValidStunURL(url)) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kSyntaxError,
-              StrCat({"'", url_string, "' is not a valid stun or turn URL."}));
-          return {};
-        }
-        if (is_valid_turn &&
-            (!ice_server->hasUsername() || !ice_server->hasCredential())) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kInvalidAccessError,
-              "Both username and credential are "
-              "required when the URL scheme is "
-              "\"turn\" or \"turns\".");
-        }
-
-        converted_urls.push_back(String(url).Utf8());
+      bool is_valid_turn = IsValidTurnURL(url);
+      if (!is_valid_turn && !IsValidStunURL(url)) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kSyntaxError,
+            StrCat({"'", url_string, "' is not a valid stun or turn URL."}));
+        return {};
+      }
+      if (is_valid_turn &&
+          (!ice_server->hasUsername() || !ice_server->hasCredential())) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kInvalidAccessError,
+            "Both username and credential are "
+            "required when the URL scheme is "
+            "\"turn\" or \"turns\".");
       }
 
-      auto converted_ice_server = webrtc::PeerConnectionInterface::IceServer();
-      converted_ice_server.urls = std::move(converted_urls);
-      if (ice_server->hasUsername()) {
-        converted_ice_server.username = ice_server->username().Utf8();
-      }
-      if (ice_server->hasCredential()) {
-        converted_ice_server.password = ice_server->credential().Utf8();
-      }
-      ice_servers.emplace_back(std::move(converted_ice_server));
+      converted_urls.push_back(String(url).Utf8());
     }
+
+    auto converted_ice_server = webrtc::PeerConnectionInterface::IceServer();
+    converted_ice_server.urls = std::move(converted_urls);
+    if (ice_server->hasUsername()) {
+      converted_ice_server.username = ice_server->username().Utf8();
+    }
+    if (ice_server->hasCredential()) {
+      converted_ice_server.password = ice_server->credential().Utf8();
+    }
+    ice_servers.emplace_back(std::move(converted_ice_server));
   }
 
-  if (configuration->hasCertificates()) {
-    web_configuration.certificates = base::ToVector(
-        configuration->certificates(),
-        [](const auto& certificate) { return certificate->Certificate(); });
-  }
+  web_configuration.certificates = base::ToVector(
+      configuration->certificates(),
+      [](const auto& certificate) { return certificate->Certificate(); });
 
   web_configuration.ice_candidate_pool_size =
       configuration->iceCandidatePoolSize();
@@ -1275,16 +1271,14 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
   }
   result->setIceServers(ice_servers);
 
-  if (!webrtc_configuration.certificates.empty()) {
-    HeapVector<blink::Member<RTCCertificate>> certificates;
-    certificates.reserve(base::checked_cast<wtf_size_t>(
-        webrtc_configuration.certificates.size()));
-    for (const auto& webrtc_certificate : webrtc_configuration.certificates) {
-      certificates.emplace_back(
-          MakeGarbageCollected<RTCCertificate>(webrtc_certificate));
-    }
-    result->setCertificates(certificates);
+  HeapVector<blink::Member<RTCCertificate>> certificates;
+  certificates.reserve(
+      base::checked_cast<wtf_size_t>(webrtc_configuration.certificates.size()));
+  for (const auto& webrtc_certificate : webrtc_configuration.certificates) {
+    certificates.emplace_back(
+        MakeGarbageCollected<RTCCertificate>(webrtc_certificate));
   }
+  result->setCertificates(certificates);
 
   result->setIceCandidatePoolSize(webrtc_configuration.ice_candidate_pool_size);
 
