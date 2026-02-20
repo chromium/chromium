@@ -201,6 +201,7 @@ export class SlimWebViewElement extends CrLitElement {
       maxwidth: {type: Number, reflect: true},
       minheight: {type: Number, reflect: true},
       maxheight: {type: Number, reflect: true},
+      partition: {type: String, reflect: true},
     };
   }
 
@@ -210,6 +211,7 @@ export class SlimWebViewElement extends CrLitElement {
   accessor maxwidth: number = 0;
   accessor minheight: number = 0;
   accessor maxheight: number = 0;
+  accessor partition: string = '';
 
   contentWindow: WindowProxy|null = null;
 
@@ -235,6 +237,15 @@ export class SlimWebViewElement extends CrLitElement {
       this.eventDispatcher.disconnect();
       this.eventDispatcher = null;
     }
+  }
+
+  override shouldUpdate(changedProperties: PropertyValues<this>): boolean {
+    if (changedProperties.has('partition')) {
+      if (!this.validatePartitionUpdate(changedProperties.get('partition'))) {
+        changedProperties.delete('partition');
+      }
+    }
+    return super.shouldUpdate(changedProperties);
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -271,11 +282,13 @@ export class SlimWebViewElement extends CrLitElement {
         instanceId: {intValue: this.viewInstanceId},
         elementWidth: {intValue: elementWidth},
         elementHeight: {intValue: elementHeight},
+        // Attributes relevant to guest creation.
         autosize: {boolValue: this.autosize},
         minwidth: {intValue: this.minwidth},
         maxwidth: {intValue: this.maxwidth},
         minheight: {intValue: this.minheight},
         maxheight: {intValue: this.maxheight},
+        partition: {stringValue: this.partition},
       },
     };
     const result =
@@ -357,6 +370,21 @@ export class SlimWebViewElement extends CrLitElement {
     };
     BrowserProxyImpl.getInstance().handler.setSize(
         this.guestInstanceId, params);
+  }
+
+  private validatePartitionUpdate(oldPartition: string|undefined): boolean {
+    if (this.guestInstanceId !== null) {
+      this.partition = oldPartition || '';
+      console.error(
+          'partition attribute can\'t be changed after the first navigation');
+      return false;
+    }
+    if (this.partition === 'persist:') {
+      this.partition = oldPartition || '';
+      console.error('invalid partition attribute');
+      return false;
+    }
+    return true;
   }
 }
 
