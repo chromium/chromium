@@ -1,0 +1,17 @@
+bot,repeat,shard
+linux-falcon-rak-5070-perf,1,1
+linux-perf,1,10
+linux-perf-fyi,1,4
+linux-r350-perf,1,20
+mac-intel-perf,1,5
+mac-m1-pro-perf,1,1
+mac-m1_mini_2020-perf,1,5
+mac-m1_mini_2020-perf-pgo,1,4
+mac-m2-pro-perf,1,1
+mac-m3-pro-perf,1,1
+mac-m4-mini-perf,1,6
+win-10-perf,1,5
+win-10_amd_laptop-perf,1,1
+win-11-perf,1,5
+win-arm64-snapdragon-elite-perf,1,5
+win-falcon-rak-5070-perf,1,1

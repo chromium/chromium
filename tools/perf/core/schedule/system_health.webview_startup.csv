@@ -1,0 +1,12 @@
+bot,repeat,shard
+android-go-wembley-perf,20,1
+android-go-wembley_webview-perf,20,1
+android-pixel-fold-perf,20,1
+android-pixel-tangor-perf,20,1
+android-pixel4-perf,20,1
+android-pixel4-perf-pgo,20,1
+android-pixel4_webview-perf,20,1
+android-pixel4_webview-perf-pgo,20,1
+android-pixel6-perf,20,1
+android-pixel6-pro-perf,20,1
+android-pixel6-pro-perf-pgo,20,1

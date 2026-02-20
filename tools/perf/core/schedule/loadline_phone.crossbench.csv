@@ -1,0 +1,8 @@
+bot,repeat,shard,flags
+android-pixel25-ultra-perf,1,1,--cool-down-threshold=moderate --debug
+android-pixel25-ultra-xl-perf,1,1,--cool-down-threshold=moderate --debug
+android-pixel6-perf,1,5,--cool-down-threshold=moderate
+android-pixel6-perf-pgo,1,1,--cool-down-threshold=moderate
+android-pixel9-perf,1,1,--cool-down-threshold=moderate --debug
+android-pixel9-pro-perf,1,1,--cool-down-threshold=moderate --debug
+android-pixel9-pro-xl-perf,1,1,--cool-down-threshold=moderate --debug

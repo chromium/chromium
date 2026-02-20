@@ -1,0 +1,5 @@
+bot,repeat,shard
+linux-perf,1,1
+linux-perf-pgo,1,1
+linux-perf-rel,1,1
+linux-r350-perf,1,1

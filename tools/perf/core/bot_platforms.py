@@ -2,11 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=too-many-lines
-
 from __future__ import annotations
 
+# pylint: disable=too-many-lines
+
+import csv
 import os
+import pathlib
+import io
+import shlex
+
 
 from typing import Dict, Iterable, List, Optional, Tuple, Union
 
@@ -55,7 +60,7 @@ class _PerfPlatform(object):
     self._name = name
     self._description = description
     self._platform_os = platform_os
-    # For sorting ignore case and "segments" in the bot name.
+    # For sorting ignore case and 'segments' in the bot name.
     self._sort_key = name.lower().replace('-', ' ')
     self._is_fyi = is_fyi
     self.run_reference_build = run_reference_build
@@ -171,6 +176,10 @@ class BenchmarkConfig(object):
     return self.benchmark.options.get('pageset_repeat', 1)
 
   @property
+  def extra_flags(self):
+    return []
+
+  @property
   def stories(self) -> List[str]:
     if self._stories is not None:
       return self._stories
@@ -204,12 +213,12 @@ class ExecutableConfig(object):
                name: str,
                path: Optional[str] = None,
                flags: Tuple[str, ...] = (),
-               extra_flags: Tuple[str, ...] = (),
-               estimated_runtime: int = 60):
+               estimated_runtime: int = 60,
+               extra_flags: Tuple[str, ...] = ()):
     self.name = name
     self.path = path or name
-    self.flags = flags
-    self.extra_flags = extra_flags
+    self.flags = flags or []
+    self.extra_flags = extra_flags or []
     self.estimated_runtime = estimated_runtime
     self.abridged = False
     self.stories = [GTEST_STORY_NAME]
@@ -293,7 +302,23 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
+_BENCHMARKS_CONFIG = {}
+for b in _ALL_BENCHMARKS_BY_NAMES:
+  _BENCHMARKS_CONFIG[b] = _TelemetryConfig
 
+
+def _register(name):
+
+  def _decorator(func):
+    if name in _BENCHMARKS_CONFIG:
+      raise ValueError('Duplicate benchmark config: %s' % name)
+    _BENCHMARKS_CONFIG[name] = func
+    return func
+
+  return _decorator
+
+
+@_register('sync_performance_tests')
 def _sync_performance_tests(estimated_runtime: int = 110,
                             path=None,
                             extra_flags: Tuple[str, ...] = ()):
@@ -306,6 +331,7 @@ def _sync_performance_tests(estimated_runtime: int = 110,
                           estimated_runtime=estimated_runtime)
 
 
+@_register('base_perftests')
 def _base_perftests(estimated_runtime: int = 270,
                     path=None,
                     extra_flags: Tuple[str, ...] = ()):
@@ -318,12 +344,14 @@ def _base_perftests(estimated_runtime: int = 270,
                           estimated_runtime=estimated_runtime)
 
 
+@_register('components_perftests')
 def _components_perftests(estimated_runtime: int = 110):
   return ExecutableConfig('components_perftests',
                           flags=('--xvfb', ),
                           estimated_runtime=estimated_runtime)
 
 
+@_register('dawn_perf_tests')
 def _dawn_perf_tests(estimated_runtime: int = 270):
   return ExecutableConfig('dawn_perf_tests',
                           flags=('--test-launcher-jobs=1',
@@ -331,17 +359,20 @@ def _dawn_perf_tests(estimated_runtime: int = 270):
                           estimated_runtime=estimated_runtime)
 
 
+@_register('tint_benchmark')
 def _tint_benchmark(estimated_runtime: int = 180):
   return ExecutableConfig('tint_benchmark',
                           flags=('--use-chrome-perf-format', ),
                           estimated_runtime=estimated_runtime)
 
 
+@_register('load_library_perf_tests')
 def _load_library_perf_tests(estimated_runtime: int = 3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
 
 
+@_register('performance_browser_tests')
 def _performance_browser_tests(estimated_runtime: int = 67):
   return ExecutableConfig(
       'performance_browser_tests',
@@ -361,18 +392,27 @@ def _performance_browser_tests(estimated_runtime: int = 67):
       estimated_runtime=estimated_runtime)
 
 
+@_register('tracing_perftests')
 def _tracing_perftests(estimated_runtime: int = 50):
   return ExecutableConfig('tracing_perftests',
                           estimated_runtime=estimated_runtime)
 
 
+@_register('views_perftests')
 def _views_perftests(estimated_runtime: int = 7):
   return ExecutableConfig('views_perftests',
                           flags=('--xvfb', ),
                           estimated_runtime=estimated_runtime)
 
 
+@_register('web_tests_cuj')
+def _web_tests_cuj(estimated_runtime: int = 10):
+  return ExecutableConfig('web_tests_cuj',
+                          path='../../tools/perf/web_tests_cuj.py',
+                          estimated_runtime=estimated_runtime)
+
 # Speedometer:
+@_register('speedometer2.0.crossbench')
 def _speedometer2_0_crossbench(estimated_runtime: int = 60,
                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer2.0.crossbench',
@@ -381,6 +421,7 @@ def _speedometer2_0_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('speedometer2.1.crossbench')
 def _speedometer2_1_crossbench(estimated_runtime: int = 60,
                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer2.1.crossbench',
@@ -389,6 +430,7 @@ def _speedometer2_1_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('speedometer2.crossbench')
 def _speedometer2_crossbench(estimated_runtime: int = 60,
                              flags: Tuple[str, ...] = ()):
   """Alias for the latest Speedometer 2.X version."""
@@ -398,6 +440,7 @@ def _speedometer2_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('speedometer3.0.crossbench')
 def _speedometer3_0_crossbench(estimated_runtime: int = 60,
                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer3.0.crossbench',
@@ -406,6 +449,7 @@ def _speedometer3_0_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('speedometer3.1.crossbench')
 def _speedometer3_1_crossbench(estimated_runtime: int = 60,
                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('speedometer3.1.crossbench',
@@ -414,6 +458,7 @@ def _speedometer3_1_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('speedometer3.crossbench')
 def _speedometer3_crossbench(estimated_runtime: int = 60,
                              flags: Tuple[str, ...] = ()):
   """Alias for the latest Speedometer 3.X version."""
@@ -423,16 +468,18 @@ def _speedometer3_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('speedometer_main.crossbench')
 def _speedometer_main_crossbench(estimated_runtime: int = 60,
                                  flags: Tuple[str, ...] = ()):
   # The latest WIP speedometer version
-  flags += ("--detailed-metrics", )
+  flags += ('--detailed-metrics', )
   return CrossbenchConfig('speedometer_main.crossbench',
                           'speedometer_main',
                           estimated_runtime=estimated_runtime,
                           flags=flags)
 
 
+@_register('speedometer3.a11y.crossbench')
 def _speedometer3_a11y_crossbench(estimated_runtime: int = 60,
                                   flags: Tuple[str, ...] = ()):
   """Latest Speedometer 3 with accessibility flag enabled."""
@@ -444,6 +491,7 @@ def _speedometer3_a11y_crossbench(estimated_runtime: int = 60,
 
 
 # MotionMark:
+@_register('motionmark1.2.crossbench')
 def _motionmark1_2_crossbench(estimated_runtime: int = 360,
                               flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark1.2.crossbench',
@@ -452,6 +500,7 @@ def _motionmark1_2_crossbench(estimated_runtime: int = 360,
                           flags=flags)
 
 
+@_register('motionmark1.3.0.crossbench')
 def _motionmark1_3_0_crossbench(estimated_runtime: int = 360,
                                 flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark1.3.0.crossbench',
@@ -460,6 +509,7 @@ def _motionmark1_3_0_crossbench(estimated_runtime: int = 360,
                           flags=flags)
 
 
+@_register('motionmark1.3.1.crossbench')
 def _motionmark1_3_1_crossbench(estimated_runtime: int = 360,
                                 flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark1.3.1.crossbench',
@@ -468,6 +518,7 @@ def _motionmark1_3_1_crossbench(estimated_runtime: int = 360,
                           flags=flags)
 
 
+@_register('motionmark1.3.crossbench')
 def _motionmark1_3_crossbench(estimated_runtime: int = 360,
                               flags: Tuple[str, ...] = ()):
   """Alias for the latest MotionMark 1.3.X version."""
@@ -477,6 +528,7 @@ def _motionmark1_3_crossbench(estimated_runtime: int = 360,
                           flags=flags)
 
 
+@_register('motionmark_main.crossbench')
 def _motionmark_main_crossbench(estimated_runtime: int = 360,
                                 flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('motionmark_main.crossbench',
@@ -486,6 +538,7 @@ def _motionmark_main_crossbench(estimated_runtime: int = 360,
 
 
 # JetStream:
+@_register('jetstream2.0.crossbench')
 def _jetstream2_0_crossbench(estimated_runtime: int = 180,
                              flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream2.0.crossbench',
@@ -494,6 +547,7 @@ def _jetstream2_0_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream2.1.crossbench')
 def _jetstream2_1_crossbench(estimated_runtime: int = 180,
                              flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream2.1.crossbench',
@@ -502,6 +556,7 @@ def _jetstream2_1_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream2.2.crossbench')
 def _jetstream2_2_crossbench(estimated_runtime: int = 180,
                              flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream2.2.crossbench',
@@ -510,6 +565,7 @@ def _jetstream2_2_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream2.crossbench')
 def _jetstream2_crossbench(estimated_runtime: int = 180,
                            flags: Tuple[str, ...] = ()):
   """Alias of the latest JetStream 2.X version."""
@@ -519,6 +575,7 @@ def _jetstream2_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream3.0.crossbench')
 def _jetstream3_0_crossbench(estimated_runtime: int = 180,
                              flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream3_0.crossbench',
@@ -527,6 +584,7 @@ def _jetstream3_0_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream3.crossbench')
 def _jetstream3_crossbench(estimated_runtime: int = 180,
                            flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream3.crossbench',
@@ -535,6 +593,7 @@ def _jetstream3_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream_main.crossbench')
 def _jetstream_main_crossbench(estimated_runtime: int = 180,
                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('jetstream_main.crossbench',
@@ -543,6 +602,7 @@ def _jetstream_main_crossbench(estimated_runtime: int = 180,
                           flags=flags)
 
 
+@_register('jetstream3-turbolev_future.crossbench')
 def _jetstream3_turbolev_future_crossbench(estimated_runtime: int = 180,
                                            flags: Tuple[str, ...] = ()):
   flags += ('--js-flags=--turbolev-future', )
@@ -553,6 +613,7 @@ def _jetstream3_turbolev_future_crossbench(estimated_runtime: int = 180,
 
 
 # LoadLine:
+@_register('loadline_phone.crossbench')
 def _loadline_phone_crossbench(estimated_runtime: int = 7000,
                                flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loadline_phone.crossbench',
@@ -561,6 +622,7 @@ def _loadline_phone_crossbench(estimated_runtime: int = 7000,
                           flags=flags)
 
 
+@_register('loadline_tablet.crossbench')
 def _loadline_tablet_crossbench(estimated_runtime: int = 3600,
                                 flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loadline_tablet.crossbench',
@@ -569,6 +631,7 @@ def _loadline_tablet_crossbench(estimated_runtime: int = 3600,
                           flags=flags)
 
 
+@_register('loadline2_phone.crossbench')
 def _loadline2_phone_crossbench(estimated_runtime: int = 1000,
                                 flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loadline2_phone.crossbench',
@@ -578,6 +641,7 @@ def _loadline2_phone_crossbench(estimated_runtime: int = 1000,
 
 
 # Webview:
+@_register('loading.crossbench')
 def _crossbench_loading(estimated_runtime: int = 60,
                         flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('loading.crossbench',
@@ -586,6 +650,7 @@ def _crossbench_loading(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('embedder.crossbench')
 def _crossbench_embedder(estimated_runtime: int = 20,
                          flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('embedder.crossbench',
@@ -594,6 +659,7 @@ def _crossbench_embedder(estimated_runtime: int = 20,
                           flags=flags)
 
 
+@_register('devtools_frontend.crossbench')
 def _devtools_frontend_crossbench(estimated_runtime: int = 60,
                                   flags: Tuple[str, ...] = ()):
   return CrossbenchConfig('devtools_frontend.crossbench',
@@ -898,9 +964,7 @@ _ANDROID_AL_BRYA_BENCHMARK_CONFIGS = PerfSuite([
     _TelemetryConfig('speedometer2'),
 ])
 _ANDROID_AL_BRYA_EXECUTABLE_CONFIGS = frozenset([
-    ExecutableConfig('web_tests_cuj',
-                     path='../../tools/perf/web_tests_cuj.py',
-                     estimated_runtime=10),
+    _web_tests_cuj(),
 ])
 _ANDROID_AL_BENCHMARK_CONFIGS = PerfSuite([
     _TelemetryConfig('rendering.mobile'),
@@ -917,7 +981,6 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _TelemetryConfig('speedometer2'),
     _TelemetryConfig('speedometer3'),
 ])
-
 
 # Linux
 _PerfPlatform('linux-perf', ('Ubuntu-22.04, Precision 3930 Rack, '
@@ -1245,7 +1308,80 @@ _PerfPlatform('linux-perf-fyi',
               | {_devtools_frontend_crossbench()},
               is_fyi=True)
 
-assert ALL_PLATFORMS, "No PerfPlatform found"
+
+# TODO(cbruni): use this to generate all perf configs.
+def _LoadSchedule():
+  schedule_dir = pathlib.Path(__file__).parent / 'schedule'
+  configs = {}
+  for file_path in schedule_dir.glob('*.csv'):
+    LoadScheduleFile(file_path, configs)
+  assert configs, 'No configs generated'
+  return configs
+
+
+def LoadScheduleFile(file_path, configs):
+  name = file_path.stem
+  factory = _BENCHMARKS_CONFIG[name]
+  is_telemetry = (factory == _TelemetryConfig)  # pylint: disable=comparison-with-callable)
+  contents = file_path.read_text(encoding='utf-8')
+  reader = csv.DictReader(io.StringIO(contents), restkey='*flag')
+  fieldnames = reader.fieldnames
+  assert fieldnames, 'Missing field names'
+  has_flags = 'flags' in fieldnames
+  for row in reader:
+    if flags := ParseFlags(file_path, row, has_flags):
+      row['flags'] = flags
+    bot = row['bot']
+    assert bot not in configs, (
+        f'Duplicate bot {bot!r} in schedule file {file_path}')
+    config = _ParseScheduleConfigRow(row, name, factory, is_telemetry)
+    configs.setdefault(bot, []).append(config)
+
+
+def ParseFlags(file_path, row, has_flags):
+  if extraFlags := row.pop('*flag', None):
+    assert has_flags, (
+        f'Unexpected extra columns in {file_path}. Extra columns are only '
+        'supported if a "flags" column exists.')
+    # Merge trailing extra flag values with the explicit flags.
+    return ','.join((row['flags'], *extraFlags))
+  return None
+
+
+def _ParseScheduleConfigRow(row, name, factory, is_telemetry):
+  repeat = int(row.get('repeat', 1))
+  kwargs = {}
+  for k, v in row.items():
+    if k in ('bot', 'repeat', 'shard'):
+      continue
+    kwargs[k] = _ParseScheduleConfigValue(k, v)
+
+  if is_telemetry:
+    return factory(name, pageset_repeat=repeat, **kwargs)
+
+  config = factory(**kwargs)
+  if hasattr(config, 'repeat'):
+    config.repeat = repeat
+  else:
+    assert repeat == 1, f'Cannot use repeat > 1 yet on {name}'
+
+  return config
+
+
+def _ParseScheduleConfigValue(k, v):
+  if k == 'flags':
+    v = str(v)
+    if v and v[0] == "'":
+      raise ValueError(f'Unsupported single quote for flag escaping: {v!r}')
+    return shlex.split(v)
+  if v.lower() == 'true':
+    return True
+  if v.lower() == 'false':
+    return False
+  return int(v)
+
+
+assert ALL_PLATFORMS, 'No PerfPlatform found'
 PLATFORMS_BY_NAME = {p.name: p for p in ALL_PLATFORMS}
 FYI_PLATFORMS = {
     p for p in ALL_PLATFORMS if p.is_fyi

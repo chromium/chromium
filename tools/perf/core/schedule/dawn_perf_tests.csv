@@ -1,0 +1,9 @@
+bot,repeat,shard,estimated_runtime
+linux-falcon-rak-5070-perf,1,1,600
+mac-intel-perf,1,1,330
+mac-m1_mini_2020-perf,1,1,330
+win-10-perf,1,1,600
+win-10-perf-pgo,1,1,600
+win-11-perf,1,1,600
+win-11-perf-pgo,1,1,600
+win-falcon-rak-5070-perf,1,1,600

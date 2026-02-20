@@ -1,0 +1,5 @@
+bot,repeat,shard
+mac-m4-mini-perf,1,1
+win-10_laptop_low_end-perf,1,1
+win-10_laptop_low_end-perf-pgo,1,1
+win-arm64-snapdragon-elite-perf,1,1
