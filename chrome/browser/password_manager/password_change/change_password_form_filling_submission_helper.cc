@@ -422,6 +422,18 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
     actor::mojom::ActionResultCode result) {
   CHECK(web_contents_);
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeImmediateSubmission)) {
+    if (result == actor::mojom::ActionResultCode::kOk) {
+      std::move(callback_).Run(std::move(form_manager_));
+    } else {
+      logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+      std::move(callback_).Run(
+        base::unexpected(SubmissionError::kFailedToClickSubmit));
+    }
+    return;
+  }
+
   if (result != actor::mojom::ActionResultCode::kOk && !submission_detected_) {
     // Fail immediately as click failed and no form submission was detected.
     logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
@@ -443,6 +455,11 @@ void ChangePasswordFormFillingSubmissionHelper::
   if (!click_helper_) {
     CHECK(callback_);
     std::move(callback_).Run(base::unexpected(SubmissionError::kTimeout));
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeImmediateSubmission)) {
     return;
   }
 

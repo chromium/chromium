@@ -127,6 +127,9 @@ BASE_FEATURE(kOtpPhishGuard, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordChangeImmediateSubmission,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordFormClientsideClassifier,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
