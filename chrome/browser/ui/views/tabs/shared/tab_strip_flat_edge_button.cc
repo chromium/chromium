@@ -64,6 +64,9 @@ TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
   ConfigureInkDropForToolbar(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
+  ConfigureToolbarInkdropForRefresh2023(
+      this, kColorTabStripControlButtonInkDrop,
+      kColorTabStripControlButtonInkDropRipple);
   SetIconSize(
       GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
 }
@@ -222,7 +225,9 @@ ui::ColorId TabStripFlatEdgeButton::GetBackgroundColor() const {
 gfx::RoundedCornersF TabStripFlatEdgeButton::GetButtonCornerRadii() const {
   int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
-  float flat_radius = radius * (1.0f - flat_edge_factor_);
+  constexpr float kFlatRadius = 2.0f;
+  float flat_radius =
+      kFlatRadius + ((radius - kFlatRadius) * (1.0f - flat_edge_factor_));
 
   switch (flat_edge_) {
     case FlatEdge::kNone:
