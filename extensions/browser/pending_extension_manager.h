@@ -64,7 +64,7 @@ class PendingExtensionManager : public KeyedService {
     //
     // This means the extension with the given `id` is no longer being installed
     // or updated. Note that this doesn't mean the operation actually succeeded.
-    // It just means the operation on this extenison is no longer taking place
+    // It just means the operation on this extension is no longer taking place
     // (ie, pending completion).
     virtual void OnExtensionRemoved(const std::string& id) {}
   };
