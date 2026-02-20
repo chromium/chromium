@@ -297,14 +297,7 @@ void ProfilePickerSignInProvider::OnProfileInitialized(
       content::WebContents::CreateParams(profile_));
   contents()->SetDelegate(this);
 
-  // Create a manager that supports modal dialogs, such as for webauthn.
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(contents());
-  web_modal::WebContentsModalDialogManager::FromWebContents(contents())
-      ->SetDelegate(this);
-
-  // To allow passing encryption keys during interactions with the page,
-  // instantiate TrustedVaultEncryptionKeysTabHelper.
-  TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(contents());
+  AddCommonSigninWebContentUserData(contents(), this);
 
   // Record that the sign in process starts. Its end is recorded automatically
   // when the primary account is set.
@@ -335,10 +328,7 @@ void ProfilePickerSignInProvider::OnProfileInitialized(
                                true));
   host_->ShowScreen(contents(), BuildSigninURL(),
                     std::move(navigation_finished_closure));
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  ChromePasswordReuseDetectionManagerClient::CreateForProfilePickerWebContents(
-      contents());
-#endif
+
   // Attach a `DiceTabHelper` to the `WebContents` to trigger the completion
   // of the step.
   DiceTabHelper::CreateForWebContents(contents());
@@ -465,4 +455,22 @@ void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
       helper.UpdateRedirectUrl(GURL(chrome::kChromeUINewTabURL));
       return;
   }
+}
+
+void AddCommonSigninWebContentUserData(
+    content::WebContents* web_contents,
+    web_modal::WebContentsModalDialogManagerDelegate* delegate) {
+  // Create a manager that supports modal dialogs, such as for webauthn.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+      ->SetDelegate(delegate);
+
+  // To allow passing encryption keys during interactions with the page,
+  // instantiate TrustedVaultEncryptionKeysTabHelper.
+  TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  ChromePasswordReuseDetectionManagerClient::CreateForProfilePickerWebContents(
+      web_contents);
+#endif
 }

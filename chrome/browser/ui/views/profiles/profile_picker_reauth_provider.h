@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -50,7 +51,8 @@ enum class ProfilePickerReauthResult {
 // last step (checking if the account that got reauthed matches with the
 // original one).
 class ProfilePickerReauthProvider : public signin::IdentityManager::Observer,
-                                    public content::WebContentsObserver {
+                                    public content::WebContentsObserver,
+                                    public ChromeWebModalDialogManagerDelegate {
  public:
   ProfilePickerReauthProvider(
       ProfilePickerWebContentsHost* host,
@@ -78,6 +80,10 @@ class ProfilePickerReauthProvider : public signin::IdentityManager::Observer,
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // ChromeWebModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
  private:
   // Attempt to create the ForceSigninVerifier, refresh tokens should be loaded.

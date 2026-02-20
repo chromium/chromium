@@ -192,4 +192,10 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
   base::WeakPtrFactory<ProfilePickerSignInProvider> weak_ptr_factory_{this};
 };
 
+// Adds the necessary UserData attached to `web_contents` that is showing a sign
+// in page in the ProfilePickerView.
+void AddCommonSigninWebContentUserData(
+    content::WebContents* web_contents,
+    web_modal::WebContentsModalDialogManagerDelegate* delegate);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_PROVIDER_H_
