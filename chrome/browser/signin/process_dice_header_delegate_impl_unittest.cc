@@ -528,17 +528,16 @@ struct TokenExchangeSuccessConfiguration {
   // Expected value for the MaybeInterceptWebSigin call.
   bool sync_signin = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kUnknown;
+      signin_metrics::AccessPoint::kWebSignin;
 };
 
 TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
-    {.access_point = signin_metrics::AccessPoint::kWebSignin},
+    {},
     {.signin_tab = true, .sync_signin = true, .access_point = kTestAccessPoint},
     {.signin_tab = true,
      .reason = Reason::kAddSecondaryAccount,
      .access_point = kTestAccessPoint},
-    {.is_reauth = true,
-     .access_point = signin_metrics::AccessPoint::kWebSignin},
+    {.is_reauth = true},
     {.is_reauth = true,
      .signin_tab = true,
      .sync_signin = true,

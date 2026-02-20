@@ -96,7 +96,7 @@ std::unique_ptr<ProcessDiceHeaderDelegateImpl>
 ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   bool is_sync_signin_tab = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kUnknown;
+      signin_metrics::AccessPoint::kWebSignin;
   signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   GURL redirect_url;
@@ -121,9 +121,6 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
     }
 
     on_signin_header_received = tab_helper->GetOnSigninHeaderReceived();
-
-  } else {
-    access_point = signin_metrics::AccessPoint::kWebSignin;
   }
 
   // If there is no active `DiceTabHelper`, default to the in-browser error
@@ -248,11 +245,6 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
 void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
     CoreAccountId account_id) {
  CHECK(!account_id.empty());
-
-  // Do not sign in if the access point is unknown.
-  if (access_point_ == signin_metrics::AccessPoint::kUnknown) {
-    return;
-  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile_.get());
