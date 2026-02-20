@@ -2935,6 +2935,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/RecentlyClosedEntriesManager.java",
       "java/src/org/chromium/chrome/browser/ServiceTabLauncher.java",
       "java/src/org/chromium/chrome/browser/ShortcutHelper.java",
+      "java/src/org/chromium/chrome/browser/TabModelAndTimestamp.java",
       "java/src/org/chromium/chrome/browser/WarmupManager.java",
       "java/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridge.java",
       "java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettingsBridge.java",

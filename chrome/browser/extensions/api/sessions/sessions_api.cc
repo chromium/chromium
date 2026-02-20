@@ -54,6 +54,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_callback.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
@@ -70,6 +71,7 @@
 #if BUILDFLAG(IS_ANDROID)
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RecentlyClosedEntriesManager_jni.h"
+#include "chrome/android/chrome_jni_headers/TabModelAndTimestamp_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -108,6 +110,15 @@ bool SortTabsByRecency(const sessions::SessionTab* t1,
                        const sessions::SessionTab* t2) {
   return t1->timestamp > t2->timestamp;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Comparator function for use with std::sort that will sort saved API session
+// entries by descending timestamp (i.e., most recent first).
+bool SortApiSessionsByRecency(const api::sessions::Session& s1,
+                              const api::sessions::Session& s2) {
+  return s1.last_modified > s2.last_modified;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Creates an extensions tab API object. Takes primitive types as parameters
 // so it can be used both with TabRestoreService (on Win/Mac/Linux) and
@@ -161,6 +172,7 @@ api::windows::Window CreateWindowModelHelper(
   return window_struct;
 }
 
+// `last_modified` is in seconds from epoch.
 api::sessions::Session CreateSessionModelHelper(
     int last_modified,
     std::optional<api::tabs::Tab> tab,
@@ -235,6 +247,18 @@ void UpdateTabState(TabAndroid* saved_tab,
     new_tab_list->ActivateTab(new_tab);
   }
 }
+
+// Uses JNI to unpack a Java TabModelAndTimestamp object.
+void UnpackTabModelAndTimestamp(
+    const base::android::JavaRef<jobject>& j_tab_model_and_timestamp,
+    base::android::ScopedJavaLocalRef<jobject>* j_tab_model,
+    int64_t* timestamp) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  *j_tab_model =
+      Java_TabModelAndTimestamp_getTabModel(env, j_tab_model_and_timestamp);
+  *timestamp =
+      Java_TabModelAndTimestamp_getTimestamp(env, j_tab_model_and_timestamp);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -305,12 +329,11 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   std::optional<GetRecentlyClosed::Params> params =
       GetRecentlyClosed::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  int max_results = api::sessions::MAX_SESSION_RESULTS;
   if (params->filter && params->filter->max_results) {
-    max_results = *params->filter->max_results;
+    max_results_ = *params->filter->max_results;
   }
   EXTENSION_FUNCTION_VALIDATE(
-      max_results >= 0 && max_results <= api::sessions::MAX_SESSION_RESULTS);
+      max_results_ <= static_cast<size_t>(api::sessions::MAX_SESSION_RESULTS));
 
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(
@@ -328,21 +351,20 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   // List of entries. They are ordered from most to least recent.
   // We prune the list to contain max 25 entries at any time and removes
   // uninteresting entries.
-  int counter = 0;
   for (const auto& entry : tab_restore_service->entries()) {
     // TODO(crbug.com/40757179): Support group entries in the Sessions API,
     // rather than sharding the group out into individual tabs.
     if (entry->type == sessions::tab_restore::Type::GROUP) {
       auto& group = static_cast<const sessions::tab_restore::Group&>(*entry);
       for (const auto& tab : group.tabs) {
-        if (counter++ < max_results) {
+        if (result_.size() < max_results_) {
           result_.push_back(CreateSessionModel(*tab));
         } else {
           break;
         }
       }
     } else {
-      if (counter++ < max_results) {
+      if (result_.size() < max_results_) {
         result_.push_back(CreateSessionModel(*entry));
       } else {
         break;
@@ -379,7 +401,19 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
 
 #if BUILDFLAG(IS_ANDROID)
 void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
-    const base::android::JavaRef<jobject>& j_tab_model) {
+    const base::android::JavaRef<jobject>& j_tab_model_and_timestamp) {
+  if (j_tab_model_and_timestamp.is_null()) {
+    // Error on the Java side, so no valid window to add.
+    Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
+    return;
+  }
+
+  // Unpack the Java object.
+  base::android::ScopedJavaLocalRef<jobject> j_tab_model;
+  int64_t timestamp = 0;
+  UnpackTabModelAndTimestamp(j_tab_model_and_timestamp, &j_tab_model,
+                             &timestamp);
+
   if (j_tab_model.is_null()) {
     // No tab model, so no valid window to add.
     Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
@@ -411,12 +445,26 @@ void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
   api::windows::Window window = CreateWindowModelHelper(
       std::move(api_tabs), base::NumberToString(model->GetSessionId().id()),
       api::windows::WindowType::kNormal, api::windows::WindowState::kNormal);
-  api::sessions::Session session =
-      CreateSessionModelHelper(base::Time::Now().ToTimeT(), std::nullopt,
-                               std::move(window), std::nullopt);
+
+  // The timestamp from Java is in milliseconds, last_modified is in seconds.
+  int last_modified = window_last_modified_for_test_
+                          ? window_last_modified_for_test_
+                          : timestamp / 1000;
+  api::sessions::Session session = CreateSessionModelHelper(
+      last_modified, std::nullopt, std::move(window), std::nullopt);
 
   // Add the session to the result.
   result_.push_back(std::move(session));
+
+  // The window close might have happened more recently than the tab closures.
+  // Ensure the results are sorted by timestamp.
+  std::sort(result_.begin(), result_.end(), SortApiSessionsByRecency);
+
+  // Adding the window may have pushed us over our result limit. Restrict to
+  // the most recent results.
+  if (result_.size() > max_results_) {
+    result_.resize(max_results_);
+  }
 
   // Respond to the API caller.
   Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
@@ -707,7 +755,19 @@ SessionsRestoreFunction::QueryRecentlyClosedEntitiesManager() {
 }
 
 void SessionsRestoreFunction::OnGetRecentlyClosedWindow(
-    const base::android::JavaRef<jobject>& j_tab_model) {
+    const base::android::JavaRef<jobject>& j_tab_model_and_timestamp) {
+  if (j_tab_model_and_timestamp.is_null()) {
+    // Error on the Java side, so no valid window to restore.
+    Respond(Error(kNoRecentlyClosedSessionsError));
+    return;
+  }
+
+  // Unpack the Java object.
+  base::android::ScopedJavaLocalRef<jobject> j_tab_model;
+  int64_t timestamp = 0;
+  UnpackTabModelAndTimestamp(j_tab_model_and_timestamp, &j_tab_model,
+                             &timestamp);
+
   if (j_tab_model.is_null()) {
     // No tab model, so no window to restore.
     Respond(Error(kNoRecentlyClosedSessionsError));
