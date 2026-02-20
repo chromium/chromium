@@ -290,6 +290,18 @@ GLTextureImageBacking::~GLTextureImageBacking() {
   }
 }
 
+bool GLTextureImageBacking::SupportsAccess(SharedImageAccessStream stream,
+                                           const AccessParams& params) const {
+  // `params.context_state` is not always available for all access streams. In
+  // such cases, we default to allowing access, assuming the context is
+  // compatible. When a context is provided, we explicitly check if it's a GL
+  // context to ensure correctness.
+  if (params.context_state) {
+    return params.context_state->GrContextIsGL();
+  }
+  return true;
+}
+
 SharedImageBackingType GLTextureImageBacking::GetType() const {
   return SharedImageBackingType::kGLTexture;
 }

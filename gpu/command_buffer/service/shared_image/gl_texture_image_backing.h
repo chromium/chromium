@@ -39,6 +39,8 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
  private:
   // SharedImageBacking:
+  bool SupportsAccess(SharedImageAccessStream stream,
+                      const AccessParams& params) const override;
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;
