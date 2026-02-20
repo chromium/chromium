@@ -62,6 +62,8 @@ export class ToolbarAppElement extends CrLitElement {
     layoutConstants: {
       toolbarButtonHeight: 34,
       toolbarButtonIconSize: 20,
+      locationBarHeight: 34,
+      locationBarMargin: 9,
     },
   };
 
@@ -105,6 +107,14 @@ export class ToolbarAppElement extends CrLitElement {
     this.style.setProperty(
         '--split-tabs-indicator-spacing',
         `${loadTimeData.getInteger('splitTabsIndicatorSpacing')}px`);
+    this.style.setProperty(
+        '--location-bar-height',
+        `${loadTimeData.getInteger('locationBarHeight')}px`);
+    this.style.setProperty(
+        '--location-bar-margin',
+        `${loadTimeData.getInteger('locationBarMargin')}px`);
+
+    this.setFontVariables('omniboxPrimary');
 
     this.navigationStateListenerHandle_ =
         this.browserProxy_.addNavigationStateListener(
@@ -125,6 +135,26 @@ export class ToolbarAppElement extends CrLitElement {
       this.trackedElementManager_.startTracking(
           splitTabs, 'kToolbarSplitTabsToolbarButtonElementId');
     }
+  }
+
+  /* Sets CSS font variables for given prefix based on loadData.
+   * See WebUIToolbarUI::AddFontVariables */
+  setFontVariables(fontPrefix: string) {
+    // from print_preview_sidebar_test.ts:
+    function camelToKebab(s: string): string {
+      return s.replace(/([A-Z])/g, '-$1').toLowerCase();
+    }
+
+    const cssVarPrefix = '--' + camelToKebab(fontPrefix);
+    this.style.setProperty(
+        `${cssVarPrefix}-font-family`,
+        CSS.escape(loadTimeData.getString(`${fontPrefix}Family`)));
+    this.style.setProperty(
+        `${cssVarPrefix}-font-size`,
+        loadTimeData.getInteger(`${fontPrefix}Size`) + 'px');
+    this.style.setProperty(
+        `${cssVarPrefix}-font-weight`,
+        String(loadTimeData.getInteger(`${fontPrefix}Weight`)));
   }
 
   /**
@@ -149,6 +179,10 @@ export class ToolbarAppElement extends CrLitElement {
         '--toolbar-button-height', `${constants.toolbarButtonHeight}px`);
     this.style.setProperty(
         '--toolbar-button-icon-size', `${constants.toolbarButtonIconSize}px`);
+    this.style.setProperty(
+        '--location-bar-height', `${constants.locationBarHeight}px`);
+    this.style.setProperty(
+        '--location-bar-margin', `${constants.locationBarMargin}px`);
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {

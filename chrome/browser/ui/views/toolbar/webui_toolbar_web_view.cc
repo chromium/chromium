@@ -119,6 +119,14 @@ class WebUIToolbarInternalWebView : public views::WebView {
 BEGIN_METADATA(WebUIToolbarInternalWebView)
 END_METADATA
 
+browser_controls_api::mojom::LayoutConstantsPtr GetLayoutConstantsStruct() {
+  return browser_controls_api::mojom::LayoutConstants::New(
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
+      GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize),
+      GetLayoutConstant(LayoutConstant::kLocationBarHeight),
+      GetLayoutConstant(LayoutConstant::kLocationBarMargin));
+}
+
 }  // namespace
 
 WebUIToolbarWebView::WebUIToolbarWebView(
@@ -139,10 +147,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       browser_controls_api::mojom::SplitTabsControlState::New();
   last_queued_state_.reload_control_state =
       browser_controls_api::mojom::ReloadControlState::New();
-  last_queued_state_.layout_constants =
-      browser_controls_api::mojom::LayoutConstants::New(
-          GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
-          GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
+  last_queued_state_.layout_constants = GetLayoutConstantsStruct();
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
   }
@@ -424,9 +429,7 @@ void WebUIToolbarWebView::OnSplitTabsControlStateChanged(
 }
 
 void WebUIToolbarWebView::OnTouchUiChanged() {
-  auto state = browser_controls_api::mojom::LayoutConstants::New(
-      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
-      GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
+  auto state = GetLayoutConstantsStruct();
   if (*state != *last_queued_state_.layout_constants) {
     last_queued_state_.layout_constants = std::move(state);
     PostPushNavigationState();

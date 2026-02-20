@@ -17,10 +17,10 @@ ${this.isSplitTabsButtonEnabled_ ?
   html`<split-tabs-button-app id="split-tabs"
         .state="${this.navigationControlsState_.splitTabsControlState}">
        </split-tabs-button-app>` : ''}
-${this.isLocationBarEnabled_ ? html`<div id="kLocationBarElementId">
+${this.isLocationBarEnabled_ ? html`<div id="location-bar">
             <div id="WebUILocationBar::kWebUIDashboardElementId"></div>
             <div id="WebUILocationBar::kWebUILocationIconElementId"></div>
-            <div id="WebUILocationBar::kWebUIOmniboxElementId"></div>
+            <div id="omnibox-view" contenteditable>https://example.org/</div>
           </div>` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
