@@ -10,14 +10,17 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
-#import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -27,10 +30,7 @@
 namespace {
 
 const char kTestNumber[] = "4234567890123456";  // Visa
-
 const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
-
-}  // namespace
 
 class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
@@ -250,3 +250,44 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, DISABLED_TimeToSelection) {
   histogram_tester.ExpectTimeBucketCount(
       "IOS.PaymentsBottomSheet.TimeToSelection", time_to_selection, 1);
 }
+
+// Tests that the payment sheet is aborted when there are no suggestions that
+// could be retrieved, when in stateless mode.
+TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
+       Stateless_AbortWhenNoSuggestions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kStatelessFormSuggestionController,
+                            kAutofillPaymentsSheetStateless},
+      /*disabled_features=*/{});
+
+  // Mock -retrieveSuggestionsForForm via swizzling.
+  id swizzle_block = ^void(id self, const autofill::FormActivityParams& params,
+                           web::WebState* web_state,
+                           FormSuggestionsReadyCompletion completion) {
+    if (completion) {
+      completion(@[], self);
+    }
+  };
+  ScopedBlockSwizzler swizzler(
+      [FormSuggestionController class],
+      @selector(retrieveSuggestionsForForm:webState:accessoryViewUpdateBlock:),
+      swizzle_block);
+
+  base::HistogramTester histogram_tester;
+
+  CreateMediator();
+
+  id mediator_mock = OCMPartialMock(mediator_);
+  OCMExpect([mediator_mock disableBottomSheetAndRefocus:YES]);
+
+  [mediator_mock didSelectCreditCard:nil atIndex:0];
+
+  EXPECT_OCMOCK_VERIFY(mediator_mock);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PaymentsBottomSheet.ExitReason",
+      /*sample=*/PaymentsSuggestionBottomSheetExitReason::kBadProvider,
+      /*expected_bucket_count=*/1);
+}
+
+}  // namespace

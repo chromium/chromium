@@ -40,6 +40,11 @@ BASE_DECLARE_FEATURE(kAutofillExtractFullUrlOnIOs);
 // propagated.
 BASE_DECLARE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode);
 
+// Enables the stateless version of the payments suggestion bottom sheet that
+// can directly pick the Autofill suggestions provider instead of intermediating
+// via the FormSuggestionController.
+BASE_DECLARE_FEATURE(kAutofillPaymentsSheetStateless);
+
 // Enables the second version of the payments suggestion bottom sheet to prevent
 // bugs that we've seen in production on other transaction sheets (e.g. some
 // fields becoming unresponsive).
