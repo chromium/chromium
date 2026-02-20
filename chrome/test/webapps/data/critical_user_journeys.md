@@ -595,3 +595,49 @@ The following actions are available on ChromeOS only:
 | #C | install(SubApp1) | install(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | check_has_sub_app(HasSubApps, SubApp1)
 | #C | install_windowed(SubApp1) | install(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_not_has_sub_app(HasSubApps, SubApp1) | check_app_in_list_windowed(SubApp1) | check_platform_shortcut_and_icon(SubApp1)
 | #C | install_tabbed(SubApp1) | install(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_not_has_sub_app(HasSubApps, SubApp1) | check_app_in_list_tabbed(SubApp1) | check_platform_shortcut_and_icon(SubApp1)
+
+## Migration
+
+| #Platforms | Test -> | | | | | | | | | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| # Verify migrations are detected, but don’t immediately install target
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedSuggested) | check_menu_button_pending_update(ExpandedUpdateAvailable) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | check_menu_button_pending_update(ExpandedUpdateAvailable) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedSuggested) | check_app_not_installed(StandaloneMigratedSuggested) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | check_app_not_installed(StandaloneMigratedForced) |
+
+| # Verify triggering migration via 3-dot menu
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | check_app_not_installed(Standalone) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | trigger_update_dialog_and_handle_response(AcceptUpdate) | check_app_not_installed(Standalone) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) | check_app_not_installed(Standalone) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) | check_app_not_installed(Standalone) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) | check_app_not_installed(StandaloneMigratedSuggested) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) | check_app_not_installed(StandaloneMigratedForced) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | check_app_in_list_windowed(StandaloneMigratedSuggested) | check_app_title(StandaloneMigratedSuggested, StandaloneMigratedSuggested) | check_app_icon(StandaloneMigratedSuggested, Red) |
+| WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | trigger_update_dialog_and_handle_response(AcceptUpdate) | check_app_in_list_windowed(StandaloneMigratedForced) | check_app_title(StandaloneMigratedForced, StandaloneMigratedForced) | check_app_icon(StandaloneMigratedForced, Red) |
+
+| # Verify forced migration dialog shows up on launch (not yet implemented)
+| #WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | check_update_dialog_is_showing |
+| #WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | handle_update_dialog_response(CancelDialogAndUninstall) | check_app_not_installed(Standalone) |
+| #WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | handle_update_dialog_response(CancelDialogAndUninstall) | check_app_not_installed(StandaloneMigratedForced) |
+| #WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | handle_update_dialog_response(AcceptUpdate) | check_app_not_installed(Standalone) |
+| #WMLC | install_by_user | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | handle_update_dialog_response(AcceptUpdate) | check_app_in_list_windowed(StandaloneMigratedForced) | check_app_title(StandaloneMigratedForced, StandaloneOriginal) | check_app_icon(StandaloneMigratedForced, Green) |
+
+| # TODO Force/policy installed apps
+| # TODO Target already installed
+
+### Sync
+
+| #Platforms | Test -> | | | | | | | | | | | | | | | | |
+| # Source app is fully installed in both profiles
+| WML | install_by_user | switch_profile_clients(Client2) | install_locally | launch_from_chrome_apps | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | check_app_not_installed(Standalone) | switch_profile_clients(Client1) | check_app_not_installed(Standalone) | check_app_in_list_windowed(StandaloneMigratedSuggested) | check_app_title(StandaloneMigratedSuggested, StandaloneMigratedSuggested) | check_app_icon(StandaloneMigratedSuggested, Red) |
+| WML | install_by_user | switch_profile_clients(Client2) | install_locally | set_open_in_tab | switch_profile_clients(Client1) | launch_from_chrome_apps | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | switch_profile_clients(Client2) | check_app_in_list_tabbed(StandaloneMigratedSuggested) |
+| #WML | install_by_user | switch_profile_clients(Client2) | install_locally | launch_from_chrome_apps | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | check_update_dialog_is_showing | handle_update_dialog_response(AcceptUpdate) | switch_profile_clients(Client1) | check_app_in_list_windowed(StandaloneMigratedForced) | check_app_title(StandaloneMigratedForced, StandaloneOriginal) | check_app_icon(StandaloneMigratedForced, Green) |
+
+| C | install_by_user | switch_profile_clients(Client2) | launch_from_chrome_apps | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | check_app_not_installed(Standalone) | switch_profile_clients(Client1) | check_app_not_installed(Standalone) | check_app_in_list_windowed(StandaloneMigratedSuggested) | check_app_title(StandaloneMigratedSuggested, StandaloneMigratedSuggested) | check_app_icon(StandaloneMigratedSuggested, Red) |
+| C | install_by_user | switch_profile_clients(Client2) | set_open_in_tab | switch_profile_clients(Client1) | launch_from_chrome_apps | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | switch_profile_clients(Client2) | check_app_in_list_tabbed(StandaloneMigratedSuggested) |
+| #C | install_by_user | switch_profile_clients(Client2) | launch_from_chrome_apps | register_migration(Standalone, StandaloneMigratedForced) | close_pwa | launch | check_update_dialog_is_showing | handle_update_dialog_response(AcceptUpdate) | switch_profile_clients(Client1) | check_app_in_list_windowed(StandaloneMigratedForced) | check_app_title(StandaloneMigratedForced, StandaloneOriginal) | check_app_icon(StandaloneMigratedForced, Green) |
+
+| # Source app is only fully installed in one profile
+| WML | install_by_user | switch_profile_clients(Client2) | check_app_in_list_not_locally_installed | switch_profile_clients(Client1) | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | switch_profile_clients(Client2) | check_app_not_installed(Standalone) |
+| WML | install_by_user | switch_profile_clients(Client2) | check_app_in_list_not_locally_installed | switch_profile_clients(Client1) | register_migration(Standalone, StandaloneMigratedSuggested) | trigger_update_dialog_and_handle_response(AcceptUpdate) | switch_profile_clients(Client2) | check_app_in_list_not_locally_installed(StandaloneMigratedSuggested) |

@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -24,6 +25,7 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif
+  enabled_features.push_back(blink::features::kWebAppMigrationApi);
 
   scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }

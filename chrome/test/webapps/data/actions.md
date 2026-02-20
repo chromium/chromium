@@ -35,6 +35,10 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | manifest_update_colors | Site |  | 80 | Not Implemented | The website updates it's manifest.json to change the 'theme' color | P3 |
 | manifest_update_display | Site, Display |  | 116 | Implemented |  |  |
 | trigger_update_dialog_and_handle_response | UpdateDialogResponse |  | 184 | Implemented | Triggers the app update dialog and either accepts, cancels or ignores the dialog. | dibyapal@ |
+| manifest_update_add_migrate_to | Site, Site |  | 185 | Implemented | Updates the manifest of source to include a migrate_to field pointing at target |  |
+| register_migration | Site, Site | manifest_update_add_migrate_to($1, $2) & navigate_browser($2) & navigate_pwa($1, $2) | 186 | Parameterized |  |  |
+| check_update_dialog_is_showing |  |  | 189 | Implemented | Verifies that the update dialog is currently showing |  |
+| handle_update_dialog_response | UpdateDialogResponse |  | 190 | Implemented | Just the second half of trigger_update_dialog_and_handle_response |  |
 | |
 | # Run on OS Login |
 | apply_run_on_os_login_policy_allowed | Site |  | 100 | Implemented | Apply WebAppSettings policy for run_on_os_login to be allowed | phillis@ |
@@ -80,6 +84,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_app_navigation | Site |  | 133 | Implemented |  |  |
 | check_app_navigation_is_start_url |  |  | 14 | Implemented |  |  |
 | check_theme_color | Site |  | 76 | Not Implemented | Asserts that the theme color of the given app window is correct. | P3 |
+| check_app_not_installed | Site | check_app_not_in_list($1) & check_platform_shortcut_not_exists($1) | 188 | Parameterized |  |  |
 | # Misc UX |
 | check_browser_navigation | Site |  | 134 | Implemented | Check the current browser navigation is the given site |  |
 | check_browser_navigation_is_app_settings | Site |  | 109 | Implemented | Check the current browser navigation is chrome://app-settings/<app-id> | phillis@ |

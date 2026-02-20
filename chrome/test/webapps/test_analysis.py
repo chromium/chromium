@@ -188,9 +188,23 @@ def expand_parameterized_tests(coverage_tests: List[CoverageTest]
 
     result_tests = []
     for test in coverage_tests:
-        expanded_tests = get_all_parameterized_tests(test.actions)
-        logging.info(f"Generated {len(expanded_tests)} test/s from {test.id}")
-        for resulting_test in get_all_parameterized_tests(test.actions):
+        queue = [test.actions]
+        final_expanded_tests = []
+
+        while queue:
+            current_actions = queue.pop(0)
+            expanded = get_all_parameterized_tests(current_actions)
+
+            for expanded_test in expanded:
+                if any(action.type is ActionType.PARAMETERIZED
+                       for action in expanded_test):
+                    queue.append(expanded_test)
+                else:
+                    final_expanded_tests.append(expanded_test)
+
+        logging.info(
+            f"Generated {len(final_expanded_tests)} test/s from {test.id}")
+        for resulting_test in final_expanded_tests:
             result_tests.append(CoverageTest(resulting_test, test.platforms))
     return result_tests
 

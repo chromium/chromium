@@ -79,6 +79,8 @@ enum class Site : int {
   kSubApp1,
   kSubApp2,
   kChromeUrl,
+  kStandaloneMigratedSuggested,
+  kStandaloneMigratedForced,
 };
 
 enum class InstallableSite {
@@ -97,7 +99,12 @@ enum class InstallableSite {
   kChromeUrl,
 };
 
-enum class Title { kStandaloneOriginal, kStandaloneUpdated };
+enum class Title {
+  kStandaloneOriginal,
+  kStandaloneUpdated,
+  kStandaloneMigratedSuggested,
+  kStandaloneMigratedForced,
+};
 
 enum class Color { kRed, kGreen, kGreenSmallDiff };
 
@@ -331,6 +338,7 @@ class WebAppIntegrationTestDriver {
   void ManifestUpdateTitle(Site site, Title title);
   void ManifestUpdateDisplay(Site site, Display display);
   void ManifestUpdateScopeTo(Site app, Site scope);
+  void ManifestUpdateAddMigrateTo(Site app, Site to);
   void OpenInChrome();
   void SetOpenInTabFromAppHome(Site site);
   void SetOpenInTabFromAppSettings(Site site);
@@ -353,6 +361,8 @@ class WebAppIntegrationTestDriver {
   void QuitAppShim(Site site);
 #endif
   void TriggerUpdateDialogAndHandleResponse(UpdateDialogResponse response);
+  void CheckUpdateDialogIsShowing();
+  void HandleUpdateDialogResponse(UpdateDialogResponse response);
 
   // State Check Actions:
   void CheckAppListEmpty();
@@ -428,9 +438,14 @@ class WebAppIntegrationTestDriver {
   // the manifest url loaded as well.
   void AwaitManifestUpdateStartedPostNavigation(content::WebContents*);
 
+  void WaitForAppIdentityUpdateDialogToShow();
+
   void HandleAppIdentityUpdateDialogResponse(
       UpdateDialogResponse response,
       std::unique_ptr<WebAppMenuModel> menu_model);
+
+  void OnWidgetShown(views::Widget* widget);
+  void OnWidgetClosing(views::Widget* widget);
 
   webapps::AppId GetAppIdBySiteMode(Site site);
   GURL GetUrlForSite(Site site, const std::string& suffix = "");
@@ -538,7 +553,8 @@ class WebAppIntegrationTestDriver {
   // all actions.
   bool in_tear_down_ = false;
 
-  std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
+  views::AnyWidgetObserver any_widget_observer_;
+  raw_ptr<views::Widget> active_update_dialog_widget_ = nullptr;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 

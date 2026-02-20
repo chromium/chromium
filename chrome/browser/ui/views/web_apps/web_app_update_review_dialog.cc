@@ -207,7 +207,7 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
 
   // WebAppInstallManagerObserver overrides:
   void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override {
-    if (!dialog_model() || !dialog_model()->host()) {
+    if (!dialog_model() || !dialog_model()->host() || !callback_) {
       return;
     }
     if (app_id != app_id_) {

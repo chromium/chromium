@@ -447,7 +447,34 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .icon_color = SK_ColorGREEN,
       .alternate_titles = {"Site A - Updated name"},
       .base_url = content::GetWebUIURLString("webapps_integration_tests")}},
+    {Site::kStandaloneMigratedSuggested,
+     {.relative_url =
+          "/webapps_integration/standalone/migrated_suggested/basic.html",
+      .relative_manifest_id =
+          "webapps_integration/standalone/migrated_suggested/basic.html",
+      .app_name = "Site A Suggested",
+      // WCO disabled is the defaulting state so the title when disabled
+      // should match with the app's name.
+      .wco_not_enabled_title = u"Site A Suggested",
+      .icon_color = SK_ColorRED,
+      .alternate_titles = {"Site A Suggested"}}},
+    {Site::kStandaloneMigratedForced,
+     {.relative_url =
+          "/webapps_integration/standalone/migrated_forced/basic.html",
+      .relative_manifest_id =
+          "webapps_integration/standalone/migrated_forced/basic.html",
+      .app_name = "Site A Forced",
+      // WCO disabled is the defaulting state so the title when disabled
+      // should match with the app's name.
+      .wco_not_enabled_title = u"Site A Forced",
+      .icon_color = SK_ColorRED,
+      .alternate_titles = {"Site A Forced"}}},
 };
+
+SiteConfig GetSiteConfiguration(Site site) {
+  CHECK(g_site_configs.contains(site));
+  return g_site_configs.find(site)->second;
+}
 
 struct DisplayConfig {
   std::string manifest_url_param;
@@ -465,6 +492,11 @@ base::flat_map<Display, DisplayConfig> g_display_configs = {
      {.manifest_url_param =
           "?manifest=manifest_window_controls_overlay.json"}}};
 
+DisplayConfig GetDisplayUpdateConfiguration(Display display) {
+  CHECK(g_display_configs.contains(display));
+  return g_display_configs.find(display)->second;
+}
+
 struct ScopeConfig {
   std::string manifest_url_param;
 };
@@ -478,14 +510,20 @@ ScopeConfig GetScopeUpdateConfiguration(Site scope) {
   return g_scope_configs.find(scope)->second;
 }
 
-DisplayConfig GetDisplayUpdateConfiguration(Display display) {
-  CHECK(g_display_configs.contains(display));
-  return g_display_configs.find(display)->second;
-}
+struct MigrateToConfig {
+  std::string manifest_url_param;
+};
 
-SiteConfig GetSiteConfiguration(Site site) {
-  CHECK(g_site_configs.contains(site));
-  return g_site_configs.find(site)->second;
+base::flat_map<Site, MigrateToConfig> g_migrate_to_configs = {
+    {Site::kStandaloneMigratedSuggested,
+     {.manifest_url_param = "?manifest=manifest_migrate_suggested.json"}},
+    {Site::kStandaloneMigratedForced,
+     {.manifest_url_param = "?manifest=manifest_migrate_forced.json"}},
+};
+
+MigrateToConfig GetMigrateToConfiguration(Site site) {
+  CHECK(g_migrate_to_configs.contains(site));
+  return g_migrate_to_configs.find(site)->second;
 }
 
 std::string GetRelativeSubAppPath(Site sub_app) {
@@ -821,7 +859,7 @@ class MenuButtonUpdateListener {
 
     // Wait for the menu button to be updated.
     if (!menu_update_future_.IsReady()) {
-      CHECK(menu_update_future_.Wait());
+      ASSERT_TRUE(menu_update_future_.Wait());
     }
   }
 
@@ -962,7 +1000,13 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
 }
 
 WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
-    : delegate_(delegate) {}
+    : delegate_(delegate),
+      any_widget_observer_(views::test::AnyWidgetTestPasskey{}) {
+  any_widget_observer_.set_shown_callback(base::BindRepeating(
+      &WebAppIntegrationTestDriver::OnWidgetShown, base::Unretained(this)));
+  any_widget_observer_.set_closing_callback(base::BindRepeating(
+      &WebAppIntegrationTestDriver::OnWidgetClosing, base::Unretained(this)));
+}
 
 WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 
@@ -1064,22 +1108,57 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   }
 }
 
+void WebAppIntegrationTestDriver::OnWidgetShown(views::Widget* widget) {
+  if (widget->GetName() == "WebAppUpdateReviewDialog") {
+    active_update_dialog_widget_ = widget;
+  }
+}
+
+void WebAppIntegrationTestDriver::OnWidgetClosing(views::Widget* widget) {
+  if (active_update_dialog_widget_ == widget) {
+    active_update_dialog_widget_ = nullptr;
+  }
+}
+
+void WebAppIntegrationTestDriver::WaitForAppIdentityUpdateDialogToShow() {
+  if (!active_update_dialog_widget_) {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "WebAppUpdateReviewDialog");
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    ASSERT_EQ(widget, active_update_dialog_widget_);
+  }
+  ASSERT_TRUE(active_update_dialog_widget_);
+}
+
 void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
     UpdateDialogResponse response,
     std::unique_ptr<WebAppMenuModel> menu_model) {
-  views::Widget* manifest_update_widget =
-      app_id_update_dialog_waiter_->WaitIfNeededAndGet();
+  // The `menu_model` is being reset in the beginning,
+  // since the `AppMenuModel` holds a raw_ptr to a `Browser`, that starts
+  // dangling as soon as the browser is shutdown as a result of
+  // uninstallation.
+  menu_model.reset();
+
+  views::Widget* manifest_update_widget = active_update_dialog_widget_;
   ASSERT_TRUE(manifest_update_widget != nullptr);
+
+  // Accepting a migration could change the currently active app id, so observe
+  // for any newly installed apps.
+  WebAppInstallManagerObserverAdapter observer(profile());
+
   switch (response) {
     case UpdateDialogResponse::kAcceptUpdate:
+      observer.SetWebAppMigratedDelegate(
+          base::BindLambdaForTesting([&](const webapps::AppId& source_app_id,
+                                         const webapps::AppId& target_app_id) {
+            if (active_app_id_ == source_app_id) {
+              active_app_id_ = target_app_id;
+            }
+          }));
+
       views::test::AcceptDialog(manifest_update_widget);
       break;
     case UpdateDialogResponse::kCancelDialogAndUninstall: {
-      // The `menu_model` is being reset in the beginning for this use-case,
-      // since the `AppMenuModel` holds a raw_ptr to a `Browser`, that starts
-      // dangling as soon as the browser is shutdown as a result of
-      // uninstallation.
-      menu_model.reset();
       auto uninstall_dialog_view =
           std::make_unique<views::NamedWidgetShownWaiter>(
               views::test::AnyWidgetTestPasskey{},
@@ -2367,6 +2446,20 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeTo(Site app, Site scope) {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::ManifestUpdateAddMigrateTo(Site app,
+                                                             Site to) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+
+  GURL url =
+      GetUrlForSite(app, GetMigrateToConfiguration(to).manifest_url_param);
+  ForceUpdateManifestContents(app, url,
+                              /*wait_for_pending_updates_to_arrive=*/true);
+
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::OpenInChrome() {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
@@ -2819,14 +2912,33 @@ void WebAppIntegrationTestDriver::TriggerUpdateDialogAndHandleResponse(
   size_t index = 0;
   const bool found = app_menu_model->GetModelAndIndexForCommandId(
       IDC_WEB_APP_UPGRADE_DIALOG, &model, &index);
-  EXPECT_TRUE(found);
+  ASSERT_TRUE(found);
   EXPECT_TRUE(model->IsEnabledAt(index));
 
-  app_id_update_dialog_waiter_ =
-      std::make_unique<views::NamedWidgetShownWaiter>(
-          views::test::AnyWidgetTestPasskey{}, "WebAppUpdateReviewDialog");
   app_menu_model->ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);
+  WaitForAppIdentityUpdateDialogToShow();
   HandleAppIdentityUpdateDialogResponse(response, std::move(app_menu_model));
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::CheckUpdateDialogIsShowing() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  WaitForAppIdentityUpdateDialogToShow();
+  ASSERT_TRUE(active_update_dialog_widget_);
+  ASSERT_TRUE(app_browser());
+  EXPECT_TRUE(app_browser()->GetBrowserView().GetProperty(
+      kIsPwaUpdateDialogShowingKey));
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::HandleUpdateDialogResponse(
+    UpdateDialogResponse response) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  HandleAppIdentityUpdateDialogResponse(response, nullptr);
   AfterStateChangeAction();
 }
 
@@ -3227,6 +3339,12 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
       break;
     case Title::kStandaloneUpdated:
       expected = "Site A - Updated name";
+      break;
+    case Title::kStandaloneMigratedSuggested:
+      expected = "Site A Suggested";
+      break;
+    case Title::kStandaloneMigratedForced:
+      expected = "Site A Forced";
       break;
   }
   EXPECT_EQ(app_state->name, expected);
@@ -4838,6 +4956,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   enabled_features.push_back(features::kWebAppPredictableAppUpdating);
   enabled_features.push_back(features::kSilentPolicyAndDefaultAppUpdating);
+  enabled_features.push_back(blink::features::kWebAppMigrationApi);
 
   scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }
