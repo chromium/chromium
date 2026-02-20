@@ -81,7 +81,8 @@ class GlicWindowControllerImpl
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source,
-              std::optional<std::string> prompt_suggestion) override;
+              std::optional<std::string> prompt_suggestion,
+              bool auto_send) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   void FocusIfOpen() override;
   void Shutdown() override;
@@ -209,11 +210,11 @@ class GlicWindowControllerImpl
  private:
   void CloseWithReason(views::Widget::ClosedReason reason);
   GlicView* GetGlicView() const;
-  void ToggleWhenNotAlwaysDetached(
-      Browser* new_attached_browser,
-      bool prevent_close,
-      mojom::InvocationSource source,
-      std::optional<std::string> prompt_suggestion);
+  void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
+                                   bool prevent_close,
+                                   mojom::InvocationSource source,
+                                   std::optional<std::string> prompt_suggestion,
+                                   bool auto_send);
 
   // Sets the floating attributes of the glic window.
   //
@@ -235,13 +236,15 @@ class GlicWindowControllerImpl
   // attached to the browser. Otherwise glic will be detached.
   void Show(Browser* browser,
             mojom::InvocationSource source,
-            std::optional<std::string> prompt_suggestion);
+            std::optional<std::string> prompt_suggestion,
+            bool auto_send);
   // Performs necessary set up and initialization before creating GlicWidget or
   // GlicView. Must be called before it's shown.
   // Returns true if successful and view creation can continue.
   bool BeforeViewCreated(Browser* browser,
                          mojom::InvocationSource source,
-                         std::optional<std::string> prompt_suggestion);
+                         std::optional<std::string> prompt_suggestion,
+                         bool auto_send);
   // Additional set up and initialization that runs after Glic is shown.
   void AfterViewShown();
   void SetupAndShowGlicWidget(Browser* browser);
@@ -410,6 +413,9 @@ class GlicWindowControllerImpl
   // String to be auto-filled in the user input text box as the web client is
   // shown to the user.
   std::optional<std::string> prompt_suggestion_;
+
+  // Whether the suggested query should be auto-sent after being shown.
+  bool auto_send_ = false;
 
   std::optional<gfx::Point> previous_position_ = std::nullopt;
 

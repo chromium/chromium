@@ -114,11 +114,14 @@ class GlicKeyedService : public KeyedService,
   // Show, summon or activate the panel, or close it if it's already active and
   // prevent_close is false. If `bwi` is non-null, attach the panel to its
   // Browser.
+  // If `auto_send` is true and `prompt_suggestion` is provided, the prompt will
+  // be automatically submitted after the panel opens.
   // TODO(b:448888544): remove `prevent_close` in favor of a Show method.
   virtual void ToggleUI(BrowserWindowInterface* bwi,
                         bool prevent_close,
                         mojom::InvocationSource source,
-                        std::optional<std::string> prompt_suggestion);
+                        std::optional<std::string> prompt_suggestion,
+                        bool auto_send = false);
   void ToggleUI(BrowserWindowInterface* bwi,
                 bool prevent_close,
                 mojom::InvocationSource source);
