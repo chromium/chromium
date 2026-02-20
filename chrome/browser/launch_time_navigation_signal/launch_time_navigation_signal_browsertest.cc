@@ -5,8 +5,6 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -133,7 +131,7 @@ class LaunchNavigationBrowserTest
   void CheckActivePageNavigationConfidence(
       const std::string& expected_navigation_confidence) {
     CheckPageNavigationConfidenceForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         expected_navigation_confidence);
   }
 
@@ -160,7 +158,7 @@ class LaunchNavigationBrowserTest
       int tab_index,
       const std::string& expected_navigation_confidence) {
     CheckPageNavigationConfidenceForWebContents(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index),
+        browser()->GetTabStripModel()->GetWebContentsAt(tab_index),
         expected_navigation_confidence);
   }
 
@@ -333,9 +331,9 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
   CheckUseCounterCount(expected_usecounter_count[2]);
 
   // Set browser startup behavior here for the non-PRE split test.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kRestoreOnStartup, GetParam().startup_prefs.restore_on_startup);
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kURLsToRestoreOnStartup,
       ListValueFromTestUrls(GetParam().startup_prefs.urls_to_restore,
                             embedded_test_server()));
@@ -356,11 +354,11 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
       expected_initial_navigation_confidence.end(), expected_initial_tab_count,
       expected_initial_navigation_confidence_value);
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ASSERT_EQ(prefs->GetUserPrefValue(prefs::kRestoreOnStartup)->GetInt(),
             test_params.startup_prefs.restore_on_startup);
   ASSERT_EQ(expected_initial_tab_count,
-            static_cast<size_t>(browser()->tab_strip_model()->count()));
+            static_cast<size_t>(browser()->GetTabStripModel()->count()));
   ASSERT_EQ(expected_initial_tab_count,
             expected_initial_navigation_confidence.size());
 
@@ -427,7 +425,7 @@ class LaunchNavigationBrowserWithIFrameTest
   void CheckActivePageFrameNavigationConfidence(
       const std::string& expected_navigation_confidence) {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
     AwaitDocumentOnLoadCompleted(web_contents);
 
@@ -498,12 +496,12 @@ class LaunchNavigationBrowserWithPopupTest
     : public LaunchNavigationBrowserTest {
  protected:
   content::WebContents* OpenPopupFromActiveWebContents() const {
-    auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* contents = browser()->GetTabStripModel()->GetActiveWebContents();
     content::ExecuteScriptAsync(
         contents, "w = open('about:blank', '', 'width=200,height=200');");
     Browser* popup = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_NE(popup, browser());
-    auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
+    auto* popup_contents = popup->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(WaitForLoadStop(popup_contents));
     EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
     return popup_contents;

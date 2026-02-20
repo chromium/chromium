@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "launch_time_navigation_signal_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/metrics:content",
+    "//components/prefs",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+  ]
+}

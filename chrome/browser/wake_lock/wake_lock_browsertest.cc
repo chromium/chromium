@@ -5,7 +5,7 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -90,7 +90,7 @@ void WakeLockBrowserTest::NavigateToAndRespondWithScript(
 // Screen locks are never allowed from workers.
 IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestScreenLockFromWorker) {
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   const std::string kWorkerScript =
       "navigator.wakeLock.request('screen').catch(err => "
       "    self.postMessage(err.name))";
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestScreenLockFromWorker) {
       kWorkerScript);
   EXPECT_EQ(
       "NotAllowedError",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "waitForMessage();"));
   EXPECT_FALSE(observer.request_shown());
 }
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestScreenLockFromWorker) {
 // permission prompt.
 IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestSystemLockFromWorker) {
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   const std::string kWorkerScript =
       "navigator.wakeLock.request('system').catch(err => "
       "    self.postMessage(err.name))";
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestSystemLockFromWorker) {
       kWorkerScript);
   EXPECT_EQ(
       "NotAllowedError",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "waitForMessage();"));
   EXPECT_FALSE(observer.request_shown());
 }
@@ -128,11 +128,12 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestPermissionScreen) {
   NavigateToSimplePage();
 
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_EQ("granted", content::EvalJs(
-                           browser()->tab_strip_model()->GetActiveWebContents(),
-                           "navigator.wakeLock.request('screen').then(lock => {"
-                           "    lock.release(); return 'granted'; });"));
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  EXPECT_EQ(
+      "granted",
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
+                      "navigator.wakeLock.request('screen').then(lock => {"
+                      "    lock.release(); return 'granted'; });"));
   EXPECT_FALSE(observer.request_shown());
 }
 
@@ -143,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest,
   NavigateToSimplePage();
 
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(
       "granted",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "navigator.wakeLock.request('screen').then(lock => {"
                       "    lock.release(); return 'granted'; });",
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -159,10 +160,10 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestPermissionSystem) {
   NavigateToSimplePage();
 
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(
       "NotAllowedError",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "navigator.wakeLock.request('system').catch(err => {"
                       "    return err.name; });"));
   EXPECT_FALSE(observer.request_shown());
@@ -175,10 +176,10 @@ IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest,
   NavigateToSimplePage();
 
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(
       "NotAllowedError",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "navigator.wakeLock.request('system').catch(err => {"
                       "    return err.name; });",
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
