@@ -705,7 +705,7 @@ BASE_FEATURE(kTrustedTypesFromLiteral, base::FEATURE_DISABLED_BY_DEFAULT);
 // optimization.
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kUpdateDirectManipulationHelperOnParentChange,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Validate the code signing identity of the network process before establishing
