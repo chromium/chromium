@@ -8224,6 +8224,27 @@
             ]
         }
     ],
+    "CustomizeChromeExperiments": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "max_customize_chrome_auto_shown_count": "5",
+                        "max_customize_chrome_auto_shown_session_count": "1"
+                    },
+                    "enable_features": [
+                        "NtpCustomizeChromeAutoOpen"
+                    ]
+                }
+            ]
+        }
+    ],
     "CustomizeChromeSidePanelExtensionsCard": [
         {
             "platforms": [
@@ -17944,23 +17965,6 @@
                     "enable_features": [
                         "ComposeboxUsesChromeComposeClient",
                         "NtpComposebox"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NtpCustomizeChromeAutoOpen": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "NtpCustomizeChromeAutoOpen"
                     ]
                 }
             ]
