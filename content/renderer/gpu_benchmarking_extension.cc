@@ -84,8 +84,8 @@
 #include "v8/include/v8-primitive.h"
 
 #if defined(ENABLE_PRINTING)
-#include "printing/metafile_skia.h"
-#include "printing/print_settings.h"
+#include "printing/metafile_skia.h"   // nogncheck
+#include "printing/print_settings.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
