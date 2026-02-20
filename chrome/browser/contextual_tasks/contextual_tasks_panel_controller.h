@@ -36,7 +36,7 @@ class ContextualTasksPanelController {
       bool transition_from_tab = false,
       omnibox::ChromeAimEntryPoint entry_point =
           omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT) = 0;
-  // Close the side panel.
+  // Close the panel.
   virtual void Close() = 0;
 
   // State checks.
