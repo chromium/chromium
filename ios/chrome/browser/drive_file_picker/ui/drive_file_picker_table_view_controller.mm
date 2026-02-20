@@ -293,8 +293,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   [self.mutator loadFirstPage];
 
-  [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                    @[ UITraitUserInterfaceStyle.class ])
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(userInterfaceStyleDidChange)];
 }
 
