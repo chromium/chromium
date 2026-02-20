@@ -137,33 +137,6 @@ if (!is_android) {
         "//third_party/libprotobuf-mutator",
       ]
     }
-
-    domatolpm_fuzzer("geolocation_element_css_fuzzer_grammar") {
-      template_file = "//chrome/test/fuzzing/geolocation_element_css_fuzzer_data/geolocation_element_css_fuzzer.html"
-      grammars = [ "geocssfuzzer://third_party/domato/src/rules/css.txt" ]
-    }
-
-    # Target to build the geolocation element CSS fuzzer test.
-    # Only add this fuzztest on non-Windows platforms since it has a dependency on protobuf_full
-    # which on Windows clashes with an existing dependency on protobuf_lite.
-    source_set("geolocation_element_css_fuzzer_test") {
-      if (!is_win) {
-        testonly = true
-        sources = [ "geolocation_element_css_fuzzer.cc" ]
-        deps = [
-          ":geolocation_element_css_fuzzer_grammar",
-          "//chrome/browser/ui",
-          "//chrome/test:test_support_ui",
-          "//components/viz/common",
-          "//content/test:browsertest_support",
-          "//testing/gtest",
-          "//testing/libfuzzer/research/domatolpm:domatolpm_context",
-          "//third_party/fuzztest",
-          "//third_party/libprotobuf-mutator",
-          "//ui/views:test_support",
-        ]
-      }
-    }
   }
 
   domatolpm_fuzzer("webcodecs_fuzzer_grammar") {

@@ -3282,10 +3282,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/compose:test_support" ]
     }
 
-    if (!is_msan) {
-      deps += [ "//chrome/test/fuzzing:geolocation_element_css_fuzzer_test" ]
-    }
-
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
@@ -4018,11 +4014,7 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
-
-    fuzztests = [
-      "SafeXmlParserFixture.ParseXML",
-      "GeolocationElementBrowserFuzzTest.TestGeolocationTextIsAlwaysReadable",
-    ]
+    fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [
       "--single-process-tests",
       "--single-process",
