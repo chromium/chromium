@@ -101,7 +101,6 @@ import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -118,7 +117,6 @@ import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
-import org.chromium.content_public.common.ResourceRequestBodyJni;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -131,32 +129,13 @@ import java.util.Map;
 
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        shadows = {
-            LocationBarMediatorTest.ShadowUrlUtilities.class,
-            LocationBarMediatorTest.ObjectAnimatorShadow.class
-        })
+@Config(shadows = {LocationBarMediatorTest.ObjectAnimatorShadow.class})
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
     AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR,
 })
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class LocationBarMediatorTest {
-
-    @Implements(UrlUtilities.class)
-    static class ShadowUrlUtilities {
-        static boolean sIsNtp;
-
-        @Implementation
-        public static boolean isNtpUrl(GURL url) {
-            return sIsNtp;
-        }
-
-        @Implementation
-        public static boolean isNtpUrl(String url) {
-            return sIsNtp;
-        }
-    }
 
     @Implements(ObjectAnimator.class)
     static class ObjectAnimatorShadow {
@@ -187,7 +166,6 @@ public class LocationBarMediatorTest {
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     @Mock private LocaleManager mLocaleManager;
-    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private TabModelSelector mTabModelSelector;
@@ -269,14 +247,14 @@ public class LocationBarMediatorTest {
                 .getUserDataHost();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(GURL.emptyGURL()).when(mTab).getUrl();
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         doReturn(true).when(mLocationBarLayout).shouldClearTextOnFocus();
         doReturn(mRootView).when(mLocationBarTablet).getRootView();
         doReturn(new WeakReference<>(null)).when(mWindowAndroid).getActivity();
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         OmniboxPrerenderJni.setInstanceForTesting(mPrerenderJni);
         PreloadPagesSettingsBridgeJni.setInstanceForTesting(mPreloadPagesSettingsJni);
-        ResourceRequestBodyJni.setInstanceForTesting(mResourceRequestBodyJni);
+        ResourceRequestBody.setNativesForTesting(mResourceRequestBodyJni);
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
@@ -331,7 +309,6 @@ public class LocationBarMediatorTest {
         mTabletMediator = createTabletMediator();
         mProfileSupplier.set(mProfile);
 
-        ShadowUrlUtilities.sIsNtp = false;
         sGeoHeaderPrimeCount = 0;
         sGeoHeaderStopCount = 0;
         GeolocationHeader.setPrimeLocationForGeoHeaderIfEnabledForTesting(
@@ -1435,7 +1412,7 @@ public class LocationBarMediatorTest {
                 .willHandleLoadUrlWithPostData(any(), anyBoolean());
 
         doReturn(true).when(mTab).isNativePage();
-        ShadowUrlUtilities.sIsNtp = true;
+        doReturn(JUnitTestGURLs.NTP_URL).when(mTab).getUrl();
         assertTrue(UrlUtilities.isNtpUrl(mTab.getUrl()));
         doReturn(false).when(mTab).isIncognito();
         // Test navigating using omnibox.
@@ -1457,7 +1434,7 @@ public class LocationBarMediatorTest {
         // Test clicking omnibox on other native page.
         // This will run the function recordNavigationOnNtp with isNtp equal to false
         // making it unable to record the histogram.
-        ShadowUrlUtilities.sIsNtp = false;
+        doReturn(JUnitTestGURLs.BLUE_1).when(mTab).getUrl();
         assertFalse(UrlUtilities.isNtpUrl(mTab.getUrl()));
         // Test navigating using omnibox.
         mMediator.loadUrl(

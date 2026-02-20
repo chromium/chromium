@@ -280,7 +280,6 @@ if (is_android) {
       "//components/download/public/task:public_java",
       "//components/embedder_support/android:content_view_java",
       "//components/embedder_support/android:context_menu_java",
-      "//components/embedder_support/android:junit_test_support",
       "//components/embedder_support/android:util_java",
       "//components/enterprise/device_attestation/android:device_attestation_java",
       "//components/external_intents/android:java",
@@ -712,10 +711,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
     ]
 
-    deps = [
-      ":chrome_junit_tests_helper",
-      "//components/embedder_support/android:util_jni_java",
-    ]
+    deps = [ ":chrome_junit_tests_helper" ]
   }
 
   robolectric_library(
@@ -1315,7 +1311,6 @@ if (is_android) {
       "//chrome/browser/settings:search_java",
       "//chrome/browser/tab_group_suggestion:java",
       "//chrome/test/android:chrome_java_transit",
-      "//components/embedder_support/android:util_jni_java",
       "//components/sensitive_content:sensitive_content_features_java",
     ]
   }

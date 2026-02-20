@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.ResourceRequestBodyJni;
+import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -54,7 +54,7 @@ public class SearchActivityClientImplUnitTest {
             new ComponentName(ContextUtils.getApplicationContext(), SearchActivity.class);
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock ResourceRequestBodyJni mResourceRequestBodyJni;
+    private @Mock ResourceRequestBody.Natives mResourceRequestBodyJni;
 
     private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     private final SearchActivityClientImpl mClient =
@@ -62,7 +62,7 @@ public class SearchActivityClientImplUnitTest {
 
     @Before
     public void setUp() {
-        ResourceRequestBodyJni.setInstanceForTesting(mResourceRequestBodyJni);
+        ResourceRequestBody.setNativesForTesting(mResourceRequestBodyJni);
         doAnswer(i -> i.getArgument(0))
                 .when(mResourceRequestBodyJni)
                 .createResourceRequestBodyFromBytes(any());

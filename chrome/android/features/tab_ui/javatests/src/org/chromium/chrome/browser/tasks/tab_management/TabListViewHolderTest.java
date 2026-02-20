@@ -105,8 +105,6 @@ import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.CurrencyFormatterJni;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
@@ -183,8 +181,6 @@ public class TabListViewHolderTest {
     @Mock private Profile mProfile;
 
     @Mock private LevelDBPersistedDataStorage.Natives mLevelDbPersistedTabDataStorage;
-
-    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
 
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
 
@@ -364,7 +360,6 @@ public class TabListViewHolderTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
         doReturn(1L)
                 .when(mCurrencyFormatterJniMock)

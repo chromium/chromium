@@ -50,6 +50,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,7 +66,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -75,7 +75,6 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public class SingleTabSwitcherOnNtpMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 
     private final int mTabId = 1;
     private final String mTitle = "test";
@@ -101,8 +100,6 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
     @Before
     public void setUp() {
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
-
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
         doReturn(mNormalTabModel).when(mTabModelSelector).getModel(false);
         doReturn(mTab).when(mNormalTabModel).getTabAt(0);
@@ -171,7 +168,11 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
-        assertEquals(mUrlHost, mPropertyModel.get(URL));
+        String expectedUrl =
+                HomeModulesMetricsUtils.useMagicStack()
+                        ? UrlUtilities.getDomainAndRegistry(mUrl.getSpec(), false)
+                        : mUrlHost;
+        assertEquals(expectedUrl, mPropertyModel.get(URL));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         if (moduleDelegate != null) {
             verify(moduleDelegate).onDataReady(eq(ModuleType.SINGLE_TAB), eq(mPropertyModel));

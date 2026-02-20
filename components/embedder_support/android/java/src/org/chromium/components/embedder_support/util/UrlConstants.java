@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class UrlConstants {
+    public static final String ABOUT_SCHEME = "about";
     public static final String APP_INTENT_SCHEME = "android-app";
     public static final String BLOB_SCHEME = "blob";
     public static final String CHROME_SCHEME = "chrome";

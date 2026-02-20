@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.price_change;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -59,8 +58,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -88,7 +85,6 @@ public class PriceChangeModuleMediatorUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private ShoppingPersistedTabDataService mService;
     @Mock private FaviconHelper mFaviconHelper;
-    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private Bitmap mFaviconBitmap;
     @Mock private Bitmap mProductImageBitmap;
     @Mock private ImageFetcher mImageFetcher;
@@ -110,7 +106,6 @@ public class PriceChangeModuleMediatorUnitTest {
 
     @Before
     public void setUp() {
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         mTab = new MockTab(123, mProfile);
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doReturn(1).when(mTabModel).getCount();
@@ -374,8 +369,6 @@ public class PriceChangeModuleMediatorUnitTest {
 
     public void showModuleWithInitializedService() {
         doReturn(true).when(mService).isInitialized();
-        when(mUrlUtilitiesJniMock.getDomainAndRegistry(eq(PRODUCT_URL.getSpec()), anyBoolean()))
-                .then(inv -> PRODUCT_URL_DOMAIN);
         mTab.setGurlOverrideForTesting(PRODUCT_URL);
         // Set up ShoppingPersistedTabData to be returned from service.
         ShoppingPersistedTabData data = mock(ShoppingPersistedTabData.class);

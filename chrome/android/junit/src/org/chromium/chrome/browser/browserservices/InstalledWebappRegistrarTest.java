@@ -16,7 +16,6 @@ import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,13 +29,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
 /** Tests for {@link InstalledWebappRegistrar}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE)
 public class InstalledWebappRegistrarTest {
     private static final int APP_UID = 123;
     private static final String APP_NAME = "Example App";
@@ -50,11 +46,6 @@ public class InstalledWebappRegistrarTest {
     @Mock private PackageManager mPackageManager;
 
     private InstalledWebappRegistrar mRegistrar;
-
-    private static String transform(String origin) {
-        // Just an arbitrary string transformation so we can check it is applied.
-        return origin.toUpperCase();
-    }
 
     @Before
     public void setUp() throws PackageManager.NameNotFoundException {
@@ -80,28 +71,14 @@ public class InstalledWebappRegistrarTest {
                 };
         ContextUtils.initApplicationContextForTests(context);
 
-        ShadowUrlUtilities.setTestImpl(
-                new ShadowUrlUtilities.TestImpl() {
-                    @Override
-                    public String getDomainAndRegistry(
-                            String uri, boolean includePrivateRegistries) {
-                        return transform(uri);
-                    }
-                });
-
         mRegistrar = new InstalledWebappRegistrar();
-    }
-
-    @After
-    public void tearDown() {
-        ShadowUrlUtilities.reset();
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void testRegister() {
         mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
-        verifyRegistration(ORIGIN);
+        verifyRegistration("example.com");
     }
 
     @Test
@@ -109,7 +86,7 @@ public class InstalledWebappRegistrarTest {
     public void testDeduplicate() {
         mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
         mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
-        verifyRegistration(ORIGIN);
+        verifyRegistration("example.com");
     }
 
     @Test
@@ -117,8 +94,8 @@ public class InstalledWebappRegistrarTest {
     public void testDifferentOrigins() {
         mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
         mRegistrar.registerClient(APP_PACKAGE, OTHER_ORIGIN, PAGE_URL);
-        verifyRegistration(ORIGIN);
-        verifyRegistration(OTHER_ORIGIN);
+        verifyRegistration("example.com");
+        verifyRegistration("other.com");
     }
 
     @Test
@@ -130,9 +107,9 @@ public class InstalledWebappRegistrarTest {
         assertEquals(uids, InstalledWebappDataRegister.getUids());
     }
 
-    private void verifyRegistration(Origin origin) {
+    private void verifyRegistration(String expectedDomain) {
         assertTrue(
                 InstalledWebappDataRegister.getDomainsForRegisteredUid(APP_UID)
-                        .contains(transform(origin.toString())));
+                        .contains(expectedDomain));
     }
 }

@@ -47,7 +47,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -2862,7 +2861,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         GURL referrerUrl = getLastCommittedUrl();
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
-        return UrlUtilitiesJni.get().isGoogleSearchUrl(referrerUrl.getSpec());
+        return UrlUtilities.isGoogleSearchUrl(referrerUrl.getSpec());
     }
 
     /** @return whether this navigation is a redirect from an intent. */

@@ -184,7 +184,6 @@ android_library("unit_device_javatests") {
     "//components/commerce/core:proto_java",
     "//components/data_sharing/public:public_java",
     "//components/embedder_support/android:util_java",
-    "//components/embedder_support/android:util_jni_java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/payments/content/android/ui:java",
     "//components/saved_tab_groups/public:java",

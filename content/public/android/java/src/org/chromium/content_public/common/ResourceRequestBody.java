@@ -63,6 +63,10 @@ public final class ResourceRequestBody {
         return createFromEncodedNativeForm(encodedNativeForm);
     }
 
+    public static void setNativesForTesting(Natives natives) {
+        ResourceRequestBodyJni.setInstanceForTesting(natives);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {

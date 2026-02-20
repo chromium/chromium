@@ -17,7 +17,6 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -30,9 +29,6 @@ import java.util.regex.Pattern;
  * Utilities for working with URIs (and URLs). These methods may be used in security-sensitive
  * contexts (after all, origins are the security boundary on the web), and so the correctness bar
  * must be high.
- *
- * Use ShadowUrlUtilities to mock out native-dependent methods in tests.
- * TODO(pshmakov): we probably should just make those methods non-static.
  */
 @JNINamespace("embedder_support")
 @NullMarked
@@ -44,7 +40,7 @@ public class UrlUtilities {
     private static final List<String> SUPPORTED_SCHEMES =
             new ArrayList<String>(
                     Arrays.asList(
-                            ContentUrlConstants.ABOUT_SCHEME,
+                            UrlConstants.ABOUT_SCHEME,
                             UrlConstants.DATA_SCHEME,
                             UrlConstants.FILE_SCHEME,
                             UrlConstants.HTTP_SCHEME,
@@ -67,7 +63,7 @@ public class UrlUtilities {
             Set.of(
                     UrlConstants.CHROME_SCHEME,
                     UrlConstants.CHROME_NATIVE_SCHEME,
-                    ContentUrlConstants.ABOUT_SCHEME);
+                    UrlConstants.ABOUT_SCHEME);
 
     private static final String TEL_SCHEME = "tel";
 
@@ -216,7 +212,6 @@ public class UrlUtilities {
      *     subcomponent (i.e. no dots other than leading/trailing ones), or is itself a recognized
      *     registry identifier.
      */
-    // TODO(crbug.com/40549331): Convert to GURL.
     @Contract("null, _ -> null")
     public static @Nullable String getDomainAndRegistry(
             @Nullable String uri, boolean includePrivateRegistries) {

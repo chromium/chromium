@@ -88,7 +88,6 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:util_java",
-    "//components/embedder_support/android:util_jni_java",
     "//components/image_fetcher:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:robolectric_all_java",

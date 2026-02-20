@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.PageTransition;
 
@@ -173,7 +173,7 @@ public class NewTabPageUma {
         if ((transitionType & PageTransition.CORE_MASK) == PageTransition.GENERATED) {
             recordAction(ACTION_SEARCHED_USING_OMNIBOX);
         } else {
-            if (UrlUtilitiesJni.get().isGoogleHomePageUrl(destinationUrl)) {
+            if (UrlUtilities.isGoogleHomePageUrl(destinationUrl)) {
                 recordAction(ACTION_NAVIGATED_TO_GOOGLE_HOMEPAGE);
             } else {
                 recordAction(ACTION_NAVIGATED_USING_OMNIBOX);

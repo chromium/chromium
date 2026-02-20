@@ -46,8 +46,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -100,7 +98,6 @@ public class GeolocationHeaderUnitTest {
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock Profile mProfileMock;
     @Mock WebContents mWebContentsMock;
@@ -111,7 +108,6 @@ public class GeolocationHeaderUnitTest {
 
     @Before
     public void setUp() {
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         GeolocationTracker.setLocationForTesting(null, null);
         GeolocationTracker.setLocationAgeForTesting(null);
@@ -127,10 +123,9 @@ public class GeolocationHeaderUnitTest {
         when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(
                         any(BrowserContextHandle.class), anyString()))
                 .thenReturn(true);
-        when(mUrlUtilitiesJniMock.isGoogleSearchUrl(anyString())).thenReturn(true);
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
-                .thenReturn("https://example.com/");
+                .thenReturn("https://www.google.com/search?q=a");
         when(mTemplateUrlServiceMock.isDefaultSearchEngineGoogle()).thenReturn(true);
         mRefreshLastKnownLocationCount = 0;
         GeolocationTracker.setRefreshLastKnownLocationRunnableForTesting(

@@ -16,9 +16,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -29,33 +27,13 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
 /** Robolectric unit tests for StandardNotificationBuilder. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE)
 public class StandardNotificationBuilderTest {
     private static final String NOTIFICATION_TAG = "TestNotificationTag";
     private static final int NOTIFICATION_ID = 99;
-
-    @Before
-    public void setUp() {
-        ShadowUrlUtilities.setTestImpl(
-                new ShadowUrlUtilities.TestImpl() {
-                    @Override
-                    public String getDomainAndRegistry(
-                            String uri, boolean includePrivateRegistries) {
-                        return uri;
-                    }
-                });
-    }
-
-    @After
-    public void tearDown() {
-        ShadowUrlUtilities.reset();
-    }
 
     private NotificationBuilderBase createAllOptionsBuilder(
             PendingIntentProvider[] outContentAndDeleteIntents) {

@@ -344,7 +344,6 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -4924,8 +4923,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 .writeBoolean(
                         ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP,
                         currentStandardTab != null
-                                && UrlUtilitiesJni.get()
-                                        .isGoogleSearchUrl(currentStandardTab.getUrl().getSpec()));
+                                && UrlUtilities.isGoogleSearchUrl(
+                                        currentStandardTab.getUrl().getSpec()));
     }
 
     @Override

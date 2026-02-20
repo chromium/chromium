@@ -8,9 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -21,39 +19,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 
-/**
- * Unit tests for NotificationBuilderBase.
- *
- * <p>Uses ShadowUrlUtilities so that we can mock out {@link UrlUtilities#getDomainAndRegistry}
- * called by {@link RoundedIconGenerator#getIconTextForUrl} during
- * testEnsureNormalizedIconBehavior().
- */
+/** Unit tests for NotificationBuilderBase. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE)
 public class NotificationBuilderBaseTest {
-    @Before
-    public void setUp() {
-        ShadowUrlUtilities.setTestImpl(
-                new ShadowUrlUtilities.TestImpl() {
-                    @Override
-                    public String getDomainAndRegistry(
-                            String uri, boolean includePrivateRegistries) {
-                        return uri;
-                    }
-                });
-    }
-
-    @After
-    public void tearDown() {
-        ShadowUrlUtilities.reset();
-    }
-
     /**
      * Tests the three paths for ensuring that a notification will be shown with a normalized icon:
      * (1) NULL bitmaps should have an auto-generated image. (2) Large bitmaps should be resized to

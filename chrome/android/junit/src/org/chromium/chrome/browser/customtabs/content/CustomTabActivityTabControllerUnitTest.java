@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
@@ -54,9 +53,7 @@ import org.chromium.net.NetId;
 
 /** Tests for {@link CustomTabActivityTabController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE)
 public class CustomTabActivityTabControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

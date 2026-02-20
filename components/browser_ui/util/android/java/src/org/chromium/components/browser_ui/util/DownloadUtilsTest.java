@@ -4,26 +4,15 @@
 
 package org.chromium.components.browser_ui.util;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
@@ -33,11 +22,8 @@ import org.chromium.url.GURL;
 public class DownloadUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
-
     @Before
     public void setUp() {
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         GURL.ensureNativeInitializedForGURL();
     }
 
@@ -62,7 +48,6 @@ public class DownloadUtilsTest {
     public void testFormatUrlForDisplayInNotification_FitsUnderLimit() {
         String urlSpec = "https://example.test/path?foo=bar";
         GURL url = new GURL(urlSpec);
-        useMockGetDomainAndRegistry(url);
         String expectedFromUrlFormatter = "example.test";
 
         String urlFormatterOutput =
@@ -79,7 +64,6 @@ public class DownloadUtilsTest {
         // which makes it too long. However the fallback, which is just the eTLD+1, can still fit.
         String urlSpec = "https://example.test:12345/path?foo=bar";
         GURL url = new GURL(urlSpec);
-        useMockGetDomainAndRegistry(url);
         String expectedFromUrlFormatter = "example.test:12345";
         int limit = expectedFromUrlFormatter.length() - 1;
         String expectedFallback = "example.test";
@@ -91,8 +75,6 @@ public class DownloadUtilsTest {
         // Therefore our formatting function will return the fallback.
         String formatted = DownloadUtils.formatUrlForDisplayInNotification(url, limit);
         Assert.assertEquals(expectedFallback, formatted);
-
-        verify(mUrlUtilitiesJniMock, times(1)).getDomainAndRegistry(anyString(), anyBoolean());
     }
 
     @Test
@@ -102,14 +84,11 @@ public class DownloadUtilsTest {
         // long.
         String urlSpec = "https://example.test:12345/path?foo=bar";
         GURL url = new GURL(urlSpec);
-        useMockGetDomainAndRegistry(url);
         String expectedFallback = "example.test";
         int limit = expectedFallback.length() - 1;
 
         String formatted = DownloadUtils.formatUrlForDisplayInNotification(url, limit);
         Assert.assertNull(formatted);
-
-        verify(mUrlUtilitiesJniMock, times(1)).getDomainAndRegistry(anyString(), anyBoolean());
     }
 
     @Test
@@ -131,8 +110,6 @@ public class DownloadUtilsTest {
 
         String formatted = DownloadUtils.formatUrlForDisplayInNotification(url, limit);
         Assert.assertEquals(expectedFallback, formatted);
-
-        verify(mUrlUtilitiesJniMock, never()).getDomainAndRegistry(anyString(), anyBoolean());
     }
 
     @Test
@@ -147,15 +124,5 @@ public class DownloadUtilsTest {
 
         String formatted = DownloadUtils.formatUrlForDisplayInNotification(url, limit);
         Assert.assertNull(formatted);
-
-        verify(mUrlUtilitiesJniMock, never()).getDomainAndRegistry(anyString(), anyBoolean());
-    }
-
-    private void useMockGetDomainAndRegistry(GURL url) {
-        // Return the host part of the url. This isn't realistic behavior, but is equivalent for the
-        // test URLs used above, whose host equals their eTLD+1.
-        String host = url.getHost();
-        when(mUrlUtilitiesJniMock.getDomainAndRegistry(eq(url.getOrigin().getSpec()), anyBoolean()))
-                .then(inv -> host);
     }
 }

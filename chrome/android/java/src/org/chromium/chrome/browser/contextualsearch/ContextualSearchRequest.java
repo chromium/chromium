@@ -12,7 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -276,12 +276,13 @@ class ContextualSearchRequest {
 
     /**
      * Judges if the given URL looks like a Google URL.
+     *
      * @param someUrl A URL to judge.
      * @return Whether it's pointing to Google infrastructure or not.
      */
     @VisibleForTesting
     boolean isGoogleUrl(@Nullable String someUrl) {
-        return !TextUtils.isEmpty(someUrl) && UrlUtilitiesJni.get().isGoogleSubDomainUrl(someUrl);
+        return !TextUtils.isEmpty(someUrl) && UrlUtilities.isGoogleSubDomainUrl(someUrl);
     }
 
     /**

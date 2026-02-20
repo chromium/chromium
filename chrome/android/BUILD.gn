@@ -637,7 +637,6 @@ if (_is_default_toolchain) {
       "//components/embedder_support/android:context_menu_java",
       "//components/embedder_support/android:simple_factory_key_java",
       "//components/embedder_support/android:util_java",
-      "//components/embedder_support/android:util_jni_java",
       "//components/embedder_support/android:virtual_structure_java",
       "//components/embedder_support/android:web_contents_delegate_java",
       "//components/enterprise/browser/reporting/android:enterprise_reporting_java",

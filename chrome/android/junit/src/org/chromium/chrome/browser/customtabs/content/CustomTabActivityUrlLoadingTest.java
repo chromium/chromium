@@ -35,8 +35,6 @@ import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -60,13 +58,11 @@ public class CustomTabActivityUrlLoadingTest {
     private CustomTabActivityNavigationController mNavigationController;
     private CustomTabIntentHandler mIntentHandler;
 
-    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Before
     public void setUp() {
         Origin.setOpaqueOriginFactoryForTesting(() -> null);
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 

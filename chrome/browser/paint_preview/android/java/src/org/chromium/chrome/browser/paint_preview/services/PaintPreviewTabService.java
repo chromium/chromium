@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -55,7 +54,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
                 && !tab.isNativePage()
                 && !tab.isShowingErrorPage()
                 && UrlUtilities.isHttpOrHttps(tab.getUrl())
-                && !UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec());
+                && !UrlUtilities.isGoogleSearchUrl(tab.getUrl().getSpec());
     }
 
     private class CaptureTriggerListener extends TabModelSelectorTabObserver

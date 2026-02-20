@@ -28,7 +28,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.util.Map;
 
@@ -179,7 +179,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
             return context.getString(R.string.help_context_history);
         }
         // Note: For www.google.com the following function returns false.
-        else if (UrlUtilitiesJni.get().isGoogleSearchUrl(url)) {
+        else if (UrlUtilities.isGoogleSearchUrl(url)) {
             return context.getString(R.string.help_context_search_results);
         }
         // For incognito NTP, we want to show incognito help.

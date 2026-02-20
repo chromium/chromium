@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -282,8 +282,8 @@ public class MerchantTrustBottomSheetMediator {
     // whether we want to use a Google icon if no favicon found for the url. When the definition of
     // "valid" url changes, update the favicon rule if needed.
     private boolean isValidUrl(GURL url) {
-        return UrlUtilitiesJni.get().isGoogleDomainUrl(url.getSpec(), true)
-                || UrlUtilitiesJni.get().isGoogleSubDomainUrl(url.getSpec());
+        return UrlUtilities.isGoogleDomainUrl(url.getSpec(), true)
+                || UrlUtilities.isGoogleSubDomainUrl(url.getSpec());
     }
 
     void setWebContentsForTesting(WebContents webContents) {

@@ -371,11 +371,6 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
-  robolectric_library("junit_test_support") {
-    sources = [ "junit/src/org/chromium/components/embedder_support/util/ShadowUrlUtilities.java" ]
-    deps = [ ":util_java" ]
-  }
-
   robolectric_library("components_embedder_support_junit_tests") {
     sources = [
       "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParamsUnitTest.java",

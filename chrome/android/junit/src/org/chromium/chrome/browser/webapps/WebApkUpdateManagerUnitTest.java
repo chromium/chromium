@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebApkInstallResult;
@@ -86,7 +85,7 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowUrlUtilities.class, BackgroundShadowAsyncTask.class})
+        shadows = {BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
     @Mock public Activity mActivityMock;
@@ -101,14 +100,14 @@ public class WebApkUpdateManagerUnitTest {
     private static final int REQUEST_UPDATE_FOR_SHELL_APK_VERSION = 100;
 
     /** Web Manifest URL */
-    private static final String WEB_MANIFEST_URL = "manifest.json";
+    private static final String WEB_MANIFEST_URL = "https://www.example.com/manifest.json";
 
-    private static final String START_URL = "/start_url.html";
-    private static final String SCOPE_URL = "/";
+    private static final String START_URL = "https://www.example.com/start_url.html";
+    private static final String SCOPE_URL = "https://www.example.com/";
     private static final String NAME = "Long Name";
     private static final String SHORT_NAME = "Short Name";
     private static final String MANIFEST_ID = "manifestId";
-    private static final String PRIMARY_ICON_URL = "/icon.png";
+    private static final String PRIMARY_ICON_URL = "https://www.example.com/icon.png";
     private static final String PRIMARY_ICON_MURMUR2_HASH = "3";
     private static final @DisplayMode.EnumType int DISPLAY_MODE = DisplayMode.UNDEFINED;
     private static final int ORIENTATION = ScreenOrientationLockType.DEFAULT;
@@ -117,7 +116,7 @@ public class WebApkUpdateManagerUnitTest {
     private static final long DARK_THEME_COLOR = 3L;
     private static final long DARK_BACKGROUND_COLOR = 4L;
     private static final int DEFAULT_BACKGROUND_COLOR = 3;
-    private static final String SHARE_TARGET_ACTION = "/share_action.html";
+    private static final String SHARE_TARGET_ACTION = "https://www.example.com/share_action.html";
     private static final String SHARE_TARGET_PARAM_TITLE = "share_params_title";
     private static final String SHARE_TARGET_METHOD_GET = "GET";
     private static final String SHARE_TARGET_METHOD_POST = "POST";
@@ -1151,9 +1150,9 @@ public class WebApkUpdateManagerUnitTest {
     public void testManifestScopeChangedShouldUpgrade() {
         ManifestData oldData = defaultManifestData();
         // webapk_installer.cc sets the scope to the default scope if the scope is empty.
-        oldData.scopeUrl = "/scope1/";
+        oldData.scopeUrl = "https://www.example.com/scope1/";
         ManifestData fetchedData = defaultManifestData();
-        fetchedData.scopeUrl = "/scope2/";
+        fetchedData.scopeUrl = "https://www.example.com/scope2/";
         assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
     }
 
@@ -1180,11 +1179,11 @@ public class WebApkUpdateManagerUnitTest {
     @Test
     public void testManifestNonEmptyScopeToEmptyScopeShouldUpgrade() {
         ManifestData oldData = defaultManifestData();
-        oldData.startUrl = "/fancy/scope/special/snowflake.html";
-        oldData.scopeUrl = "/fancy/scope/";
+        oldData.startUrl = "https://www.example.com/fancy/scope/special/snowflake.html";
+        oldData.scopeUrl = "https://www.example.com/fancy/scope/";
         assertTrue(!oldData.scopeUrl.equals(ShortcutHelper.getScopeFromUrl(oldData.startUrl)));
         ManifestData fetchedData = defaultManifestData();
-        fetchedData.startUrl = "/fancy/scope/special/snowflake.html";
+        fetchedData.startUrl = "https://www.example.com/fancy/scope/special/snowflake.html";
         fetchedData.scopeUrl = "";
 
         assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
@@ -1396,9 +1395,9 @@ public class WebApkUpdateManagerUnitTest {
     @Test
     public void testManifestStartUrlChangedShouldUpgrade() {
         ManifestData oldData = defaultManifestData();
-        oldData.startUrl = "/old_start_url.html";
+        oldData.startUrl = "https://www.example.com/old_start_url.html";
         ManifestData fetchedData = defaultManifestData();
-        fetchedData.startUrl = "/new_start_url.html";
+        fetchedData.startUrl = "https://www.example.com/new_start_url.html";
         assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
     }
 

@@ -39,7 +39,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
@@ -238,7 +238,7 @@ public class GeolocationHeader {
             // Only send X-Geo header to Search Engines.
             var isDseUrl = service.isSearchResultsPageFromDefaultSearchProvider(new GURL(url));
             var isGoogleDse = service.isDefaultSearchEngineGoogle();
-            if (!(isDseUrl || (isGoogleDse && UrlUtilitiesJni.get().isGoogleSearchUrl(url)))) {
+            if (!(isDseUrl || (isGoogleDse && UrlUtilities.isGoogleSearchUrl(url)))) {
                 return HeaderState.UNSUITABLE_URL;
             }
 

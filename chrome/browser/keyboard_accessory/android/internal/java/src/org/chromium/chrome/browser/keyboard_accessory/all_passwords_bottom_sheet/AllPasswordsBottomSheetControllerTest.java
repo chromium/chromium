@@ -8,10 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.DISMISS_HANDLER;
@@ -35,8 +32,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -52,7 +47,6 @@ public class AllPasswordsBottomSheetControllerTest {
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
 
     private AllPasswordsBottomSheetMediator mMediator;
@@ -61,16 +55,12 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Before
     public void setUp() {
-        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         mMediator = new AllPasswordsBottomSheetMediator();
         mModel =
                 AllPasswordsBottomSheetProperties.createDefaultModel(
                         EXAMPLE_ORIGIN, mMediator::onDismissed, mMediator::onQueryTextChange);
         mListModel = new ListModel<>();
         mMediator.initialize(mMockDelegate, mModel, mListModel);
-
-        when(mUrlUtilitiesJniMock.getDomainAndRegistry(anyString(), anyBoolean()))
-                .then(inv -> getDomainAndRegistry(inv.getArgument(0)));
     }
 
     @Test
@@ -88,11 +78,11 @@ public class AllPasswordsBottomSheetControllerTest {
         assertThat(itemList.size(), is(3));
 
         assertThat(itemList.get(0).type, is(ItemType.CREDENTIAL));
-        assertThat(itemList.get(0).model.get(CREDENTIAL), is(NO_ONE));
+        assertThat(itemList.get(0).model.get(CREDENTIAL), is(ANA));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
-        assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(NO_ONE));
         assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
-        assertThat(itemList.get(2).model.get(CREDENTIAL), is(ANA));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(BOB));
     }
 
     @Test
@@ -132,20 +122,8 @@ public class AllPasswordsBottomSheetControllerTest {
 
         ListModel<ListItem> itemList = mListModel;
 
-        assertThat(itemList.get(0).model.get(CREDENTIAL), is(NO_ONE));
-        assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
-        assertThat(itemList.get(2).model.get(CREDENTIAL), is(ANA));
-    }
-
-    /**
-     * Helper to get organization-identifying host from URLs. The real implementation calls {@link
-     * UrlUtilities}. It's not useful to actually reimplement it, so just return a string in a
-     * trivial way.
-     *
-     * @param origin A URL.
-     * @return The organization-identifying host from the given URL.
-     */
-    private String getDomainAndRegistry(String origin) {
-        return origin.replaceAll(".*\\.(.+\\.[^.]+$)", "$1");
+        assertThat(itemList.get(0).model.get(CREDENTIAL), is(ANA));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(NO_ONE));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(BOB));
     }
 }
