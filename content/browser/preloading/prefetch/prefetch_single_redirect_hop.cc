@@ -24,7 +24,8 @@ PrefetchSingleRedirectHop::PrefetchSingleRedirectHop(
                          prefetch_container.GetWeakPtr()),
           base::BindOnce(&PrefetchContainer::OnPrefetchComplete,
                          prefetch_container.GetWeakPtr()),
-          std::move(flow))) {}
+          std::move(flow))),
+      prefetch_container_(prefetch_container) {}
 
 PrefetchSingleRedirectHop::~PrefetchSingleRedirectHop() {
   CHECK(response_reader_);

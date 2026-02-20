@@ -26,6 +26,7 @@
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
+#include "content/browser/preloading/prefetch/prefetch_single_redirect_hop.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preloading.h"
@@ -199,7 +200,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         GURL("https://test.com"), web_contents());
     navigation_simulator->Start();
 
-    PrefetchServingHandle::SetOnIsolatedCookieCopyStartCallbackForTesting(
+    PrefetchSingleRedirectHop::SetOnIsolatedCookieCopyStartCallbackForTesting(
         base::BindRepeating(&PrefetchURLLoaderInterceptorTestBase::
                                 OnIsolatedCookieCopyStartForTesting,
                             base::Unretained(this)));
@@ -208,7 +209,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
   void TearDown() override {
     interceptor_.release();
 
-    PrefetchServingHandle::SetOnIsolatedCookieCopyStartCallbackForTesting({});
+    PrefetchSingleRedirectHop::SetOnIsolatedCookieCopyStartCallbackForTesting(
+        {});
 
     PrefetchingMetricsTestBase::TearDown();
   }

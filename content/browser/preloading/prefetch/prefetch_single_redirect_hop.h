@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
+#include "net/cookies/cookie_util.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
 
@@ -30,14 +32,16 @@ class PrefetchResponseReader;
 // mutable                  Yes         Yes
 // ------------------------ ----------- -------
 // because const references are used via `GetCurrentSingleRedirectHopToServe()`
-// during serving.
+// and other const-qualified member functions during serving.
 //
 // This is semi-internal class of `PrefetchContainer` that should be only
 // exposed to a limited number of its associated classes.
 //
 // TODO(https://crbug.com/437416134): Consider making the fields private and set
-// proper methods and access control.
-class PrefetchSingleRedirectHop final {
+// proper methods and access control. Currently all methods used during serving
+// is marked as const to follow the convention above, but instead `mutable`
+// should be removed and state-modifying methods should be marked non-const.
+class CONTENT_EXPORT PrefetchSingleRedirectHop final {
  public:
   PrefetchSingleRedirectHop(PrefetchContainer& prefetch_container,
                             const GURL& url,
@@ -48,6 +52,30 @@ class PrefetchSingleRedirectHop final {
   PrefetchSingleRedirectHop(const PrefetchSingleRedirectHop&) = delete;
   PrefetchSingleRedirectHop& operator=(const PrefetchSingleRedirectHop&) =
       delete;
+
+  // Copies any cookies in the isolated network context associated with `this`
+  // to the default network context.
+  void CopyIsolatedCookies() const;
+
+  // Before a prefetch can be served, any cookies added to the isolated
+  // network context must be copied over to the default network context. These
+  // functions are used to check and update the status of this process, as
+  // well as record metrics about how long this process takes.
+  bool IsIsolatedCookieCopyInProgress() const;
+  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback) const;
+
+  void OnInterceptorCheckCookieCopy() const;
+  void OnIsolatedCookieCopyStart() const;
+  void OnIsolatedCookiesReadCompleteAndWriteStart() const;
+  void OnIsolatedCookieCopyComplete() const;
+
+  // Called with the `PrefetchContainer`'s initial URL and the currently serving
+  // URL.
+  using OnIsolatedCookieCopyStartCallbackForTesting =
+      base::RepeatingCallback<void(const GURL&, const GURL&)>;
+  static void SetOnIsolatedCookieCopyStartCallbackForTesting(
+      OnIsolatedCookieCopyStartCallbackForTesting
+          on_isolated_cookie_copy_start_callback_for_testing);
 
   // The URL that will potentially be prefetched. This can be the original
   // prefetch URL, or a URL from a redirect resulting from requesting the
@@ -61,6 +89,16 @@ class PrefetchSingleRedirectHop final {
   std::unique_ptr<PrefetchCookieListener> cookie_listener_;
 
   scoped_refptr<PrefetchResponseReader> response_reader_;
+
+ private:
+  // Isolated cookie copy methods.
+  bool HasIsolatedCookieCopyStarted() const;
+  // Called when the cookies are read from the isolated network context for
+  // `this` (== the isolated network context of `prefetch_container_`) and are
+  // ready to be written to the default network context.
+  void OnGotIsolatedCookiesForCopy(
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& excluded_cookies) const;
 
   // The different possible states of the cookie copy process.
   enum class CookieCopyStatus {
@@ -80,6 +118,11 @@ class PrefetchSingleRedirectHop final {
 
   // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
   mutable base::OnceClosure on_cookie_copy_complete_callback_;
+
+  // The `PrefetchContainer` owning `this`.
+  raw_ref<PrefetchContainer> prefetch_container_;
+
+  base::WeakPtrFactory<PrefetchSingleRedirectHop> weak_ptr_factory_{this};
 };
 
 }  // namespace content

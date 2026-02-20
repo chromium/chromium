@@ -78,17 +78,12 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   bool HaveDefaultContextCookiesChanged() const;
 
-  // Before a prefetch can be served, any cookies added to the isolated
-  // network context must be copied over to the default network context. These
-  // functions are used to check and update the status of this process, as
-  // well as record metrics about how long this process takes.
-  bool HasIsolatedCookieCopyStarted() const;
-  bool IsIsolatedCookieCopyInProgress() const;
+  bool IsIsolatedCookieCopyInProgressForTesting() const;
   void OnIsolatedCookieCopyStartForTesting();
   void OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
   void OnIsolatedCookieCopyCompleteForTesting();
-  void OnInterceptorCheckCookieCopy();
-  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
+  void OnInterceptorCheckCookieCopyForTesting();
+  void SetOnCookieCopyCompleteCallbackForTesting(base::OnceClosure callback);
 
   // Called with the result of the probe. If the probing feature is enabled,
   // then a probe must complete successfully before the prefetch can be
@@ -132,31 +127,12 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   // the current redirect hop to the default network context.
   void CopyIsolatedCookies();
 
-  // Called with the `PrefetchContainer`'s initial URL and the currently serving
-  // URL.
-  using OnIsolatedCookieCopyStartCallbackForTesting =
-      base::RepeatingCallback<void(const GURL&, const GURL&)>;
-  static void SetOnIsolatedCookieCopyStartCallbackForTesting(
-      PrefetchServingHandle::OnIsolatedCookieCopyStartCallbackForTesting
-          on_isolated_cookie_copy_start_callback_for_testing);
-
  private:
   const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>&
   redirect_chain() const;
 
   // Returns the `SingleRedirectHop` to be served next.
   const PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe() const;
-
-  // Isolated cookie copy methods.
-  void OnIsolatedCookieCopyStart();
-  void OnIsolatedCookiesReadCompleteAndWriteStart();
-  // Called when the cookies from |prefetch_conatiner| are read from the
-  // isolated network context and are ready to be written to the default network
-  // context.
-  void OnGotIsolatedCookiesForCopy(
-      const net::CookieAccessResultList& cookie_list,
-      const net::CookieAccessResultList& excluded_cookies) &&;
-  void OnIsolatedCookieCopyComplete() &&;
 
   // Validation methods.
   struct OnGotPrefetchToServeState;
