@@ -27,7 +27,9 @@ import org.chromium.ui.widget.ChromeImageButton;
 @NullMarked
 public class ListMenuButton extends ChromeImageButton {
     private final ListMenuHost mListMenuHost;
-    private boolean mIsAttachedToWindow;
+    private boolean mIsActive;
+
+    private boolean mIsAttachedToWindowForTesting;
 
     /**
      * Creates a new {@link ListMenuButton}.
@@ -37,7 +39,7 @@ public class ListMenuButton extends ChromeImageButton {
      */
     public ListMenuButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mListMenuHost = new ListMenuHost(this, attrs);
+        mListMenuHost = new ListMenuHost(this, attrs, this::setIsPressed);
     }
 
     /**
@@ -104,8 +106,19 @@ public class ListMenuButton extends ChromeImageButton {
 
     /** Shows a popupWindow built by ListMenuButton */
     public void showMenu() {
-        if (!mIsAttachedToWindow) return;
+        if (!isAttachedToWindow()) return;
         mListMenuHost.showMenu();
+    }
+
+    /** Store the active state to set 'pressed' style to the button when the menu is open. */
+    public void setIsPressed(boolean active) {
+        mIsActive = active;
+        setPressed(active);
+    }
+
+    @Override
+    public void setPressed(boolean pressed) {
+        super.setPressed(mIsActive || pressed);
     }
 
     /**
@@ -159,14 +172,17 @@ public class ListMenuButton extends ChromeImageButton {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mIsAttachedToWindow = true;
     }
 
     @Override
     protected void onDetachedFromWindow() {
         dismiss();
-        mIsAttachedToWindow = false;
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public boolean isAttachedToWindow() {
+        return mIsAttachedToWindowForTesting || super.isAttachedToWindow();
     }
 
     @Override
@@ -181,6 +197,6 @@ public class ListMenuButton extends ChromeImageButton {
     }
 
     public void setAttachedToWindowForTesting() {
-        mIsAttachedToWindow = true;
+        mIsAttachedToWindowForTesting = true;
     }
 }

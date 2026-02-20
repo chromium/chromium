@@ -4,8 +4,10 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
@@ -104,11 +106,14 @@ public class ListMenuHostUnitTest {
         button.showMenu();
         ShadowLooper.idleMainLooper();
         assertNotNull(mSpyPopupMenu);
+        assertTrue("Button should be in pressed state when menu is visible.", button.isPressed());
     }
 
     private void dismissMenu(ListMenuButton button) {
         button.dismiss();
         ShadowLooper.idleMainLooper();
         assertNull(mSpyPopupMenu);
+        assertFalse(
+                "Button should no longer be pressed once menu is dismissed.", button.isPressed());
     }
 }
