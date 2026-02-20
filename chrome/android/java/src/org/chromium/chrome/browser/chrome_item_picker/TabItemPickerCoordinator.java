@@ -33,9 +33,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -75,6 +78,8 @@ public class TabItemPickerCoordinator {
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
     private @Nullable Callback<Boolean> mSuccessCallback;
     private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
+    private @Nullable IncognitoTabModelObserver mIncognitoTabModelObserver;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
 
@@ -176,21 +181,48 @@ public class TabItemPickerCoordinator {
                 mTabModelSelector,
                 mCallbackController.makeCancelable(
                         (@Nullable TabModelSelector s) -> {
-                            boolean loaded = s != null;
+                            Profile currentProfile = mProfileSupplier.get();
+                            boolean loaded = s != null && currentProfile != null;
                             runSuccessCallbackIfSame(loaded, successCallback);
                             if (loaded) {
                                 assumeNonNull(s);
                                 mTabListEditorCoordinator = createTabListEditorCoordinator(s);
-                                refreshTabsToShow();
+
+                                assumeNonNull(currentProfile);
+                                showTabsOnInitalLoad(currentProfile, s);
                             }
                         }));
     }
 
     /** Fetches the list of tabs to be displayed and shows the editor UI. */
-    private void refreshTabsToShow() {
+    private void showTabsOnInitalLoad(Profile profile, TabModelSelector tabModelSelector) {
         // TODO(crbug.com/457858995): Use common tab filters.
-        Profile profile = mProfileSupplier.get();
-        if (profile == null || profile.isIncognitoBranded()) {
+
+        // Observe for model destruction as we shouldn't keep the picker around if the model it is
+        // bound to is destroyed.
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onDestroyed() {
+                        cancelPicker(mActivity);
+                        tabModelSelector.removeObserver(this);
+                    }
+                };
+        tabModelSelector.addObserver(mTabModelSelectorObserver);
+        if (profile.isIncognitoBranded()) {
+            var incognitoTabModel =
+                    (IncognitoTabModel) tabModelSelector.getModel(/* incognito= */ true);
+            mIncognitoTabModelObserver =
+                    new IncognitoTabModelObserver() {
+                        @Override
+                        public void didBecomeEmpty() {
+                            cancelPicker(mActivity);
+                            incognitoTabModel.removeIncognitoObserver(this);
+                        }
+                    };
+            incognitoTabModel.addIncognitoObserver(mIncognitoTabModelObserver);
+
+            // Early out as incognito tabs are not cached.
             onCachedTabIdsRetrieved(new long[0]);
             return;
         }
@@ -304,6 +336,14 @@ public class TabItemPickerCoordinator {
         controller.preselectTabs(selectionSet);
     }
 
+    private static void cancelPicker(Activity activity) {
+        if (activity instanceof ChromeItemPickerActivity cipa) {
+            cipa.finishWithCancel();
+        } else {
+            activity.finish();
+        }
+    }
+
     public interface ItemPickerSelectionHandler {
 
         /**
@@ -339,11 +379,7 @@ public class TabItemPickerCoordinator {
             }
 
             // Route back press to the Activity's cancel handler.
-            if (mActivity instanceof ChromeItemPickerActivity cipa) {
-                cipa.finishWithCancel();
-            } else {
-                mActivity.finish();
-            }
+            cancelPicker(mActivity);
         }
 
         @Override
@@ -410,6 +446,14 @@ public class TabItemPickerCoordinator {
                     .getHandleBackPressChangedSupplier()
                     .removeObserver(mBackPressEnabledObserver);
             mTabListEditorCoordinator.destroy();
+        }
+        if (mTabModelSelector != null && mTabModelSelectorObserver != null) {
+            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            if (mIncognitoTabModelObserver != null
+                    && mTabModelSelector.getModel(true)
+                            instanceof IncognitoTabModel incognitoTabModel) {
+                incognitoTabModel.removeIncognitoObserver(mIncognitoTabModelObserver);
+            }
         }
         runSuccessCallback(false);
         mBackPressCallback.remove();

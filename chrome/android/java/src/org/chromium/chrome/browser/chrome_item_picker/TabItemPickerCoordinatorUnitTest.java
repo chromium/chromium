@@ -51,9 +51,12 @@ import org.chromium.chrome.browser.page_content_annotations.PageContentExtractio
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
@@ -66,6 +69,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for TabItemPickerCoordinator. */
@@ -392,5 +396,50 @@ public class TabItemPickerCoordinatorUnitTest {
         assertTrue("Should contain active tab", shownTabs.contains(tabActive));
         assertTrue("Should contain cached tab", shownTabs.contains(tabCached));
         assertTrue("Should contain background tab", shownTabs.contains(tabBackground));
+    }
+
+    @Test
+    public void testTabModelSelectorDestroyed_FinishesActivity() {
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        mProfileSupplierImpl.set(mProfile);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        ArgumentCaptor<TabModelSelectorObserver> observerCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+        verify(mTabModelSelector).addObserver(observerCaptor.capture());
+
+        observerCaptor.getValue().onDestroyed();
+
+        verify(mActivity).finish();
+        verify(mTabModelSelector).removeObserver(observerCaptor.getValue());
+    }
+
+    @Test
+    public void testIncognitoTabModelEmpty_FinishesActivity() {
+        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        IncognitoTabModel incognitoTabModel = Mockito.mock(IncognitoTabModel.class);
+        when(mTabModelSelector.getModel(true)).thenReturn(incognitoTabModel);
+        when(incognitoTabModel.iterator()).thenReturn(Collections.emptyIterator());
+
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        mProfileSupplierImpl.set(mProfile);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        ArgumentCaptor<IncognitoTabModelObserver> observerCaptor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoTabModel).addIncognitoObserver(observerCaptor.capture());
+
+        observerCaptor.getValue().didBecomeEmpty();
+
+        verify(mActivity).finish();
+        verify(incognitoTabModel).removeIncognitoObserver(observerCaptor.getValue());
     }
 }
