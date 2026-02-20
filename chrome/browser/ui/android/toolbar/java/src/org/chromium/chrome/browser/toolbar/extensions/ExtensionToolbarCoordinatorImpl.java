@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
@@ -14,6 +16,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -23,6 +26,9 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuButton;
+
+import java.util.Collection;
 
 /** The implementation of {@link ExtensionToolbarCoordinator}. */
 @NullMarked
@@ -33,10 +39,14 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     // TODO(crbug.com/473396591): Remove once {link ExtensionActionsBridge} is deprecated.
     private ExtensionActionsBridge mBridge;
 
+    private LinearLayout mContainer;
     private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuAndAccessControlButtonCoordinator
             mExtensionsMenuAndAccessControlButtonCoordinator;
+
+    private final MenuButtonWidthConsumer mMenuButtonWidthConsumer = new MenuButtonWidthConsumer();
+    private final ActionListWidthConsumer mActionListWidthConsumer = new ActionListWidthConsumer();
 
     @Override
     public void initializeWithNative(
@@ -51,14 +61,14 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
         mBridge = new ExtensionActionsBridge(task, profile);
 
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
-        LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
+        mContainer = (LinearLayout) extensionToolbarStub.inflate();
 
         mExtensionsToolbarBridge = new ExtensionsToolbarBridge(task, profile);
 
         mExtensionActionListCoordinator =
                 new ExtensionActionListCoordinator(
                         context,
-                        container.findViewById(R.id.extension_action_list),
+                        mContainer.findViewById(R.id.extension_action_list),
                         windowAndroid,
                         task,
                         profile,
@@ -67,14 +77,14 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
         mExtensionsMenuAndAccessControlButtonCoordinator =
                 new ExtensionsMenuAndAccessControlButtonCoordinator(
                         context,
-                        container.findViewById(R.id.extensions_menu_button),
+                        mContainer.findViewById(R.id.extensions_menu_button),
                         themeColorProvider,
                         task,
                         profile,
                         currentTabSupplier,
                         tabCreator,
                         mExtensionsToolbarBridge,
-                        container.findViewById(R.id.extensions_request_access_button));
+                        mContainer.findViewById(R.id.extensions_request_access_button));
     }
 
     @Override
@@ -83,6 +93,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
         mExtensionActionListCoordinator.destroy();
         mExtensionsToolbarBridge.destroy();
         mBridge.destroy();
+
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -108,5 +119,87 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     @Override
     public void updateMenuButtonBackground(int backgroundResource) {
         mExtensionsMenuAndAccessControlButtonCoordinator.updateButtonBackground(backgroundResource);
+    }
+
+    @Override
+    public ToolbarWidthConsumer getMenuButtonWidthConsumer() {
+        return mMenuButtonWidthConsumer;
+    }
+
+    @Override
+    public ToolbarWidthConsumer getActionListWidthConsumer() {
+        return mActionListWidthConsumer;
+    }
+
+    private class MenuButtonWidthConsumer implements ToolbarWidthConsumer {
+        @Override
+        public boolean isVisible() {
+            ListMenuButton menuButton = mContainer.findViewById(R.id.extensions_menu_button);
+            return menuButton.getVisibility() == View.VISIBLE;
+        }
+
+        private void setHasSpaceToShow(boolean hasSpaceToShow) {
+            int visibility = hasSpaceToShow ? View.VISIBLE : View.GONE;
+            mContainer.findViewById(R.id.extensions_menu_button).setVisibility(visibility);
+            mContainer.findViewById(R.id.extensions_divider).setVisibility(visibility);
+        }
+
+        @Override
+        public int updateVisibility(int availableWidth) {
+            int puzzleButtonWidth =
+                    mContainer
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    org.chromium.chrome.browser.toolbar.R.dimen
+                                            .toolbar_button_width);
+            int toolbarDividerWidth =
+                    mContainer
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    org.chromium.chrome.browser.toolbar.R.dimen
+                                            .toolbar_divider_width);
+            int totalWidth = puzzleButtonWidth + toolbarDividerWidth;
+
+            setHasSpaceToShow(totalWidth <= availableWidth);
+            return Math.min(availableWidth, totalWidth);
+        }
+
+        @Override
+        public int updateVisibilityWithAnimation(
+                int availableWidth, Collection<Animator> animators) {
+            return updateVisibility(availableWidth);
+        }
+    }
+
+    private class ActionListWidthConsumer implements ToolbarWidthConsumer {
+        @Override
+        public boolean isVisible() {
+            return mContainer.findViewById(R.id.extension_action_list).getVisibility()
+                    == View.VISIBLE;
+        }
+
+        @Override
+        public int updateVisibility(int availableWidth) {
+            // TODO(crbug.com/483194547): Hide icons partially.
+            int puzzleButtonWidth =
+                    mContainer
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    org.chromium.chrome.browser.toolbar.R.dimen
+                                            .toolbar_button_width);
+            int toolbarDividerWidth =
+                    mContainer
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    org.chromium.chrome.browser.toolbar.R.dimen
+                                            .toolbar_divider_width);
+            return mContainer.getWidth() - puzzleButtonWidth - toolbarDividerWidth;
+        }
+
+        @Override
+        public int updateVisibilityWithAnimation(
+                int availableWidth, Collection<Animator> animators) {
+            return updateVisibility(availableWidth);
+        }
     }
 }

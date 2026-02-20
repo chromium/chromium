@@ -14,6 +14,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -100,4 +101,10 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
      * transitioning into incognito mode.
      */
     void updateMenuButtonBackground(int backgroundResource);
+
+    /** Returns the {@link ToolbarWidthConsumer} for the extensions menu icon. */
+    ToolbarWidthConsumer getMenuButtonWidthConsumer();
+
+    /** Returns the {@link ToolbarWidthConsumer} for the action list container. */
+    ToolbarWidthConsumer getActionListWidthConsumer();
 }

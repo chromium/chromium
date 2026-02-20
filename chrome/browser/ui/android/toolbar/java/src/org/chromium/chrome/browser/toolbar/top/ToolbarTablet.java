@@ -448,6 +448,10 @@ public class ToolbarTablet extends ToolbarLayout {
     public void setExtensionToolbarCoordinator(
             ExtensionToolbarCoordinator extensionToolbarCoordinator) {
         mExtensionToolbarCoordinator = extensionToolbarCoordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.EXTENSIONS_MENU_BUTTON] =
+                mExtensionToolbarCoordinator.getMenuButtonWidthConsumer();
+        mToolbarWidthConsumers[ToolbarComponentId.EXTENSION_ACTION_LIST] =
+                mExtensionToolbarCoordinator.getActionListWidthConsumer();
     }
 
     @Override
