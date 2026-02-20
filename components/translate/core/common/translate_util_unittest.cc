@@ -4,9 +4,13 @@
 
 #include "components/translate/core/common/translate_util.h"
 
+#include <string>
+
 #include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
 namespace translate {
@@ -23,6 +27,16 @@ TEST(TranslateUtilTest, SecurityOrigin) {
   GURL modified_origin = GetTranslateSecurityOrigin();
   EXPECT_EQ(running_origin, modified_origin.spec());
 }
+
+void GetTranslateSecurityOriginDoesNotCrash(std::string_view fuzzed_origin) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kTranslateSecurityOrigin, fuzzed_origin);
+  GetTranslateSecurityOrigin();
+}
+
+FUZZ_TEST(TranslateUtilFuzzTest, GetTranslateSecurityOriginDoesNotCrash)
+    .WithDomains(fuzztest::PrintableAsciiString());
 
 }  // namespace
 }  // namespace translate

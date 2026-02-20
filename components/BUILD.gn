@@ -1006,6 +1006,7 @@ test("components_unittests") {
     "PrivacyMathTest.GetNumStatesDoesNotCrash",
     "RegistrationInfoTest.Parses",
     "SourceRegistrationTest.Parses",
+    "TranslateUtilFuzzTest.GetTranslateSecurityOriginDoesNotCrash",
     "TriggerRegistrationTest.Parses",
   ]
 }

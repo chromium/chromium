@@ -41,22 +41,11 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//base",
-    "//testing/gtest",
-    "//third_party/metrics_proto",
-    "//url",
-  ]
-}
-
-test("translate_util_fuzztest") {
-  sources = [ "translate_util_fuzztest.cc" ]
-  fuzztests = [ "TranslateUtilFuzzTest.GetTranslateSecurityOriginDoesNotCrash" ]
-
-  deps = [
-    ":common",
-    "//base",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/fuzztest:fuzztest_gtest_main",
+    "//third_party/fuzztest",
+    "//third_party/metrics_proto",
+    "//url",
   ]
 }
 
