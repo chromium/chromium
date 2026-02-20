@@ -450,10 +450,12 @@ void WebRtcLogUploader::UploadCompressedLog(
       net::DefineNetworkTrafficAnnotation("webrtc_log_upload", R"(
         semantics {
           sender: "Webrtc Log Uploader"
-          description: "Uploads WebRTC debug logs for Hangouts."
+          description: "Uploads WebRTC debug logs."
           trigger:
             "When a Hangouts extension or Hangouts services extension signals "
             "to upload via the private WebRTC logging extension API."
+            "When a Web application signals to upload via the WebRTC Diagnostic"
+            " Logging Web API."
           data:
             "WebRTC specific log entries, additional system information, and "
             "RTP packet headers for incoming and outgoing WebRTC streams. "
@@ -463,21 +465,25 @@ void WebRtcLogUploader::UploadCompressedLog(
         policy {
           cookies_allowed: NO
           setting:
-            "This feature can be disabled by unchecking 'Report additional "
-            "diagnostics to help improve Hangouts.' in Hangouts settings."
-            "This feature is enabled by default."
+            "The extension version of this feature can be disabled by "
+            "unchecking 'Report additional diagnostics to help improve "
+            "Hangouts.' in Hangouts settings. The Web API version of this "
+            "feature is disabled by default and can be enabled for specific "
+            "origins via enterprise policy."
           chrome_policy {
             WebRtcTextLogCollectionAllowed {
               WebRtcTextLogCollectionAllowed: false
             }
+            WebRtcDiagnosticLogCollectionAllowedForOrigins {
+              WebRtcDiagnosticLogCollectionAllowedForOrigins: {
+                entries: 'example.com'
+              }
+            }
           }
         })");
 
-  constexpr char kUploadURL[] = "https://clients2.google.com/cr/report";
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = !upload_url_for_testing_.is_empty()
-                              ? upload_url_for_testing_
-                              : GURL(kUploadURL);
+  resource_request->url = upload_url_;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =

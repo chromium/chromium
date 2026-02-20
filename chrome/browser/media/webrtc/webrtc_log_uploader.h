@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "chrome/browser/media/webrtc/webrtc_log_buffer.h"
 #include "url/gurl.h"
 
@@ -145,11 +146,15 @@ class WebRtcLogUploader {
     post_data_ = post_data;
   }
 
+  GURL upload_url() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+    return upload_url_;
+  }
+
   // For testing purposes.
   void SetUploadUrlForTesting(const GURL& url) {
-    DCHECK((!url.is_empty() && upload_url_for_testing_.is_empty()) ||
-           (url.is_empty() && !upload_url_for_testing_.is_empty()));
-    upload_url_for_testing_ = url;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+    upload_url_ = url;
   }
 
   const scoped_refptr<base::SequencedTaskRunner>& background_task_runner()
@@ -250,8 +255,8 @@ class WebRtcLogUploader {
   // on the background sequence
   raw_ptr<std::string> post_data_ = nullptr;
 
-  // For testing purposes.
-  GURL upload_url_for_testing_;
+  static constexpr char kUploadURL[] = "https://clients2.google.com/cr/report";
+  GURL upload_url_ = GURL(kUploadURL);
 
   // Only accessed on the main sequence.
   SimpleURLLoaderList pending_uploads_;
