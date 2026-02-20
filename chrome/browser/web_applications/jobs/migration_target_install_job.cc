@@ -36,18 +36,20 @@ MigrationTargetInstallJob::CreateAndStart(
     Profile* profile,
     WebAppDataRetriever* data_retriever,
     base::DictValue* debug_value,
-    WithAppResources* lock,
+    Lock* lock,
+    WithAppResources* lock_resources,
     MigrationTargetInstallCallback callback) {
   CHECK(manifest);
   CHECK(web_contents);
   CHECK(profile);
   CHECK(debug_value);
   CHECK(lock);
+  CHECK(lock_resources);
   CHECK(data_retriever);
 
   auto job = base::WrapUnique(new MigrationTargetInstallJob(
       std::move(manifest), web_contents, profile, data_retriever, debug_value,
-      lock, std::move(callback)));
+      lock, lock_resources, std::move(callback)));
   job->Start();
   return job;
 }
@@ -60,7 +62,8 @@ MigrationTargetInstallJob::MigrationTargetInstallJob(
     Profile* profile,
     WebAppDataRetriever* data_retriever,
     base::DictValue* debug_value,
-    WithAppResources* lock,
+    Lock* lock,
+    WithAppResources* lock_resources,
     MigrationTargetInstallCallback callback)
     : manifest_(std::move(manifest)),
       web_contents_(web_contents),
@@ -68,11 +71,12 @@ MigrationTargetInstallJob::MigrationTargetInstallJob(
       data_retriever_(*data_retriever),
       debug_value_(*debug_value),
       lock_(*lock),
+      lock_resources_(*lock_resources),
       callback_(std::move(callback)) {}
 
 void MigrationTargetInstallJob::Start() {
   webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_->id);
-  if (lock_->registrar().AppMatches(
+  if (lock_resources_->registrar().AppMatches(
           app_id, WebAppFilter::IsAppEligibleForManifestUpdate())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -119,7 +123,7 @@ void MigrationTargetInstallJob::OnManifestToWebAppInstallInfoJobFinished(
       webapps::WebappInstallSource::MIGRATION, install_params,
       base::BindOnce(&MigrationTargetInstallJob::OnInstallFromInfoJobFinished,
                      weak_factory_.GetWeakPtr()));
-  install_from_info_job_->Start(&lock_.get());
+  install_from_info_job_->Start(&lock_.get(), &lock_resources_.get());
 }
 
 void MigrationTargetInstallJob::OnInstallFromInfoJobFinished(

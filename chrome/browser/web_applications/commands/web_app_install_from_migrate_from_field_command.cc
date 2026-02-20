@@ -99,7 +99,7 @@ void WebAppInstallFromMigrateFromFieldCommand::StartWithLock(
 
   job_ = MigrationTargetInstallJob::CreateAndStart(
       std::move(manifest_), web_contents_, profile, data_retriever_.get(),
-      &GetMutableDebugValue(), lock_.get(),
+      &GetMutableDebugValue(), lock_.get(), lock_.get(),
       base::BindOnce(&WebAppInstallFromMigrateFromFieldCommand::OnJobFinished,
                      weak_factory_.GetWeakPtr()));
 }

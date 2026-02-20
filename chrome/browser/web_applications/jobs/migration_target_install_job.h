@@ -27,6 +27,7 @@ class WebContents;
 namespace web_app {
 
 struct WebAppInstallInfo;
+class Lock;
 class WithAppResources;
 class ManifestToWebAppInstallInfoJob;
 class InstallFromInfoJob;
@@ -53,7 +54,8 @@ class MigrationTargetInstallJob {
       Profile* profile,
       WebAppDataRetriever* data_retriever,
       base::DictValue* debug_value,
-      WithAppResources* lock,
+      Lock* lock,
+      WithAppResources* lock_resources,
       MigrationTargetInstallCallback callback);
 
   ~MigrationTargetInstallJob();
@@ -64,7 +66,8 @@ class MigrationTargetInstallJob {
                             Profile* profile,
                             WebAppDataRetriever* data_retriever,
                             base::DictValue* debug_value,
-                            WithAppResources* lock,
+                            Lock* lock,
+                            WithAppResources* lock_resources,
                             MigrationTargetInstallCallback callback);
 
   void Start();
@@ -81,7 +84,8 @@ class MigrationTargetInstallJob {
   const raw_ptr<Profile> profile_;
   const raw_ref<WebAppDataRetriever> data_retriever_;
   const raw_ref<base::DictValue> debug_value_;
-  const raw_ref<WithAppResources> lock_;
+  const raw_ref<Lock> lock_;
+  const raw_ref<WithAppResources> lock_resources_;
   MigrationTargetInstallCallback callback_;
 
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;

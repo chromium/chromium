@@ -69,7 +69,7 @@ void InstallFromInfoCommand::OnShutdown(
 
 void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
-  install_from_info_job_->Start(lock_.get());
+  install_from_info_job_->Start(lock_.get(), lock_.get());
 }
 
 void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(

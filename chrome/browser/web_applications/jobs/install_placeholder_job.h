@@ -28,6 +28,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
+class FinalizeInstallJob;
 class SharedWebContentsWithAppLock;
 class WebAppDataRetriever;
 
@@ -90,6 +91,8 @@ class InstallPlaceholderJob {
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+
+  std::unique_ptr<FinalizeInstallJob> install_job_;
 
   base::WeakPtrFactory<InstallPlaceholderJob> weak_factory_{this};
 };

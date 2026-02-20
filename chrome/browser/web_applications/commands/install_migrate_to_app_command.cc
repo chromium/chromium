@@ -181,6 +181,7 @@ void InstallMigrateToAppCommand::OnAppLockAcquired() {
         profile_, data_retriever_.get(),
         GetMutableDebugValue().EnsureDict("MigrationTargetInstallJob"),
         shared_web_contents_with_app_lock_.get(),
+        shared_web_contents_with_app_lock_.get(),
         base::BindOnce(&InstallMigrateToAppCommand::OnInstallJobFinished,
                        weak_factory_.GetWeakPtr()));
   }

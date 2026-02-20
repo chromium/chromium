@@ -33,6 +33,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
+class FinalizeInstallJob;
 enum class IconsDownloadedResult;
 class SharedWebContentsWithAppLock;
 class WebAppDataRetriever;
@@ -123,6 +124,7 @@ class WebInstallFromUrlCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  std::unique_ptr<FinalizeInstallJob> install_job_;
   IconUrlSizeSet icons_from_manifest_;
   webapps::InstallResultCode install_result_code_;
   blink::mojom::ManifestPtr opt_manifest_;

@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -264,14 +265,19 @@ void WebInstallFromUrlCommand::OnInstallDialogCompleted(
   finalize_options.overwrite_existing_manifest_fields = true;
   finalize_options.add_to_applications_menu = true;
   finalize_options.add_to_desktop = true;
-  shared_web_contents_with_app_lock_->install_finalizer().FinalizeInstall(
-      *web_app_info_, finalize_options,
-      base::BindOnce(&WebInstallFromUrlCommand::OnAppInstalled,
-                     weak_ptr_factory_.GetWeakPtr()));
+
+  install_job_ = std::make_unique<FinalizeInstallJob>(
+      profile_.get(), shared_web_contents_with_app_lock_.get(),
+      shared_web_contents_with_app_lock_.get(), *web_app_info_,
+      finalize_options);
+
+  install_job_->Start(base::BindOnce(&WebInstallFromUrlCommand::OnAppInstalled,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebInstallFromUrlCommand::OnAppInstalled(const webapps::AppId& app_id,
                                               webapps::InstallResultCode code) {
+  install_job_.reset();
   if (code != webapps::InstallResultCode::kSuccessNewInstall) {
     Abort(code);
     return;

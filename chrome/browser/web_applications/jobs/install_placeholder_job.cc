@@ -219,15 +219,17 @@ void InstallPlaceholderJob::FinalizeInstall(
 
   web_app_info->is_placeholder = true;
 
-  lock_->install_finalizer().FinalizeInstall(
-      *web_app_info, options,
-      base::BindOnce(&InstallPlaceholderJob::OnInstallFinalized,
-                     weak_factory_.GetWeakPtr()));
+  install_job_ = std::make_unique<FinalizeInstallJob>(
+      profile_.get(), &lock_.get(), &lock_.get(), *web_app_info, options);
+
+  install_job_->Start(base::BindOnce(&InstallPlaceholderJob::OnInstallFinalized,
+                                     weak_factory_.GetWeakPtr()));
 }
 
 void InstallPlaceholderJob::OnInstallFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  install_job_.reset();
   debug_value_->Set("result_code", base::ToString(code));
 
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());

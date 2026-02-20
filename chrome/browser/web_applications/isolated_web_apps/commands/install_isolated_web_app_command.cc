@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -346,8 +347,10 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
   options.iwa_options = FinalizeJobOptions::IwaOptions(
       *destination_storage_location_, std::move(integrity_block_data_));
 
-  lock_->install_finalizer().FinalizeInstall(
-      std::move(install_info), options,
+  install_job_ = std::make_unique<FinalizeInstallJob>(
+      profile(), lock_.get(), lock_.get(), std::move(install_info), options);
+
+  install_job_->Start(
       base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,
                      weak_factory_.GetWeakPtr(), to_be_installed_version));
 }
@@ -356,6 +359,7 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
     const IwaVersion& attempted_version,
     const webapps::AppId& unused_app_id,
     webapps::InstallResultCode install_result_code) {
+  install_job_.reset();
   if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {
     ReportSuccess(attempted_version);
   } else {

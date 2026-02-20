@@ -32,6 +32,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
+class FinalizeInstallJob;
 class SharedWebContentsWithAppLock;
 
 // Installs a web app using a raw manifest JSON string, bypassing the usual
@@ -114,6 +115,7 @@ class InstallAppFromVerifiedManifestCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  std::unique_ptr<FinalizeInstallJob> install_job_;
 
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
 

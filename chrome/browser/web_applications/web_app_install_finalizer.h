@@ -98,7 +98,6 @@ class WebAppInstallFinalizer {
 
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
-  raw_ptr<base::Clock> clock_{base::DefaultClock::GetInstance()};
 
   absl::flat_hash_set<std::unique_ptr<FinalizeInstallJob>> install_jobs_;
   absl::flat_hash_set<std::unique_ptr<FinalizeUpdateJob>> install_update_jobs_;

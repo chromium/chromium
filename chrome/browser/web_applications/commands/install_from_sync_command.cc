@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -363,8 +364,10 @@ void InstallFromSyncCommand::FinalizeInstall(FinalizeMode mode) {
     current_info->user_display_mode = migration_source_info_->user_display_mode;
   }
 
-  lock_->install_finalizer().FinalizeInstall(
-      *current_info, finalize_options,
+  install_job_ = std::make_unique<FinalizeInstallJob>(
+      *profile_, lock_.get(), lock_.get(), *current_info, finalize_options);
+
+  install_job_->Start(
       base::BindOnce(&InstallFromSyncCommand::OnInstallFinalized,
                      weak_ptr_factory_.GetWeakPtr(), mode));
 }
@@ -373,6 +376,7 @@ void InstallFromSyncCommand::OnInstallFinalized(
     FinalizeMode mode,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  install_job_.reset();
   if (mode == FinalizeMode::kNormalWebAppInfo && !IsSuccess(code)) {
     InstallFallback(code);
     return;

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
+#include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -21,6 +22,7 @@
 class Profile;
 
 namespace web_app {
+class FinalizeInstallJob;
 
 // Starts a web app installation process using prefilled
 // |install_info| which holds all the data needed for installation.
@@ -53,7 +55,7 @@ class InstallFromInfoJob {
 
   ~InstallFromInfoJob();
 
-  void Start(WithAppResources* lock_with_app_resources);
+  void Start(Lock* lock, WithAppResources* lock_resources);
 
   webapps::WebappInstallSource install_surface() const {
     return install_surface_;
@@ -75,6 +77,8 @@ class InstallFromInfoJob {
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   ResultCallback callback_;
+
+  std::unique_ptr<FinalizeInstallJob> install_job_;
 
   base::WeakPtrFactory<InstallFromInfoJob> weak_factory_{this};
 };

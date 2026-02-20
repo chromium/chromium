@@ -69,7 +69,8 @@ class MigrationTargetInstallJobTest : public WebAppTest {
     auto data_retriever = web_contents_manager().CreateDataRetriever();
     auto job = MigrationTargetInstallJob::CreateAndStart(
         std::move(manifest), web_contents()->GetWeakPtr(), profile(),
-        data_retriever.get(), &debug_value, lock.get(), future.GetCallback());
+        data_retriever.get(), &debug_value, lock.get(), lock.get(),
+        future.GetCallback());
     return future.Get();
   }
 };

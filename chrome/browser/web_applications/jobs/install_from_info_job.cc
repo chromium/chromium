@@ -12,11 +12,11 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
-#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -60,10 +60,11 @@ InstallFromInfoJob::InstallFromInfoJob(
 
 InstallFromInfoJob::~InstallFromInfoJob() = default;
 
-void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
-  CHECK(lock_with_app_resources);
+void InstallFromInfoJob::Start(Lock* lock, WithAppResources* lock_resources) {
+  CHECK(lock);
+  CHECK(lock_resources);
 
-  lock_with_app_resources_ = lock_with_app_resources;
+  lock_with_app_resources_ = lock_resources;
   PopulateProductIcons(install_info_.get(),
                        /*icons_map=*/nullptr);
   // No IconsMap to populate shortcut item icons from.
@@ -93,16 +94,19 @@ void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
 
   debug_value_->Set("options.install_state",
                     base::ToString(options.install_state));
-  lock_with_app_resources_->install_finalizer().FinalizeInstall(
-      *install_info_, options,
-      base::BindOnce(&InstallFromInfoJob::OnInstallCompleted,
-                     weak_factory_.GetWeakPtr()));
+
+  install_job_ = std::make_unique<FinalizeInstallJob>(
+      profile_.get(), lock, lock_with_app_resources_, *install_info_, options);
+
+  install_job_->Start(base::BindOnce(&InstallFromInfoJob::OnInstallCompleted,
+                                     weak_factory_.GetWeakPtr()));
 }
 
 void InstallFromInfoJob::OnInstallCompleted(const webapps::AppId& app_id,
                                             webapps::InstallResultCode code) {
   debug_value_->Set("result_code", base::ToString(code));
   CHECK(callback_);
+  install_job_.reset();
   std::move(callback_).Run(app_id_, code);
 }
 

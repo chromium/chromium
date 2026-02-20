@@ -45,6 +45,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
+class FinalizeInstallJob;
 class InstallPlaceholderJob;
 class WebAppDataRetriever;
 class WebAppUninstallAndReplaceJob;
@@ -194,6 +195,7 @@ class ExternalAppResolutionCommand
   std::optional<InstallPlaceholderJob> install_placeholder_job_;
   std::optional<InstallFromInfoJob> install_from_info_job_;
   std::optional<RemoveInstallSourceJob> remove_placeholder_job_;
+  std::optional<FinalizeInstallJob> install_job_;
 
   base::OnceClosure on_lock_upgraded_callback_for_testing_;
 

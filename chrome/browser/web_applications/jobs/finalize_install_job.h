@@ -39,10 +39,19 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
+class Lock;
+class WithAppResources;
 class IwaVersion;
 class WebApp;
 class WebAppProvider;
 class WebAppScope;
+class WebAppRegistrar;
+class WebAppSyncBridge;
+class WebAppInstallManager;
+class WebAppIconManager;
+class WebAppTranslationManager;
+class OsIntegrationManager;
+class WebAppOriginAssociationManager;
 struct OriginAssociations;
 
 using InstallFinalizedCallback =
@@ -101,13 +110,12 @@ struct FinalizeJobOptions {
 // Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
 // and registers the app.
 //
-// This is a job based on web_app_install_finalizer. It is currently only
-// triggered by web_app_install_finalizer until refactoring is complete.
+// This is a job based on web_app_install_finalizer.
 class FinalizeInstallJob {
  public:
   FinalizeInstallJob(Profile& profile,
-                     WebAppProvider& provider,
-                     base::Clock* clock,
+                     Lock* lock,
+                     WithAppResources* lock_resources,
                      const WebAppInstallInfo& web_app_info,
                      const FinalizeJobOptions& options);
   ~FinalizeInstallJob();
@@ -131,6 +139,14 @@ class FinalizeInstallJob {
   static bool& DisableUserDisplayModeSyncMitigationsForTesting();
 
  private:
+  WebAppRegistrar& registrar() const;
+  WebAppSyncBridge& sync_bridge() const;
+  WebAppInstallManager& install_manager() const;
+  WebAppIconManager& icon_manager() const;
+  WebAppTranslationManager& translation_manager() const;
+  OsIntegrationManager& os_integration_manager() const;
+  WebAppOriginAssociationManager& origin_association_manager() const;
+
   friend class WebAppInstallFinalizer;
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
@@ -173,8 +189,10 @@ class FinalizeInstallJob {
                                                webapps::AppId app_id);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
   raw_ptr<base::Clock> clock_;
+  raw_ptr<Lock> lock_ = nullptr;
+  raw_ptr<WithAppResources> resources_lock_ = nullptr;
 
   WebAppInstallInfo web_app_info_;
   FinalizeJobOptions options_;
