@@ -200,25 +200,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       ComposeboxToolMode.kUnspecified;
   protected accessor submitButtonShown: boolean = false;
 
-  computeUploadButtonDisabled(): boolean {
-    // If only 1 image is uploaded and the create image tool is enabled, we
-    // don't want to disable the context menu entrypoint because the user
-    // should still be able to use the tool within the context menu.
-    const isCreateImageToolAvailableWithImages = this.createImageModeEnabled_ &&
-        this.hasImageFiles() && this.files_.size === 1;
-    // Only return true if:
-    //   1. The max number of files is reached, and the create image tool button
-    //      is not available.
-    //   2. The user has an image uploaded and is in create image mode.
-    //   3. The user is in deep search mode.
-    return (this.activeTool_ === ComposeboxToolMode.kDeepSearch) ||
-        (this.files_.size >= this.maxFileCount_ &&
-         !isCreateImageToolAvailableWithImages) ||
-        (this.hasImageFiles() &&
-         this.activeTool_ === ComposeboxToolMode.kImageGen) ||
-        !this.fileUploadsComplete;
-  }
-
   getActiveToolMode() {
     return this.activeTool_;
   }
@@ -337,8 +318,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
-  private createImageModeEnabled_: boolean =
-      loadTimeData.getBoolean('composeboxShowCreateImageButton');
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
   private automaticActiveTabChipToken_: UnguessableToken|null = null;
@@ -349,13 +328,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('fileUploadsComplete')) {
-      this.uploadButtonDisabled_ = this.computeUploadButtonDisabled();
+      this.uploadButtonDisabled_ = !this.fileUploadsComplete;
     }
     if (changedPrivateProperties.has('files_') ||
         changedPrivateProperties.has(`activeTool_`)) {
       // `uploadButtonDisabled_` decides whether or not the context menu
       // entrypoint is shown to the user.
-      this.uploadButtonDisabled_ = this.computeUploadButtonDisabled();
+      this.uploadButtonDisabled_ = !this.fileUploadsComplete;
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
     }

@@ -430,22 +430,16 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
-  source->AddString("composeboxDragAndDropHint",
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
-                        composebox_config.composebox().max_num_files()));
-  source->AddString("maxFilesReachedError",
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
-                        composebox_config.composebox().max_num_files()));
   int max_images = 0;
   int max_pdfs = 0;
+  int max_files = 0;
   AimEligibilityService* service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   const omnibox::SearchboxConfig* config =
       service ? service->GetSearchboxConfig() : nullptr;
 
   if (config && config->has_rule_set()) {
+    max_files = config->rule_set().max_total_inputs();
     for (const auto& rule : config->rule_set().input_type_rules()) {
       if (rule.input_type() == omnibox::INPUT_TYPE_LENS_IMAGE) {
         max_images = rule.max_instance();
@@ -454,6 +448,19 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       }
     }
   }
+
+  source->AddString(
+      "composeboxDragAndDropHint",
+      l10n_util::GetPluralStringFUTF16(
+          IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
+          max_files > 0 ? max_files
+                        : composebox_config.composebox().max_num_files()));
+  source->AddString(
+      "maxFilesReachedError",
+      l10n_util::GetPluralStringFUTF16(
+          IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
+          max_files > 0 ? max_files
+                        : composebox_config.composebox().max_num_files()));
   // TODO(crbug.com/483852166): Update the error messages to be more specific to
   // the input type.
   source->AddString(
