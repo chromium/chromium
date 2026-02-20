@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "enable_backup_ref_ptr_support": false,
     "enable_run_ios_unittests_with_xctest": true,
     "enable_swift_cxx_interop": true,
     "is_component_build": false,
@@ -8,6 +9,7 @@
     "target_cpu": "arm64",
     "target_environment": "simulator",
     "target_os": "ios",
+    "use_partition_alloc_as_malloc": false,
     "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
