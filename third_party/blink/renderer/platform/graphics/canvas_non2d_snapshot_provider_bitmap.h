@@ -28,7 +28,8 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   static scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       const CanvasSnapshotProvider::Info& info,
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation);
+      ImageOrientation orientation,
+      sk_sp<SkSurface> client_provided_surface = nullptr);
 
   // CanvasSnapshotProvider:
   bool IsGpuContextLost() const override;
