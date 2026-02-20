@@ -32,7 +32,9 @@ bool MultiplexedSessionHandle::GetSSLInfo(SSLInfo* ssl_info) const {
 }
 
 void MultiplexedSessionHandle::SaveSSLInfo() {
-  has_ssl_info_ = session_->GetSSLInfo(&ssl_info_);
+  if (session_) {
+    has_ssl_info_ = session_->GetSSLInfo(&ssl_info_);
+  }
 }
 
 std::string_view MultiplexedSessionHandle::GetAcceptChViaAlps(
