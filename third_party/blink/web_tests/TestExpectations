@@ -9475,8 +9475,6 @@ crbug.com/448490201 [ Win ] virtual/forced-high-contrast-colors/external/wpt/for
 
 # Gardener 2025-10-06
 # crbug.com/449751911 failure pass for linux debug, crbug.com/331556923 and crbug.com/347055177 for timeouts and failures on all platforms
-crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
-crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-animated-image.tentative.html [ Failure Pass ]
 # crbug.com/449751911 failure pass for linux debug, crbug.com/41366962 for timeouts (sometimes unresponsive browser reported as a crash) on all platforms.
 crbug.com/449751911 crbug.com/41366962 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Crash Failure Pass Timeout ]
