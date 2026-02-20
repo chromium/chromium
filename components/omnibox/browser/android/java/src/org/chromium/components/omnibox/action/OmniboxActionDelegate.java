@@ -7,7 +7,9 @@ package org.chromium.components.omnibox.action;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.url.GURL;
 
 /** An interface for handling interactions for Omnibox Action Chips. */
@@ -52,4 +54,7 @@ public interface OmniboxActionDelegate {
      * @return whether the switch was successful.
      */
     boolean switchToTab(int tabId, GURL url);
+
+    /** Returns the AutocompleteInput instance that is currently live. */
+    @Nullable AutocompleteInput getAutocompleteInput();
 }

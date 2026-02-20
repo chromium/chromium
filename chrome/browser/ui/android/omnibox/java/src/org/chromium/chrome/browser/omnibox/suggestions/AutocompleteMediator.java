@@ -539,6 +539,7 @@ class AutocompleteMediator
             mAutocompleteInput.getKeywordSupplier().removeObserver(mOnKeywordChanged);
         }
         mAutocompleteInput = input;
+        mOmniboxActionDelegate.setAutocompleteInput(input);
         if (mAutocompleteInput != null) {
             mAutocompleteInput
                     .getRequestTypeSupplier()
