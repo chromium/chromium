@@ -711,6 +711,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface dismissSnackBar];
   GREYAssert([PasswordSettingsAppInterface clearProfilePasswordStore],
              @"PasswordStore was not cleared.");
+  [PasswordSettingsAppInterface clearPasskeyStore];
 
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);

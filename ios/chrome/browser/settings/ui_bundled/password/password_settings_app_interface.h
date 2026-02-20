@@ -48,6 +48,9 @@
 // Removes all credentials from both the profile and the account store.
 + (BOOL)clearPasswordStores;
 
+// Removes all passkeys from the passkey store.
++ (void)clearPasskeyStore;
+
 // Creates multiple password form with index being part of the username,
 // password, origin and realm in the profile store.
 + (void)saveExamplePasswordToProfileWithCount:(NSInteger)count;

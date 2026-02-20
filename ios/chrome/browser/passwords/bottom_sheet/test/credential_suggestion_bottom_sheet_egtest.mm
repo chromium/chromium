@@ -238,6 +238,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 - (void)tearDownHelper {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
+  [PasswordSettingsAppInterface clearPasskeyStore];
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [CredentialSuggestionBottomSheetAppInterface
       removeMockReauthenticationModule];

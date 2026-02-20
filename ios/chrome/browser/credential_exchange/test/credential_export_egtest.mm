@@ -127,6 +127,7 @@ void CheckCredentialExportScreenActionMetric(
 }
 
 - (void)tearDownHelper {
+  [PasswordSettingsAppInterface clearPasskeyStore];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];

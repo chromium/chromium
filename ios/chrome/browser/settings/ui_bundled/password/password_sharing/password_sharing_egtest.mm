@@ -185,6 +185,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 }
 
 - (void)tearDownHelper {
+  [PasswordSettingsAppInterface clearPasskeyStore];
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Reset preference to its non-default state (which should be the case

@@ -456,6 +456,10 @@ bool ClearPasswordStores() {
   return ClearPasswordStores();
 }
 
++ (void)clearPasskeyStore {
+  GetPasskeyStore()->DeleteAllPasskeys();
+}
+
 + (BOOL)isCredentialsServiceEnabled {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   return profile->GetPrefs()->GetBoolean(
