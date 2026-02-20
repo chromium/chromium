@@ -8062,24 +8062,6 @@
             ]
         }
     ],
-    "CredentialManagementUnifiedUi": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CredentialManagementUnifiedUi"
-                    ]
-                }
-            ]
-        }
-    ],
     "CreditCardInfobarDisplayLength": [
         {
             "platforms": [
