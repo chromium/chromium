@@ -42,6 +42,10 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -132,6 +136,9 @@ base::DictValue GetPdfViewerStrings() {
       {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
       {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
       {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
+#if BUILDFLAG(ENABLE_GLIC)
+      {"glicSummarize", IDS_PDF_GLIC_SUMMARIZE},
+#endif  // BUILDFLAG(ENABLE_GLIC)
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
       {"saveToDriveDialogCancelUploadButtonLabel",
        IDS_SAVE_TO_DRIVE_DIALOG_CANCEL_UPLOAD_BUTTON_LABEL},
@@ -316,6 +323,11 @@ base::DictValue GetAdditionalData(content::BrowserContext* context) {
   dict.Set(
       "pdfSearchifySaveEnabled",
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave));
+
+#if BUILDFLAG(ENABLE_GLIC)
+  dict.Set("pdfGlicSummarizeEnabled",
+           base::FeatureList::IsEnabled(features::kPdfGlicSummarize));
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   const bool save_to_drive_enabled =
