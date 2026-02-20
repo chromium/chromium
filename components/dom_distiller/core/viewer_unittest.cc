@@ -56,6 +56,13 @@ class TestDomDistillerService : public DomDistillerServiceInterface {
       const GURL&) override {
     return std::unique_ptr<ViewerHandle>(ViewUrlImpl());
   }
+  MOCK_METHOD0(ViewUrlIgnoreCacheImpl, ViewerHandle*());
+  std::unique_ptr<ViewerHandle> ViewUrlIgnoreCache(
+      ViewRequestDelegate*,
+      std::unique_ptr<DistillerPage> distiller_page,
+      const GURL&) override {
+    return std::unique_ptr<ViewerHandle>(ViewUrlIgnoreCacheImpl());
+  }
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPage(
       const gfx::Size& render_view_size) override {
     return nullptr;

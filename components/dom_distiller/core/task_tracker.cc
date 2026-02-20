@@ -44,9 +44,9 @@ TaskTracker::~TaskTracker() {
   DCHECK(viewers_.empty());
 }
 
-void TaskTracker::StartDistiller(
-    DistillerFactory* factory,
-    std::unique_ptr<DistillerPage> distiller_page) {
+void TaskTracker::StartDistiller(DistillerFactory* factory,
+                                 std::unique_ptr<DistillerPage> distiller_page,
+                                 bool use_cache) {
   if (distiller_) {
     return;
   }
@@ -60,7 +60,7 @@ void TaskTracker::StartDistiller(
   distiller_->DistillPage(
       url, std::move(distiller_page),
       base::BindOnce(&TaskTracker::OnDistillerFinished,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), use_cache),
       base::BindRepeating(&TaskTracker::OnArticleDistillationUpdated,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -147,13 +147,14 @@ void TaskTracker::ScheduleSaveCallbacks(bool distillation_succeeded) {
 }
 
 void TaskTracker::OnDistillerFinished(
+    bool use_cache,
     std::unique_ptr<DistilledArticleProto> distilled_article) {
   if (content_ready_) {
     return;
   }
 
   DistilledArticleReady(std::move(distilled_article));
-  if (content_ready_) {
+  if (content_ready_ && use_cache) {
     AddDistilledContentToStore(*distilled_article_);
   }
 

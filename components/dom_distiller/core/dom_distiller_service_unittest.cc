@@ -12,11 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/dom_distiller/core/article_entry.h"
+#include "components/dom_distiller/core/distilled_content_store.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/fake_distiller.h"
 #include "components/dom_distiller/core/fake_distiller_page.h"
+#include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,10 +47,15 @@ void RunDistillerCallback(FakeDistiller* distiller,
 }
 
 std::unique_ptr<DistilledArticleProto> CreateArticleWithURL(
-    const std::string& url) {
-  std::unique_ptr<DistilledArticleProto> proto(new DistilledArticleProto);
+    const std::string& url,
+    const std::string& html = "") {
+  std::unique_ptr<DistilledArticleProto> proto =
+      std::make_unique<DistilledArticleProto>();
   DistilledPageProto* page = proto->add_pages();
   page->set_url(url);
+  if (!html.empty()) {
+    page->set_html(html);
+  }
   return proto;
 }
 
@@ -162,6 +170,52 @@ TEST_F(DomDistillerServiceTest, TestViewUrlCancelled) {
   handle.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(distiller_destroyed);
+}
+
+TEST_F(DomDistillerServiceTest, TestViewUrlIgnoreCache) {
+  // Inject stale content into the cache.
+  GURL url("http://www.example.com/p1");
+  ArticleEntry entry;
+  static_cast<InMemoryContentStore*>(service_->GetContentStoreForTesting())
+      ->InjectContent(entry, *CreateArticleWithURL(url.spec(), "STALE"));
+
+  FakeDistiller* fresh_distiller = new FakeDistiller(false);
+  FakeDistiller* second_distiller = new FakeDistiller(false);
+  EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
+      .WillOnce(Return(fresh_distiller))
+      .WillOnce(Return(second_distiller));
+
+  FakeViewRequestDelegate viewer_delegate;
+  FakeViewRequestDelegate viewer_delegate2;
+
+  std::unique_ptr<ViewerHandle> handle = service_->ViewUrlIgnoreCache(
+      &viewer_delegate, service_->CreateDefaultDistillerPage(gfx::Size()), url);
+  ASSERT_FALSE(fresh_distiller->GetArticleCallback().is_null());
+
+  // Verify we receive FRESH content and not the STALE content from cache.
+  EXPECT_CALL(viewer_delegate, OnArticleReady(_))
+      .WillOnce([&](const DistilledArticleProto* proto) {
+        EXPECT_EQ("FRESH", proto->pages(0).html());
+      });
+
+  RunDistillerCallback(fresh_distiller,
+                       CreateArticleWithURL(url.spec(), "FRESH"));
+
+  handle.reset();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !service_->HasTaskTrackerForTesting(url); }));
+
+  // Verify cache didn't get updated and still has STALE content.
+  base::RunLoop run_loop;
+  EXPECT_CALL(viewer_delegate2, OnArticleReady(_))
+      .WillOnce([&](const DistilledArticleProto* proto) {
+        EXPECT_EQ("STALE", proto->pages(0).html());
+        run_loop.Quit();
+      });
+  std::unique_ptr<ViewerHandle> handle2 =
+      service_->ViewUrl(&viewer_delegate2,
+                        service_->CreateDefaultDistillerPage(gfx::Size()), url);
+  run_loop.Run();
 }
 
 }  // namespace test

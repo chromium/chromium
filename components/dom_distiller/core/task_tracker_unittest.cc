@@ -163,7 +163,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestViewerNotifiedOnDistillationComplete) {
   EXPECT_CALL(viewer_delegate, OnArticleReady(_));
 
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(cancel_callback.Cancelled());
@@ -187,7 +188,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestDistillerFails) {
   EXPECT_CALL(viewer_delegate, OnArticleReady(_));
 
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
   distiller->RunDistillerCallback(std::make_unique<DistilledArticleProto>());
   base::RunLoop().RunUntilIdle();
 
@@ -212,7 +214,8 @@ TEST_F(DomDistillerTaskTrackerTest,
   EXPECT_CALL(save_callback, Save(_, _, _));
 
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(cancel_callback.Cancelled());
@@ -288,7 +291,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestBlobFetcherFinishesFirst) {
       .WillOnce(testing::Assign(&distiller_destroyed, true));
 
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
   task_tracker.StartBlobFetcher();
   base::RunLoop().RunUntilIdle();
 
@@ -323,7 +327,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestBlobFetcherWithoutBlob) {
 
   task_tracker.StartBlobFetcher();
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
 
   // OnArticleReady shouldn't be called until distillation finishes (i.e. the
   // blob fetcher shouldn't return distilled content).
@@ -359,7 +364,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestDistillerFailsFirst) {
       .WillOnce(MoveArg<1>(&content_store_load_callback));
 
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
   task_tracker.StartBlobFetcher();
 
   EXPECT_CALL(viewer_delegate, OnArticleReady(_)).Times(0);
@@ -400,7 +406,8 @@ TEST_F(DomDistillerTaskTrackerTest, ContentIsSaved) {
       .WillOnce(testing::SaveArg<1>(&stored_distilled_article));
 
   task_tracker.StartDistiller(&distiller_factory,
-                              std::unique_ptr<DistillerPage>());
+                              std::unique_ptr<DistillerPage>(),
+                              /* use_cache */ true);
 
   EXPECT_CALL(viewer_delegate, OnArticleReady(_));
   distiller->RunDistillerCallback(

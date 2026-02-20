@@ -40,6 +40,14 @@ std::unique_ptr<ViewerHandle> LazyDomDistillerService::ViewUrl(
   return GetImpl()->ViewUrl(delegate, std::move(distiller_page), url);
 }
 
+std::unique_ptr<ViewerHandle> LazyDomDistillerService::ViewUrlIgnoreCache(
+    ViewRequestDelegate* delegate,
+    std::unique_ptr<DistillerPage> distiller_page,
+    const GURL& url) {
+  return GetImpl()->ViewUrlIgnoreCache(delegate, std::move(distiller_page),
+                                       url);
+}
+
 std::unique_ptr<DistillerPage>
 LazyDomDistillerService::CreateDefaultDistillerPage(
     const gfx::Size& render_view_size) {

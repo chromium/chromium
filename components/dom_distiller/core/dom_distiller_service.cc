@@ -65,6 +65,23 @@ std::unique_ptr<ViewerHandle> DomDistillerService::ViewUrl(
     ViewRequestDelegate* delegate,
     std::unique_ptr<DistillerPage> distiller_page,
     const GURL& url) {
+  return ViewUrlImpl(delegate, std::move(distiller_page), url,
+                     /*use_cache=*/true);
+}
+
+std::unique_ptr<ViewerHandle> DomDistillerService::ViewUrlIgnoreCache(
+    ViewRequestDelegate* delegate,
+    std::unique_ptr<DistillerPage> distiller_page,
+    const GURL& url) {
+  return ViewUrlImpl(delegate, std::move(distiller_page), url,
+                     /*use_cache=*/false);
+}
+
+std::unique_ptr<ViewerHandle> DomDistillerService::ViewUrlImpl(
+    ViewRequestDelegate* delegate,
+    std::unique_ptr<DistillerPage> distiller_page,
+    const GURL& url,
+    bool use_cache) {
   if (!url.is_valid()) {
     return nullptr;
   }
@@ -76,8 +93,10 @@ std::unique_ptr<ViewerHandle> DomDistillerService::ViewUrl(
   // If a distiller is already running for one URL, don't start another.
   if (was_created) {
     task_tracker->StartDistiller(distiller_factory_.get(),
-                                 std::move(distiller_page));
-    task_tracker->StartBlobFetcher();
+                                 std::move(distiller_page), use_cache);
+    if (use_cache) {
+      task_tracker->StartBlobFetcher();
+    }
   }
 
   return viewer_handle;
