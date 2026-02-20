@@ -162,10 +162,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   static void SetHostNonUniqueFilterForTesting(
       bool (*filter)(std::string_view));
 
-  // Sets the URLLoaderFactory to be used during testing instead of the
-  // |PrefetchNetworkContext| associated with each |PrefetchContainer|. Note
-  // that this does not take ownership of |url_loader_factory|, and caller must
-  // keep ownership over the course of the test.
+  // Sets the URLLoaderFactory to be used as
+  // `GetURLLoaderFactoryForCurrentPrefetch()` during testing. Note that this
+  // does not take ownership of |url_loader_factory|, and caller must keep
+  // ownership over the course of the test.
   static void SetURLLoaderFactoryForTesting(
       network::SharedURLLoaderFactory* url_loader_factory);
 

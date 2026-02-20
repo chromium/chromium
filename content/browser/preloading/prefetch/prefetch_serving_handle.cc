@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
-#include "content/browser/preloading/prefetch/prefetch_network_context.h"
+#include "content/browser/preloading/prefetch/prefetch_isolated_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -220,7 +220,7 @@ void PrefetchServingHandle::CopyIsolatedCookies() {
 
   OnIsolatedCookieCopyStart();
 
-  PrefetchNetworkContext* isolated_network_context =
+  PrefetchIsolatedNetworkContext* isolated_network_context =
       prefetch_container_->GetIsolatedNetworkContext();
 
   if (!isolated_network_context) {

@@ -47,9 +47,9 @@ class Origin;
 
 namespace content {
 
+class PrefetchIsolatedNetworkContext;
 class PrefetchKey;
 class PrefetchMatchResolverAction;
-class PrefetchNetworkContext;
 class PrefetchRequest;
 class PrefetchResponseReader;
 class PrefetchService;
@@ -387,10 +387,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // redirect hops where needed.
   // This returns `nullptr` when the isolated network context for `this` is not
   // yet created.
-  PrefetchNetworkContext* GetIsolatedNetworkContext() const;
+  PrefetchIsolatedNetworkContext* GetIsolatedNetworkContext() const;
 
   // Creates the isolated network context.
-  PrefetchNetworkContext* CreateIsolatedNetworkContext(
+  PrefetchIsolatedNetworkContext* CreateIsolatedNetworkContext(
       mojo::Remote<network::mojom::NetworkContext> isolated_network_context);
 
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -782,7 +782,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // The network contexts used for this prefetch.
   scoped_refptr<network::SharedURLLoaderFactory>
       default_network_context_url_loader_factory_;
-  std::unique_ptr<PrefetchNetworkContext> isolated_network_context_;
+  std::unique_ptr<PrefetchIsolatedNetworkContext> isolated_network_context_;
 
   // The currently prefetching streaming URL loader, prefetching the last
   // element of `redirect_chain_`. Multiple streaming URL loaders can be used in

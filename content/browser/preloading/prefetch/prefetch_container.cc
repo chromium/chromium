@@ -22,8 +22,8 @@
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_isolated_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
-#include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
@@ -568,15 +568,16 @@ PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
   return prefetch_status_.value();
 }
 
-PrefetchNetworkContext* PrefetchContainer::CreateIsolatedNetworkContext(
+PrefetchIsolatedNetworkContext* PrefetchContainer::CreateIsolatedNetworkContext(
     mojo::Remote<network::mojom::NetworkContext> isolated_network_context) {
   CHECK(!isolated_network_context_);
-  isolated_network_context_ = std::make_unique<PrefetchNetworkContext>(
+  isolated_network_context_ = std::make_unique<PrefetchIsolatedNetworkContext>(
       std::move(isolated_network_context), request());
   return isolated_network_context_.get();
 }
 
-PrefetchNetworkContext* PrefetchContainer::GetIsolatedNetworkContext() const {
+PrefetchIsolatedNetworkContext* PrefetchContainer::GetIsolatedNetworkContext()
+    const {
   return isolated_network_context_.get();
 }
 
@@ -584,7 +585,7 @@ scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchContainer::GetOrCreateDefaultNetworkContextURLLoaderFactory() {
   if (!default_network_context_url_loader_factory_) {
     // The corresponding `CreatePrefetchURLLoaderFactory()` call is inside
-    // `PrefetchNetworkContext`.
+    // `PrefetchIsolatedNetworkContext`.
     default_network_context_url_loader_factory_ =
         CreatePrefetchURLLoaderFactory(request()
                                            .browser_context()

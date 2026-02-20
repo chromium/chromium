@@ -26,8 +26,8 @@
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
+#include "content/browser/preloading/prefetch/prefetch_isolated_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
-#include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
@@ -1673,9 +1673,9 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
         .GetOrCreateDefaultNetworkContextURLLoaderFactory();
   }
 
-  if (PrefetchNetworkContext* network_context =
+  if (PrefetchIsolatedNetworkContext* isolated_network_context =
           prefetch_container.GetIsolatedNetworkContext()) {
-    return network_context->GetURLLoaderFactory();
+    return isolated_network_context->GetURLLoaderFactory();
   }
 
   const bool is_proxy_required_when_cross_origin =
