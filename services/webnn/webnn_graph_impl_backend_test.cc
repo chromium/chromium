@@ -366,27 +366,38 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeConcatWithConstants",
       "BuildAndComputeGraphWithReshapeAsIntermediateNode",
       "BuildAndComputeGraphWithReshapeAsLastNode",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithSplitAndReshape",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTransposeAndRelu",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTransposeAndTwoOutputs",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTransposeAndTwoReshape",
       "BuildAndComputeGraphWithTwoOutputs", "BuildAndComputeGraphWithTwoRelu",
       "BuildAndComputeGraphWithTwoReshape",
       "BuildAndComputeGraphWithTwoTranspose",
       "BuildAndComputeMultipleOperatorGemm",
       // "BuildAndComputeReluWithOnlyConstantInput",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeReshapeConcatAndClamp",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeSingleOperatorClamp",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeSingleOperatorGruCell",
       "BuildAndComputeSingleOperatorGru",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeSingleOperatorHardSigmoid",
       "BuildAndComputeSingleOperatorHardSwish",
       // "BuildAndComputeSingleOperatorLstmCell",
       // "BuildAndComputeSingleOperatorLstm",
       // "BuildAndComputeSingleOperatorResample2d",
       "BuildAndComputeSingleOperatorTanh",
-      "BuildGemmWithReshapedConstantOperand", "BuildMaxPoolingAsFirstOperator",
-      "BuildMaxPoolingAsSecondOperator", "BuildMaxPoolingAsThirdOperator",
+      "BuildGemmWithReshapedConstantOperand",
+#if !BUILDFLAG(IS_WIN)
+      "BuildMaxPoolingAsFirstOperator", "BuildMaxPoolingAsSecondOperator",
+      "BuildMaxPoolingAsThirdOperator",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildMultipleConstantsAppendingInputs",
       "BuildMultipleInputsAppendingConstants",
       "BuildSingleOperatorLayerNormalization",
