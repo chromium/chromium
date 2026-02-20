@@ -41,6 +41,21 @@ class POLICY_EXPORT IncognitoModePolicyHandler
       const PolicyMap& policies,
       PrefValueMap* prefs,
       std::optional<policy::IncognitoModeAvailability> incognito_availability);
+
+ private:
+  // Checks that URL list policy is set, all entries are valid URL patterns and
+  // list size is not larger than the maximum allowed.
+  bool CheckUrlListPolicySettings(const char* policy_name,
+                                  const PolicyMap& policies,
+                                  PolicyErrorMap* errors);
+  // Validates that policy follows official pattern
+  // https://www.chromium.org/administrators/url-blocklist-filter-format
+  bool ValidatePolicy(const std::string& url_pattern);
+  // Returns the filtered URL list policy value. Invalid entries are
+  // filtered out and list gets truncated to maximum size.
+  std::optional<base::ListValue> GetFilteredUrlListPolicyValue(
+      const PolicyMap& policies,
+      const char* policy_name);
 };
 
 }  // namespace policy

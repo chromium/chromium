@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/incognito/incognito_mode_policy_handler_test.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -12,6 +13,8 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -21,6 +24,15 @@ class IncognitoModePolicyHandlerTest
   void SetUp() override {
     handler_list_.AddHandler(base::WrapUnique<ConfigurationPolicyHandler>(
         new IncognitoModePolicyHandler));
+  }
+
+ protected:
+  base::ListValue GetUrlListPolicyValueWithEntries(size_t len) {
+    base::ListValue list;
+    for (size_t i = 0; i < len; ++i) {
+      list.Append("http://example" + base::NumberToString(i) + ".com");
+    }
+    return list;
   }
 };
 
@@ -112,6 +124,12 @@ TEST_F(IncognitoModePolicyHandlerTest, AvailabilityInvalidType) {
   policies_.Set(key::kIncognitoModeAvailability, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value("invalid"),
                 nullptr);
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_FALSE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
   ApplyPolicies();
   const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(
@@ -124,6 +142,12 @@ TEST_F(IncognitoModePolicyHandlerTest, AvailabilityOutOfRange) {
                 base::Value(static_cast<int>(
                     policy::IncognitoModeAvailability::kNumTypes)),
                 nullptr);
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_FALSE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
   ApplyPolicies();
   const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(
@@ -134,6 +158,12 @@ TEST_F(IncognitoModePolicyHandlerTest, AllowlistInvalidType) {
   policies_.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(123),
                 nullptr);
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_FALSE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
   ApplyPolicies();
   const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(
@@ -144,51 +174,155 @@ TEST_F(IncognitoModePolicyHandlerTest, BlocklistInvalidType) {
   policies_.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(123),
                 nullptr);
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_FALSE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
   ApplyPolicies();
   const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(
       policy::policy_prefs::kIncognitoModeUrlBlocklist, &value));
 }
 
-TEST_F(IncognitoModePolicyHandlerTest, CheckPolicySettingsErrors) {
+TEST_F(IncognitoModePolicyHandlerTest, AllowlistEmpty) {
+  SetIncognitoModeUrlAllowlist(base::ListValue());
+  ApplyPolicies();
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeUrlAllowlist, &value));
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, BlocklistEmpty) {
+  SetIncognitoModeUrlBlocklist(base::ListValue());
+  ApplyPolicies();
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeUrlBlocklist, &value));
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, AllowlistWrongElementType) {
+  base::ListValue in;
+  in.Append(false);
+  SetIncognitoModeUrlAllowlist(std::move(in));
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_TRUE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
+  ApplyPolicies();
+
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeUrlAllowlist, &value));
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, BlocklistWrongElementType) {
+  base::ListValue in;
+  in.Append(false);
+  SetIncognitoModeUrlBlocklist(std::move(in));
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_TRUE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
+  ApplyPolicies();
+
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeUrlBlocklist, &value));
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, MaxFiltersLimitOK) {
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
+  base::ListValue urls =
+      GetUrlListPolicyValueWithEntries(max_filters_per_policy);
+
+  SetIncognitoModeUrlAllowlist(urls.Clone());
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_TRUE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(0U, errors.size());
+
+  ApplyPolicies();
+  VerifyAllowlistPref(urls);
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, MaxFiltersLimitExceeded) {
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
+  base::ListValue urls =
+      GetUrlListPolicyValueWithEntries(max_filters_per_policy + 1);
+
+  SetIncognitoModeUrlAllowlist(urls.Clone());
+
+  IncognitoModePolicyHandler handler;
+  PolicyErrorMap errors;
+  EXPECT_TRUE(handler.CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(1U, errors.size());
+
+  auto error_str = errors.GetErrorMessages(key::kIncognitoModeUrlAllowlist);
+  auto expected_str = l10n_util::GetStringFUTF16(
+      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
+      base::NumberToString16(max_filters_per_policy));
+  EXPECT_TRUE(error_str.find(expected_str) != std::u16string::npos);
+
+  ApplyPolicies();
+
+  // IncognitoModePolicyHandler truncates the list.
+  base::ListValue expected_urls =
+      GetUrlListPolicyValueWithEntries(max_filters_per_policy);
+  VerifyAllowlistPref(expected_urls);
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, FilterInvalidUrls) {
+  base::ListValue in;
+  in.Append("http://valid.com");
+  in.Append("wsgi:///invalid.com");
+  SetIncognitoModeUrlAllowlist(std::move(in));
+  ApplyPolicies();
+
+  base::ListValue expected;
+  expected.Append("http://valid.com");
+  VerifyAllowlistPref(expected);
+}
+
+TEST_F(IncognitoModePolicyHandlerTest, ValidatePolicy) {
   IncognitoModePolicyHandler handler;
   PolicyErrorMap errors;
 
-  // Invalid availability type
-  PolicyMap policies;
-  policies.Set(key::kIncognitoModeAvailability, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value("invalid"),
-               nullptr);
-  EXPECT_FALSE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError(key::kIncognitoModeAvailability));
+  auto check_url = [&](const std::string& url) {
+    errors.Clear();
+    policies_.Clear();
+    base::ListValue list;
+    list.Append(url);
+    SetIncognitoModeUrlAllowlist(std::move(list));
+    return handler.CheckPolicySettings(policies_, &errors);
+  };
 
-  // Out of range availability
-  errors.Clear();
-  policies.Set(key::kIncognitoModeAvailability, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(static_cast<int>(
-                   policy::IncognitoModeAvailability::kNumTypes)),
-               nullptr);
-  EXPECT_FALSE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError(key::kIncognitoModeAvailability));
+  EXPECT_TRUE(check_url("http://*"));
+  EXPECT_EQ(0U, errors.size());
 
-  // Invalid allowlist
-  errors.Clear();
-  policies.Clear();
-  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(123),
-               nullptr);
-  EXPECT_FALSE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError(key::kIncognitoModeUrlAllowlist));
+  EXPECT_TRUE(check_url("ws://example.org/component.js"));
+  EXPECT_EQ(0U, errors.size());
 
-  // Invalid blocklist
-  errors.Clear();
-  policies.Clear();
-  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(123),
-               nullptr);
-  EXPECT_FALSE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError(key::kIncognitoModeUrlBlocklist));
+  EXPECT_TRUE(check_url("wsgi:///rancom,org/"));
+  EXPECT_EQ(1U, errors.size());
+
+  EXPECT_TRUE(check_url("127.0.0.1:65535"));
+  EXPECT_EQ(0U, errors.size());
+
+  EXPECT_TRUE(check_url("127.0.0.1:65536"));
+  EXPECT_EQ(1U, errors.size());
+
+  EXPECT_TRUE(check_url("*"));
+  EXPECT_EQ(0U, errors.size());
+
+  EXPECT_TRUE(check_url("*.developers.com"));
+  EXPECT_EQ(1U, errors.size());
 }
 
 }  // namespace policy
