@@ -206,10 +206,6 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   virtual bool IsFormatSupportedForTexturing(
       viz::SharedImageFormat format) const;
 
-  // This returns a preferred format for solid color image on Wayland.
-  virtual std::optional<viz::SharedImageFormat>
-  GetPreferredFormatForSolidColor() const;
-
  protected:
   SurfaceFactoryOzone();
   virtual ~SurfaceFactoryOzone();

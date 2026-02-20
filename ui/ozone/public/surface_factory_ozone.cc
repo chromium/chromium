@@ -131,9 +131,4 @@ bool SurfaceFactoryOzone::IsFormatSupportedForTexturing(
   return false;
 }
 
-std::optional<viz::SharedImageFormat>
-SurfaceFactoryOzone::GetPreferredFormatForSolidColor() const {
-  return std::nullopt;
-}
-
 }  // namespace ui

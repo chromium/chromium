@@ -2658,32 +2658,16 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
     gpu::Mailbox mailbox,
     const SkColor4f& color,
     const gfx::ColorSpace& color_space) {
-#if BUILDFLAG(IS_OZONE)
-  auto preferred_solid_color_format = ui::OzonePlatform::GetInstance()
-                                          ->GetSurfaceFactoryOzone()
-                                          ->GetPreferredFormatForSolidColor();
-  if (preferred_solid_color_format) {
-    solid_color_image_format_ = preferred_solid_color_format.value();
-  }
-#endif
-  DCHECK(solid_color_image_format_ == SinglePlaneFormat::kRGBA_8888 ||
-         solid_color_image_format_ == SinglePlaneFormat::kBGRA_8888);
-  // Create a 1x1 pixel span of the colour in |solid_color_image_format_|.
   gfx::Size size(1, 1);
   // Premultiply the SkColor4f to support transparent quads.
   SkColor4f premul{color[0] * color[3], color[1] * color[3],
                    color[2] * color[3], color[3]};
   const uint32_t premul_rgba_bytes = premul.toBytes_RGBA();
   uint32_t premul_bytes = premul_rgba_bytes;
-  if (solid_color_image_format_ == SinglePlaneFormat::kBGRA_8888) {
-    SkSwapRB(&premul_bytes, &premul_rgba_bytes, 1);
-  }
   auto pixel_span = base::byte_span_from_ref(premul_bytes);
 
-  // TODO(crbug.com/40237688) Some work is needed to properly support F16
-  // format.
   shared_image_factory_->CreateSharedImage(
-      mailbox, solid_color_image_format_, size, color_space,
+      mailbox, SinglePlaneFormat::kRGBA_8888, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
       "SkiaSolidColor", pixel_span);
