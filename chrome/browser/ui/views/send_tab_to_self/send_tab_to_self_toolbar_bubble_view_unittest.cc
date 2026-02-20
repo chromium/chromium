@@ -37,6 +37,7 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
                   params->disposition);
         EXPECT_EQ(NavigateParams::WindowAction::kShowWindow,
                   params->window_action);
+        return base::WeakPtr<content::NavigationHandle>();
       }));
 }
 

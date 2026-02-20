@@ -7,11 +7,16 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BrowserWindowInterface;
 struct NavigateParams;
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 namespace send_tab_to_self {
 
@@ -26,7 +31,8 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
       BrowserWindowInterface& browser,
       views::BubbleAnchor anchor,
       const SendTabToSelfEntry& entry,
-      base::OnceCallback<void(NavigateParams*)> navigate_callback);
+      base::OnceCallback<base::WeakPtr<content::NavigationHandle>(
+          NavigateParams*)> navigate_callback);
 
   ~SendTabToSelfToolbarBubbleView() override;
 
@@ -35,7 +41,8 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
       BrowserWindowInterface& browser,
       views::BubbleAnchor anchor,
       const SendTabToSelfEntry& entry,
-      base::OnceCallback<void(NavigateParams*)> navigate_callback);
+      base::OnceCallback<base::WeakPtr<content::NavigationHandle>(
+          NavigateParams*)> navigate_callback);
 
   // Overwrites the existing entry in the bubble with `new_entry`.
   void ReplaceEntry(const SendTabToSelfEntry& new_entry);
@@ -52,7 +59,8 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
 
   void Timeout();
 
-  base::OnceCallback<void(NavigateParams*)> navigate_callback_;
+  base::OnceCallback<base::WeakPtr<content::NavigationHandle>(NavigateParams*)>
+      navigate_callback_;
 
   bool opened_ = false;
 
