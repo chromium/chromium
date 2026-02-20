@@ -23,6 +23,15 @@ class MediaStateObserver
       public content::WebContentsUserData<MediaStateObserver>,
       public MediaStreamCaptureIndicator::Observer {
  public:
+  // Values defined in Tab.java and must be kept in sync.
+  enum MediaState {
+    NONE = 0,
+    MUTED = 1,
+    AUDIBLE = 2,
+    RECORDING = 3,
+    SHARING = 4,
+  };
+
   explicit MediaStateObserver(content::WebContents* web_contents);
   ~MediaStateObserver() override;
 
@@ -69,6 +78,8 @@ class MediaStateObserver
   bool is_capturing_audio_ = false;
   bool is_audio_muted_ = false;
   bool is_audible_ = false;
+
+  MediaState media_state_ = NONE;
 
   // Subscription to be notified when the recently audible state has changed.
   const base::CallbackListSubscription recently_audible_subscription_;
