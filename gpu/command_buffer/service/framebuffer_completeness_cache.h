@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace gpu {
 namespace gles2 {
@@ -30,7 +31,7 @@ class GPU_GLES2_EXPORT FramebufferCompletenessCache {
   void SetComplete(const std::string& signature);
 
  private:
-  typedef std::unordered_set<std::string> Map;
+  typedef absl::flat_hash_set<std::string> Map;
 
   Map cache_;
 };
