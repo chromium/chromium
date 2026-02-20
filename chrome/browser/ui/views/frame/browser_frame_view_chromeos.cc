@@ -569,9 +569,7 @@ gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
   }
 
   // Include bottom rounded corners region. See b:294588040.
-  aura::Window* window = GetWidget()->GetNativeWindow();
-  const gfx::RoundedCornersF window_radii =
-      ash::WindowState::Get(window)->GetWindowRoundedCorners();
+  const gfx::RoundedCornersF window_radii = GetWindowRoundedCorners();
   CHECK_EQ(window_radii.lower_left(), window_radii.lower_right());
 
   min_height = min_height + window_radii.lower_left();
@@ -740,6 +738,11 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
   // the `window`accordingly.
   if (key == chromeos::kWindowHasRoundedCornersKey) {
     UpdateWindowRoundedCorners();
+    if (GetProperty(chromeos::kWindowHasRoundedCornersKey) != old) {
+      if (auto* const browser_view = GetBrowserView()) {
+        browser_view->InvalidateLayout();
+      }
+    }
   }
 
   if (key == aura::client::kShowStateKey) {
@@ -1103,20 +1106,19 @@ void BrowserFrameViewChromeOS::UpdateProfileIcons() {
   }
 }
 
+gfx::RoundedCornersF BrowserFrameViewChromeOS::GetWindowRoundedCorners() const {
+  if (aura::Window* const window = GetWidget()->GetNativeWindow()) {
+    if (auto* const window_state = ash::WindowState::Get(window)) {
+      return window_state->GetWindowRoundedCorners();
+    }
+  }
+  return gfx::RoundedCornersF();
+}
+
 void BrowserFrameViewChromeOS::UpdateWindowRoundedCorners() {
   DCHECK(GetWidget());
 
-  aura::Window* window = GetWidget()->GetNativeWindow();
-  auto* window_state = ash::WindowState::Get(window);
-
-  // For certain windows, we do not window state associated with them. (See
-  // `ash::WindowState::Get()` for details)
-  if (!window_state) {
-    return;
-  }
-
-  const gfx::RoundedCornersF window_radii =
-      window_state->GetWindowRoundedCorners();
+  const gfx::RoundedCornersF window_radii = GetWindowRoundedCorners();
 
   if (frame_header_) {
     CHECK_EQ(window_radii.upper_left(), window_radii.upper_right());

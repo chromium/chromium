@@ -51,6 +51,7 @@ class BrowserFrameViewMac : public BrowserFrameView,
   void PaintAsActiveChanged() override;
   void OnThemeChanged() override;
   views::LayoutAlignment GetWindowTitleAlignment() const override;
+  gfx::RoundedCornersF GetWindowRoundedCorners() const override;
 
   // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;

@@ -301,6 +301,15 @@ views::LayoutAlignment BrowserFrameViewMac::GetWindowTitleAlignment() const {
   }
 }
 
+gfx::RoundedCornersF BrowserFrameViewMac::GetWindowRoundedCorners() const {
+  if (auto* const widget = GetWidget();
+      widget && !widget->IsFullscreen() && !widget->IsMaximized()) {
+    return gfx::RoundedCornersF(
+        GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
+  }
+  return gfx::RoundedCornersF();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewMac, views::FrameView implementation:
 

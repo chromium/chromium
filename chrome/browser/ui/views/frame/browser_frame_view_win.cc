@@ -49,6 +49,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/win/icon_util.h"
@@ -482,6 +483,16 @@ void BrowserFrameViewWin::OnThemeChanged() {
   if (!ShouldBrowserCustomDrawTitlebar(GetBrowserView())) {
     SetSystemMicaTitlebarAttributes();
   }
+}
+
+gfx::RoundedCornersF BrowserFrameViewWin::GetWindowRoundedCorners() const {
+  const auto* const widget = GetWidget();
+  if (widget && !widget->IsMaximized() && !widget->IsFullscreen() &&
+      !IsWindowArranged(views::HWNDForWidget(widget))) {
+    return gfx::RoundedCornersF(
+        GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
+  }
+  return gfx::RoundedCornersF();
 }
 
 bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {

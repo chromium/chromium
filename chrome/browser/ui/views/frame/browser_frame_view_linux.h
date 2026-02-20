@@ -42,6 +42,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   bool CaptionButtonsOnLeadingEdge() const override;
   bool CaptionButtonsOnTrailingEdge() const override;
   BoundsAndMargins GetCaptionButtonBounds() const override;
+  gfx::RoundedCornersF GetWindowRoundedCorners() const override;
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.

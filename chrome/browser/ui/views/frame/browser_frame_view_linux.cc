@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
@@ -203,6 +204,15 @@ bool BrowserFrameViewLinux::CaptionButtonsOnTrailingEdge() const {
 BrowserFrameViewLinux::BoundsAndMargins
 BrowserFrameViewLinux::GetCaptionButtonBounds() const {
   NOTREACHED() << "Linux uses a different computation for caption buttons.";
+}
+
+gfx::RoundedCornersF BrowserFrameViewLinux::GetWindowRoundedCorners() const {
+  if (auto* const widget = GetWidget();
+      widget && !widget->IsFullscreen() && !widget->IsMaximized()) {
+    const float radius_dip = GetRestoredCornerRadiusDip();
+    return gfx::RoundedCornersF(radius_dip, radius_dip, 0, 0);
+  }
+  return gfx::RoundedCornersF();
 }
 
 BEGIN_METADATA(BrowserFrameViewLinux)

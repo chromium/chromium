@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/views/layout/layout_types.h"
@@ -95,6 +96,11 @@ class BrowserFrameView : public views::FrameView {
   // Returns which alignment the title uses.
   virtual views::LayoutAlignment GetWindowTitleAlignment() const;
 
+  // Returns the corner radii for the window. These tend to be platform-
+  // dependent. Default implementation does not have rounded corners; override
+  // as needed.
+  virtual gfx::RoundedCornersF GetWindowRoundedCorners() const;
+
   // Returns the inset from the top of the window to the top of the client
   // view. For a tabbed browser, this is the space occupied by the tab strip.
   // For popup windows, this is the toolbar. For app windows, this is the
@@ -170,7 +176,7 @@ class BrowserFrameView : public views::FrameView {
   virtual gfx::Insets GetInputInsets() const;
 
   // Gets the rounded-rect clipping region for the window frame when it is
-  // in its restored (non-maximized) state. Subclasses must implement this.
+  // in its restored (non-maximized) state. Subclasses should implement this.
   virtual SkRRect GetRestoredClipRegion() const;
 
   // Returns the height of the translucent area at the top of the frame. Returns
