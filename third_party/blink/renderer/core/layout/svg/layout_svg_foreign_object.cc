@@ -149,10 +149,10 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
 
   // Any propagated sticky-descendants may have invalid sticky-constraints.
   // Clear them now.
-  if (const auto* sticky_descendants =
-          content_result->GetPhysicalFragment().PropagatedStickyDescendants()) {
-    for (const auto& sticky_descendant : *sticky_descendants) {
-      sticky_descendant->SetStickyConstraints(nullptr);
+  for (const auto& item :
+       content_result->GetPhysicalFragment().StickyDescendants()) {
+    if (auto* pending = item.GetIfPending()) {
+      pending->SetStickyConstraints(nullptr);
     }
   }
 

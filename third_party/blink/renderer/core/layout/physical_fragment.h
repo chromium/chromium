@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
+#include "third_party/blink/renderer/core/layout/split_axis_item.h"
 #include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
@@ -113,17 +114,17 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   struct PropagatedData : public GarbageCollected<PropagatedData> {
    public:
-    PropagatedData(
-        const GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
-        const GCedHeapVector<Member<Element>>* snap_areas,
-        const Member<const LayoutObject> scroll_initial_target,
-        const TriggerScopedNameMap* named_triggers)
+    PropagatedData(const GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>*
+                       sticky_descendants,
+                   const GCedHeapVector<Member<Element>>* snap_areas,
+                   const Member<const LayoutObject> scroll_initial_target,
+                   const TriggerScopedNameMap* named_triggers)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
           scroll_initial_target(scroll_initial_target),
           named_triggers(named_triggers) {}
     void Trace(Visitor* visitor) const;
-    Member<const GCedHeapVector<Member<LayoutBoxModelObject>>>
+    Member<const GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>
         sticky_descendants;
     Member<const GCedHeapVector<Member<Element>>> snap_areas;
     Member<const LayoutObject> scroll_initial_target;
@@ -651,14 +652,18 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return has_running_anchor_transform_animation_;
   }
 
-  const GCedHeapVector<Member<LayoutBoxModelObject>>* StickyDescendants()
-      const {
-    return propagated_data_ ? propagated_data_->sticky_descendants.Get()
-                            : nullptr;
+  const GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>& StickyDescendants()
+      const;
+
+  bool HasConsumedStickyDescendants() const {
+    return std::ranges::any_of(
+        StickyDescendants(),
+        &SplitAxisItem<LayoutBoxModelObject>::GetIfConsumed);
   }
-  const GCedHeapVector<Member<LayoutBoxModelObject>>*
-  PropagatedStickyDescendants() const {
-    return IsScrollContainer() ? nullptr : StickyDescendants();
+  bool HasPendingStickyDescendants() const {
+    return std::ranges::any_of(
+        StickyDescendants(),
+        &SplitAxisItem<LayoutBoxModelObject>::GetIfPending);
   }
 
   const Member<const LayoutObject> ScrollInitialTarget() const {
@@ -676,7 +681,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   }
 
   bool HasPropagatedLayoutObjects() const {
-    return PropagatedStickyDescendants() || PropagatedScrollInitialTarget() ||
+    return HasPendingStickyDescendants() || PropagatedScrollInitialTarget() ||
            PropagatedSnapAreas() || NamedTriggers();
   }
 

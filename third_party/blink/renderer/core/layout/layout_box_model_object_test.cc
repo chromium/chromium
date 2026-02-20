@@ -30,8 +30,8 @@ class LayoutBoxModelObjectTest : public RenderingTest,
                       const LayoutBoxModelObject* sticky) {
     for (const auto& fragment :
          scrollable_area->GetLayoutBox()->PhysicalFragments()) {
-      if (auto* sticky_descendants = fragment.StickyDescendants()) {
-        if (sticky_descendants->Contains(sticky)) {
+      for (const auto& item : fragment.StickyDescendants()) {
+        if (item.GetIfConsumed() == sticky) {
           return true;
         }
       }

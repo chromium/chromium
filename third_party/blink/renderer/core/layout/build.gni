@@ -544,6 +544,7 @@ blink_core_sources_layout = [
   "simplified_oof_layout_algorithm.h",
   "space_utils.cc",
   "space_utils.h",
+  "split_axis_item.h",
   "style_variant.h",
   "svg/layout_svg_block.cc",
   "svg/layout_svg_block.h",

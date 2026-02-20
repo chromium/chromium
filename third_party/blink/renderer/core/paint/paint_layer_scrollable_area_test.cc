@@ -2348,8 +2348,7 @@ TEST_P(PaintLayerScrollableAreaTest, SingleAxisScrollableAxes) {
   EXPECT_EQ(kPhysicalAxesBoth, view_scrollable->ScrollableAxes());
 
   const auto* view_fragment = layout_view->GetPhysicalFragment(0);
-  ASSERT_TRUE(view_fragment->StickyDescendants());
-  EXPECT_EQ(1u, view_fragment->StickyDescendants()->size());
+  EXPECT_EQ(1u, view_fragment->StickyDescendants().size());
 
   // --- Print (Paginated) Layout ---
 
@@ -2378,10 +2377,7 @@ TEST_P(PaintLayerScrollableAreaTest, SingleAxisScrollableAxes) {
   // PhysicalFragment::kPageBorderBox boundary during paginated layout, so it
   // does not propagate up to the root.
   const auto* printed_view_fragment = layout_view->GetPhysicalFragment(0);
-  const auto* sticky_descendants = printed_view_fragment->StickyDescendants();
-  wtf_size_t sticky_count =
-      sticky_descendants ? sticky_descendants->size() : 0u;
-  EXPECT_EQ(0u, sticky_count);
+  EXPECT_EQ(0u, printed_view_fragment->StickyDescendants().size());
 
   // --- Teardown ---
 

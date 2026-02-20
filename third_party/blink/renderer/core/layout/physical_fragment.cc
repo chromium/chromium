@@ -733,6 +733,18 @@ void PhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(oof_data_);
 }
 
+const GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>&
+PhysicalFragment::StickyDescendants() const {
+  if (propagated_data_ && propagated_data_->sticky_descendants) {
+    return *propagated_data_->sticky_descendants;
+  }
+  DEFINE_STATIC_LOCAL(
+      Persistent<GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>, empty,
+      (MakeGarbageCollected<
+          GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>()));
+  return *empty;
+}
+
 bool PhysicalFragment::DependsOnPercentageBlockSize(
     const FragmentBuilder& builder) {
   if (!builder.node_ || builder.node_.IsInline()) {
