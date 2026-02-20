@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
@@ -525,12 +526,12 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue& args) {
 #if BUILDFLAG(IS_CHROMEOS)
 void AboutHandler::HandleOpenDiagnostics(const base::ListValue& args) {
   DCHECK(args.empty());
-  chrome::ShowDiagnosticsApp(profile_);
+  ash::ShowDiagnosticsApp(profile_);
 }
 
 void AboutHandler::HandleOpenFirmwareUpdates(const base::ListValue& args) {
   DCHECK(args.empty());
-  chrome::ShowFirmwareUpdatesApp(profile_);
+  ash::ShowFirmwareUpdatesApp(profile_);
 }
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue& args) {

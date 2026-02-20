@@ -162,25 +162,6 @@ void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point);
-
-void ShowGraduationApp(Profile* profile);
-
-void ShowPrintManagementApp(Profile* profile);
-
-void ShowConnectivityDiagnosticsApp(Profile* profile);
-
-void ShowScanningApp(Profile* profile);
-
-void ShowDiagnosticsApp(Profile* profile);
-
-void ShowFirmwareUpdatesApp(Profile* profile);
-
-void ShowShortcutCustomizationApp(Profile* profile);
-// The `action` and `category` will be appended the app URL in the following
-// format: url?action={action}&category={category}.
-void ShowShortcutCustomizationApp(Profile* profile,
-                                  const std::string& action,
-                                  const std::string& category);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

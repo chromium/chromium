@@ -71,10 +71,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
-#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #else
@@ -304,19 +302,6 @@ void ShowSiteSettingsFileSystemImpl(Browser* browser,
   params.browser = browser;
   Navigate(&params);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ShowSystemAppInternal(Profile* profile,
-                           const ash::SystemWebAppType type,
-                           const ash::SystemAppLaunchParams& params) {
-  ash::LaunchSystemWebAppAsync(profile, type, params);
-}
-void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
-  ash::SystemAppLaunchParams params;
-  params.launch_source = apps::LaunchSource::kUnknown;
-  ash::LaunchSystemWebAppAsync(profile, type, params);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 Browser* GetOrCreateBrowserForProfile(Profile* profile) {
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
@@ -712,50 +697,6 @@ void ShowAppManagementPage(Profile* profile,
       {chromeos::settings::mojom::kAppDetailsSubpagePath, "?id=", app_id});
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
                                                                sub_page);
-}
-
-void ShowGraduationApp(Profile* profile) {
-  ash::SystemAppLaunchParams params;
-  params.launch_source = apps::LaunchSource::kFromOtherApp;
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::GRADUATION, params);
-}
-
-void ShowPrintManagementApp(Profile* profile) {
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::PRINT_MANAGEMENT);
-}
-
-void ShowConnectivityDiagnosticsApp(Profile* profile) {
-  ShowSystemAppInternal(profile,
-                        ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
-}
-
-void ShowScanningApp(Profile* profile) {
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::SCANNING);
-}
-
-void ShowDiagnosticsApp(Profile* profile) {
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::DIAGNOSTICS);
-}
-
-void ShowFirmwareUpdatesApp(Profile* profile) {
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
-}
-
-void ShowShortcutCustomizationApp(Profile* profile) {
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
-}
-
-void ShowShortcutCustomizationApp(Profile* profile,
-                                  const std::string& action,
-                                  const std::string& category) {
-  const std::string query_string =
-      base::StrCat({"action=", action, "&category=", category});
-  ash::SystemAppLaunchParams params;
-  params.launch_source = apps::LaunchSource::kUnknown;
-  params.url = GURL(base::StrCat(
-      {ash::kChromeUIShortcutCustomizationAppURL, "?", query_string}));
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
-                        params);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

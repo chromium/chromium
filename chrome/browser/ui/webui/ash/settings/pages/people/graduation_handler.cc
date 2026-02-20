@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 
 namespace ash::settings {
 
@@ -30,7 +30,7 @@ void GraduationHandler::BindInterface(
 }
 
 void GraduationHandler::LaunchGraduationApp() {
-  chrome::ShowGraduationApp(profile_);
+  ash::ShowGraduationApp(profile_);
 }
 
 void GraduationHandler::AddObserver(

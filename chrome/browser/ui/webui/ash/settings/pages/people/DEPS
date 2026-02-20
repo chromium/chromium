@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/signin",
   "+chrome/browser/sync",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/ui_features.h",
   "+chrome/browser/ui/webui/ash/account_manager",
   "+chrome/browser/ui/webui/ash/add_supervision",
@@ -40,3 +39,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "graduation_handler\.cc": [
+    "+chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h",
+  ],
+}

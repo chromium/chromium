@@ -27,6 +27,7 @@ include_rules = [
   "+chrome/browser/ui/ash/cast_config",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
+  "+chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",

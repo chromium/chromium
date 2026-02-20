@@ -48,6 +48,7 @@
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -733,7 +734,7 @@ void SystemTrayClientImpl::ShowMultiDeviceSetup() {
 }
 
 void SystemTrayClientImpl::ShowFirmwareUpdate() {
-  chrome::ShowFirmwareUpdatesApp(ProfileManager::GetActiveUserProfile());
+  ash::ShowFirmwareUpdatesApp(ProfileManager::GetActiveUserProfile());
 }
 
 void SystemTrayClientImpl::SetLocaleAndExit(

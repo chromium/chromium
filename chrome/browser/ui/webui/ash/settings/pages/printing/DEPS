@@ -16,7 +16,7 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/local_discovery",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",

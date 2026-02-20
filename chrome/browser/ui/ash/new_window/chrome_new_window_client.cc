@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -510,7 +511,7 @@ void ChromeNewWindowClient::RestoreTab() {
 }
 
 void ChromeNewWindowClient::ShowShortcutCustomizationApp() {
-  chrome::ShowShortcutCustomizationApp(ProfileManager::GetActiveUserProfile());
+  ash::ShowShortcutCustomizationApp(ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeNewWindowClient::ShowTaskManager() {
@@ -518,7 +519,7 @@ void ChromeNewWindowClient::ShowTaskManager() {
 }
 
 void ChromeNewWindowClient::OpenDiagnostics() {
-  chrome::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
+  ash::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeNewWindowClient::OpenFeedbackPage(
