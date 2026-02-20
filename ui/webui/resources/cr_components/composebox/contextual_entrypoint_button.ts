@@ -157,6 +157,18 @@ export class ContextualEntrypointButtonElement extends
     this.$.menu.showAt(entrypoint);
   }
 
+  protected getWrapperId_(): string {
+    return this.glifAnimationState !== GlifAnimationState.INELIGIBLE ?
+        'glowWrapper' :
+        '';
+  }
+
+  protected getWrapperCssClass_(): string {
+    return this.glifAnimationState !== GlifAnimationState.INELIGIBLE ?
+        'glow-container' :
+        '';
+  }
+
   protected hasAllowedInputs_(): boolean {
     return !!this.inputState &&
         (this.inputState.allowedModels.length > 0 ||

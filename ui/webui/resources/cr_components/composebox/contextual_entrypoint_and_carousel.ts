@@ -1018,6 +1018,12 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     });
   }
 
+  protected shouldShowVoiceSearchAtBottom_(): boolean {
+    return (this.searchboxLayoutMode === 'TallBottomContext' ||
+            !this.searchboxLayoutMode) &&
+        this.showVoiceSearch;
+  }
+
   protected onVoiceSearchClick_() {
     this.fire('open-voice-search');
   }
