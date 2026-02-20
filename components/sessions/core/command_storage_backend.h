@@ -92,11 +92,11 @@ class SESSIONS_EXPORT CommandStorageBackend
   static bool IsValidFileForTest(const base::FilePath& path);
 
   // Returns the path the files are being written to.
-  const base::FilePath current_path() const {
+  const base::FilePath current_path_for_testing() const {
     return open_file_ ? open_file_->path : base::FilePath();
   }
 
-  bool IsFileOpen() const { return open_file_.get() != nullptr; }
+  bool IsFileOpenForTesting() const { return open_file_.get() != nullptr; }
 
   base::SequencedTaskRunner* owning_task_runner() {
     return base::RefCountedDeleteOnSequence<

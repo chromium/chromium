@@ -157,7 +157,7 @@ TEST_F(CommandStorageBackendTest, MigrateOther) {
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  const auto path = backend->current_path();
+  const auto path = backend->current_path_for_testing();
   EXPECT_EQ(file_path().DirName(), path.DirName());
   auto base_name = file_path().BaseName().value();
   EXPECT_EQ(base_name, path.BaseName().value().substr(0, base_name.length()));
@@ -356,7 +356,7 @@ TEST_F(CommandStorageBackendTest, IsValidFileWithInvalidFiles) {
 
 TEST_F(CommandStorageBackendTest, IsNotValidFileWithoutMarker) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
-  const auto path = backend->current_path();
+  const auto path = backend->current_path_for_testing();
   backend->AppendCommands({}, true, base::DoNothing());
   backend = nullptr;
 
@@ -738,19 +738,19 @@ TEST_F(CommandStorageBackendTest, NewFileOnTruncate) {
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  const base::FilePath path1 = backend->current_path();
+  const base::FilePath path1 = backend->current_path_for_testing();
 
   // Path shouldn't change if truncate is false.
   commands.clear();
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), false, base::DoNothing());
-  EXPECT_EQ(path1, backend->current_path());
+  EXPECT_EQ(path1, backend->current_path_for_testing());
 
   // Path should change on truncate, and `path1` should not be removed.
   commands.clear();
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  const base::FilePath path2 = backend->current_path();
+  const base::FilePath path2 = backend->current_path_for_testing();
   EXPECT_TRUE(!path2.empty());
   EXPECT_NE(path1, path2);
   EXPECT_TRUE(base::PathExists(path1));
@@ -760,7 +760,7 @@ TEST_F(CommandStorageBackendTest, NewFileOnTruncate) {
   commands.clear();
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  const base::FilePath path3 = backend->current_path();
+  const base::FilePath path3 = backend->current_path_for_testing();
   EXPECT_TRUE(!path3.empty());
   EXPECT_NE(path1, path3);
   EXPECT_NE(path2, path3);
@@ -784,17 +784,17 @@ TEST_F(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  EXPECT_TRUE(backend->IsFileOpen());
+  EXPECT_TRUE(backend->IsFileOpenForTesting());
 
   // Make appending fail, which should close the file.
   backend->ForceAppendCommandsToFailForTesting();
   backend->AppendCommands({}, false, base::DoNothing());
-  EXPECT_FALSE(backend->IsFileOpen());
+  EXPECT_FALSE(backend->IsFileOpenForTesting());
 
   // Append again, with another fail. Should attempt to reopen file and file.
   backend->ForceAppendCommandsToFailForTesting();
   backend->AppendCommands({}, true, base::DoNothing());
-  EXPECT_FALSE(backend->IsFileOpen());
+  EXPECT_FALSE(backend->IsFileOpenForTesting());
 
   // Reopen and read last session. Should get `data` and marker.
   backend = nullptr;
@@ -814,7 +814,7 @@ TEST_F(CommandStorageBackendTest, PathTimeIncreases) {
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  const base::FilePath path1 = backend->current_path();
+  const base::FilePath path1 = backend->current_path_for_testing();
   EXPECT_FALSE(path1.empty());
   base::Time path1_time;
   EXPECT_TRUE(CommandStorageBackend::TimestampFromPath(path1, path1_time));
@@ -823,7 +823,7 @@ TEST_F(CommandStorageBackendTest, PathTimeIncreases) {
   SessionCommands commands2;
   commands2.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands2), true, base::DoNothing());
-  const base::FilePath path2 = backend->current_path();
+  const base::FilePath path2 = backend->current_path_for_testing();
   EXPECT_FALSE(path2.empty());
   EXPECT_NE(path1, path2);
   base::Time path2_time;
