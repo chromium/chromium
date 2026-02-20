@@ -697,9 +697,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  protected preventFocus_(e: FocusEvent) {
-    e.preventDefault();
-    e.stopPropagation();
+  protected onContextMenuContainerMouseDown_(e: FocusEvent) {
+    // Special treatment for the "Tall" layout variants where not clicking on an
+    // inner element should be treated as clicking on a non-focusable area.
+    if (this.searchboxLayoutMode !== 'Compact' &&
+        (e.target instanceof HTMLElement &&
+         e.target.id === 'contextMenuContainer')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
 
   protected onContextMenuContainerClick_(e: MouseEvent) {

@@ -83,7 +83,6 @@
 
 .dropdown-item:hover {
   background-color: var(--cr-hover-background-color);
-  outline: none;
 }
 
 .dropdown-item[disabled] {

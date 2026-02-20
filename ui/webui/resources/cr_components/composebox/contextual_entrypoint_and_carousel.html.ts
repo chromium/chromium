@@ -69,8 +69,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   `;
 
   const contextMenu = html`
-      <div class="context-menu-container" part="context-menu-and-tools"
-          @mousedown="${this.preventFocus_}"
+      <div class="context-menu-container" id="contextMenuContainer"
+          part="context-menu-and-tools"
+          @mousedown="${this.onContextMenuContainerMouseDown_}"
           @click="${this.onContextMenuContainerClick_}">
         ${this.shouldHideEntrypointButton_ ? '' : html`
           ${this.showModelPicker ? html`
