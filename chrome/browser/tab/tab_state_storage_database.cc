@@ -354,17 +354,18 @@ bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
 }
 
 OpenTransaction* TabStateStorageDatabase::CreateTransaction() {
-  DCHECK(!open_transaction_) << "An open transaction already exists.";
+  if (!open_transaction_) {
+    DCHECK_EQ(0, open_transaction_count_);
+    open_transaction_.emplace(&db_, base::PassKey<TabStateStorageDatabase>());
+    sql::Transaction* transaction_ptr =
+        open_transaction_->GetTransaction(base::PassKey<TabStateStorageDatabase>());
 
-  open_transaction_.emplace(&db_, base::PassKey<TabStateStorageDatabase>());
-  sql::Transaction* transaction_ptr = open_transaction_->GetTransaction(
-      base::PassKey<TabStateStorageDatabase>());
-
-  if (!transaction_ptr->Begin()) {
-    DLOG(ERROR) << "Failed to begin transaction.";
-    open_transaction_->MarkFailed();
+    if (!transaction_ptr->Begin()) {
+      DLOG(ERROR) << "Failed to begin transaction.";
+      open_transaction_->MarkFailed();
+    }
   }
-
+  open_transaction_count_++;
   return &*open_transaction_;
 }
 
@@ -372,6 +373,13 @@ bool TabStateStorageDatabase::CloseTransaction(
     OpenTransaction* open_transaction) {
   DCHECK(open_transaction_) << "There is no open transaction.";
   DCHECK_EQ(open_transaction, &*open_transaction_) << "Transaction mismatch.";
+  DCHECK_GT(open_transaction_count_, 0);
+
+  open_transaction_count_--;
+  if (open_transaction_count_ > 0) {
+    return true;
+  }
+
   sql::Transaction* transaction = open_transaction->GetTransaction(
       base::PassKey<TabStateStorageDatabase>());
 

@@ -166,6 +166,7 @@ class TabStateStorageDatabase {
   sql::Database db_;
   sql::MetaTable meta_table_;
   std::optional<OpenTransaction> open_transaction_;
+  int open_transaction_count_ = 0;
 
   // A map of window tags to their associated keys for OTR payloads.
   absl::flat_hash_map<std::string, std::vector<uint8_t>> keys_;
