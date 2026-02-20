@@ -139,6 +139,7 @@ import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPoli
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
+import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
@@ -862,6 +863,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mOverviewColorSupplier,
                         mInsetObserver,
                         mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
+    }
+
+    @Override
+    protected void initializeToolbar() {
+        if (OpenInAppUtils.isOpenInAppAvailable()) {
+            View controlContainer = mActivity.findViewById(R.id.control_container);
+            assert controlContainer != null;
+
+            ViewGroup omniboxChipContainer =
+                    controlContainer.findViewById(R.id.omnibox_chip_container);
+            mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer);
+        }
+
+        super.initializeToolbar();
     }
 
     @Override

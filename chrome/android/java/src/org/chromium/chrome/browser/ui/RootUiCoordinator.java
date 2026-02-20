@@ -126,7 +126,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDeleg
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.open_in_app.OpenInAppEntryPoint;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
-import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -1811,12 +1810,6 @@ public class RootUiCoordinator
                             },
                             TabWindowManagerSingleton::getInstance,
                             this::bringTabToFront);
-
-            if (OpenInAppUtils.isOpenInAppAvailable()) {
-                ViewGroup omniboxChipContainer =
-                        controlContainer.findViewById(R.id.omnibox_chip_container);
-                mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer);
-            }
 
             mToolbarManager =
                     new ToolbarManager(

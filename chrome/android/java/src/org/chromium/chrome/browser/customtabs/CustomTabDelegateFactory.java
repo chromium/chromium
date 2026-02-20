@@ -204,6 +204,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                     CustomTabAuthUrlHeuristics.AuthScheme.COUNT);
         }
 
+        @Override
+        public boolean allowExternalNavigationForHttpProtocols(GURL url) {
+            return false;
+        }
+
         public void resumeDelayedVerificationForTesting() {
             mAuthTabVerifier.onFinishNativeInitialization();
         }
