@@ -33,8 +33,9 @@
 namespace actor::ui {
 
 // Constructs a MouseMove that may have a computed_target.
-AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
-                               const PageTarget& target);
+std::pair<std::optional<gfx::Point>, TargetSource> ComputeMouseTarget(
+    tabs::TabInterface::Handle tab,
+    const PageTarget& target);
 namespace {
 
 using ::actor::mojom::ActionResultCode;
@@ -59,8 +60,9 @@ auto NoUiEvents = [](const T& tr) -> EventSequence<AsyncUiEvent> {
 
 constexpr absl::Overload PreToolEventsFn{
     [](const ClickToolRequest& tr) {
+      auto [pt, source] = ComputeMouseTarget(tr.GetTabHandle(), tr.GetTarget());
       return EventSequence<AsyncUiEvent>{
-          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget()),
+          MouseMove(tr.GetTabHandle(), pt, source),
           MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
@@ -78,15 +80,17 @@ constexpr absl::Overload PreToolEventsFn{
 #endif
     NoUiEvents<MediaControlToolRequest>,
     [](const MoveMouseToolRequest& tr) {
+      auto [pt, source] = ComputeMouseTarget(tr.GetTabHandle(), tr.GetTarget());
       return EventSequence<AsyncUiEvent>{
-          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
+          MouseMove(tr.GetTabHandle(), pt, source)};
     },
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
     [](const TypeToolRequest& tr) {
+      auto [pt, source] = ComputeMouseTarget(tr.GetTabHandle(), tr.GetTarget());
       return EventSequence<AsyncUiEvent>{
-          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
+          MouseMove(tr.GetTabHandle(), pt, source)};
     },
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>,
