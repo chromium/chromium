@@ -136,7 +136,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       attachmentFileTypes_: {type: Array},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
-      pendingFiles_: {type: Object},
       addedTabsIds_: {type: Object},
       imageFileTypes_: {type: Array},
       composeboxShowPdfUpload_: {
@@ -187,8 +186,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor addedTabsIds_: Map<number, UnguessableToken> = new Map();
-  protected accessor pendingFiles_: Map<UnguessableToken, FileUploadStatus> =
-      new Map();
   protected accessor imageFileTypes_: string[] =
       loadTimeData.getString('composeboxImageFileTypes').split(',');
   protected accessor uploadButtonDisabled_: boolean = false;
@@ -509,7 +506,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
       this.files_ = new Map([...this.files_]);
     } else {
-      this.pendingFiles_.set(token, status);
+      file = {
+        uuid: token,
+        name: '',
+        objectUrl: null,
+        dataUrl: null,
+        type: '',
+        status: status,
+        url: null,
+        tabId: null,
+        isDeletable: true,
+      };
+      this.onFileContextAdded(file);
     }
     return {file, errorMessage};
   }
@@ -633,7 +641,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.handleProcessFilesError_(ProcessFilesError.INVALID_TYPE);
       return;
     }
-    const pendingStatus = this.pendingFiles_.get(fileAttachment.uuid);
+    const pendingStatus = this.files_.get(fileAttachment.uuid)?.status;
     const composeboxFile: ComposeboxFile = {
       uuid: fileAttachment.uuid,
       name: fileAttachment.name,
@@ -645,9 +653,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       tabId: null,
       isDeletable: true,
     };
-    if (pendingStatus) {
-      this.pendingFiles_.delete(fileAttachment.uuid);
-    }
     this.onFileContextAdded(composeboxFile);
   }
 

@@ -15,7 +15,8 @@ ${this.hasAllowedInputs_() ? html`
     ${this.showContextMenuDescription ? html`
       <cr-button id="entrypoint" class="ai-mode-button"
           @click="${this.onEntrypointClick_}"
-          title="${this.i18n('addContextTitle')}" noink>
+          title="${this.i18n('addContextTitle')}"
+          ?disabled="${this.uploadButtonDisabled}" noink>
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
         <span id="description"
             @animationend="${this.onDescriptionAnimationEnd_}">
@@ -26,7 +27,8 @@ ${this.hasAllowedInputs_() ? html`
       <cr-icon-button id="entrypoint" class="ai-mode-button"
           part="context-menu-entrypoint-icon" iron-icon="cr:add"
           @click="${this.onEntrypointClick_}"
-          title="${this.i18n('addContextTitle')}" noink>
+          title="${this.i18n('addContextTitle')}"
+          ?disabled="${this.uploadButtonDisabled}" noink>
       </cr-icon-button>
     `}
     ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`

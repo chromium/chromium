@@ -90,6 +90,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
                 .fileNum="${this.files_.size}"
                 .searchboxLayoutMode="${this.searchboxLayoutMode}"
                 .inputState="${this.inputState}"
+                ?upload-button-disabled="${this.uploadButtonDisabled_}"
                 ?show-context-menu-description="${
                       this.shouldShowDescription_()}"
                 glif-animation-state="${this.contextMenuGlifAnimationState}">
