@@ -79,8 +79,13 @@ class DisplayTest : public test::ExoTestBase {
     WMHelper::GetInstance()->RegisterAppPropertyResolver(std::move(resolver));
   }
 
+  void TearDown() override {
+    resolver_ = nullptr;
+    test::ExoTestBase::TearDown();
+  }
+
  private:
-  raw_ptr<TestPropertyResolver, DanglingUntriaged> resolver_;
+  raw_ptr<TestPropertyResolver> resolver_;
 };
 
 TEST_F(DisplayTest, CreateSurface) {
