@@ -130,6 +130,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
     data_source_delegate_.reset();
     data_device_.reset();
     seat_.reset();
+    drag_drop_controller_ = nullptr;
     test::ExoTestBase::TearDown();
   }
 
@@ -151,8 +152,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
     return test::ExoTestHelper::CreateBuffer(size);
   }
 
-  raw_ptr<ash::DragDropController, DanglingUntriaged> drag_drop_controller_ =
-      nullptr;
+  raw_ptr<ash::DragDropController> drag_drop_controller_ = nullptr;
   std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
