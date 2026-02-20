@@ -26,6 +26,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -515,6 +516,26 @@ tabs::TabInterface* TabModelJniBridge::GetOpenerForTab(tabs::TabHandle target) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   return Java_TabModelJniBridge_getOpenerForTab(env, jobj, target_tab);
+}
+
+tabs::TabInterface* TabModelJniBridge::InsertWebContentsAt(
+    int index,
+    std::unique_ptr<content::WebContents> web_contents,
+    bool should_pin,
+    std::optional<tab_groups::TabGroupId> group) {
+  JNIEnv* env = AttachCurrentThread();
+
+  TabAndroid* new_tab = Java_TabModelJniBridge_insertWebContentsAt(
+      env, java_object_.get(env), index, web_contents->GetJavaWebContents(),
+      should_pin, tab_groups::TabGroupId::ToOptionalToken(group));
+
+  // If new tab creation is successful, Java assumes ownership of the lifetime
+  // of the WebContents.
+  if (new_tab) {
+    web_contents.release();
+  }
+
+  return new_tab;
 }
 
 content::WebContents* TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {

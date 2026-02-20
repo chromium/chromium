@@ -9,7 +9,9 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/gfx/range/range.h"
 
 namespace {
 
@@ -46,6 +48,27 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, AddToGroupWithOutOfOrderHandles) {
   EXPECT_EQ(tab_c->GetHandle(), tab_list->GetTab(0)->GetHandle());
   EXPECT_EQ(tab_a->GetHandle(), tab_list->GetTab(1)->GetHandle());
   EXPECT_EQ(tab_b->GetHandle(), tab_list->GetTab(2)->GetHandle());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, InsertWebContentsAt) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+  int initial_count = tab_list->GetTabCount();
+
+  // Insert WebContents to a new tab at index 1.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  auto* web_contents_ptr = web_contents.get();
+  tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
+      /*index=*/1, std::move(web_contents), /*should_pin=*/false,
+      /*group=*/std::nullopt);
+
+  // Check the new tab.
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(initial_count + 1, tab_list->GetTabCount());
+  EXPECT_EQ(new_tab, tab_list->GetTab(1));
+  EXPECT_EQ(web_contents_ptr, new_tab->GetContents());
 }
 
 }  // namespace

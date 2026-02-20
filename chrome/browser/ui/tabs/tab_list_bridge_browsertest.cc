@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 
 #include <deque>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -975,6 +977,29 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {
   EXPECT_THAT(tab_list_interface->GetAllTabs(),
               testing::ElementsAre(MatchesTab(url2), MatchesTab(url1),
                                    MatchesTab(url3)));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, InsertWebContentsAt) {
+  SetupTabs(browser(), 3);
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+  EXPECT_EQ(3, tab_list_interface->GetTabCount());
+
+  // Insert WebContents to a new tab.
+  auto web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          browser()->profile(),
+          content::SiteInstance::Create(browser()->profile())));
+  auto* web_contents_ptr = web_contents.get();
+  tabs::TabInterface* new_tab = tab_list_interface->InsertWebContentsAt(
+      2, std::move(web_contents), false, std::nullopt);
+
+  // Now we should have 4 tabs.
+  EXPECT_EQ(4, tab_list_interface->GetTabCount());
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(new_tab, tab_list_interface->GetTab(2));
+  EXPECT_EQ(web_contents_ptr, new_tab->GetContents());
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, DiscardTab) {

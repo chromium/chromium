@@ -51,6 +51,11 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
   tabs::TabInterface* OpenTab(const GURL& url, int index) override;
   void SetOpenerForTab(tabs::TabHandle target, tabs::TabHandle opener) override;
   tabs::TabInterface* GetOpenerForTab(tabs::TabHandle target) override;
+  tabs::TabInterface* InsertWebContentsAt(
+      int index,
+      std::unique_ptr<content::WebContents> web_contents,
+      bool should_pin,
+      std::optional<tab_groups::TabGroupId> group) override;
   content::WebContents* DiscardTab(tabs::TabHandle tab) override;
   tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;

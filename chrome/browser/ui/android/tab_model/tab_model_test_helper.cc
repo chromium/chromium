@@ -6,7 +6,9 @@
 
 #include <jni.h>
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -163,6 +165,15 @@ void TestTabModel::SetOpenerForTab(tabs::TabHandle target,
 }
 
 tabs::TabInterface* TestTabModel::GetOpenerForTab(tabs::TabHandle target) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+tabs::TabInterface* TestTabModel::InsertWebContentsAt(
+    int index,
+    std::unique_ptr<content::WebContents> web_contents,
+    bool should_pin,
+    std::optional<tab_groups::TabGroupId> group) {
   NOTIMPLEMENTED();
   return nullptr;
 }
@@ -476,6 +487,15 @@ void OwningTestTabModel::SetOpenerForTab(tabs::TabHandle target,
 
 tabs::TabInterface* OwningTestTabModel::GetOpenerForTab(
     tabs::TabHandle target) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+tabs::TabInterface* OwningTestTabModel::InsertWebContentsAt(
+    int index,
+    std::unique_ptr<content::WebContents> web_contents,
+    bool should_pin,
+    std::optional<tab_groups::TabGroupId> group) {
   NOTIMPLEMENTED();
   return nullptr;
 }

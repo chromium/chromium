@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 
+#include <cstddef>
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -170,6 +173,18 @@ tabs::TabInterface* TabListBridge::GetOpenerForTab(tabs::TabHandle target) {
   const int target_index = GetIndexOfTab(target);
   CHECK_NE(target_index, TabStripModel::kNoTab);
   return tab_strip_->GetOpenerOfTabAt(target_index);
+}
+
+tabs::TabInterface* TabListBridge::InsertWebContentsAt(
+    int index,
+    std::unique_ptr<content::WebContents> web_contents,
+    bool should_pin,
+    std::optional<tab_groups::TabGroupId> group) {
+  AddTabTypes add_types =
+      should_pin ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_NONE;
+  int new_index = tab_strip_->InsertWebContentsAt(
+      index, std::move(web_contents), add_types, group);
+  return tab_strip_->GetTabAtIndex(new_index);
 }
 
 content::WebContents* TabListBridge::DiscardTab(tabs::TabHandle tab) {

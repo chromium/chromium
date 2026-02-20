@@ -288,7 +288,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     private @JniType("TabAndroid*") @Nullable Tab createTabWithWebContents(
-            Tab parent,
+            @Nullable Tab parent,
             Profile profile,
             WebContents webContents,
             int index,
@@ -303,6 +303,35 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         webContents.getVisibleUrl(),
                         index,
                         /* addTabToModel= */ CompletableFuture.completedFuture(true));
+    }
+
+    /**
+     * Insert the given WebContents to a new Tab.
+     *
+     * @param index The index to create the tab at.
+     * @param webContents A {@link WebContents} object.
+     * @param shouldPin Whether the tab should be pinned.
+     * @param tabGroupId The group that the tab should be added to (optional).
+     * @return The newly created tab.
+     */
+    @CalledByNative
+    private @JniType("TabAndroid*") @Nullable Tab insertWebContentsAt(
+            int index,
+            WebContents webContents,
+            boolean shouldPin,
+            @JniType("std::optional<base::Token>") @Nullable Token tabGroupId) {
+        Tab tab =
+                createTabWithWebContents(
+                        null,
+                        mProfile,
+                        webContents,
+                        index,
+                        TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                        shouldPin);
+        if (tab != null && tabGroupId != null) {
+            addTabsToGroup(tabGroupId, List.of(tab));
+        }
+        return tab;
     }
 
     @CalledByNative

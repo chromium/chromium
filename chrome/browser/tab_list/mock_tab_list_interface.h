@@ -55,6 +55,13 @@ class MockTabListInterface : public TabListInterface {
               GetOpenerForTab,
               (tabs::TabHandle),
               (override));
+  MOCK_METHOD(tabs::TabInterface*,
+              InsertWebContentsAt,
+              (int,
+               std::unique_ptr<content::WebContents>,
+               bool,
+               std::optional<tab_groups::TabGroupId>),
+              (override));
   MOCK_METHOD(content::WebContents*, DiscardTab, (tabs::TabHandle), (override));
   MOCK_METHOD(tabs::TabInterface*, DuplicateTab, (tabs::TabHandle), (override));
   MOCK_METHOD(tabs::TabInterface*, GetTab, (int), (override));
