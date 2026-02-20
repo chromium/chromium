@@ -1187,6 +1187,7 @@ void SingleThreadProxy::DoPainting() {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
 
+  layer_tree_host_->WillBeginImplCommit();
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics =
       layer_tree_host_->TakeBeginMainFrameMetrics();
   host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,

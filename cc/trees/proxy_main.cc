@@ -491,6 +491,8 @@ void ProxyMain::BeginMainFrame(
 
   current_pipeline_stage_ = NO_PIPELINE_STAGE;
 
+  layer_tree_host_->WillBeginImplCommit();
+
   // Notify the impl thread that the main thread is ready to commit. This will
   // begin the commit process, which is blocking from the main thread's
   // point of view, but asynchronously performed on the impl thread,
@@ -523,10 +525,12 @@ void ProxyMain::BeginMainFrame(
       layer_tree_host_->WaitForProtectedSequenceCompletion();
   }
 
-  // For Blink implementations, this updates frame throttling and
-  // delivers IntersectionObserver events for Chromium-internal customers
-  // but *not* script-created IntersectionObserver. See
+  // For Blink implementations, this is the typical hook that will deliver
+  // intersection observer events for chromium-internal customers, see:
   // blink::LocalFrameView::RunPostLifecycleSteps.
+  // Canvas.onpaint requires running post lifecycle steps before the commit, so
+  // there are some scenarios where the post lifecycle steps are run above, via
+  // WillBeginImplCommit.
   layer_tree_host_->DidBeginMainFrame();
   if (blocking)
     layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);

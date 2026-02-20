@@ -372,6 +372,14 @@ void LayerTreeHost::WillBeginMainFrame() {
   client_->WillBeginMainFrame();
 }
 
+void LayerTreeHost::WillBeginImplCommit() {
+  if (client_) {
+    base::AutoReset<bool> in_will_begin_impl_commit(
+        &inside_will_begin_impl_commit_, true);
+    client_->WillBeginImplCommit();
+  }
+}
+
 void LayerTreeHost::DidBeginMainFrame() {
   DCHECK(IsMainThread());
   inside_main_frame_ = false;
@@ -471,6 +479,9 @@ void LayerTreeHost::WaitForProtectedSequenceCompletion() const {
 
 void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());
+  // We should not be running code that modifies commit state just prior to the
+  // impl commit.
+  CHECK(!inside_will_begin_impl_commit_);
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
     commit_completion_event_->Wait();

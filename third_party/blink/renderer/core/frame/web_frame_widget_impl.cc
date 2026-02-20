@@ -1679,12 +1679,21 @@ AnimationFrameTimingInfo* WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
       *local_root_frame->DomWindow(), rendering_update_time);
 }
 
+void WebFrameWidgetImpl::WillBeginImplCommit() {
+  LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
+  CHECK(local_root_frame);
+
+  if (LocalFrameView* frame_view = local_root_frame->View()) {
+    frame_view->WillBeginImplCommit();
+  }
+}
+
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
   CHECK(local_root_frame);
 
   if (LocalFrameView* frame_view = local_root_frame->View()) {
-    frame_view->RunPostLifecycleSteps();
+    frame_view->DidBeginMainFrame();
   }
 
   if (Page* page = local_root_frame->GetPage()) {

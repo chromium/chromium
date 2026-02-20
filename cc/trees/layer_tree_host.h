@@ -790,6 +790,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // LayerTreeHost interface to Proxy.
   void WillBeginMainFrame();
+  void WillBeginImplCommit();
   void DidBeginMainFrame();
   void BeginMainFrame(const viz::BeginFrameArgs& args);
   void BeginMainFrameNotExpectedSoon();
@@ -1115,6 +1116,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Track when we're inside a main frame to see if compositor is being
   // destroyed midway which causes a crash. crbug.com/654672
   bool inside_main_frame_ = false;
+
+  // Track when we're inside `WillBeginImplCommit` to ensure commit state is
+  // not modified.
+  bool inside_will_begin_impl_commit_ = false;
 
   // Set to force a commit during BeginMainFrame even if there are no actual
   // rendering changes, to ensure the bits in CommitState are propagated.

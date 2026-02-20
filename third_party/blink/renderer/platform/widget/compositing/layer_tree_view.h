@@ -82,6 +82,7 @@ class PLATFORM_EXPORT LayerTreeView
   // Ensure such callbacks have a `source_frame_number` to ensure callbacks
   // associated with the previous delegate are safely discarded.
   void WillBeginMainFrame() override;
+  void WillBeginImplCommit() override;
   void DidBeginMainFrame() override;
   void WillUpdateLayers() override;
   void DidUpdateLayers() override;
