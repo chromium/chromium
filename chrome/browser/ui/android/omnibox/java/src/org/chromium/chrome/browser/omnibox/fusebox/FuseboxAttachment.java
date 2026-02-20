@@ -10,11 +10,13 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,6 +32,9 @@ public final class FuseboxAttachment extends ListItem {
     public final byte[] data;
     public final @Nullable Tab tab;
     public final @Nullable Integer tabId;
+    public final long startTime;
+    public final @FuseboxAttachmentButtonType int buttonType;
+
     private boolean mIsUploadComplete;
     private boolean mIsFetchingTabDataFromCache;
     private @Nullable String mToken;
@@ -40,7 +45,9 @@ public final class FuseboxAttachment extends ListItem {
             String title,
             String mimeType,
             byte[] data,
-            @Nullable Tab tab) {
+            @Nullable Tab tab,
+            @Nullable Long optionalStartTime,
+            @FuseboxAttachmentButtonType int buttonType) {
         super(itemType, new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS));
         this.thumbnail = thumbnail;
         this.title = title;
@@ -55,34 +62,63 @@ public final class FuseboxAttachment extends ListItem {
         }
         mIsUploadComplete = false;
         mToken = null;
+        startTime = optionalStartTime == null ? SystemClock.elapsedRealtime() : optionalStartTime;
+        this.buttonType = buttonType;
 
-        // Set the ATTACHMENT property to this instance after construction
+        // Set the ATTACHMENT property to this instance after construction.
         model.set(FuseboxAttachmentProperties.ATTACHMENT, this);
     }
 
-    /** Creates a FuseboxAttachment for a camera image. */
-    public static FuseboxAttachment forCameraImage(
-            @Nullable Drawable thumbnail, String title, String mimeType, byte[] data) {
+    /** Creates a FuseboxAttachment for an image from various sources. */
+    public static FuseboxAttachment forImage(
+            @Nullable Drawable thumbnail,
+            String title,
+            String mimeType,
+            byte[] data,
+            long startTime,
+            @FuseboxAttachmentButtonType int buttonType) {
         return new FuseboxAttachment(
-                FuseboxAttachmentType.ATTACHMENT_IMAGE, thumbnail, title, mimeType, data, null);
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                thumbnail,
+                title,
+                mimeType,
+                data,
+                /* tab= */ null,
+                startTime,
+                buttonType);
     }
 
     /** Creates a FuseboxAttachment for a file. */
     public static FuseboxAttachment forFile(
-            @Nullable Drawable thumbnail, String title, String mimeType, byte[] data) {
+            @Nullable Drawable thumbnail,
+            String title,
+            String mimeType,
+            byte[] data,
+            long startTime,
+            @FuseboxAttachmentButtonType int buttonType) {
         return new FuseboxAttachment(
-                FuseboxAttachmentType.ATTACHMENT_FILE, thumbnail, title, mimeType, data, null);
+                FuseboxAttachmentType.ATTACHMENT_FILE,
+                thumbnail,
+                title,
+                mimeType,
+                data,
+                /* tab= */ null,
+                startTime,
+                buttonType);
     }
 
     /** Creates a FuseboxAttachment for a tab. */
-    public static FuseboxAttachment forTab(Tab tab, Resources res) {
+    public static FuseboxAttachment forTab(
+            Tab tab, Resources res, @FuseboxAttachmentButtonType int buttonType) {
         return new FuseboxAttachment(
                 FuseboxAttachmentType.ATTACHMENT_TAB,
                 new BitmapDrawable(res, OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
                 tab.getTitle(),
                 "",
                 new byte[0],
-                tab);
+                tab,
+                /* optionalStartTime= */ null,
+                buttonType);
     }
 
     /**

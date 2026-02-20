@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -32,6 +33,7 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -73,7 +75,13 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetThumbnail() {
         FuseboxAttachment attachment =
-                FuseboxAttachment.forFile(mDrawable, "Test", "text/plain", new byte[0]);
+                FuseboxAttachment.forFile(
+                        mDrawable,
+                        "Test",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
@@ -83,7 +91,13 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetTitle_emptyString() {
         FuseboxAttachment attachment =
-                FuseboxAttachment.forFile(mDrawable, "", "text/plain", new byte[0]);
+                FuseboxAttachment.forFile(
+                        mDrawable,
+                        "",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
@@ -93,7 +107,13 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetTitle() {
         FuseboxAttachment attachment =
-                FuseboxAttachment.forFile(mDrawable, "My Attachment", "text/plain", new byte[0]);
+                FuseboxAttachment.forFile(
+                        mDrawable,
+                        "My Attachment",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
@@ -103,7 +123,13 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetDescription_withTitle() {
         FuseboxAttachment attachment =
-                FuseboxAttachment.forFile(mDrawable, "My Title", "text/plain", new byte[0]);
+                FuseboxAttachment.forFile(
+                        mDrawable,
+                        "My Title",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
 
@@ -115,10 +141,12 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testSetThumbnail_fallbackWhenNull() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(
-                        null, // null thumbnail should trigger fallback
+                        /* thumbnail= */ null, // null thumbnail should trigger fallback
                         "Test",
                         "text/plain",
-                        new byte[0]);
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
@@ -131,10 +159,12 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testUploadPending() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(
-                        null, // null thumbnail should trigger fallback
+                        /* thumbnail= */ null, // null thumbnail should trigger fallback
                         "Test",
                         "text/plain",
-                        new byte[0]);
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
 
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
@@ -159,14 +189,26 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
         // File attachment with thumbnail.
         FuseboxAttachment fileWithThumb =
-                FuseboxAttachment.forFile(mDrawable, "File", "text/plain", new byte[0]);
+                FuseboxAttachment.forFile(
+                        mDrawable,
+                        "File",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         assertEquals(
                 mDrawable,
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, fileWithThumb, context));
 
         // File attachment without thumbnail (fallback).
         FuseboxAttachment fileNoThumb =
-                FuseboxAttachment.forFile(null, "File", "text/plain", new byte[0]);
+                FuseboxAttachment.forFile(
+                        /* thumbnail= */ null,
+                        "File",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         Drawable fallback =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, fileNoThumb, context);
         assertNotNull(fallback);
@@ -174,14 +216,26 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
         // Image attachment with thumbnail.
         FuseboxAttachment imageWithThumb =
-                FuseboxAttachment.forCameraImage(mDrawable, "Image", "image/png", new byte[0]);
+                FuseboxAttachment.forImage(
+                        mDrawable,
+                        "Image",
+                        "image/png",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.CAMERA);
         assertEquals(
                 mDrawable,
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, imageWithThumb, context));
 
         // Image attachment without thumbnail (fallback).
         FuseboxAttachment imageNoThumb =
-                FuseboxAttachment.forCameraImage(null, "Image", "image/png", new byte[0]);
+                FuseboxAttachment.forImage(
+                        /* thumbnail= */ null,
+                        "Image",
+                        "image/png",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.CAMERA);
         Drawable imageFallback =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, imageNoThumb, context);
         assertNotNull(imageFallback);
@@ -193,7 +247,9 @@ public class FuseboxAttachmentViewBinderUnitTest {
         doReturn(1).when(mTab).getId();
         doReturn("Title").when(mTab).getTitle();
 
-        FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(mTab, context.getResources());
+        FuseboxAttachment tabAttachment =
+                FuseboxAttachment.forTab(
+                        mTab, context.getResources(), FuseboxAttachmentButtonType.TAB_PICKER);
         Drawable tabDrawable =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, tabAttachment, context);
         assertNotNull(tabDrawable);
@@ -201,7 +257,8 @@ public class FuseboxAttachmentViewBinderUnitTest {
         // Tab attachment without favicon (fallback).
         OmniboxResourceProvider.setTabFaviconFactory(t -> null);
         FuseboxAttachment tabAttachmentNoFavicon =
-                FuseboxAttachment.forTab(mTab, context.getResources());
+                FuseboxAttachment.forTab(
+                        mTab, context.getResources(), FuseboxAttachmentButtonType.TAB_PICKER);
         Drawable tabDrawableNoFavicon =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(
                         mModel, tabAttachmentNoFavicon, context);
