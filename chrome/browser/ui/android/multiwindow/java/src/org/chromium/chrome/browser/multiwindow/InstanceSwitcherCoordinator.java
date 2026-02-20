@@ -213,7 +213,7 @@ public class InstanceSwitcherCoordinator {
                                 mInstanceListContainer,
                                 mInactiveInstancesList,
                                 mIsInactiveListShowing,
-                                getTotalInstanceCount() < mMaxInstanceCount);
+                                shouldAllowNewWindowCreation());
                         mActiveInstancesList.setVisibility(isActiveTab ? View.VISIBLE : View.GONE);
                         mInactiveInstancesList.setVisibility(
                                 isActiveTab ? View.GONE : View.VISIBLE);
@@ -228,7 +228,7 @@ public class InstanceSwitcherCoordinator {
                                 mMinCommandItemHeightPx,
                                 mItemPaddingHeightPx,
                                 /* registerResizeListener= */ false);
-                        updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
+                        updateCommandUiState(shouldAllowNewWindowCreation());
                         unselectItems(/* hideVisibleList= */ false);
                         updateMoreMenu();
                         updatePositiveButtonText();
@@ -447,7 +447,7 @@ public class InstanceSwitcherCoordinator {
         addItemsToModelList(mInactiveModelList, inactiveInstances);
 
         // Update UI state.
-        updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
+        updateCommandUiState(shouldAllowNewWindowCreation());
         updateTabTitle(mActiveModelList.size(), mInactiveModelList.size());
 
         mDialog = createDialog(mDialogView);
@@ -771,10 +771,12 @@ public class InstanceSwitcherCoordinator {
                 : R.string.max_number_of_windows_instance_switcher_v2_active_tab;
     }
 
-    private int getTotalInstanceCount() {
-        int numActiveInstances = mActiveModelList.size();
-        int numInactiveInstances = mInactiveModelList.size();
-        return numActiveInstances + numInactiveInstances;
+    private boolean shouldAllowNewWindowCreation() {
+        int instanceCount = mActiveModelList.size();
+        if (!UiUtils.isRobustWindowManagementEnabled()) {
+            instanceCount += mInactiveModelList.size();
+        }
+        return instanceCount < mMaxInstanceCount;
     }
 
     private void removeInstances(List<Integer> instanceIds) {
@@ -796,7 +798,7 @@ public class InstanceSwitcherCoordinator {
             removeItemFromModelList(
                     instanceId, mIsInactiveListShowing ? mInactiveModelList : mActiveModelList);
             updateActionButtons();
-            updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
+            updateCommandUiState(shouldAllowNewWindowCreation());
             updateTabTitle(mActiveModelList.size(), mInactiveModelList.size());
             updateMoreMenu();
             updateInactiveListEmptyStateVisibility();
