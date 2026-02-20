@@ -55,7 +55,8 @@ void RecordActionChipsRequestStatus(
 void RecordImpressionMetrics(
     base::span<const action_chips::mojom::ActionChipPtr> chips) {
   for (const auto& chip : chips) {
-    base::UmaHistogramEnumeration("NewTabPage.ActionChips.Shown", chip->type);
+    base::UmaHistogramEnumeration("NewTabPage.ActionChips.Shown2",
+                                  chip->suggest_template_info->type_icon);
   }
 }
 

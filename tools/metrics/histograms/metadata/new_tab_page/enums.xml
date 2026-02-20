@@ -26,21 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActionChipIconType) -->
+
+<enum name="ActionChipIconType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="History"/>
+  <int value="2" label="Search Loop"/>
+  <int value="3" label="Search Loop With Sparkle"/>
+  <int value="4" label="Trending"/>
+  <int value="5" label="Sub Arrow Right"/>
+  <int value="6" label="Globe With Search Loop"/>
+  <int value="7" label="Banana"/>
+  <int value="8" label="Favicon"/>
+  <int value="9" label="Notes Spark"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:IconType) -->
+
 <enum name="BooleanFromHTTPCache">
   <int value="0" label="Downloaded from network"/>
   <int value="1" label="HTTP cache hit"/>
 </enum>
-
-<!-- LINT.IfChange(ChipType) -->
-
-<enum name="ChipType">
-  <int value="0" label="Create Image Chip"/>
-  <int value="1" label="Deep Search Chip"/>
-  <int value="2" label="Recent Tab Chip"/>
-  <int value="3" label="Deep Dive Chip"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:ChipType) -->
 
 <enum name="FailToShowHomeSurfaceReason">
   <int value="0" label="Fail to create a NTP Tab"/>

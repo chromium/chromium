@@ -32,6 +32,7 @@ enum ChipType {
 // third_party/omnibox_proto/suggest_template_info.proto.
 // In particular, the int values must match so the proto enum values are
 // correctly mapped to the mojom enum values.
+// LINT.IfChange(IconType)
 enum IconType {
   kIconTypeUnspecified = 0,
   kHistory = 1,
@@ -44,6 +45,8 @@ enum IconType {
   kFavicon = 8,
   kNotesSpark = 9,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
 
 // SuggestTemplateInfo contains a subset of the fields of SuggestTemplateInfo in
 // third_party/omnibox_proto/suggest_template_info.proto.

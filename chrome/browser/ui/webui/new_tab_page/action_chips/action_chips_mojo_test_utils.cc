@@ -38,7 +38,8 @@ void PrintTo(const ActionChip& chip, std::ostream* os) {
   } else {
     PrintTo(*chip.tab, os);
   }
-  *os << "\n}";
+  *os << ",\n"
+      << "  icon_type: " << chip.suggest_template_info->type_icon << "\n}";
 }
 
 void PrintTo(const ActionChipPtr& chip, std::ostream* os) {

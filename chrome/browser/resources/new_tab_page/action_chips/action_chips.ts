@@ -18,10 +18,10 @@ import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
 import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
 
-// Records a click metric for the given action chip type.
-function recordClick(chipType: ChipType) {
+// Records a click metric for the given action chip icon type.
+function recordClick(iconType: IconType) {
   chrome.metricsPrivate.recordEnumerationValue(
-      'NewTabPage.ActionChips.Click', chipType, ChipType.MAX_VALUE + 1);
+      'NewTabPage.ActionChips.Click2', iconType, IconType.MAX_VALUE + 1);
 }
 
 // Records a latency metric.
@@ -169,12 +169,12 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   protected onCreateImageClick_(chip: ActionChip) {
-    recordClick(ChipType.kImage);
+    recordClick(chip.suggestTemplateInfo.typeIcon);
     this.onActionChipClick_(chip.suggestion, [], ToolMode.kImageGen);
   }
 
   protected onDeepDiveClick_(chip: ActionChip) {
-    recordClick(ChipType.kDeepDive);
+    recordClick(chip.suggestTemplateInfo.typeIcon);
     const tab = chip.tab!;
     const deepDiveTabInfo: TabUpload = {
       tabId: tab.tabId,
@@ -188,12 +188,12 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   protected onDeepSearchClick_(chip: ActionChip) {
-    recordClick(ChipType.kDeepSearch);
+    recordClick(chip.suggestTemplateInfo.typeIcon);
     this.onActionChipClick_(chip.suggestion, [], ToolMode.kDeepSearch);
   }
 
   protected onTabContextClick_(chip: ActionChip) {
-    recordClick(ChipType.kRecentTab);
+    recordClick(chip.suggestTemplateInfo.typeIcon);
     const tab = chip.tab!;
     const recentTabInfo: TabUpload = {
       tabId: tab.tabId,
