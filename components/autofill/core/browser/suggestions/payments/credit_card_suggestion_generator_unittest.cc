@@ -4321,7 +4321,10 @@ TEST_F(
     GetCreditCardOrCvcFieldSuggestions_GetVirtualCreditCardsForStandaloneCvcField_ExcludeVCN) {
   // Set up virtual card usage data and credit cards.
   payments_data().ClearCreditCards();
-  CreditCard masked_server_card = test::GetVirtualCard();
+  CreditCard masked_server_card = test::GetMaskedServerCard();
+  masked_server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+
   masked_server_card.set_guid("1234");
   VirtualCardUsageData virtual_card_usage_data =
       test::GetVirtualCardUsageData1();
