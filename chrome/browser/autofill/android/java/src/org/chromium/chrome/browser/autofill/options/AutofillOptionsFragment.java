@@ -208,7 +208,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         // LINT.IfChange(AutofillEnabledCheckFragment)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
         // LINT.ThenChange(:AddAddAddressButtonMediator)
-
     }
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

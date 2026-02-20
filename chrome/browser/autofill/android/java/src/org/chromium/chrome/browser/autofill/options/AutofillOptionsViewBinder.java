@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.autofill.options;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_ENABLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
@@ -69,6 +71,17 @@ class AutofillOptionsViewBinder {
                     .setOnPreferenceChangeListener(
                             (preference, newValue) -> {
                                 model.get(ON_AUTOFILL_AI_SETTING_TOGGLED)
+                                        .onResult((boolean) newValue);
+                                return true;
+                            });
+        } else if (key == AUTOFILL_AI_REAUTH_SETTING_ON) {
+            view.getAutofillAiAuthenticationSwitch()
+                    .setChecked(model.get(AUTOFILL_AI_REAUTH_SETTING_ON));
+        } else if (key == ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED) {
+            view.getAutofillAiAuthenticationSwitch()
+                    .setOnPreferenceChangeListener(
+                            (preference, newValue) -> {
+                                model.get(ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED)
                                         .onResult((boolean) newValue);
                                 return true;
                             });

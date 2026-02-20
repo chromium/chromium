@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -30,6 +31,9 @@ import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -71,6 +75,8 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     private final Supplier<PropertyModel> mRestartConfirmationDialogModelSupplier;
     private PropertyModel mModel;
     private Context mContext;
+    private Activity mActivity;
+    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
 
     AutofillOptionsMediator(
             Profile profile,
@@ -110,16 +116,29 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     }
 
     @Initializer
-    void initialize(PropertyModel model, @AutofillOptionsReferrer int referrer, Context context) {
+    void initialize(
+            PropertyModel model,
+            @AutofillOptionsReferrer int referrer,
+            Context context,
+            Activity activity) {
         mModel = model;
         mContext = context;
+        mActivity = activity;
         updateToggleStateFromPref();
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_ENABLED, isAutofillAiEnabled());
         mModel.set(
                 AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE, isEligibleToAutofillAi());
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
+        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON, isAutofillAiReauthOn());
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);
+    }
+
+    void destroy() {
+        if (mReauthenticatorBridge != null) {
+            mReauthenticatorBridge.destroy();
+            mReauthenticatorBridge = null;
+        }
     }
 
     boolean isInitialized() {
@@ -152,6 +171,44 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
             // If failed to set, reset the switch to match current status.
             mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
         }
+    }
+
+    boolean isAutofillAiReauthOn() {
+        return prefs().getBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA);
+    }
+
+    void onAutofillAiReauthSettingToggled(boolean isOn) {
+        if (isOn == isAutofillAiReauthOn()) {
+            return;
+        }
+
+        if (mReauthenticatorBridge == null) {
+            mReauthenticatorBridge =
+                    ReauthenticatorBridge.create(mActivity, mProfile, DeviceAuthSource.AUTOFILL);
+        }
+
+        if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                == BiometricStatus.UNAVAILABLE) {
+            prefs().setBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA, isOn);
+            mModel.set(
+                    AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON,
+                    isAutofillAiReauthOn());
+            return;
+        }
+
+        mReauthenticatorBridge.reauthenticate(
+                (success) -> {
+                    if (success) {
+                        prefs().setBoolean(
+                                        Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA,
+                                        isOn);
+                    }
+                    // Always sync the model to either the new value or back to the old one on
+                    // failure.
+                    mModel.set(
+                            AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON,
+                            isAutofillAiReauthOn());
+                });
     }
 
     /**

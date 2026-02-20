@@ -45,6 +45,7 @@ public class AutofillOptionsCoordinator {
 
                 @Override
                 public void onDestroy(LifecycleOwner lifecycleOwner) {
+                    mMediator.destroy();
                     lifecycleOwner.getLifecycle().removeObserver(this);
                 }
             };
@@ -111,10 +112,17 @@ public class AutofillOptionsCoordinator {
                                 AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED,
                                 mMediator::onAutofillAiSettingToggled)
                         .with(
+                                AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON,
+                                mMediator.isAutofillAiReauthOn())
+                        .with(
+                                AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED,
+                                mMediator::onAutofillAiReauthSettingToggled)
+                        .with(
                                 AutofillOptionsProperties.AUTOFILL_AI_ENABLED,
                                 mMediator.isAutofillAiEnabled())
                         .build();
-        mMediator.initialize(model, mFragment.getReferrer(), mFragment.getContext());
+        mMediator.initialize(
+                model, mFragment.getReferrer(), mFragment.getContext(), mFragment.getActivity());
 
         PropertyModelChangeProcessor.create(model, mFragment, AutofillOptionsViewBinder::bind);
         return model;
