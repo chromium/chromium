@@ -260,4 +260,18 @@ suite('DiscoverSkillsPage', function() {
     cards = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(3, cards.length);
   });
+
+  test('ShowsNoSearchResultsPage', async function() {
+    await setFirstPartySkills({
+      'Produce': [{id: '1', name: 'Apple'}],
+    });
+
+    page.onSearchChanged('Banana');
+    await microtasksFinished();
+    assertTrue(!!page.shadowRoot.querySelector('error-page'));
+
+    page.onSearchChanged('');
+    await microtasksFinished();
+    assertFalse(!!page.shadowRoot.querySelector('error-page'));
+  });
 });

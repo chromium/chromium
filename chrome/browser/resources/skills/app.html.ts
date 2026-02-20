@@ -6,6 +6,7 @@ import '/strings.m.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {type SkillsAppElement} from './app.js';
+import {ErrorType} from './error_page.js';
 import {Page} from './sidebar.js';
 
 export function getHtml(this: SkillsAppElement) {
@@ -21,7 +22,8 @@ export function getHtml(this: SkillsAppElement) {
     ?show-menu="${this.shouldShowToolbarMenu_()}"
     .showSearch="${!this.shouldShowErrorPage_}">
 </cr-toolbar>
-${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
+${this.shouldShowErrorPage_ ? html`
+  <error-page error-type="${ErrorType.GLIC_NOT_ENABLED}"></error-page>` : html`
   <div id="content" class="no-outline cr-scrollable">
     <div id="left">
       <div role="navigation" id="sidebar" ?hidden="${this.narrow_}">
