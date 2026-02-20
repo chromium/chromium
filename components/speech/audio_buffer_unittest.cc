@@ -46,6 +46,26 @@ TEST(AudioChunkTest, Constructors) {
   EXPECT_TRUE(base::span(chunk4->data()) == data_span);
 }
 
+TEST(AudioChunkTest, EmptyLength) {
+  constexpr int kBytesPerSample = 1;
+  constexpr size_t kLength = 0;
+
+  // Length constructor
+  auto chunk = base::MakeRefCounted<AudioChunk>(kLength, kBytesPerSample);
+  EXPECT_TRUE(chunk->IsEmpty());
+
+  // Data constructor
+  constexpr auto kData = std::array<uint8_t, 0>();
+  auto chunk2 = base::MakeRefCounted<AudioChunk>(kData.data(), kData.size(),
+                                                 kBytesPerSample);
+  EXPECT_TRUE(chunk2->IsEmpty());
+
+  // Span constructor
+  base::span<const uint8_t> data_span(kData);
+  auto chunk3 = base::MakeRefCounted<AudioChunk>(data_span, kBytesPerSample);
+  EXPECT_TRUE(chunk3->IsEmpty());
+}
+
 TEST(AudioChunkTest, AsStringView) {
   constexpr int kBytesPerSample = 1;
   constexpr auto kData = std::to_array<uint8_t>({'H', 'e', 'l', 'l', 'o'});
