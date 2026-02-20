@@ -52,7 +52,7 @@
       rgba(240, 242, 245);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
   --color-suggestions-background-loading: rgba(241, 243, 244, 1);
-  --color-zero-state-greeting: rgba(0, 0, 0, 1);
+  --color-zero-state-greeting: rgba(10, 10, 10, 1);
   --color-zero-state-match-icon: rgba(128, 133, 141, 1);
   --color-zero-state-match-text: rgba(87, 89, 95, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
@@ -109,6 +109,7 @@
   --file-chip-width: auto;
   --ghost-loader-base: #F3F5F6;
   --ghost-loader-highlight: #DEE1E3;
+  --search-animated-glif-rotation-duration: 3s;
   --google-sans-font:
       'Google Sans', Roboto, Arial, sans-serif;
   --gradient-protection-width: 100%;
@@ -199,7 +200,7 @@
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(23, 24, 31, 1);
   --color-suggestions-background-loading: rgba(60, 64, 67, 1);
-  --color-zero-state-greeting: rgba(255, 255, 255, 1);
+  --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --color-zero-state-match-icon: rgba(139, 140, 145, 1);
   --color-zero-state-match-text: rgba(174, 175, 184, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
