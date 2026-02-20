@@ -14,14 +14,9 @@ static_library("slim_web_view") {
     "slim_web_view_constants.h",
     "slim_web_view_guest.cc",
     "slim_web_view_guest.h",
-    "slim_web_view_page_handler.cc",
-    "slim_web_view_page_handler.h",
-    "slim_web_view_page_handler_factory.cc",
-    "slim_web_view_page_handler_factory.h",
   ]
 
   deps = [
-    ":mojo_bindings",
     ":strings",
     "//base",
     "//components/guest_view/browser",
@@ -30,6 +25,23 @@ static_library("slim_web_view") {
     "//net",
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink_headers",
+  ]
+}
+
+static_library("page_handler") {
+  sources = [
+    "slim_web_view_page_handler.cc",
+    "slim_web_view_page_handler.h",
+    "slim_web_view_page_handler_factory.cc",
+    "slim_web_view_page_handler_factory.h",
+  ]
+
+  public_deps = [ ":mojo_bindings" ]
+
+  deps = [
+    ":slim_web_view",
+    "//components/guest_view/browser",
+    "//content/public/browser",
   ]
 }
 

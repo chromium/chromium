@@ -25,6 +25,7 @@ source_set("guest_view") {
     "//chrome/browser/task_manager",
     "//components/guest_view/browser",
     "//components/guest_view/browser/slim_web_view",
+    "//components/guest_view/browser/slim_web_view:page_handler",
     "//components/guest_view/common:mojom",
     "//content/public/browser",
   ]

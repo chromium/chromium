@@ -149,6 +149,11 @@ source_set("glic") {
   if (is_chromeos) {
     public_deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
+
+  if (!enable_extensions_core) {
+    public_deps +=
+        [ "//components/guest_view/browser/slim_web_view:page_handler" ]
+  }
 }
 
 if (is_android) {
@@ -424,10 +429,7 @@ source_set("impl") {
     deps += [ "//components/guest_view/browser" ]
 
     if (!enable_extensions_core) {
-      deps += [
-        "//chrome/browser/resources/guest_view_shared:resources",
-        "//components/guest_view/browser/slim_web_view",
-      ]
+      deps += [ "//chrome/browser/resources/guest_view_shared:resources" ]
     }
   }
 
