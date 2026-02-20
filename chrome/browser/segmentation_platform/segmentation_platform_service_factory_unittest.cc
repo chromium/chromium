@@ -710,7 +710,11 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestTipsNotificationsRanker) {
   input_context->metadata_args.emplace(
       kBottomOmniboxTipShown, processing::ProcessedValue::FromFloat(1));
   input_context->metadata_args.emplace(
+      kTipsIsUserSignedIn, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
       kPasswordAutofillTipShown, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kSigninTipShown, processing::ProcessedValue::FromFloat(1));
 
   ExpectGetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,

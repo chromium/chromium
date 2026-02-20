@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -19,6 +20,8 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TipsAgent_jni.h"
@@ -44,6 +47,8 @@ notifications::TipsNotificationsFeatureType GetFeatureType(
     return notifications::TipsNotificationsFeatureType::kBottomOmnibox;
   } else if (label == segmentation_platform::kPasswordAutofill) {
     return notifications::TipsNotificationsFeatureType::kPasswordAutofill;
+  } else if (label == segmentation_platform::kSignin) {
+    return notifications::TipsNotificationsFeatureType::kSignin;
   } else {
     NOTREACHED();
   }
@@ -119,6 +124,8 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
 
+  // V1 Tips: ESB, Quick Delete, Google Lens, Bottom Omnibox
+
   bool is_enhanced_safe_browsing =
       safe_browsing::GetSafeBrowsingState(*pref_service) ==
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION;
@@ -172,12 +179,28 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
       segmentation_platform::processing::ProcessedValue(
           bottom_omnibox_tip_shown));
 
+  // V2 Tips: Password Autofill, Signin
+
+  bool is_user_signed_in =
+      IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kTipsIsUserSignedIn,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          is_user_signed_in));
+
   bool password_autofill_tip_shown = pref_service->GetBoolean(
       prefs::kAndroidTipNotificationShownPasswordAutofill);
   input_context->metadata_args.emplace(
       segmentation_platform::kPasswordAutofillTipShown,
       segmentation_platform::processing::ProcessedValue(
           password_autofill_tip_shown));
+
+  bool signin_tip_shown =
+      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownSignin);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSigninTipShown,
+      segmentation_platform::processing::ProcessedValue(signin_tip_shown));
 
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
