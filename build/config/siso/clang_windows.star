@@ -76,6 +76,12 @@ def __step_config(ctx, step_config):
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"
 
+        # Remote linking with ThinLTO takes much longer.
+        # Linking browser_tests takes 50m locally. On remote with gVisor,
+        # it takes even more.
+        use_thin_lto = gn_logs.read(ctx).get("use_thin_lto") == "true"
+        remote_link_timeout = "80m" if use_thin_lto else "10m"
+
         reproxy_config_inputs = []
         reproxy_config_inputs.extend(reproxy_config.get("inputs", []))
         reproxy_config_inputs.extend(reproxy_config.get("toolchain_inputs", []))
@@ -164,7 +170,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": remote_wrapper,
                 "platform_ref": "lld-link",
                 "input_root_absolute_path": input_root_absolute_path,
-                "timeout": "2m",
+                "timeout": remote_link_timeout,
             },
             {
                 "name": "lld-link/solink_module",
@@ -183,7 +189,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": remote_wrapper,
                 "platform_ref": "lld-link",
                 "input_root_absolute_path": input_root_absolute_path,
-                "timeout": "2m",
+                "timeout": remote_link_timeout,
             },
             {
                 "name": "lld-link/link",
@@ -202,7 +208,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": remote_wrapper,
                 "platform_ref": "lld-link",
                 "input_root_absolute_path": input_root_absolute_path,
-                "timeout": "4m",
+                "timeout": remote_link_timeout,
             },
         ])
         step_config = clang_exception.step_config(ctx, step_config, use_windows_worker)
