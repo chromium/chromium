@@ -133,7 +133,7 @@ void WebUIBrowserBookmarkBarPageHandler::OpenInNewTab(int64_t node_id) {
   const bookmarks::BookmarkNode* node =
       bookmarks::GetBookmarkNodeByID(bookmark_model_, node_id);
   bookmarks::OpenAllIfAllowed(
-      browser_, {node}, WindowOpenDisposition::CURRENT_TAB,
+      browser_, {node}, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       bookmarks::OpenAllBookmarksContext::kNone,
       page_load_metrics::NavigationHandleUserData::InitiatorLocation::
           kBookmarkBar,
