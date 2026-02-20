@@ -1971,7 +1971,7 @@
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
-<translation id="2316129865977710310">不用了，谢谢</translation>
+<translation id="2316129865977710310">不用了</translation>
 <translation id="2316433409811863464">应用串流</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
 <translation id="2317842250900878657">已迁移 <ph name="PROGRESS_PERCENT" />%</translation>
@@ -9981,7 +9981,7 @@
 <translation id="7799650166313181433">只有已登录账号 <ph name="USER_EMAIL" /> 的设备可与此设备分享内容。您无需批准您的设备之间的内容分享。</translation>
 <translation id="7800485561443537737">热点会使用 <ph name="DEVICE_TYPE" /> 的移动流量，所以您的运营商可能会收取额外费用。另外，热点可能会增加耗电量。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
-<translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="780301667611848630">不用了</translation>
 <translation id="7803657407897251194">如要使用 Android 设备继续设置，请将 <ph name="DEVICE_TYPE" /> 连接到网络</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="7805371082115476536">轻</translation>
