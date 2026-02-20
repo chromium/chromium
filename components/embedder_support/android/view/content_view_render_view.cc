@@ -21,7 +21,7 @@
 #include "ui/gfx/geometry/size.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/view_jni_headers/ContentViewRenderView_jni.h"
+#include "components/embedder_support/android/view_jni/ContentViewRenderView_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

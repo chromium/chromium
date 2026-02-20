@@ -76,6 +76,7 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:util_jni_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

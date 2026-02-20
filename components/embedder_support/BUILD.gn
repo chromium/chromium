@@ -108,7 +108,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      "android:native_j_unittests_jni_headers",
+      "android:native_j_unittests_jni",
       "android:native_java_unittests_java",
       "android:util",
     ]

@@ -15,7 +15,7 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/util_jni_headers/UrlUtilities_jni.h"
+#include "components/embedder_support/android/util_jni/UrlUtilities_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

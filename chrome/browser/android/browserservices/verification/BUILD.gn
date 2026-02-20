@@ -57,6 +57,8 @@ android_library("javatests") {
 }
 
 robolectric_binary("verification_junit_tests") {
+  shared_libraries =
+      [ "//chrome/android/junit:libchrome_junit_tests($robolectric_toolchain)" ]
   sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierJunitTest.java" ]
   deps = [
     ":java",

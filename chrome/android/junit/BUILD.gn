@@ -14,6 +14,9 @@ shared_library_with_jni("libchrome_junit_tests") {
   enable_target = is_robolectric
   java_targets = [
     "//chrome/android:chrome_junit_tests",
+    "//chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests",
+    "//chrome/browser/android/browserservices/verification:verification_junit_tests",
+    "//chrome/browser/password_manager/android:password_manager_junit_tests",
     "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",
   ]
 
@@ -27,6 +30,7 @@ shared_library_with_jni("libchrome_junit_tests") {
   }
 
   deps = [
+    "//components/embedder_support/android:util($robolectric_toolchain)",
     "//components/url_formatter($robolectric_toolchain)",
     "//url:robolectric_jni_onload($robolectric_toolchain)",
   ]
@@ -345,7 +349,6 @@ if (is_android) {
       "//content/public/android:content_full_java",
       "//content/public/android:content_java",
       "//content/public/android:content_main_dex_jni_java",
-      "//content/public/android:public_common_jni_java",
       "//content/public/common:common_java",
       "//content/public/test/android:content_java_test_support",
       "//google_apis/gaia/android:java",
@@ -709,7 +712,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//components/embedder_support/android:util_jni_java",
+    ]
   }
 
   robolectric_library(
@@ -1309,6 +1315,7 @@ if (is_android) {
       "//chrome/browser/settings:search_java",
       "//chrome/browser/tab_group_suggestion:java",
       "//chrome/test/android:chrome_java_transit",
+      "//components/embedder_support/android:util_jni_java",
       "//components/sensitive_content:sensitive_content_features_java",
     ]
   }

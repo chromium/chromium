@@ -265,6 +265,8 @@ java_group("javatests") {
 robolectric_binary("password_manager_junit_tests") {
   testonly = true
   android_manifest = "AndroidManifest.xml"
+  shared_libraries =
+      [ "//chrome/android/junit:libchrome_junit_tests($robolectric_toolchain)" ]
 
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/CctPasswordSavingMetricsRecorderBridgeTest.java",

@@ -22,7 +22,7 @@
 #include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/native_j_unittests_jni_headers/WebResourceResponseUnittest_jni.h"
+#include "components/embedder_support/android/native_j_unittests_jni/WebResourceResponseUnittest_jni.h"
 
 namespace embedder_support {
 class WebResourceResponseTest : public testing::Test {

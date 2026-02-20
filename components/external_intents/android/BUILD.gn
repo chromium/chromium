@@ -24,6 +24,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:util_jni_java",
     "//components/messages/android:java",
     "//components/navigation_interception/android:navigation_interception_java",
     "//components/strings:components_strings_grd",

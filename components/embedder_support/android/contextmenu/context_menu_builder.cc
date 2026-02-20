@@ -17,7 +17,7 @@
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
+#include "components/embedder_support/android/context_menu_jni/ContextMenuParams_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 

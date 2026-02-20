@@ -23,7 +23,7 @@
 #include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/util_jni_headers/WebResourceResponseInfo_jni.h"
+#include "components/embedder_support/android/util_jni/WebResourceResponseInfo_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::ConvertJavaStringToUTF8;

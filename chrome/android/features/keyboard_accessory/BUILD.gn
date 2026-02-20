@@ -129,6 +129,9 @@ android_resources("test_resources") {
 robolectric_binary("keyboard_accessory_junit_tests") {
   testonly = true
 
+  shared_libraries =
+      [ "//chrome/android/junit:libchrome_junit_tests($robolectric_toolchain)" ]
+
   sources = [
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipGroupTest.java",

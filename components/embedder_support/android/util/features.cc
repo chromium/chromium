@@ -15,7 +15,7 @@
 #include "base/notreached.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/util_jni_headers/EmbedderSupportFeatures_jni.h"
+#include "components/embedder_support/android/util_jni/EmbedderSupportFeatures_jni.h"
 
 namespace embedder_support::features {
 

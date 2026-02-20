@@ -18,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/native_j_unittests_jni_headers/InputStreamUnittest_jni.h"
+#include "components/embedder_support/android/native_j_unittests_jni/InputStreamUnittest_jni.h"
 
 using base::android::AttachCurrentThread;
 using embedder_support::InputStream;
