@@ -1793,6 +1793,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormClientsideClassifier)},
+    {"send-tab-to-self-enhanced-handoff",
+     flag_descriptions::kSendTabToSelfEnhancedHandoffName,
+     flag_descriptions::kSendTabToSelfEnhancedHandoffDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfPropagateFormFields)},
     {"send-tab-ios-push-notifications",
      flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription,

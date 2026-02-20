@@ -886,6 +886,9 @@ extern const char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[];
 extern const char
     kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[];
 
+extern const char kSendTabToSelfEnhancedHandoffName[];
+extern const char kSendTabToSelfEnhancedHandoffDescription[];
+
 extern const char kSendTabToSelfIOSPushNotificationsName[];
 extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 

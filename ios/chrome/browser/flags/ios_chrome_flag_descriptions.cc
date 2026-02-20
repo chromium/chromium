@@ -1457,6 +1457,12 @@ const char kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
     "Enables the Magic Stack module ranking to be split by surface for "
     "engagement";
 
+const char kSendTabToSelfEnhancedHandoffName[] =
+    "Send Tab To Self enhanced handoff";
+const char kSendTabToSelfEnhancedHandoffDescription[] =
+    "Enables an enhanced version of Send Tab To Self that propagates more "
+    "information, such as form fields.";
+
 const char kSendTabToSelfIOSPushNotificationsName[] =
     "Send tab to self iOS push notifications";
 const char kSendTabToSelfIOSPushNotificationsDescription[] =

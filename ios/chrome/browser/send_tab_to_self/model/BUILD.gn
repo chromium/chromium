@@ -10,9 +10,13 @@ source_set("model") {
     "send_tab_push_notification_client.mm",
     "send_tab_to_self_browser_agent.h",
     "send_tab_to_self_browser_agent.mm",
+    "send_tab_to_self_util.h",
+    "send_tab_to_self_util.mm",
   ]
   deps = [
     "//base",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/infobars/core",
     "//components/send_tab_to_self",
     "//components/sync",
@@ -41,6 +45,7 @@ source_set("model") {
     "//ios/chrome/browser/tabs/model",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/public/js_messaging",
     "//ui/base",
     "//ui/gfx",
     "//ui/strings:ui_strings_grit",

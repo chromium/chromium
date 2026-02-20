@@ -15,6 +15,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_presentation_controller.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_table_view_controller.h"
@@ -40,6 +42,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -295,11 +298,20 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
                       targetDeviceName:(NSString*)deviceName {
+  send_tab_to_self::PageContext pageContext;
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPropagateFormFields)) {
+    // TODO(crbug.com/485145029): Making assumptions about which precise
+    // WebState is being sent appears fishy. Ideally, the information should
+    // come from higher layers.
+    pageContext = send_tab_to_self::ExtractFormFieldsFromWebState(
+        self.browser->GetWebStateList()->GetActiveWebState());
+  }
+
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
       ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
-                 base::SysNSStringToUTF8(cacheGUID),
-                 send_tab_to_self::PageContext());
+                 base::SysNSStringToUTF8(cacheGUID), pageContext);
 
   // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
   __weak __typeof(self) weakSelf = self;
