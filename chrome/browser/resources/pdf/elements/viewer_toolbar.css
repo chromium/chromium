@@ -59,6 +59,7 @@
 }
 
 #end {
+  align-items: center;
   display: flex;
   justify-content: flex-end;
   padding-inline-start: 20px;
@@ -169,18 +170,10 @@ cr-progress,
 }
 
 <if expr="enable_glic">
-#glic-controls {
-  align-items: center;
-  display: flex;
-  margin-inline-start: 6px;
-}
-
-#glic-controls #summarize-button {
-  margin-inline-start: 6px;
-}
-
-#glic-controls .vertical-separator {
-  margin-inline: 6px;
+#glic-summarize-button {
+  background-color: #a6c6fa;
+  color: #0e326f;
+  margin-inline-end: 16px;
 }
 </if>
 

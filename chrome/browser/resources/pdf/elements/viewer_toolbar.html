@@ -49,17 +49,6 @@ import {AnnotationMode} from '../constants.js';
         aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
         @click="${this.onRotateClick_}">
     </cr-icon-button>
-<if expr="enable_glic">
-    ${this.pdfGlicSummarizeEnabled_ ? html`
-      <span id="glic-controls">
-        <span class="vertical-separator"></span>
-        <cr-button id="summarize-button" class="action-button"
-            aria-label="$i18n{glicSummarize}"
-            @click="${this.onGlicSummarizeClick_}">
-          $i18n{glicSummarize}
-        </cr-button>
-      </span>` : ''}
-</if>
 <if expr="enable_pdf_ink2">
     ${this.showInk2Buttons_() ? html`
       <span id="annotate-controls">
@@ -96,6 +85,15 @@ import {AnnotationMode} from '../constants.js';
 </if>
   </div>
   <div id="end">
+<if expr="enable_glic">
+    ${this.pdfGlicSummarizeEnabled_ ? html`
+    <cr-button id="glic-summarize-button" class="action-button"
+        aria-label="$i18n{glicSummarize}"
+        @click="${this.onGlicSummarizeClick_}">
+      <cr-icon slot="prefix-icon" icon="pdf-glic:summarize"></cr-icon>
+      $i18n{glicSummarize}
+    </cr-button>` : ''}
+</if>
 <if expr="enable_pdf_save_to_drive">
     ${this.pdfSaveToDriveEnabled ? html`
     <viewer-save-to-drive-controls id="save-to-drive"
