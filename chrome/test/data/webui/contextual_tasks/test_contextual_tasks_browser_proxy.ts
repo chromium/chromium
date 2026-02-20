@@ -145,6 +145,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   private url_: Url;
   private isInTab_: boolean = true;
   private page_: MockPage;
+  private isAiPageResult_: boolean = false;
 
   constructor(url: string, page: MockPage) {
     super([
@@ -222,9 +223,13 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve({isZeroState: false});
   }
 
+  setIsAiPage(isAiPage: boolean) {
+    this.isAiPageResult_ = isAiPage;
+  }
+
   isAiPage(url: Url) {
     this.methodCalled('isAiPage', url);
-    return Promise.resolve({isAiPage: false});
+    return Promise.resolve({isAiPage: this.isAiPageResult_});
   }
 
   openMyActivityUi() {
