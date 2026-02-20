@@ -87,7 +87,6 @@ source_set("unittests") {
     "fake_video_capture_host.cc",
     "fake_video_capture_host.h",
     "media_remoter_unittest.cc",
-    "mirroring_gpu_factories_factory_unittest.cc",
     "openscreen_message_port_unittest.cc",
     "openscreen_session_host_unittest.cc",
     "openscreen_stats_client_unittest.cc",
