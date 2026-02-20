@@ -71,7 +71,8 @@ void ReferenceFilterOperation::RemoveClient(SVGResourceClient& client) {
 bool ReferenceFilterOperation::IsEqualAssumingSameType(
     const FilterOperation& o) const {
   const auto& other = To<ReferenceFilterOperation>(o);
-  return url_ == other.url_ && resource_ == other.resource_;
+  return url_ == other.url_ && resource_ == other.resource_ &&
+         filter_.Get() == other.filter_.Get();
 }
 
 gfx::RectF BlurFilterOperation::MapRect(const gfx::RectF& rect) const {
