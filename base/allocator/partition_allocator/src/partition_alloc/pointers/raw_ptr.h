@@ -445,7 +445,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     }
   }
 #else
-  PA_ALWAYS_INLINE ~raw_ptr() noexcept = default;
+  PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
+    // Not =default because we want MSan use-after-dtor instrumentation.
+  }
   static_assert(!kZeroOnDestruct);
 #endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
         // PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) ||

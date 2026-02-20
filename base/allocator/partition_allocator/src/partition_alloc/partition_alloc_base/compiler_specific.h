@@ -8,6 +8,10 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 
+#if defined(MEMORY_SANITIZER)
+#include <sanitizer/msan_interface.h>
+#endif
+
 // A wrapper around `__has_cpp_attribute()`, which is in C++20 and thus not yet
 // available for all targets PA supports (since PA's minimum C++ version is 17).
 // This works similarly to `PA_HAS_ATTRIBUTE()` below, in that where it's
@@ -238,10 +242,27 @@
 //   PA_MSAN_UNPOISON(ptr, sizeof(T));
 // ```
 #if defined(MEMORY_SANITIZER)
-#include <sanitizer/msan_interface.h>
 #define PA_MSAN_UNPOISON(p, size) __msan_unpoison(p, size)
 #else
 #define PA_MSAN_UNPOISON(p, size)
+#endif
+
+// Checks if the pointer `p` and the `size` bytes after it are initialized or
+// not.
+//
+// See also:
+//   https://github.com/google/sanitizers/wiki/MemorySanitizer
+//
+// Usage:
+//   Currently used in raw_ptr destructor to catch use-after-destruct
+// ```
+//   PA_MSAN_CHECK_MEM_IS_INITIALIZED(&ptr, sizeof(ptr));
+// ```
+#if defined(MEMORY_SANITIZER)
+#define PA_MSAN_CHECK_MEM_IS_INITIALIZED(p, size) \
+  __msan_check_mem_is_initialized(p, size)
+#else
+#define PA_MSAN_CHECK_MEM_IS_INITIALIZED(p, size)
 #endif
 
 // Annotates a codepath suppressing static analysis along that path. Useful when
