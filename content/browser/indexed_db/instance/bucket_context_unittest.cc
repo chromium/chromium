@@ -41,11 +41,14 @@ class BucketContextTest : public testing::Test {
         /*is_incognito=*/false, temp_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         quota_policy_.get());
-
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
+    bucket_context_ = CreateBucketContext();
+  }
+
+  std::unique_ptr<BucketContext> CreateBucketContext() {
     storage::BucketInfo bucket_info = quota_manager_->CreateBucket(
         storage::BucketInitParams::ForDefaultBucket(
             blink::StorageKey::CreateFromStringForTesting(
@@ -54,7 +57,7 @@ class BucketContextTest : public testing::Test {
         blob_storage_context;
     mock_blob_storage_context_.Clone(
         blob_storage_context.InitWithNewPipeAndPassReceiver());
-    bucket_context_ = std::make_unique<BucketContext>(
+    return std::make_unique<BucketContext>(
         bucket_info, base::FilePath(), BucketContext::Delegate(),
         quota_manager_proxy_, std::move(blob_storage_context),
         /*file_system_access_context=*/mojo::NullRemote());
@@ -319,18 +322,17 @@ TEST_F(BucketContextTest, MetadataRecordingStateHistory) {
 
 TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
   auto is_sqlite_used_by_new_bucket = [this]() {
-    return BucketContext(storage::BucketInfo(), base::FilePath(),
-                         BucketContext::Delegate(), quota_manager_proxy_,
-                         /*blob_storage_context=*/mojo::NullRemote(),
-                         /*file_system_access_context=*/mojo::NullRemote())
-        .ShouldUseSqlite();
+    std::unique_ptr<BucketContext> bucket_context = CreateBucketContext();
+    std::ignore = bucket_context->InitBackingStore(/*create_if_missing=*/true);
+    return bucket_context->IsUsingSqlite();
   };
+  bucket_context_->InitBackingStore(/*create_if_missing=*/true);
   {
     base::AutoReset<std::optional<bool>> scoped_override =
         BucketContext::OverrideShouldUseSqliteForTesting(false);
     EXPECT_FALSE(is_sqlite_used_by_new_bucket());
   }
-  EXPECT_EQ(bucket_context_->ShouldUseSqlite(), is_sqlite_used_by_new_bucket());
+  EXPECT_EQ(bucket_context_->IsUsingSqlite(), is_sqlite_used_by_new_bucket());
   {
     base::AutoReset<std::optional<bool>> scoped_override =
         BucketContext::OverrideShouldUseSqliteForTesting(true);

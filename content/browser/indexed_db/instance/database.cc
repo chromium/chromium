@@ -237,7 +237,7 @@ std::vector<PartitionedLockManager::PartitionedLockRequest>
 Database::BuildLockRequestsForTransaction(
     blink::mojom::IDBTransactionMode mode,
     const std::set<int64_t>& scope) const {
-  return bucket_context_->ShouldUseSqlite()
+  return bucket_context_->IsUsingSqlite()
              ? BuildLockRequestsForSqlite(name_, mode, scope)
              : BuildLockRequestsForLevelDb(name_, backing_store_db_.get(), mode,
                                            scope);

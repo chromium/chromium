@@ -186,7 +186,7 @@ class ConnectionCoordinator::OpenRequest
                           std::move(pending_connection->factory_client),
                           synchronous_duration),
         pending_(std::move(pending_connection)),
-        uses_sqlite_(bucket_context.ShouldUseSqlite()) {
+        uses_sqlite_(bucket_context.IsUsingSqlite()) {
     // Note that the `scheduling_priority` on this lock receiver isn't very
     // important because locks are only acquired when upgrading the version, and
     // that requires that all other connections be closed. So there shouldn't be
@@ -233,7 +233,7 @@ class ConnectionCoordinator::OpenRequest
     base::ElapsedTimer timer;
     saved_status_ = db_->OpenInternal();
     if (saved_status_.ok()) {
-      if (bucket_context_handle_->ShouldUseSqlite()) {
+      if (bucket_context_handle_->IsUsingSqlite()) {
         pending_->data_loss_info = db_->GetDataLossInfo();
       }
     } else {

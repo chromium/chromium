@@ -11,6 +11,7 @@
 #include <optional>
 #include <queue>
 #include <string>
+#include <tuple>
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
@@ -51,6 +52,14 @@ namespace content::indexed_db {
 class BackingStore;
 class BucketContextHandle;
 class Database;
+
+enum class SqliteRolloutStage {
+  // Use LevelDB exclusively; delete SQLite stores if found.
+  kUseLevelDbOnly,
+  // Use SQLite exclusively; delete LevelDB stores if found.
+  kUseSqliteOnly,
+  kMaxValue = kUseSqliteOnly,
+};
 
 // BucketContext manages the per-bucket IndexedDB state, and other important
 // context like the backing store and lock manager.
@@ -154,7 +163,7 @@ class CONTENT_EXPORT BucketContext
 
   // All `BucketContext` instances created during the lifetime of the returned
   // object will use SQLite iff `use_sqlite` is true, unless overridden for a
-  // specific instance with `set_should_use_sqlite_for_testing()`.
+  // specific instance with `SetShouldUseSqliteForTesting()`.
   static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
       bool use_sqlite);
 
@@ -162,7 +171,9 @@ class CONTENT_EXPORT BucketContext
   // crbug.com/340398745.
   static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
 
-  bool ShouldUseSqlite();
+  // Whether the backing store is using SQLite. `CHECK`s that the backing store
+  // exists.
+  bool IsUsingSqlite();
 
   void QueueRunTasks();
 
@@ -212,7 +223,9 @@ class CONTENT_EXPORT BucketContext
   storage::BucketLocator bucket_locator() {
     return bucket_info_.ToBucketLocator();
   }
-  BackingStore* backing_store() { return backing_store_.get(); }
+  BackingStore* backing_store() {
+    return backing_store_ ? std::get<0>(*backing_store_).get() : nullptr;
+  }
   const DBMap& GetDatabasesForTesting() const { return databases_; }
   PartitionedLockManager& lock_manager() { return *lock_manager_; }
   const PartitionedLockManager& lock_manager() const { return *lock_manager_; }
@@ -296,17 +309,21 @@ class CONTENT_EXPORT BucketContext
   friend BucketContextHandle;
   friend class BackingStoreTestBase;
   friend class DatabaseTest;
-  friend class IndexedDBTest;
+  friend class IndexedDBTestBase;
   friend class TransactionTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTestWithBucketType,
+                           ChangingEngineDeletesOtherEngineFiles);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
+  FRIEND_TEST_ALL_PREFIXES(BucketContextTest,
+                           OverrideShouldUseSqliteForTesting);
 
   // Overrides the backing store type for this instance only. Must be called
-  // right after object construction.
+  // before backing store initialization.
   void SetShouldUseSqliteForTesting(bool use_sqlite);
 
   // The data structure that stores everything bound to the receiver. This will
@@ -381,10 +398,8 @@ class CONTENT_EXPORT BucketContext
   // Base directory for blobs and backing store files.
   const base::FilePath data_path_;
 
-  // True if the backing store is SQLite, or would be SQLite if it existed. This
-  // is lazily initialized based on flag state, or overridden with
-  // `set_should_use_sqlite_for_testing()`.
-  std::optional<bool> should_use_sqlite_;
+  // Set at construction. Can be overridden by `SetShouldUseSqliteForTesting()`.
+  SqliteRolloutStage sqlite_rollout_stage_;
 
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see CanClose.
@@ -396,7 +411,9 @@ class CONTENT_EXPORT BucketContext
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
-  std::unique_ptr<BackingStore> backing_store_;
+  // <BackingStore, is_sqlite>. Set only after a successful call to
+  // `InitBackingStore()`.
+  std::optional<std::tuple<std::unique_ptr<BackingStore>, bool>> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   // Databases in the backing store which are already loaded/represented by

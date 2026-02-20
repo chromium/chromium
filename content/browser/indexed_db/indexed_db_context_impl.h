@@ -155,7 +155,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketId& id);
 
  private:
-  friend class IndexedDBTest;
+  friend class IndexedDBTestBase;
   friend class FactoryTest;
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);

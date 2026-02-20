@@ -27,6 +27,7 @@
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -180,11 +181,32 @@ DatabaseError CreateDefaultError() {
       u"Internal error opening backing store for indexedDB.open.");
 }
 
-bool ShouldUseSqlite(bool in_memory) {
-  return g_should_use_sqlite_for_testing.value_or(
-      base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore) ||
-      (in_memory &&
-       base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
+// Returns the SQLite rollout stage by taking into account all global test
+// overrides and feature states.
+SqliteRolloutStage GetSqliteRolloutStage(bool in_memory) {
+  if (g_should_use_sqlite_for_testing.has_value()) {
+    return *g_should_use_sqlite_for_testing
+               ? SqliteRolloutStage::kUseSqliteOnly
+               : SqliteRolloutStage::kUseLevelDbOnly;
+  }
+  if (base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore)) {
+    return SqliteRolloutStage::kUseSqliteOnly;
+  }
+  if (in_memory) {
+    return base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)
+               ? SqliteRolloutStage::kUseSqliteOnly
+               : SqliteRolloutStage::kUseLevelDbOnly;
+  }
+  return SqliteRolloutStage::kUseLevelDbOnly;
+}
+
+bool ShouldUseSqlite(SqliteRolloutStage stage) {
+  switch (stage) {
+    case SqliteRolloutStage::kUseLevelDbOnly:
+      return false;
+    case SqliteRolloutStage::kUseSqliteOnly:
+      return true;
+  }
 }
 
 }  // namespace
@@ -219,10 +241,7 @@ BucketContext::BucketContext(
           base::trace_event::MemoryDumpProvider::Options());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
-
-  // It's intentional that this is lazily initialized, which should not happen
-  // until the caller has had a chance to override it.
-  CHECK(!should_use_sqlite_.has_value());
+  sqlite_rollout_stage_ = GetSqliteRolloutStage(in_memory());
 }
 
 BucketContext::~BucketContext() {
@@ -242,7 +261,7 @@ uint64_t BucketContext::ReadUsageFromDisk(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_path) {
   CHECK(!data_path.empty());
-  return content::indexed_db::ShouldUseSqlite(/*in_memory=*/false)
+  return ShouldUseSqlite(GetSqliteRolloutStage(/*in_memory=*/false))
              ? sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
                    data_path.Append(GetSqliteDbDirectory(bucket_locator)))
              : level_db::BackingStore::ReadSizeFromDisk(
@@ -325,7 +344,7 @@ BucketContext::StopMetadataRecording() {
 }
 
 uint64_t BucketContext::GetUsage(bool write_in_progress) {
-  return backing_store_ ? backing_store_->EstimateSize(write_in_progress)
+  return backing_store_ ? backing_store()->EstimateSize(write_in_progress)
          : in_memory()  ? 0
                         : ReadUsageFromDisk(bucket_locator(), data_path_);
 }
@@ -401,7 +420,7 @@ int64_t BucketContext::GetBucketSpaceToAllot() {
 void BucketContext::CreateAllExternalObjects(
     const std::vector<IndexedDBExternalObject>& objects,
     std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects) {
-  CHECK(!ShouldUseSqlite());
+  CHECK(!IsUsingSqlite());
 
   TRACE_EVENT0("IndexedDB", "BucketContext::CreateAllExternalObjects");
 
@@ -454,11 +473,9 @@ void BucketContext::CreateAllExternalObjects(
   }
 }
 
-bool BucketContext::ShouldUseSqlite() {
-  if (!should_use_sqlite_) {
-    should_use_sqlite_ = content::indexed_db::ShouldUseSqlite(in_memory());
-  }
-  return *should_use_sqlite_;
+bool BucketContext::IsUsingSqlite() {
+  CHECK(backing_store_);
+  return std::get<bool>(*backing_store_);
 }
 
 void BucketContext::QueueRunTasks() {
@@ -495,7 +512,7 @@ void BucketContext::RunTasks() {
   }
   if (CanClose() && closing_stage_ == ClosingState::kClosed) {
     ResetBackingStore();
-  } else if (ShouldUseSqlite()) {
+  } else if (IsUsingSqlite()) {
     // Since a `Database` may have just been destroyed, there may no longer be
     // a need to keep `this` around. Note that this isn't necessary in LevelDB
     // due to differences in `CanClose()`, although it likely wouldn't be
@@ -550,7 +567,7 @@ void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
   }
 
   auto names_and_versions = LOG_RESULT(
-      backing_store_->GetDatabaseNamesAndVersions(),
+      backing_store()->GetDatabaseNamesAndVersions(),
       "IndexedDB.BackingStore.GetDatabaseNamesAndVersions", in_memory());
   if (!names_and_versions.has_value()) {
     std::move(callback).Run({}, blink::mojom::IDBError::New(
@@ -688,7 +705,7 @@ void BucketContext::DeleteDatabase(
     std::unique_ptr<Database> database = std::move(it->second);
     databases_.erase(it);
     Status status = std::move(*database).ForceClose("The database is deleted.");
-    if (!status.ok() && !ShouldUseSqlite()) {
+    if (!status.ok() && !IsUsingSqlite()) {
       OnDatabaseError(nullptr, status, "Error aborting transactions.");
     }
   }
@@ -756,7 +773,7 @@ bool BucketContext::CanClose() {
   CHECK_GE(open_handles_, 0);
 
   if (backing_store_ && !skip_closing_sequence_ &&
-      !backing_store_->CanOpportunisticallyClose()) {
+      !backing_store()->CanOpportunisticallyClose()) {
     return false;
   }
 
@@ -860,8 +877,9 @@ BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
 }
 
 void BucketContext::SetShouldUseSqliteForTesting(bool use_sqlite) {
-  CHECK(!should_use_sqlite_.has_value());
-  should_use_sqlite_ = use_sqlite;
+  CHECK(!backing_store_);
+  sqlite_rollout_stage_ = use_sqlite ? SqliteRolloutStage::kUseSqliteOnly
+                                     : SqliteRolloutStage::kUseLevelDbOnly;
 }
 
 // static
@@ -898,7 +916,7 @@ void BucketContext::OnDatabaseError(Database* database,
 
   const std::string error_message =
       message.empty() ? status.ToString() : message;
-  if (ShouldUseSqlite()) {
+  if (IsUsingSqlite()) {
     // Unlike in the LevelDB case, an error in one database doesn't indicate a
     // problem with the entire bucket, so we just `ForceClose` the one
     // `Database`.
@@ -947,6 +965,7 @@ bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 std::tuple<Status, DatabaseError, IndexedDBDataLossInfo>
 BucketContext::InitBackingStore(bool create_if_missing) {
   CHECK(!backing_store_);
+  bool should_use_sqlite = ShouldUseSqlite(sqlite_rollout_stage_);
 
   // Construct paths and create required directories.
   base::FilePath blob_path;
@@ -961,18 +980,41 @@ BucketContext::InitBackingStore(bool create_if_missing) {
               CreateDefaultError(), IndexedDBDataLossInfo()};
     }
 
-    if (ShouldUseSqlite()) {
+    base::FilePath sqlite_database_path =
+        data_path_.Append(GetSqliteDbDirectory(bucket_locator()));
+    base::FilePath leveldb_database_path =
+        data_path_.Append(GetLevelDBFileName(bucket_locator()));
+    base::FilePath leveldb_blob_path =
+        data_path_.Append(GetBlobStoreFileName(bucket_locator()));
+
+    if (should_use_sqlite) {
       // Construct the directory path where databases are stored, e.g.
       // <user-data-dir>/<profile-name>/IndexedDB/https_example.com/
-      database_path = data_path_.Append(GetSqliteDbDirectory(bucket_locator()));
+      database_path = sqlite_database_path;
+      base::DeletePathRecursively(leveldb_database_path);
+      base::DeletePathRecursively(leveldb_blob_path);
     } else {
-      database_path = data_path_.Append(GetLevelDBFileName(bucket_locator()));
-      blob_path = data_path_.Append(GetBlobStoreFileName(bucket_locator()));
+      database_path = leveldb_database_path;
+      blob_path = leveldb_blob_path;
+      if (sqlite_database_path.IsParent(leveldb_database_path)) {
+        // True for non-legacy buckets. Delete everything except the leveldb and
+        // blob directories.
+        base::FileEnumerator enumerator(sqlite_database_path,
+                                        /*recursive=*/false,
+                                        base::FileEnumerator::NAMES_ONLY);
+        enumerator.ForEach([&](const base::FilePath& path) {
+          if (path != leveldb_database_path && path != leveldb_blob_path) {
+            base::DeletePathRecursively(path);
+          }
+        });
+      } else {
+        base::DeletePathRecursively(sqlite_database_path);
+      }
 
 #if BUILDFLAG(IS_WIN)
       int max_ldb_file_path_length =
           // The longest file path LevelDB uses.
-          database_path.AppendASCII("MANIFEST-000001").value().size();
+          leveldb_database_path.AppendASCII("MANIFEST-000001").value().size();
 
       // Underflow (i.e. file path length <= MAX_PATH) intentionally emits to
       // the 0 bucket.
@@ -980,8 +1022,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
                                   max_ldb_file_path_length - MAX_PATH);
 
       int max_sqlite_file_path_length =
-          data_path_
-              .Append(GetSqliteDbDirectory(bucket_locator()))
+          sqlite_database_path
               // All database names hash to the same length file name.
               .Append(DatabaseNameToFileName(u"any_string"))
               // The WAL file will use the path with "-wal" appended. This
@@ -1003,7 +1044,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       return {Status::IOError("File path too long"), CreateDefaultError(),
               IndexedDBDataLossInfo()};
     }
-    if (ShouldUseSqlite() && !base::DirectoryExists(database_path)) {
+    if (should_use_sqlite && base::IsDirectoryEmpty(database_path)) {
       if (!create_if_missing) {
         return {Status::NotFound("Backing store does not exist"),
                 DatabaseError(), IndexedDBDataLossInfo()};
@@ -1020,26 +1061,28 @@ BucketContext::InitBackingStore(bool create_if_missing) {
   auto lock_manager = std::make_unique<PartitionedLockManager>();
   IndexedDBDataLossInfo data_loss_info;
 
-  if (ShouldUseSqlite()) {
-    backing_store_ = std::make_unique<sqlite::BackingStoreImpl>(
-        database_path, *blob_storage_context_,
-        base::BindRepeating(
-            [](PartitionedLockManager& lock_manager,
-               const std::u16string& name) {
-              // TODO(crbug.com/436880909): Deduplicate with
-              // `BuildLockRequestsForSqlite()`.
-              std::string key = DatabaseNameToFileName(name).MaybeAsASCII();
-              constexpr int kMetadataLockPartition = 0;
-              PartitionedLockHolder lock_holder;
-              lock_manager.AcquireLocks(
-                  {{{kMetadataLockPartition, key},
-                    PartitionedLockManager::LockType::kExclusive}},
-                  lock_holder, base::DoNothing());
-              // Locks should be granted synchronously.
-              CHECK_EQ(lock_holder.locks.size(), 1U);
-              return std::move(lock_holder.locks);
-            },
-            std::ref(*lock_manager)));
+  if (should_use_sqlite) {
+    backing_store_.emplace(
+        std::make_unique<sqlite::BackingStoreImpl>(
+            database_path, *blob_storage_context_,
+            base::BindRepeating(
+                [](PartitionedLockManager& lock_manager,
+                   const std::u16string& name) {
+                  // TODO(crbug.com/436880909): Deduplicate with
+                  // `BuildLockRequestsForSqlite()`.
+                  std::string key = DatabaseNameToFileName(name).MaybeAsASCII();
+                  constexpr int kMetadataLockPartition = 0;
+                  PartitionedLockHolder lock_holder;
+                  lock_manager.AcquireLocks(
+                      {{{kMetadataLockPartition, key},
+                        PartitionedLockManager::LockType::kExclusive}},
+                      lock_holder, base::DoNothing());
+                  // Locks should be granted synchronously.
+                  CHECK_EQ(lock_holder.locks.size(), 1U);
+                  return std::move(lock_holder.locks);
+                },
+                std::ref(*lock_manager))),
+        /*is_sqlite=*/true);
   } else {
     std::unique_ptr<BackingStore> backing_store;
     bool disk_full = false;
@@ -1092,7 +1135,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       return {status, CreateDefaultError(), data_loss_info};
     }
 
-    backing_store_ = std::move(backing_store);
+    backing_store_.emplace(std::move(backing_store), /*is_sqlite=*/false);
   }
 
   if (!in_memory()) {
@@ -1108,9 +1151,11 @@ void BucketContext::ResetBackingStore() {
   file_reader_map_.clear();
   weak_factory_.InvalidateWeakPtrs();
 
+  std::optional<bool> was_using_sqlite;
   if (backing_store_) {
+    was_using_sqlite = IsUsingSqlite();
     base::WaitableEvent destruct_event;
-    std::move(*backing_store_).SignalWhenDestructionComplete(&destruct_event);
+    std::move(*backing_store()).SignalWhenDestructionComplete(&destruct_event);
     backing_store_.reset();
     destruct_event.Wait();
     if (!GetTeardownExtraStepForTesting().is_null()) {
@@ -1118,10 +1163,10 @@ void BucketContext::ResetBackingStore() {
     }
   }
 
-  if (is_doomed_) {
+  if (is_doomed_ && !in_memory()) {
     // TODO(crbug.com/436887363): Log if deletion fails.
     if (ShouldUseLegacyFilePath(bucket_locator())) {
-      if (ShouldUseSqlite()) {
+      if (was_using_sqlite.value_or(ShouldUseSqlite(sqlite_rollout_stage_))) {
         base::DeletePathRecursively(
             data_path_.Append(GetSqliteDbDirectory(bucket_locator())));
       } else {
