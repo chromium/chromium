@@ -35,11 +35,19 @@ PickleIterator PickleIterator::WithData(span<const uint8_t> data) {
   if (data.size() < sizeof(Pickle::Header)) {
     return PickleIterator();
   }
-  const auto* header = reinterpret_cast<const Pickle::Header*>(data.data());
-  if (header->payload_size > data.size() - sizeof(Pickle::Header)) {
+  // Make a copy of the header instead of dereferencing `data` with
+  // reinterpret_cast in case the memory is not aligned, which would lead to
+  // Undefined Behavior. This scenario should be rare as in most cases memory
+  // allocations are aligned, but it is not guaranteed by this API which accepts
+  // arbitrary spans.
+  Pickle::Header header;
+  byte_span_from_ref(header).copy_from_nonoverlapping(
+      data.first(sizeof(header)));
+
+  if (header.payload_size > data.size() - sizeof(Pickle::Header)) {
     return PickleIterator();
   }
-  const size_t header_size = data.size() - header->payload_size;
+  const size_t header_size = data.size() - header.payload_size;
   if (header_size != bits::AlignUp(header_size, sizeof(uint32_t))) {
     return PickleIterator();
   }
@@ -50,7 +58,7 @@ PickleIterator PickleIterator::WithData(span<const uint8_t> data) {
   iter.payload_ =
       UNSAFE_BUFFERS(reinterpret_cast<const char*>(data.data()) + header_size);
   iter.read_index_ = 0;
-  iter.end_index_ = header->payload_size;
+  iter.end_index_ = header.payload_size;
   return iter;
 }
 

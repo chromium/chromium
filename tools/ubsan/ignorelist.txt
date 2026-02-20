@@ -27,10 +27,6 @@ src:*/hb-ot-shape-fallback.cc
 [null]
 fun:*views*ViewAccessibilityUtils*IsFocusedChildWidget*
 
-# https://crbug.com/363225486
-[alignment]
-fun:*base*Pickle*
-
 # https://crbug.com/385062729
 [pointer-overflow]
 fun:*angle*PoolAllocator*allocate*

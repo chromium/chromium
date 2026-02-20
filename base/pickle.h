@@ -188,7 +188,8 @@ class BASE_EXPORT Pickle {
   // initialization when the speed gain of not copying the data outweighs the
   // danger of dangling pointers. If a Pickle is obtained from this call, it is
   // a requirement that only const methods be called. The header padding size is
-  // deduced from the data length.
+  // deduced from the data length. `data` must represent a 4-byte-aligned memory
+  // range, or generally header-aligned if the pickle uses a custom header.
   // TODO(crbug.com/479750481): Deprecated. Use
   // PickleIterator::WithData() instead whenever possible.
   static Pickle WithUnownedBuffer(span<const uint8_t> data);
