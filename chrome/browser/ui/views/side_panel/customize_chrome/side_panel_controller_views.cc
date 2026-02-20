@@ -94,9 +94,7 @@ void SidePanelControllerViews::OnEntryWillHide(
   // without explicitly closing the it. In those cases the view of the SidePanel
   // still exists, therefore we do not count those events. Also closing the
   // browser with an opened SidePanel does not trigger this call.
-  // TODO(crbug.com/454215211): Follow up this check with more robust solution.
-  if (reason == SidePanelEntryHideReason::kSidePanelClosed &&
-      !entry->CachedView()) {
+  if (reason == SidePanelEntryHideReason::kSidePanelClosed) {
     Profile* const profile =
         Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
     profile->GetPrefs()->SetBoolean(prefs::kNtpCustomizeChromeExplicitlyClosed,
