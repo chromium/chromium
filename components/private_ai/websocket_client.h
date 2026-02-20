@@ -31,7 +31,7 @@ class NetworkContext;
 
 namespace private_ai {
 
-class LegionLogger;
+class PrivateAiLogger;
 
 class WebSocketClient : public Transport,
                         public network::mojom::WebSocketHandshakeClient,
@@ -39,7 +39,7 @@ class WebSocketClient : public Transport,
  public:
   WebSocketClient(const GURL& service_url,
                   network::mojom::NetworkContext* network_context,
-                  LegionLogger* logger);
+                  PrivateAiLogger* logger);
   ~WebSocketClient() override;
 
   // Transport:
@@ -90,7 +90,7 @@ class WebSocketClient : public Transport,
   State state_ = State::kInitialized;
   const GURL service_url_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
-  const raw_ptr<LegionLogger> logger_;
+  const raw_ptr<PrivateAiLogger> logger_;
   ResponseCallback response_callback_;
 
   std::vector<uint8_t> pending_read_data_;

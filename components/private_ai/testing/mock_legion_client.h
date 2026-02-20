@@ -34,7 +34,7 @@ class MockLegionClient : public Client {
                OnPaicMessageRequestCompletedCallback callback,
                const RequestOptions& options),
               (override));
-  MOCK_METHOD(LegionLogger*, GetLogger, (), (override));
+  MOCK_METHOD(PrivateAiLogger*, GetLogger, (), (override));
 };
 
 }  // namespace private_ai

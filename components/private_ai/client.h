@@ -23,7 +23,7 @@ class NetworkContext;
 
 namespace private_ai {
 
-class LegionLogger;
+class PrivateAiLogger;
 
 // Interface for the legion client.
 class Client {
@@ -63,7 +63,7 @@ class Client {
       network::mojom::NetworkContext* network_context,
       phosphor::TokenManager* token_manager,
       network::mojom::NetworkService* network_service,
-      std::unique_ptr<LegionLogger> logger);
+      std::unique_ptr<PrivateAiLogger> logger);
 
   virtual ~Client() = default;
 
@@ -98,7 +98,7 @@ class Client {
                                OnPaicMessageRequestCompletedCallback callback,
                                const RequestOptions& options) = 0;
 
-  virtual LegionLogger* GetLogger() = 0;
+  virtual PrivateAiLogger* GetLogger() = 0;
 };
 
 }  // namespace private_ai

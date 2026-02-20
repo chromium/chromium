@@ -26,7 +26,7 @@ namespace {
 
 std::unique_ptr<Connection> CreateConnectionStack(
     const GURL& url,
-    LegionLogger* logger,
+    PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
     base::RepeatingClosure on_disconnect,
     network::mojom::NetworkContext* network_context) {
@@ -54,7 +54,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
 ConnectionFactoryImpl::ConnectionFactoryImpl(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
-    LegionLogger* logger)
+    PrivateAiLogger* logger)
     : url_(url), network_context_(network_context), logger_(logger) {
   CHECK(network_context_);
   CHECK(logger_);

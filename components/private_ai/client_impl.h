@@ -27,7 +27,7 @@ class ConnectionFactory;
 class ClientImpl : public Client {
  public:
   ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
-             std::unique_ptr<LegionLogger> logger);
+             std::unique_ptr<PrivateAiLogger> logger);
   ~ClientImpl() override;
 
   ClientImpl(const ClientImpl&) = delete;
@@ -49,7 +49,7 @@ class ClientImpl : public Client {
                        OnPaicMessageRequestCompletedCallback callback,
                        const RequestOptions& options) override;
 
-  LegionLogger* GetLogger() override;
+  PrivateAiLogger* GetLogger() override;
 
  private:
   // Callback for when a `SendRequest` operation completes.
@@ -73,7 +73,7 @@ class ClientImpl : public Client {
 
   void OnConnectionDisconnected();
 
-  std::unique_ptr<LegionLogger> logger_;
+  std::unique_ptr<PrivateAiLogger> logger_;
 
   std::unique_ptr<Connection> connection_;
 

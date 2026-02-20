@@ -67,7 +67,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 WebSocketClient::WebSocketClient(
     const GURL& service_url,
     network::mojom::NetworkContext* network_context,
-    LegionLogger* logger)
+    PrivateAiLogger* logger)
     : service_url_(service_url),
       network_context_(network_context),
       logger_(logger),

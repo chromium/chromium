@@ -30,7 +30,7 @@ std::unique_ptr<Client> Client::Create(
     network::mojom::NetworkContext* network_context,
     phosphor::TokenManager* token_manager,
     network::mojom::NetworkService* network_service,
-    std::unique_ptr<LegionLogger> logger) {
+    std::unique_ptr<PrivateAiLogger> logger) {
   CHECK(!api_key.empty());
   GURL formatted_url = Client::FormatUrl(url, api_key);
 

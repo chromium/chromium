@@ -76,7 +76,7 @@ void ReceivePaicMessage(
 }  // namespace
 
 ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
-                       std::unique_ptr<LegionLogger> logger)
+                       std::unique_ptr<PrivateAiLogger> logger)
     : logger_(std::move(logger)),
       connection_factory_(std::move(connection_factory)) {
   CHECK(logger_);
@@ -117,7 +117,7 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
                              std::move(text_response_callback), options);
 }
 
-LegionLogger* ClientImpl::GetLogger() {
+PrivateAiLogger* ClientImpl::GetLogger() {
   return logger_.get();
 }
 

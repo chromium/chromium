@@ -52,10 +52,10 @@ class ConnectionFactoryImplBrowserTest : public InProcessBrowserTest {
     return token_manager;
   }
 
-  LegionLogger* GetLogger() { return &logger_; }
+  PrivateAiLogger* GetLogger() { return &logger_; }
 
  private:
-  LegionLogger logger_;
+  PrivateAiLogger logger_;
   base::test::ScopedFeatureList feature_list_;
 };
 

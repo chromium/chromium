@@ -224,7 +224,7 @@ class SecureChannelImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 
-  LegionLogger logger_;
+  PrivateAiLogger logger_;
   std::unique_ptr<SecureChannelImpl> secure_channel_;
 
   std::unique_ptr<MockTransport> transport_ptr_;

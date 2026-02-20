@@ -14,7 +14,7 @@ namespace {
 
 using ::testing::_;
 
-class MockObserver : public LegionLogger::Observer {
+class MockObserver : public PrivateAiLogger::Observer {
  public:
   MOCK_METHOD(void,
               OnLogInfo,
@@ -26,8 +26,8 @@ class MockObserver : public LegionLogger::Observer {
               (override));
 };
 
-TEST(LegionLoggerTest, NotifiesObserversOnLogging) {
-  LegionLogger logger;
+TEST(PrivateAiLoggerTest, NotifiesObserversOnLogging) {
+  PrivateAiLogger logger;
   MockObserver observer;
   logger.AddObserver(&observer);
 

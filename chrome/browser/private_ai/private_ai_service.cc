@@ -43,7 +43,7 @@ PrivateAiService::PrivateAiService(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto logger = std::make_unique<LegionLogger>();
+  auto logger = std::make_unique<PrivateAiLogger>();
   auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto bsa = bsa_factory_->CreateBlindSignAuth(url_loader_factory->Clone());

@@ -26,7 +26,7 @@ class NetworkContext;
 
 class LegionInternalsPageHandler
     : public legion_internals::mojom::LegionInternalsPageHandler,
-      public private_ai::LegionLogger::Observer {
+      public private_ai::PrivateAiLogger::Observer {
  public:
   explicit LegionInternalsPageHandler(
       private_ai::phosphor::TokenManager* token_manager,
@@ -53,7 +53,7 @@ class LegionInternalsPageHandler
                    const std::string& request,
                    SendRequestCallback callback) override;
 
-  // private_ai::LegionLogger::Observer:
+  // private_ai::PrivateAiLogger::Observer:
   void OnLogInfo(const base::Location& location,
                  std::string_view message) override;
   void OnLogError(const base::Location& location,
@@ -73,8 +73,8 @@ class LegionInternalsPageHandler
   mojo::Receiver<legion_internals::mojom::LegionInternalsPageHandler> receiver_;
   mojo::Remote<legion_internals::mojom::LegionInternalsPage> page_;
 
-  base::ScopedMultiSourceObservation<private_ai::LegionLogger,
-                                     private_ai::LegionLogger::Observer>
+  base::ScopedMultiSourceObservation<private_ai::PrivateAiLogger,
+                                     private_ai::PrivateAiLogger::Observer>
       scoped_logger_observations_{this};
 };
 

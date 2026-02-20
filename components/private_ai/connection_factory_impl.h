@@ -19,7 +19,7 @@ class NetworkService;
 
 namespace private_ai {
 
-class LegionLogger;
+class PrivateAiLogger;
 
 namespace phosphor {
 class TokenManager;
@@ -29,7 +29,7 @@ class ConnectionFactoryImpl : public ConnectionFactory {
  public:
   ConnectionFactoryImpl(const GURL& url,
                         network::mojom::NetworkContext* network_context,
-                        LegionLogger* logger);
+                        PrivateAiLogger* logger);
   ~ConnectionFactoryImpl() override;
 
   ConnectionFactoryImpl(const ConnectionFactoryImpl&) = delete;
@@ -46,7 +46,7 @@ class ConnectionFactoryImpl : public ConnectionFactory {
  private:
   const GURL url_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
-  const raw_ptr<LegionLogger> logger_;
+  const raw_ptr<PrivateAiLogger> logger_;
 
   raw_ptr<phosphor::TokenManager> token_manager_ = nullptr;
   GURL proxy_url_;

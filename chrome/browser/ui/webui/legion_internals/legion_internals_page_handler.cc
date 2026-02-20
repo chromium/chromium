@@ -53,7 +53,7 @@ void LegionInternalsPageHandler::Connect(const std::string& url,
   webui_client_ = private_ai::Client::Create(
       url, api_key, proxy_url, use_token_attestation, network_context_,
       token_manager_, content::GetNetworkService(),
-      std::make_unique<private_ai::LegionLogger>());
+      std::make_unique<private_ai::PrivateAiLogger>());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
   webui_client_->EstablishConnection();
   std::move(callback).Run();

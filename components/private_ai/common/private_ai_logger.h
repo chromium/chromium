@@ -17,7 +17,7 @@ class Location;
 namespace private_ai {
 
 // Handles logging in Legion and notifies observers.
-class LegionLogger {
+class PrivateAiLogger {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -27,11 +27,11 @@ class LegionLogger {
                             std::string_view message) {}
   };
 
-  LegionLogger();
-  ~LegionLogger();
+  PrivateAiLogger();
+  ~PrivateAiLogger();
 
-  LegionLogger(const LegionLogger&) = delete;
-  LegionLogger& operator=(const LegionLogger&) = delete;
+  PrivateAiLogger(const PrivateAiLogger&) = delete;
+  PrivateAiLogger& operator=(const PrivateAiLogger&) = delete;
 
   void LogInfo(const base::Location& location, std::string_view message);
   void LogError(const base::Location& location, std::string_view message);

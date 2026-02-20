@@ -80,7 +80,7 @@ class ClientImplTest : public ::testing::Test {
     auto factory = std::make_unique<FakeConnectionFactory>();
     factory_ = factory.get();
     client_ = std::make_unique<ClientImpl>(std::move(factory),
-                                           std::make_unique<LegionLogger>());
+                                           std::make_unique<PrivateAiLogger>());
   }
 
   ~ClientImplTest() override = default;
