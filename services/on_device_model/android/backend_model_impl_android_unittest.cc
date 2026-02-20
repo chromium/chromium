@@ -61,6 +61,8 @@ class BackendModelImplAndroidTest : public testing::Test {
 };
 
 TEST_F(BackendModelImplAndroidTest, GenerateWithDefaultFactory) {
+  java_helper_.SetDefaultAiCoreFactory();
+
   std::unique_ptr<BackendSession> session = model_->CreateSession(
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));

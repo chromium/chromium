@@ -19,6 +19,11 @@ OnDeviceModelBridgeNativeUnitTestHelper::
 OnDeviceModelBridgeNativeUnitTestHelper::
     ~OnDeviceModelBridgeNativeUnitTestHelper() = default;
 
+void OnDeviceModelBridgeNativeUnitTestHelper::SetDefaultAiCoreFactory() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setDefaultAiCoreFactory(env);
+}
+
 void OnDeviceModelBridgeNativeUnitTestHelper::SetMockAiCoreFactory() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreFactory(

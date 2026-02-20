@@ -46,7 +46,11 @@ class BackendSessionImplAndroid : public BackendSession {
     // A response processing error is thrown when running inference. This may
     // be caused by safety filtering.
     kInferenceResponseProcessingError = 7,
-    kMaxValue = kInferenceResponseProcessingError,
+    // An invalid argument error when building the inference request. This can
+    // happen when request parameters violate MLKit API constraints (e.g.,
+    // maxOutputTokens cannot exceed 256).
+    kInvalidRequestArgumentError = 8,
+    kMaxValue = kInvalidRequestArgumentError,
   };
 
   BackendSessionImplAndroid(

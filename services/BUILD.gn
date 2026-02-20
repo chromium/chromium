@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 
@@ -193,6 +194,11 @@ if (is_android) {
       "//skia/public/mojom:mojom_java",
       "//third_party/google-truth:google_truth_java",
     ]
+
+    # Enable tests for MLKit-based implementations for AICore.
+    if (use_mlkit_for_aicore) {
+      deps += [ "//services/on_device_model/android:junit" ]
+    }
   }
 
   android_library("services_javatests") {

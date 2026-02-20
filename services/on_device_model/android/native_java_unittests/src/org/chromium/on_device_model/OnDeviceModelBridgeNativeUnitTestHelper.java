@@ -259,6 +259,31 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         assertEquals(requirePersistentMode, downloaderBackend.mParams.requirePersistentMode);
     }
 
+    /**
+     * Sets a default AiCoreFactory that uses upstream (dummy) implementations. This factory returns
+     * AiCoreSessionBackendUpstreamImpl and AiCoreModelDownloaderBackendUpstreamImpl which report
+     * API_NOT_AVAILABLE. Use this for tests that need to verify behavior when MLKit is not
+     * available.
+     */
+    @CalledByNative
+    public static void setDefaultAiCoreFactory() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                AiCoreFactory.class,
+                new AiCoreFactory() {
+                    @Override
+                    public AiCoreSessionBackend createSessionBackend(
+                            ModelExecutionFeature feature, SessionParams params) {
+                        return new AiCoreSessionBackendUpstreamImpl();
+                    }
+
+                    @Override
+                    public AiCoreModelDownloaderBackend createModelDownloader(
+                            ModelExecutionFeature feature, DownloaderParams params) {
+                        return new AiCoreModelDownloaderBackendUpstreamImpl();
+                    }
+                });
+    }
+
     @CalledByNative
     public void setMockAiCoreFactory() {
         mMockAiCoreFactory = new MockAiCoreFactory();

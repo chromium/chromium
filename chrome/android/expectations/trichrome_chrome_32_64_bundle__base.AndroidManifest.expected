@@ -124,6 +124,12 @@
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="10"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
+    <provider  # DIFF-ANCHOR: a3fe279b
+        android:name="com.google.mlkit.common.internal.MlKitInitProvider"
+        android:authorities="$PACKAGE.mlkitinitprovider"
+        android:exported="false"
+        android:initOrder="99">
+    </provider>  # DIFF-ANCHOR: a3fe279b
     <provider  # DIFF-ANCHOR: 3b9c6c31
         android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
         android:authorities="$PACKAGE.AutofillThirdPartyModeContentProvider"
@@ -213,6 +219,12 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT"/>
       </intent-filter>  # DIFF-ANCHOR: 69e70070
     </service>  # DIFF-ANCHOR: 2295960c
+    <service  # DIFF-ANCHOR: 85869b23
+        android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
+        android:directBootAware="true"
+        android:exported="false">
+      <meta-data android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    </service>  # DIFF-ANCHOR: 85869b23
     <service  # DIFF-ANCHOR: a550decc
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:exported="false"

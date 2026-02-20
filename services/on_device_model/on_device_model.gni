@@ -24,4 +24,10 @@ declare_args() {
   enable_ml_internal =
       build_with_internal_optimization_guide && use_on_device_model_service
   use_chromeos_model_service = is_chrome_branded && is_cbx
+
+  # Use MLKit public APIs to access AICore for non-Chrome branded builds.
+  # MLKit is the developer-facing APIs and AICore is the system-level AI runtime
+  # to host on-device model services. Chrome-branded builds use internal/private
+  # APIs to access AICore directly.
+  use_mlkit_for_aicore = !is_chrome_branded
 }

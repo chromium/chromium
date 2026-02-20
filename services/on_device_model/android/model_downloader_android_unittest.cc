@@ -71,6 +71,8 @@ class ModelDownloaderAndroidTest : public testing::Test {
 };
 
 TEST_F(ModelDownloaderAndroidTest, DefaultDownloader) {
+  java_helper_.SetDefaultAiCoreFactory();
+
   base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(

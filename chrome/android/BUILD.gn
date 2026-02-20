@@ -42,6 +42,7 @@ if (_is_default_toolchain) {
   import("//content/public/common/features.gni")
   import("//device/vr/buildflags/buildflags.gni")
   import("//printing/buildflags/buildflags.gni")
+  import("//services/on_device_model/on_device_model.gni")
   import("//testing/test.gni")
   import("//third_party/icu/config.gni")
   import("//third_party/jni_zero/jni_zero.gni")
@@ -2142,6 +2143,11 @@ if (_is_default_toolchain) {
     # More deps for DFMs.
     if (dfmify_dev_ui) {
       deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
+    }
+
+    if (use_mlkit_for_aicore) {
+      # MLKitInitProvider must be in the base manifest, so the lib must be in the base module.
+      deps += [ "//third_party/android_deps:com_google_mlkit_common_java" ]
     }
 
     srcjar_deps = [

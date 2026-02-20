@@ -4,6 +4,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
@@ -82,6 +83,16 @@ android_library("java") {
     "java/src/org/chromium/on_device_model/OnDeviceModelBridge.java",
     "java/src/org/chromium/on_device_model/SessionResponder.java",
   ]
+
+  # MLKit-based implementations for AICore backend for non-Chrome branded builds.
+  if (use_mlkit_for_aicore) {
+    sources += [
+      "java/src/org/chromium/on_device_model/MlKitAiCoreFactoryImpl.java",
+      "java/src/org/chromium/on_device_model/MlKitAiCoreModelDownloaderBackendImpl.java",
+      "java/src/org/chromium/on_device_model/MlKitAiCoreSessionBackendImpl.java",
+    ]
+  }
+
   deps = [
     ":mojom_java",
     "//base:base_java",
@@ -91,6 +102,17 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
+
+  # Dependencies of MLKit-based implementations for AICore backend.
+  if (use_mlkit_for_aicore) {
+    deps += [
+      "//third_party/android_deps:com_google_mlkit_common_java",
+      "//third_party/android_deps:com_google_mlkit_genai_common_java",
+      "//third_party/android_deps:com_google_mlkit_genai_prompt_java",
+      "//third_party/android_deps:guava_java",
+    ]
+  }
+
   srcjar_deps = [
     ":java_enum_srcjar",
     ":jni_headers",
@@ -139,4 +161,30 @@ java_cpp_enum("java_enum_srcjar") {
 mojom("mojom") {
   sources = [ "downloader_params.mojom" ]
   generate_java = true
+}
+
+# Unit tests of MLKit-based implementations for AICore backend.
+if (use_mlkit_for_aicore) {
+  robolectric_library("junit") {
+    testonly = true
+    sources = [
+      "junit/src/org/chromium/on_device_model/MlKitAiCoreModelDownloaderBackendImplTest.java",
+      "junit/src/org/chromium/on_device_model/MlKitAiCoreSessionBackendImplTest.java",
+    ]
+    deps = [
+      ":java",
+      ":mojom_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
+      "//services/on_device_model/public/mojom:mojom_java",
+      "//third_party/android_deps:com_google_mlkit_common_java",
+      "//third_party/android_deps:com_google_mlkit_genai_common_java",
+      "//third_party/android_deps:com_google_mlkit_genai_prompt_java",
+      "//third_party/android_deps:guava_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+    ]
+  }
 }

@@ -19,6 +19,10 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
   OnDeviceModelBridgeNativeUnitTestHelper();
   ~OnDeviceModelBridgeNativeUnitTestHelper();
 
+  // Sets a default AiCoreFactory that uses upstream (dummy) implementations.
+  // Use this for tests that need to verify behavior when MLKit is not
+  // available.
+  void SetDefaultAiCoreFactory();
   void SetMockAiCoreFactory();
 
   // `index` is the index of the session backend in the list of session backends
