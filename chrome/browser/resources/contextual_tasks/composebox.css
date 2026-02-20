@@ -274,6 +274,11 @@
   transition: ease-out 100ms;
 }
 
+:host([is-lens-overlay-showing]) #composebox::part(lens-icon) {
+  background-color: var(--color-composebox-lens-active-background);
+  border-radius: 50%;
+}
+
 #composebox[submit-enabled_]::part(lens-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
