@@ -122,9 +122,34 @@ void TabStateStorageBackend::ClearAllNodes() {
                                 base::Unretained(database_.get())));
 }
 
+void TabStateStorageBackend::ClearAllDivergentNodes() {
+  db_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TabStateStorageDatabase::ClearAllDivergentNodes,
+                     base::Unretained(database_.get())));
+}
+
 void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearWindow,
+                                base::Unretained(database_.get()),
+                                std::string(window_tag)));
+}
+
+void TabStateStorageBackend::ClearDivergentNodesForWindow(
+    std::string_view window_tag,
+    bool is_off_the_record) {
+  db_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TabStateStorageDatabase::ClearDivergentNodesForWindow,
+                     base::Unretained(database_.get()), std::string(window_tag),
+                     is_off_the_record));
+}
+
+void TabStateStorageBackend::ClearDivergenceWindow(
+    std::string_view window_tag) {
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearDivergenceWindow,
                                 base::Unretained(database_.get()),
                                 std::string(window_tag)));
 }

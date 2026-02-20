@@ -19,6 +19,7 @@
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
+#include "chrome/browser/tab/tab_state_storage_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace tabs {
@@ -107,8 +108,12 @@ StorageLoadedData::StorageLoadingContext::error_message() const {
 }
 
 StorageLoadedData::Builder::Builder(
+    std::string_view window_tag,
+    bool is_off_the_record,
     std::unique_ptr<RestoreEntityTracker> tracker)
-    : tracker_(std::move(tracker)) {
+    : window_tag_(window_tag),
+      is_off_the_record_(is_off_the_record),
+      tracker_(std::move(tracker)) {
   tracker_->SetLoadingContext(&context_);
 }
 
@@ -194,7 +199,17 @@ void StorageLoadedData::Builder::AddNode(
                                passkey);
 }
 
-std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build() {
+void StorageLoadedData::Builder::AddDivergentNode(
+    StorageId id,
+    TabStorageType type,
+    std::optional<base::span<const uint8_t>> children,
+    base::PassKey<TabStateStorageDatabase> passkey) {
+  NOTIMPLEMENTED();
+}
+
+std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
+    base::PassKey<TabStateStorageDatabase> passkey,
+    TabStateStorageDatabase* database) {
   if (context_.HasError()) {
     return base::WrapUnique(new StorageLoadedData(
         std::vector<tabs_pb::TabState>(),
@@ -220,6 +235,13 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build() {
       loaded_tabs.emplace_back(std::move(tab));
     }
   }
+
+  // TODO(crbug.com/483984954): Reconcile the divergence window data with the
+  // canonical window data and save the reconciled differences.
+
+  // Clear the divergent window from the database now that we have reconciled
+  // the divergent data.
+  database->ClearDivergentNodesForWindow(window_tag_, is_off_the_record_);
 
   // TODO(crbug.com/460490530): CHECK that every tab row was found in the
   // child traversal. Otherwise we've got an inconsistent state and cleanup

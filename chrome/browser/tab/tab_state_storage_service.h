@@ -103,9 +103,15 @@ class TabStateStorageService : public KeyedService,
                           bool is_off_the_record,
                           CountTabsForWindowCallback callback);
 
-  void ClearState();
+  void ClearAllWindows();
+  void ClearAllDivergenceWindows();
 
   void ClearWindow(std::string_view window_tag);
+
+  void ClearDivergentNodesForWindow(std::string_view window_tag,
+                                    bool is_off_the_record);
+
+  void ClearDivergenceWindow(std::string_view window_tag);
 
   void ClearNodesForWindowExcept(std::string_view window_tag,
                                  bool is_off_the_record,

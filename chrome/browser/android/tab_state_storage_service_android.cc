@@ -28,6 +28,7 @@
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_strip_collection.h"
@@ -141,12 +142,16 @@ void TabStateStorageServiceAndroid::CountTabsForWindow(
 }
 
 void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {
-  tab_state_storage_service_->ClearState();
+  auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
+  tab_state_storage_service_->ClearAllWindows();
+  tab_state_storage_service_->ClearAllDivergenceWindows();
 }
 
 void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
                                                 const std::string& window_tag) {
+  auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
   tab_state_storage_service_->ClearWindow(window_tag);
+  tab_state_storage_service_->ClearDivergenceWindow(window_tag);
 }
 
 void TabStateStorageServiceAndroid::ClearWindowWithOtrStatus(
@@ -154,8 +159,11 @@ void TabStateStorageServiceAndroid::ClearWindowWithOtrStatus(
     const std::string& window_tag,
     bool is_off_the_record) {
   std::vector<StorageId> ids;
+  auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
   tab_state_storage_service_->ClearNodesForWindowExcept(window_tag,
                                                         is_off_the_record, ids);
+  tab_state_storage_service_->ClearDivergentNodesForWindow(window_tag,
+                                                           is_off_the_record);
 }
 
 void TabStateStorageServiceAndroid::ClearUnusedNodesForWindow(
@@ -173,6 +181,8 @@ void TabStateStorageServiceAndroid::ClearUnusedNodesForWindow(
     walker.Walk();
   }
 
+  // We do not need to clear the divergence window since divergent nodes will
+  // never remain when this method is called.
   tab_state_storage_service_->ClearNodesForWindowExcept(window_tag,
                                                         is_off_the_record, ids);
 }

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/payload.h"
@@ -27,6 +28,7 @@ namespace tabs {
 
 class RestoreEntityTracker;
 class TabStateStorageDatabase;
+class TabStateStorageService;
 
 // Represents data loaded from the database.
 class StorageLoadedData {
@@ -75,7 +77,9 @@ class StorageLoadedData {
 
   class Builder {
    public:
-    explicit Builder(std::unique_ptr<RestoreEntityTracker> tracker);
+    explicit Builder(std::string_view window_tag,
+                     bool is_off_the_record,
+                     std::unique_ptr<RestoreEntityTracker> tracker);
     ~Builder();
 
     Builder(const Builder&) = delete;
@@ -90,9 +94,20 @@ class StorageLoadedData {
                  base::span<const uint8_t> payload,
                  std::optional<base::span<const uint8_t>> children,
                  base::PassKey<TabStateStorageDatabase>);
-    std::unique_ptr<StorageLoadedData> Build();
+
+    // Called on the DB task runner to process a divergent node.
+    void AddDivergentNode(StorageId id,
+                          TabStorageType type,
+                          std::optional<base::span<const uint8_t>> children,
+                          base::PassKey<TabStateStorageDatabase>);
+
+    std::unique_ptr<StorageLoadedData> Build(
+        base::PassKey<TabStateStorageDatabase>,
+        TabStateStorageDatabase* database);
 
    private:
+    std::string window_tag_;
+    bool is_off_the_record_;
     std::unique_ptr<RestoreEntityTracker> tracker_;
     absl::flat_hash_map<StorageId, tabs_pb::TabState> loaded_tabs_map_;
     absl::flat_hash_map<StorageId, std::vector<StorageId>> children_map_;

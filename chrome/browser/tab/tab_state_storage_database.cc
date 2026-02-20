@@ -40,7 +40,8 @@ using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
 // ??-08-2025, Version 1: Initial version of the database schema.
 // 11-11-2025, Version 2: Add window_tag and is_off_the_record columns.
 // 19-11-2025, Version 3: Change storage id type from int to blob and use token.
-const int kCurrentVersionNumber = 3;
+// 27-03-2025, Version 4: Add divergent nodes table.
+const int kCurrentVersionNumber = 4;
 
 // The last version of the database schema that is compatible with the current
 // version. Any changes made to the database schema that would break
@@ -59,6 +60,31 @@ static_assert(
     "Current version must be greater than or equal to compatible version.");
 
 constexpr char kTabsTableName[] = "nodes";
+constexpr char kDivergentNodesTableName[] = "divergent_nodes";
+
+static constexpr char kCreateTabSchemaSql[] =
+    "CREATE TABLE IF NOT EXISTS nodes("
+    "id BLOB PRIMARY KEY NOT NULL,"
+    "window_tag TEXT NOT NULL,"
+    "is_off_the_record INTEGER NOT NULL,"
+    "type INTEGER NOT NULL,"
+    "children BLOB,"
+    "payload BLOB)";
+
+static constexpr char kCreateDivergentNodesSchemaSql[] =
+    "CREATE TABLE IF NOT EXISTS divergent_nodes("
+    "id BLOB PRIMARY KEY NOT NULL,"
+    "window_tag TEXT NOT NULL,"
+    "is_off_the_record INTEGER NOT NULL,"
+    "children BLOB)";
+
+static constexpr char kCreateIndexSql[] =
+    "CREATE INDEX IF NOT EXISTS nodes_window_index "
+    "ON nodes(window_tag, is_off_the_record)";
+
+static constexpr char kCreateDivergentNodesIndexSql[] =
+    "CREATE INDEX IF NOT EXISTS divergent_nodes_window_index "
+    "ON divergent_nodes(window_tag, is_off_the_record)";
 
 bool ExecuteSql(sql::Database* db, base::cstring_view sql_command) {
   DCHECK(db->IsSQLValid(sql_command)) << sql_command << " is not valid SQL.";
@@ -68,26 +94,23 @@ bool ExecuteSql(sql::Database* db, base::cstring_view sql_command) {
 bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
   DCHECK(db->HasActiveTransactions());
 
-  static constexpr char kCreateTabSchemaSql[] =
-      "CREATE TABLE IF NOT EXISTS nodes("
-      "id BLOB PRIMARY KEY NOT NULL,"
-      "window_tag TEXT NOT NULL,"
-      "is_off_the_record INTEGER NOT NULL,"
-      "type INTEGER NOT NULL,"
-      "children BLOB,"
-      "payload BLOB)";
-
-  static constexpr char kCreateIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS nodes_window_index "
-      "ON nodes(window_tag, is_off_the_record)";
-
   if (!ExecuteSql(db, kCreateTabSchemaSql)) {
     DLOG(ERROR) << "Failed to create tab schema.";
     return false;
   }
 
+  if (!ExecuteSql(db, kCreateDivergentNodesSchemaSql)) {
+    DLOG(ERROR) << "Failed to create divergent nodes schema.";
+    return false;
+  }
+
   if (!ExecuteSql(db, kCreateIndexSql)) {
     DLOG(ERROR) << "Failed to create index.";
+    return false;
+  }
+
+  if (!ExecuteSql(db, kCreateDivergentNodesIndexSql)) {
+    DLOG(ERROR) << "Failed to create divergent nodes index.";
     return false;
   }
   return true;
@@ -97,8 +120,9 @@ bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
 // initialization failures.
 bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
   bool has_metatable = meta_table->DoesTableExist(db);
-
-  if (!has_metatable && db->DoesTableExist(kTabsTableName)) {
+  bool has_either_tables = db->DoesTableExist(kTabsTableName) ||
+                           db->DoesTableExist(kDivergentNodesTableName);
+  if (!has_metatable && has_either_tables) {
     db->Raze();
   }
 
@@ -139,6 +163,17 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
   // Any graceful upgrade logic when changing versions should go here in version
   // upgrade order.
+
+  // Version 3 -> Version 4: Add divergent nodes table.
+  if (meta_table->GetVersionNumber() == 3) {
+    if (!ExecuteSql(db, kCreateDivergentNodesSchemaSql) ||
+        !ExecuteSql(db, kCreateDivergentNodesIndexSql)) {
+      LOG(ERROR)
+          << "TabStateStorageDatabase failed to upgrade from version 3 to "
+             "version 4.";
+      return false;
+    }
+  }
 
   return meta_table->SetVersionNumber(kCurrentVersionNumber) &&
          meta_table->SetCompatibleVersionNumber(kCompatibleVersionNumber) &&
@@ -361,23 +396,39 @@ std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
     std::string_view window_tag,
     bool is_off_the_record,
     std::unique_ptr<StorageLoadedData::Builder> builder) {
+  // UNION ALL is used since it is more performant than a JOIN and avoids
+  // matching IDs between the two tables.
   static constexpr char kSelectAllNodesSql[] =
-      "SELECT id, type, payload, children FROM nodes "
+      "SELECT id, type, payload, children, 0 as is_divergent FROM nodes "
+      "WHERE window_tag = ? AND is_off_the_record = ? "
+      "UNION ALL "
+      "SELECT id, 0 as type, NULL as payload, children, 1 as is_divergent FROM "
+      "divergent_nodes "
       "WHERE window_tag = ? AND is_off_the_record = ?";
   sql::Statement select_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectAllNodesSql));
   select_statement.BindString(0, window_tag);
   select_statement.BindInt(1, static_cast<int>(is_off_the_record));
+  select_statement.BindString(2, window_tag);
+  select_statement.BindInt(3, static_cast<int>(is_off_the_record));
   while (select_statement.Step()) {
     StorageId id = StorageIdFromBlob(select_statement.ColumnBlob(0));
     TabStorageType type =
         static_cast<TabStorageType>(select_statement.ColumnInt(1));
-    base::span<const uint8_t> payload = select_statement.ColumnBlob(2);
 
     std::optional<base::span<const uint8_t>> children;
     if (type != TabStorageType::kTab) {
       children = select_statement.ColumnBlob(3);
     }
+    const bool is_divergent = select_statement.ColumnBool(4);
+
+    if (is_divergent) {
+      builder->AddDivergentNode(id, type, children,
+                                base::PassKey<TabStateStorageDatabase>());
+      continue;
+    }
+
+    base::span<const uint8_t> payload = select_statement.ColumnBlob(2);
 
     if (is_off_the_record) {
       std::optional<std::vector<uint8_t>> open_payload =
@@ -392,7 +443,7 @@ std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
                        base::PassKey<TabStateStorageDatabase>());
     }
   }
-  return builder->Build();
+  return builder->Build(base::PassKey<TabStateStorageDatabase>(), this);
 }
 
 int TabStateStorageDatabase::CountTabsForWindow(std::string_view window_tag,
@@ -416,11 +467,42 @@ void TabStateStorageDatabase::ClearAllNodes() {
   delete_statement.Run();
 }
 
+void TabStateStorageDatabase::ClearAllDivergentNodes() {
+  static constexpr char kDeleteAllDivergentNodesSql[] =
+      "DELETE FROM divergent_nodes";
+  sql::Statement delete_divergent_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllDivergentNodesSql));
+  delete_divergent_statement.Run();
+}
+
 void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
   static constexpr char kDeleteWindowSql[] =
       "DELETE FROM nodes WHERE window_tag = ?";
   sql::Statement delete_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteWindowSql));
+  delete_statement.BindString(0, window_tag);
+  delete_statement.Run();
+}
+
+void TabStateStorageDatabase::ClearDivergentNodesForWindow(
+    std::string_view window_tag,
+    bool is_off_the_record) {
+  static constexpr char kDeleteDivergentNodesForWindowSql[] =
+      "DELETE FROM divergent_nodes WHERE window_tag = ? AND "
+      "is_off_the_record = ?";
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteDivergentNodesForWindowSql));
+  delete_statement.BindString(0, window_tag);
+  delete_statement.BindInt(1, static_cast<int>(is_off_the_record));
+  delete_statement.Run();
+}
+
+void TabStateStorageDatabase::ClearDivergenceWindow(
+    std::string_view window_tag) {
+  static constexpr char kDeleteDivergenceWindowSql[] =
+      "DELETE FROM divergent_nodes WHERE window_tag = ?";
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteDivergenceWindowSql));
   delete_statement.BindString(0, window_tag);
   delete_statement.Run();
 }
