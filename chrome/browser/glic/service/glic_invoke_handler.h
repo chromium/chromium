@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
@@ -18,25 +19,31 @@ class GlicInstanceImpl;
 // instance's host.
 class GlicInvokeHandler {
  public:
-  using InvokeCompleteCallback =
+  using CompletionCallback =
       base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
 
   GlicInvokeHandler(GlicInstanceImpl& instance,
                     GlicInvokeOptions options,
-                    InvokeCompleteCallback invoke_complete_callback);
+                    CompletionCallback completion_callback);
   ~GlicInvokeHandler();
 
   GlicInvokeHandler(const GlicInvokeHandler&) = delete;
   GlicInvokeHandler& operator=(const GlicInvokeHandler&) = delete;
 
+  // Kicks off the invocation process.
+  void Invoke();
+
  private:
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
-  void OnSendToClientComplete(base::OnceClosure callback);
+  void OnSuccess();
+  void OnError(GlicInvokeError error);
 
   const base::raw_ref<GlicInstanceImpl> instance_;
   GlicInvokeOptions options_;
-  InvokeCompleteCallback invoke_complete_callback_;
+  CompletionCallback completion_callback_;
+
+  base::WeakPtrFactory<GlicInvokeHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
