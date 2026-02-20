@@ -336,6 +336,31 @@ bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
   return write_statement.Run();
 }
 
+bool TabStateStorageDatabase::SaveDivergentNode(OpenTransaction* transaction,
+                                                StorageId id,
+                                                std::string_view window_tag,
+                                                bool is_off_the_record,
+                                                std::vector<uint8_t> children) {
+  DCHECK(OpenTransaction::IsValid(transaction));
+
+  static constexpr char kInsertDivergentNodeSql[] =
+      "INSERT OR REPLACE INTO divergent_nodes"
+      "(id, window_tag, is_off_the_record, children)"
+      "VALUES (?,?,?,?)";
+
+  DCHECK(db_.IsSQLValid(kInsertDivergentNodeSql));
+
+  sql::Statement write_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertDivergentNodeSql));
+
+  write_statement.BindBlob(0, StorageIdToBlob(id));
+  write_statement.BindString(1, window_tag);
+  write_statement.BindInt(2, static_cast<int>(is_off_the_record));
+  write_statement.BindBlob(3, std::move(children));
+
+  return write_statement.Run();
+}
+
 bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
                                          StorageId id) {
   DCHECK(OpenTransaction::IsValid(transaction));

@@ -25,6 +25,7 @@ enum class UnitType {
   kSavePayload = 1,
   kSaveChildren = 2,
   kRemoveNode = 3,
+  kSaveDivergentChildren = 4,
 };
 
 class StorageUpdateUnit;
@@ -103,6 +104,28 @@ class SaveChildrenPendingUpdate : public StoragePendingUpdate {
   UnitType type() const override;
 
  private:
+  raw_ptr<TabStoragePackager> packager_;
+  raw_ref<StorageIdMapping> mapping_;
+  const TabCollectionHandle handle_;
+};
+
+// StoragePendingUpdate to save divergent children.
+class SaveDivergentChildrenPendingUpdate : public StoragePendingUpdate {
+ public:
+  SaveDivergentChildrenPendingUpdate(StorageId id,
+                                     std::string window_tag,
+                                     bool is_off_the_record,
+                                     TabStoragePackager* packager,
+                                     StorageIdMapping& mapping,
+                                     TabCollectionHandle handle);
+  ~SaveDivergentChildrenPendingUpdate() override;
+
+  std::unique_ptr<StorageUpdateUnit> CreateUnit() override;
+  UnitType type() const override;
+
+ private:
+  std::string window_tag_;
+  const bool is_off_the_record_;
   raw_ptr<TabStoragePackager> packager_;
   raw_ref<StorageIdMapping> mapping_;
   const TabCollectionHandle handle_;

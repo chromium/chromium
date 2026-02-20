@@ -161,6 +161,17 @@ void TabStateStorageService::SaveChildren(const TabCollection* collection) {
   });
 }
 
+void TabStateStorageService::SaveDivergentChildren(
+    const TabCollection* collection,
+    base::PassKey<StorageRestoreOrchestrator>) {
+  DCHECK(packager_);
+
+  StorageId storage_id = GetStorageId(collection);
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.SaveDivergentChildren(storage_id, collection);
+  });
+}
+
 void TabStateStorageService::Remove(const TabInterface* tab) {
   DCHECK(packager_);
 

@@ -45,6 +45,7 @@ class TabStateStorageUpdaterBuilder {
   // Use a pointer instead of a handle, since converting back to a pointer can
   // be slow.
   void SaveChildren(StorageId id, const TabCollection* collection);
+  void SaveDivergentChildren(StorageId id, const TabCollection* collection);
   void RemoveNode(StorageId id);
 
   std::unique_ptr<TabStateStorageUpdater> Build();
@@ -61,6 +62,8 @@ class TabStateStorageUpdaterBuilder {
   raw_ptr<TabStoragePackager> packager_;
   absl::flat_hash_map<StorageId, std::unique_ptr<StoragePendingUpdate>>
       update_for_id_;
+  absl::flat_hash_map<StorageId, std::unique_ptr<StoragePendingUpdate>>
+      divergence_update_for_id_;
 };
 
 }  // namespace tabs

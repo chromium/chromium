@@ -88,6 +88,13 @@ class TabStateStorageDatabase {
                         StorageId id,
                         std::vector<uint8_t> children);
 
+  // Inserts or updates a divergent node.
+  bool SaveDivergentNode(OpenTransaction* transaction,
+                         StorageId id,
+                         std::string_view window_tag,
+                         bool is_off_the_record,
+                         std::vector<uint8_t> children);
+
   // Removes a node from the database.
   // This will silently fail if the node does not already exist.
   bool RemoveNode(OpenTransaction* transaction, StorageId id);

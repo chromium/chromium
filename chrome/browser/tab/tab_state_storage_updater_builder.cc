@@ -117,6 +117,19 @@ void TabStateStorageUpdaterBuilder::SaveChildren(
       id, packager_, mapping_.get(), collection->GetHandle());
 }
 
+void TabStateStorageUpdaterBuilder::SaveDivergentChildren(
+    StorageId id,
+    const TabCollection* collection) {
+  auto [it, inserted] = divergence_update_for_id_.try_emplace(id);
+  if (!inserted) {
+    return;
+  }
+  it->second = std::make_unique<SaveDivergentChildrenPendingUpdate>(
+      id, packager_->GetWindowTag(collection),
+      packager_->IsOffTheRecord(collection), packager_, mapping_.get(),
+      collection->GetHandle());
+}
+
 void TabStateStorageUpdaterBuilder::RemoveNode(StorageId id) {
   if (ContainsUpdateWithAnyType(id, {UnitType::kRemoveNode})) {
     return;
@@ -128,6 +141,9 @@ void TabStateStorageUpdaterBuilder::RemoveNode(StorageId id) {
 std::unique_ptr<TabStateStorageUpdater> TabStateStorageUpdaterBuilder::Build() {
   auto updater = std::make_unique<TabStateStorageUpdater>();
   for (auto& [id, update] : update_for_id_) {
+    updater->Add(update->CreateUnit());
+  }
+  for (auto& [id, update] : divergence_update_for_id_) {
     updater->Add(update->CreateUnit());
   }
   return updater;
