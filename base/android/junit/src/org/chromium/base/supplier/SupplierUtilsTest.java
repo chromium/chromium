@@ -7,8 +7,8 @@ package org.chromium.base.supplier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class SupplierUtilsTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled);
         callbackHelper.assertNotCalled();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 
@@ -46,7 +46,7 @@ public class SupplierUtilsTest {
                 observableSupplier,
                 syncOneshotSupplier);
         callbackHelper.assertNotCalled();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 
@@ -70,10 +70,10 @@ public class SupplierUtilsTest {
 
         callbackHelper.assertNotCalled();
         oneshotSupplier.set("foo");
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         syncOneshotSupplier.set(new ArrayList<>());
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 
@@ -91,16 +91,16 @@ public class SupplierUtilsTest {
                 observableSupplier,
                 syncOneshotSupplier);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         observableSupplier.set(new Object());
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         oneshotSupplier.set("foo");
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         syncOneshotSupplier.set(new ArrayList<>());
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 
@@ -111,10 +111,10 @@ public class SupplierUtilsTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         supplier.set(new Object());
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 
@@ -126,10 +126,10 @@ public class SupplierUtilsTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         supplier.set(new Object());
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 
@@ -140,10 +140,10 @@ public class SupplierUtilsTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertNotCalled();
         supplier.set(new Object());
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.assertCalledOnce();
     }
 }

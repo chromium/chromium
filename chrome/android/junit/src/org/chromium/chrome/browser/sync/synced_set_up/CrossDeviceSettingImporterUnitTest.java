@@ -40,8 +40,8 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
@@ -157,7 +157,7 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mLibraryLoader.isInitialized()).thenReturn(true);
 
         mUserActionTester = new UserActionTester();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private CrossDeviceSettingImporter initializeCrossDeviceSettingImporter() {
@@ -756,13 +756,13 @@ public class CrossDeviceSettingImporterUnitTest {
     @Test
     public void testTabObserverManagement() {
         initializeCrossDeviceSettingImporter();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTab).addObserver(any(TabObserver.class));
 
         // Simulate tab change.
         mActivityTabSupplier.set(mTab2);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTab).removeObserver(any(TabObserver.class));
         verify(mTab2).addObserver(any(TabObserver.class));
 

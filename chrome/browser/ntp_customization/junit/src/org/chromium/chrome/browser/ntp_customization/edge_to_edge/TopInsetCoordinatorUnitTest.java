@@ -44,8 +44,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -402,7 +402,7 @@ public class TopInsetCoordinatorUnitTest {
 
         // Verifies the observer is added when the LayoutStateProvider is available.
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mLayoutStateProvider)
                 .addObserver(any(LayoutStateProvider.LayoutStateObserver.class));

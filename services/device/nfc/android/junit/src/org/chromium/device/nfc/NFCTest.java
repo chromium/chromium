@@ -43,8 +43,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.device.mojom.NdefError;
 import org.chromium.device.mojom.NdefErrorType;
@@ -1654,7 +1654,7 @@ public class NFCTest {
                         (Bundle) isNull());
 
         nfc.cancelPush();
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1686,7 +1686,7 @@ public class NFCTest {
                         (Bundle) isNull());
 
         nfc.cancelMakeReadOnly();
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1726,7 +1726,7 @@ public class NFCTest {
 
         // Cancel the second push.
         nfc.cancelPush();
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled after cancelPush is invoked.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1766,7 +1766,7 @@ public class NFCTest {
 
         // Cancel the second makeReadOnly.
         nfc.cancelMakeReadOnly();
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled after cancelMakeReadOnly is invoked.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1809,7 +1809,7 @@ public class NFCTest {
         verify(mNfcAdapter, times(0)).disableReaderMode(mActivity);
 
         nfc.cancelWatch(mNextWatchId);
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled when there are no pending push / watch operations.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1847,7 +1847,7 @@ public class NFCTest {
         verify(mNfcAdapter, times(0)).disableReaderMode(mActivity);
 
         nfc.cancelWatch(mNextWatchId);
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled when there are no pending makeReadOnly / watch operations.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);

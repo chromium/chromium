@@ -60,8 +60,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -367,7 +367,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         mPageZoomManagerMock,
                         /* openInAppMenuItemProvider= */ null);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
 
         MultiWindowTestUtils.resetInstanceInfo();

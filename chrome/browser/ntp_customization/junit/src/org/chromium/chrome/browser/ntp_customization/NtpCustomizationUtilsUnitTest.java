@@ -72,8 +72,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -256,7 +256,7 @@ public class NtpCustomizationUtilsUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         File file = NtpCustomizationUtils.createBackgroundImageFile();
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, file);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         assertTrue(file.exists());
 
@@ -270,7 +270,7 @@ public class NtpCustomizationUtilsUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         File file = NtpCustomizationUtils.createBackgroundImageFile();
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, file);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         // Reads the bitmap from the file.
         Bitmap bitmapResult = NtpCustomizationUtils.readNtpBackgroundImageImpl(file);
@@ -368,13 +368,13 @@ public class NtpCustomizationUtilsUnitTest {
         File dailyRefreshImageFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, imageFile);
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, dailyRefreshImageFile);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(imageFile.exists());
         assertTrue(dailyRefreshImageFile.exists());
 
         // Call reset.
         NtpCustomizationUtils.resetCustomizedImage();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify all keys are removed.
         assertFalse(
@@ -410,7 +410,7 @@ public class NtpCustomizationUtilsUnitTest {
         sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE, IMAGE_FROM_DISK);
 
         NtpCustomizationUtils.resetNtpCustomBackgroundData();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE));
     }
@@ -1057,7 +1057,7 @@ public class NtpCustomizationUtilsUnitTest {
                 bitmap,
                 backgroundImageInfo,
                 /* skipSavingPrimaryColor= */ false);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
         CustomBackgroundInfo restoredInfo =
@@ -1086,7 +1086,7 @@ public class NtpCustomizationUtilsUnitTest {
                 bitmap,
                 backgroundImageInfo,
                 /* skipSavingPrimaryColor= */ true);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
         assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
@@ -1131,7 +1131,7 @@ public class NtpCustomizationUtilsUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, dailyRefreshFile);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
         assertTrue(dailyRefreshFile.exists());
 
         // Ensure main file doesn't exist yet, or is different.
@@ -1143,7 +1143,7 @@ public class NtpCustomizationUtilsUnitTest {
 
         // 2. Call the method under test.
         NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         // 3. Assertions.
         // Check that regular preferences are updated.
@@ -1184,7 +1184,7 @@ public class NtpCustomizationUtilsUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, dailyRefreshFile);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         // Reads the bitmap from the file.
         Bitmap bitmapResult = NtpCustomizationUtils.readNtpBackgroundImageImpl(dailyRefreshFile);
@@ -1281,7 +1281,7 @@ public class NtpCustomizationUtilsUnitTest {
         // 2. Call the method under test.
         NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(
                 customBackgroundInfo, bitmap, backgroundImageInfo);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         // 3. Assertions.
         assertTrue(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
@@ -1467,7 +1467,7 @@ public class NtpCustomizationUtilsUnitTest {
 
         Callback<Bitmap> callback = mock(Callback.class);
         NtpCustomizationUtils.getBitmapFromUriAsync(context, uri, callback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         ArgumentCaptor<Bitmap> captor = ArgumentCaptor.forClass(Bitmap.class);
         verify(callback).onResult(captor.capture());

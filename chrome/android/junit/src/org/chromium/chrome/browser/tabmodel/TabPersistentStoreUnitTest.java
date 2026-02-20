@@ -44,8 +44,8 @@ import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -143,7 +143,7 @@ public class TabPersistentStoreUnitTest {
             SequencedTaskRunner runner = mPersistentStore.getTaskRunnerForTesting();
             if (!mockingDetails(runner).isMock()) {
                 runner.execute(() -> flushed.set(true));
-                BaseRobolectricTestRule.runAllBackgroundAndUi();
+                RobolectricUtil.runAllBackgroundAndUi();
                 assertThat(flushed.get()).isTrue();
             }
         }
@@ -915,7 +915,7 @@ public class TabPersistentStoreUnitTest {
                         /* recordLegacyTabCountMetrics= */ true);
 
         // Ensure mPrefetchTabListTask completes.
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mPersistentStore.loadState(/* ignoreIncognitoFiles= */ true);
 

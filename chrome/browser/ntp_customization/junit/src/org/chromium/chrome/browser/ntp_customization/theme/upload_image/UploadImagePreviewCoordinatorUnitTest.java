@@ -40,8 +40,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
@@ -110,7 +110,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
         mConfigManager = NtpCustomizationConfigManager.getInstance();
         ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.setForTesting(true);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @After
@@ -302,7 +302,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         mSaveButton.performClick();
 
         // Allows background tasks (like file saving) to complete.
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         BackgroundImageInfo savedInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
 

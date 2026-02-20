@@ -35,8 +35,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -156,7 +156,7 @@ public class NtpSyncedThemeManagerUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // 6. Verify daily refresh info is saved and bridge is destroyed.
         assertTrue(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());

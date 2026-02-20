@@ -24,8 +24,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
 import org.chromium.base.ScreenOffBroadcastReceiver.ScreenOffListener;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link ScreenOffBroadcastReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,14 +36,14 @@ public class ScreenOffBroadcastReceiverTest {
     public void setUp() {
         // Initialize the receiver to ensure it is registered.
         ScreenOffBroadcastReceiver.getInstance();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @After
     public void tearDown() {
         // Reset to ensure our listeners are removed and statics are reset.
         ScreenOffBroadcastReceiver.resetForTesting();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test

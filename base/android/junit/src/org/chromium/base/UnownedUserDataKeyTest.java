@@ -25,8 +25,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
@@ -784,7 +784,7 @@ public class UnownedUserDataKeyTest {
                 new FutureTask<>(
                         () -> assertAsserts(() -> KEY1.retrieveDataFromHost(mHost1)), null);
         PostTask.postTask(TaskTraits.USER_VISIBLE, getTask);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         getTask.get();
 
         // Manual cleanup to ensure we can verify host map size during tear down.

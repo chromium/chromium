@@ -29,8 +29,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -295,7 +295,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
         NtpCustomizationUtils.saveBitmapImageToFile(
                 Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888), dailyRefreshFile);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
         assertTrue(dailyRefreshFile.exists());
 
         // 3. Apply daily update status in the manager.
@@ -304,7 +304,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
 
         // 4. Call the method.
         mManager.maybeSaveDailyRefreshAndReset(mOnDailyRefreshThemeCollectionApplied);
-        BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for rename.
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for rename.
 
         // 5. Verify results.
         assertEquals(timeStamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());

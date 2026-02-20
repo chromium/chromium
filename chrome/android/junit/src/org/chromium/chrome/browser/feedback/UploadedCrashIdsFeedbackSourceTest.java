@@ -13,8 +13,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -88,7 +88,7 @@ public class UploadedCrashIdsFeedbackSourceTest {
 
         UploadedCrashIdsFeedbackSource source = new UploadedCrashIdsFeedbackSource();
         source.start(() -> {});
-        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertTrue("Source should be ready.", source.isReady());
         Map<String, String> feedback = source.getFeedback();

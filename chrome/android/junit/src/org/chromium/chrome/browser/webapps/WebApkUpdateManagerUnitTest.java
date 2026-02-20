@@ -47,8 +47,8 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -873,7 +873,7 @@ public class WebApkUpdateManagerUnitTest {
         assertTrue(new File(updateRequestPath).exists());
 
         tryCompletingUpdate(updateManager, storage, WebApkInstallResult.FAILURE);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertNull(storage.getPendingUpdateRequestPath());
         assertFalse(new File(updateRequestPath).exists());
@@ -899,7 +899,7 @@ public class WebApkUpdateManagerUnitTest {
         assertTrue(new File(updateRequestPath).exists());
 
         updateManager.getStoreUpdateRequestCallback().onResult(false);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertNull(storage.getPendingUpdateRequestPath());
         assertFalse(new File(updateRequestPath).exists());

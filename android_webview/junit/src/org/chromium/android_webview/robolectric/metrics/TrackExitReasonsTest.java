@@ -27,8 +27,8 @@ import org.chromium.android_webview.metrics.TrackExitReasons.AppStateData;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -233,7 +233,7 @@ public class TrackExitReasonsTest {
                 };
         int calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(calls + 1, writeFinished.getCallCount());
 
         AppStateData data = TrackExitReasons.readData().get(0);
@@ -245,7 +245,7 @@ public class TrackExitReasonsTest {
         TrackExitReasons.setCurrentTimeMillisForTest(++timeMillis);
         calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(calls + 1, writeFinished.getCallCount());
 
         data = TrackExitReasons.readData().get(0);
@@ -257,7 +257,7 @@ public class TrackExitReasonsTest {
         TrackExitReasons.setCurrentTimeMillisForTest(++timeMillis);
         calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(calls + 1, writeFinished.getCallCount());
 
         data = TrackExitReasons.readData().get(0);
@@ -283,7 +283,7 @@ public class TrackExitReasonsTest {
                     };
             int calls = writeFinished.getCallCount();
             TrackExitReasons.startTrackingStartup(resultCallback);
-            BaseRobolectricTestRule.runAllBackgroundAndUi();
+            RobolectricUtil.runAllBackgroundAndUi();
             assertEquals(calls + 1, writeFinished.getCallCount());
 
             if (i <= TrackExitReasons.MAX_DATA_LIST_SIZE) {
@@ -329,7 +329,7 @@ public class TrackExitReasonsTest {
         mMockNotifier.mState = AppState.DESTROYED;
         calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(calls + 1, writeFinished.getCallCount());
 
         dataList = TrackExitReasons.readData();
@@ -344,7 +344,7 @@ public class TrackExitReasonsTest {
         TrackExitReasons.setCurrentTimeMillisForTest(currentTimeMillis);
         calls = writeFinished.getCallCount();
         TrackExitReasons.startTrackingStartup(resultCallback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(calls + 1, writeFinished.getCallCount());
 
         dataList = TrackExitReasons.readData();
@@ -374,7 +374,7 @@ public class TrackExitReasonsTest {
         calls = writeFinished.getCallCount();
         mMockNotifier.mState = AppState.FOREGROUND;
         TrackExitReasons.finishTrackingStartup(mMockNotifier::getAppState, resultCallback);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(calls + 1, writeFinished.getCallCount());
 
         histogramWatcher.assertExpected();

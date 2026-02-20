@@ -47,8 +47,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -126,7 +126,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
 
         mNtpCustomizationConfigManager.onUploadedImageSelected(mBitmap, mBackgroundImageInfo);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verifies that the image file are saved to the disk and matrices are persisted to prefs.
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
@@ -430,7 +430,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
 
         mNtpCustomizationConfigManager.onUploadedImageSelected(mBitmap, mBackgroundImageInfo);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 NtpBackgroundType.IMAGE_FROM_DISK,
                 mNtpCustomizationConfigManager.getBackgroundType());
@@ -593,7 +593,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // 5. Add a listener and simulate the bitmap becoming available.
         configManager.addListener(mListener, mContext, /* skipNotify= */ true);
         mBitmapCallbackCaptor.getValue().onResult(mBitmap);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // 6. Verify listener is notified with correct data from initialization.
         verify(mListener)

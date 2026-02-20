@@ -18,8 +18,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.build.BuildConfig;
 
 /** Unit tests for ThreadUtils. */
@@ -28,7 +28,7 @@ import org.chromium.build.BuildConfig;
 public class ThreadUtilsTest {
     @Before
     public void setUp() {
-        BaseRobolectricTestRule.uninstallPausedExecutorService();
+        RobolectricUtil.uninstallPausedExecutorService();
     }
 
     @Test

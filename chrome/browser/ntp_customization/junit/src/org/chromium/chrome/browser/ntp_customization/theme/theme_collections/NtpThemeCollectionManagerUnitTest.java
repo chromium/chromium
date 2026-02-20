@@ -32,8 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -107,7 +107,7 @@ public class NtpThemeCollectionManagerUnitTest {
 
         // This is needed for the async task inside
         // saveBackgroundInfoForThemeCollectionOrUploadedImage
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));
         verify(mNtpCustomizationConfigManager)
@@ -154,7 +154,7 @@ public class NtpThemeCollectionManagerUnitTest {
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify it saves for daily refresh and does NOT apply it immediately.
         assertTrue(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
@@ -256,7 +256,7 @@ public class NtpThemeCollectionManagerUnitTest {
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // 3. Verify the theme was set for today.
         verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));
@@ -362,7 +362,7 @@ public class NtpThemeCollectionManagerUnitTest {
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         if (shouldUpdateTheme) {
             verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));

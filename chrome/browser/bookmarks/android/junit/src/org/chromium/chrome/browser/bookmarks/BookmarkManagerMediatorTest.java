@@ -58,8 +58,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -542,7 +542,7 @@ public class BookmarkManagerMediatorTest {
         mMediator.onAttachedToWindow();
         mMediator.addUiObserver(mBookmarkUiObserver);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void finishLoading() {
@@ -1401,7 +1401,7 @@ public class BookmarkManagerMediatorTest {
                 .getValue()
                 .bookmarkNodeRemoved(mFolderItem2, 0, mBookmarkItem21, false);
 
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(3, mModelList.size());
         verify(mBookmarkUiObserver, times(1)).onUiModeChanged(BookmarkUiMode.FOLDER);
     }
@@ -2281,7 +2281,7 @@ public class BookmarkManagerMediatorTest {
         mBookmarkModelObserverArgumentCaptor.getValue().bookmarkModelChanged();
 
         // Should still be in search mode, and should have refreshed and picked up new results.
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         verifyCurrentBookmarkIds(null, mFolderId2);
     }
@@ -2384,7 +2384,7 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         BookmarkModelObserver observer = mBookmarkModelObserverArgumentCaptor.getValue();
         observer.bookmarkModelChanged();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertBookmarkListEmpty();
 
         // Neither of these can do anything, the models are gone. But more importantly, they should
