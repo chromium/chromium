@@ -521,6 +521,32 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   EXPECT_FALSE(host_impl->viewport_mobile_optimized());
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateIsAnimatingHUDContents) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->is_animating_hud_contents = false;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_FALSE(active_tree->IsAnimatingHUDContents());
+
+  // Update to true.
+  auto update2 = CreateDefaultUpdate();
+  update2->is_animating_hud_contents = true;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(active_tree->IsAnimatingHUDContents());
+
+  // Update back to false.
+  auto update3 = CreateDefaultUpdate();
+  update3->is_animating_hud_contents = false;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_FALSE(active_tree->IsAnimatingHUDContents());
+}
+
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
   cc::LayerTreeImpl* active_tree =
       layer_context_impl_->host_impl()->active_tree();
