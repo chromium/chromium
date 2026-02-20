@@ -5520,6 +5520,12 @@
     "expiry_milestone": 150
   },
   {
+    "name": "hide-fusebox-voice-lens-actions",
+    "owners": [
+    "stkhapugin@chromium.org", "bling-flags@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "hide-toolbars-in-overflow-menu",
     "owners": [
     "alionadangla@chromium.org", "bling-flags@google.com"],

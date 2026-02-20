@@ -709,6 +709,11 @@ const char kHandleMdmErrorsForDasherAccountsName[] =
 const char kHandleMdmErrorsForDasherAccountsDescription[] =
     "Enables the mdm error handling feature for dasher accounts";
 
+const char kHideFuseboxVoiceLensActionsName[] =
+    "Hide Voice and Lens in Fusebox";
+const char kHideFuseboxVoiceLensActionsDescription[] =
+    "Hides voice and lens shortcuts in fusebox.";
+
 const char kHideToolbarsInOverflowMenuName[] = "Hide Toolbars in Overflow menu";
 const char kHideToolbarsInOverflowMenuDescription[] =
     "When enabled, adds a button in the overflow menu that force the "

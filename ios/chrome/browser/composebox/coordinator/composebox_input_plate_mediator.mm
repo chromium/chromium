@@ -1989,7 +1989,9 @@ CreateInputDataFromAnnotatedPageContent(
       LensEntrypoint::Composebox, [self isDSEGoogle]);
   BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
   BOOL canSend = hasContent && !compactMode && allowsMultimodalActions;
-  BOOL showShortcuts = !hasContent && !canSend;
+  BOOL showShortcuts =
+      !hasContent && !canSend &&
+      !base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
   BOOL showLeadingImage = !compactMode || !allowsMultimodalActions;
   BOOL shouldPersistAIMButton =
       IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;

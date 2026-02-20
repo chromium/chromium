@@ -441,6 +441,9 @@ extern const char kGeminiUpdatedEligibilityDescription[];
 extern const char kHandleMdmErrorsForDasherAccountsName[];
 extern const char kHandleMdmErrorsForDasherAccountsDescription[];
 
+extern const char kHideFuseboxVoiceLensActionsName[];
+extern const char kHideFuseboxVoiceLensActionsDescription[];
+
 extern const char kHideToolbarsInOverflowMenuName[];
 extern const char kHideToolbarsInOverflowMenuDescription[];
 

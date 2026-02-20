@@ -2413,6 +2413,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kAppBundlePromoEphemeralCard)},
+    {"hide-fusebox-voice-lens-actions",
+     flag_descriptions::kHideFuseboxVoiceLensActionsName,
+     flag_descriptions::kHideFuseboxVoiceLensActionsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kHideFuseboxVoiceLensActions)},
     {"hide-toolbars-in-overflow-menu",
      flag_descriptions::kHideToolbarsInOverflowMenuName,
      flag_descriptions::kHideToolbarsInOverflowMenuDescription,

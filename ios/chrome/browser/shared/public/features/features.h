@@ -248,6 +248,9 @@ extern const base::FeatureParam<int>
 // Feature flag the "Hide Toolbar" button in the overflow menu.
 BASE_DECLARE_FEATURE(kHideToolbarsInOverflowMenu);
 
+// Flag to hide voice and lens actions in fusebox.
+BASE_DECLARE_FEATURE(kHideFuseboxVoiceLensActions);
+
 // Whether the Safety Check Manager can automatically trigger Safety Checks.
 bool IsSafetyCheckAutorunByManagerEnabled();
 
