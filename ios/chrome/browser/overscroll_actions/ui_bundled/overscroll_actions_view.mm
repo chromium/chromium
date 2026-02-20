@@ -326,10 +326,10 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
                                                 action:@selector(tapGesture:)];
     [_tapGesture setDelegate:self];
     [self addGestureRecognizer:_tapGesture];
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+    NSArray<UITrait>* traits = @[
       NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class,
       UITraitUserInterfaceStyle.class
-    ]);
+    ];
     [self registerForTraitChanges:traits
                        withAction:@selector(updateLayerColors)];
     [self registerForTraitChanges:
