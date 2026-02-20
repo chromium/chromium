@@ -140,7 +140,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   FRIEND_TEST_ALL_PREFIXES(PartitionedVisitedLinkTest, HashRangeWraparound);
 
   // When creating an empty table, we use this many entries (see the .cc file).
-  static const unsigned kDefaultTableSize;
+  static const int32_t kDefaultTableSize;
   // Object to build the table on the history thread (see the .cc file).
   class TableBuilder;
 
@@ -226,10 +226,10 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
       base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Returns the default table size. It can be overridden in unit tests.
-  uint32_t DefaultTableSize() const;
+  int32_t DefaultTableSize() const;
 
   // Returns the desired table size for storing `item_count` visited links.
-  uint32_t NewTableSizeForCount(int32_t item_count) const;
+  static int32_t NewTableSizeForCount(int32_t item_count);
 
   // Member variables ----------------------------------------------------------
 

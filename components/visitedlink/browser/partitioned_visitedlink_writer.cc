@@ -4,6 +4,7 @@
 
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/compiler_specific.h"
@@ -48,7 +49,7 @@ namespace visitedlink {
 
 // This value should also be the same as the smallest size in the lookup
 // table in NewTableSizeForCount (prime number).
-const unsigned PartitionedVisitedLinkWriter::kDefaultTableSize = 16381;
+const int32_t PartitionedVisitedLinkWriter::kDefaultTableSize = 16381;
 
 bool PartitionedVisitedLinkWriter::fail_table_creation_for_testing_ = false;
 
@@ -280,11 +281,10 @@ bool PartitionedVisitedLinkWriter::CreateVisitedLinkTableHelper(
     return false;
   }
 
-  UNSAFE_TODO(memset(memory->mapping.memory(), 0, alloc_size));
+  std::ranges::fill(memory->mapping, 0);
 
   // Save the header for other processes to read.
-  PartitionedSharedHeader* header =
-      static_cast<PartitionedSharedHeader*>(memory->mapping.memory());
+  auto* header = memory->mapping.GetMemoryAs<PartitionedSharedHeader>();
   header->length = num_entries;
   return true;
 }
@@ -296,20 +296,19 @@ bool PartitionedVisitedLinkWriter::ResizeTableIfNecessary() {
   // keeping the table not very full. This is because we use linear probing
   // which increases the likelihood of clumps of entries which will reduce
   // performance.
-  const float max_table_load = 0.5f;  // Grow when we're > this full.
-  const float min_table_load = 0.2f;  // Shrink when we're < this full.
+  constexpr float kMaxTableLoad = 0.5f;  // Grow when we're > this full.
+  constexpr float kMinTableLoad = 0.2f;  // Shrink when we're < this full.
 
   float load = ComputeTableLoad();
-  if (load < max_table_load &&
-      (table_length_ <= static_cast<float>(kDefaultTableSize) ||
-       load > min_table_load)) {
+  if (load < kMaxTableLoad &&
+      (table_length_ <= kDefaultTableSize || load > kMinTableLoad)) {
     return false;
   }
 
   // Table needs to grow or shrink.
-  int new_size = NewTableSizeForCount(used_items_);
+  int32_t new_size = NewTableSizeForCount(used_items_);
   DCHECK(new_size > used_items_);
-  DCHECK(load <= min_table_load || new_size > table_length_);
+  DCHECK(load <= kMinTableLoad || new_size > table_length_);
   ResizeTable(new_size);
   return true;
 }
@@ -487,8 +486,8 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
     salts_ = std::move(salts);
 
     // Generate space for the new table in shared memory.
-    int new_table_size = NewTableSizeForCount(
-        static_cast<int>(fingerprints.size() + added_during_build_.size()));
+    int32_t new_table_size = NewTableSizeForCount(
+        static_cast<int32_t>(fingerprints.size() + added_during_build_.size()));
     if (CreateVisitedLinkTable(new_table_size)) {
       // Add the stored fingerprints to the hash table.
       for (auto fingerprint : fingerprints) {
@@ -536,18 +535,18 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
   }
 }
 
-uint32_t PartitionedVisitedLinkWriter::DefaultTableSize() const {
+int32_t PartitionedVisitedLinkWriter::DefaultTableSize() const {
   if (table_size_override_) {
     return table_size_override_;
   }
   return kDefaultTableSize;
 }
 
-uint32_t PartitionedVisitedLinkWriter::NewTableSizeForCount(
-    int32_t item_count) const {
+// static
+int32_t PartitionedVisitedLinkWriter::NewTableSizeForCount(int32_t item_count) {
   // These table sizes are selected to be the maximum prime number less than
   // a "convenient" multiple of 1K.
-  static constexpr auto kTableSizes = std::to_array<const int>({
+  static constexpr auto kTableSizes = std::to_array<const int32_t>({
       16381,     // 16K  = 16384   <- don't shrink below this table size
                  //                   (should be == default_table_size)
       32767,     // 32K  = 32768
@@ -564,7 +563,7 @@ uint32_t PartitionedVisitedLinkWriter::NewTableSizeForCount(
   });
 
   // Try to leave the table 33% full.
-  int desired = item_count * 3;
+  int32_t desired = item_count * 3;
 
   // Find the closest prime.
   for (auto size : kTableSizes) {
@@ -773,8 +772,7 @@ PartitionedVisitedLinkWriter::GetHashTableFromMapping(
   DCHECK(hash_table_mapping.IsValid());
   // Our table pointer is just the data immediately following the header.
   return reinterpret_cast<Fingerprint*>(
-      UNSAFE_TODO(static_cast<char*>(hash_table_mapping.memory()) +
-                  sizeof(PartitionedSharedHeader)));
+      UNSAFE_TODO(hash_table_mapping.data() + sizeof(PartitionedSharedHeader)));
 }
 
 }  // namespace visitedlink

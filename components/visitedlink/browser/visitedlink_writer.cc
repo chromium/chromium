@@ -61,7 +61,7 @@ const size_t VisitedLinkWriter::kFileHeaderSize =
 
 // This value should also be the same as the smallest size in the lookup
 // table in NewTableSizeForCount (prime number).
-const unsigned VisitedLinkWriter::kDefaultTableSize = 16381;
+const int32_t VisitedLinkWriter::kDefaultTableSize = 16381;
 
 bool VisitedLinkWriter::fail_table_creation_for_testing_ = false;
 
@@ -732,8 +732,8 @@ void VisitedLinkWriter::OnTableLoadComplete(
 
   if (!added_since_load_.empty() || !deleted_since_load_.empty()) {
     // Resize the table if the table doesn't have enough capacity.
-    int new_used_items =
-        used_items_ + static_cast<int>(added_since_load_.size());
+    int32_t new_used_items =
+        used_items_ + static_cast<int32_t>(added_since_load_.size());
     if (new_used_items >= table_length_)
       ResizeTable(NewTableSizeForCount(new_used_items));
 
@@ -888,10 +888,10 @@ bool VisitedLinkWriter::CreateApartURLTable(
   if (!memory->IsValid())
     return false;
 
-  UNSAFE_TODO(memset(memory->mapping.memory(), 0, alloc_size));
+  std::ranges::fill(memory->mapping, 0);
 
   // Save the header for other processes to read.
-  SharedHeader* header = static_cast<SharedHeader*>(memory->mapping.memory());
+  auto* header = memory->mapping.GetMemoryAs<SharedHeader>();
   header->length = num_entries;
   header->salt = salt;
 
@@ -916,19 +916,19 @@ bool VisitedLinkWriter::ResizeTableIfNecessary() {
   // keeping the table not very full. This is because we use linear probing
   // which increases the likelihood of clumps of entries which will reduce
   // performance.
-  const float max_table_load = 0.5f;  // Grow when we're > this full.
-  const float min_table_load = 0.2f;  // Shrink when we're < this full.
+  constexpr float kMaxTableLoad = 0.5f;  // Grow when we're > this full.
+  constexpr float kMinTableLoad = 0.2f;  // Shrink when we're < this full.
 
   float load = ComputeTableLoad();
-  if (load < max_table_load &&
-      (table_length_ <= static_cast<float>(kDefaultTableSize) ||
-       load > min_table_load))
+  if (load < kMaxTableLoad &&
+      (table_length_ <= kDefaultTableSize || load > kMinTableLoad)) {
     return false;
+  }
 
   // Table needs to grow or shrink.
-  int new_size = NewTableSizeForCount(used_items_);
+  int32_t new_size = NewTableSizeForCount(used_items_);
   DCHECK(new_size > used_items_);
-  DCHECK(load <= min_table_load || new_size > table_length_);
+  DCHECK(load <= kMinTableLoad || new_size > table_length_);
   ResizeTable(new_size);
   return true;
 }
@@ -974,17 +974,18 @@ void VisitedLinkWriter::ResizeTable(int32_t new_size) {
     WriteFullTable();
 }
 
-uint32_t VisitedLinkWriter::DefaultTableSize() const {
+int32_t VisitedLinkWriter::DefaultTableSize() const {
   if (table_size_override_)
     return table_size_override_;
 
   return kDefaultTableSize;
 }
 
-uint32_t VisitedLinkWriter::NewTableSizeForCount(int32_t item_count) const {
+// static
+int32_t VisitedLinkWriter::NewTableSizeForCount(int32_t item_count) {
   // These table sizes are selected to be the maximum prime number less than
   // a "convenient" multiple of 1K.
-  static constexpr auto kTableSizes = std::to_array<const int>({
+  static constexpr auto kTableSizes = std::to_array<const int32_t>({
       16381,     // 16K  = 16384   <- don't shrink below this table size
                  //                   (should be == default_table_size)
       32767,     // 32K  = 32768
@@ -1001,7 +1002,7 @@ uint32_t VisitedLinkWriter::NewTableSizeForCount(int32_t item_count) const {
   });
 
   // Try to leave the table 33% full.
-  int desired = item_count * 3;
+  int32_t desired = item_count * 3;
 
   // Find the closest prime.
   for (auto size : kTableSizes) {
@@ -1032,8 +1033,8 @@ void VisitedLinkWriter::OnTableRebuildComplete(
   if (success) {
     // Replace the old table with a new blank one.
 
-    int new_table_size = NewTableSizeForCount(
-        static_cast<int>(fingerprints.size() + added_since_rebuild_.size()));
+    int32_t new_table_size = NewTableSizeForCount(static_cast<int32_t>(
+        fingerprints.size() + added_since_rebuild_.size()));
     if (CreateURLTable(new_table_size)) {
       // Add the stored fingerprints to the hash table.
       for (auto fingerprint : fingerprints) {
@@ -1173,8 +1174,8 @@ VisitedLinkCommon::Fingerprint* VisitedLinkWriter::GetHashTableFromMapping(
     base::WritableSharedMemoryMapping& hash_table_mapping) {
   DCHECK(hash_table_mapping.IsValid());
   // Our table pointer is just the data immediately following the header.
-  return reinterpret_cast<Fingerprint*>(UNSAFE_TODO(
-      static_cast<char*>(hash_table_mapping.memory()) + sizeof(SharedHeader)));
+  return reinterpret_cast<Fingerprint*>(
+      UNSAFE_TODO(hash_table_mapping.data() + sizeof(SharedHeader)));
 }
 
 }  // namespace visitedlink

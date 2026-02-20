@@ -190,7 +190,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   static const size_t kFileHeaderSize;
 
   // When creating a fresh new table, we use this many entries.
-  static const unsigned kDefaultTableSize;
+  static const int32_t kDefaultTableSize;
 
   // When the user is adding or deleting a boatload of URLs, we don't really
   // want to do individual writes for each of them. When the count exceeds this
@@ -326,11 +326,11 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // current count.
   void ResizeTable(int32_t new_size);
 
-  // Returns the default table size. It can be overrided in unit tests.
-  uint32_t DefaultTableSize() const;
+  // Returns the default table size. It can be overridden in unit tests.
+  int32_t DefaultTableSize() const;
 
   // Returns the desired table size for |item_count| URLs.
-  uint32_t NewTableSizeForCount(int32_t item_count) const;
+  static int32_t NewTableSizeForCount(int32_t item_count);
 
   // Computes the table load as fraction. For example, if 1/4 of the entries are
   // full, this value will be 0.25
