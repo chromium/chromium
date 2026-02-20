@@ -11,6 +11,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_drag_scroll_handler.h"
+#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/view_observer.h"
@@ -30,7 +32,8 @@ class ScrollView;
 // be targeted by the core tab dragging logic. It also supports nested targets,
 // allowing the dragged tab view to be reparented into child views of this.
 class VerticalDraggedTabsContainer : public TabDragTarget,
-                                     public views::ViewObserver {
+                                     public views::ViewObserver,
+                                     public gfx::AnimationDelegate {
  public:
   // The axes that the dragged tabs can move on.
   enum class DragAxes { kVerticalOnly, kBoth };
@@ -66,6 +69,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
   // ViewObserver
   void OnViewBoundsChanged(views::View* observed_view) override;
+
+  // AnimationDelegate
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
 
   // Whether this container is currently handling a drag.
   bool IsHandlingDrag() const;
@@ -129,6 +136,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // starts handling a drag.
   void InitializeDragState(TabDragTarget::DragController& controller);
 
+  // Initializes the animation for dragged views to be ordered contiguously.
+  void InitializeDragStartAnimation(
+      const TabDragTarget::DragController& controller);
+
   // Builds `dragging_views_` and `dragging_views_bounds_` for the given
   // drag data.
   void BuildDragLayout(const DragSessionData& drag_data);
@@ -159,6 +170,14 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   gfx::Rect GetDraggingViewsBoundsAtPointClamped(
       const gfx::Point& point_in_container) const;
 
+  // Returns the expected position for the dragging view, given position of
+  // the bounding box for views and a target offset within it.
+  // This takes animation progress into account.
+  gfx::Vector2d GetDraggingViewPositionForBounds(
+      const views::View* dragging_view,
+      const gfx::Rect& dragging_views_bounding_box,
+      const gfx::Vector2d& target_offset) const;
+
   void ResetCollectionNode();
 
   // Handles updates, both visually and in the model, for whenever the dragged
@@ -179,6 +198,12 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Child views that are being dragged, mapped to their DraggedViewVisualData,
   // whose offset is relative within `dragging_views_bounds_`.
   base::flat_map<raw_ptr<views::View>, DraggedViewVisualData> dragging_views_;
+
+  // Dragged views must animate into contiguous/stacked order. This keeps track
+  // of the starting position, used for animation.
+  base::flat_map<raw_ptr<views::View>, gfx::Vector2d>
+      animating_views_start_offsets_;
+  gfx::SlideAnimation drag_start_animation_;
 
   const DragAxes drag_axes_;
   const DragLayout drag_layout_;

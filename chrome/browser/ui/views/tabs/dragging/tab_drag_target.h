@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
 
 struct DragSessionData;
