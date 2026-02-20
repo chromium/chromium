@@ -97,8 +97,9 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
 
 InputStateModel::InputStateModel(
     contextual_search::ContextualSearchSessionHandle& session_handle,
-    const SearchboxConfig& config)
-    : session_handle_(session_handle) {
+    const SearchboxConfig& config,
+    bool is_off_the_record)
+    : session_handle_(session_handle), is_off_the_record_(is_off_the_record) {
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
@@ -109,6 +110,10 @@ InputStateModel::InputStateModel(
     state_.allowed_tools.reserve(rule_set_.allowed_tools().size());
     for (const auto& tool : rule_set_.allowed_tools()) {
       if (tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+        continue;
+      }
+      if (is_off_the_record_ &&
+          tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
         continue;
       }
       state_.allowed_tools.push_back(static_cast<omnibox::ToolMode>(tool));
@@ -176,7 +181,8 @@ InputStateModel::InputStateModel(
 InputStateModel::InputStateModel(
     const InputStateModel& new_input_state_model,
     contextual_search::ContextualSearchSessionHandle& new_session_handle)
-    : session_handle_(new_session_handle) {
+    : session_handle_(new_session_handle),
+      is_off_the_record_(new_input_state_model.is_off_the_record_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
 }

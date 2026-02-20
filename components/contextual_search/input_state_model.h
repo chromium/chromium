@@ -37,7 +37,8 @@ class InputStateModel {
   // info.
   explicit InputStateModel(
       contextual_search::ContextualSearchSessionHandle& session_handle,
-      const SearchboxConfig& config);
+      const SearchboxConfig& config,
+      bool is_off_the_record);
   InputStateModel(
       const InputStateModel& other,
       contextual_search::ContextualSearchSessionHandle& new_session_handle);
@@ -98,6 +99,7 @@ class InputStateModel {
   base::RepeatingCallbackList<void(const InputState&)> subscribers_;
 
   raw_ptr<const PrefService> pref_service_ = nullptr;
+  const bool is_off_the_record_;
 };
 
 }  // namespace contextual_search
