@@ -142,8 +142,7 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithNormalPolicy) {
 }
 
 // Future policy will be filter out unless it's whitelisted by
-// kEnableExperimentalPolicies or the feature kFuturePoliciesOnDesktopAndroid is
-// enabled (for Desktop Android dogfooders).
+// kEnableExperimentalPolicies.
 TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithFuturePolicy) {
 
   AddSimplePolicy();
@@ -153,16 +152,6 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithFuturePolicy) {
 
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false,
                       /*in_deprecated=*/false, /*in_future=*/true);
-
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  // Future policy will not be filtered out if kFuturePoliciesOnDesktopAndroid
-  // is enabled (for Desktop Android dogfooders, see
-  // https://crbug.com/452666657).
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFuturePoliciesOnDesktopAndroid);
-
-  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
-#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
   // Whitelist a different policy.
   base::ListValue enabled_future_policies;
@@ -184,6 +173,32 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithFuturePolicy) {
 
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
 }
+
+// Future policy will be filter out unless it's whitelisted by
+// kEnableExperimentalPolicies or the feature kFuturePoliciesOnDesktopAndroid is
+// enabled.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+TEST_F(ConfigurationPolicyHandlerListTest,
+       ApplySettingsWithFuturePolicyOnDesktopAndroid) {
+  AddSimplePolicy();
+  details()->is_future = true;
+
+  ApplySettings();
+
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false,
+                      /*in_deprecated=*/false, /*in_future=*/true);
+
+  // Future policy will not be filtered out if kFuturePoliciesOnDesktopAndroid
+  // is enabled (for Desktop Android dogfooders, see
+  // https://crbug.com/452666657).
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFuturePoliciesOnDesktopAndroid);
+
+  ApplySettings();
+
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+}
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
 TEST_F(ConfigurationPolicyHandlerListTest,
        ApplySettingsWithoutFutureFilterPolicy) {
@@ -221,10 +236,7 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithDeprecatedPolicy) {
 }
 
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
-// Test that policy is applied when kDesktopAndroidPolicy is not enabled by
-// default.
-TEST_F(ConfigurationPolicyHandlerListTest,
-       DesktopAndroidAllowlist_FeatureDisabled) {
+TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidBlocklist_Default) {
   base::test::ScopedFeatureList feature_list;
 
   AddSimplePolicy();
@@ -233,13 +245,11 @@ TEST_F(ConfigurationPolicyHandlerListTest,
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
 }
 
-// Test that policy is not applied when kDesktopAndroidPolicy is enabled and
-// policy is not in allowlist.
-TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidAllowlist_Blocked) {
+TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidBlocklist_Blocked) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kDesktopAndroidPolicy,
-      {{features::kDesktopAndroidPolicyAllowlist.name, kPolicyName2}});
+      {{features::kDesktopAndroidPolicyBlocklist.name, kPolicyName}});
 
   AddSimplePolicy();
   ApplySettings();
@@ -247,27 +257,31 @@ TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidAllowlist_Blocked) {
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
 }
 
-// Test that policy is applied when kDesktopAndroidPolicy is enabled and policy
-// is in allowlist.
-TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidAllowlist_Allowed) {
+TEST_F(ConfigurationPolicyHandlerListTest,
+       DesktopAndroidBlocklist_AllowedAndBlocked) {
+  const char kPolicyName3[] = "PolicyName3";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kDesktopAndroidPolicy,
-      {{features::kDesktopAndroidPolicyAllowlist.name, base::StrCat({kPolicyName, ", ", kPolicyName2})}});
+      {{features::kDesktopAndroidPolicyBlocklist.name,
+       base::StrCat({kPolicyName2, ", ", kPolicyName3})}});
 
   AddSimplePolicy();
+  AddPolicy(kPolicyName2, /*is_cloud=*/true, base::Value(kPolicyValue));
+
   ApplySettings();
 
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+  VerifyPolicyAndPref(kPolicyName2, /*in_pref=*/false);
 }
 
 // Test that other filters still works.
 TEST_F(ConfigurationPolicyHandlerListTest,
-       DesktopAndroidAllowlist_AllowedButBlockedByOtherFilter) {
+       DesktopAndroidBlocklist_AllowedButBlockedByOtherFilter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kDesktopAndroidPolicy,
-      {{features::kDesktopAndroidPolicyAllowlist.name, kPolicyName}});
+      {{features::kDesktopAndroidPolicyBlocklist.name, kPolicyName2}});
 
   AddSimplePolicy();
   details()->is_future = true;

@@ -73,8 +73,8 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
       PoliciesSet* future_policies_blocked,
       PolicyMap::const_reference entry) const;
 
-  // Returns true if the policy `policy_name` is not in the allowlist of
-  // policies supported on Desktop Android.
+  // Returns true if the policy `policy_name` is in the blocklist for
+  // policies on Desktop Android.
   bool IsBlockedDesktopAndroidPolicy(const std::string& policy_name) const;
 
   bool IsBlockedPlatformDevicePolicy(const PolicyDetails& policy_details,
