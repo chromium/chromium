@@ -13,6 +13,9 @@
 // Opens a given URL in a new tab.
 - (void)openURLInNewTab:(NSString*)URL;
 
+// Closes any presented views and opens the given URL in a new tab.
+- (void)closePresentedViewsAndOpenURLInNewTab:(NSString*)URL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_LINK_OPENING_DELEGATE_H_
