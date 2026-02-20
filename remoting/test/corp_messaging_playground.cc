@@ -45,6 +45,7 @@ namespace {
 
 using internal::BurstStruct;
 using internal::EncryptedStruct;
+using internal::OidcStruct;
 using internal::PingPongStruct;
 using internal::ShareSessionTokenStruct;
 using internal::SimpleStruct;
@@ -275,6 +276,13 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                  [](const SimpleStruct& simple_message) {
                    LOG(INFO) << "PeerMessage received: payload="
                              << simple_message.payload;
+                 },
+                 [](const OidcStruct& oidc_message) {
+                   // TODO: joedow - Implement an OIDC code exchange helper.
+                   LOG(INFO) << "OIDC message received:\n"
+                             << "  redirect_uri: " << oidc_message.redirect_uri
+                             << "  state: " << oidc_message.state
+                             << "  code: " << oidc_message.code;
                  },
                  [this](const EncryptedStruct& encrypted_struct) {
                    if (base::StartsWith(encrypted_struct.unencrypted_payload,

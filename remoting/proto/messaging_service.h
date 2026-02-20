@@ -83,6 +83,12 @@ struct ShareSessionTokenStruct {
   std::string messaging_authz_token;
 };
 
+struct OidcStruct {
+  std::string redirect_uri;
+  std::string code;
+  std::string state;
+};
+
 struct SystemTestStruct {
   SystemTestStruct();
   SystemTestStruct(const SystemTestStruct&);
@@ -91,6 +97,7 @@ struct SystemTestStruct {
 
   std::variant<BurstStruct,
                EncryptedStruct,
+               OidcStruct,
                PingPongStruct,
                SimpleStruct,
                ShareSessionTokenStruct>
