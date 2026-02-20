@@ -2945,6 +2945,8 @@ class TabImpl implements Tab {
     public void setMediaState(@MediaState int mediaState) {
         if (mMediaState == mediaState) return;
         mMediaState = mediaState;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tab.Android.MediaState", mediaState, MediaState.COUNT);
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             for (TabObserver observer : mObservers) {
                 observer.onMediaStateChanged(this, mediaState);

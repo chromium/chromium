@@ -50,6 +50,7 @@ public interface Tab extends TabLifecycle {
     }
 
     /** Tracks the media indicator state of the tab. */
+    // LINT.IfChange(AndroidTabMediaState)
     @IntDef({
         MediaState.NONE,
         MediaState.MUTED,
@@ -57,6 +58,7 @@ public interface Tab extends TabLifecycle {
         MediaState.RECORDING,
         MediaState.SHARING,
         MediaState.MAX_VALUE,
+        MediaState.COUNT,
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -67,7 +69,10 @@ public interface Tab extends TabLifecycle {
         int RECORDING = 3;
         int SHARING = 4;
         int MAX_VALUE = SHARING;
+        int COUNT = MAX_VALUE + 1;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AndroidTabMediaState)
 
     /** The result of the loadUrl. */
     class LoadUrlResult {
