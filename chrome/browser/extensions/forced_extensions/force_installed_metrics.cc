@@ -549,8 +549,9 @@ void ForceInstalledMetrics::ReportMetrics() {
   const ExtensionSet& blocklisted_extensions =
       registry_->blocklisted_extensions();
   for (const auto& entry : installed_extensions) {
-    if (missing_forced_extensions.count(entry->id())) {
-      missing_forced_extensions.erase(entry->id());
+    if (auto it = missing_forced_extensions.find(entry->id());
+        it != missing_forced_extensions.end()) {
+      missing_forced_extensions.erase(it);
       ReportDisableReason(entry->id());
       if (blocklisted_extensions.Contains(entry->id())) {
         blocklisted_count++;
