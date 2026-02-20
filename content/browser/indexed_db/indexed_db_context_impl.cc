@@ -1274,6 +1274,10 @@ void IndexedDBContextImpl::GetDefaultStorageKeys(
 
 void IndexedDBContextImpl::PerformStorageCleanup(
     PerformStorageCleanupCallback callback) {
+  // IndexedDB doesn't need to do anything because all traces of data are
+  // already removed when a bucket is deleted. This hook exists for databases
+  // like LocalStorage where data across many origins are stored in a single
+  // backing database.
   std::move(callback).Run();
 }
 
