@@ -256,7 +256,7 @@ JumpList::JumpList(Profile* profile)
 
   // Register as TopSitesObserver so that we can update ourselves when the
   // TopSites changes. TopSites updates itself after a delay. This is especially
-  // noticable when your profile is empty.
+  // noticeable when your profile is empty.
   scoped_refptr<history::TopSites> top_sites =
       TopSitesFactory::GetForProfile(profile_);
   if (top_sites)
