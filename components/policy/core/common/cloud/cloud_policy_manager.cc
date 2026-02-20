@@ -103,6 +103,10 @@ void CloudPolicyManager::InitExtensionInstallPolicies(
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter) {
   CHECK(IsClientRegistered());
   CHECK(extension_install_store_);
+  // Extension install core should only be initialized once.
+  if (extension_install_core_) {
+    return;
+  }
 
   extension_install_store_observation_.Observe(extension_install_store());
   if (extension_install_store()->is_initialized()) {

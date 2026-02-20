@@ -2195,6 +2195,12 @@ AppSorting* ExtensionPrefs::app_sorting() const {
   return ExtensionSystem::Get(browser_context_)->app_sorting();
 }
 
+void ExtensionPrefs::RegisterBrowserPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      pref_names::kExtensionInstallCloudPolicyChecksEnabled,
+      /*default_value=*/false);
+}
+
 // static
 void ExtensionPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
