@@ -1,3 +1,4 @@
 This page contains the following errors:
-error on line 10 at column 1: Unexpected end of stream: still inside the root element
+error on line 10 at column 1: Premature end of data in tag style line 9
+
 Below is a rendering of the page up to the first error.
