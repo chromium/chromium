@@ -1050,6 +1050,11 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return false;
     }
 
+    @Override
+    public boolean shouldShowIconRow() {
+        return false;
+    }
+
     /**
      * Updates the bookmark item's visibility.
      *

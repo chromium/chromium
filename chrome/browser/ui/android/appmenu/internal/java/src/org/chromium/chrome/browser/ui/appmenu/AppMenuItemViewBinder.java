@@ -11,6 +11,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -231,7 +232,7 @@ class AppMenuItemViewBinder {
         }
     }
 
-    public static @Px int getIconRowItemPixelHeight(Context context) {
+    public static @Px int getIconRowItemPixelHeight(Context context, PropertyModel model) {
         TypedArray a =
                 context.obtainStyledAttributes(
                         new int[] {R.attr.minInteractTargetSize, R.attr.appMenuIconRowPadding});
@@ -240,6 +241,22 @@ class AppMenuItemViewBinder {
         a.recycle();
 
         return itemRowHeight + 2 * iconRowPadding;
+    }
+
+    private static @Px int getListItemHeight(Context context) {
+        TypedArray a = context.obtainStyledAttributes(new int[] {R.attr.listItemHeight});
+        int height = a.getDimensionPixelSize(0, 0);
+        a.recycle();
+
+        return height;
+    }
+
+    public static @Px int getSubmenuHeaderPixelHeight(Context context, PropertyModel model) {
+        if (model.get(AppMenuSubmenuHeaderItemProperties.SHOULD_SHOW_ICON_ROW)) {
+            return getIconRowItemPixelHeight(context, model);
+        } else {
+            return getListItemHeight(context);
+        }
     }
 
     public static void bindItemWithSubmenu(PropertyModel model, View view, PropertyKey key) {
@@ -291,6 +308,11 @@ class AppMenuItemViewBinder {
             view.setOnClickListener(model.get(AppMenuItemWithSubmenuProperties.CLICK_LISTENER));
         } else if (key == AppMenuItemProperties.KEY_LISTENER) {
             view.setOnKeyListener(model.get(AppMenuItemProperties.KEY_LISTENER));
+        } else if (key == AppMenuSubmenuHeaderItemProperties.SHOULD_SHOW_ICON_ROW) {
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            assert params != null;
+            params.height = getSubmenuHeaderPixelHeight(view.getContext(), model);
+            view.setLayoutParams(params);
         }
     }
 

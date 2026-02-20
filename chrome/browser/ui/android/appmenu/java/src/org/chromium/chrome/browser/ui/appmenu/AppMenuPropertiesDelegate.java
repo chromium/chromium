@@ -13,8 +13,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /** App Menu helper that handles hiding and showing menu items based on activity state. */
 @NullMarked
@@ -32,7 +33,7 @@ public interface AppMenuPropertiesDelegate {
      */
     default void registerCustomViewBinders(
             ModelListAdapter modelListAdapter,
-            SparseArray<Function<Context, Integer>> customSizingSuppliers) {}
+            SparseArray<BiFunction<Context, PropertyModel, Integer>> customSizingSuppliers) {}
 
     /**
      * Gets the menu items for app menu.
@@ -75,4 +76,7 @@ public interface AppMenuPropertiesDelegate {
 
     /** Returns whether the menu icon is positioned at the start. */
     boolean isMenuIconAtStart();
+
+    /** Returns whether the icon row is showing. */
+    boolean shouldShowIconRow();
 }

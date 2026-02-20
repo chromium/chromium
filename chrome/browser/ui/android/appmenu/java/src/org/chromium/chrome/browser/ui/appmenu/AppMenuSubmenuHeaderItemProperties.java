@@ -12,12 +12,17 @@ import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuPrope
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** {@link PropertyKey} list for app menu. */
 @NullMarked
 public class AppMenuSubmenuHeaderItemProperties {
+
+    public static final WritableBooleanPropertyKey SHOULD_SHOW_ICON_ROW =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                MENU_ITEM_ID, TITLE, ENABLED, CLICK_LISTENER, KEY_LISTENER,
+                MENU_ITEM_ID, TITLE, ENABLED, CLICK_LISTENER, KEY_LISTENER, SHOULD_SHOW_ICON_ROW
             };
 }

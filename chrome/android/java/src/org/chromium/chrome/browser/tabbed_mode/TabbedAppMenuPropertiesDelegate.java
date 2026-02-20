@@ -98,7 +98,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
@@ -187,7 +187,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     @Override
     public void registerCustomViewBinders(
             ModelListAdapter modelListAdapter,
-            SparseArray<Function<Context, Integer>> customSizingSuppliers) {
+            SparseArray<BiFunction<Context, PropertyModel, Integer>> customSizingSuppliers) {
         modelListAdapter.registerType(
                 TabbedAppMenuItemType.UPDATE_ITEM,
                 new LayoutViewBuilder(R.layout.update_menu_item),
@@ -1290,8 +1290,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.material_ic_delete_24dp : 0));
     }
 
-    @VisibleForTesting
-    boolean shouldShowIconRow() {
+    @Override
+    public boolean shouldShowIconRow() {
         boolean shouldShowIconRow = true;
         if (mIsTablet) {
             boolean widthOnTabletBelowMinimum =

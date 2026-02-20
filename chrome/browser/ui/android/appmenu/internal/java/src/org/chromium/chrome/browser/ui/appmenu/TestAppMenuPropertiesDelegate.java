@@ -164,5 +164,10 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     }
 
     @Override
+    public boolean shouldShowIconRow() {
+        return false;
+    }
+
+    @Override
     public void onMenuShown() {}
 }

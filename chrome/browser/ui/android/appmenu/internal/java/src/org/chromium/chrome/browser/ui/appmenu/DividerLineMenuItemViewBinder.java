@@ -25,7 +25,7 @@ public class DividerLineMenuItemViewBinder {
     }
 
     /** Provides the minimum height for the view for menu sizing. */
-    public static int getPixelHeight(Context context) {
+    public static int getPixelHeight(Context context, PropertyModel model) {
         int dividerLineHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.divider_height);
         int paddingSize =

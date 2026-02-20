@@ -76,7 +76,7 @@ class UpdateMenuItemViewBinder {
     }
 
     /** Provides the minimum height for the view for menu sizing. */
-    public static int getPixelHeight(Context context) {
+    public static int getPixelHeight(Context context, PropertyModel model) {
         int textSize =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.overflow_menu_update_min_height);
