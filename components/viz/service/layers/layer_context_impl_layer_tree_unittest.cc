@@ -572,6 +572,32 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateIsHandlingInteraction) {
   EXPECT_FALSE(host_impl->IsHandlingInteraction());
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest,
+       UpdateMayThrottleIfUndrawnFrames) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->may_throttle_if_undrawn_frames = true;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(host_impl->may_throttle_if_undrawn_frames());
+
+  // Update to false.
+  auto update2 = CreateDefaultUpdate();
+  update2->may_throttle_if_undrawn_frames = false;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_FALSE(host_impl->may_throttle_if_undrawn_frames());
+
+  // Update back to true.
+  auto update3 = CreateDefaultUpdate();
+  update3->may_throttle_if_undrawn_frames = true;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_TRUE(host_impl->may_throttle_if_undrawn_frames());
+}
+
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
   cc::LayerTreeImpl* active_tree =
       layer_context_impl_->host_impl()->active_tree();
