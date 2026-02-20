@@ -328,7 +328,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
     SetActiveEmbedderAndNotifyStateChange(new_key);
   }
 
-  MaybeShowHostUi(embedder_to_show, options.prompt_suggestion);
+  MaybeShowHostUi(embedder_to_show, options.prompt_suggestion,
+                  options.auto_send);
   embedder_to_show->Show(options);
   if (options.focus_on_show) {
     embedder_to_show->Focus();
@@ -387,7 +388,8 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               bool prevent_close,
                               glic::mojom::InvocationSource source,
-                              std::optional<std::string> prompt_suggestion) {
+                              std::optional<std::string> prompt_suggestion,
+                              bool auto_send) {
   if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
     service_->metrics()->OnTrustFirstOnboardingShown();
   }
@@ -404,6 +406,7 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
   // We assume that a toggle is user initiated so focus on show.
   options.focus_on_show = true;
   options.prompt_suggestion = prompt_suggestion;
+  options.auto_send = auto_send;
   Show(options);
   return true;
 }
@@ -924,7 +927,8 @@ void GlicInstanceImpl::UpdateFloatingPanelCanAttach() {
 
 void GlicInstanceImpl::MaybeShowHostUi(
     GlicUiEmbedder* embedder,
-    std::optional<std::string> prompt_suggestion) {
+    std::optional<std::string> prompt_suggestion,
+    bool auto_send) {
   Host::EmbedderDelegate* delegate = embedder->GetHostEmbedderDelegate();
   if (!delegate) {
     return;
@@ -937,7 +941,7 @@ void GlicInstanceImpl::MaybeShowHostUi(
 
   // TODO: pass in the correct invocation source
   NotifyPanelWillOpen(mojom::InvocationSource::kTopChromeButton,
-                      prompt_suggestion);
+                      prompt_suggestion, auto_send);
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
@@ -1275,7 +1279,8 @@ void GlicInstanceImpl::OnTabPinningStatusEvent(tabs::TabInterface* tab,
 
 void GlicInstanceImpl::NotifyPanelWillOpen(
     mojom::InvocationSource invocation_source,
-    std::optional<std::string> prompt_suggestion) {
+    std::optional<std::string> prompt_suggestion,
+    bool auto_send) {
   Host::PanelWillOpenOptions options;
   options.conversation_info = GetConversationInfo();
   if (coordinator_delegate_) {
@@ -1284,6 +1289,7 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
             kMaxRecentConversationsForPanel);
   }
   options.prompt_suggestion = prompt_suggestion;
+  options.auto_send = auto_send;
   host_.PanelWillOpen(invocation_source, std::move(options));
 }
 
@@ -1291,7 +1297,8 @@ void GlicInstanceImpl::OnWebClientCleared() {
   if (actor_task_manager_) {
     actor_task_manager_->CancelTask();
   }
-  NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue, std::nullopt);
+  NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue, std::nullopt,
+                      /*auto_send=*/false);
 }
 
 void GlicInstanceImpl::CloseAllEmbedders() {

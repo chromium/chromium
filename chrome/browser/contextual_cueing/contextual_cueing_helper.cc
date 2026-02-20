@@ -415,12 +415,17 @@ void ContextualCueingHelper::OnCueingDecision(
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     if (glic_service && browser_window_interface) {
+      const bool auto_send_prompt =
+          decision_result->auto_send_params.has_value() &&
+          decision_result->auto_send_params->auto_send_eligible &&
+          !prompt_suggestion.empty();
       glic_service->ToggleUI(
           browser_window_interface,
           /*prevent_close=*/true,
           glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
           prompt_suggestion.empty() ? std::nullopt
-                                    : std::make_optional(prompt_suggestion));
+                                    : std::make_optional(prompt_suggestion),
+          auto_send_prompt);
       return;
     }
     // Fall through to nudge if side panel open fails.

@@ -245,13 +245,14 @@ void GlicInstanceCoordinatorImpl::Toggle(
     BrowserWindowInterface* browser,
     bool prevent_close,
     mojom::InvocationSource source,
-    std::optional<std::string> prompt_suggestion) {
+    std::optional<std::string> prompt_suggestion,
+    bool auto_send) {
   if (!browser) {
     ToggleFloaty(prevent_close, source, prompt_suggestion);
     return;
   }
 
-  ToggleSidePanel(browser, prevent_close, source, prompt_suggestion);
+  ToggleSidePanel(browser, prevent_close, source, prompt_suggestion, auto_send);
 }
 
 void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
@@ -549,14 +550,15 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(
     std::optional<std::string> prompt_suggestion) {
   GetOrCreateInstanceImplForFloaty()->Toggle(
       ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
-      prevent_close, source, prompt_suggestion);
+      prevent_close, source, prompt_suggestion, /*auto_send=*/false);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     BrowserWindowInterface* browser,
     bool prevent_close,
     glic::mojom::InvocationSource source,
-    std::optional<std::string> prompt_suggestion) {
+    std::optional<std::string> prompt_suggestion,
+    bool auto_send) {
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
     return;
@@ -573,7 +575,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   // newly created instance, so we provide the instance creation trigger.
   instance->Toggle(
       ShowOptions::ForSidePanel(*tab, GlicPinTrigger::kInstanceCreation),
-      prevent_close, source, prompt_suggestion);
+      prevent_close, source, prompt_suggestion, auto_send);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {

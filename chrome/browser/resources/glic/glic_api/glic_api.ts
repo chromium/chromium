@@ -1344,6 +1344,11 @@ export declare interface PanelOpeningData {
    */
   promptSuggestion?: string;
   /**
+   * If true and promptSuggestion is set, the prompt will be automatically
+   * submitted after the panel opens.
+   */
+  autoSend?: boolean;
+  /**
    * An optional Skill. If provided, the Gemini app should auto-run it.
    */
   skillToInvoke?: Skill;
