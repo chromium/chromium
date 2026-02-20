@@ -52620,6 +52620,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VerticalTabs_EnabledFirstTime">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user enables vertical tabs for the first time.
+  </description>
+</action>
+
 <action name="VerticalTabs_TabStrip_ButtonToggleCollapsed">
   <owner>charlesmeng@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

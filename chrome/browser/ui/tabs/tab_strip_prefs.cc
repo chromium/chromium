@@ -40,6 +40,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kProjectsPanelPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kVerticalTabsEnabledFirstTime, false);
 }
 
 void MigrateTabSearchPref(PrefService* profile_prefs) {

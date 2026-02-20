@@ -6,7 +6,9 @@
 
 #include <optional>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -30,9 +32,7 @@ class VerticalTabStripStateControllerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kVerticalTabsEnabled, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    tabs::RegisterProfilePrefs(pref_service_.registry());
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
 
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
@@ -94,6 +94,32 @@ TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabled) {
   controller()->SetVerticalTabsEnabled(false);
   EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
   EXPECT_FALSE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
+}
+
+TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabledFirstTime) {
+  base::UserActionTester user_action_tester;
+  ASSERT_FALSE(
+      pref_service()->GetBoolean(prefs::kVerticalTabsEnabledFirstTime));
+  ASSERT_EQ(0,
+            user_action_tester.GetActionCount("VerticalTabs_EnabledFirstTime"));
+
+  controller()->SetVerticalTabsEnabled(true);
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabledFirstTime));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("VerticalTabs_EnabledFirstTime"));
+
+  controller()->SetVerticalTabsEnabled(false);
+  EXPECT_FALSE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabledFirstTime));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("VerticalTabs_EnabledFirstTime"));
+
+  controller()->SetVerticalTabsEnabled(true);
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabledFirstTime));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("VerticalTabs_EnabledFirstTime"));
 }
 
 TEST_F(VerticalTabStripStateControllerTest, Collapsed) {

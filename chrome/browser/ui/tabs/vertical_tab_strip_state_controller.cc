@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/i18n/rtl.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -49,7 +51,7 @@ VerticalTabStripStateController::VerticalTabStripStateController(
 
   pref_change_registrar_.Add(
       prefs::kVerticalTabsEnabled,
-      base::BindRepeating(&VerticalTabStripStateController::NotifyModeChanged,
+      base::BindRepeating(&VerticalTabStripStateController::OnModeChanged,
                           base::Unretained(this)));
 
   if (restored_state_collapsed.has_value()) {
@@ -171,6 +173,16 @@ void VerticalTabStripStateController::NotifyModeWillChange() {
 
 void VerticalTabStripStateController::NotifyModeChanged() {
   on_mode_changed_callback_list_.Notify(this);
+}
+
+void VerticalTabStripStateController::OnModeChanged() {
+  if (pref_service_->GetBoolean(prefs::kVerticalTabsEnabled) &&
+      !pref_service_->GetBoolean(prefs::kVerticalTabsEnabledFirstTime)) {
+    base::RecordAction(
+        base::UserMetricsAction("VerticalTabs_EnabledFirstTime"));
+    pref_service_->SetBoolean(prefs::kVerticalTabsEnabledFirstTime, true);
+  }
+  NotifyModeChanged();
 }
 
 void VerticalTabStripStateController::UpdateSessionService() {

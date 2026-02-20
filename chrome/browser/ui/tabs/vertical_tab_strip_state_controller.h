@@ -80,6 +80,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   void NotifyModeWillChange();
   void NotifyModeChanged();
 
+  void OnModeChanged();
+
   // Updates the SessionService with the current state (collapsed status and
   // uncollapsed width) for the associated session ID.
   void UpdateSessionService();
