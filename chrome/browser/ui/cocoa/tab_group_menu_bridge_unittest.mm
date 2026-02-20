@@ -10,10 +10,12 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
@@ -26,6 +28,10 @@
 
 class TabGroupMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
+  TabGroupMenuBridgeTest() {
+    feature_list_.InitAndDisableFeature(tab_groups::kProjectsPanel);
+  }
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     service_ = std::make_unique<tab_groups::FakeTabGroupSyncService>();
@@ -104,6 +110,7 @@ class TabGroupMenuBridgeTest : public BrowserWithTestWindowTest {
     }
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<tab_groups::TabGroupSyncService> service_;
   NSMenu* __strong main_menu_;
   NSMenuItem* __strong tab_groups_menu_root_;
@@ -217,4 +224,41 @@ TEST_F(TabGroupMenuBridgeTest, ClickingTabOpensUrl) {
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_EQ(GURL("https://a.com"), new_tab->GetVisibleURL());
+}
+
+class TabGroupMenuBridgeProjectsPanelEnabledTest
+    : public TabGroupMenuBridgeTest {
+ public:
+  TabGroupMenuBridgeProjectsPanelEnabledTest() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(tab_groups::kProjectsPanel);
+  }
+};
+
+TEST_F(TabGroupMenuBridgeProjectsPanelEnabledTest, SubmenuHidesPinUnpin) {
+  TabGroupMenuBridge bridge(profile(), service());
+  AddGroup(u"Group 1", tab_groups::TabGroupColorId::kGrey,
+           {GURL("https://a.com")});
+  bridge.BuildMenu();
+
+  NSMenuItem* group_item = [menu() itemWithTitle:@"Group 1"];
+  ASSERT_TRUE(group_item);
+  NSMenu* submenu = group_item.submenu;
+
+  // Expected items when the projects panel is enabled:
+  // 0: Open in Browser
+  // 1: Open/Move to New Window
+  // 2: Delete/Leave
+  // 3: --- separator ---
+  // 4: Tab Title
+  EXPECT_EQ(5, submenu.numberOfItems);
+
+  NSString* pin_title =
+      l10n_util::GetNSString(IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP);
+  NSString* unpin_title =
+      l10n_util::GetNSString(IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP);
+  for (NSMenuItem* item in [submenu itemArray]) {
+    EXPECT_FALSE([item.title isEqualToString:pin_title]);
+    EXPECT_FALSE([item.title isEqualToString:unpin_title]);
+  }
 }

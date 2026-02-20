@@ -26,7 +26,9 @@ namespace tab_groups {
 
 class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
  public:
-  SavedTabGroupTabsMenuModelBrowserTest() = default;
+  SavedTabGroupTabsMenuModelBrowserTest() {
+    feature_list_.InitAndDisableFeature(tab_groups::kProjectsPanel);
+  }
 
   int GetNextCommandId() { return next_command_id_++; }
 
@@ -43,13 +45,30 @@ class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
     return false;
   }
 
+  bool IsPinItemPresent(STGTabsMenuModel* model) {
+    std::u16string pin_label =
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP);
+    std::u16string unpin_label =
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP);
+
+    size_t item_count = model->GetItemCount();
+    for (size_t i = 0; i < item_count; ++i) {
+      if (model->GetLabelAt(i) == pin_label ||
+          model->GetLabelAt(i) == unpin_label) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  protected:
   TabGroupSyncService* GetSyncService() {
     return TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
   }
 
- private:
   base::test::ScopedFeatureList feature_list_;
+
+ private:
   int next_command_id_ = 1;
 };
 
@@ -90,6 +109,50 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                   base::Unretained(this)));
 
   EXPECT_FALSE(IsOpenGroupItemEnabled(&model));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
+                       PinUnpinOptionVisibility) {
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
+                      std::nullopt);
+  GetSyncService()->AddGroup(group);
+
+  // Pin/unpin should be present when the projects panel is disabled.
+  STGTabsMenuModel model(
+      browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
+  model.Build(group,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  EXPECT_TRUE(IsPinItemPresent(&model));
+}
+
+class SavedTabGroupTabsMenuModelWithProjectsPanelEnabledBrowserTest
+    : public SavedTabGroupTabsMenuModelBrowserTest {
+ public:
+  SavedTabGroupTabsMenuModelWithProjectsPanelEnabledBrowserTest() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(tab_groups::kProjectsPanel);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SavedTabGroupTabsMenuModelWithProjectsPanelEnabledBrowserTest,
+    PinUnpinOptionVisibility) {
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
+                      std::nullopt);
+  GetSyncService()->AddGroup(group);
+
+  // Pin/unpin should be hidden when the projects panel is enabled.
+  STGTabsMenuModel model(
+      browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
+  model.Build(group,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  EXPECT_FALSE(IsPinItemPresent(&model));
 }
 
 }  // namespace tab_groups

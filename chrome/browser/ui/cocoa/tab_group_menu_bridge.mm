@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
@@ -153,11 +154,13 @@ void TabGroupMenuBridge::BuildMenu() {
                         : IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW,
                     TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW,
                     uuid)];
-    [submenu
-        addItem:CreateStaticSubmenuItem(
-                    group->is_pinned() ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                                       : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-                    TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, uuid)];
+    if (!tab_groups::IsProjectsPanelFeatureEnabled()) {
+      [submenu addItem:CreateStaticSubmenuItem(
+                           group->is_pinned()
+                               ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
+                               : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
+                           TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, uuid)];
+    }
     bool is_owner =
         tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(profile_, uuid);
     [submenu addItem:CreateStaticSubmenuItem(

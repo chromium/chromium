@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,20 +106,22 @@ void STGTabsMenuModel::Build(
                          sync_id_.value()});
 
   // Add item: pin or unpin.
-  latest_command_id = get_next_command_id.Run();
-  bool group_pinned = saved_group.is_pinned();
-  AddItemWithStringIdAndIcon(
-      latest_command_id,
-      group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                   : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-      ui::ImageModel::FromVectorIcon(group_pinned ? kKeepOffIcon : kKeepIcon,
-                                     ui::kColorMenuIcon, kUIUpdateIconSize));
-  SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
-                         kToggleGroupPinStateMenuItem);
-  command_id_to_action_.emplace(
-      latest_command_id,
-      TabGroupMenuAction{TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP,
-                         sync_id_.value()});
+  if (!tab_groups::IsProjectsPanelFeatureEnabled()) {
+    latest_command_id = get_next_command_id.Run();
+    bool group_pinned = saved_group.is_pinned();
+    AddItemWithStringIdAndIcon(
+        latest_command_id,
+        group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
+                     : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
+        ui::ImageModel::FromVectorIcon(group_pinned ? kKeepOffIcon : kKeepIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+    SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
+                           kToggleGroupPinStateMenuItem);
+    command_id_to_action_.emplace(
+        latest_command_id,
+        TabGroupMenuAction{TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP,
+                           sync_id_.value()});
+  }
 
   latest_command_id = get_next_command_id.Run();
   if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->profile(),
