@@ -20,8 +20,6 @@ import static org.chromium.chrome.browser.customtabs.features.branding.BrandingC
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -41,7 +39,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowToast;
 
@@ -49,9 +46,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
@@ -62,7 +58,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class, ShadowPostTask.class, ShadowToast.class})
+        shadows = {ShadowSystemClock.class, ShadowToast.class})
 @LooperMode(Mode.PAUSED)
 public class BrandingControllerUnitTest {
     @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
@@ -72,22 +68,9 @@ public class BrandingControllerUnitTest {
     @Mock MismatchNotificationChecker mMismatchNotificationChecker;
     @Captor ArgumentCaptor<Callback<MismatchNotificationData>> mCloseCallbackCaptor;
     private BrandingController mBrandingController;
-    private ShadowPostTask.TestImpl mShadowPostTaskImpl;
 
     @Before
     public void setup() {
-        mShadowPostTaskImpl =
-                new ShadowPostTask.TestImpl() {
-                    final Handler mHandler = new Handler(Looper.getMainLooper());
-
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        mHandler.postDelayed(task, delay);
-                    }
-                };
-        ShadowPostTask.setTestImpl(mShadowPostTaskImpl);
-
         SystemClock.setCurrentTimeMillis(TimeUtils.currentTimeMillis());
     }
 
@@ -280,7 +263,7 @@ public class BrandingControllerUnitTest {
         storage.put("stubPackageA", 1L);
         storage.put("stubPackageB", 1L);
         storage.put("stubPackageC", 1L);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals("3 Stub package name should be in the storage.", 3, storage.getSize());
 
         new BrandingCheckTester()
@@ -369,7 +352,7 @@ public class BrandingControllerUnitTest {
         }
 
         public BrandingCheckTester idleMainLooper() {
-            Shadows.shadowOf(Looper.getMainLooper()).idle();
+            RobolectricUtil.runAllBackgroundAndUi();
             return this;
         }
 

@@ -17,12 +17,14 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.verify.domain.DomainVerificationManager;
 import android.content.pm.verify.domain.DomainVerificationUserState;
 import android.os.Build;
 
 import androidx.browser.auth.AuthTabIntent;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,13 +35,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
@@ -58,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 /** Tests for {@link AuthTabVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
-@Config(shadows = {ShadowPostTask.class, ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class AuthTabVerifierTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -78,11 +81,14 @@ public class AuthTabVerifierTest {
     @Mock DomainVerificationUserState mDomainVerificationUserState;
 
     private AuthTabVerifier mDelegate;
-    private Runnable mDelayedTask;
 
     @Before
     public void setUp() throws Exception {
-        ShadowPostTask.setTestImpl((taskTraits, task, delay) -> mDelayedTask = task);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
+                    .setSystemService(
+                            Context.DOMAIN_VERIFICATION_SERVICE, mDomainVerificationManager);
+        }
 
         when(mIntentDataProvider.getAuthRedirectHost()).thenReturn(REDIRECT_HOST);
         when(mIntentDataProvider.getAuthRedirectPath()).thenReturn(REDIRECT_PATH);
@@ -215,7 +221,7 @@ public class AuthTabVerifierTest {
                 sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs.getValue(),
                 TimeUnit.MILLISECONDS);
         // Simulate timeout.
-        mDelayedTask.run();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mActivity).setResult(eq(AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT), any());
         verify(mActivity).finish();
@@ -241,8 +247,7 @@ public class AuthTabVerifierTest {
                         mActivity, mLifecycleDispatcher, mIntentDataProvider, mActivityTabProvider);
 
         assertTrue(mDelegate.shouldRunOriginVerifier());
-        mDelayedTask.run();
-        mDelayedTask.run();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse("Android AppLink should be completed", mDelegate.shouldRunOriginVerifier());
 
         // Verify that Chrome DAL verification is never executed.

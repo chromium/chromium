@@ -10,8 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.test.core.content.pm.PackageInfoBuilder;
@@ -22,18 +20,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingAppIdType;
@@ -46,8 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit test for {@link BrandingChecker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPackageManager.class, ShadowSystemClock.class, ShadowPostTask.class})
-@LooperMode(Mode.PAUSED)
+@Config(shadows = {ShadowPackageManager.class, ShadowSystemClock.class})
 public class BrandingCheckerUnitTest {
     private static final String PACKAGE_1 = "com.example.myapplication";
     private static final String PACKAGE_2 = "org.foo.bar";
@@ -72,17 +64,6 @@ public class BrandingCheckerUnitTest {
         pm.installPackage(PackageInfoBuilder.newBuilder().setPackageName(PACKAGE_1).build());
         pm.installPackage(PackageInfoBuilder.newBuilder().setPackageName(PACKAGE_2).build());
         pm.installPackage(PackageInfoBuilder.newBuilder().setPackageName(NEW_APPLICATION).build());
-
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    final Handler mHandler = new Handler(Looper.getMainLooper());
-
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        mHandler.postDelayed(task, delay);
-                    }
-                });
     }
 
     @After
@@ -101,7 +82,7 @@ public class BrandingCheckerUnitTest {
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         HistogramWatcher watcher = newHistogramWatcher();
-        mainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "Branding is checked after cadence, BrandingDecision should be TOOLBAR. ",
                 BrandingDecision.TOOLBAR,
@@ -118,7 +99,7 @@ public class BrandingCheckerUnitTest {
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         HistogramWatcher watcher = newHistogramWatcher();
-        mainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         long showBrandingTime = SystemClock.elapsedRealtime();
         assertEquals(
                 "Branding is checked for new package, BrandingDecision should be TOAST. ",
@@ -141,12 +122,12 @@ public class BrandingCheckerUnitTest {
 
         HistogramWatcher watcher = newHistogramWatcher();
         // Run looper for #doInBackground
-        mainLooper().runOneTask();
+        RobolectricUtil.runOneBackgroundTask();
         assertEquals("BrandingDecision is not set yet.", 0, callbackDelegate.getCallCount());
 
         // Cancel before the result gets back.
         checker.cancel(true);
-        mainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         long showBrandingTime = SystemClock.elapsedRealtime();
         assertEquals(
                 "Branding check canceled, BrandingDecision should be the test default. ",
@@ -164,7 +145,7 @@ public class BrandingCheckerUnitTest {
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         HistogramWatcher watcher = newHistogramWatcher();
-        mainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "Package is invalid, BrandingDecision should be the test default. ",
                 BrandingDecision.TOAST,
@@ -198,13 +179,13 @@ public class BrandingCheckerUnitTest {
         checker1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         checker2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        mainLooper().runOneTask();
-        mainLooper().runOneTask();
+        RobolectricUtil.runOneBackgroundTask();
+        RobolectricUtil.runOneBackgroundTask();
 
         // Advance the time assuming, simulating time elapse for reading storage.
         advanceTimeMs(10);
         long showBrandingTime = SystemClock.elapsedRealtime();
-        mainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "Branding is checked after cadence, BrandingDecision should be TOOLBAR. ",
                 BrandingDecision.TOOLBAR,
@@ -239,7 +220,7 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(appId, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        mainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         var fetchedAppData = callbackDelegate.getMimData().getAppData(accountId, appId);
         assertEquals("Retrived MIM data is not correct.", appData, fetchedAppData);
     }
@@ -252,10 +233,6 @@ public class BrandingCheckerUnitTest {
                 callbackDelegate::notifyCalled,
                 TEST_BRANDING_CADENCE,
                 BrandingDecision.TOAST);
-    }
-
-    private ShadowLooper mainLooper() {
-        return Shadows.shadowOf(Looper.getMainLooper());
     }
 
     private void advanceTimeMs(long increments) {

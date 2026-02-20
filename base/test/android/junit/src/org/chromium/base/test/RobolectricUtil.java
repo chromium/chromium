@@ -15,6 +15,13 @@ import org.chromium.base.task.PostTask;
 public class RobolectricUtil {
     private RobolectricUtil() {}
 
+    /** Runs a single queued background task */
+    public static void runOneBackgroundTask() {
+        if (!BaseRobolectricTestRule.sPausedExecutor.runNext()) {
+            throw new AssertionError("No pending task");
+        }
+    }
+
     /**
      * Runs all queued background and UI non-delayed tasks and waits for them to finish.
      *

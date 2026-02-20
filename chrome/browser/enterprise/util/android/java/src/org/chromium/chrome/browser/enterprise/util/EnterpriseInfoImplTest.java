@@ -20,22 +20,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
-
-import java.util.concurrent.RejectedExecutionException;
 
 /** Unit tests for {@link EnterpriseInfoImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPostTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@Config(manifest = Config.NONE)
 public class EnterpriseInfoImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public EnterpriseInfo.Natives mNatives;
@@ -107,12 +100,14 @@ public class EnterpriseInfoImplTest {
         // framework these async tasks are run synchronously. Meaning as soon as we make the call
         // we'll have the result when it returns.
         instance.getDeviceEnterpriseInfo(callback);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(
-                "Callback doesn't match the expected cached result.", callback.result, stateIn);
+                "Callback doesn't match the expected cached result.", stateIn, callback.result);
 
         instance.getDeviceEnterpriseInfo(callback2);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(
-                "Callback doesn't match the expected cached result.", callback2.result, stateIn);
+                "Callback doesn't match the expected cached result.", stateIn, callback2.result);
     }
 
     /**
@@ -227,6 +222,7 @@ public class EnterpriseInfoImplTest {
                        -------------------------------
                     */
                 });
+        RobolectricUtil.runAllBackgroundAndUi();
         // By this point all post()s should have been run, including |callback|'s.
         Assert.assertEquals("Second callback wasn't executed.", 2, helper.getCallCount());
     }
@@ -281,12 +277,8 @@ public class EnterpriseInfoImplTest {
     @SmallTest
     public void testGetManagedStateForNativeNullOwnedState() {
         getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(false);
-        ShadowPostTask.setTestImpl(
-                (@TaskTraits int taskTraits, Runnable task, long delay) -> {
-                    throw new RejectedExecutionException();
-                });
-
         EnterpriseInfo.getManagedStateForNative();
+        RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mNatives, Mockito.times(1)).updateNativeOwnedState(false, false);
     }
 }
