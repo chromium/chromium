@@ -21,10 +21,8 @@ DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
     WebContents* web_contents,
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  RenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
-  return std::make_unique<download::DownloadUrlParameters>(
-      url, render_frame_host->GetProcess()->GetDeprecatedID(),
-      render_frame_host->GetRoutingID(), traffic_annotation);
+  return web_contents->GetPrimaryMainFrame()->CreateDownloadUrlParameters(
+      url, traffic_annotation);
 }
 
 // static

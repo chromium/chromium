@@ -4341,17 +4341,13 @@ void RenderViewContextMenu::ExecSaveLinkAs() {
           policy_exception_justification: "Not implemented."
         })");
 
-  auto dl_params = std::make_unique<DownloadUrlParameters>(
-      url, render_frame_host->GetProcess()->GetDeprecatedID(),
-      render_frame_host->GetRoutingID(), traffic_annotation);
+  auto dl_params =
+      render_frame_host->CreateDownloadUrlParameters(url, traffic_annotation);
   content::Referrer referrer = CreateReferrer(url, params_);
   dl_params->set_referrer(referrer.url);
   dl_params->set_referrer_policy(
       content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
   dl_params->set_referrer_encoding(params_.frame_charset);
-  // TODO(crbug.com/40066346): use the actual origin here rather than
-  // pulling it out of the frame url.
-  dl_params->set_initiator(url::Origin::Create(params_.frame_url));
   dl_params->set_suggested_name(params_.suggested_filename);
   dl_params->set_prompt(true);
   dl_params->set_download_source(download::DownloadSource::CONTEXT_MENU);

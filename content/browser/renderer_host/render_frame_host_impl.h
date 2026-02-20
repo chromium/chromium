@@ -2689,6 +2689,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnFirstContentfulPaint(base::TimeDelta duration) override;
   void NotifyFirstContentfulPaint();
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
+  std::unique_ptr<download::DownloadUrlParameters> CreateDownloadUrlParameters(
+      const GURL& url,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation)
+      const override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

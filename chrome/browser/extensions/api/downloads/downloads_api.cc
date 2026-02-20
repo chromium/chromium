@@ -1101,11 +1101,17 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
             }
           }
         })");
-  std::unique_ptr<download::DownloadUrlParameters> download_params(
-      new download::DownloadUrlParameters(
-          download_url, source_process_id(),
-          render_frame_host() ? render_frame_host()->GetRoutingID() : -1,
-          traffic_annotation));
+  std::unique_ptr<download::DownloadUrlParameters> download_params;
+  if (auto* rfh = render_frame_host(); rfh) {
+    download_params =
+        rfh->CreateDownloadUrlParameters(download_url, traffic_annotation);
+  } else {
+    // Service-worker-based extensions may have no associated `rfh`.
+    download_params = std::make_unique<download::DownloadUrlParameters>(
+        download_url, traffic_annotation);
+    download_params->set_render_process_host_id(source_process_id());
+    download_params->set_initiator(extension()->origin());
+  }
   base::FilePath creator_suggested_filename;
   if (options.filename) {
     // Strip "%" character as it affects environment variables.

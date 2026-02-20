@@ -4,15 +4,31 @@
 
 #include "components/download/public/common/download_url_parameters.h"
 
+#include "base/types/pass_key.h"
+
 namespace download {
 
 DownloadUrlParameters::DownloadUrlParameters(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : DownloadUrlParameters(url, -1, -1, traffic_annotation) {}
+    : DownloadUrlParameters(url, std::nullopt, -1, -1, traffic_annotation) {}
+
+DownloadUrlParameters::DownloadUrlParameters(
+    base::PassKey<content::RenderFrameHostImpl>,
+    const GURL& url,
+    std::optional<url::Origin> initiator,
+    int render_process_host_id,
+    int render_frame_host_routing_id,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation)
+    : DownloadUrlParameters(url,
+                            initiator,
+                            render_process_host_id,
+                            render_frame_host_routing_id,
+                            traffic_annotation) {}
 
 DownloadUrlParameters::DownloadUrlParameters(
     const GURL& url,
+    std::optional<url::Origin> initiator,
     int render_process_host_id,
     int render_frame_host_routing_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
@@ -24,6 +40,7 @@ DownloadUrlParameters::DownloadUrlParameters(
       prefer_cache_(false),
       referrer_policy_(
           net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
+      initiator_(std::move(initiator)),
       render_process_host_id_(render_process_host_id),
       render_frame_host_routing_id_(render_frame_host_routing_id),
       url_(url),

@@ -15,6 +15,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
@@ -26,6 +27,13 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace content {
+// `RenderFrameHostImpl` is a `//content`-internal type, but it's okay, because:
+// * This forward-declaration only leaks the name of the type
+// * This is needed for `PassKey`-based visibility delegation/restriction below
+class RenderFrameHostImpl;
+}  // namespace content
 
 namespace download {
 
@@ -79,8 +87,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
+  // `base::PassKey` to shepherd potential callers to instead go through
+  // `content::RenderFrameHost::CreateDownloadUrlParameters`.
   DownloadUrlParameters(
+      base::PassKey<content::RenderFrameHostImpl>,
       const GURL& url,
+      std::optional<url::Origin> initiator,
       int render_process_host_id,
       int render_frame_host_routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
@@ -273,6 +285,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     has_user_gesture_ = has_user_gesture;
   }
 
+  void set_render_process_host_id(int render_process_host_id) {
+    render_process_host_id_ = render_process_host_id;
+  }
+
   void set_update_first_party_url_on_redirect(
       bool update_first_party_url_on_redirect) {
     update_first_party_url_on_redirect_ = update_first_party_url_on_redirect;
@@ -359,6 +375,13 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   }
 
  private:
+  DownloadUrlParameters(
+      const GURL& url,
+      std::optional<url::Origin> initiator,
+      int render_process_host_id,
+      int render_frame_host_routing_id,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
   OnStartedCallback callback_;
   bool content_initiated_;
   RequestHeadersType request_headers_;

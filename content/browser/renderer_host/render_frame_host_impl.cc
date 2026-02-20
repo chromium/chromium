@@ -7673,10 +7673,8 @@ void RenderFrameHostImpl::DownloadURL(
             }
           }
         })");
-  std::unique_ptr<download::DownloadUrlParameters> parameters(
-      new download::DownloadUrlParameters(blink_parameters->url,
-                                          GetProcess()->GetDeprecatedID(),
-                                          GetRoutingID(), traffic_annotation));
+  std::unique_ptr<download::DownloadUrlParameters> parameters =
+      CreateDownloadUrlParameters(blink_parameters->url, traffic_annotation);
   parameters->set_content_initiated(!blink_parameters->is_context_menu_save);
   parameters->set_has_user_gesture(blink_parameters->has_user_gesture);
   parameters->set_suggested_name(
@@ -8284,6 +8282,16 @@ void RenderFrameHostImpl::SetStorageAccessApiStatus(
       return;
   }
   NOTREACHED();
+}
+
+std::unique_ptr<download::DownloadUrlParameters>
+RenderFrameHostImpl::CreateDownloadUrlParameters(
+    const GURL& url,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) const {
+  return std::make_unique<download::DownloadUrlParameters>(
+      base::PassKey<RenderFrameHostImpl>(), url,
+      std::optional<url::Origin>(GetLastCommittedOrigin()),
+      GetProcess()->GetDeprecatedID(), GetRoutingID(), traffic_annotation);
 }
 
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {

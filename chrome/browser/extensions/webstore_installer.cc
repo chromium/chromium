@@ -553,11 +553,6 @@ void WebstoreInstaller::StartDownload(
   // The download url for the given extension is contained in |download_url_|.
   // We will navigate the current tab to this url to start the download. The
   // download system will then pass the crx to the CrxInstaller.
-  int render_process_host_id = web_contents_->GetPrimaryMainFrame()
-                                   ->GetRenderViewHost()
-                                   ->GetProcess()
-                                   ->GetDeprecatedID();
-
   content::RenderFrameHost* render_frame_host =
       web_contents_->GetPrimaryMainFrame();
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -590,11 +585,10 @@ void WebstoreInstaller::StartDownload(
             }
           }
         })");
-  std::unique_ptr<DownloadUrlParameters> params(new DownloadUrlParameters(
-      download_url_, render_process_host_id, render_frame_host->GetRoutingID(),
-      traffic_annotation));
+  std::unique_ptr<DownloadUrlParameters> params =
+      render_frame_host->CreateDownloadUrlParameters(download_url_,
+                                                     traffic_annotation);
   params->set_file_path(file);
-  params->set_initiator(render_frame_host->GetLastCommittedOrigin());
   if (controller.GetVisibleEntry()) {
     content::Referrer referrer = content::Referrer::SanitizeForRequest(
         download_url_,

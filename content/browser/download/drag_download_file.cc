@@ -91,13 +91,17 @@ class DragDownloadFile::DragDownloadFileUI
             }
           }
         })");
-    auto params = std::make_unique<download::DownloadUrlParameters>(
-        url_, render_process_id_, render_frame_id_, traffic_annotation);
+    auto params = host->CreateDownloadUrlParameters(url_, traffic_annotation);
     params->set_referrer(referrer_.url);
     params->set_referrer_policy(
         Referrer::ReferrerPolicyForUrlRequest(referrer_.policy));
     params->set_referrer_encoding(referrer_encoding_);
+
+    // `initiator_origin_` (coming from
+    // `OSExchangeDataProvider::GetRendererTaintedOrigin`) is more accurate than
+    // `host` (coming from `WebContents::GetPrimaryMainFrame`).
     params->set_initiator(initiator_origin_);
+
     params->set_callback(base::BindOnce(&DragDownloadFileUI::OnDownloadStarted,
                                         weak_ptr_factory_.GetWeakPtr()));
     params->set_file_path(file_path);
