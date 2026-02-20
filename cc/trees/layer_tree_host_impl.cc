@@ -1439,7 +1439,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
                "damage! "
             << "Client: " << root_layer_damage_rect_.ToString()
             << " Viz: " << viz_damage_rect.ToString() << " Viz content rect: "
-            << active_tree_->RootRenderSurface()->content_rect().ToString();
+            << active_tree_->RootRenderSurface()->content_rect().ToString()
+            << " Client-in-Viz Insets: "
+            << viz_damage_rect.InsetsFrom(root_layer_damage_rect_).ToString()
+            << " DSF: " << active_tree_->device_scale_factor() << " Transform: "
+            << active_tree_->RootRenderSurface()->draw_transform().ToString();
       }
     }
 
