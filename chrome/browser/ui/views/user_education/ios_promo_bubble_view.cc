@@ -203,12 +203,15 @@ void IOSPromoBubbleView::AddedToWidget() {
   }
 }
 
-void IOSPromoBubbleView::VisibilityChanged(View* starting_from,
-                                           bool is_visible) {
-  BubbleDialogDelegateView::VisibilityChanged(starting_from, is_visible);
-  if (starting_from == nullptr && is_visible) {
-    GetBubbleFrameView()->SetDisplayVisibleArrow(false);
-  }
+gfx::Rect IOSPromoBubbleView::GetBubbleBounds() {
+  gfx::Rect bubble_bounds = BubbleDialogDelegateView::GetBubbleBounds();
+  gfx::Rect anchor_rect = GetAnchorRect();
+  // Manually position the bubble to be right-aligned with the anchor and below
+  // it. This mimics TOP_RIGHT anchor behavior but without the arrow inset
+  // logic.
+  bubble_bounds.set_x(anchor_rect.right() - bubble_bounds.width());
+  bubble_bounds.set_y(anchor_rect.bottom());
+  return bubble_bounds;
 }
 
 bool IOSPromoBubbleView::Cancel() {

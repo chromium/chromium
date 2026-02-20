@@ -50,7 +50,7 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
 
   // views::View:
   void AddedToWidget() override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
+  gfx::Rect GetBubbleBounds() override;
 
   // Set the handle to the open url callback for testing.
   void SetOpenUrlCallbackForTesting(OpenUrlCallback callback);
