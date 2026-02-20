@@ -17,10 +17,6 @@
 
 namespace web_app {
 
-namespace proto {
-class PendingMigrationInfo;
-}  // namespace proto
-
 using UpdateMetadata = std::optional<WebAppIdentityUpdate>;
 
 // Parse a web app's pending migration metadata and icons stored on the disk to
@@ -32,6 +28,7 @@ class AppMigrationDataReadCommand
   AppMigrationDataReadCommand(
       const webapps::AppId& old_app_id,
       const webapps::AppId& new_app_id,
+      bool is_forced_migration_on_startup,
       base::OnceCallback<void(UpdateMetadata)> completed_callback);
   ~AppMigrationDataReadCommand() override;
 
@@ -48,7 +45,6 @@ class AppMigrationDataReadCommand
   std::unique_ptr<AppLock> lock_;
   const webapps::AppId old_app_id_;
   const webapps::AppId new_app_id_;
-  proto::PendingMigrationInfo pending_migration_info_;
   WebAppIdentityUpdate update_;
 
   base::WeakPtrFactory<AppMigrationDataReadCommand> weak_factory_{this};

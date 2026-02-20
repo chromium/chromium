@@ -177,6 +177,7 @@ class WebAppBrowserController : public AppBrowserController,
   void CreateMetadataAndTriggerAppUpdateDialog(
       base::TimeTicks start_time) const;
   void CreateMetadataAndTriggerAppMigrationDialog(
+      bool is_forced_migration_on_startup,
       base::TimeTicks start_time) const;
   void OnMetadataObtainedTriggerUpdateDialog(
       base::TimeTicks start_time,

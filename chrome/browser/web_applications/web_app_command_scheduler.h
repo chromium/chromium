@@ -720,6 +720,7 @@ class WebAppCommandScheduler {
   void ReadAppMigrationDataFromDisk(
       const webapps::AppId& old_app_id,
       const webapps::AppId& new_app_id,
+      bool is_forced_migration_on_startup,
       base::OnceCallback<void(std::optional<WebAppIdentityUpdate>)> callback,
       const base::Location& location = FROM_HERE);
 

@@ -149,6 +149,21 @@ WebAppBrowserController::WebAppBrowserController(
     per_window_wco_enabled_ =
         registrar().GetWindowControlsOverlayEnabled(this->app_id());
   }
+
+  if (const WebApp* app = registrar().GetAppById(this->app_id())) {
+    if (auto pending_migration_info = app->pending_migration_info()) {
+      if (pending_migration_info->behavior() ==
+          proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&WebAppBrowserController::
+                               CreateMetadataAndTriggerAppMigrationDialog,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           /*is_forced_migration_on_startup=*/true,
+                           base::TimeTicks::Now()));
+      }
+    }
+  }
 }
 
 WebAppBrowserController::~WebAppBrowserController() = default;
@@ -301,7 +316,8 @@ bool WebAppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
 void WebAppBrowserController::TriggerAppUpdateOrMigrationDialog(
     base::TimeTicks start_time) const {
   if (registrar().GetAppById(app_id())->pending_migration_info()) {
-    CreateMetadataAndTriggerAppMigrationDialog(start_time);
+    CreateMetadataAndTriggerAppMigrationDialog(
+        /*is_forced_migration_on_startup=*/false, start_time);
   } else {
     CreateMetadataAndTriggerAppUpdateDialog(start_time);
   }
@@ -317,6 +333,7 @@ void WebAppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
 }
 
 void WebAppBrowserController::CreateMetadataAndTriggerAppMigrationDialog(
+    bool is_forced_migration_on_startup,
     base::TimeTicks start_time) const {
   CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
   auto pending_migration_info =
@@ -325,7 +342,7 @@ void WebAppBrowserController::CreateMetadataAndTriggerAppMigrationDialog(
   webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
       webapps::ManifestId(pending_migration_info->manifest_id()));
   provider_->scheduler().ReadAppMigrationDataFromDisk(
-      app_id(), destination_app_id,
+      app_id(), destination_app_id, is_forced_migration_on_startup,
       base::BindOnce(
           &WebAppBrowserController::OnMetadataObtainedTriggerMigrationDialog,
           weak_ptr_factory_.GetWeakPtr(), start_time));

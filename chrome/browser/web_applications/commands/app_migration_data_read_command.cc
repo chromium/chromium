@@ -29,6 +29,7 @@ namespace web_app {
 AppMigrationDataReadCommand::AppMigrationDataReadCommand(
     const webapps::AppId& old_app_id,
     const webapps::AppId& new_app_id,
+    bool is_forced_migration_on_startup,
     base::OnceCallback<void(UpdateMetadata)> completed_callback)
     : WebAppCommand<AppLock, UpdateMetadata>(
           "AppMigrationDataReadCommand",
@@ -38,6 +39,8 @@ AppMigrationDataReadCommand::AppMigrationDataReadCommand(
           std::make_tuple(std::nullopt)),
       old_app_id_(old_app_id),
       new_app_id_(new_app_id) {
+  update_.is_forced_migration = is_forced_migration_on_startup;
+
   GetMutableDebugValue().Set("old_app_id", old_app_id);
   GetMutableDebugValue().Set("new_app_id", new_app_id);
 }
@@ -58,12 +61,12 @@ void AppMigrationDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   auto* old_web_app = registrar.GetAppById(old_app_id_);
   CHECK(old_web_app->pending_migration_info().has_value());
 
-  pending_migration_info_ = *old_web_app->pending_migration_info();
-  GetMutableDebugValue().Set("pending_migration_info",
-                             proto::ToValue(pending_migration_info_));
+  GetMutableDebugValue().Set(
+      "pending_migration_info",
+      proto::ToValue(*old_web_app->pending_migration_info()));
 
   const auto barrier_closure = base::BarrierClosure(
-      /*num_closures=*/2,
+      /*num_closures=*/update_.is_forced_migration ? 1 : 2,
       base::BindOnce(
           &AppMigrationDataReadCommand::OnIconsProcessedCreateIdentity,
           weak_factory_.GetWeakPtr()));
@@ -73,11 +76,16 @@ void AppMigrationDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
       base::BindOnce(&AppMigrationDataReadCommand::SetOldIconForIdentityUpdate,
                      weak_factory_.GetWeakPtr())
           .Then(barrier_closure));
-  ReadSingleIcon(
-      new_app_id_,
-      base::BindOnce(&AppMigrationDataReadCommand::SetNewIconForIdentityUpdate,
-                     weak_factory_.GetWeakPtr())
-          .Then(barrier_closure));
+
+  // If this is a forced migration, icon changes are ignored
+  if (!update_.is_forced_migration) {
+    ReadSingleIcon(
+        new_app_id_,
+        base::BindOnce(
+            &AppMigrationDataReadCommand::SetNewIconForIdentityUpdate,
+            weak_factory_.GetWeakPtr())
+            .Then(barrier_closure));
+  }
 }
 
 void AppMigrationDataReadCommand::ReadSingleIcon(
@@ -128,8 +136,10 @@ void AppMigrationDataReadCommand::OnIconsProcessedCreateIdentity() {
   CHECK(old_web_app);
   CHECK(new_web_app);
 
-  if (old_web_app->untranslated_name() != new_web_app->untranslated_name()) {
-    update_.old_title = base::UTF8ToUTF16(old_web_app->untranslated_name());
+  // Name changes are ignored for forced migration.
+  update_.old_title = base::UTF8ToUTF16(old_web_app->untranslated_name());
+  if (old_web_app->untranslated_name() != new_web_app->untranslated_name() &&
+      !update_.is_forced_migration) {
     update_.new_title = base::UTF8ToUTF16(new_web_app->untranslated_name());
     GetMutableDebugValue().Set("new_name", update_.new_title.has_value());
   }
