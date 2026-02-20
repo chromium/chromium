@@ -24,7 +24,12 @@ class AimEligibilityService;
 class BrowserWindowInterface;
 class GoogleServiceAuthError;
 class Profile;
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/483442073): Remove this once we remove TabStripModel from
+// MaybeFocusExistingOpenTab.
 class TabStripModel;
+#endif
 
 namespace base {
 class Uuid;
@@ -250,13 +255,17 @@ class ContextualTasksUiService : public KeyedService {
   // Runs all pending access token callbacks with the provided token.
   void RunPendingAccessTokenCallbacks(const std::string& token);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Focus an existing tab based on the provided URL if it exists. The URLs are
   // compared without text selection directives as they don't change the page
   // content and only tell the browser what text to highlight on the page. A
   // pointer to the selected tab is returned if found.
+  // TODO(crbug.com/483442073): Remove the ifdef block once we remove
+  // TabStripModel from MaybeFocusExistingOpenTab.
   tabs::TabInterface* MaybeFocusExistingOpenTab(const GURL& url,
                                                 TabStripModel* tab_strip_model,
                                                 const base::Uuid& task_id);
+#endif
 
   // A callback for checking whether text fragments from a URL are on a page.
   void OnTextFinderLookupComplete(

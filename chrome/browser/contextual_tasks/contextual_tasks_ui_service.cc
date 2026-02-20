@@ -23,7 +23,6 @@
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,8 +32,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -60,6 +57,15 @@
 #include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/483442073): Remove TabStripModel and WebUi once we finished
+// migrating other functions off TabStripModel and find alternatives to access
+// BrowserWindowInterface in Android.
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#endif
 
 using sessions::SessionTabHelper;
 
@@ -273,11 +279,10 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
       session_handle->IsTabInContext(
           SessionTabHelper::IdForTab(source_tab->GetContents()))) {
     AssociateWebContentsToTask(source_tab->GetContents(), task.GetTaskId());
-    BrowserWindow* window = BrowserWindow::FindBrowserWindowWithWebContents(
-        source_tab->GetContents());
+    BrowserWindowInterface* window =
+        webui::GetBrowserWindowInterface(source_tab->GetContents());
     if (window) {
-      auto* controller = ContextualTasksPanelController::From(
-          window->AsBrowserView()->browser());
+      auto* controller = ContextualTasksPanelController::From(window);
       controller->Show();
       contextual_task_web_contents = controller->GetActiveWebContents();
     }
@@ -347,10 +352,14 @@ void ContextualTasksUiService::ShowOauthErrorDialogForWebContents(
     base::WeakPtr<content::WebContents> web_contents) {
   content::WebUI* webui = web_contents->GetWebUI();
   if (webui && webui->GetController()) {
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/483442073): Remove the ifdef block once ContextualTasksUI
+    // is available on Android.
     auto* ui_controller = webui->GetController()->GetAs<ContextualTasksUI>();
     if (ui_controller) {
       ui_controller->ShowOauthErrorDialog();
     }
+#endif
   }
 }
 
@@ -374,6 +383,9 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/483442073): Remove TabStripModel once we add missing APIs to
+// TabListInterface.
 tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
     const GURL& url,
     TabStripModel* tab_strip_model,
@@ -400,6 +412,7 @@ tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
   }
   return nullptr;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
@@ -417,7 +430,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   base::RecordAction(
       base::UserMetricsAction(ai_response_link_clicked_metric_name.c_str()));
 
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_));
@@ -433,14 +445,23 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   new_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
 
+#if !BUILDFLAG(IS_ANDROID)
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+#endif
+
   // If the source contents is the panel, open the AI page in a new foreground
   // tab.
   // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
   if (!tab) {
     // Attempt to focus an existing tab prior to creating a new one.
-    tabs::TabInterface* existing_tab =
-        MaybeFocusExistingOpenTab(url, tab_strip_model, task_id);
+    tabs::TabInterface* existing_tab = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/483442073): Remove TabStripModel once we add missing APIs
+    // to TabListInterface.
+    existing_tab = MaybeFocusExistingOpenTab(url, tab_strip_model, task_id);
+#endif
     if (!existing_tab) {
+#if !BUILDFLAG(IS_ANDROID)
       // Creates the Tab so session ID is created for the WebContents.
       auto tab_to_insert = std::make_unique<tabs::TabModel>(
           std::move(new_contents), tab_strip_model);
@@ -449,9 +470,12 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       }
       // Insert the WebContents after the current active.
       int active_tab_index = tab_strip_model->active_index();
+      // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
+      // APIs to TabListInterface.
       tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
                               ui::PAGE_TRANSITION_LINK,
                               AddTabTypes::ADD_ACTIVE);
+#endif
     } else {
       // If the tab was found, check if there was a text fragment to search for
       // in the URL. If so, highlight them to be shown to the user.
@@ -479,7 +503,10 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Get the index of the web contents.
+  // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
+  // APIs to TabListInterface.
   const int current_index = tab_strip_model->GetIndexOfTab(tab.get());
 
   // Open the linked page in a tab directly after this one.
@@ -488,9 +515,16 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   tab_strip_model->InsertWebContentsAt(current_index + 1,
                                        std::move(new_contents),
                                        AddTabTypes::ADD_NONE, tab->GetGroup());
+#endif
+
   AssociateWebContentsToTask(new_contents_ptr, task_id);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
+  // APIs to TabListInterface.
   tab_strip_model->ActivateTabAt(current_index + 1);
   CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
+#endif
 
   // Do not open side panel if kOpenSidePanelOnLinkClicked is not set.
   if (!kOpenSidePanelOnLinkClicked.Get()) {
@@ -498,16 +532,20 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   }
 
   // Detach the WebContents from tab.
+  content::WebContents* contextual_task_contents_ptr = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
+  // APIs to TabListInterface.
   std::unique_ptr<content::WebContents> contextual_task_contents =
       tab_strip_model->DetachWebContentsAtForInsertion(
           current_index, TabRemovedReason::kInsertedIntoSidePanel);
-  content::WebContents* contextual_task_contents_ptr =
-      contextual_task_contents.get();
+  contextual_task_contents_ptr = contextual_task_contents.get();
 
   // Transfer the contextual task contents into the side panel cache.
   ContextualTasksPanelController::From(browser.get())
       ->TransferWebContentsFromTab(task_id,
                                    std::move(contextual_task_contents));
+#endif
 
   // Open the side panel.
   ContextualTasksPanelController::From(browser.get())
@@ -546,6 +584,9 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
   if (!tab || !all_text_found) {
     // If the tab went away or the text wasn't found on the page, open a new
     // tab.
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
+    // APIs to TabListInterface.
     TabStripModel* tab_strip_model = browser->GetTabStripModel();
     std::unique_ptr<content::WebContents> new_contents =
         content::WebContents::Create(
@@ -563,6 +604,7 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
     int active_tab_index = tab_strip_model->active_index();
     tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
                             ui::PAGE_TRANSITION_LINK, AddTabTypes::ADD_ACTIVE);
+#endif
     return;
   }
 
