@@ -264,8 +264,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
   // Map the task ID to the intercepted url. This is done so the UI knows which
   // URL to load initially in the embedded frame.
-  GURL query_url = lens::AppendCommonSearchParametersToURL(
-      url, g_browser_process->GetApplicationLocale(), false);
+  GURL query_url =
+      lens::AppendCommonSearchParametersToURL(url, std::nullopt, false);
   task_id_to_creation_url_[task.GetTaskId()] = query_url;
 
   GURL ui_url = GetContextualTaskUrlForTask(task.GetTaskId());
@@ -639,8 +639,8 @@ void ContextualTasksUiService::OnNonThreadNavigationInTab(
 void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
     content::OpenURLParams url_params,
     ContextualTasksUIInterface* web_ui_interface) {
-  url_params.url = lens::AppendCommonSearchParametersToURL(
-      url_params.url, g_browser_process->GetApplicationLocale(), false);
+  url_params.url = lens::AppendCommonSearchParametersToURL(url_params.url,
+                                                           std::nullopt, false);
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 
@@ -786,7 +786,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           return false;
         }
       } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
-        if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
+        if (!lens::HasSidePanelSearchQueryParameters(url_params.url)) {
           ContextualTasksUIInterface* webui_controller =
               GetWebUiInterface(source_contents);
 
@@ -949,8 +949,7 @@ void ContextualTasksUiService::GetThreadUrlFromTaskId(
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
   GURL url = lens::AppendCommonSearchParametersToURL(
-      GURL(GetContextualTasksAiPageUrl()),
-      g_browser_process->GetApplicationLocale(), false);
+      GURL(GetContextualTasksAiPageUrl()), std::nullopt, false);
   return url;
 }
 

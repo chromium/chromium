@@ -205,7 +205,7 @@ std::map<std::string, std::string> GetParametersMapWithoutQuery(
 }
 
 std::map<std::string, std::string> GetCommonSearchParametersMap(
-    const std::string& country_code,
+    const std::optional<std::string>& country_code,
     bool use_dark_mode,
     bool is_side_panel) {
   std::map<std::string, std::string> params;
@@ -213,16 +213,19 @@ std::map<std::string, std::string> GetCommonSearchParametersMap(
                  is_side_panel
                      ? lens::features::GetLensOverlayGscQueryParamValue()
                      : ""});
-  params.insert({kLanguageCodeParameterKey, country_code});
+  if (country_code) {
+    params.insert({kLanguageCodeParameterKey, country_code.value()});
+  }
   params.insert({kDarkModeParameterKey, use_dark_mode
                                             ? kDarkModeParameterDarkValue
                                             : kDarkModeParameterLightValue});
   return params;
 }
 
-GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
-                                       const std::string& country_code,
-                                       bool use_dark_mode) {
+GURL AppendCommonSearchParametersToURL(
+    const GURL& url_to_modify,
+    const std::optional<std::string>& country_code,
+    bool use_dark_mode) {
   GURL new_url = url_to_modify;
   for (const auto& [key, value] :
        GetCommonSearchParametersMap(country_code, use_dark_mode,
@@ -232,15 +235,21 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
   return new_url;
 }
 
-bool HasCommonSearchQueryParameters(const GURL& url) {
+bool HasSidePanelSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;
   return net::GetValueForKeyInQuery(url, kChromeSidePanelParameterKey,
                                     &temp_output_string) &&
-         net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
-                                    &temp_output_string) &&
          net::GetValueForKeyInQuery(url, kDarkModeParameterKey,
                                     &temp_output_string);
+}
+
+bool HasCommonSearchQueryParameters(const GURL& url) {
+  // Needed to prevent memory leaks even though we do not use the output.
+  std::string unused_output_string;
+  return HasSidePanelSearchQueryParameters(url) &&
+         net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
+                                    &unused_output_string);
 }
 
 GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
