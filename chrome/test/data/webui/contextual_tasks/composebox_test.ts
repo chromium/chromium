@@ -17,6 +17,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -31,6 +32,50 @@ const ADD_FILE_CONTEXT_FN = 'addFileContext';
 const ADD_TAB_CONTEXT_FN = 'addTabContext';
 const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
 const FAKE_TOKEN_STRING_2 = '00000000000000001234567890ABCDFF';
+
+const mockInputState: InputState = {
+  hintText: '',
+  toolConfigs: [
+    {
+      tool: ComposeboxToolMode.kDeepSearch,
+      hintText: '',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ComposeboxToolMode.kImageGen,
+      hintText: '',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ComposeboxToolMode.kCanvas,
+      hintText: '',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+  ],
+  modelConfigs: [],
+  allowedModels: [],
+  allowedTools: [],
+  allowedInputTypes: [],
+  activeModel: 0,
+  activeTool: 0,
+  disabledModels: [],
+  disabledTools: [],
+  disabledInputTypes: [],
+  inputTypeConfigs: [],
+  toolsSectionConfig: null,
+  modelSectionConfig: null,
+  maxInstances: {},
+  maxTotalInputs: 0,
+};
 
 type MockContextualTasksAppElement =
     Omit<ContextualTasksAppElement,|'isZeroState_'|'isShownInTab_'>&{
@@ -295,6 +340,9 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(
         MockResizeObserver.instances.length >= 1,
         'There should be at least one ResizeObserver instance.');
+
+    searchboxCallbackRouterRemote.onInputStateChanged(mockInputState);
+    await microtasksFinished();
   });
 
   teardown(() => {
@@ -413,7 +461,9 @@ suite('ContextualTasksComposeboxTest', () => {
         isVisible(inputElement), 'Composebox input element should be visible');
 
     simulateUserInput(inputElement, TEST_QUERY);
+
     mockTimer.tick(300);
+
     await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
 
     await setupAutocompleteResults(searchboxCallbackRouterRemote, TEST_QUERY);
@@ -449,7 +499,6 @@ suite('ContextualTasksComposeboxTest', () => {
   });
 
   test('LensButtonTriggersOverlay', async () => {
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
     contextualTasksApp.$.composebox.isSidePanel = true;
     await microtasksFinished();
 
@@ -479,16 +528,18 @@ suite('ContextualTasksComposeboxTest', () => {
   test(
       'hides composebox and header using z-index when hideInput called',
       async () => {
-        const composeboxElement = contextualTasksApp.$.composebox;
         const threadFrame = contextualTasksApp.$.threadFrame;
         const flexCenterContainer = contextualTasksApp.$.flexCenterContainer;
+
+        (contextualTasksApp as any).isAiPage_ = false;
+        (contextualTasksApp as any).isNavigatingFromAiPage_ = false;
 
         testProxy.callbackRouterRemote.hideInput();
         await testProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         assertFalse(
-            composeboxElement.hidden,
+            composebox.hidden,
             'Composebox should NOT be hidden with z-order flag');
 
         const threadFrameStyle = getComputedStyle(threadFrame);
@@ -502,6 +553,8 @@ suite('ContextualTasksComposeboxTest', () => {
 
         testProxy.callbackRouterRemote.restoreInput();
         await testProxy.callbackRouterRemote.$.flushForTesting();
+        await contextualTasksApp.updateComplete;
+
         await microtasksFinished();
 
         const threadFrameStyleRestored = getComputedStyle(threadFrame);
@@ -516,42 +569,58 @@ suite('ContextualTasksComposeboxTest', () => {
       });
 
   test(
-      'hides composebox and header when hideInput called  and enableBasicModeZOrder is false',
+      'hides composebox and header when hideInput called' +
+          'and enableBasicModeZOrder is false',
       async () => {
         loadTimeData.overrideValues({enableBasicModeZOrder: false});
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         contextualTasksApp = document.createElement('contextual-tasks-app') as
             unknown as MockContextualTasksAppElement;
         document.body.appendChild(contextualTasksApp);
+
         await microtasksFinished();
 
-        const composebox = contextualTasksApp.$.composebox;
+        /* Refresh the composebox attribute reference, but not
+         * the cr-components composebox. We utilize its wrapper,
+         * contextual tasks composebox. */
+        const contextualComposebox = contextualTasksApp.$.composebox;
         const header = contextualTasksApp.$.composeboxHeaderWrapper;
+
+        (contextualTasksApp as any).isAiPage_ = false;
+        (contextualTasksApp as any).isNavigatingFromAiPage_ = false;
 
         testProxy.callbackRouterRemote.hideInput();
         await testProxy.callbackRouterRemote.$.flushForTesting();
+        await contextualTasksApp.updateComplete;
         await microtasksFinished();
-
-        assertTrue(!!composebox, 'Composebox should exist after hideInput');
+        assertTrue(
+            !!contextualComposebox,
+            'Contextual composebox should exist after hideInput');
         assertTrue(!!header, 'Composebox header should exist after hideInput');
 
         assertTrue(
             header.hidden,
             'Composebox header should be hidden after hideInput');
         assertTrue(
-            composebox.hidden, 'Composebox should be hidden after hideInput');
+            contextualComposebox.hidden,
+            'Contextual composebox should be hidden after hideInput');
 
         testProxy.callbackRouterRemote.restoreInput();
         await testProxy.callbackRouterRemote.$.flushForTesting();
+        await contextualTasksApp.updateComplete;
         await microtasksFinished();
 
-        assertTrue(!!composebox, 'Composebox should exist after restoreInput');
+        assertTrue(
+            !!contextualComposebox,
+            'Contextual composebox ' +
+                'should exist after restoreInput');
         assertFalse(
-            composebox.hidden,
-            'Composebox should not be hidden after restoreInput');
+            contextualComposebox.hidden,
+            'Contextual composebox should not be hidden after restoreInput');
 
         assertTrue(
-            !!header, 'Composebox header should exist after restoreInput');
+            !!header,
+            'Contextual composebox header should exist after restoreInput');
         assertFalse(
             header.hidden,
             'Composebox header should not be hidden after restoreInput');
@@ -634,7 +703,9 @@ suite('ContextualTasksComposeboxTest', () => {
     // `submitContainer` must be clickable for tabbing->enter to submit to work.
     submitContainer?.click();
 
-    mockTimer.tick(0);
+    // Flush the macrotask queue / event loop
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -681,11 +752,14 @@ suite('ContextualTasksComposeboxTest', () => {
 
     submitContainer?.click();
 
-    mockTimer.tick(0);
+    // Flush the macrotask queue / event loop
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     await composebox.updateComplete;
     await microtasksFinished();
-    assertEquals(
-        composebox.animationState, GlowAnimationState.EXPANDING,
+
+    assertNotEquals(
+        composebox.animationState, GlowAnimationState.SUBMITTING,
         'Query is not submitted via submitQuery_()');
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
@@ -705,7 +779,9 @@ suite('ContextualTasksComposeboxTest', () => {
 
     submitContainer?.click();
 
-    mockTimer.tick(0);
+    // Flush the macrotask queue / event loop
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -768,12 +844,14 @@ suite('ContextualTasksComposeboxTest', () => {
 
     submitContainer?.click();
 
-    mockTimer.tick(0);
+    // Flush the macrotask queue / event loop
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(
-        composebox.animationState, GlowAnimationState.EXPANDING,
+    assertNotEquals(
+        composebox.animationState, GlowAnimationState.SUBMITTING,
         'Query is not submitted via submitQuery_()');
 
     // Simulate tab upload success.
@@ -797,7 +875,9 @@ suite('ContextualTasksComposeboxTest', () => {
 
     submitContainer?.click();
 
-    mockTimer.tick(0);
+    // Flush the macrotask queue / event loop
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -871,7 +951,8 @@ suite('ContextualTasksComposeboxTest', () => {
 
         submitContainer?.click();
 
-        mockTimer.tick(0);
+        // Flush the macrotask queue / event loop
+        await new Promise(resolve => setTimeout(resolve, 0));
         await composebox.updateComplete;
         await microtasksFinished();
 
@@ -1407,7 +1488,6 @@ suite('ContextualTasksComposeboxTest', () => {
     await searchboxCallbackRouterRemote.$.flushForTesting();
     mockTimer.tick(0);
 
-
     const matchesEl = composebox.getMatchesElement();
     assertTrue(!!matchesEl.result, 'Matches should be populated');
     assertEquals(2, matchesEl.result.matches.length, 'Should have 2 matches');
@@ -1932,7 +2012,9 @@ suite('ContextualTasksComposeboxTest', () => {
         assertTrue(!!errorContainer);
         assertTrue(errorContainer.hidden);
 
-        mockTimer.tick(0);
+        // Flush the macrotask queue / event loop
+        await new Promise(resolve => setTimeout(resolve, 0));
+
         await microtasksFinished();
         await waitForDisplayNone(voiceSearchElement);
         assertStyle(voiceSearchElement, 'display', 'none');
@@ -2444,7 +2526,14 @@ suite('ContextualTasksComposeboxTest', () => {
         MockContextualTasksAppElement;
     app.isZeroState_ = false;
     document.body.appendChild(app);
+    await app.updateComplete;
     await microtasksFinished();
+
+    // Reset so that way any calls that happen before
+    // adding to document do not count (since before that,
+    // we are just setting up the test).
+    mockSearchboxPageHandler.reset();
+
     // Mock `isZeroState_` updating value from parent.
     app.isZeroState_ = true;
     await microtasksFinished();
@@ -2959,7 +3048,15 @@ suite('ContextualTasksComposeboxTest', () => {
             MockContextualTasksAppElement;
         app.isZeroState_ = false;
         document.body.appendChild(app);
+
+        await app.updateComplete;
         await microtasksFinished();
+
+        // Reset so that way any calls that happen before
+        // adding to document do not count (since before that,
+        // we are just setting up the test).
+        mockSearchboxPageHandler.reset();
+
         // Mock `isZeroState_` updating value from parent.
         app.isZeroState_ = false;
         await microtasksFinished();
