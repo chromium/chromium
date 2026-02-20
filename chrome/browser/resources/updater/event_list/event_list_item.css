@@ -49,11 +49,12 @@ cr-expand-button {
   gap: 8px;
   align-items: baseline;
   flex-grow: 1;
+  overflow: hidden;
+  min-width: 1000px;
 }
 
-.event-date {
-  flex-basis: 10%;
-  flex-shrink: 0;
+.event-date-column {
+  flex: 0 0 150px;
   font-size: 0.8em;
   color: var(--cr-secondary-text-color);
 }
@@ -63,8 +64,7 @@ cr-expand-button {
 }
 
 .event-scope-column {
-  flex-basis: 5%;
-  flex-shrink: 0;
+  flex: 0 0 50px;
 }
 
 .event-scope-column cr-icon {
@@ -72,8 +72,7 @@ cr-expand-button {
 }
 
 .event-type-column {
-  flex-basis: 10%;
-  flex-shrink: 0;
+  flex: 0 0 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -81,18 +80,17 @@ cr-expand-button {
 
 .event-type {
   display: block;
-  width: 75%;
   text-align: center;
   background-color: var(--event-type-background-color);
   border-radius: 12px;
   padding: 2px 6px;
   font-size: 0.9em;
   color: var(--cr-link-color);
+  overflow: hidden;
 }
 
 .event-description-icon-column {
-  flex-basis: 1%;
-  flex-shrink: 0;
+  flex: 0 0 16px;
  --iron-icon-width: 16px;
  --iron-icon-height: 16px;
 }
@@ -105,25 +103,24 @@ cr-expand-button {
   --iron-icon-fill-color: var(--error-icon-color);
 }
 
-.event-description {
-  flex-basis: 54%;
-  flex-shrink: 0;
+.event-description-column {
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.event-app {
+.event-app-column {
+  flex: 0 1 20%;
+  min-width: 150px;
   font-weight: bold;
-  flex-basis: 20%;
-  flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--cr-primary-text-color);
 }
 
-.event-app.internal-event {
+.event-app-column.internal-event {
   font-style: italic;
 }
 

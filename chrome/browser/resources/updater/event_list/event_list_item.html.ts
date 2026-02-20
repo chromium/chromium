@@ -17,10 +17,10 @@ ${this.event !== undefined ? html`
       @expanded-changed="${this.onExpandedChanged}">
     <div class="event-header">
       <div class="event-summary">
-        <div class="event-date">
+        <div class="event-date-column">
           ${this.formattedDate ?? ''}
         </div>
-        <span class="event-app${!this.appId ? ' internal-event' : ''}">
+        <span class="event-app-column${!this.appId ? ' internal-event' : ''}">
           ${this.appLabel ?? ''}
         </span>
         <div class="event-scope-column">
@@ -40,7 +40,7 @@ ${this.event !== undefined ? html`
             </cr-icon>
           ` : ''}
         </div>
-        <span class="event-description">
+        <span class="event-description-column">
           ${this.eventSummary ?? ''}
         </span>
       </div>
