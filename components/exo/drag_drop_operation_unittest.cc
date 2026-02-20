@@ -173,9 +173,13 @@ class DragDropOperationTestWithWebUITabStripTest
 
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
 
+  void TearDown() override {
+    mock_shell_delegate_ = nullptr;
+    DragDropOperationTest::TearDown();
+  }
+
  private:
-  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged> mock_shell_delegate_ =
-      nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>> mock_shell_delegate_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
