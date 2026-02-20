@@ -18,11 +18,18 @@ namespace actor::ui {
 
 // The source of a target on a page.
 enum class TargetSource {
-  kUnresolvableInApc = 0,  // The ToolRequest DomTarget couldn't be resolved
-                           // from the AnnotatedPageContent.
-  kToolRequest = 1,        // The target came directly from the ToolRequest.
-  kDerivedFromApc = 2,     // The target was derived from AnnotatedPageContent.
-  kMaxValue = kDerivedFromApc,
+  // The ToolRequest DomTarget couldn't be resolved from the
+  // AnnotatedPageContent.
+  kUnresolvableInApc = 0,
+  // The target came directly from the ToolRequest.
+  kToolRequest = 1,
+  // The target was derived from AnnotatedPageContent.
+  kDerivedFromApc = 2,
+  // The target couldn't be resolved from the renderer.
+  kUnresolvableFromRenderer = 3,
+  // The target came from the renderer validation step.
+  kRendererResolved = 4,
+  kMaxValue = kRendererResolved,
 };
 
 // STATUS: Dispatched when ActorTask state changes from Created to Acting.

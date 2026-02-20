@@ -138,4 +138,11 @@ void RecordGetDomNodeResult(GetDomNodeResult result) {
                                 result);
 }
 
+void RecordRendererResolvedTargetResult(
+    RendererResolvedTargetResult target_result) {
+  base::UmaHistogramEnumeration(
+      GetEventDispatcherHistogramName("RendererResolvedTargetResult"),
+      target_result);
+}
+
 }  // namespace actor::ui

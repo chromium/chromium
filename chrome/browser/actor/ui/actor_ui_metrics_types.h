@@ -31,6 +31,17 @@ enum class ComputedTargetResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ComputedTargetResult)
 
+// LINT.IfChange(RendererResolvedTargetResult)
+// These enum values are persisted to logs.  Do not renumber or reuse numeric
+// values.
+enum class RendererResolvedTargetResult {
+  kSuccess = 0,
+  kMissingActorTabData = 1,
+  kRendererResolvedTargetHasNoValue = 2,
+  kMaxValue = kRendererResolvedTargetHasNoValue,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:RendererResolvedTargetResult)
+
 // LINT.IfChange(ModelPageTargetType)
 // These enum values are persisted to logs.  Do not renumber or reuse numeric
 // values.

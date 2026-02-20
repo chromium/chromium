@@ -726,4 +726,23 @@ const EnterprisePolicyUrlChecker* NoEnterprisePolicyChecker() {
   return checker.get();
 }
 
+TestTabState::TestTabState(content::WebContents* web_contents) {
+  if (web_contents) {
+    ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents));
+  }
+  ON_CALL(tab, RegisterWillDetach)
+      .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
+        return will_detach_callback_list_.Add(std::move(callback));
+      });
+  ON_CALL(tab, GetUnownedUserDataHost())
+      .WillByDefault(::testing::ReturnRef(user_data_host));
+
+  tab_data = std::make_unique<ActorTabData>(&tab);
+}
+
+TestTabState::~TestTabState() {
+  will_detach_callback_list_.Notify(&tab,
+                                    tabs::TabInterface::DetachReason::kDelete);
+}
+
 }  // namespace actor

@@ -84,6 +84,10 @@ std::string DebugString(TargetSource source) {
       return "ToolRequest";
     case TargetSource::kDerivedFromApc:
       return "DerivedFromApc";
+    case TargetSource::kUnresolvableFromRenderer:
+      return "UnresolvableFromRenderer";
+    case TargetSource::kRendererResolved:
+      return "RendererResolved";
   }
 }
 

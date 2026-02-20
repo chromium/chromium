@@ -16,6 +16,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_tab_data.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -27,6 +29,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "ui/gfx/geometry/point.h"
@@ -292,6 +295,22 @@ class MockPolicyChecker : public EnterprisePolicyUrlChecker {
 // Returns a passthrough EnterprisePolicyUrlChecker tests can use to avoid
 // policy checks.
 const EnterprisePolicyUrlChecker* NoEnterprisePolicyChecker();
+
+// Helper struct for unit tests that require a mock TabInterface and its
+// associated ActorTabData.
+struct TestTabState {
+  explicit TestTabState(content::WebContents* web_contents = nullptr);
+  ~TestTabState();
+
+  using WillDetachCallbackList =
+      base::RepeatingCallbackList<void(tabs::TabInterface*,
+                                       tabs::TabInterface::DetachReason)>;
+  WillDetachCallbackList will_detach_callback_list_;
+
+  tabs::MockTabInterface tab;
+  ::ui::UnownedUserDataHost user_data_host;
+  std::unique_ptr<ActorTabData> tab_data;
+};
 
 }  // namespace actor
 
