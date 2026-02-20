@@ -129,7 +129,9 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     // TODO(crbug.com/467563819): Hide everything related to Autofill AI if the page is accessed via
     // deep-link.
     boolean isAutofillAiEnabled() {
+        // LINT.IfChange(AutofillEnabledCheckMediator)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
+        // LINT.ThenChange(AutofillEnabledCheckFragment)
     }
 
     boolean isEligibleToAutofillAi() {

@@ -38,6 +38,13 @@ found in the LICENSE file.
             android:summary="@string/settings_autofill_ai_to_consider_data_usage"
             android:icon="@drawable/ic_logo_googleg_24dp"
             app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:id="@+id/autofill_ai_authentication_switch"
+            android:key="autofill_ai_authentication_switch"
+            android:order="3"
+            android:title="@string/settings_autofill_ai_authentication_toggle_title"
+            android:summary="@string/settings_autofill_ai_authentication_toggle_subtitle" />
     </PreferenceCategory>
 
    <org.chromium.chrome.browser.autofill.options.RadioButtonGroupThirdPartyPreference
