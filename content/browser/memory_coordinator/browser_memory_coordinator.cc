@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
+#include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -40,6 +41,35 @@ BrowserMemoryCoordinator::~BrowserMemoryCoordinator() {
   g_instance = nullptr;
 }
 
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+void BrowserMemoryCoordinator::AddDiagnosticObserver(
+    MemoryCoordinatorPolicyManager::DiagnosticObserver* observer) {
+  policy_manager_.AddDiagnosticObserver(observer);
+  ++diagnostic_observer_count_;
+
+  // This is the first diagnostic observer added. Must enable diagnostics.
+  if (diagnostic_observer_count_ == 1u) {
+    for (auto& [id, host] : hosts_) {
+      host->EnableDiagnosticsReporting();
+    }
+  }
+}
+
+void BrowserMemoryCoordinator::RemoveDiagnosticObserver(
+    MemoryCoordinatorPolicyManager::DiagnosticObserver* observer) {
+  policy_manager_.RemoveDiagnosticObserver(observer);
+  CHECK_GT(diagnostic_observer_count_, 0u);
+  --diagnostic_observer_count_;
+
+  // This is the last diagnostic observer removed. Must disable diagnostics.
+  if (diagnostic_observer_count_ == 0u) {
+    for (auto& [id, host] : hosts_) {
+      host->DisableDiagnosticsReporting();
+    }
+  }
+}
+#endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+
 void BrowserMemoryCoordinator::Bind(
     ProcessType process_type,
     ChildProcessId child_process_id,
@@ -54,6 +84,12 @@ void BrowserMemoryCoordinator::Bind(
       policy_manager_, process_type, child_process_id, std::move(receiver),
       base::BindOnce(&BrowserMemoryCoordinator::OnHostDisconnected,
                      base::Unretained(this), child_process_id));
+
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+  if (diagnostic_observer_count_ > 0) {
+    it->second->EnableDiagnosticsReporting();
+  }
+#endif
 }
 
 void BrowserMemoryCoordinator::NotifyReleaseMemoryForTesting() {

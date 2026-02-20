@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+// The interface for receiving diagnostics-specific notifications from a child
+// process. This handles Child -> Browser communication.
+interface MemoryCoordinatorDiagnosticsHost {
+  // Notifies the host when the aggregate memory limit for a consumer group
+  // changes in the child process.
+  OnMemoryLimitChanged(string consumer_id, int32 memory_limit);
+};

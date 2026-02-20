@@ -12,6 +12,7 @@
 
 #include "base/memory_coordinator/traits.h"
 #include "base/test/task_environment.h"
+#include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -325,6 +326,19 @@ class MockObserverPolicy : public MemoryCoordinatorPolicy,
   using MemoryCoordinatorPolicy::manager;
 };
 
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+class MockDiagnosticObserver
+    : public MemoryCoordinatorPolicyManager::DiagnosticObserver {
+ public:
+  MOCK_METHOD(void,
+              OnMemoryLimitChanged,
+              (std::string_view consumer_id,
+               ChildProcessId child_process_id,
+               int memory_limit),
+              (override));
+};
+#endif
+
 }  // namespace
 
 class MemoryCoordinatorPolicyObserverTest
@@ -519,5 +533,39 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, MultipleConsumersSameChild) {
 
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
+
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       AddDiagnosticObserverNotifiesExistingLimits) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(42);
+  static constexpr char kConsumerId[] = "consumer";
+
+  policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kTestTraits1,
+                                        PROCESS_TYPE_RENDERER, kChildId);
+
+  MockPolicy policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+
+  // Set an initial limit.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 50, false})));
+  policy.manager().UpdateConsumers(&policy,
+                                   {{kChildId, {kConsumerId, 50, false}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Adding a diagnostic observer should immediately notify the current limit.
+  MockDiagnosticObserver observer;
+  EXPECT_CALL(observer, OnMemoryLimitChanged(kConsumerId, kChildId, 50));
+  policy_manager().AddDiagnosticObserver(&observer);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // Clean up.
+  policy_manager().RemoveDiagnosticObserver(&observer);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+#endif
 
 }  // namespace content

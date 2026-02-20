@@ -4,6 +4,9 @@
 
 module content.mojom;
 
+[EnableIf=ENABLE_MEMORY_COORDINATOR_INTERNALS]
+import "content/common/memory_coordinator/mojom/memory_coordinator_diagnostics.mojom";
+
 // Represents a memory update for a consumer.
 // TODO(pmonette): Hash the consumer ID to avoid serializing so many strings.
 struct MemoryConsumerUpdate {
@@ -13,10 +16,16 @@ struct MemoryConsumerUpdate {
 };
 
 // The interface for communicating with the MemoryCoordinator in a child
-// process.
+// process. This handles Browser -> Child communication.
 interface ChildMemoryCoordinator {
   // Notifies of multiple changes at once.
   UpdateConsumers(array<MemoryConsumerUpdate> updates);
+
+  // Enables diagnostics for this process. The child process should use the host
+  // to report state changes.
+  [EnableIf=ENABLE_MEMORY_COORDINATOR_INTERNALS]
+  EnableDiagnosticsReporting(
+      pending_remote<MemoryCoordinatorDiagnosticsHost> host);
 };
 
 // This struct directly corresponds to base::MemoryConsumerTraits, from which it
@@ -36,16 +45,14 @@ struct MemoryConsumerTraits {
 };
 
 // The interface for communicating with the MemoryConsumerRegistry that lives in
-// the browser process.
+// the browser process. This handles Child -> Browser communication.
 interface ChildMemoryConsumerRegistryHost {
   // Binds the ChildMemoryCoordinator interface for the process associated with
   // this host.
   BindCoordinator(pending_remote<ChildMemoryCoordinator> coordinator);
 
   // Registers a MemoryConsumer with the browser-side registry.
-  Register(
-      string consumer_id,
-      MemoryConsumerTraits traits);
+  Register(string consumer_id, MemoryConsumerTraits traits);
 
   // Unregisters a MemoryConsumer with the browser-side registry.
   Unregister(string consumer_id);

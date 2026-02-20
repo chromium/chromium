@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/memory_coordinator/traits.h"
+#include "content/common/buildflags.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 
@@ -34,6 +35,14 @@ class MemoryConsumerGroupController {
                                     ChildProcessId child_process_id) = 0;
   virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
                                       ChildProcessId child_process_id) = 0;
+
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+  // Called when the aggregate memory limit for a consumer group changes in the
+  // child process.
+  virtual void OnMemoryLimitChanged(std::string_view consumer_id,
+                                    ChildProcessId child_process_id,
+                                    int memory_limit) = 0;
+#endif
 };
 
 }  // namespace content

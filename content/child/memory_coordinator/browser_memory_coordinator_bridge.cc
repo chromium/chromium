@@ -56,6 +56,34 @@ void BrowserMemoryCoordinatorBridge::UpdateConsumers(
   manager().UpdateConsumers(this, std::move(updates));
 }
 
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+void BrowserMemoryCoordinatorBridge::EnableDiagnosticsReporting(
+    mojo::PendingRemote<mojom::MemoryCoordinatorDiagnosticsHost> host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!diagnostics_host_.is_bound());
+
+  diagnostics_host_.Bind(std::move(host));
+  // The use of Unretained is safe here because `this` owns the remote and will
+  // always outlive it.
+  diagnostics_host_.set_disconnect_handler(base::BindOnce(
+      &BrowserMemoryCoordinatorBridge::OnReportingHostDisconnected,
+      base::Unretained(this)));
+
+  manager().AddDiagnosticObserver(this);
+}
+
+void BrowserMemoryCoordinatorBridge::OnMemoryLimitChanged(
+    std::string_view consumer_id,
+    ChildProcessId child_process_id,
+    int memory_limit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (diagnostics_host_) {
+    diagnostics_host_->OnMemoryLimitChanged(std::string(consumer_id),
+                                            memory_limit);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+
 mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
 BrowserMemoryCoordinatorBridge::BindAndPassReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,5 +101,13 @@ BrowserMemoryCoordinatorBridge::BindAndPassReceiver() {
 
   return pending_receiver;
 }
+
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+void BrowserMemoryCoordinatorBridge::OnReportingHostDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  diagnostics_host_.reset();
+  manager().RemoveDiagnosticObserver(this);
+}
+#endif
 
 }  // namespace content

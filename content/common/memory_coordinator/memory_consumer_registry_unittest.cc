@@ -14,6 +14,7 @@
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/test/task_environment.h"
+#include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,6 +76,12 @@ class MemoryConsumerRegistryTest : public Test,
              entry.child_process_id == child_process_id;
     });
   }
+
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+  void OnMemoryLimitChanged(std::string_view consumer_id,
+                            ChildProcessId child_process_id,
+                            int memory_limit) override {}
+#endif
 
  private:
   base::test::TaskEnvironment task_environment_;

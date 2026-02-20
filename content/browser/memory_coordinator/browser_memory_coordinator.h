@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
@@ -38,6 +39,15 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
 
   MemoryConsumerRegistry& registry() { return registry_.Get(); }
 
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+  // Adds/removes a diagnostic observer. When the first observer is added,
+  // diagnostic reporting is enabled in all child processes.
+  void AddDiagnosticObserver(
+      MemoryCoordinatorPolicyManager::DiagnosticObserver* observer);
+  void RemoveDiagnosticObserver(
+      MemoryCoordinatorPolicyManager::DiagnosticObserver* observer);
+#endif
+
   // Connects a MemoryConsumerRegistry in a child process with the browser
   // process.
   void Bind(
@@ -61,6 +71,10 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
 
   MemoryPressureListenerPolicy memory_pressure_listener_policy_{
       policy_manager_};
+
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+  size_t diagnostic_observer_count_ = 0u;
+#endif
 };
 
 }  // namespace content
