@@ -28,7 +28,8 @@ void FakePageTimingSender::SendTiming(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
+    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+    std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, event_timings,
                            subresource_load_metrics, soft_navigation_metrics);

@@ -164,7 +164,8 @@ class FakePageTimingSender : public PageTimingSender {
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override;
+      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override;
 
   void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;

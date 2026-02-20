@@ -249,6 +249,12 @@ void PageTimingMetricsSender::UpdateResourceMetadata(
   it->second->SetIsMainFrameResource(is_main_frame_resource);
 }
 
+void PageTimingMetricsSender::UpdateCustomUserTimings(
+    mojom::CustomUserTimingMarkPtr custom_timing) {
+  custom_user_timings_.push_back(std::move(custom_timing));
+  EnsureSendTimer();
+}
+
 void PageTimingMetricsSender::SetUpDroppedFramesReporting(
     base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) {
   sender_->SetUpDroppedFramesReporting(std::move(shared_memory_dropped_frames));
@@ -351,7 +357,8 @@ void PageTimingMetricsSender::SendNow() {
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(event_timings_), subresource_load_metrics_,
-                      soft_navigation_metrics_);
+                      soft_navigation_metrics_,
+                      std::move(custom_user_timings_));
 
   event_timings_.clear();
   new_features_.clear();

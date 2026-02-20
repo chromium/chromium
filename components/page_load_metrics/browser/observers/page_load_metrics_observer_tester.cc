@@ -258,7 +258,8 @@ void PageLoadMetricsObserverTester::SimulatePageLoadTimingUpdate(
       rfh, timing.Clone(), metadata.Clone(), new_features,
       std::vector<mojom::ResourceDataUpdatePtr>(), render_data.Clone(),
       cpu_timing.Clone(), std::move(event_timings_clone),
-      subresource_load_metrics, soft_navigation_metrics.Clone());
+      subresource_load_metrics, soft_navigation_metrics.Clone(),
+      std::vector<mojom::CustomUserTimingMarkPtr>());
   // If sending the timing update caused the PageLoadMetricsUpdateDispatcher to
   // schedule a buffering timer, then fire it now so metrics are dispatched to
   // observers.
@@ -284,7 +285,8 @@ void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
       std::vector<blink::UseCounterFeature>(), resources,
       mojom::FrameRenderDataUpdatePtr(std::in_place),
       mojom::CpuTimingPtr(std::in_place), std::vector<mojom::EventTimingPtr>(),
-      std::nullopt, CreateSoftNavigationMetrics());
+      std::nullopt, CreateSoftNavigationMetrics(),
+      std::vector<mojom::CustomUserTimingMarkPtr>());
 }
 
 void PageLoadMetricsObserverTester::SimulateLoadedResource(

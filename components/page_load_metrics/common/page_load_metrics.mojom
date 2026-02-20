@@ -587,7 +587,8 @@ interface PageLoadMetrics {
                CpuTiming cpu_load_timing,
                array<EventTiming> event_timings,
                SubresourceLoadMetrics? subresource_load_metrics,
-               SoftNavigationMetrics soft_navigation_metrics);
+               SoftNavigationMetrics soft_navigation_metrics,
+               array<CustomUserTimingMark> custom_user_timings);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structures is defined in

@@ -110,6 +110,8 @@ class PageTimingMetricsSender {
 
   void UpdateResourceMetadata(int resource_id, bool is_main_frame_resource);
 
+  void UpdateCustomUserTimings(mojom::CustomUserTimingMarkPtr);
+
   void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames);
 
@@ -154,6 +156,8 @@ class PageTimingMetricsSender {
   // browser.
   std::vector<blink::UseCounterFeature> new_features_;
   mojom::FrameRenderDataUpdate render_data_;
+
+  std::vector<mojom::CustomUserTimingMarkPtr> custom_user_timings_;
 
   blink::UseCounterFeatureTracker feature_tracker_;
 

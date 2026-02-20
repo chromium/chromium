@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/page_load_metrics/common/features.h"
 #include "components/page_load_metrics/renderer/features.h"
 #include "components/page_load_metrics/renderer/page_timing_metrics_sender.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
@@ -68,13 +69,15 @@ class MojoPageTimingSender : public PageTimingSender {
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override {
+      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(event_timings),
-        subresource_load_metrics, soft_navigation_metrics->Clone());
+        subresource_load_metrics, soft_navigation_metrics->Clone(),
+        std::move(user_timings));
   }
 
   void SetUpDroppedFramesReporting(
@@ -584,8 +587,14 @@ void MetricsRenderFrameObserver::SendMetrics() {
 
   mojom::CustomUserTimingMarkPtr user_timing = GetCustomUserTimingMark();
   if (user_timing) {
-    page_timing_metrics_sender_->SendCustomUserTimingMark(
-        std::move(user_timing));
+    if (base::FeatureList::IsEnabled(
+            features::kThrottleSendingCustomUserTimings)) {
+      page_timing_metrics_sender_->UpdateCustomUserTimings(
+          std::move(user_timing));
+    } else {
+      page_timing_metrics_sender_->SendCustomUserTimingMark(
+          std::move(user_timing));
+    }
   }
 }
 

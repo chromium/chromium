@@ -1179,13 +1179,15 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
+    std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
   if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(render_frame_host)) {
     tracker->UpdateMetrics(
         render_frame_host, std::move(timing), std::move(metadata),
         std::move(new_features), resources, std::move(render_data),
         std::move(cpu_timing), std::move(event_timings),
         subresource_load_metrics, std::move(soft_navigation_metrics));
+    tracker->AddCustomUserTimings(std::move(user_timings));
   }
 }
 
@@ -1227,13 +1229,15 @@ void MetricsWebContentsObserver::UpdateTiming(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
+    std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),
                   new_features, resources, std::move(render_data),
                   std::move(cpu_timing), std::move(event_timings),
-                  subresource_load_metrics, std::move(soft_navigation_metrics));
+                  subresource_load_metrics, std::move(soft_navigation_metrics),
+                  std::move(user_timings));
 }
 
 void MetricsWebContentsObserver::AddCustomUserTiming(

@@ -184,7 +184,8 @@ class MetricsWebContentsObserver
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      mojom::SoftNavigationMetricsPtr);
+      mojom::SoftNavigationMetricsPtr,
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings);
 
   void OnCustomUserTimingUpdated(content::RenderFrameHost* rfh,
                                  mojom::CustomUserTimingMarkPtr custom_timing);
@@ -265,7 +266,8 @@ class MetricsWebContentsObserver
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      mojom::SoftNavigationMetricsPtr soft_navigation_metrics) override;
+      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override;
   void AddCustomUserTiming(
       mojom::CustomUserTimingMarkPtr custom_timing) override;
 
