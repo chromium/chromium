@@ -970,6 +970,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                              base::Time());
 
   registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
+  registry->RegisterIntegerPref(prefs::kGenAiEnabledByPolicy, 0);
   registry->RegisterBooleanPref(prefs::kAIHubEligibilityTriggered, false);
 
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeUrlBlocklist);

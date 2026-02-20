@@ -13,6 +13,7 @@
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -70,21 +71,20 @@ bool BwgService::IsProfileEligibleForGemini() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
-  // kGeminiEnabledByPolicy is 0 for allowed, 1 for disallowed.
-  const bool disabled_by_enterprise =
-      pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1;
+  const bool allowed_by_enterprise =
+      gemini::GeminiAllowedByPolicy(pref_service_);
   const bool authenticated =
       !account_info.IsEmpty() &&
       identity_manager_
               ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
               .state() == GoogleServiceAuthError::NONE;
-  const bool is_eligible = can_use_model_execution && !disabled_by_enterprise &&
+  const bool is_eligible = can_use_model_execution && allowed_by_enterprise &&
                            !is_disabled_by_gemini_policy_.value_or(false) &&
                            authenticated && !profile_->IsOffTheRecord();
   const gemini::IneligibilityReasons ineligibility_reasons =
       gemini::IneligibilityReasons()
           .set_workspace(is_disabled_by_gemini_policy_.value_or(false))
-          .set_chrome_enterprise(disabled_by_enterprise)
+          .set_chrome_enterprise(!allowed_by_enterprise)
           .set_account_capability(!can_use_model_execution)
           .set_authentication(!authenticated);
   RecordGeminiIneligibilityReasons(ineligibility_reasons);

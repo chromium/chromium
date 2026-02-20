@@ -83,6 +83,21 @@ enum class InputPlateAttachmentOption {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiInputPlateAttachmentOption)
 
+// Settings for Gemini integration.
+enum class SettingsPolicy {
+  kAllowed = 0,
+  kNotAllowed = 1,
+};
+
+// Default policy values for generative AI features.
+enum class GenAiDefaultSettingsPolicy {
+  //  Allow GenAI features and improve AI models by using relevant data.
+  kAllowedImprovingModels = 0,
+  //  Allow GenAI features without improving AI models.
+  kAllowedWithoutImprovingModels = 1,
+  // Do not allow GenAI features.
+  kNotAllowed = 2,
+};
 }  // namespace gemini
 
 // BWG UI sheet detent identifier.
