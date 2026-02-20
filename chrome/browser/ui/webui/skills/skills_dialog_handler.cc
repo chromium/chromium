@@ -74,7 +74,9 @@ void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
     LOG(WARNING) << "SkillsPageHandler: SkillsService is null.";
     return;
   }
-  RecordSkillsAction(skills::SkillsActions::kSavedSkill);
+  // TODO(crbug.com/477385216): Update to use an enum for creation mode.
+  RecordSkillsDialogAction(SkillsDialogAction::kSaved,
+                           /*is_edit_mode=*/!initial_skill_.id.empty());
   if (!delegate_) {
     LOG(WARNING) << "SkillsPageHandler: delegate is null.";
     return;
@@ -85,7 +87,9 @@ void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
 }
 
 void SkillsDialogHandler::CloseDialog() {
-  RecordSkillsAction(skills::SkillsActions::kClickedCancelInCreationDialog);
+  // TODO(crbug.com/477385216): Update to use an enum for creation mode.
+  RecordSkillsDialogAction(SkillsDialogAction::kCancelled,
+                           /*is_edit_mode=*/!initial_skill_.id.empty());
   if (delegate_) {
     delegate_->CloseDialog();
   }
@@ -134,7 +138,9 @@ void SkillsDialogHandler::OnRefineSkillResponse(
 void SkillsDialogHandler::RefineSkill(
     const skills::Skill& skill,
     DialogHandler::RefineSkillCallback callback) {
-  RecordSkillsAction(skills::SkillsActions::kClickedRefineInCreationDialog);
+  // TODO(crbug.com/477385216): Update to use an enum for creation mode.
+  RecordSkillsDialogAction(SkillsDialogAction::kRefined,
+                           /*is_edit_mode=*/!initial_skill_.id.empty());
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
 

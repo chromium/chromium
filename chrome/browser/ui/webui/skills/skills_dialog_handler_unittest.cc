@@ -125,9 +125,8 @@ TEST_F(SkillsDialogHandlerTest, CloseDialog_LogsCancelled) {
   EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
   handler_->CloseDialog();
 
-  histogram_tester_.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kClickedCancelInCreationDialog,
-      1);
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kCancelled, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, RefineSkill_LogsMetric) {
@@ -138,24 +137,22 @@ TEST_F(SkillsDialogHandlerTest, RefineSkill_LogsMetric) {
 
   handler_->RefineSkill(std::move(skill), callback.Get());
 
-  histogram_tester_.ExpectBucketCount(
-      "Skills.Actions", skills::SkillsActions::kClickedRefineInCreationDialog,
-      1);
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kRefined, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSaved) {
   skills::Skill skill;
   skill.name = "Test Skill";
   skill.prompt = "Test Prompt";
-
   EXPECT_CALL(mock_delegate_, OnSkillSaved("generated_fake_id")).Times(1);
   EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
 
   handler_->SubmitSkill(skill);
 
   // Metric Check
-  histogram_tester_.ExpectBucketCount("Skills.Actions",
-                                      skills::SkillsActions::kSavedSkill, 1);
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
+                                      SkillsDialogAction::kSaved, 1);
 }
 
 // Tests that GetInitialSkill returns the skill passed in during construction.

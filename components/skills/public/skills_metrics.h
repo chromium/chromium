@@ -9,22 +9,32 @@ namespace skills {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(SkillsActions)
-enum class SkillsActions {
-  kSavedSkill = 0,
-  kClickedTryItNow = 1,
-  kUsed1stPartySkill = 2,
-  kUsedUserCreatedSkill = 3,
-  kOpenedCreationDialog = 4,
-  kClickedCancelInCreationDialog = 5,
-  kClickedRefineInCreationDialog = 6,
-  kOpenedManageSkillsPage = 7,
-  kMaxValue = kOpenedManageSkillsPage,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsActions)
 
-// Records a discrete user action (e.g., clicking a button).
-void RecordSkillsAction(SkillsActions action);
+// LINT.IfChange(SkillsDialogAction)
+enum class SkillsDialogAction {
+  kOpened = 0,
+  kSaved = 1,
+  kCancelled = 2,
+  kRefined = 3,
+  kMaxValue = kRefined,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsDialogAction)
+
+// LINT.IfChange(SkillsInvokeAction)
+enum class SkillsInvokeAction {
+  kFirstParty = 0,
+  kUserCreated = 1,
+  kDerivedFromFirstParty = 2,
+  kMaxValue = kDerivedFromFirstParty,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsInvokeAction)
+
+// TODO(crbug.com/477385216): Update to use an enum for creation mode.
+// Records user interactions within the Skills Creation or Edit dialogs
+void RecordSkillsDialogAction(SkillsDialogAction action, bool is_edit_mode);
+
+// Records the execution of a skill and its type.
+void RecordSkillsInvokeAction(SkillsInvokeAction action);
 
 }  // namespace skills
 

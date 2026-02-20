@@ -8,8 +8,16 @@
 
 namespace skills {
 
-void RecordSkillsAction(SkillsActions action) {
-  base::UmaHistogramEnumeration("Skills.Actions", action);
+void RecordSkillsDialogAction(SkillsDialogAction action, bool is_edit_mode) {
+  if (is_edit_mode) {
+    base::UmaHistogramEnumeration("Skills.Dialog.Edit.Action", action);
+  } else {
+    base::UmaHistogramEnumeration("Skills.Dialog.Creation.Action", action);
+  }
+}
+
+void RecordSkillsInvokeAction(SkillsInvokeAction action) {
+  base::UmaHistogramEnumeration("Skills.Invoke.Action", action);
 }
 
 }  // namespace skills
