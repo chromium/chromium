@@ -564,11 +564,11 @@ class StringPolicyProto;
 
 namespace em = enterprise_management;
 
-namespace policy {
-
-namespace internal {
+namespace policy::internal {
 struct SchemaData;
 }
+
+namespace policy {
 %(windows_only_part)s
 #if BUILDFLAG(IS_CHROMEOS)
 // Sets default profile policies values for enterprise users.
@@ -585,7 +585,7 @@ const PolicyDetails* GetChromePolicyDetails(
 const std::string& policy);
 
 // Returns the schema data of the Chrome policy schema.
-const internal::SchemaData* GetChromeSchemaData();
+const policy::internal::SchemaData* GetChromeSchemaData();
 
 // Key names for the policy settings.
 namespace key {
@@ -691,8 +691,8 @@ constexpr int64_t kDevicePolicyExternalDataResourceCacheSize = 0;
 '''
 
 EXPECTED_POLICY_CONSTANTS_HEADER_MUTABLE = '''
-#ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_H_
-#define COMPONENTS_POLICY_POLICY_CONSTANTS_H_
+#ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_MUTABLE_H_
+#define COMPONENTS_POLICY_POLICY_CONSTANTS_MUTABLE_H_
 
 #include <cstdint>
 #include <string>
@@ -710,11 +710,11 @@ class StringPolicyProto;
 
 namespace em = enterprise_management;
 
-namespace policy {
-
-namespace internal {
+namespace policy::internal {
 struct SchemaData;
 }
+
+namespace policy::test {
 %(windows_only_part)s
 #if BUILDFLAG(IS_CHROMEOS)
 // Sets default profile policies values for enterprise users.
@@ -731,7 +731,7 @@ const PolicyDetails* GetChromePolicyDetails(
 const std::string& policy);
 
 // Returns the schema data of the Chrome policy schema.
-const internal::SchemaData* GetChromeSchemaData();
+const policy::internal::SchemaData* GetChromeSchemaData();
 
 // Key names for the policy settings.
 namespace key {
@@ -839,9 +839,9 @@ extern const std::array<StringListPolicyAccess, 0> kStringListPolicyAccess;
 
 constexpr int64_t kDevicePolicyExternalDataResourceCacheSize = 0;
 
-}  // namespace policy
+}  // namespace policy::test
 
-#endif  // COMPONENTS_POLICY_POLICY_CONSTANTS_H_
+#endif  // COMPONENTS_POLICY_POLICY_CONSTANTS_MUTABLE_H_
 '''
 
 POLICY_CONSTANTS_HEADER_WIN_ONLY_PART = '''
@@ -1249,7 +1249,9 @@ EXPECTED_POLICY_CONSTANTS_SOURCE_MUTABLE = '''\
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/risk_tag.h"
 
-namespace policy {
+namespace policy::test {
+
+namespace internal = ::policy::internal;
 
 [[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
 // is_deprecated is_future scope id max_external_data_size, risk tags
@@ -1675,7 +1677,7 @@ const std::array<StringListPolicyAccess, 0> kStringListPolicyAccess {{
 }};
 
 
-}  // namespace policy
+}  // namespace policy::test
 '''
 
 POLICY_CONSTANTS_SOURCE_WIN_ONLY_PART = '''
