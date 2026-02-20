@@ -77,7 +77,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
     ExecutionContext* execution_context) {
   const String& name = options->name();
   const String& value = options->value();
-  if (name.empty() && value.Contains('=')) {
+  if (name.empty() && value.contains('=')) {
     exception_state.ThrowTypeError(
         "Cookie value cannot contain '=' if the name is empty");
     return nullptr;
@@ -87,7 +87,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
         "Cookie name and value both cannot be empty");
     return nullptr;
   }
-  if (name.Contains('=')) {
+  if (name.contains('=')) {
     exception_state.ThrowTypeError("Cookie name cannot contain '='");
     return nullptr;
   }

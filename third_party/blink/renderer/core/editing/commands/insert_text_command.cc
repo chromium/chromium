@@ -105,8 +105,9 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   if (!EndingSelection().IsRange())
     return false;
 
-  if (text.Contains('\t') || text.Contains(' ') || text.Contains('\n'))
+  if (text.contains('\t') || text.contains(' ') || text.contains('\n')) {
     return false;
+  }
 
   // Also if the text is surrounded by a hyperlink and all the contents of the
   // link are selected, then we shouldn't be retaining the link with just one

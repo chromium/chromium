@@ -260,7 +260,7 @@ class WTF_EXPORT String {
     return impl_ ? impl_->FindIgnoringAsciiCase(value, start) : kNotFound;
   }
 
-  bool Contains(char c) const { return find(c) != kNotFound; }
+  bool contains(char c) const { return find(c) != kNotFound; }
   bool contains(const StringView& value) const { return find(value) != npos; }
 
   // Find the last instance of a single character or string.

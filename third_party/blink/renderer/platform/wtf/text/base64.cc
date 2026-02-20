@@ -123,8 +123,9 @@ bool Base64Decode(const StringView& in,
 }
 
 bool Base64UnpaddedUrlDecode(const String& in, Vector<uint8_t>& out) {
-  if (in.Contains('+') || in.Contains('/') || in.Contains('='))
+  if (in.contains('+') || in.contains('/') || in.contains('=')) {
     return false;
+  }
 
   return Base64Decode(NormalizeToBase64(in), out);
 }

@@ -476,7 +476,7 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
     SetReferrerPolicy(referrer_policy);
   } else {
     String error_reason;
-    if (source == kPolicySourceMetaTag && policy.Contains(',')) {
+    if (source == kPolicySourceMetaTag && policy.contains(',')) {
       // Only a single token is permitted for Meta-specified policies
       // (https://crbug.com/1093914).
       error_reason =

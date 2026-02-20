@@ -1007,7 +1007,7 @@ void HTMLElement::setInnerText(const String& text) {
   // the function, we can guarantee that no exceptions will be thrown.
   EventQueueScope delay_mutation_events;
 
-  if (!text.Contains('\n') && !text.Contains('\r')) {
+  if (!text.contains('\n') && !text.contains('\r')) {
     if (text.empty()) {
       RemoveChildren();
       return;
@@ -1036,10 +1036,11 @@ void HTMLElement::setOuterText(const String& text,
   Node* new_child = nullptr;
 
   // Convert text to fragment with <br> tags instead of linebreaks if needed.
-  if (text.Contains('\r') || text.Contains('\n'))
+  if (text.contains('\r') || text.contains('\n')) {
     new_child = TextToFragment(text, exception_state);
-  else
+  } else {
     new_child = Text::Create(GetDocument(), text);
+  }
 
   if (exception_state.HadException())
     return;

@@ -1260,7 +1260,7 @@ bool IsTabHTMLSpanElement(const Node* node) {
   if (!first_child_text_node) {
     return false;
   }
-  if (!first_child_text_node->data().Contains('\t')) {
+  if (!first_child_text_node->data().contains('\t')) {
     return false;
   }
   // TODO(editing-dev): Hoist the call of UpdateStyleAndLayoutTree to callers.

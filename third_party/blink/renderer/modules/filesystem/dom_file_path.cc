@@ -136,8 +136,9 @@ bool DOMFilePath::IsValidName(const String& name) {
   if (name.empty())
     return true;
   // '/' is not allowed in name.
-  if (name.Contains('/'))
+  if (name.contains('/')) {
     return false;
+  }
   return IsValidPath(name);
 }
 

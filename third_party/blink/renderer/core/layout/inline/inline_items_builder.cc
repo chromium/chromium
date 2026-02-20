@@ -472,7 +472,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     // must go through the full pipeline to ensure that we exit and enter the
     // correct bidi contexts the re-layout.
     if (bidi_context_.size() || layout_text->HasBidiControlInlineItems()) {
-      if (layout_text->TransformedText().Contains(uchar::kLineFeed)) {
+      if (layout_text->TransformedText().contains(uchar::kLineFeed)) {
         return false;
       }
     }
