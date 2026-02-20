@@ -325,7 +325,7 @@ TEST_F(OmniboxNextAimEligibilityTest, ShouldShowAimContextMenuOption) {
   std::vector<TestCase> test_cases = {
       // If either AIM feature is enabled, then menu option should be shown.
       // Entry point is enabled:
-      {true, false, true, false, "", true},
+      {true, false, true, false, "below_results", true},
       // Context button is enabled:
       {true, false, false, true, "below_results", true},
       // If the user is AIM ineligible, then the menu option should be hidden

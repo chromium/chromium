@@ -37,7 +37,6 @@ BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
 
 constexpr base::FeatureParam<AddContextButtonVariant>::Option
     kAddContextButtonVariantOptions[] = {
-        {AddContextButtonVariant::kNone, "none"},
         {AddContextButtonVariant::kBelowResults, "below_results"},
         {AddContextButtonVariant::kAboveResults, "above_results"},
         {AddContextButtonVariant::kInline, "inline"}};
@@ -46,7 +45,7 @@ constexpr base::FeatureParam<AddContextButtonVariant>::Option
 const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam{
         &internal::kWebUIOmniboxAimPopup, "Omnibox_AddContextButtonVariant",
-        AddContextButtonVariant::kNone, &kAddContextButtonVariantOptions};
+        AddContextButtonVariant::kBelowResults, &kAddContextButtonVariantOptions};
 // When enabled, clicking aim button in omnibox always navigates directly to
 // g.com/aimode, e.g. instead of opening the AI Mode popup
 // (`omnibox::internal::kWebUIOmniboxAimPopup`).
@@ -183,9 +182,7 @@ bool ShouldShowAimContextMenuOption(Profile* profile) {
   }
 
   const bool is_aim_context_entrypoint_enabled =
-      omnibox::IsAimPopupEnabled(profile) &&
-      (omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() !=
-       omnibox::AddContextButtonVariant::kNone);
+      omnibox::IsAimPopupEnabled(profile);
 
   return is_aim_context_entrypoint_enabled;
 }

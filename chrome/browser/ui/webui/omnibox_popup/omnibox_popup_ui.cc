@@ -44,8 +44,6 @@ using AddContextButtonVariant = omnibox::AddContextButtonVariant;
 std::string_view AddContextButtonVariantToSearchboxLayoutMode(
     AddContextButtonVariant variant) {
   switch (variant) {
-    case AddContextButtonVariant::kNone:
-      return "";
     case AddContextButtonVariant::kBelowResults:
       return "TallBottomContext";
     case AddContextButtonVariant::kAboveResults:
