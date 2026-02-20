@@ -38,18 +38,22 @@ class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback,
   // endpoints.
   void SetDisconnectHandler(base::OnceClosure handler);
 
-  // Starts the capturer, creating new Mojo endpoints to return to the network
-  // process.
-  mojom::CreateVideoCapturerResultPtr Start();
+  // Creates new Mojo endpoints to return to the network process.
+  mojom::CreateVideoCapturerResultPtr CreateMojoEndpoints();
 
   // mojom::VideoCapturer implementation.
-  void CaptureFrame() override;
+  void Start() override;
   void SetComposeEnabled(bool enabled) override;
+  void SetMaxFrameRate(uint32_t max_frame_rate) override;
+  void Pause(bool pause) override;
+  void BoostCaptureRate(base::TimeDelta capture_interval,
+                        base::TimeDelta duration) override;
 
   void SetMouseCursor(std::unique_ptr<webrtc::MouseCursor> mouse_cursor);
   void SetMouseCursorPosition(const webrtc::DesktopVector& position);
 
   // webrtc::DesktopCapturer::Callback implementation.
+  void OnFrameCaptureStart() override;
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 

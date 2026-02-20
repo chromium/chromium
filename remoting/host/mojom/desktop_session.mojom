@@ -7,6 +7,7 @@ module remoting.mojom;
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "remoting/host/mojom/keyboard_layout.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -474,14 +475,22 @@ struct CreateVideoCapturerResult {
 // The remote for this interface is owned in the low-privilege network process
 // and the receiver is bound in the high-privilege desktop integration process.
 interface VideoCapturer {
-  // Requests that a new frame be captured. Video-frames are returned via
-  // VideoCapturerEventHandler (rather than in response to this CaptureFrame()
-  // request). This ensures the frames are correctly ordered relative to the
-  // shared-memory events.
-  CaptureFrame();
+  // Starts capturing. Video-frames are returned via VideoCapturerEventHandler,
+  // ordered relative to the shared-memory events.
+  Start();
 
   // Indicates whether the mouse cursor should be embedded in the video frame.
   SetComposeEnabled(bool enabled);
+
+  // Sets the maximum frame rate for the capturer.
+  SetMaxFrameRate(uint32 max_frame_rate);
+
+  // Pauses or unpauses the capturer.
+  Pause(bool pause);
+
+  // Temporarily boosts the capture rate.
+  BoostCaptureRate(mojo_base.mojom.TimeDelta capture_interval,
+                   mojo_base.mojom.TimeDelta duration);
 };
 
 // Enables receiving capture information (shared-memory, video-frames) from a
@@ -500,6 +509,10 @@ interface VideoCapturerEventHandler {
   // Notifies the network process that a shared memory region has been released
   // and should no longer be used.
   OnSharedMemoryRegionReleased(int32 id);
+
+  // Notifies the network process that a frame capture has started at the
+  // specified time.
+  OnFrameCaptureStart(mojo_base.mojom.TimeTicks start_time);
 
   // Notifies the network process that new frame data is available in the shared
   // memory region along with the details on how to access it (e.g. stride,

@@ -245,8 +245,8 @@ void WebrtcVideoStream::Core::SetMaxFramerateFps(int max_framerate_fps) {
 
 WebrtcVideoStream::WebrtcVideoStream(const SessionOptions& session_options)
     : session_options_(session_options) {
-// TODO(joedow): Dig into the threading model on other platforms to see if they
-// can also be updated to run on a dedicated thread.
+// TODO: yuweih - Check if the other platforms can also be updated to run on a
+// dedicated thread.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   core_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::HIGHEST},

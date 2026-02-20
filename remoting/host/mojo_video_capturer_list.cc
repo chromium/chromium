@@ -34,7 +34,7 @@ mojom::CreateVideoCapturerResultPtr MojoVideoCapturerList::CreateVideoCapturer(
 
   auto capturer = std::make_unique<MojoVideoCapturer>(
       environment->CreateVideoCapturer(screen_id), caller_task_runner);
-  mojom::CreateVideoCapturerResultPtr result = capturer->Start();
+  mojom::CreateVideoCapturerResultPtr result = capturer->CreateMojoEndpoints();
 
   // Register handler to remove the capturer when it is no longer needed.
   // base::Unretained() is safe because the callback is cancelled if the Mojo

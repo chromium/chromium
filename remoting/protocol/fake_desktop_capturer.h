@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -40,6 +41,7 @@ class FakeDesktopCapturer : public DesktopCapturer {
   ~FakeDesktopCapturer() override;
 
   void set_frame_generator(FrameGenerator frame_generator);
+  void set_on_started_closure(base::OnceClosure on_started_closure);
 
   // webrtc::DesktopCapturer interface.
   void Start(Callback* callback) override;
@@ -49,12 +51,18 @@ class FakeDesktopCapturer : public DesktopCapturer {
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
 
+  base::WeakPtr<FakeDesktopCapturer> GetWeakPtr();
+
  private:
   FrameGenerator frame_generator_;
+
+  base::OnceClosure on_started_closure_;
 
   raw_ptr<Callback> callback_;
 
   std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory_;
+
+  base::WeakPtrFactory<FakeDesktopCapturer> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting::protocol

@@ -92,14 +92,12 @@ class MockScreenCapturerCallback : public webrtc::DesktopCapturer::Callback {
 
   ~MockScreenCapturerCallback() override = default;
 
+  MOCK_METHOD(void, OnFrameCaptureStart, (), (override));
   MOCK_METHOD(void,
-              OnCaptureResultPtr,
+              OnCaptureResult,
               (webrtc::DesktopCapturer::Result,
-               std::unique_ptr<webrtc::DesktopFrame>*));
-  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
-                       std::unique_ptr<webrtc::DesktopFrame> frame) override {
-    OnCaptureResultPtr(result, &frame);
-  }
+               std::unique_ptr<webrtc::DesktopFrame>),
+              (override));
 };
 
 // Receives messages sent from the desktop process to the daemon.
@@ -277,6 +275,8 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   raw_ptr<MockInputInjector, AcrossTasksDanglingUntriaged>
       remote_input_injector_;
 
+  base::WeakPtr<protocol::FakeDesktopCapturer> remote_desktop_capturer_;
+
   // Will be transferred to the caller of
   // MockDesktopEnvironment::CreateUrlForwarderConfigurator().
   // We create the configurator in advance to allow setting expectations before
@@ -421,6 +421,8 @@ void IpcDesktopEnvironmentTest::CreateDesktopEnvironment(
     const DesktopEnvironmentOptions&,
     DesktopEnvironmentFactory::CreateCallback callback) {
   auto desktop_environment = std::make_unique<MockDesktopEnvironment>();
+  auto desktop_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
+  remote_desktop_capturer_ = desktop_capturer->GetWeakPtr();
   EXPECT_CALL(*desktop_environment, CreateAudioCapturer()).Times(0);
   EXPECT_CALL(*desktop_environment, CreateInputInjector())
       .Times(AtMost(1))
@@ -428,8 +430,7 @@ void IpcDesktopEnvironmentTest::CreateDesktopEnvironment(
   EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateVideoCapturer(_))
       .Times(AtMost(1))
-      .WillOnce(
-          Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));
+      .WillOnce(Return(ByMove(std::move(desktop_capturer))));
   EXPECT_CALL(*desktop_environment, CreateActionExecutor()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateFileOperations()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitor())
@@ -609,18 +610,32 @@ TEST_F(IpcDesktopEnvironmentTest, CaptureFrame) {
 
   // Start the input injector and screen capturer.
   input_injector_->Start(std::move(clipboard_stub));
-  video_capturer_->Start(&desktop_capturer_callback_);
 
   // Run the message loop until the desktop is attached.
   setup_run_loop_->Run();
 
-  // Stop the test when the first frame is captured.
-  EXPECT_CALL(desktop_capturer_callback_, OnCaptureResultPtr(_, _))
-      .WillOnce(InvokeWithoutArgs(
-          this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
+  base::test::TestFuture<void> remote_capturer_started;
+  remote_desktop_capturer_->set_on_started_closure(
+      remote_capturer_started.GetCallback());
+  video_capturer_->Start(&desktop_capturer_callback_);
+
+  // Wait for Start() to be called on FakeDesktopCapturer before calling
+  // CaptureFrame().
+  ASSERT_TRUE(remote_capturer_started.Wait());
+
+  EXPECT_CALL(desktop_capturer_callback_, OnFrameCaptureStart());
+  base::test::TestFuture<webrtc::DesktopCapturer::Result,
+                         std::unique_ptr<webrtc::DesktopFrame>>
+      capture_result;
+  EXPECT_CALL(desktop_capturer_callback_, OnCaptureResult(_, _))
+      .WillOnce(base::test::InvokeFuture(capture_result));
 
   // Capture a single frame.
-  video_capturer_->CaptureFrame();
+  remote_desktop_capturer_->CaptureFrame();
+
+  ASSERT_EQ(capture_result.Get<0>(), webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_NE(capture_result.Get<1>(), nullptr);
+  DeleteDesktopEnvironment();
 }
 
 // Tests that attaching to a new desktop works.

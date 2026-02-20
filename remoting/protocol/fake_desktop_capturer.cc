@@ -141,10 +141,18 @@ void FakeDesktopCapturer::set_frame_generator(FrameGenerator frame_generator) {
   frame_generator_ = std::move(frame_generator);
 }
 
+void FakeDesktopCapturer::set_on_started_closure(
+    base::OnceClosure on_started_closure) {
+  on_started_closure_ = std::move(on_started_closure);
+}
+
 void FakeDesktopCapturer::Start(Callback* callback) {
   DCHECK(!callback_);
   DCHECK(callback);
   callback_ = callback;
+  if (on_started_closure_) {
+    std::move(on_started_closure_).Run();
+  }
 }
 
 void FakeDesktopCapturer::SetSharedMemoryFactory(
@@ -153,6 +161,10 @@ void FakeDesktopCapturer::SetSharedMemoryFactory(
 }
 
 void FakeDesktopCapturer::CaptureFrame() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&webrtc::DesktopCapturer::Callback::OnFrameCaptureStart,
+                     base::Unretained(callback_)));
   base::Time capture_start_time = base::Time::Now();
   std::unique_ptr<webrtc::DesktopFrame> frame =
       frame_generator_.Run(shared_memory_factory_.get());
@@ -181,6 +193,10 @@ bool FakeDesktopCapturer::GetSourceList(SourceList* sources) {
 bool FakeDesktopCapturer::SelectSource(SourceId id) {
   NOTIMPLEMENTED();
   return false;
+}
+
+base::WeakPtr<FakeDesktopCapturer> FakeDesktopCapturer::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace remoting::protocol

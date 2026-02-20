@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/video_memory_utils.h"
 #include "remoting/protocol/desktop_capturer.h"
@@ -41,19 +42,31 @@ void MojoVideoCapturer::SetDisconnectHandler(base::OnceClosure handler) {
   capturer_control_.set_disconnect_handler(std::move(handler));
 }
 
-mojom::CreateVideoCapturerResultPtr MojoVideoCapturer::Start() {
-  video_capturer_->Start(this);
+mojom::CreateVideoCapturerResultPtr MojoVideoCapturer::CreateMojoEndpoints() {
   return mojom::CreateVideoCapturerResult::New(
       capturer_control_.BindNewPipeAndPassRemote(),
       event_handler_.BindNewPipeAndPassReceiver());
 }
 
-void MojoVideoCapturer::CaptureFrame() {
-  video_capturer_->CaptureFrame();
+void MojoVideoCapturer::Start() {
+  video_capturer_->Start(this);
 }
 
 void MojoVideoCapturer::SetComposeEnabled(bool enabled) {
   video_capturer_->SetComposeEnabled(enabled);
+}
+
+void MojoVideoCapturer::SetMaxFrameRate(uint32_t max_frame_rate) {
+  video_capturer_->SetMaxFrameRate(max_frame_rate);
+}
+
+void MojoVideoCapturer::Pause(bool pause) {
+  video_capturer_->Pause(pause);
+}
+
+void MojoVideoCapturer::BoostCaptureRate(base::TimeDelta capture_interval,
+                                         base::TimeDelta duration) {
+  video_capturer_->BoostCaptureRate(capture_interval, duration);
 }
 
 void MojoVideoCapturer::SetMouseCursor(
@@ -64,6 +77,12 @@ void MojoVideoCapturer::SetMouseCursor(
 void MojoVideoCapturer::SetMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   video_capturer_->SetMouseCursorPosition(position);
+}
+
+void MojoVideoCapturer::OnFrameCaptureStart() {
+  if (event_handler_) {
+    event_handler_->OnFrameCaptureStart(base::TimeTicks::Now());
+  }
 }
 
 void MojoVideoCapturer::OnCaptureResult(

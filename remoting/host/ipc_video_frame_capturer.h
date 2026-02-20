@@ -47,16 +47,20 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
 
   // webrtc::DesktopCapturer interface.
   void Start(Callback* callback) override;
-  void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
   void SetComposeEnabled(bool enabled) override;
+  void SetMaxFrameRate(uint32_t max_frame_rate) override;
+  void Pause(bool pause) override;
+  void BoostCaptureRate(base::TimeDelta capture_interval,
+                        base::TimeDelta duration) override;
 
   // mojom::VideoCapturerEventHandler interface.
   void OnSharedMemoryRegionCreated(int id,
                                    base::ReadOnlySharedMemoryRegion region,
                                    uint32_t size) override;
   void OnSharedMemoryRegionReleased(int id) override;
+  void OnFrameCaptureStart(base::TimeTicks start_time) override;
   void OnCaptureResult(mojom::CaptureResultPtr result) override;
 
  private:
@@ -78,8 +82,6 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
 
   // Mojo endpoint for receiving capturer events from the Desktop process.
   mojo::Receiver<mojom::VideoCapturerEventHandler> event_handler_{this};
-
-  int pending_capture_frame_requests_ = 0;
 
   // Shared memory buffers by Id. Each buffer is owned by the corresponding
   // frame.
