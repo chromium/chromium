@@ -8,12 +8,11 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "base/strings/stringprintf.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace send_tab_to_self_helper {
@@ -289,6 +288,13 @@ void SendTabToSelfUrlDeletedChecker::EntriesAddedRemotely(
 void SendTabToSelfUrlDeletedChecker::EntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
+}
+
+content::EvalJsResult GetFormFieldValueById(content::WebContents* web_contents,
+                                            const std::string& id) {
+  return content::EvalJs(
+      web_contents,
+      base::StringPrintf("document.getElementById('%s').value;", id.c_str()));
 }
 
 }  // namespace send_tab_to_self_helper

@@ -12,7 +12,12 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace send_tab_to_self {
 class SendTabToSelfEntry;
@@ -21,13 +26,13 @@ class SendTabToSelfSyncService;
 
 namespace send_tab_to_self_helper {
 
-// Class that allows waiting until a particular |url| is exposed by the
-// SendTabToSelfModel in |service|.
+// Class that allows waiting until a particular `url` is exposed by the
+// SendTabToSelfModel in `service`.
 class SendTabToSelfUrlChecker
     : public StatusChangeChecker,
       public send_tab_to_self::SendTabToSelfModelObserver {
  public:
-  // The caller must ensure that |service| is not null and will outlive this
+  // The caller must ensure that `service` is not null and will outlive this
   // object.
   SendTabToSelfUrlChecker(send_tab_to_self::SendTabToSelfSyncService* service,
                           const GURL& url);
@@ -53,13 +58,13 @@ class SendTabToSelfUrlChecker
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
-// Class that allows waiting until a particular |url| is marked opened by the
-// SendTabToSelfModel in |service|.
+// Class that allows waiting until a particular `url` is marked opened by the
+// SendTabToSelfModel in `service`.
 class SendTabToSelfUrlOpenedChecker
     : public StatusChangeChecker,
       public send_tab_to_self::SendTabToSelfModelObserver {
  public:
-  // The caller must ensure that |service| is not null and will outlive this
+  // The caller must ensure that `service` is not null and will outlive this
   // object.
   SendTabToSelfUrlOpenedChecker(
       send_tab_to_self::SendTabToSelfSyncService* service,
@@ -90,13 +95,13 @@ class SendTabToSelfUrlOpenedChecker
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
-// Class that allows waiting the number of entries in until |service0|
-// matches the number of entries in |service1|.
+// Class that allows waiting the number of entries in until `service0`
+// matches the number of entries in `service1`.
 class SendTabToSelfModelEqualityChecker
     : public StatusChangeChecker,
       public send_tab_to_self::SendTabToSelfModelObserver {
  public:
-  // The caller must ensure that |service0| and |service1| are not null and
+  // The caller must ensure that `service0` and `service1` are not null and
   // will outlive this object.
   SendTabToSelfModelEqualityChecker(
       send_tab_to_self::SendTabToSelfSyncService* service0,
@@ -130,7 +135,7 @@ class SendTabToSelfActiveChecker
     : public StatusChangeChecker,
       public send_tab_to_self::SendTabToSelfModelObserver {
  public:
-  // The caller must ensure that |service| is not null and will outlive this
+  // The caller must ensure that `service` is not null and will outlive this
   // object.
   explicit SendTabToSelfActiveChecker(
       send_tab_to_self::SendTabToSelfSyncService* service);
@@ -205,7 +210,7 @@ class SendTabToSelfUrlDeletedChecker
     : public StatusChangeChecker,
       public send_tab_to_self::SendTabToSelfModelObserver {
  public:
-  // The caller must ensure that |service| is not null and will outlive this
+  // The caller must ensure that `service` is not null and will outlive this
   // object.
   SendTabToSelfUrlDeletedChecker(
       send_tab_to_self::SendTabToSelfSyncService* service,
@@ -233,6 +238,10 @@ class SendTabToSelfUrlDeletedChecker
   const GURL url_;
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
+
+// Returns the value of a form field with the given `id` in `web_contents`.
+content::EvalJsResult GetFormFieldValueById(content::WebContents* web_contents,
+                                            const std::string& id);
 
 }  // namespace send_tab_to_self_helper
 

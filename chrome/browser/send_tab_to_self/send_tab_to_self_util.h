@@ -8,19 +8,30 @@
 #include <optional>
 
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/page_context.h"
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace send_tab_to_self {
 
-// |web_contents| can be null.
+// `web_contents` can be null.
 std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     content::WebContents* web_contents);
 
 // Returns true if the entry point should be shown.
 bool ShouldDisplayEntryPoint(content::WebContents* web_contents);
+
+// Fills form fields in `web_contents` from `page_context` if the field's origin
+// matches `origin`.
+void FillWebContents(content::WebContents* web_contents,
+                     const url::Origin& origin,
+                     const PageContext& page_context);
 
 }  // namespace send_tab_to_self
 

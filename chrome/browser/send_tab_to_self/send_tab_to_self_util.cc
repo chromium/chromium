@@ -4,18 +4,17 @@
 
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "components/prefs/pref_service.h"
-#include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/received_tab_forms_filler.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace send_tab_to_self {
 
@@ -35,6 +34,21 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
 
 bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {
   return GetEntryPointDisplayReason(web_contents).has_value();
+}
+
+void FillWebContents(content::WebContents* web_contents,
+                     const url::Origin& origin,
+                     const PageContext& page_context) {
+  if (!web_contents || page_context.form_field_info.fields.empty()) {
+    return;
+  }
+
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+  if (autofill_client) {
+    ReceivedTabFormsFiller::Start(*autofill_client, origin,
+                                  page_context.form_field_info);
+  }
 }
 
 }  // namespace send_tab_to_self
