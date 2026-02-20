@@ -236,7 +236,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             iconModels.add(buildForwardActionModel(currentTab));
             iconModels.add(buildBookmarkActionModel(currentTab));
             iconModels.add(buildDownloadActionModel(currentTab));
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)) {
+            if (ChromeFeatureList.sGlic.isEnabled()) {
                 iconModels.add(buildGlicActionModel(currentTab));
             } else {
                 iconModels.add(buildPageInfoModel(currentTab));
@@ -1378,7 +1378,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private MVCListAdapter.@Nullable ListItem maybeBuildOpenGlicItem(@Nullable Tab currentTab) {
         if (currentTab == null
                 || currentTab.getWebContents() == null
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)) {
+                || !ChromeFeatureList.sGlic.isEnabled()) {
             return null;
         }
         return new MVCListAdapter.ListItem(

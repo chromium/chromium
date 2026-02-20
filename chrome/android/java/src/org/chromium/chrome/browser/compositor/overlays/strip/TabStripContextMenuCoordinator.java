@@ -169,7 +169,7 @@ public class TabStripContextMenuCoordinator {
         // Add "Pin Gemini" option with divider
         if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)) {
+                && ChromeFeatureList.sGlic.isEnabled()) {
             // TODO(crbug.com/483810144): Add unpinning functionality.
             // TODO(crbug.com/483509451): Only show when Glic button not already visible
             if (!isIncognito) {

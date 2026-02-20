@@ -1926,7 +1926,7 @@ public class StripLayoutHelperManager
     }
 
     private boolean isGlicButtonEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC);
+        return ChromeFeatureList.sGlic.isEnabled();
     }
 
     @Override
