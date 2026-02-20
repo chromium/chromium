@@ -66,10 +66,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 /** Implements {@link ChromeAndroidTask}. */
@@ -1316,18 +1314,6 @@ final class ChromeAndroidTaskImpl
 
         if (activityScopedObjectsToRemove != null) {
             mActivityScopedObjectsDeque.remove(activityScopedObjectsToRemove);
-
-            Iterator<Entry<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature>> iterator =
-                    mFeatures.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Entry<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature> entry =
-                        iterator.next();
-                ChromeAndroidTaskFeatureKey key = entry.getKey();
-                if (activityWindowAndroid == key.mActivityWindowAndroid) {
-                    entry.getValue().onFeatureRemoved();
-                    iterator.remove();
-                }
-            }
         }
     }
 

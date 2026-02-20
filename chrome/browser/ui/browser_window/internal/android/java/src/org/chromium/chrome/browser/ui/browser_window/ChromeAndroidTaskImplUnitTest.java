@@ -557,48 +557,6 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void removeActivityScopedObjects_destroysActivityScopedFeatures() throws Exception {
-        // Arrange: Add 2 instances of ActivityScopedObjects.
-        int taskId = 1;
-        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(taskId);
-        var chromeAndroidTask =
-                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var activityScopedObjects1 = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
-        var activityScopedObjects2 = createActivityScopedObjects(taskId);
-        chromeAndroidTask.addActivityScopedObjects(activityScopedObjects2);
-
-        // Add activity-scoped features.
-        var testFeature1 = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        var featureKey1 =
-                new ChromeAndroidTaskFeatureKey(
-                        TestChromeAndroidTaskFeature.class,
-                        /* profile= */ null,
-                        activityScopedObjects1.mActivityWindowAndroid);
-        chromeAndroidTask.addFeature(featureKey1, () -> testFeature1);
-
-        var testFeature2 = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        var featureKey2 =
-                new ChromeAndroidTaskFeatureKey(
-                        TestChromeAndroidTaskFeature.class,
-                        /* profile= */ null,
-                        activityScopedObjects2.mActivityWindowAndroid);
-        chromeAndroidTask.addFeature(featureKey2, () -> testFeature2);
-
-        // Act: Remove activityScopedObjects2.
-        chromeAndroidTask.removeActivityScopedObjects(
-                activityScopedObjects2.mActivityWindowAndroid);
-
-        // Assert:
-        // (1) Feature associated with activity 2 is destroyed.
-        testFeature2.mOnTaskRemovedHelper.waitForCallback(0, 1);
-        assertNull(chromeAndroidTask.getFeatureForTesting(featureKey2));
-
-        // (2) Feature associated with activity 1 is NOT destroyed.
-        assertEquals(0, testFeature1.mOnTaskRemovedHelper.getCallCount());
-        assertNotNull(chromeAndroidTask.getFeatureForTesting(featureKey1));
-    }
-
-    @Test
     public void
             removeActivityScopedObjects_activityToRemoveIsNotAtTop_removesActivityScopedObjects() {
         // Arrange: Add the 1st instance of ActivityScopedObjects.

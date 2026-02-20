@@ -621,13 +621,10 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
                     var chromeAndroidTask = getChromeAndroidTask(taskId);
                     assertNotNull(chromeAndroidTask);
 
-                    var activityWindowAndroid = chromeAndroidTask.getTopActivityWindowAndroid();
                     return (ExtensionWindowControllerBridgeImpl)
                             chromeAndroidTask.getFeatureForTesting(
                                     new ChromeAndroidTaskFeatureKey(
-                                            ExtensionWindowControllerBridge.class,
-                                            profile,
-                                            activityWindowAndroid));
+                                            ExtensionWindowControllerBridge.class, profile));
                 });
     }
 }
