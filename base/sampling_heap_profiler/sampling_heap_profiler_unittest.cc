@@ -257,7 +257,8 @@ TEST_F(SamplingHeapProfilerTest, DISABLED_SequentialLargeSmallStats) {
 // Platform TLS: alloc+free[ns]: 22.184  alloc[ns]: 8.910  free[ns]: 13.274
 // thread_local: alloc+free[ns]: 18.353  alloc[ns]: 5.021  free[ns]: 13.331
 // TODO(crbug.com/40145097) Disabled on Mac
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/486038197) Disabled on ChromeOS
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MANUAL_SamplerMicroBenchmark DISABLED_MANUAL_SamplerMicroBenchmark
 #else
 #define MAYBE_MANUAL_SamplerMicroBenchmark MANUAL_SamplerMicroBenchmark
