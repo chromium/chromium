@@ -2636,6 +2636,8 @@ export enum InvocationSource {
   HANDOFF_BUTTON = 14,
   // From invoking skills.
   SKILLS = 15,
+  // Automatically opened from contextual cueing.
+  AUTO_OPENED_BY_CONTEXTUAL_CUE = 16,
 }
 
 ///////////////////////////////////////////////

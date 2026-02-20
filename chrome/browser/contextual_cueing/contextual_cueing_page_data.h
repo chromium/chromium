@@ -28,6 +28,10 @@ struct CueingResult {
   std::string prompt_suggestion;
   // Whether the cue is contextual to page.
   bool is_dynamic = false;
+  // Whether this configuration is eligible for auto-opening the side panel.
+  // The client will auto-open if enabled and conditions are met, otherwise
+  // falls back to standard nudge behavior.
+  bool auto_open_eligible = false;
 };
 
 // Decider for contextual cueing that is scoped to `Page`.
