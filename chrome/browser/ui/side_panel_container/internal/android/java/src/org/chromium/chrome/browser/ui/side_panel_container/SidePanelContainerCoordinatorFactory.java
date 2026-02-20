@@ -15,7 +15,7 @@ public final class SidePanelContainerCoordinatorFactory {
 
     @Nullable
     public static SidePanelContainerCoordinator create() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)) {
+        if (!ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
             return null;
         }
 
