@@ -93,6 +93,15 @@ struct FlexLine {
 
   LayoutUnit cross_axis_offset;
 
+  // Per-line effective gap size used only for gap decoration positioning.
+  // This already accounts for both the base `gap` property and any extra
+  // content distribution space from `justify-content` (e.g. space-between).
+  // This value is captured from the first inter-item gap in the line and
+  // reused for all items, so it may differ by a small delta from the actual
+  // diffused values used for item positioning. This discrepancy is negligible
+  // for gap decoration purposes.
+  LayoutUnit effective_gap_between_items;
+
   // These fields are only used/populated during fragmentation.
   LayoutUnit item_offset_adjustment;
   bool has_seen_all_children = false;

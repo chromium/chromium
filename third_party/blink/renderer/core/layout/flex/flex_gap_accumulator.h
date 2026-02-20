@@ -258,6 +258,11 @@ class CORE_EXPORT FlexGapAccumulator {
   LayoutUnit content_cross_start_ = LayoutUnit::Max();
   LayoutUnit content_cross_end_;
   LayoutUnit content_main_start_ = LayoutUnit::Max();
+
+  // Per-line effective gap sizes (`gap` property + content distribution space).
+  // Indexed by fragment-relative line index.
+  // Every line has a corresponding entry on this vector.
+  Vector<LayoutUnit> cross_gap_sizes_;
   LayoutUnit content_main_end_;
 
   // Tracks the index of the first flex line procesesed within the current

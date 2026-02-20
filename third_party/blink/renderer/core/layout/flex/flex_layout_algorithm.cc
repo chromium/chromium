@@ -1779,6 +1779,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     const wtf_size_t line_items_size = flex_line.item_indices.size();
     LayoutUnitDiffuser space_between_items = ContentDistributionSpace(
         justify_content, main_axis_free_space, line_items_size);
+
+    bool need_to_set_effective_gap_size = true;
+
     LayoutUnit main_axis_offset =
         (is_column_ ? BorderScrollbarPadding().block_start
                     : BorderScrollbarPadding().inline_start) +
@@ -1934,8 +1937,17 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           is_column_ ? LogicalOffset(cross_axis_offset, main_axis_offset)
                      : LogicalOffset(main_axis_offset, cross_axis_offset);
 
+      LayoutUnit current_space_between = space_between_items.Next();
       main_axis_offset += item.FlexedBorderBoxSize() + margin.MainEnd() +
-                          space_between_items.Next() + gap_between_items_;
+                          current_space_between + gap_between_items_;
+
+      // For gap decoration purposes, we only need to set the effective gap size
+      // once per line.
+      if (need_to_set_effective_gap_size && item_index_in_line > 0) {
+        flex_line.effective_gap_between_items =
+            current_space_between + gap_between_items_;
+        need_to_set_effective_gap_size = false;
+      }
 
       const BoxStrut logical_margins =
           physical_margins.ConvertToLogical(writing_direction);

@@ -83,6 +83,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         container_type_(other.container_type_),
         main_gaps_(std::move(new_main_gaps)),
         cross_gaps_(other.cross_gaps_),
+        flex_cross_gap_sizes_(other.flex_cross_gap_sizes_),
         content_inline_start_(other.content_inline_start_),
         content_inline_end_(other.content_inline_end_),
         content_block_start_(new_content_block_start),
@@ -106,6 +107,17 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
   LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
 
+  // Per-line main axis gap sizes for flex containers.
+  // This is needed because different lines in a flex container can have
+  // different effective gap sizes due to content distribution space.
+  void SetFlexCrossGapSizes(Vector<LayoutUnit>&& sizes) {
+    flex_cross_gap_sizes_ = std::move(sizes);
+  }
+  LayoutUnit GetFlexCrossGapSizes(wtf_size_t line_index) const {
+    CHECK(flex_cross_gap_sizes_.has_value());
+    CHECK_GT(flex_cross_gap_sizes_->size(), line_index);
+    return (*flex_cross_gap_sizes_)[line_index];
+  }
 
   void SetContentInlineOffsets(LayoutUnit start_offset, LayoutUnit end_offset);
   LayoutUnit GetContentInlineStart() const { return content_inline_start_; }
@@ -325,6 +337,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
+
+  // Per-line effective gap sizes for flex containers.
+  // Each flex line corresponds to one entry in this vector, indexed by
+  // fragment-relative line index.
+  std::optional<Vector<LayoutUnit>> flex_cross_gap_sizes_;
 
   // These represent the offsets of the content where the gaps begin and end.
   // We use separate LayoutUnits instead of LogicalOffsets, since these are more
