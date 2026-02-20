@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.TipsP
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -65,6 +66,7 @@ public class TipsPromoCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private QuickDeleteController mQuickDeleteController;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LensController mLensController;
@@ -87,6 +89,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mActivity,
                         mBottomSheetController,
                         mQuickDeleteController,
+                        mSigninCoordinator,
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
@@ -392,6 +395,7 @@ public class TipsPromoCoordinatorUnitTest {
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
         verify(mBottomSheetController).hideContent(any(), eq(true));
+        verify(mSigninCoordinator).startSigninFlow(any());
 
         histogramWatcher.assertExpected();
     }
@@ -497,6 +501,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mActivity,
                         mBottomSheetController,
                         mQuickDeleteController,
+                        mSigninCoordinator,
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         featureType);

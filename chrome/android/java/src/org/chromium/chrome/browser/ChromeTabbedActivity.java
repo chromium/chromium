@@ -2758,6 +2758,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     this,
                                     mRootUiCoordinator.getBottomSheetController(),
                                     getQuickDeleteController(),
+                                    createBottomSheetSigninCoordinator(
+                                            new BottomSheetSigninAndHistorySyncCoordinator
+                                                    .Delegate() {},
+                                            SigninAccessPoint.SET_UP_LIST),
                                     getWindowAndroid(),
                                     getCurrentTabModel().isIncognito(),
                                     fromTipsNotifications);
@@ -3395,21 +3399,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     createBottomSheetSigninAndHistorySyncCoordinator(
                             BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
                             @SigninAccessPoint int accessPoint) {
-                OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
-                getProfileProviderSupplier()
-                        .onAvailable(pp -> profileSupplier.set(pp.getOriginalProfile()));
-                return SigninAndHistorySyncActivityLauncherImpl.get()
-                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                getWindowAndroid(),
-                                ChromeTabbedActivity.this,
-                                getActivityResultTracker(),
-                                delegate,
-                                DeviceLockActivityLauncherImpl.get(),
-                                profileSupplier,
-                                this::getBottomSheetController,
-                                getModalDialogManagerSupplier(),
-                                getSnackbarManager(),
-                                accessPoint);
+                return createBottomSheetSigninCoordinator(delegate, accessPoint);
             }
 
             @Override
@@ -3436,6 +3426,26 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 coordinator.startSigninFlow(config);
             }
         };
+    }
+
+    private BottomSheetSigninAndHistorySyncCoordinator createBottomSheetSigninCoordinator(
+            BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
+            @SigninAccessPoint int accessPoint) {
+        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+        getProfileProviderSupplier()
+                .onAvailable(pp -> profileSupplier.set(pp.getOriginalProfile()));
+        return SigninAndHistorySyncActivityLauncherImpl.get()
+                .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                        getWindowAndroid(),
+                        ChromeTabbedActivity.this,
+                        getActivityResultTracker(),
+                        delegate,
+                        DeviceLockActivityLauncherImpl.get(),
+                        profileSupplier,
+                        mRootUiCoordinator::getBottomSheetController,
+                        getModalDialogManagerSupplier(),
+                        getSnackbarManager(),
+                        accessPoint);
     }
 
     private boolean shouldIgnoreIntent() {

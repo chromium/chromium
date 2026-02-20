@@ -184,8 +184,7 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getFeatureTipPromoDataForType(
                         mActivity, TipsNotificationsFeatureType.SIGNIN);
         assertEquals(
-                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_noop),
-                promoData.positiveButtonText);
+                mActivity.getString(R.string.signin_promo_signin), promoData.positiveButtonText);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_signin),
                 promoData.mainPageTitle);

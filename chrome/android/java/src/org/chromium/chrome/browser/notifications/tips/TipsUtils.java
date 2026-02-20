@@ -38,6 +38,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -165,7 +168,7 @@ public class TipsUtils {
                                 R.string.tips_promo_bottom_sheet_third_step_password_autofill));
                 break;
             case TipsNotificationsFeatureType.SIGNIN:
-                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_noop;
+                positiveButtonTextRes = R.string.signin_promo_signin;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_signin;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_signin;
                 mainPageLogoViewRes = R.drawable.tips_promo_signin_logo;
@@ -403,5 +406,34 @@ public class TipsUtils {
             return R.drawable.view_list_bottom_item_background;
         }
         return R.drawable.view_list_normal_item_background;
+    }
+
+    /**
+     * Assembles a {@link BottomSheetSigninAndHistorySyncConfig} for the account picker bottom sheet
+     * used in the Sign-in feature flow.
+     *
+     * @param context The current context.
+     */
+    public static BottomSheetSigninAndHistorySyncConfig getAccountPickerBottomSheetConfig(
+            Context context) {
+        String title = context.getString(R.string.signin_account_picker_bottom_sheet_title);
+        String subtitle =
+                context.getString(R.string.signin_account_picker_bottom_sheet_benefits_subtitle);
+        AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(title)
+                        .setSubtitleString(subtitle)
+                        .build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                accountPickerBottomSheetStrings,
+                                BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
+                                        .BOTTOM_SHEET,
+                                BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.OPTIONAL,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
+                        .build();
+        return config;
     }
 }

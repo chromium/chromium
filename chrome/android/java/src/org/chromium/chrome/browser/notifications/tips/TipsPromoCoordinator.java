@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -101,6 +102,7 @@ public class TipsPromoCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final QuickDeleteController mQuickDeleteController;
+    private final BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private final WindowAndroid mWindowAndroid;
     private final boolean mIsIncognito;
     private final TipsPromoSheetContent mSheetContent;
@@ -117,6 +119,7 @@ public class TipsPromoCoordinator {
      * @param context The Android {@link Context}.
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param quickDeleteController The controller to for the quick delete dialog.
+     * @param signinCoordinator The coordinator for the sign-in promo bottom sheet.
      * @param windowAndroid The current WindowAndroid.
      * @param isIncognito Whether the current context is incognito.
      * @param featureType The {@link TipsNotificationsFeatureType} to show.
@@ -125,12 +128,14 @@ public class TipsPromoCoordinator {
             Context context,
             BottomSheetController bottomSheetController,
             QuickDeleteController quickDeleteController,
+            BottomSheetSigninAndHistorySyncCoordinator signinCoordinator,
             WindowAndroid windowAndroid,
             boolean isIncognito,
             @TipsNotificationsFeatureType int featureType) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mQuickDeleteController = quickDeleteController;
+        mSigninCoordinator = signinCoordinator;
         mWindowAndroid = windowAndroid;
         mIsIncognito = isIncognito;
         mPropertyModel = TipsPromoProperties.createDefaultModel();
@@ -271,7 +276,9 @@ public class TipsPromoCoordinator {
                 // No-op since there is no page to travel to.
                 break;
             case TipsNotificationsFeatureType.SIGNIN:
-                // TODO(crbug.com/481396353): Explore adding the sign in flow.
+                // The user must be signed out in order to see this flow.
+                mSigninCoordinator.startSigninFlow(
+                        TipsUtils.getAccountPickerBottomSheetConfig(mContext));
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
