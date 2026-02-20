@@ -537,6 +537,7 @@ viewTimelineName
 viewTransitionClass
 viewTransitionGroup
 viewTransitionName
+viewTransitionScope
 visibility
 webkitAlignContent
 webkitAlignItems
