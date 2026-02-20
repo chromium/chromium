@@ -27,9 +27,22 @@ MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(Browser& browser)
 
 void MultiContentsViewDelegateImpl::WebContentsFocused(
     content::WebContents* web_contents) {
-  int tab_index = tab_strip_model_->GetIndexOfWebContents(web_contents);
-  if (tab_index != TabStripModel::kNoTab) {
-    tab_strip_model_->ActivateTabAt(tab_index);
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab || !tab->IsSplit()) {
+    return;
+  }
+
+  std::vector<tabs::TabInterface*> tabs =
+      tab_strip_model_->GetSplitData(tab->GetSplit().value())->ListTabs();
+
+  // Ensure that the focused WebContents and the active tab are part of the same
+  // split. There could be a race condition between when the focus happens and
+  // when the contents of MultiContentsView are swapped out. See
+  // crbug.com/485670308.
+  if (std::find(tabs.begin(), tabs.end(), tab_strip_model_->GetActiveTab()) !=
+      tabs.end()) {
+    tab_strip_model_->ActivateTabAt(tab_strip_model_->GetIndexOfTab(tab));
   }
 }
 

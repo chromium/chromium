@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
@@ -574,6 +575,42 @@ IN_PROC_BROWSER_TEST_F(
   //    which calls `InvalidateLayout()`, scheduling a final, asynchronous
   //    layout pass.
   EXPECT_EQ(GetResizeCount(split_tab), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
+  // Set up tab strip with a regular tab and two split views with the last split
+  // view being active.
+  auto* tab_strip_model = browser()->tab_strip_model();
+
+  EXPECT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  EXPECT_TRUE(
+      AddTabAtIndex(3, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  ASSERT_EQ(5, browser()->tab_strip_model()->count());
+  const int active_index = tab_strip_model->active_index();
+  ASSERT_EQ(4, active_index);
+  EXPECT_TRUE(tab_strip_model->GetActiveTab()->IsSplit());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
+
+  auto* delegate = multi_contents_view()->delegate_for_testing();
+  // Focusing a tab outside the active split doesn't change the active index.
+  delegate->WebContentsFocused(tab_strip_model->GetWebContentsAt(0));
+  EXPECT_EQ(tab_strip_model->active_index(), active_index);
+
+  // Focusing a split tab outside the active split doesn't change the active
+  // index.
+  delegate->WebContentsFocused(tab_strip_model->GetWebContentsAt(1));
+  EXPECT_EQ(tab_strip_model->active_index(), active_index);
+
+  // Focusing a tab inside the active split changes the active index.
+  delegate->WebContentsFocused(tab_strip_model->GetWebContentsAt(3));
+  EXPECT_EQ(tab_strip_model->active_index(), 3);
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, LeadingSeparatorLayout) {

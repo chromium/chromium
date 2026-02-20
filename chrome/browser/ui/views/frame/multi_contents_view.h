@@ -194,6 +194,8 @@ class MultiContentsView : public views::View,
     return background_view_;
   }
 
+  MultiContentsViewDelegate* delegate_for_testing() { return delegate_.get(); }
+
   const FocusableViewMap* GetFocusableViewsMapFor(
       const ContentsContainerView* container) const;
 
