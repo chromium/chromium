@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -45,6 +46,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.notifications.TipsOptInBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.widget.ButtonCompat;
@@ -106,6 +108,7 @@ public class TipsNotificationsOptInPromoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/486122313
     public void testOptInBottomSheetAccept() {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;
