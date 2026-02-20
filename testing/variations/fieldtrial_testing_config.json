@@ -10201,6 +10201,21 @@
             ]
         }
     ],
+    "EnableExtensionsForCorpDesktopAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260219",
+                    "enable_features": [
+                        "EnableExtensionsForCorpDesktopAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableFallbackFontsCrashReporting": [
         {
             "platforms": [
