@@ -137,6 +137,12 @@ class CORE_EXPORT ResponsivenessMetrics
   void SetKeyIdAndRecordLatency(PerformanceEventTiming* entry,
                                 EventTimestamps event_timestamps);
 
+  // Assign an interaction id to an event timing entry if needed. Also records
+  // the interaction latency. Returns true if the entry is ready to be surfaced
+  // in PerformanceObservers and the Performance Timeline.
+  bool TryAssignInteractionId(PerformanceEventTiming* entry,
+                              EventTimestamps event_timestamps);
+
   // Clears all keydowns in |key_code_to_interaction_info_map_| and report to
   // UKM.
   void FlushKeydown();

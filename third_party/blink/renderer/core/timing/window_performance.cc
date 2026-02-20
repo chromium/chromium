@@ -189,23 +189,6 @@ AtomicString SameOriginAttribution(Frame* observer_frame,
   return SameOriginKeyword();
 }
 
-// Eligible event types should be kept in sync with
-// WebInputEvent::IsWebInteractionEvent().
-bool IsEventTypeForInteractionId(const AtomicString& type) {
-  return type == event_type_names::kPointercancel ||
-         type == event_type_names::kContextmenu ||
-         type == event_type_names::kPointerdown ||
-         type == event_type_names::kPointerup ||
-         type == event_type_names::kClick ||
-         type == event_type_names::kKeydown ||
-         type == event_type_names::kKeypress ||
-         type == event_type_names::kKeyup ||
-         type == event_type_names::kCompositionstart ||
-         type == event_type_names::kCompositionupdate ||
-         type == event_type_names::kCompositionend ||
-         type == event_type_names::kInput;
-}
-
 base::TimeDelta TotalNonOverlappingProcessingDuration(
     base::span<const Member<PerformanceEventTiming>> range) {
   base::TimeDelta processing_duration;
@@ -664,8 +647,9 @@ void WindowPerformance::EventTimingProcessingEnd(
 
   // Windows (like iframes or open tabs) can become detached in the middle of
   // the event, when the event itself does the detaching.
-  // ReportEventTimings() requires a window, so we likely won't ever report this
-  // event anywhere, but let's still return the bookkeeping to a clean state.
+  // TryFlushEventTimingQueue() requires a window, so we likely won't ever
+  // report this event anywhere, but let's still return the bookkeeping to a
+  // clean state.
   if (!DomWindow() || !DomWindow()->GetFrame()) {
     entry->UpdateFallbackTime(processing_end, FallbackReason::kWindowDestroyed);
     return;
@@ -860,7 +844,7 @@ void WindowPerformance::OnPresentationPromiseResolved(
                                 FallbackReason::kModalDialog);
     }
   });
-  ReportEventTimings();
+  TryFlushEventTimingQueue();
 }
 
 void WindowPerformance::ReportEventTimingsWithoutNextPaint(
@@ -876,7 +860,7 @@ void WindowPerformance::ReportEventTimingsWithoutNextPaint(
   current_frame_index_++;
 
   // These events are done and potentially ready for reporting, so check.
-  ReportEventTimings();
+  TryFlushEventTimingQueue();
 }
 
 void WindowPerformance::FlushEventTimingsOnPageHidden() {
@@ -924,10 +908,10 @@ void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
                                              FallbackReason::kVisibilityChange);
     }
   }
-  ReportEventTimings();
+  TryFlushEventTimingQueue();
 }
 
-void WindowPerformance::ReportEventTimings() {
+void WindowPerformance::TryFlushEventTimingQueue() {
   if (!DomWindow() || !DomWindow()->document()) {
     event_timing_entries_.clear();
     return;
@@ -996,7 +980,7 @@ void WindowPerformance::ReportEventTimings() {
     bool had_key_interaction = false;
     bool had_click_tap_interaction = false;
     for (auto entry : frame_entries) {
-      ReportEvent(interactive_detector, entry);
+      FlushEventTiming(interactive_detector, entry);
       if (auto interaction_id = entry->GetInteractionIdInfo();
           interaction_id &&
           interaction_id->id != PerformanceTimelineEntryIdInfo::kNoId) {
@@ -1113,17 +1097,17 @@ void WindowPerformance::ReportEventTimings() {
   }
 }
 
-void WindowPerformance::ReportEvent(
+void WindowPerformance::FlushEventTiming(
     InteractiveDetector* interactive_detector,
-    Member<PerformanceEventTiming> event_timing_entry) {
-  auto* timings = event_timing_entry->GetEventTimingReportingInfo();
+    Member<PerformanceEventTiming> entry) {
+  auto* timings = entry->GetEventTimingReportingInfo();
   base::TimeTicks event_creation_time = timings->creation_time;
   base::TimeTicks enqueued_to_main_thread_time =
       timings->enqueued_to_main_thread_time;
   base::TimeTicks processing_start = timings->processing_start_time;
   base::TimeTicks processing_end = timings->processing_end_time;
   base::TimeDelta processing_duration = processing_end - processing_start;
-  base::TimeTicks event_end_time = event_timing_entry->GetEndTime();
+  base::TimeTicks event_end_time = entry->GetEndTime();
   base::TimeTicks commit_or_end_time = timings->commit_finish_time.is_null()
                                            ? event_end_time
                                            : timings->commit_finish_time;
@@ -1142,21 +1126,20 @@ void WindowPerformance::ReportEvent(
       std::round((event_end_time - event_creation_time).InMillisecondsF() / 8) *
       8;
 
-  event_timing_entry->SetDuration(rounded_duration);
+  entry->SetDuration(rounded_duration);
 
-  if (event_timing_entry->name() == "pointerdown") {
+  if (entry->name() == "pointerdown") {
     pending_pointer_down_processing_time_ = processing_duration;
     pending_pointer_down_time_to_next_paint_ = time_to_next_paint;
-  } else if (event_timing_entry->name() == "pointerup") {
+  } else if (entry->name() == "pointerup") {
     if (pending_pointer_down_time_to_next_paint_.has_value() &&
         interactive_detector) {
       interactive_detector->RecordInputEventTimingUMA(
           pending_pointer_down_processing_time_.value(),
           pending_pointer_down_time_to_next_paint_.value());
     }
-  } else if ((event_timing_entry->name() == "click" ||
-              event_timing_entry->name() == "keydown" ||
-              event_timing_entry->name() == "mousedown") &&
+  } else if ((entry->name() == "click" || entry->name() == "keydown" ||
+              entry->name() == "mousedown") &&
              interactive_detector) {
     interactive_detector->RecordInputEventTimingUMA(processing_duration,
                                                     time_to_next_paint);
@@ -1167,49 +1150,28 @@ void WindowPerformance::ReportEvent(
       event_creation_time, enqueued_to_main_thread_time, commit_or_end_time,
       event_end_time};
 
-  if (SetInteractionIdAndRecordLatency(event_timing_entry, event_timestamps)) {
-    NotifyAndAddEventTimingBuffer(event_timing_entry);
+  if (responsiveness_metrics_->TryAssignInteractionId(entry,
+                                                      event_timestamps)) {
+    ReportEventTimingToPerformanceTimeline(entry);
   }
 
-  ReportFirstInputTiming(event_timing_entry);
+  // Let FID see the event, even before interactionID assignment, because it
+  // saves its own references.
+  // TODO(crbug.com/331806288): Instead of using a little mini state machine,
+  // just use the interactionID value and report the first event-timing with
+  // interactionID.  The spec for Event Timing was updated this way.
+  // This requires FlushEventTiming to always have known interactionID, which
+  // requires crbug.com/328902994.
+  TryReportAsFirstInputTiming(entry);
 }
 
-void WindowPerformance::ReportFirstInputTiming(
-    PerformanceEventTiming* event_timing_entry) {
-  // First Input
-  //
-  // See also ./First_input_state_machine.md
-  // (https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/First_input_state_machine.md)
-  // to understand the logics below.
-  if (!first_input_timing_) {
-    if (event_timing_entry->name() == event_type_names::kPointerdown) {
-      first_pointer_down_event_timing_ =
-          PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
-    } else if (event_timing_entry->name() == event_type_names::kPointerup &&
-               first_pointer_down_event_timing_) {
-      if (event_timing_entry->HasKnownInteractionID()) {
-        first_pointer_down_event_timing_->SetInteractionIdInfo(
-            event_timing_entry->GetInteractionIdInfo());
-      }
-      DispatchFirstInputTiming(first_pointer_down_event_timing_);
-    } else if (event_timing_entry->name() == event_type_names::kPointercancel) {
-      first_pointer_down_event_timing_.Clear();
-    } else if ((event_timing_entry->name() == event_type_names::kMousedown ||
-                event_timing_entry->name() == event_type_names::kClick ||
-                event_timing_entry->name() == event_type_names::kKeydown) &&
-               !first_pointer_down_event_timing_) {
-      DispatchFirstInputTiming(
-          PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry));
-    }
-  }
-}
-
-void WindowPerformance::NotifyAndAddEventTimingBuffer(
+void WindowPerformance::ReportEventTimingToPerformanceTimeline(
     PerformanceEventTiming* entry) {
   if (!DomWindow() || !DomWindow()->GetFrame()) {
     return;
   }
   CHECK(entry->HasKnownInteractionID());
+
   if (HasObserverFor(PerformanceEntry::kEvent)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kEventTimingExplicitlyRequested);
@@ -1329,28 +1291,6 @@ void WindowPerformance::PopulateContainerTimingEntries() {
   has_container_timing_changes_ = false;
 }
 
-bool WindowPerformance::SetInteractionIdAndRecordLatency(
-    PerformanceEventTiming* entry,
-    ResponsivenessMetrics::EventTimestamps event_timestamps) {
-  if (!IsEventTypeForInteractionId(entry->name())) {
-    // Set 0 interaction id for event timings that do not go into state
-    // machine.
-    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
-    return true;
-  }
-  // We set the interactionId and record the metric in the
-  // same logic, so we need to ignore the return value when InteractionId is
-  // disabled.
-  if (entry->GetEventTimingReportingInfo()->pointer_id.has_value()) {
-    return responsiveness_metrics_->SetPointerIdAndRecordLatency(
-        entry, event_timestamps);
-  }
-
-  responsiveness_metrics_->SetKeyIdAndRecordLatency(entry, event_timestamps);
-
-  return true;
-}
-
 void WindowPerformance::QueueLongAnimationFrameTiming(
     AnimationFrameTimingInfo* info,
     std::optional<DOMPaintTimingInfo> paint_timing_info) {
@@ -1444,20 +1384,54 @@ void WindowPerformance::AddContainerTiming(
   }
 }
 
-void WindowPerformance::DispatchFirstInputTiming(
-    PerformanceEventTiming* entry) {
-  CHECK(entry);
-  CHECK_EQ("first-input", entry->entryType());
+void WindowPerformance::TryReportAsFirstInputTiming(
+    PerformanceEventTiming* event_timing_entry) {
+  CHECK(event_timing_entry && event_timing_entry->IsReadyForReporting());
+  // First Input
+  //
+  // See also ./First_input_state_machine.md
+  // (https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/First_input_state_machine.md)
+  // to understand the logics below.
+
+  // If we have already emitted, bail out.
+  if (first_input_timing_) {
+    return;
+  }
+
+  PerformanceEventTiming* first_input_entry = nullptr;
+
+  if (event_timing_entry->name() == event_type_names::kPointerdown) {
+    first_pointer_down_event_timing_ = event_timing_entry;
+  } else if (event_timing_entry->name() == event_type_names::kPointerup &&
+             first_pointer_down_event_timing_) {
+    // Use the old buffered pointerdown when we see pointerup.
+    first_input_entry = PerformanceEventTiming::CreateFirstInputTiming(
+        first_pointer_down_event_timing_);
+  } else if (event_timing_entry->name() == event_type_names::kPointercancel) {
+    first_pointer_down_event_timing_ = nullptr;
+  } else if ((event_timing_entry->name() == event_type_names::kMousedown ||
+              event_timing_entry->name() == event_type_names::kClick ||
+              event_timing_entry->name() == event_type_names::kKeydown) &&
+             !first_pointer_down_event_timing_) {
+    first_input_entry =
+        PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
+  }
+
+  if (!first_input_entry) {
+    return;
+  }
+
+  CHECK_EQ("first-input", first_input_entry->entryType());
   if (HasObserverFor(PerformanceEntry::kFirstInput)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kEventTimingExplicitlyRequested);
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kEventTimingFirstInputExplicitlyRequested);
-    NotifyObserversOfEntry(*entry);
+    NotifyObserversOfEntry(*first_input_entry);
   }
 
   CHECK(!first_input_timing_);
-  first_input_timing_ = entry;
+  first_input_timing_ = first_input_entry;
 }
 
 void WindowPerformance::AddLayoutShiftEntry(LayoutShift* entry) {

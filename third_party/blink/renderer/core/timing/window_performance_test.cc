@@ -127,7 +127,8 @@ class WindowPerformanceTest : public testing::Test,
         entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
         entry->GetEventTimingReportingInfo()->commit_finish_time,
         entry->GetEndTime()};
-    performance_->SetInteractionIdAndRecordLatency(entry, event_timestamps);
+    performance_->GetResponsivenessMetrics().TryAssignInteractionId(
+        entry, event_timestamps);
   }
 
   PerformanceEventTiming* RegisterKeyboardEvent(

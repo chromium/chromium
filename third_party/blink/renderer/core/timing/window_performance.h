@@ -63,6 +63,7 @@ class AnimationFrameTimingInfo;
 class InteractionContentfulPaint;
 class InteractiveDetector;
 class PerformanceTimingForReporting;
+class LocalDOMWindow;
 
 class CORE_EXPORT WindowPerformance final : public Performance,
                                             public PerformanceMonitor::Client,
@@ -104,7 +105,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // There might be nested events being dispatched (e.g. `input` event nested
   // inside a raw pointer event), but the RAII class `EventTiming` uses the
   // stack to manage calling these functions (from constructor/destructor).
-  // This means that calls to End will be in LIFO often with Start.
+  // This means that calls to End will be in LIFO order w.r.t. Start.
   //
   // Will create a `PerformanceEventTiming`, and if needed, requests the next
   // presentation time to calculate the full |duration| to next paint.
@@ -235,24 +236,15 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       const viz::FrameTimingDetails& presentation_details);
   // Report buffered events with presentation time following their registered
   // order; stop as soon as seeing an event with pending presentation promise.
-  void ReportEventTimings();
-  void ReportEvent(InteractiveDetector* interactive_detector,
-                   Member<PerformanceEventTiming> event_timing_entry);
+  void TryFlushEventTimingQueue();
+  void FlushEventTiming(InteractiveDetector* interactive_detector,
+                        Member<PerformanceEventTiming> event_timing_entry);
 
-  void DispatchFirstInputTiming(PerformanceEventTiming* entry);
-
-  // Assign an interaction id to an event timing entry if needed. Also records
-  // the interaction latency. Returns true if the entry is ready to be surfaced
-  // in PerformanceObservers and the Performance Timeline
-  bool SetInteractionIdAndRecordLatency(
-      PerformanceEventTiming* entry,
-      ResponsivenessMetrics::EventTimestamps event_timestamps);
+  void TryReportAsFirstInputTiming(PerformanceEventTiming* event_timing_entry);
 
   // Notify observer that an event timing entry is ready and add it to the event
   // timing buffer if needed.
-  void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
-
-  void ReportFirstInputTiming(PerformanceEventTiming* event_timing_entry);
+  void ReportEventTimingToPerformanceTimeline(PerformanceEventTiming* entry);
 
   template <typename Callback>
   void IterateEventTimingsByAnimationFrame(uint64_t frame_index,

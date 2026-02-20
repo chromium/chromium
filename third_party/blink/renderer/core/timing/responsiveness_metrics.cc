@@ -15,7 +15,6 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -24,11 +23,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event.h"
 
@@ -95,6 +92,21 @@ void LogResponsivenessHistogram(base::TimeDelta max_event_duration,
   base::UmaHistogramCustomTimes(
       base::StrCat({kHistogramMaxEventDuration, suffix}), max_event_duration,
       base::Milliseconds(1), base::Seconds(60), 50);
+}
+
+bool IsEventTypeForInteractionId(const AtomicString& type) {
+  return type == event_type_names::kPointercancel ||
+         type == event_type_names::kContextmenu ||
+         type == event_type_names::kPointerdown ||
+         type == event_type_names::kPointerup ||
+         type == event_type_names::kClick ||
+         type == event_type_names::kKeydown ||
+         type == event_type_names::kKeypress ||
+         type == event_type_names::kKeyup ||
+         type == event_type_names::kCompositionstart ||
+         type == event_type_names::kCompositionupdate ||
+         type == event_type_names::kCompositionend ||
+         type == event_type_names::kInput;
 }
 
 }  // namespace
@@ -346,6 +358,22 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // Any existing pointerup in the map cannot fire a click.
     FlushAllPointerdownWithMeasuredPointerup();
   }
+  return true;
+}
+
+bool ResponsivenessMetrics::TryAssignInteractionId(
+    PerformanceEventTiming* entry,
+    EventTimestamps event_timestamps) {
+  if (!IsEventTypeForInteractionId(entry->name())) {
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
+    return true;
+  }
+
+  if (entry->GetEventTimingReportingInfo()->pointer_id.has_value()) {
+    return SetPointerIdAndRecordLatency(entry, event_timestamps);
+  }
+
+  SetKeyIdAndRecordLatency(entry, event_timestamps);
   return true;
 }
 
@@ -625,7 +653,7 @@ void ResponsivenessMetrics::FlushPointerdownAndNotifyObservers(
   // We only delay dispatching entries when they are pointerdown.
   CHECK(entry->name() == event_type_names::kPointerdown);
   CHECK(entry->HasKnownInteractionID());
-  window_performance_->NotifyAndAddEventTimingBuffer(entry);
+  window_performance_->ReportEventTimingToPerformanceTimeline(entry);
   pointer_info->SetEntryEmitted();
 }
 
