@@ -312,12 +312,13 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
       GURL("http://a.com"),
       {content_settings::PageSpecificContentSettings::kCameraAccessed});
 
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(indicator_chip->GetVisible());
-  EXPECT_FALSE(
-      dashboard_controller->get_collapse_timer_for_testing().IsRunning());
-
+  // After the camera is accessed, wait for the animation to finish, so that all
+  // timers and UI states are properly initialized.
   WaitForAnimationCompletion();
+
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_TRUE(
+      dashboard_controller->get_collapse_timer_for_testing().IsRunning());
 
   EXPECT_TRUE(dashboard_controller->is_verbose());
   EXPECT_TRUE(
