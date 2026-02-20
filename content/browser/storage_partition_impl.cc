@@ -294,38 +294,15 @@ void OnClearedCookies(base::OnceClosure callback, uint32_t num_deleted) {
   std::move(callback).Run();
 }
 
-void CheckQuotaManagedDataDeletionStatus(size_t* deletion_task_count,
-                                         base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (*deletion_task_count == 0) {
-    delete deletion_task_count;
-    std::move(callback).Run();
-  }
-}
-
 void OnQuotaManagedBucketDeleted(const storage::BucketLocator& bucket,
-                                 size_t* deletion_task_count,
-                                 base::OnceClosure callback,
                                  blink::mojom::QuotaStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_GT(*deletion_task_count, 0u);
   if (status != blink::mojom::QuotaStatusCode::kOk) {
     DLOG(ERROR) << "Couldn't remove data for bucket with storage key "
                 << bucket.storage_key.GetDebugString() << " is_default "
                 << bucket.is_default << " and bucket id " << bucket.id
                 << ". Status: " << static_cast<int>(status);
   }
-
-  (*deletion_task_count)--;
-  CheckQuotaManagedDataDeletionStatus(deletion_task_count, std::move(callback));
-}
-
-void PerformQuotaManagerStorageCleanup(
-    const scoped_refptr<storage::QuotaManager>& quota_manager,
-    storage::QuotaClientTypes quota_client_types,
-    base::OnceClosure callback) {
-  quota_manager->PerformStorageCleanup(std::move(quota_client_types),
-                                       std::move(callback));
 }
 
 void ClearedGpuCache(base::OnceClosure callback) {
@@ -2991,18 +2968,9 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
   storage::QuotaClientTypes quota_client_types =
       StoragePartitionImpl::GenerateQuotaClientTypes(remove_mask_);
 
-  // The logic below (via CheckQuotaManagedDataDeletionStatus) only
-  // invokes the callback when all processing is complete.
-  base::OnceClosure done_callback =
-      perform_storage_cleanup
-          ? base::BindOnce(&PerformQuotaManagerStorageCleanup,
-                           base::WrapRefCounted(quota_manager),
-                           quota_client_types, std::move(callback))
-          : std::move(callback);
-
-  size_t* deletion_task_count = new size_t(0u);
-  (*deletion_task_count)++;
-  for (const auto& bucket : buckets) {
+  // Collect buckets that pass the filters.
+  std::vector<storage::BucketLocator> buckets_to_delete;
+  for (const storage::BucketLocator& bucket : buckets) {
     // TODO(mkwst): Clean this up, it's slow. http://crbug.com/130746
     if (storage_key_.has_value() && bucket.storage_key != *storage_key_) {
       continue;
@@ -3014,19 +2982,24 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
       continue;
     }
 
-    auto split_callback = base::SplitOnceCallback(std::move(done_callback));
-    done_callback = std::move(split_callback.first);
+    buckets_to_delete.push_back(bucket);
+  }
 
-    (*deletion_task_count)++;
+  base::OnceClosure done_callback =
+      perform_storage_cleanup
+          ? base::BindOnce(&storage::QuotaManager::PerformStorageCleanup,
+                           quota_manager, quota_client_types,
+                           std::move(callback))
+          : std::move(callback);
+
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(buckets_to_delete.size(), std::move(done_callback));
+
+  for (const storage::BucketLocator& bucket : buckets_to_delete) {
     quota_manager->DeleteBucketData(
         bucket, quota_client_types,
-        base::BindOnce(&OnQuotaManagedBucketDeleted, bucket,
-                       deletion_task_count, std::move(split_callback.second)));
+        base::BindOnce(&OnQuotaManagedBucketDeleted, bucket).Then(barrier));
   }
-  (*deletion_task_count)--;
-
-  CheckQuotaManagedDataDeletionStatus(deletion_task_count,
-                                      std::move(done_callback));
 }
 
 base::OnceClosure
