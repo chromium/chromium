@@ -245,9 +245,20 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, SpecialSchemeDevtools) {
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().SchemeIs(
           content::kChromeDevToolsScheme));
 
-  GURL fetch_url = https_server().GetURL("/cors-ok.txt");
+  // DevTools has strict CSP which doesn't allow fetching from local addresses,
+  // so we're using an iframe, since frame-src allows wildcards.
+  GURL iframe_url = https_server().GetURL("/cors-ok.txt");
+  content::TestNavigationManager nav_manager(web_contents(), iframe_url);
 
-  EXPECT_EQ(true, content::EvalJs(web_contents(), FetchScript(fetch_url)));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace(
+                          "const iframe = document.createElement('iframe');"
+                          "iframe.src = $1;"
+                          "document.body.appendChild(iframe);",
+                          iframe_url)));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(nav_manager.was_successful());
 }
 
 // This test verifies that the chrome-search:// scheme is considered loopback
