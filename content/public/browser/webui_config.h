@@ -51,6 +51,10 @@ class CONTENT_EXPORT WebUIConfig {
   // WebUIs should be created for all requests to their host. Defaults to true.
   virtual bool ShouldHandleURL(const GURL& url);
 
+  // Returns whether the browser should crash on javascript errors. Development
+  // builds only. Defaults to false.
+  virtual bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const;
+
   // Returns a WebUIController for WebUI and GURL.
   //
   // URLDataSource is usually created in the constructor of WebUIController. The

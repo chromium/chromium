@@ -64,6 +64,11 @@ bool OmniboxPopupUIConfig::IsWebUIEnabled(
          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup);
 }
 
+bool OmniboxPopupUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild()
+    const {
+  return true;
+}
+
 OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
                                true /* Needed for webui browser tests */),

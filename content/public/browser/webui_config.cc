@@ -21,4 +21,8 @@ bool WebUIConfig::ShouldHandleURL(const GURL& url) {
   return true;
 }
 
+bool WebUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild() const {
+  return false;
+}
+
 }  // namespace content

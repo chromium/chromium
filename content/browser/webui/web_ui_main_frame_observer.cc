@@ -7,11 +7,13 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
@@ -20,6 +22,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
@@ -53,6 +57,10 @@ bool IsWebUIJavaScriptErrorReportingSupported() {
   return base::FeatureList::IsEnabled(features::kWebUIJSErrorReportingExtended);
 #endif
 }
+
+// The command line flag to disable the crash on WebUI JS error in development
+// builds.
+const char kDisableCrashOnWebUIJsError[] = "disable-crash-on-webui-js-error";
 
 }  // namespace
 
@@ -94,15 +102,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     return;
   }
 
-  scoped_refptr<JsErrorReportProcessor> processor =
-      JsErrorReportProcessor::Get();
-
-  if (!processor) {
-    // This usually means we are not on an official Google build, FYI.
-    DVLOG(3) << "Message not reported, no processor";
-    return;
-  }
-
   // Redact query parameters & fragment. Also the username and password.
   // TODO(crbug.com/40146362) Improve redaction.
   GURL url(source_id);
@@ -135,6 +134,26 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     report.page_url = RedactURL(page_url);
   }
 
+  if (should_crash_on_error_) {
+    // LOG(FATAL) will crash the browser.
+    LOG(FATAL) << "JavaScript error in development build. To disable this "
+                  "crash, use --"
+               << kDisableCrashOnWebUIJsError << ".\n"
+               << "URL: " << report.url << "\n"
+               << "Page URL: " << report.page_url.value_or("(empty)") << "\n"
+               << "Message: " << report.message << "\n"
+               << "Stack trace: " << report.stack_trace.value_or("(empty)");
+  }
+
+  scoped_refptr<JsErrorReportProcessor> processor =
+      JsErrorReportProcessor::Get();
+
+  if (!processor) {
+    // This usually means we are not on an official Google build, FYI.
+    DVLOG(3) << "Message not reported, no processor";
+    return;
+  }
+
   DVLOG(3) << "Error being sent to Google";
   processor->SendErrorReport(std::move(report), base::DoNothing(),
                              web_contents()->GetBrowserContext());
@@ -149,6 +168,21 @@ void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
 
   error_reporting_enabled_ =
       web_ui_->GetController()->IsJavascriptErrorReportingEnabled();
+
+  // WebUIConfigMap::GetConfig() uses the origin of the URL to look up the
+  // config, so this works even if the page URL has a path, e.g.
+  // chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html.
+  WebUIConfig* config = WebUIConfigMap::GetInstance().GetConfig(
+      web_contents()->GetBrowserContext(), navigation_handle->GetURL());
+  should_crash_on_error_ =
+      config && config->ShouldCrashOnJavascriptErrorInDevelopmentBuild() &&
+      !version_info::IsOfficialBuild();
+
+  // Allow disabling the crash via a command line switch, for testing purposes.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableCrashOnWebUIJsError)) {
+    should_crash_on_error_ = false;
+  }
 
   // If we are collecting error reports, make sure the main frame sends us
   // stacks along with those messages. Warning: Don't call

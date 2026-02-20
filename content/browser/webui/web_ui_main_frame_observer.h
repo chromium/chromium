@@ -62,6 +62,9 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   // Do we report JavaScript errors ?
   bool error_reporting_enabled_ = false;
 
+  // Do we crash the browser on JavaScript errors?
+  bool should_crash_on_error_ = false;
+
   raw_ptr<WebUIImpl> web_ui_;
 };
 
