@@ -202,6 +202,17 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       HoverCardDomainLabelHiddenWhenEmpty) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUINewTabURL)),
+      HoverTabAt(0),
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
+      WaitForHide(TabHoverCardBubbleView::kHoverCardDomainLabelElementId),
+      UnhoverTab(), CheckHovercardIsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardShownOnTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
