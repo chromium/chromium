@@ -247,5 +247,6 @@ void ZoomBubbleCoordinator::UpdateZoomBubbleStateAndIconVisibility(
 
   auto* tab_feature = tab_interface->GetTabFeatures();
   CHECK(tab_feature);
-  tab_feature->zoom_view_controller()->UpdatePageActionIcon(is_bubble_visible);
+  tab_feature->zoom_view_controller()->UpdatePageActionIconVisibility(
+      is_bubble_visible);
 }

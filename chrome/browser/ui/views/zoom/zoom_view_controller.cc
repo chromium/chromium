@@ -42,16 +42,24 @@ ZoomViewController::~ZoomViewController() = default;
 void ZoomViewController::UpdatePageActionIconAndBubbleVisibility(
     bool prefer_to_show_bubble,
     bool from_user_gesture) {
-  // Show / hide the bubble first so that UpdatePageActionIcon()
-  // runs with the correct "bubble visible?" state.  This prevents the
-  // icon from being hidden just before we show a bubble (the anchor would
-  // disappear) and also makes sure we hide the icon right after the bubble
-  // is closed while the zoom level is back to default.
+  // Update the page action's accessible/tooltip/icon properties first.
+  //
+  // Showing or refreshing the zoom bubble may synchronously query the anchor's
+  // accessible name/tooltip (and can trigger an accessibility announcement).
+  // If these properties are updated after the bubble visibility update, the
+  // bubble/a11y pipeline can observe stale values from the previous zoom percent.
+  UpdatePageActionIconProperties();
+
+  // Then update bubble visibility so the subsequent icon visibility decision
+  // uses the correct "bubble visible?" state. This prevents the icon from being
+  // hidden just before showing a bubble (the anchor would disappear) and also
+  // ensures the icon is hidden immediately after the bubble is closed when the
+  // zoom level returns to default.
   UpdateBubbleVisibility(prefer_to_show_bubble, from_user_gesture);
-  UpdatePageActionIcon(IsBubbleVisible());
+  UpdatePageActionIconVisibility(IsBubbleVisible());
 }
 
-void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
+void ZoomViewController::UpdatePageActionIconProperties() {
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(GetWebContents());
   CHECK(zoom_controller);
@@ -59,8 +67,6 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
   auto accessible_text = l10n_util::GetStringFUTF16(
       IDS_TOOLTIP_ZOOM, base::FormatPercent(zoom_controller->GetZoomPercent()));
 
-  // Update the tooltip and the accessible name with the current zoom
-  // percentage.
   page_action_controller_->OverrideTooltip(kActionZoomNormal, accessible_text);
   page_action_controller_->OverrideAccessibleName(kActionZoomNormal,
                                                   accessible_text);
@@ -72,7 +78,6 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
           ui::ImageModel::FromVectorIcon(kZoomMinusChromeRefreshIcon));
       break;
     case ZoomController::ZOOM_AT_DEFAULT_ZOOM:
-      // Default and above share the “zoom plus” icon for simplicity.
     case ZoomController::ZOOM_ABOVE_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
           kActionZoomNormal,
@@ -81,9 +86,14 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
     default:
       NOTREACHED();
   }
+}
 
-  // Show or hide the page action icon. Hide it if at default zoom and no
-  // bubble.
+void ZoomViewController::UpdatePageActionIconVisibility(
+    bool is_bubble_visible) {
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(GetWebContents());
+  CHECK(zoom_controller);
+
   const bool is_at_default_zoom = zoom_controller->IsAtDefaultZoom();
   if (is_at_default_zoom && !is_bubble_visible) {
     page_action_controller_->Hide(kActionZoomNormal);
