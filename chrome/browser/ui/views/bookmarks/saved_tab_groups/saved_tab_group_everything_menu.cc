@@ -96,7 +96,7 @@ class STGEverythingMenu::AppMenuSubMenuModelDelegate
     if (model_) {
       model_->SetMenuModelDelegate(nullptr);
     }
-    menu_item_->GetSubmenu()->RemoveObserver(this);
+    observed_view->RemoveObserver(this);
     menu_item_ = nullptr;
   }
 
@@ -121,8 +121,20 @@ int STGEverythingMenu::GenerateTabGroupCommandID(int idx_in_sorted_tab_groups) {
 }
 
 base::Uuid STGEverythingMenu::GetTabGroupIdFromCommandId(int command_id) {
-  const int idx_in_sorted_tab_group = (command_id - kMinCommandId) / kGap;
-  return sorted_non_empty_tab_groups_.at(idx_in_sorted_tab_group);
+  // Check if the command id is in the range of tab group commands and matches
+  // the expected gap.
+  if (command_id < kMinCommandId || (command_id - kMinCommandId) % kGap != 0) {
+    return base::Uuid();
+  }
+
+  const size_t idx_in_sorted_tab_group = (command_id - kMinCommandId) / kGap;
+  // Verify the index is within the bounds of the current sorted tab groups
+  // to prevent out-of-bounds access if the model has changed.
+  if (idx_in_sorted_tab_group >= sorted_non_empty_tab_groups_.size()) {
+    return base::Uuid();
+  }
+
+  return sorted_non_empty_tab_groups_[idx_in_sorted_tab_group];
 }
 
 
@@ -221,6 +233,9 @@ bool STGEverythingMenu::ShouldEnableCommand(int command_id) {
 void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
   base::Uuid group_id =
       GetTabGroupIdFromCommandId(/*command_id=*/parent->GetCommand());
+  if (!group_id.is_valid()) {
+    return;
+  }
 
   if (latest_group_id_ == group_id) {
     return;
@@ -293,11 +308,17 @@ bool STGEverythingMenu::ShouldShowSubmenu() {
 }
 
 void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
-  if (latest_group_id_ &&
-      tabs_models_[latest_group_id_.value()]->HasCommandId(command_id)) {
-    tabs_models_[latest_group_id_.value()]->ExecuteCommand(command_id,
-                                                           event_flags);
-  } else if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
+  // Search through all tab models to find the one that handles this command.
+  // This is more robust than relying on latest_group_id_, which may be null
+  // or out of sync.
+  for (const auto& [group_id, model] : tabs_models_) {
+    if (model->HasCommandId(command_id)) {
+      model->ExecuteCommand(command_id, event_flags);
+      return;
+    }
+  }
+
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
     switch (menu_context_) {
       case MenuContext::kAppMenu:
         base::RecordAction(base::UserMetricsAction(
@@ -322,9 +343,13 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
 
     browser_->command_controller()->ExecuteCommand(command_id);
   } else {
+    const auto group_id = GetTabGroupIdFromCommandId(command_id);
+    if (!group_id.is_valid()) {
+      return;
+    }
+
     base::RecordAction(base::UserMetricsAction(
         "TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2"));
-    const auto group_id = GetTabGroupIdFromCommandId(command_id);
     TabGroupSyncService* tab_group_service =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser_->profile());
@@ -364,6 +389,9 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
   base::RecordAction(base::UserMetricsAction(
       "TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu"));
   const base::Uuid group_id = GetTabGroupIdFromCommandId(command_id);
+  if (!group_id.is_valid()) {
+    return false;
+  }
 
   latest_group_id_ = group_id;
 

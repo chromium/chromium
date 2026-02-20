@@ -3843,6 +3843,7 @@ if (!is_android) {
       "../browser/ui/views/bookmarks/bookmark_test_utils.cc",
       "../browser/ui/views/bookmarks/bookmark_test_utils.h",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar_browsertest.cc",
+      "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu_browsertest.cc",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model_browsertest.cc",
       "../browser/ui/views/confirm_bubble_views_browsertest.cc",
       "../browser/ui/views/content_setting_bubble_contents_browsertest.cc",
