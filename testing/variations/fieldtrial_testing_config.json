@@ -9576,6 +9576,26 @@
             ]
         }
     ],
+    "DnsOverHttpsCloudflareFamilies": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260220",
+                    "enable_features": [
+                        "DohProviderCloudflareFamily",
+                        "DohProviderCloudflareSecurity"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsOverHttpsQuad9Secure": [
         {
             "platforms": [
