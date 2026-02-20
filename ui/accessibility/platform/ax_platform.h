@@ -127,14 +127,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // string.
   const std::string& GetToolkitVersion() const;
 
-  // Enables or disables use of the UI Automation Provider on Windows. If this
-  // function is not called, the provider is enabled or disabled on the basis of
-  // the "UiaProvider" base::Feature. In such cases, the `--enable-features` or
-  // `--disable-features` switches on the browser's command line may be used to
-  // enable or disable use of the provider, respectively. This function may only
-  // be called during browser process startup before any UI is presented.
-  void SetUiaProviderEnabled(bool is_enabled);
-
   // Disables the UI Automation Provider on Windows, and signals to UIA that the
   // previous providers that might have been returned are no longer valid.
   void DisableActiveUiaProvider();
@@ -205,16 +197,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   mutable std::optional<ProductStrings> product_strings_
       GUARDED_BY_CONTEXT(thread_checker_);
 
-  enum class UiaProviderEnablement {
-    // Enabled or disabled via Chrome Variations (base::FeatureList).
-    kVariations,
-    // Explicitly enabled at runtime.
-    kEnabled,
-    // Explicitly disabled at runtime.
-    kDisabled,
-  };
-  UiaProviderEnablement uia_provider_enablement_
-      GUARDED_BY_CONTEXT(thread_checker_) = UiaProviderEnablement::kVariations;
+  // The UI Automation provider may be disabled if incompatible accessibility
+  // tools are detected.
+  bool uia_provider_enabled_ GUARDED_BY_CONTEXT(thread_checker_) = true;
 #endif  // BUILDFLAG(IS_WIN)
 
   // Keeps track of the active AssistiveTech.

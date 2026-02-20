@@ -3372,9 +3372,6 @@ inline constexpr char kChromeForTestingAllowed[] = "chrome_for_testing.allowed";
 #endif
 
 #if BUILDFLAG(IS_WIN)
-inline constexpr char kUiAutomationProviderEnabled[] =
-    "accessibility.ui_automation_provider_enabled";
-
 inline constexpr char kForegroundLaunchOnLogin[] =
     "launch_on_login.foreground.enabled";
 

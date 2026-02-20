@@ -1,17 +1,5 @@
 [
   {
-    "os": [ "win" ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "accessibility.ui_automation_provider_enabled",
-      "pref_location": "local_state",
-      "policy_settings": {
-        "scope": "machine"
-      },
-      "default_value": false,
-      "values_to_test": [
-        false,
-        true
-      ]
-    }
+    "reason_for_missing_test": "Policy was removed"
   }
 ]

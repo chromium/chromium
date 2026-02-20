@@ -21,13 +21,6 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include <tuple>
-
-#include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/platform/ax_platform.h"
-#endif
-
 namespace policy {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -568,63 +561,5 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, FaceGazeForcedOn) {
   EXPECT_TRUE(accessibility_manager->IsFaceGazeEnabled());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-// Tests that the UiAutomationProviderEnabled policy is respected when set, and
-// that the UiaProvider feature takes effect only when the policy is not set.
-class UiAutomationProviderPolicyTest
-    : public PolicyTest,
-      public ::testing::WithParamInterface<
-          std::tuple<PolicyTest::BooleanPolicy, bool>> {
- protected:
-  static PolicyTest::BooleanPolicy GetBooleanPolicyParam() {
-    return std::get<0>(GetParam());
-  }
-
-  static bool GetFeatureEnabledParam() { return std::get<1>(GetParam()); }
-
-  UiAutomationProviderPolicyTest() {
-    feature_list_.InitWithFeatureState(::features::kUiaProvider,
-                                       GetFeatureEnabledParam());
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    if (const auto boolean_policy = GetBooleanPolicyParam();
-        boolean_policy != BooleanPolicy::kNotConfigured) {
-      PolicyMap policy_map;
-      SetPolicy(&policy_map, key::kUiAutomationProviderEnabled,
-                base::Value(boolean_policy == BooleanPolicy::kTrue));
-      UpdateProviderPolicy(policy_map);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(UiAutomationProviderPolicyTest, IsUiaProviderEnabled) {
-  if (const auto boolean_policy = GetBooleanPolicyParam();
-      boolean_policy == BooleanPolicy::kNotConfigured) {
-    // Enabled or disabled according to the variations framework.
-    ASSERT_EQ(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled(),
-              GetFeatureEnabledParam());
-  } else {
-    // Enabled or disabled according to the value of the policy.
-    ASSERT_EQ(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled(),
-              boolean_policy == BooleanPolicy::kTrue);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    UiAutomationProviderPolicyTest,
-    ::testing::Combine(
-        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                          PolicyTest::BooleanPolicy::kFalse,
-                          PolicyTest::BooleanPolicy::kTrue),
-        ::testing::Bool()));
-
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace policy

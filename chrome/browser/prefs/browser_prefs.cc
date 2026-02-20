@@ -1691,10 +1691,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(prefs::kUiAutomationProviderEnabled, false);
-#endif
-
   registry->RegisterBooleanPref(prefs::kQRCodeGeneratorEnabled, true);
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);

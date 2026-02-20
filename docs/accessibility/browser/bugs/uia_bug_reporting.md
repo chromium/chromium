@@ -1,8 +1,6 @@
 # UIA Bug Reporting
 
-UI Automation (UIA) is now enabled by default for most Windows users in Chromium. The only exceptions are:
-* Users on older versions of JAWS that still force the legacy IA2 path. For more info, see the feature flag `DisableUiaProviderWhenJawsIsRunning`.
-* Enterprise-managed devices whose administrators have explicitly disabled UIA via policy. For more information, see [UiaAutomationProviderEnabled](https://chromeenterprise.google/policies/#UiAutomationProviderEnabled).
+UI Automation (UIA) is now enabled by default for most Windows users in Chromium. The only exception is users on older versions of JAWS that still force the legacy IA2 path. For more info, see the feature flag `DisableUiaProviderWhenJawsIsRunning`.
 
 This guide explains how to confirm whether an issue is caused by the UIA provider and how to file the bug correctly.
 

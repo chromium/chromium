@@ -106,21 +106,13 @@ const std::string& AXPlatform::GetToolkitVersion() const {
   return product_strings_->toolkit_version;
 }
 
-void AXPlatform::SetUiaProviderEnabled(bool is_enabled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  CHECK_EQ(uia_provider_enablement_, UiaProviderEnablement::kVariations);
-  uia_provider_enablement_ = is_enabled ? UiaProviderEnablement::kEnabled
-                                        : UiaProviderEnablement::kDisabled;
-}
-
 void AXPlatform::DisableActiveUiaProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (uia_provider_enablement_ == UiaProviderEnablement::kDisabled) {
-    // Already disabled.
-    return;
+  if (!uia_provider_enabled_) {
+    return;  // Already disabled.
   }
 
-  uia_provider_enablement_ = UiaProviderEnablement::kDisabled;
+  uia_provider_enabled_ = false;
 
   // We must call this *after* we disabled the UIA provider to ensure that we
   // don't respond with the same provider to a re-entrant WM_GETOBJECT call. See
@@ -132,9 +124,8 @@ void AXPlatform::DisableActiveUiaProvider() {
 
 bool AXPlatform::IsUiaProviderEnabled() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return uia_provider_enablement_ == UiaProviderEnablement::kVariations
-             ? base::FeatureList::IsEnabled(features::kUiaProvider)
-             : (uia_provider_enablement_ == UiaProviderEnablement::kEnabled);
+  return uia_provider_enabled_ &&
+         base::FeatureList::IsEnabled(features::kUiaProvider);
 }
 
 void AXPlatform::SetUiaClientServiced(bool uia_client_serviced) {

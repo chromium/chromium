@@ -121,7 +121,6 @@
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_win.h"
-#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/ui_base_switches.h"
@@ -588,19 +587,6 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   if (chrome::GetChannel() == version_info::Channel::CANARY) {
     content::RenderProcessHost::SetHungRendererAnalysisFunction(
         &DumpHungRendererProcessImpl);
-  }
-
-  // Pass the value of the UiAutomationProviderEnabled enterprise policy, if
-  // set, down to the accessibility platform after the platform is initialized
-  // in BrowserMainLoop::PostCreateMainMessageLoop() but before any UI is
-  // created.
-  if (auto* local_state = g_browser_process->local_state(); local_state) {
-    if (auto* pref =
-            local_state->FindPreference(prefs::kUiAutomationProviderEnabled);
-        pref && pref->IsManaged()) {
-      ui::AXPlatform::GetInstance().SetUiaProviderEnabled(
-          pref->GetValue()->GetBool());
-    }
   }
 
   return ChromeBrowserMainParts::PreCreateThreads();

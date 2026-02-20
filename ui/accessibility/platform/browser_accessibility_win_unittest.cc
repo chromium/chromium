@@ -3582,7 +3582,6 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, UIACreateExtraAnnouncementNodesFails) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(true);
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kGenericContainer;
@@ -3616,7 +3615,7 @@ TEST_F(BrowserAccessibilityWinTest, UIACreateExtraAnnouncementNodesFails) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, CreateExtraAnnouncementNodes) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(false);
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
 
   // Create AXNodeData objects for a simple document tree.
   AXNodeData root_data;
@@ -3740,7 +3739,7 @@ TEST_F(BrowserAccessibilityWinTest, CreateExtraAnnouncementNodes) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, GetExtraAnnouncementNodes) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(false);
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kGenericContainer;
@@ -3772,7 +3771,7 @@ TEST_F(BrowserAccessibilityWinTest, GetExtraAnnouncementNodes) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, IA2AriaNotifyFallback) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(false);
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kGenericContainer;
@@ -3800,7 +3799,7 @@ TEST_F(BrowserAccessibilityWinTest, IA2AriaNotifyFallback) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, PlatformGetChild) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(false);
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kGenericContainer;
@@ -3847,7 +3846,7 @@ TEST_F(BrowserAccessibilityWinTest, PlatformGetChild) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, PlatformGetLastChild) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(false);
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kGenericContainer;
@@ -3885,7 +3884,7 @@ TEST_F(BrowserAccessibilityWinTest, PlatformGetLastChild) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, PlatformGetSiblings) {
-  AXPlatform::GetInstance().SetUiaProviderEnabled(false);
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kGenericContainer;

@@ -41,7 +41,8 @@ desc: |-
   Support for this policy setting will end in <ph
   name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 146.
 supported_on:
-- chrome.win:125-
+- chrome.win:125-146
+deprecated: true
 features:
   dynamic_refresh: false
   per_profile: false
