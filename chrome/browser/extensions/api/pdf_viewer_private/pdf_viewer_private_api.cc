@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -24,6 +25,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "pdf/buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
@@ -287,6 +289,11 @@ PdfViewerPrivateGlicSummarizeFunction::
     ~PdfViewerPrivateGlicSummarizeFunction() = default;
 
 ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
+  bool success = false;
+  auto cleanup = absl::MakeCleanup([&success] {
+    base::UmaHistogramBoolean("PDF.GlicSummarizeButtonClicked", success);
+  });
+
   content::WebContents* contents = GetSenderWebContents();
   if (!contents) {
     return RespondNow(Error("No web contents."));
@@ -314,6 +321,7 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
                          /*prompt_suggestion=*/"summarize the pdf",
                          /*auto_send=*/true);
 
+  success = true;
   return RespondNow(NoArguments());
 }
 

@@ -4,11 +4,17 @@
 
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 
+#include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/content_restriction.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/tabs/public/tab_interface.h"
@@ -52,6 +58,23 @@ void MaybeHideSearchifyFeaturePromo(tabs::TabInterface* tab_interface) {
   }
 }
 
+void LogGlicSummarizeMetrics(content::RenderFrameHost* render_frame_host) {
+  content::WebContents* web_contents_to_use =
+      GetWebContentsToUse(render_frame_host);
+  if (!web_contents_to_use) {
+    return;
+  }
+
+  bool glic_enabled = glic::GlicEnabling::IsEnabledForProfile(
+      Profile::FromBrowserContext(web_contents_to_use->GetBrowserContext()));
+  base::UmaHistogramBoolean("PDF.GlicEnabled", glic_enabled);
+  bool glic_summarize_button_enabled =
+      pdf_extension_util::ShouldShowGlicSummarizeButton(
+          web_contents_to_use->GetBrowserContext());
+  base::UmaHistogramBoolean("PDF.GlicSummarizeButtonEnabled",
+                            glic_summarize_button_enabled);
+}
+
 }  // namespace
 
 ChromePDFDocumentHelperClient::ChromePDFDocumentHelperClient() = default;
@@ -62,6 +85,16 @@ void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
     content::RenderFrameHost* render_frame_host) {
   MaybeShowFeaturePromo(feature_engagement::kIPHPdfInkSignaturesFeature,
                         GetWebContentsToUse(render_frame_host));
+
+  auto* parent = render_frame_host->GetParent();
+  bool is_pdf_viewer =
+      parent && parent->GetLastCommittedURL().GetWithEmptyPath() ==
+                    base::FilePath(ChromeContentClient::kPDFExtensionPluginPath)
+                        .MaybeAsASCII();
+
+  if (is_pdf_viewer) {
+    LogGlicSummarizeMetrics(render_frame_host);
+  }
 }
 
 void ChromePDFDocumentHelperClient::UpdateContentRestrictions(

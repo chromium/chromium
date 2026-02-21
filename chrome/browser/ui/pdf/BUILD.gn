@@ -15,6 +15,7 @@ source_set("pdf") {
   ]
   deps = [
     "//chrome/browser/download",
+    "//chrome/browser/glic",
     "//chrome/browser/pdf",
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui/tab_contents",
