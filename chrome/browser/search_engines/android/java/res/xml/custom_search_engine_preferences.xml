@@ -19,9 +19,9 @@ found in the LICENSE file.
             android:summary="@string/site_search_search_engines_description"
             app:allowDividerBelow="false" />
 
-        <org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListPreference
+        <org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference
             android:key="custom_search_engine_item_list"
-            android:layout="@layout/custom_search_engine_list_preference"
+            android:layout="@layout/preference_list_recycler_view"
             app:allowDividerAbove="false" />
 
     </PreferenceCategory>

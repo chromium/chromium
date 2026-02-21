@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -38,7 +39,7 @@ public class CustomSearchEngineViewBinder {
     }
 
     public static void bindPreference(
-            PropertyModel model, CustomSearchEngineListPreference pref, PropertyKey propertyKey) {
+            PropertyModel model, SearchEngineListPreference pref, PropertyKey propertyKey) {
         if (CustomSearchEngineProperties.ADAPTER == propertyKey) {
             pref.setAdapter(model.get(CustomSearchEngineProperties.ADAPTER));
         }

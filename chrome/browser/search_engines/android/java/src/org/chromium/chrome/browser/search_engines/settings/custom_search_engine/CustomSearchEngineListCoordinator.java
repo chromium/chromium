@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineProperties.CustomSearchEngineRecyclerViewItems;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -34,7 +35,7 @@ public class CustomSearchEngineListCoordinator {
     public CustomSearchEngineListCoordinator(
             Context context,
             Profile profile,
-            CustomSearchEngineListPreference pref,
+            SearchEngineListPreference pref,
             ModalDialogManager modalDialogManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;

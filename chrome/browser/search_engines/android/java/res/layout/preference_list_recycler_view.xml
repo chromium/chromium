@@ -5,9 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineRecyclerView
+<org.chromium.chrome.browser.search_engines.settings.common.PreferenceListRecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/custom_search_engine_list_container"
     style="@style/PreferenceLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

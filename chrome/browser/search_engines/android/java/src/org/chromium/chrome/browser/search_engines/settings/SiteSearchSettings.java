@@ -12,8 +12,8 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListCoordinator;
-import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchListPreference;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -49,7 +49,7 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
 
         // Search Engines
         SettingsUtils.addPreferencesFromResource(this, R.xml.custom_search_engine_preferences);
-        CustomSearchEngineListPreference customSearchEnginePref =
+        SearchEngineListPreference customSearchEnginePref =
                 findPreference(CUSTOM_SEARCH_ENGINE_LIST_PREF);
         if (customSearchEnginePref != null) {
             if (mSearchEngineCoordinator == null) {

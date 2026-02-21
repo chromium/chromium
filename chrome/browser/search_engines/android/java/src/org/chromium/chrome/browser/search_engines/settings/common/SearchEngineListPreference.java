@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.search_engines.settings.custom_search_engine;
+package org.chromium.chrome.browser.search_engines.settings.common;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -17,12 +17,12 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
 @NullMarked
-public class CustomSearchEngineListPreference extends ChromeBasePreference {
+public class SearchEngineListPreference extends ChromeBasePreference {
     private @Nullable Adapter mAdapter;
 
-    public CustomSearchEngineListPreference(Context context, AttributeSet attrs) {
+    public SearchEngineListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.custom_search_engine_list_preference);
+        setLayoutResource(R.layout.preference_list_recycler_view);
     }
 
     public void setAdapter(@Nullable Adapter adapter) {
