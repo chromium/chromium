@@ -18,3 +18,8 @@ interface MathService {
     // So many different sizes! I guess we don't have to worry about overflow.
     AddTwoInts(TwoInts ns) => (uint32 ret);
 };
+
+interface HandleService {
+    // Sends three message pipe handles and one untyped handle.
+    PassHandles(handle<message_pipe> h1, handle<message_pipe> h2, handle<message_pipe> h3, handle h4);
+};

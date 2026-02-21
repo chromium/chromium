@@ -10,10 +10,11 @@
 chromium::import! {
     "//mojo/public/rust/bindings";
     "//mojo/public/rust/bindings/test:bindings_unittests_mojom_rust";
+    "//mojo/public/rust/system";
 }
 
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
-use test_mojom::{MathService, TwoInts};
+use test_mojom::{HandleService, MathService, TwoInts};
 
 use bindings::register_mojom_state_object_impls;
 
@@ -73,3 +74,47 @@ impl<F: FnMut(u32) + Send> MathService for NotifyingMathService<F> {
 
 register_mojom_state_object_impls!(
     impl<F> MathService for NotifyingMathService<F> where F: FnMut(u32) + Send);
+
+// Implementer of the `HandleService` interface which notifies a
+// user-provided closure when it receives handles.
+pub struct HandleServiceImpl<F>
+where
+    F: FnMut(
+            system::message_pipe::MessageEndpoint,
+            system::message_pipe::MessageEndpoint,
+            system::message_pipe::MessageEndpoint,
+            system::mojo_types::UntypedHandle,
+        ) + Send,
+{
+    pub f: F,
+}
+
+impl<F> test_mojom::HandleService for HandleServiceImpl<F>
+where
+    F: FnMut(
+            system::message_pipe::MessageEndpoint,
+            system::message_pipe::MessageEndpoint,
+            system::message_pipe::MessageEndpoint,
+            system::mojo_types::UntypedHandle,
+        ) + Send,
+{
+    fn PassHandles(
+        &mut self,
+        h1: system::message_pipe::MessageEndpoint,
+        h2: system::message_pipe::MessageEndpoint,
+        h3: system::message_pipe::MessageEndpoint,
+        h4: system::mojo_types::UntypedHandle,
+    ) {
+        (self.f)(h1, h2, h3, h4)
+    }
+}
+
+register_mojom_state_object_impls!(
+    impl<F> HandleService for HandleServiceImpl<F>
+    where F: FnMut(
+        system::message_pipe::MessageEndpoint,
+        system::message_pipe::MessageEndpoint,
+        system::message_pipe::MessageEndpoint,
+        system::mojo_types::UntypedHandle,
+    ) + Send
+);
