@@ -89,7 +89,7 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.show_icon = tab_ui_helper->ShouldDisplayFavicon();
   data.blocked = tab->IsBlocked();
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
-  data.alert_state = tabs::TabAlertController::From(tab)->GetAlertToShow();
+  data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
   data.should_themify_favicon = tab_ui_helper->ShouldThemifyFavicon();
 
   data.should_show_discard_status = tab_ui_helper->ShouldShowDiscardStatus();

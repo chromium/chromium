@@ -570,7 +570,8 @@ void TabHoverCardBubbleView::UpdateCardContent(
   } else {
     domain_url = tab_data.last_committed_url;
     title = tab_data.title;
-    alert_state_ = tab_data.alert_state;
+    alert_state_ =
+        tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state);
   }
 
   std::u16string domain;

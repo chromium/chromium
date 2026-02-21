@@ -55,7 +55,7 @@ struct TabRendererData {
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;
-  std::optional<tabs::TabAlert> alert_state;
+  std::vector<tabs::TabAlert> alert_state;
   bool should_hide_throbber = false;
   bool should_render_loading_title = false;
   bool should_themify_favicon = false;

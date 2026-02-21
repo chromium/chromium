@@ -117,7 +117,7 @@ class TabTest : public ChromeViewsTestBase {
     // Tab size and TabRendererData state.
     if (tab.data_.pinned) {
       EXPECT_EQ(1, VisibleIconCount(tab));
-      if (tab.data_.alert_state.has_value()) {
+      if (tab.data_.alert_state.size()) {
         EXPECT_FALSE(tab.showing_icon_);
         EXPECT_TRUE(tab.showing_alert_indicator_);
       } else {
@@ -134,7 +134,7 @@ class TabTest : public ChromeViewsTestBase {
           EXPECT_FALSE(tab.showing_alert_indicator_);
           break;
         case 2:
-          if (tab.data_.alert_state.has_value()) {
+          if (tab.data_.alert_state.size()) {
             EXPECT_FALSE(tab.showing_icon_);
             EXPECT_TRUE(tab.showing_alert_indicator_);
           } else {
@@ -144,14 +144,14 @@ class TabTest : public ChromeViewsTestBase {
           break;
         default:
           EXPECT_EQ(3, VisibleIconCount(tab));
-          EXPECT_TRUE(tab.data_.alert_state.has_value());
+          EXPECT_FALSE(tab.data_.alert_state.empty());
           break;
       }
     } else {  // Tab not active and not pinned tab.
       switch (VisibleIconCount(tab)) {
         case 1:
           EXPECT_FALSE(tab.showing_close_button_);
-          if (!tab.data_.alert_state.has_value()) {
+          if (tab.data_.alert_state.empty()) {
             EXPECT_FALSE(tab.showing_alert_indicator_);
             EXPECT_TRUE(tab.showing_icon_);
           } else {
@@ -161,7 +161,7 @@ class TabTest : public ChromeViewsTestBase {
           break;
         case 2:
           EXPECT_TRUE(tab.showing_icon_);
-          if (tab.data_.alert_state.has_value()) {
+          if (tab.data_.alert_state.size()) {
             EXPECT_TRUE(tab.showing_alert_indicator_);
           } else {
             EXPECT_FALSE(tab.showing_alert_indicator_);
@@ -169,7 +169,7 @@ class TabTest : public ChromeViewsTestBase {
           break;
         default:
           EXPECT_EQ(3, VisibleIconCount(tab));
-          EXPECT_TRUE(tab.data_.alert_state.has_value());
+          EXPECT_FALSE(tab.data_.alert_state.empty());
       }
     }
 
@@ -460,7 +460,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         if (alert_state) {
           data.alert_state = {alert_state.value()};
         } else {
-          data.alert_state = std::nullopt;
+          data.alert_state.clear();
         }
         tab->SetData(data);
         StopFadeAnimationIfNecessary(*tab);

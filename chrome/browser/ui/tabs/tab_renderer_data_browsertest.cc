@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FromTabInterface) {
   EXPECT_FALSE(data.pinned);
   EXPECT_TRUE(data.show_icon);
   EXPECT_EQ(data.network_state, TabNetworkState::kNone);
-  EXPECT_FALSE(data.alert_state.has_value());
+  EXPECT_TRUE(data.alert_state.empty());
   EXPECT_EQ(data.visible_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.last_committed_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.title, TabUIHelper::From(tab_interface)->GetTitle());
@@ -336,8 +336,9 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, AlertStateAudioPlaying) {
   content::WebContents* wc = tab_interface->GetContents();
   base::ScopedClosureRunner scoped_closure_runner = wc->MarkAudible();
   TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_TRUE(data.alert_state.has_value());
-  EXPECT_EQ(data.alert_state.value(), tabs::TabAlert::kAudioPlaying);
+  EXPECT_NE(data.alert_state.end(),
+            std::find(data.alert_state.begin(), data.alert_state.end(),
+                      tabs::TabAlert::kAudioPlaying));
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldHideThrobber) {
