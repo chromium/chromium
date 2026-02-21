@@ -6,17 +6,19 @@
 
 #include "encoder_dict.h"
 
-#include <stdlib.h>  /* malloc, free */
-
 #include "../common/dictionary.h"
 #include "../common/platform.h"
+#include <brotli/shared_dictionary.h>
 #include "../common/shared_dictionary_internal.h"
 #include "../common/transform.h"
+#include <brotli/encode.h>
 #include "compound_dictionary.h"
 #include "dictionary_hash.h"
+#include "hash_base.h"
+#include "hash.h"
 #include "memory.h"
 #include "quality.h"
-#include "hash.h"
+#include "static_dict_lut.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
@@ -77,6 +79,7 @@ static void BrotliDestroyEncoderDictionary(MemoryManager* m,
   BrotliTrieFree(m, &dict->trie);
 }
 
+#if defined(BROTLI_EXPERIMENTAL)
 /* Word length must be at least 4 bytes */
 static uint32_t Hash(const uint8_t* data, int bits) {
   uint32_t h = BROTLI_UNALIGNED_LOAD32LE(data) * kHashMul32;
@@ -117,8 +120,8 @@ static uint32_t BrotliTrieAlloc(MemoryManager* m, size_t num, BrotliTrie* trie,
     keep_index = (uint32_t)(*keep - trie->pool);
   }
   if (trie->pool_size == 0) {
-    /* Have a dummy node in the front. We do not want the result to be 0, it
-    must be at least 1, 0 represents "null pointer" */
+    /* Have a placeholder node in the front. We do not want the result to be 0,
+       it must be at least 1, 0 represents "null pointer" */
     trie->pool_size = 1;
   }
   BROTLI_ENSURE_CAPACITY(m, BrotliTrieNode, trie->pool, trie->pool_capacity,
@@ -481,6 +484,7 @@ static BROTLI_BOOL ComputeDictionary(MemoryManager* m, int quality,
 
   return BROTLI_TRUE;
 }
+#endif  /* BROTLI_EXPERIMENTAL */
 
 void BrotliInitSharedEncoderDictionary(SharedEncoderDictionary* dict) {
   dict->magic = kSharedDictionaryMagic;
@@ -501,6 +505,7 @@ void BrotliInitSharedEncoderDictionary(SharedEncoderDictionary* dict) {
   dict->max_quality = BROTLI_MAX_QUALITY;
 }
 
+#if defined(BROTLI_EXPERIMENTAL)
 /* TODO(eustas): make sure that tooling will warn user if not all the cutoff
    transforms are available (for low-quality encoder). */
 static BROTLI_BOOL InitCustomSharedEncoderDictionary(
@@ -586,6 +591,7 @@ BROTLI_BOOL BrotliInitCustomSharedEncoderDictionary(
   BrotliSharedDictionaryDestroyInstance(decoded_dict);
   return success;
 }
+#endif  /* BROTLI_EXPERIMENTAL */
 
 void BrotliCleanupSharedEncoderDictionary(MemoryManager* m,
                                           SharedEncoderDictionary* dict) {
@@ -625,8 +631,8 @@ void BrotliDestroyManagedDictionary(ManagedDictionary* dictionary) {
 
 /* Escalate internal functions visibility; for testing purposes only. */
 #if defined(BROTLI_TEST)
-void InitEncoderDictionaryForTest(BrotliEncoderDictionary*);
-void InitEncoderDictionaryForTest(BrotliEncoderDictionary* d) {
+void BrotliInitEncoderDictionaryForTest(BrotliEncoderDictionary*);
+void BrotliInitEncoderDictionaryForTest(BrotliEncoderDictionary* d) {
   InitEncoderDictionary(d);
 }
 #endif

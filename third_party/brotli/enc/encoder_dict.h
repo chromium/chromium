@@ -8,9 +8,8 @@
 #define BROTLI_ENC_ENCODER_DICT_H_
 
 #include "../common/dictionary.h"
-#include "../common/platform.h"
 #include <brotli/shared_dictionary.h>
-#include <brotli/types.h>
+#include "../common/platform.h"
 #include "compound_dictionary.h"
 #include "memory.h"
 #include "static_dict_lut.h"
@@ -29,7 +28,7 @@ Dictionary hierarchy for Encoder:
 ---BrotliEncoderDictionary [up to 64x]
    = for each context, precomputed static dictionary with words + transforms
 
-Dictionary hiearchy from common: similar, but without precomputed hashes
+Dictionary hierarchy from common: similar, but without precomputed hashes
 -BrotliSharedDictionary
 --BrotliDictionary [up to 64x]
 --BrotliTransforms [up to 64x]
@@ -51,8 +50,11 @@ typedef struct BrotliTrie {
   BrotliTrieNode root;
 } BrotliTrie;
 
+#if defined(BROTLI_EXPERIMENTAL)
 BROTLI_INTERNAL const BrotliTrieNode* BrotliTrieSub(const BrotliTrie* trie,
     const BrotliTrieNode* node, uint8_t c);
+#endif  /* BROTLI_EXPERIMENTAL */
+
 /* Dictionary data (words and transforms) for 1 possible context */
 typedef struct BrotliEncoderDictionary {
   const BrotliDictionary* words;
@@ -103,9 +105,6 @@ typedef struct ContextualEncoderDictionary {
   BrotliEncoderDictionary* instances_;
 } ContextualEncoderDictionary;
 
-static const uint32_t kSharedDictionaryMagic = 0xDEBCEDE1;
-static const uint32_t kManagedDictionaryMagic = 0xDEBCEDE2;
-
 typedef struct SharedEncoderDictionary {
   /* Magic value to distinguish this struct from PreparedDictionary for
      certain external usages. */
@@ -131,12 +130,14 @@ typedef struct ManagedDictionary {
 BROTLI_INTERNAL void BrotliInitSharedEncoderDictionary(
     SharedEncoderDictionary* dict);
 
+#if defined(BROTLI_EXPERIMENTAL)
 /* Initializes to shared dictionary that will be parsed from
    encoded_dict. Requires that you keep the encoded_dict buffer
    around, parts of data will point to it. */
 BROTLI_INTERNAL BROTLI_BOOL BrotliInitCustomSharedEncoderDictionary(
     MemoryManager* m, const uint8_t* encoded_dict, size_t size,
     int quality, SharedEncoderDictionary* dict);
+#endif  /* BROTLI_EXPERIMENTAL */
 
 BROTLI_INTERNAL void BrotliCleanupSharedEncoderDictionary(
     MemoryManager* m, SharedEncoderDictionary* dict);

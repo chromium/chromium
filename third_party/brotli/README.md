@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/google/brotli/actions/workflows/build_test.yml/badge.svg" alt="GitHub Actions Build Status" href="https://github.com/google/brotli/actions?query=branch%3Amaster">
+  <img src="https://oss-fuzz-build-logs.storage.googleapis.com/badges/brotli.svg" alt="Fuzzing Status" href="https://oss-fuzz-build-logs.storage.googleapis.com/index.html#brotli">
+</p>
 <p align="center"><img src="https://brotli.org/brotli.svg" alt="Brotli" width="64"></p>
 
 ### Introduction
@@ -8,36 +12,47 @@ and 2nd order context modeling, with a compression ratio comparable to the best
 currently available general-purpose compression methods. It is similar in speed
 with deflate but offers more dense compression.
 
-The specification of the Brotli Compressed Data Format is defined in [RFC 7932](https://tools.ietf.org/html/rfc7932).
+The specification of the Brotli Compressed Data Format is defined in
+[RFC 7932](https://datatracker.ietf.org/doc/html/rfc7932).
 
 Brotli is open-sourced under the MIT License, see the LICENSE file.
 
-Brotli mailing list:
-https://groups.google.com/forum/#!forum/brotli
+> **Please note:** brotli is a "stream" format; it does not contain
+> meta-information, like checksums or uncompressed data length. It is possible
+> to modify "raw" ranges of the compressed stream and the decoder will not
+> notice that.
 
-[![TravisCI Build Status](https://travis-ci.org/google/brotli.svg?branch=master)](https://travis-ci.org/google/brotli)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/google/brotli?branch=master&svg=true)](https://ci.appveyor.com/project/szabadka/brotli)
+### Installation
+
+In most Linux distributions, installing `brotli` is just a matter of using
+the package management system. For example in Debian-based distributions:
+`apt install brotli` will install `brotli`. On MacOS, you can use
+[Homebrew](https://brew.sh/): `brew install brotli`.
+
+[![brotli packaging status](https://repology.org/badge/vertical-allrepos/brotli.svg?exclude_unsupported=1&columns=3&exclude_sources=modules,site&header=brotli%20packaging%20status)](https://repology.org/project/brotli/versions)
+
+Of course you can also build brotli from sources.
 
 ### Build instructions
 
-#### Autotools-style CMake
+#### Vcpkg
 
-[configure-cmake](https://github.com/nemequ/configure-cmake) is an
-autotools-style configure script for CMake-based projects (not supported on Windows).
+You can download and install brotli using the
+[vcpkg](https://github.com/Microsoft/vcpkg/) dependency manager:
 
-The basic commands to build, test and install brotli are:
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install brotli
 
-    $ mkdir out && cd out
-    $ ../configure-cmake
-    $ make
-    $ make test
-    $ make install
-  
-By default, debug binaries are built. To generate "release" `Makefile` specify `--disable-debug` option to `configure-cmake`.
+The brotli port in vcpkg is kept up to date by Microsoft team members and
+community contributors. If the version is out of date, please [create an issue
+or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
 
 #### Bazel
 
-See [Bazel](http://www.bazel.build/)
+See [Bazel](https://www.bazel.build/)
 
 #### CMake
 
@@ -48,10 +63,6 @@ The basic commands to build and install brotli are:
     $ cmake --build . --config Release --target install
 
 You can use other [CMake](https://cmake.org/) configuration.
-
-#### Premake5
-
-See [Premake5](https://premake.github.io/)
 
 #### Python
 
@@ -66,20 +77,38 @@ To install the tip-of-the-tree version, run:
 See the [Python readme](python/README.md) for more details on installing
 from source, development, and testing.
 
+### Contributing
+
+We glad to answer/library related questions in
+[brotli mailing list](https://groups.google.com/g/brotli).
+
+Regular issues / feature requests should be reported in
+[issue tracker](https://github.com/google/brotli/issues).
+
+For reporting vulnerability please read [SECURITY](SECURITY.md).
+
+For contributing changes please read [CONTRIBUTING](CONTRIBUTING.md).
+
 ### Benchmarks
 * [Squash Compression Benchmark](https://quixdb.github.io/squash-benchmark/) / [Unstable Squash Compression Benchmark](https://quixdb.github.io/squash-benchmark/unstable/)
-* [Large Text Compression Benchmark](http://mattmahoney.net/dc/text.html)
+* [Large Text Compression Benchmark](https://mattmahoney.net/dc/text.html)
 * [Lzturbo Benchmark](https://sites.google.com/site/powturbo/home/benchmark)
 
 ### Related projects
 > **Disclaimer:** Brotli authors take no responsibility for the third party projects mentioned in this section.
 
-Independent [decoder](https://github.com/madler/brotli) implementation by Mark Adler, based entirely on format specification.
+Independent [decoder](https://github.com/madler/brotli) implementation
+by Mark Adler, based entirely on format specification.
 
-JavaScript port of brotli [decoder](https://github.com/devongovett/brotli.js). Could be used directly via `npm install brotli`
+JavaScript port of brotli [decoder](https://github.com/devongovett/brotli.js).
+Could be used directly via `npm install brotli`
 
-Hand ported [decoder / encoder](https://github.com/dominikhlbg/BrotliHaxe) in haxe by Dominik Homberger. Output source code: JavaScript, PHP, Python, Java and C#
+Hand ported [decoder / encoder](https://github.com/dominikhlbg/BrotliHaxe)
+in haxe by Dominik Homberger.
+Output source code: JavaScript, PHP, Python, Java and C#
 
 7Zip [plugin](https://github.com/mcmilk/7-Zip-Zstd)
 
-Dart [native bindings](https://github.com/thosakwe/brotli)
+Dart compression framework with
+[fast FFI-based Brotli implementation](https://pub.dev/documentation/es_compression/latest/brotli/)
+with ready-to-use prebuilt binaries for Win/Linux/Mac

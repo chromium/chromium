@@ -9,19 +9,15 @@
 
 #include "memory.h"
 
-#include <stdlib.h>  /* exit, free, malloc */
-#include <string.h>  /* memcpy */
-
 #include "../common/platform.h"
-#include <brotli/types.h>
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
 
-#define MAX_PERM_ALLOCATED 128
-#define MAX_NEW_ALLOCATED 64
-#define MAX_NEW_FREED 64
+#define MAX_NEW_ALLOCATED (BROTLI_ENCODER_MEMORY_MANAGER_SLOTS >> 2)
+#define MAX_NEW_FREED (BROTLI_ENCODER_MEMORY_MANAGER_SLOTS >> 2)
+#define MAX_PERM_ALLOCATED (BROTLI_ENCODER_MEMORY_MANAGER_SLOTS >> 1)
 
 #define PERM_ALLOCATED_OFFSET 0
 #define NEW_ALLOCATED_OFFSET MAX_PERM_ALLOCATED
@@ -67,6 +63,7 @@ void BrotliWipeOutMemoryManager(MemoryManager* m) {
 
 static void SortPointers(void** items, const size_t n) {
   /* Shell sort. */
+  /* TODO(eustas): fine-tune for "many slots" case */
   static const size_t gaps[] = {23, 10, 4, 1};
   int g = 0;
   for (; g < 4; ++g) {

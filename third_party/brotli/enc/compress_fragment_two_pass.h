@@ -15,7 +15,6 @@
 
 #include "../common/constants.h"
 #include "../common/platform.h"
-#include <brotli/types.h>
 #include "entropy_encode.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)

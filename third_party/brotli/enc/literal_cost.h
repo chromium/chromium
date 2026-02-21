@@ -11,7 +11,6 @@
 #define BROTLI_ENC_LITERAL_COST_H_
 
 #include "../common/platform.h"
-#include <brotli/types.h>
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {

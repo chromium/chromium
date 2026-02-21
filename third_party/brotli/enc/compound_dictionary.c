@@ -7,9 +7,8 @@
 #include "compound_dictionary.h"
 
 #include "../common/platform.h"
-#include <brotli/types.h>
+#include <brotli/shared_dictionary.h>
 #include "memory.h"
-#include "quality.h"
 
 static PreparedDictionary* CreatePreparedDictionaryWithParams(MemoryManager* m,
     const uint8_t* source, size_t source_size, uint32_t bucket_bits,
@@ -33,7 +32,7 @@ static PreparedDictionary* CreatePreparedDictionaryWithParams(MemoryManager* m,
   uint32_t* slot_offsets = NULL;
   uint16_t* heads = NULL;
   uint32_t* items = NULL;
-  uint8_t* source_copy = NULL;
+  uint8_t** source_ref = NULL;
   uint32_t i;
   uint32_t* slot_size = NULL;
   uint32_t* slot_limit = NULL;
@@ -97,7 +96,7 @@ static PreparedDictionary* CreatePreparedDictionaryWithParams(MemoryManager* m,
   /* Step 3: transfer data to "slim" hasher. */
   alloc_size = sizeof(PreparedDictionary) + (sizeof(uint32_t) << slot_bits) +
       (sizeof(uint16_t) << bucket_bits) + (sizeof(uint32_t) * total_items) +
-      source_size;
+      sizeof(uint8_t*);
 
   result = (PreparedDictionary*)BROTLI_ALLOC(m, uint8_t, alloc_size);
   if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(result)) {
@@ -107,14 +106,15 @@ static PreparedDictionary* CreatePreparedDictionaryWithParams(MemoryManager* m,
   slot_offsets = (uint32_t*)(&result[1]);
   heads = (uint16_t*)(&slot_offsets[num_slots]);
   items = (uint32_t*)(&heads[num_buckets]);
-  source_copy = (uint8_t*)(&items[total_items]);
+  source_ref = (uint8_t**)(&items[total_items]);
 
-  result->magic = kPreparedDictionaryMagic;
-  result->source_offset = total_items;
+  result->magic = kLeanPreparedDictionaryMagic;
+  result->num_items = total_items;
   result->source_size = (uint32_t)source_size;
   result->hash_bits = hash_bits;
   result->bucket_bits = bucket_bits;
   result->slot_bits = slot_bits;
+  BROTLI_UNALIGNED_STORE_PTR(source_ref, source);
 
   total_items = 0;
   for (i = 0; i < num_slots; ++i) {
@@ -145,7 +145,6 @@ static PreparedDictionary* CreatePreparedDictionaryWithParams(MemoryManager* m,
   }
 
   BROTLI_FREE(m, flat);
-  memcpy(source_copy, source, source_size);
   return result;
 }
 
@@ -190,10 +189,16 @@ BROTLI_BOOL AttachPreparedDictionary(
   compound->chunk_offsets[index + 1] = compound->total_size;
   {
     uint32_t* slot_offsets = (uint32_t*)(&dictionary[1]);
-    uint16_t* heads = (uint16_t*)(&slot_offsets[1u << dictionary->slot_bits]);
-    uint32_t* items = (uint32_t*)(&heads[1u << dictionary->bucket_bits]);
-    compound->chunk_source[index] =
-        (const uint8_t*)(&items[dictionary->source_offset]);
+    uint16_t* heads = (uint16_t*)(&slot_offsets[(size_t)1u << dictionary->slot_bits]);
+    uint32_t* items = (uint32_t*)(&heads[(size_t)1u << dictionary->bucket_bits]);
+    const void* tail = (void*)&items[dictionary->num_items];
+    if (dictionary->magic == kPreparedDictionaryMagic) {
+      compound->chunk_source[index] = (const uint8_t*)tail;
+    } else {
+      /* dictionary->magic == kLeanPreparedDictionaryMagic */
+      compound->chunk_source[index] =
+          (const uint8_t*)BROTLI_UNALIGNED_LOAD_PTR((const uint8_t**)tail);
+    }
   }
   compound->num_chunks++;
   return BROTLI_TRUE;

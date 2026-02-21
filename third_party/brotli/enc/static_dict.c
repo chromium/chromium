@@ -11,17 +11,11 @@
 #include "../common/transform.h"
 #include "encoder_dict.h"
 #include "find_match_length.h"
+#include "hash_base.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
-
-static BROTLI_INLINE uint32_t Hash(const uint8_t* data) {
-  uint32_t h = BROTLI_UNALIGNED_LOAD32LE(data) * kDictHashMul32;
-  /* The higher bits contain more mixture from the multiplication,
-     so we take our results from there. */
-  return h >> (32 - kDictNumBits);
-}
 
 static BROTLI_INLINE void AddMatch(size_t distance, size_t len, size_t len_code,
                                    uint32_t* matches) {
@@ -79,6 +73,7 @@ static BROTLI_BOOL BrotliFindAllStaticDictionaryMatchesFor(
     const BrotliEncoderDictionary* dictionary, const uint8_t* data,
     size_t min_length, size_t max_length, uint32_t* matches) {
   BROTLI_BOOL has_found_match = BROTLI_FALSE;
+#if defined(BROTLI_EXPERIMENTAL)
   if (dictionary->has_words_heavy) {
     const BrotliTrieNode* node = &dictionary->trie.root;
     size_t l = 0;
@@ -93,8 +88,9 @@ static BROTLI_BOOL BrotliFindAllStaticDictionaryMatchesFor(
     }
     return has_found_match;
   }
+#endif  /* BROTLI_EXPERIMENTAL */
   {
-    size_t offset = dictionary->buckets[Hash(data)];
+    size_t offset = dictionary->buckets[Hash15(data)];
     BROTLI_BOOL end = !offset;
     while (!end) {
       DictWord w = dictionary->dict_words[offset++];
@@ -339,7 +335,7 @@ static BROTLI_BOOL BrotliFindAllStaticDictionaryMatchesFor(
   /* Transforms with prefixes " " and "." */
   if (max_length >= 5 && (data[0] == ' ' || data[0] == '.')) {
     BROTLI_BOOL is_space = TO_BROTLI_BOOL(data[0] == ' ');
-    size_t offset = dictionary->buckets[Hash(&data[1])];
+    size_t offset = dictionary->buckets[Hash15(&data[1])];
     BROTLI_BOOL end = !offset;
     while (!end) {
       DictWord w = dictionary->dict_words[offset++];
@@ -434,7 +430,7 @@ static BROTLI_BOOL BrotliFindAllStaticDictionaryMatchesFor(
     if ((data[1] == ' ' &&
          (data[0] == 'e' || data[0] == 's' || data[0] == ',')) ||
         (data[0] == 0xC2 && data[1] == 0xA0)) {
-      size_t offset = dictionary->buckets[Hash(&data[2])];
+      size_t offset = dictionary->buckets[Hash15(&data[2])];
       BROTLI_BOOL end = !offset;
       while (!end) {
         DictWord w = dictionary->dict_words[offset++];
@@ -463,7 +459,7 @@ static BROTLI_BOOL BrotliFindAllStaticDictionaryMatchesFor(
          data[3] == 'e' && data[4] == ' ') ||
         (data[0] == '.' && data[1] == 'c' && data[2] == 'o' &&
          data[3] == 'm' && data[4] == '/')) {
-      size_t offset = dictionary->buckets[Hash(&data[5])];
+      size_t offset = dictionary->buckets[Hash15(&data[5])];
       BROTLI_BOOL end = !offset;
       while (!end) {
         DictWord w = dictionary->dict_words[offset++];

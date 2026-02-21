@@ -1,15 +1,17 @@
-brotli(1) -- brotli, unbrotli - compress or decompress files
-================================================================
+# NAME
 
-SYNOPSIS
---------
+brotli(1) -- brotli, brcat, unbrotli - compress or decompress files
+
+# SYNOPSIS
 
 `brotli` [*OPTION|FILE*]...
 
+`brcat` is equivalent to `brotli --decompress --concatenated --stdout`
+
 `unbrotli` is equivalent to `brotli --decompress`
 
-DESCRIPTION
------------
+# DESCRIPTION
+
 `brotli` is a generic-purpose lossless compression algorithm that compresses
 data using a combination of a modern variant of the **LZ77** algorithm, Huffman
 coding and 2-nd order context modeling, with a compression ratio comparable to
@@ -52,8 +54,7 @@ Default suffix is `.br`, but it could be specified with `--suffix` option.
 
 Conflicting or duplicate _options_ are not allowed.
 
-OPTIONS
--------
+# OPTIONS
 
 * `-#`:
     compression level (0-9); bigger values cause denser, but slower compression
@@ -81,12 +82,18 @@ OPTIONS
     increase output verbosity
 * `-w NUM`, `--lgwin=NUM`:
     set LZ77 window size (0, 10-24) (default: 24); window size is
-    `(2**NUM - 16)`; 0 lets compressor decide over the optimal value; bigger
-    windows size improve density; decoder might require up to window size
+    `(pow(2, NUM) - 16)`; 0 lets compressor decide over the optimal value;
+    bigger windows size improve density; decoder might require up to window size
     memory to operate
+* `-C B64`, `--comment=B64`:
+    set comment; argument is base64-decoded first;
+    when decoding: check stream comment;
+    when encoding: embed comment (fingerprint)
 * `-D FILE`, `--dictionary=FILE`:
     use FILE as raw (LZ77) dictionary; same dictionary MUST be used both for
     compression and decompression
+* `-K`, `--concatenated`:
+    when decoding, allow concatenated brotli streams as input
 * `-S SUF`, `--suffix=SUF`:
     output file suffix (default: `.br`)
 * `-V`, `--version`:
@@ -94,8 +101,7 @@ OPTIONS
 * `-Z`, `--best`:
     use best compression level (default); same as "`-q 11`"
 
-SEE ALSO
---------
+# SEE ALSO
 
 `brotli` file format is defined in
 [RFC 7932](https://www.ietf.org/rfc/rfc7932.txt).
@@ -105,6 +111,6 @@ SEE ALSO
 
 Mailing list: https://groups.google.com/forum/#!forum/brotli
 
-BUGS
-----
+# BUGS
+
 Report bugs at: https://github.com/google/brotli/issues
