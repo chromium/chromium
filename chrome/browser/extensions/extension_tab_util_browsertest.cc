@@ -168,12 +168,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::WebContents* web_contents = GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+
   ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
                                   web_contents, GURL("chrome://version"));
-  // After opening a new window, the last active browser should be the new
-  // one.
-  BrowserWindowInterface* const new_browser =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+
+  // Wait for the new browser to be created and get its pointer.
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(new_browser);
+
   // Ensure it's not the same as the original browser.
   ASSERT_NE(browser(), new_browser);
   auto url = new_browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
@@ -487,8 +491,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   regular = browser_created_observer->Wait();
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
   // Ensure that the regular browser is the foreground browser.
+  ui_test_utils::WaitForBrowserSetLastActive(regular);
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(regular, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
   EXPECT_EQ(1, regular->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       regular->tab_strip_model()->GetActiveWebContents()));
