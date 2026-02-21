@@ -122,6 +122,7 @@
 }
 
 #composebox {
+  border-radius: inherit;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
