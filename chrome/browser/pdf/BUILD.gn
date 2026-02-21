@@ -32,6 +32,7 @@ source_set("pdf") {
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
+    "//chrome/browser/glic",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/pdf:resources",

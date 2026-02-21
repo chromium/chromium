@@ -43,6 +43,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -325,8 +326,7 @@ base::DictValue GetAdditionalData(content::BrowserContext* context) {
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave));
 
 #if BUILDFLAG(ENABLE_GLIC)
-  dict.Set("pdfGlicSummarizeEnabled",
-           base::FeatureList::IsEnabled(features::kPdfGlicSummarize));
+  dict.Set("pdfGlicSummarizeEnabled", ShouldShowGlicSummarizeButton(context));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
@@ -421,6 +421,26 @@ void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
   extensions::EventRouter* event_router = extensions::EventRouter::Get(context);
   event_router->DispatchEventToExtension(extension_misc::kPdfExtensionId,
                                          std::move(event));
+}
+
+bool ShouldShowGlicSummarizeButton(content::BrowserContext* context) {
+#if BUILDFLAG(ENABLE_GLIC)
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
+    return false;
+  }
+
+  // If the user has not passed FRE, and `kPdfGlicSummarizeFre` is false, then
+  // don't show the button.
+  if (!base::FeatureList::IsEnabled(features::kPdfGlicSummarizeFre) &&
+      !glic::GlicEnabling::HasConsentedForProfile(profile)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 }  // namespace pdf_extension_util
