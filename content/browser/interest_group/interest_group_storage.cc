@@ -59,6 +59,7 @@
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -80,15 +81,8 @@ using blink::mojom::ViewOrClickCountsPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 using network::AdAuctionEventRecord;
 
-// Allow lookups using `std::string_view`.
-struct StringViewHasher : public std::hash<std::string_view> {
-  using is_transparent = void;
-};
-
-using InterestGroupsByName = std::unordered_map<std::string,
-                                                StorageInterestGroup,
-                                                StringViewHasher,
-                                                std::equal_to<>>;
+using InterestGroupsByName =
+    absl::flat_hash_map<std::string, StorageInterestGroup>;
 
 // The raw view and click data for a given (provider_origin, eligible_origin)
 // tuple.
