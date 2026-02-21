@@ -142,6 +142,7 @@ class LevelDBTestTransaction : public TransactionalLevelDBTransaction {
     DCHECK(fail_method != FailMethod::NOTHING);
     DCHECK_GT(fail_on_call_num, 0);
   }
+  ~LevelDBTestTransaction() override = default;
 
   leveldb::Status Get(std::string_view key,
                       std::string* value,
@@ -177,8 +178,6 @@ class LevelDBTestTransaction : public TransactionalLevelDBTransaction {
   }
 
  private:
-  ~LevelDBTestTransaction() override = default;
-
   FailMethod fail_method_;
   int fail_on_call_num_;
   int current_call_num_;
@@ -193,6 +192,7 @@ class LevelDBTraceTransaction : public TransactionalLevelDBTransaction {
         class_name_("LevelDBTransaction"),
         commit_tracer_(class_name_, "Commit", tx_num),
         get_tracer_(class_name_, "Get", tx_num) {}
+  ~LevelDBTraceTransaction() override = default;
 
   leveldb::Status Get(std::string_view key,
                       std::string* value,
@@ -208,8 +208,6 @@ class LevelDBTraceTransaction : public TransactionalLevelDBTransaction {
 
  private:
   const std::string class_name_;
-
-  ~LevelDBTraceTransaction() override = default;
 
   FunctionTracer commit_tracer_;
   FunctionTracer get_tracer_;
@@ -352,20 +350,20 @@ MockBrowserTestIndexedDBClassFactory::CreateLevelDBDirectTransaction(
   return DefaultTransactionalLevelDBFactory::CreateLevelDBDirectTransaction(db);
 }
 
-scoped_refptr<TransactionalLevelDBTransaction>
+std::unique_ptr<TransactionalLevelDBTransaction>
 MockBrowserTestIndexedDBClassFactory::CreateLevelDBTransaction(
     TransactionalLevelDBDatabase* db,
     std::unique_ptr<LevelDBScope> scope) {
   instance_count_[FailClass::LEVELDB_TRANSACTION] =
       instance_count_[FailClass::LEVELDB_TRANSACTION] + 1;
   if (only_trace_calls_) {
-    return base::MakeRefCounted<LevelDBTraceTransaction>(
+    return std::make_unique<LevelDBTraceTransaction>(
         db, std::move(scope), instance_count_[FailClass::LEVELDB_TRANSACTION]);
   }
   if (failure_class_ == FailClass::LEVELDB_TRANSACTION &&
       instance_count_[FailClass::LEVELDB_TRANSACTION] ==
           fail_on_instance_num_[FailClass::LEVELDB_TRANSACTION]) {
-    return base::MakeRefCounted<LevelDBTestTransaction>(
+    return std::make_unique<LevelDBTestTransaction>(
         db, std::move(scope), failure_method_,
         fail_on_call_num_[FailClass::LEVELDB_TRANSACTION]);
   }

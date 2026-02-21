@@ -43,7 +43,7 @@ class TransactionalLevelDBFactory {
 
   // A LevelDBTransaction uses the LevelDBScope to write changes, and
   // appropriately flushes the scope for reads.
-  virtual scoped_refptr<TransactionalLevelDBTransaction>
+  virtual std::unique_ptr<TransactionalLevelDBTransaction>
   CreateLevelDBTransaction(TransactionalLevelDBDatabase* db,
                            std::unique_ptr<LevelDBScope> scope) = 0;
 
@@ -66,7 +66,7 @@ class DefaultTransactionalLevelDBFactory : public TransactionalLevelDBFactory {
       size_t max_open_iterators) override;
   std::unique_ptr<LevelDBDirectTransaction> CreateLevelDBDirectTransaction(
       TransactionalLevelDBDatabase* db) override;
-  scoped_refptr<TransactionalLevelDBTransaction> CreateLevelDBTransaction(
+  std::unique_ptr<TransactionalLevelDBTransaction> CreateLevelDBTransaction(
       TransactionalLevelDBDatabase* db,
       std::unique_ptr<LevelDBScope> scope) override;
   std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(

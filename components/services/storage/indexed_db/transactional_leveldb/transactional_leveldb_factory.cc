@@ -30,11 +30,11 @@ DefaultTransactionalLevelDBFactory::CreateLevelDBDirectTransaction(
   return base::WrapUnique(new LevelDBDirectTransaction(db));
 }
 
-scoped_refptr<TransactionalLevelDBTransaction>
+std::unique_ptr<TransactionalLevelDBTransaction>
 DefaultTransactionalLevelDBFactory::CreateLevelDBTransaction(
     TransactionalLevelDBDatabase* db,
     std::unique_ptr<LevelDBScope> scope) {
-  return base::WrapRefCounted(
+  return base::WrapUnique(
       new TransactionalLevelDBTransaction(db, std::move(scope)));
 }
 

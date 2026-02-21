@@ -281,7 +281,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     base::WeakPtr<BackingStore> backing_store_;
     base::WeakPtr<Database> database_;
 
-    scoped_refptr<TransactionalLevelDBTransaction> transaction_;
+    std::unique_ptr<TransactionalLevelDBTransaction> transaction_;
 
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
         external_object_change_map_;

@@ -1766,7 +1766,7 @@ Status BackingStore::Database::DeleteDatabase(
     base::OnceClosure on_complete) {
   TRACE_EVENT0("IndexedDB", "BackingStore::DeleteDatabase");
 
-  scoped_refptr<TransactionalLevelDBTransaction> transaction =
+  std::unique_ptr<TransactionalLevelDBTransaction> transaction =
       GetTransactionalLevelDBFactory()->CreateLevelDBTransaction(
           backing_store_->db(),
           backing_store_->db()->scopes()->CreateScope(std::move(locks)));
