@@ -93,6 +93,20 @@ enum SwitchProButtons {
   SWITCH_PRO_BUTTON_COUNT
 };
 
+// The DualSense controller has a Touchpad button that has no
+// equivalent in the Standard Gamepad.
+enum DualSenseButtons {
+  DUAL_SENSE_BUTTON_TOUCHPAD = BUTTON_INDEX_COUNT,
+  DUAL_SENSE_BUTTON_COUNT
+};
+
+// The DualShock 4 controller has a Touchpad button that has no
+// equivalent in the Standard Gamepad.
+enum Dualshock4Buttons {
+  DUALSHOCK_BUTTON_TOUCHPAD = BUTTON_INDEX_COUNT,
+  DUALSHOCK_BUTTON_COUNT
+};
+
 // Common mapping functions
 GamepadButton AxisToButton(float input);
 GamepadButton AxisNegativeAsButton(float input);

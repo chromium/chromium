@@ -29,6 +29,8 @@ GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kAllowlistHidrawGamepads);
 #if BUILDFLAG(IS_APPLE)
 GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kXboxUseGameControllerDataFetcherMac);
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kPlayStationUseGameControllerDataFetcherMac);
 #endif  // BUILDFLAG(IS_APPLE)
 
 GAMEPAD_FEATURES_EXPORT bool IsGamepadMultitouchEnabled();

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
@@ -20,6 +21,11 @@ namespace {
 
 // Default value for sharpness to use for haptics, must be between [0.0, 1.0]
 const float kDefaultHapticSharpness = 1.0f;
+
+// Sony Gamepad touchpad dimensions
+// TODO: Verify this also applies to DualSense
+constexpr uint16_t kSonyTouchDimensionX = 1920;
+constexpr uint16_t kSonyTouchDimensionY = 942;
 
 // Helper to create a new haptic player for a continuous vibration event.
 id<CHHapticPatternPlayer> CreateContinuousPlayer(double intensity,
@@ -214,9 +220,9 @@ void GameControllerGamepad::UpdateState(Gamepad& pad) {
                     extended_gamepad.leftThumbstickButton);
   SetOptionalButton(pad, BUTTON_INDEX_RIGHT_THUMBSTICK,
                     extended_gamepad.rightThumbstickButton);
-  if ([extended_gamepad isKindOfClass:[GCXboxGamepad class]]) {
-    GCXboxGamepad* xbox_gamepad = (GCXboxGamepad*)extended_gamepad;
 
+  if (GCXboxGamepad* xbox_gamepad =
+          base::apple::ObjCCast<GCXboxGamepad>(extended_gamepad)) {
     // Game controller framework doesn't detect share button presses over
     // USB. Bug filed: FB21568043
     SetOptionalButton(pad, XBOX_SERIES_X_BUTTON_SHARE,
@@ -224,6 +230,46 @@ void GameControllerGamepad::UpdateState(Gamepad& pad) {
     if (xbox_gamepad.buttonShare) {
       pad.buttons_length = XBOX_SERIES_X_BUTTON_COUNT;
     }
+  } else if (GCDualSenseGamepad* dualsense_gamepad =
+                 base::apple::ObjCCast<GCDualSenseGamepad>(extended_gamepad)) {
+    SetOptionalButton(pad, DUAL_SENSE_BUTTON_TOUCHPAD,
+                      dualsense_gamepad.touchpadButton);
+    if (dualsense_gamepad.touchpadButton) {
+      pad.buttons_length = DUAL_SENSE_BUTTON_COUNT;
+    }
+
+    uint32_t touch_count = 0;
+    if (ProcessTouchPoint(dualsense_gamepad.touchpadPrimary,
+                          primary_touch_state_,
+                          pad.touch_events[touch_count])) {
+      touch_count++;
+    }
+    if (ProcessTouchPoint(dualsense_gamepad.touchpadSecondary,
+                          secondary_touch_state_,
+                          pad.touch_events[touch_count])) {
+      touch_count++;
+    }
+    pad.touch_events_length = touch_count;
+  } else if (GCDualShockGamepad* dualshock_gamepad =
+                 base::apple::ObjCCast<GCDualShockGamepad>(extended_gamepad)) {
+    SetOptionalButton(pad, DUALSHOCK_BUTTON_TOUCHPAD,
+                      dualshock_gamepad.touchpadButton);
+    if (dualshock_gamepad.touchpadButton) {
+      pad.buttons_length = DUALSHOCK_BUTTON_COUNT;
+    }
+
+    uint32_t touch_count = 0;
+    if (ProcessTouchPoint(dualshock_gamepad.touchpadPrimary,
+                          primary_touch_state_,
+                          pad.touch_events[touch_count])) {
+      touch_count++;
+    }
+    if (ProcessTouchPoint(dualshock_gamepad.touchpadSecondary,
+                          secondary_touch_state_,
+                          pad.touch_events[touch_count])) {
+      touch_count++;
+    }
+    pad.touch_events_length = touch_count;
   }
 
 #undef BUTTON
@@ -303,6 +349,11 @@ void GameControllerGamepad::InitializeStaticData(Gamepad& pad) {
       pad.vibration_actuator.not_null = true;
     }
   }
+
+  if ([controller_ isKindOfClass:[GCDualSenseGamepad class]] ||
+      [controller_ isKindOfClass:[GCDualShockGamepad class]]) {
+    pad.supports_touch_events_ = true;
+  }
 }
 
 void GameControllerGamepad::SetVibration(
@@ -344,6 +395,41 @@ void GameControllerGamepad::DoShutdown() {
 
 base::WeakPtr<AbstractHapticGamepad> GameControllerGamepad::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool GameControllerGamepad::ProcessTouchPoint(
+    GCControllerDirectionPad* dpad,
+    GameControllerGamepad::TouchState& state,
+    GamepadTouch& touch) {
+  // Check if the touchpad is being touched
+  if (dpad.xAxis.value == 0.0f && dpad.yAxis.value == 0.0f) {
+    state.active = false;
+    return false;
+  }
+
+  // If the touch just started, assign it a new unique id
+  if (!state.active) {
+    state.active = true;
+    state.id = next_touch_id_++;
+
+    if (!initial_touch_id_.has_value()) {
+      initial_touch_id_ = state.id;
+    }
+  }
+
+  touch.touch_id = state.id - initial_touch_id_.value();
+  touch.surface_id = 0;
+  touch.surface_width = kSonyTouchDimensionX;
+  touch.surface_height = kSonyTouchDimensionY;
+  touch.has_surface_dimensions = true;
+
+  // Normalization: GC framework provides [-1, 1].
+  // Coordinate System: -1.0 is Top/Left, 1.0 is Bottom/Right.
+  // Apple's yAxis is "up-positive" (1.0 is top), so we negate it.
+  touch.x = dpad.xAxis.value;
+  touch.y = -dpad.yAxis.value;
+
+  return true;
 }
 
 }  // namespace device

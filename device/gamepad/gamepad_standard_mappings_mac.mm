@@ -178,11 +178,6 @@ void MapperPlaystationSixAxis(const Gamepad& input, Gamepad* mapped) {
 }
 
 void MapperDualshock4(const Gamepad& input, Gamepad* mapped) {
-  enum Dualshock4Buttons {
-    DUALSHOCK_BUTTON_TOUCHPAD = BUTTON_INDEX_COUNT,
-    DUALSHOCK_BUTTON_COUNT
-  };
-
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[1];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[2];
@@ -206,11 +201,6 @@ void MapperDualshock4(const Gamepad& input, Gamepad* mapped) {
 }
 
 void MapperDualSense(const Gamepad& input, Gamepad* mapped) {
-  enum DualSenseButtons {
-    DUAL_SENSE_BUTTON_TOUCHPAD = BUTTON_INDEX_COUNT,
-    DUAL_SENSE_BUTTON_COUNT
-  };
-
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[1];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[2];
