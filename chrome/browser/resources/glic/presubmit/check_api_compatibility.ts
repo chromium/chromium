@@ -25,16 +25,17 @@ type DeepRequired<T> = {
   [K in keyof T]: DeepRequired<T[K]>
 }&Required<T>;
 
-// Get the set of BackwardsCompatibleTypes in both old and current. This
-// allows us to ignore types removed from BackwardsCompatibleTypes.
+// Get the set of TheBackwardsCompatibleTypes in both old and current. This
+// allows us to ignore types removed from TheBackwardsCompatibleTypes.
 type OldTypes = {
-  [K in keyof oldEdited.BackwardsCompatibleTypes &
-   keyof current.BackwardsCompatibleTypes]: oldEdited
-                                              .BackwardsCompatibleTypes[K]
+  [K in keyof oldEdited.TheBackwardsCompatibleTypes &
+   keyof current.TheBackwardsCompatibleTypes]: oldEdited
+                                                 .TheBackwardsCompatibleTypes[K]
 };
 type CurrentTypes = {
-  [K in keyof oldEdited.BackwardsCompatibleTypes &
-   keyof current.BackwardsCompatibleTypes]: current.BackwardsCompatibleTypes[K]
+  [K in keyof oldEdited.TheBackwardsCompatibleTypes &
+   keyof current.TheBackwardsCompatibleTypes]: current
+                                                 .TheBackwardsCompatibleTypes[K]
 };
 
 /*
@@ -56,14 +57,14 @@ These are the kinds of changes we might see, and how they're categorized.
 // Note: We're just using assignment to verify these types are compatible.
 
 export const oldTypesAreCompatibleWithCurrent: CurrentTypes =
-    null as any as oldEdited.BackwardsCompatibleTypes;
+    null as any as oldEdited.TheBackwardsCompatibleTypes;
 export const currentTypesAreCompatibleWithOld: OldTypes =
-    null as any as current.BackwardsCompatibleTypes;
+    null as any as current.TheBackwardsCompatibleTypes;
 
 // Make all fields required, then check that all fields are compatible. This
 // ensures we don't remove optional fields.
 export const canNotRemoveAnything: DeepRequired<OldTypes> =
-    null as any as DeepRequired<current.BackwardsCompatibleTypes>;
+    null as any as DeepRequired<current.TheBackwardsCompatibleTypes>;
 
 
 // Ensure ClosedEnums are not modified, and ExtensibleEnums are only extended.
@@ -82,8 +83,9 @@ type ClosedEnumsDoNotChange = AllValues<{
 assertNever<ClosedEnumsDoNotChange>();
 
 type CheckExtensibleEnums = AllValues<{
-  [K in keyof current.ExtensibleEnums & keyof oldOriginal.ExtensibleEnums]:
+  [K in keyof current.TheExtensibleEnums &
+   keyof oldOriginal.TheExtensibleEnums]:
       EnumOnlyExtended<
-          oldOriginal.ExtensibleEnums[K], current.ExtensibleEnums[K]>;
+          oldOriginal.TheExtensibleEnums[K], current.TheExtensibleEnums[K]>;
 }>;
 assertNever<CheckExtensibleEnums>();

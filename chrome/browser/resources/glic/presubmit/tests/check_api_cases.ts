@@ -5,6 +5,8 @@
 export declare interface InterfaceA {
   someMethod?(text: string): Promise<void>;
   someRequiredMethod(text: string): Promise<void>;
+  returnsEnum1(): ExtEnum1;
+  takesEnum1(value: ExtEnum1): void;
   // ErrorAddRequiredMethod:edit-add-lines:
   // newRequired(): void;
 
@@ -17,16 +19,14 @@ export declare interface InterfaceB {
   someRequiredMethod(text: string): Promise<void>;
 }
 
-// ErrorMissingBackwardsCompatibleDecl:edit-add-lines:
-// export declare interface InterfaceC {
-// }
-
 // ErrorInterfaceIsNotDeclare:edit-add-lines:
 // export interface InterfaceC {}
 
 export enum ExtEnum1 {
   A = 0,
   B = 1,
+  // OkAddNewEnumValue:edit-add-lines:
+  // C = 2,
 }
 
 export enum ExtEnum2 {
@@ -44,24 +44,9 @@ export enum ClosedEnum1 {
 
 export interface PrivateTypes {
   privateTypes: PrivateTypes;
-  backwardsCompatibleTypes: BackwardsCompatibleTypes;
   closedEnums: ClosedEnums;
-  extensibleEnums: ExtensibleEnums;
-}
-
-export interface BackwardsCompatibleTypes {
-  interfaceA: InterfaceA;
-  interfaceB: InterfaceB;
-  // ErrorInterfaceIsNotDeclare:edit-add-lines:
-  // interfaceC: InterfaceC;
 }
 
 export interface ClosedEnums {
   closedEnum1: typeof ClosedEnum1;
-}
-
-export interface ExtensibleEnums {
-  extEnum1: typeof ExtEnum1;
-  // ErrorEnumNotDeclared:edit-remove-lines: 1
-  extEnum2: typeof ExtEnum2;
 }

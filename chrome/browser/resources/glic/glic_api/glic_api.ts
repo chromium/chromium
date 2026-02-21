@@ -2371,113 +2371,22 @@ export declare interface SelectAutofillSuggestionsDialogResponse {
 //
 
 // Types not intended to be used externally, and therefore may not be
-// backwards compatible.
+// backwards compatible. All remaining types can only be updated in
+// backwards compatible ways.
 export interface PrivateTypes {
   privateTypes: PrivateTypes;
-  backwardsCompatibleTypes: BackwardsCompatibleTypes;
   closedEnums: ClosedEnums;
-  extensibleEnums: ExtensibleEnums;
 }
 
-// Types to be checked for backwards compatibility on presubmit, excluding
-// enums.
-export interface BackwardsCompatibleTypes {
-  actInFocusedTabParams: ActInFocusedTabParams;
-  actInFocusedTabResult: ActInFocusedTabResult;
-  additionalContext: AdditionalContext;
-  additionalContextPart: AdditionalContextPart;
-  annotatedPageData: AnnotatedPageData;
-  autofillSuggestion: AutofillSuggestion;
-  browserHost: GlicBrowserHost;
-  capturedRegion: CapturedRegion;
-  captureRegionResult: CaptureRegionResult;
-  chromeVersion: ChromeVersion;
-  conversationInfo: ConversationInfo;
-  createActorTabOptions: CreateActorTabOptions;
-  createSkillRequest: CreateSkillRequest;
-  createTabOptions: CreateTabOptions;
-  credential: Credential;
-  documentData: DocumentData;
-  draggableArea: DraggableArea;
-  errorReasonTypes: ErrorReasonTypes;
-  errorWithReason: ErrorWithReason<any>;
-  focusedTabData: FocusedTabData;
-  focusedTabDataHasFocus: FocusedTabDataHasFocus;
-  focusedTabDataHasNoFocus: FocusedTabDataHasNoFocus;
-  formFillingRequest: FormFillingRequest;
-  formFillingResponse: FormFillingResponse;
-  frameMetadata: FrameMetadata;
-  getPinCandidatesOptions: GetPinCandidatesOptions;
-  glicApiBootMessage: GlicApiBootMessage;
-  glicBrowserHostJournal: GlicBrowserHostJournal;
-  glicBrowserHostMetrics: GlicBrowserHostMetrics;
-  hostRegistry: GlicHostRegistry;
-  imageOriginAnnotations: ImageOriginAnnotations;
-  journal: Journal;
-  metaTag: MetaTag;
-  navigationConfirmationRequest: NavigationConfirmationRequest;
-  navigationConfirmationResponse: NavigationConfirmationResponse;
-  observable: Observable<any>;
-  observableValue: ObservableValue<any>;
-  observer: Observer<any>;
-  onResponseStoppedDetails: OnResponseStoppedDetails;
-  openPanelInfo: OpenPanelInfo;
-  openSettingsOptions: OpenSettingsOptions;
-  osPermissionType: OsPermissionType;
-  pageMetadata: PageMetadata;
-  panelOpeningData: PanelOpeningData;
-  panelState: PanelState;
-  pdfDocumentData: PdfDocumentData;
-  pinCandidate: PinCandidate;
-  pinTabsOptions: PinTabsOptions;
-  rect: Rect;
-  resizeWindowOptions: ResizeWindowOptions;
-  resumeActorTaskResult: ResumeActorTaskResult;
-  screenshot: Screenshot;
-  scrollToNodeSelector: ScrollToNodeSelector;
-  scrollToParams: ScrollToParams;
-  scrollToSelector: ScrollToSelector;
-  scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
-  scrollToTextSelector: ScrollToTextSelector;
-  selectAutofillSuggestionsDialogRequest:
-      SelectAutofillSuggestionsDialogRequest;
-  selectAutofillSuggestionsDialogResponse:
-      SelectAutofillSuggestionsDialogResponse;
-  selectCredentialDialogRequest: SelectCredentialDialogRequest;
-  selectCredentialDialogResponse: SelectCredentialDialogResponse;
-  skill: Skill;
-  skillPreview: SkillPreview;
-  subscriber: Subscriber;
-  suggestionContent: SuggestionContent;
-  tabContextOptions: TabContextOptions;
-  tabContextResult: TabContextResult;
-  tabData: TabData;
-  taskOptions: TaskOptions;
-  unpinTabsOptions: UnpinTabsOptions;
-  updateSkillRequest: UpdateSkillRequest;
-  userConfirmationDialogRequest: UserConfirmationDialogRequest;
-  userConfirmationDialogResponse: UserConfirmationDialogResponse;
-  userProfileInfo: UserProfileInfo;
-  viewChangedNotification: ViewChangedNotification;
-  viewChangeRequestActuation: ViewChangeRequestActuation;
-  viewChangeRequestConversation: ViewChangeRequestConversation;
-  webClient: GlicWebClient;
-  webPageData: WebPageData;
-  withGlicApi: WithGlicApi;
-  zeroStateSuggestions: ZeroStateSuggestions;
-  zeroStateSuggestionsOptions: ZeroStateSuggestionsOptions;
-  zeroStateSuggestionsV2: ZeroStateSuggestionsV2;
-  invokeOptions: InvokeOptions;
-}
-
-// Enums that should not be changed.
+// Enums that should not be changed. All other enums may be extended
+// in future versions.
 export interface ClosedEnums {
   panelStateKind: typeof PanelStateKind;
   webClientMode: typeof WebClientMode;
 
   // NOTICE: Enums below this line were added here by default, and
-  // may in fact be safe to extend. Please verify safety before moving
-  // them to ExtensibleEnums.
+  // may in fact be safe to extend. Please verify safety before
+  // removing them.
   webClientModel: typeof WebClientModel;
   skillSource: typeof SkillSource;
   switchConversationErrorReason: typeof SwitchConversationErrorReason;
@@ -2488,30 +2397,6 @@ export interface ClosedEnums {
   additionalContextSource: typeof AdditionalContextSource;
   unpinTrigger: typeof UnpinTrigger;
   responseStopCause: typeof ResponseStopCause;
-}
-
-// Enums that can be extended.
-export interface ExtensibleEnums {
-  captureScreenshotErrorReason: typeof CaptureScreenshotErrorReason;
-  captureRegionErrorReason: typeof CaptureRegionErrorReason;
-  scrollToErrorReason: typeof ScrollToErrorReason;
-  webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
-  invocationSource: typeof InvocationSource;
-  actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
-  createTaskErrorReason: typeof CreateTaskErrorReason;
-  performActionsErrorReason: typeof PerformActionsErrorReason;
-  settingsPageField: typeof SettingsPageField;
-  hostCapability: typeof HostCapability;
-  actorTaskState: typeof ActorTaskState;
-  actorTaskPauseReason: typeof ActorTaskPauseReason;
-  actorTaskStopReason: typeof ActorTaskStopReason;
-  UserGrantedPermissionDuration: typeof UserGrantedPermissionDuration;
-  webUseCounter: typeof WebUseCounter;
-  platform: typeof Platform;
-  cancelActionsResult: typeof CancelActionsResult;
-  featureMode: typeof FeatureMode;
-  microphoneStatus: typeof MicrophoneStatus;
-  formFactor: typeof FormFactor;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

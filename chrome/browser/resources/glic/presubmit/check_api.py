@@ -11,12 +11,19 @@ import re
 import sys
 import tempfile
 import subprocess
+from dataclasses import dataclass
 
 DEBUG = False
 
 API_FILE = 'chrome/browser/resources/glic/glic_api/glic_api.ts'
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 ROOT_PATH = os.path.join(SCRIPT_PATH, '../../../../../')
+
+
+@dataclass
+class InterfaceInfo:
+    is_declare: bool
+    type_parameters: list[str]
 
 
 def StripComments(source_text):
@@ -43,34 +50,34 @@ def ReadTypeSet(source_text: str, set_name: str) -> set[str]:
 
 
 # Returns a dict of interface name to whether it is declared with declare.
-def GetAllExportedInterfaces(source_text: str) -> dict[str, bool]:
-    pattern = r'\n\s*export\s+(declare\s+)?interface\s+(\w+)'
+def GetAllExportedInterfaces(source_text: str) -> dict[str, InterfaceInfo]:
+    pattern = r'\n\s*export\s+(declare\s+)?interface\s+(\w+)(<[^<>]*>)?'
     matches = re.finditer(pattern, StripComments(source_text))
-    return {match.group(2): match.group(1) is not None for match in matches}
+    result = {}
+    for match in matches:
+        type_parameters = []
+        if match.group(3):
+            type_parameters = [
+                p.strip() for p in match.group(3)[1:-1].split(',')
+            ]
+        result[match.group(2)] = InterfaceInfo(
+            match.group(1) is not None, type_parameters)
+    return result
 
 
-def CheckForUncategorizedInterfaces(source_text: str) -> list[str]:
-    interfaces = GetAllExportedInterfaces(source_text)
-    categorized_interfaces = ReadTypeSet(source_text,
-                                         'BackwardsCompatibleTypes').union(
-                                             ReadTypeSet(
-                                                 source_text, 'PrivateTypes'))
-    uncategorized = interfaces.keys() - categorized_interfaces
-    if uncategorized:
-        return [
-            'All exported interfaces in glic_api.ts must be added to either ' +
-            'BackwardsCompatibleTypes or PrivateTypes. Please move the ' +
-            'following to one of those declarations: ' +
-            ', '.join(uncategorized)
-        ]
-    return []
+def GetBackwardsCompatibleTypes(source_text: str) -> dict[str, InterfaceInfo]:
+    all_types = GetAllExportedInterfaces(source_text)
+    for private_type in ReadTypeSet(source_text, 'PrivateTypes'):
+        del all_types[private_type]
+    return all_types
 
 
 def CheckForInterfacesWithoutDeclare(source_text: str) -> list[str]:
     interfaces = GetAllExportedInterfaces(source_text)
     interfaces_without_declare = set(
-        interface_name for interface_name, is_declare in interfaces.items()
-        if not is_declare)
+        interface_name
+        for interface_name, interface_info in interfaces.items()
+        if not interface_info.is_declare)
     interfaces_without_declare -= ReadTypeSet(source_text, 'PrivateTypes')
     if interfaces_without_declare:
         return [
@@ -79,27 +86,6 @@ def CheckForInterfacesWithoutDeclare(source_text: str) -> list[str]:
             ', '.join(interfaces_without_declare)
         ]
     return []
-
-
-def CheckAllEnumsAreCategorized(source_text: str) -> list[str]:
-    errors = []
-    enums = GetAllEnumDefinitions(source_text)
-    extensible = ReadTypeSet(source_text, 'ExtensibleEnums')
-    closed = ReadTypeSet(source_text, 'ClosedEnums')
-    uncategorized_enums = enums.keys() - extensible - closed
-    if extensible & closed:
-        errors.append(
-            'Enums cannot be in both ExtensibleEnums and ClosedEnums. ' +
-            'The following were found in both: ' +
-            ', '.join(extensible & closed))
-
-    if uncategorized_enums:
-        errors.append(
-            'All enums in glic_api.ts must be added to either ' +
-            'ExtensibleEnums or ClosedEnums. Please move the following ' +
-            'enums to one of those declarations: ' +
-            ', '.join(uncategorized_enums))
-    return errors
 
 
 # returns a dict of enum name to enum declaration text.
@@ -127,6 +113,42 @@ def ReplaceEnums(old_source: str, new_source: str,
     return old_source
 
 
+def BuildBackwardsCompatibleTypesDeclaration(source_text: str) -> str:
+    types = GetBackwardsCompatibleTypes(source_text)
+
+    def MakeDecl(name):
+        type_suffix = ''
+        if types[name].type_parameters:
+            type_suffix = '<' + ','.join(
+                ['any'] * len(types[name].type_parameters)) + '>'
+        return f'  {name}: {name}{type_suffix};'
+
+    declarations = [MakeDecl(t) for t in sorted(types.keys())]
+    return 'export interface TheBackwardsCompatibleTypes {\n' + '\n'.join(
+        declarations) + '\n}'
+
+
+def BuildExtensibleEnumsTypeDeclaration(source_text: str) -> str:
+    enums = GetAllEnumDefinitions(source_text)
+    closed_enums = ReadTypeSet(source_text, 'ClosedEnums')
+    extensible_enums = enums.keys() - closed_enums
+
+    def MakeDecl(name):
+        return f'  {name}: typeof {name};'
+
+    declarations = [MakeDecl(t) for t in sorted(extensible_enums)]
+    return 'export interface TheExtensibleEnums {\n' + '\n'.join(
+        declarations) + '\n}'
+
+
+def AddAnnotations(source_text: str) -> str:
+    return '\n'.join([
+        source_text,
+        BuildBackwardsCompatibleTypesDeclaration(source_text),
+        BuildExtensibleEnumsTypeDeclaration(source_text)
+    ])
+
+
 def CheckCompatibility(old_contents: str, new_contents: str) -> list[str]:
     tmp_dir = tempfile.TemporaryDirectory()
     tmp_dir_name = tmp_dir.name
@@ -136,14 +158,14 @@ def CheckCompatibility(old_contents: str, new_contents: str) -> list[str]:
         tmp_dir_name = tempfile.mkdtemp()
 
     with open(os.path.join(tmp_dir_name, 'old_glic_api.ts'), 'w') as oldfile:
-        oldfile.write(old_contents)
+        oldfile.write(AddAnnotations(old_contents))
     old_edited_contents = ReplaceEnums(
         old_contents, new_contents, ReadTypeSet(old_contents, 'ClosedEnums'))
     with open(os.path.join(tmp_dir_name, 'old_edited_glic_api.ts'),
               'w') as old_edited_file:
-        old_edited_file.write(old_edited_contents)
+        old_edited_file.write(AddAnnotations(old_edited_contents))
     with open(os.path.join(tmp_dir_name, 'new_glic_api.ts'), 'w') as newfile:
-        newfile.write(new_contents)
+        newfile.write(AddAnnotations(new_contents))
 
     tsconfig_path = os.path.join(tmp_dir_name, 'tsconfig.json')
     with open(os.path.join(tmp_dir_name, 'tsconfig.json'),
@@ -213,9 +235,7 @@ def main():
     with open(glic_api_path, 'r') as glic_api_file:
         new_contents = glic_api_file.read()
 
-    errors.extend(CheckAllEnumsAreCategorized(new_contents))
     errors.extend(CheckForInterfacesWithoutDeclare(new_contents))
-    errors.extend(CheckForUncategorizedInterfaces(new_contents))
     if old_contents is None:
         old_contents = new_contents
     if not skip_compatibility_check:
