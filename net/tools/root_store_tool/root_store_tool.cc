@@ -250,6 +250,16 @@ void MaybeWriteConstraintsConstant(
       constraint_params.push_back("{}");
     }
 
+    constraint_params.push_back(
+        constraint.has_index_not_after()
+            ? base::NumberToString(constraint.index_not_after())
+            : kNulloptString);
+
+    constraint_params.push_back(
+        constraint.has_index_after()
+            ? base::NumberToString(constraint.index_after())
+            : kNulloptString);
+
     constraint_strings.push_back(
         base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
 

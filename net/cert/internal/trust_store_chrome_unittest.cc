@@ -8,6 +8,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
@@ -344,6 +345,8 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
             std::vector<uint32_t>({125, 0, 6368, 2}));
   EXPECT_THAT(constraints[0].permitted_dns_names,
               testing::ElementsAre("foo.example.com", "bar.example.com"));
+  EXPECT_EQ(constraints[0].index_not_after, 1234U);
+  EXPECT_EQ(constraints[0].index_after, 987U);
 
   EXPECT_THAT(constraints[1].permitted_dns_names,
               testing::ElementsAre("mtc.example.com"));
@@ -356,6 +359,97 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
                   .GetConstraintsForCert(
                       MakeTestPathForMtcAnchor(unknown_mtc_anchor).get())
                   .empty());
+}
+
+TEST(TrustStoreChromeTestNoFixture, MTCConstraintsFromProto) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+
+  constexpr uint8_t kConstrainedAnchorLogId[] = {0x03, 0x08, 0x04, 0x09, 0x06};
+  MtcLogBuilder constrained_mtc_log_builder(kConstrainedAnchorLogId);
+  constrained_mtc_log_builder.AddUnusedEntries(1);
+  constrained_mtc_log_builder.AdvanceLandmark();
+  auto constrained_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      kConstrainedAnchorLogId,
+      constrained_mtc_log_builder.GetLandmarkSubtreeHashes());
+  const bssl::TrustAnchor constrainted_anchor(
+      constrained_mtc_anchor->CertTrust(), constrained_mtc_anchor);
+
+  chrome_root_store::RootStore root_store;
+
+  scoped_refptr<X509Certificate> root = MakeTestRoot();
+  root_store.add_trust_anchors()->set_der(
+      base::as_string_view(root->cert_span()));
+
+  auto* mtc_anchor = root_store.add_mtc_anchors();
+  mtc_anchor->set_tls_trust_anchor(true);
+  mtc_anchor->set_log_id(base::as_string_view(kConstrainedAnchorLogId));
+
+  auto* proto_constraints = mtc_anchor->add_constraints();
+  proto_constraints->set_max_version_exclusive("100.2.3.4");
+
+  proto_constraints = mtc_anchor->add_constraints();
+  proto_constraints->set_sct_not_after_sec(23456);
+  proto_constraints->set_sct_all_after_sec(23455);
+  proto_constraints->set_min_version("100.2.3.4");
+  proto_constraints->set_max_version_exclusive("999.0.9999.1");
+  proto_constraints->add_permitted_dns_names("name1.com");
+  proto_constraints->add_permitted_dns_names("name2.org");
+  proto_constraints->set_index_not_after(34567);
+  proto_constraints->set_index_after(34566);
+
+  std::optional<ChromeRootStoreData> root_store_data =
+      ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+  ASSERT_TRUE(root_store_data);
+
+  // MtcMetadata matching the test anchors must be present, or the anchors
+  // won't be added to TrustStoreChrome. The test doesn't otherwise use the
+  // MtcMetadata.
+  chrome_root_store::MtcMetadata mtc_metadata_proto;
+  mtc_metadata_proto.set_update_time_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  constrained_mtc_log_builder.FillMtcMetadataAnchorProto(
+      mtc_metadata_proto.add_mtc_anchor_data());
+  auto mtc_metadata = ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
+      mtc_metadata_proto);
+  ASSERT_TRUE(mtc_metadata);
+
+  TrustStoreChrome trust_store_chrome(&root_store_data.value(), &*mtc_metadata);
+
+  base::span<const ChromeRootCertConstraints> constraints =
+      trust_store_chrome.GetConstraintsForCert(
+          MakeTestPathForMtcAnchor(constrained_mtc_anchor).get());
+  ASSERT_EQ(constraints.size(), 2U);
+
+  EXPECT_EQ(constraints[0].max_version_exclusive.value().components(),
+            std::vector<uint32_t>({100, 2, 3, 4}));
+
+  ASSERT_TRUE(constraints[1].sct_not_after.has_value());
+  EXPECT_EQ(
+      constraints[1].sct_not_after.value().InMillisecondsSinceUnixEpoch() /
+          1000,
+      23456);
+
+  ASSERT_TRUE(constraints[1].sct_all_after.has_value());
+  EXPECT_EQ(
+      constraints[1].sct_all_after.value().InMillisecondsSinceUnixEpoch() /
+          1000,
+      23455);
+
+  ASSERT_TRUE(constraints[1].min_version.has_value());
+  EXPECT_EQ(constraints[1].min_version.value().components(),
+            std::vector<uint32_t>({100, 2, 3, 4}));
+
+  ASSERT_TRUE(constraints[1].max_version_exclusive.has_value());
+  EXPECT_EQ(constraints[1].max_version_exclusive.value().components(),
+            std::vector<uint32_t>({999, 0, 9999, 1}));
+
+  EXPECT_THAT(constraints[1].permitted_dns_names,
+              testing::ElementsAre("name1.com", "name2.org"));
+
+  EXPECT_EQ(constraints[1].index_not_after, 34567U);
+  EXPECT_EQ(constraints[1].index_after, 34566U);
 }
 
 // TODO(crbug.com/452986179): test MTC anchor constraint overrides once
@@ -786,21 +880,27 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
        std::nullopt,
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("31")),
-       {}}};
+       {},
+       std::nullopt,
+       std::nullopt}};
 
   override_constraints[crypto::SHA256Hash(root4->cert_span())] = {
       {std::nullopt,
        std::nullopt,
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("41")),
-       {}}};
+       {},
+       std::nullopt,
+       std::nullopt}};
 
   override_constraints[crypto::SHA256Hash(root6->cert_span())] = {
       {std::nullopt,
        std::nullopt,
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("61")),
-       {}}};
+       {},
+       std::nullopt,
+       std::nullopt}};
 
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(

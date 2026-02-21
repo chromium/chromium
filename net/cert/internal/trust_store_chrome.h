@@ -39,6 +39,9 @@ struct StaticChromeRootCertConstraints {
   std::optional<std::string_view> max_version_exclusive;
 
   base::span<const std::string_view> permitted_dns_names;
+
+  std::optional<uint64_t> index_not_after;
+  std::optional<uint64_t> index_after;
 };
 
 struct ChromeRootCertInfo {
@@ -69,7 +72,9 @@ struct NET_EXPORT ChromeRootCertConstraints {
                             std::optional<base::Time> sct_all_after,
                             std::optional<base::Version> min_version,
                             std::optional<base::Version> max_version_exclusive,
-                            std::vector<std::string> permitted_dns_names);
+                            std::vector<std::string> permitted_dns_names,
+                            std::optional<uint64_t> index_not_after,
+                            std::optional<uint64_t> index_after);
   explicit ChromeRootCertConstraints(
       const StaticChromeRootCertConstraints& constraints);
   ~ChromeRootCertConstraints();
@@ -85,6 +90,9 @@ struct NET_EXPORT ChromeRootCertConstraints {
   std::optional<base::Version> max_version_exclusive;
 
   std::vector<std::string> permitted_dns_names;
+
+  std::optional<uint64_t> index_not_after;
+  std::optional<uint64_t> index_after;
 };
 
 // ChromeRootStoreData is a container class that stores the Chrome Root Store
@@ -268,6 +276,9 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   //   `minversion=${dotted_version_string}`
   //   `maxversionexclusive=${dotted_version_string}`
   //   `dns=${permitted_dns_name}` (can be specified multiple times)
+  //
+  // TODO(crbug.com/452986180): support constraint overrides for MTC index
+  // constraints.
   //
   // If the same root hash is specified multiple times in separate constraint
   // specifications, each time will create a new constraintset for that root,

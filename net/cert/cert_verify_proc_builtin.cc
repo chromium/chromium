@@ -769,6 +769,26 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return false;
     }
 
+    if (path->trust_anchor.MTCAnchor() &&
+        (constraint.index_not_after.has_value() ||
+         constraint.index_after.has_value())) {
+      const auto& leaf = path->certs.front();
+      uint64_t index;
+      if (!bssl::der::ParseUint64(leaf->tbs().serial_number, &index)) {
+        return false;
+      }
+
+      if (constraint.index_not_after.has_value() &&
+          index > constraint.index_not_after) {
+        return false;
+      }
+
+      if (constraint.index_after.has_value() &&
+          index <= constraint.index_after) {
+        return false;
+      }
+    }
+
     return true;
   }
 

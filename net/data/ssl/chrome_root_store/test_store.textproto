@@ -85,6 +85,8 @@ mtc_anchors {
     max_version_exclusive: "125.0.6368.2"
     permitted_dns_names: "foo.example.com"
     permitted_dns_names: "bar.example.com"
+    index_not_after: 1234
+    index_after: 987
   }
   constraints: {
     permitted_dns_names: "mtc.example.com"

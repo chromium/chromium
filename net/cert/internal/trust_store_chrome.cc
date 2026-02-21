@@ -37,19 +37,25 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     std::optional<base::Time> sct_all_after,
     std::optional<base::Version> min_version,
     std::optional<base::Version> max_version_exclusive,
-    std::vector<std::string> permitted_dns_names)
+    std::vector<std::string> permitted_dns_names,
+    std::optional<uint64_t> index_not_after,
+    std::optional<uint64_t> index_after)
     : sct_not_after(sct_not_after),
       sct_all_after(sct_all_after),
       min_version(std::move(min_version)),
       max_version_exclusive(std::move(max_version_exclusive)),
-      permitted_dns_names(std::move(permitted_dns_names)) {}
+      permitted_dns_names(std::move(permitted_dns_names)),
+      index_not_after(index_not_after),
+      index_after(index_after) {}
 
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     const StaticChromeRootCertConstraints& constraints)
     : sct_not_after(constraints.sct_not_after),
       sct_all_after(constraints.sct_all_after),
       min_version(constraints.min_version),
-      max_version_exclusive(constraints.max_version_exclusive) {
+      max_version_exclusive(constraints.max_version_exclusive),
+      index_not_after(constraints.index_not_after),
+      index_after(constraints.index_after) {
   for (std::string_view name : constraints.permitted_dns_names) {
     permitted_dns_names.emplace_back(name);
   }
@@ -157,7 +163,12 @@ std::optional<std::vector<ChromeRootCertConstraints>> CreateConstraints(
                             base::Seconds(constraint.sct_all_after_sec()))
             : std::nullopt,
         min_version, max_version_exclusive,
-        base::ToVector(constraint.permitted_dns_names()));
+        base::ToVector(constraint.permitted_dns_names()),
+        constraint.has_index_not_after()
+            ? std::optional(constraint.index_not_after())
+            : std::nullopt,
+        constraint.has_index_after() ? std::optional(constraint.index_after())
+                                     : std::nullopt);
   }
 
   return constraints;

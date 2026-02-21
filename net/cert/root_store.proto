@@ -41,6 +41,16 @@ message ConstraintSet {
   // `enforce_anchor_expiry` and `enforce_anchor_constraints` were briefly
   // represented in this message, but moved to TrustAnchor.
   reserved 6, 7;
+
+  // A leaf MTC chaining to a MtcAnchor with this constraint must not have an
+  // index higher than the specified value. Ignored if specified on a classical
+  // TrustAnchor.
+  optional uint64 index_not_after = 8;
+
+  // A leaf MTC chaining to a MtcAnchor with this constraint must have an index
+  // higher than the specified value. Ignored if specified on a classical
+  // TrustAnchor.
+  optional uint64 index_after = 9;
 }
 
 message TrustAnchor {
