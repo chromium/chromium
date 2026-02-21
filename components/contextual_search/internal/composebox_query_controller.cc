@@ -607,6 +607,13 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
 
   // Add the request id data for each file token.
   if (!active_files_.empty() && cluster_info_.has_value()) {
+    bool is_region_interaction =
+        create_client_to_aim_request_info
+            ->force_include_latest_interaction_request_data &&
+        create_client_to_aim_request_info->file_tokens.size() == 1 &&
+        latest_interaction_request_data_ &&
+        latest_interaction_request_data_->has_image_crop();
+
     for (const auto& file_token :
          create_client_to_aim_request_info->file_tokens) {
       auto* file_info = GetFileInfo(file_token);
@@ -625,7 +632,11 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
           cluster_info_->search_session_id());
       lens_image_query_data->mutable_request_id()->CopyFrom(
           file_info->request_id.value());
-      auto media_type = file_info->request_id->media_type();
+      auto media_type =
+          is_region_interaction
+              ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+              : file_info->request_id->media_type();
+      lens_image_query_data->mutable_request_id()->set_media_type(media_type);
       lens_image_query_data->set_visual_input_type(
           MediaTypeToVisualInputType(media_type));
     }

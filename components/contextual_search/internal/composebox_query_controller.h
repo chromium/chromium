@@ -283,6 +283,12 @@ class ComposeboxQueryController
     // for cancelling any requests that have been superseded by another.
     int sequence_id() const { return request_id_->sequence_id(); }
 
+    // Returns true if the request is a region interaction request.
+    bool has_image_crop() const {
+      return request_ && request_->has_interaction_request() &&
+             request_->interaction_request().has_image_crop();
+    }
+
     // The request ID for this request.
     const std::unique_ptr<lens::LensOverlayRequestId> request_id_;
 
