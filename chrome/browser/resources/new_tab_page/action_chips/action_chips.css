@@ -366,3 +366,10 @@
 cr-button>span {
   display: block;
 }
+
+:host([reduced-motion-preferred]) .action-chips-container,
+:host([reduced-motion-preferred]) .action-chip {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
