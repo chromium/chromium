@@ -272,6 +272,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION = 70;
   // Target for the Neural Residual Echo Estimator used in the WebRTC AEC.
   OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR = 71;
+  // Target for Classifier model.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER = 72;
 }
 
 // The model engine versions that can be used to do model inference.

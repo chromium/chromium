@@ -33,6 +33,8 @@ std::string_view GetVariantName(mojom::OnDeviceFeature feature) {
       return "WritingAssistanceApi";
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return "OnDeviceSpeechRecognition";
+    case mojom::OnDeviceFeature::kClassifier:
+      return "Classifier";
   }
 }
 
@@ -66,6 +68,8 @@ proto::OptimizationTarget GetOptimizationTargetForFeature(
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return proto::
           OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
+    case mojom::OnDeviceFeature::kClassifier:
+      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER;
   }
 }
 
@@ -101,6 +105,8 @@ proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
+    case mojom::OnDeviceFeature::kClassifier:
+      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CLASSIFIER;
   }
 }
 

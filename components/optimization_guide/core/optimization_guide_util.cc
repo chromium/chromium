@@ -127,6 +127,8 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_GEMINI_ANTISCAM_PROTECTION:
       return "GeminiAntiscamProtection";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CLASSIFIER:
+      return "Classifier";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
