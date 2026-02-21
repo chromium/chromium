@@ -1356,7 +1356,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     // Populate the smart compose suggestion.
-    this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint ?
+    this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint?.trim() ?
         this.result_.smartComposeInlineHint :
         '';
   }
