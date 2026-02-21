@@ -143,7 +143,17 @@ void GeminiThreadSyncBridge::OnReadAllData(
     change_processor()->ReportError(*error);
     return;
   }
-  // TODO(crbug.com/483959855) Finish implementation
+  for (const auto& record : *entries) {
+    sync_pb::GeminiThreadSpecifics entity;
+    if (!entity.ParseFromString(record.value)) {
+      change_processor()->ReportError(*error);
+      continue;
+    }
+    gemini_thread_specifics_[entity.conversation_id()] = std::move(entity);
+  }
+  for (auto& observer : observers_) {
+    observer.OnGeminiThreadDataStoreLoaded();
+  }
 
   data_type_store_->ReadAllMetadata(
       base::BindOnce(&GeminiThreadSyncBridge::OnReadAllMetadata,
@@ -165,6 +175,14 @@ void GeminiThreadSyncBridge::OnDataTypeStoreCommit(
   if (error) {
     change_processor()->ReportError(*error);
   }
+}
+
+void GeminiThreadSyncBridge::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GeminiThreadSyncBridge::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace contextual_tasks

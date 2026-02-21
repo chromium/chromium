@@ -195,6 +195,7 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
           syncer::GEMINI_THREAD, dump_stack);
   gemini_thread_sync_bridge_ = std::make_unique<GeminiThreadSyncBridge>(
       std::move(gemini_thread_processor), data_type_store_factory);
+  gemini_thread_observation_.Observe(gemini_thread_sync_bridge_.get());
 
   auto contextual_task_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -206,7 +207,7 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
   // Wait for both AiThreadSyncBridge and ContextualTaskSyncBridge to finish
   // loading their data store.
   on_data_loaded_barrier_ = base::BarrierClosure(
-      2, base::BindOnce(&ContextualTasksServiceImpl::OnDataStoresLoaded,
+      3, base::BindOnce(&ContextualTasksServiceImpl::OnDataStoresLoaded,
                         weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -633,6 +634,10 @@ void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
   for (const auto& task_id : tasks_to_delete) {
     RemoveTaskInternal(task_id, TriggerSource::kRemote);
   }
+}
+
+void ContextualTasksServiceImpl::OnGeminiThreadDataStoreLoaded() {
+  on_data_loaded_barrier_.Run();
 }
 
 std::pair<std::map<base::Uuid, ContextualTask>::iterator, bool>

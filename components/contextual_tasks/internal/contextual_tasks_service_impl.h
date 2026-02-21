@@ -44,7 +44,8 @@ struct ContextDecorationParams;
 
 class ContextualTasksServiceImpl : public ContextualTasksService,
                                    public AiThreadSyncBridge::Observer,
-                                   public ContextualTaskSyncBridge::Observer {
+                                   public ContextualTaskSyncBridge::Observer,
+                                   public GeminiThreadSyncBridge::Observer {
  public:
   ContextualTasksServiceImpl(
       version_info::Channel channel,
@@ -143,6 +144,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       const std::vector<ContextualTask>& contextual_tasks) override;
   void OnTaskRemovedRemotely(const std::vector<base::Uuid>& task_ids) override;
 
+  // GeminiThreadSyncBridge::Observer implementation.
+  void OnGeminiThreadDataStoreLoaded() override;
+
   void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
   void NotifyTaskUpdated(const ContextualTask& task, TriggerSource source);
   void NotifyTaskRemoved(const base::Uuid& task_id, TriggerSource source);
@@ -196,6 +200,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
                           ContextualTaskSyncBridge::Observer>
       task_observation_{this};
 
+  base::ScopedObservation<GeminiThreadSyncBridge,
+                          GeminiThreadSyncBridge::Observer>
+      gemini_thread_observation_{this};
   base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };
 

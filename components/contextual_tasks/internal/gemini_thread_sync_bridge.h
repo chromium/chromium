@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
@@ -23,6 +25,14 @@ namespace contextual_tasks {
 // Sync bridge implementation for Gemini thread data type.
 class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    // Invoked when the store containing the Gemini Threads is loaded.
+    virtual void OnGeminiThreadDataStoreLoaded() = 0;
+  };
   GeminiThreadSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceDataTypeStoreFactory store_factory);
@@ -54,6 +64,14 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
                                    delete_metadata_change_list) override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  std::unordered_map<std::string, sync_pb::GeminiThreadSpecifics>&
+  gemini_thread_specifics_for_testing() {
+    return gemini_thread_specifics_;
+  }
+
  private:
   void OnDataTypeStoreCreated(const std::optional<syncer::ModelError>& error,
                               std::unique_ptr<syncer::DataTypeStore> store);
@@ -71,6 +89,8 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
 
   std::unordered_map<std::string, sync_pb::GeminiThreadSpecifics>
       gemini_thread_specifics_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<GeminiThreadSyncBridge> weak_ptr_factory_{this};
 };
