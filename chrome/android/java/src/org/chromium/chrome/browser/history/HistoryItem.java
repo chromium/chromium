@@ -24,6 +24,7 @@ public class HistoryItem extends TimedItem {
     private final String mTitle;
     private final @Nullable String mAppId;
     private final boolean mWasBlockedVisit;
+    private final boolean mIsActorVisit;
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
     private @Nullable Long mStableId;
@@ -39,6 +40,7 @@ public class HistoryItem extends TimedItem {
      * @param mostRecentJavaTimestamp Most recent Java compatible navigation time.
      * @param nativeTimestamps Microsecond resolution navigation times.
      * @param blockedVisit Whether the visit to this item was blocked when it was attempted.
+     * @param isActorVisit Whether the visit is actor initiated.
      */
     public HistoryItem(
             GURL url,
@@ -47,7 +49,8 @@ public class HistoryItem extends TimedItem {
             @Nullable String appId,
             long mostRecentJavaTimestamp,
             long[] nativeTimestamps,
-            boolean blockedVisit) {
+            boolean blockedVisit,
+            boolean isActorVisit) {
         mUrl = url;
         mDomain = domain;
         mTitle =
@@ -59,6 +62,7 @@ public class HistoryItem extends TimedItem {
         mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
         mNativeTimestampList = Arrays.copyOf(nativeTimestamps, nativeTimestamps.length);
         mWasBlockedVisit = blockedVisit;
+        mIsActorVisit = isActorVisit;
     }
 
     /** @return The url for this item. */
@@ -85,8 +89,15 @@ public class HistoryItem extends TimedItem {
     }
 
     /** @return Whether the visit to this item was blocked when it was attempted. */
-    public Boolean wasBlockedVisit() {
+    public boolean wasBlockedVisit() {
         return mWasBlockedVisit;
+    }
+
+    /**
+     * @return Whether the visit is actor initiated.
+     */
+    public boolean isActorVisit() {
+        return mIsActorVisit;
     }
 
     @Override

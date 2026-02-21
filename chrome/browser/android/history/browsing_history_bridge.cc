@@ -147,7 +147,7 @@ void BrowsingHistoryBridge::OnQueryComplete(
             : nullptr,
         most_recent_java_timestamp,
         base::android::ToJavaLongArray(env, native_timestamps),
-        entry.blocked_visit);
+        entry.blocked_visit, entry.is_actor_visit);
   }
 
   Java_BrowsingHistoryBridge_onQueryHistoryComplete(

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/offline_pages/core/request_header/offline_page_navigation_ui_data.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -17,10 +18,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_navigation_ui_data.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/common/actor/task_id.h"  // nogncheck
 #endif
 
 namespace content {
@@ -86,9 +83,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   std::optional<int64_t> bookmark_id() { return bookmark_id_; }
   void set_bookmark_id(std::optional<int64_t> id) { bookmark_id_ = id; }
 
-#if !BUILDFLAG(IS_ANDROID)
   actor::TaskId actor_task_id() { return actor_task_id_; }
-#endif
 
   bool navigation_initiated_from_sync() {
     return navigation_initiated_from_sync_;
@@ -135,11 +130,9 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // navigation.
   bool navigation_initiated_from_sync_ = false;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Id of the actor task active during this navigation. Set only if actor was
   // acting on the tab when the navigation started.
   actor::TaskId actor_task_id_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_NAVIGATION_UI_DATA_H_

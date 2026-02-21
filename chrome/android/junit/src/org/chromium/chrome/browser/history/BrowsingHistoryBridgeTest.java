@@ -74,7 +74,7 @@ public class BrowsingHistoryBridgeTest {
         long[] timestamps = new long[0];
         String appId = "org.chromium.dino.Trex";
         BrowsingHistoryBridge.createHistoryItemAndAddToList(
-                items, GURL.emptyGURL(), "domain.com", "title", appId, 0, timestamps, false);
+                items, GURL.emptyGURL(), "domain.com", "title", appId, 0, timestamps, false, false);
         mBrowsingHistoryBridge.onQueryHistoryComplete(items, false);
 
         adapter.markItemForRemoval(items.get(0));

@@ -180,6 +180,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
+                    false,
                     false);
         } else if (which == 1) {
             return new HistoryItem(
@@ -189,6 +190,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
+                    false,
                     false);
         } else if (which == 2) {
             return new HistoryItem(
@@ -198,6 +200,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
+                    false,
                     false);
         } else if (which == 3) {
             return new HistoryItem(
@@ -207,6 +210,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
+                    false,
                     false);
         } else if (which == 4) {
             return new HistoryItem(
@@ -216,6 +220,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
+                    false,
                     false);
         } else if (which == 5) {
             return new HistoryItem(
@@ -225,7 +230,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    true);
+                    true,
+                    false);
         } else {
             return null;
         }

@@ -118,7 +118,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
             String appId,
             long mostRecentJavaTimestamp,
             long[] nativeTimestamps,
-            boolean blockedVisit) {
+            boolean blockedVisit,
+            boolean isActorVisit) {
         items.add(
                 new HistoryItem(
                         url,
@@ -127,7 +128,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         appId,
                         mostRecentJavaTimestamp,
                         nativeTimestamps,
-                        blockedVisit));
+                        blockedVisit,
+                        isActorVisit));
     }
 
     @CalledByNative
