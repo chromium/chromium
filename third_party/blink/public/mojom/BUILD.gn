@@ -153,6 +153,7 @@ mojom("mojom_platform") {
     "manifest/manifest.mojom",
     "manifest/manifest_launch_handler.mojom",
     "manifest/manifest_manager.mojom",
+    "manifest/manifest_migration_behavior.mojom",
     "manifest/manifest_observer.mojom",
     "media/capture_handle_config.mojom",
     "media/fullscreen_video_element.mojom",

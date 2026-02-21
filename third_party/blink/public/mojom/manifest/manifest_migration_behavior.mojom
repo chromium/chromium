@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Enumeration of possible behaviors for the migration.
+enum ManifestMigrationBehavior {
+  // The migration is suggested (default).
+  kSuggest,
+  // The migration is forced.
+  kForce,
+};

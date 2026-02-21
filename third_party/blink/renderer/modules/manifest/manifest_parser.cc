@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/manifest_migration_behavior.mojom-blink.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"

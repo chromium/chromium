@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
+import "third_party/blink/public/mojom/manifest/manifest_migration_behavior.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -374,14 +375,6 @@ struct ManifestTranslationItem {
   mojo_base.mojom.String16? short_name;
 
   mojo_base.mojom.String16? description;
-};
-
-// Enumeration of possible behaviors for the migration.
-enum ManifestMigrationBehavior {
-  // The migration is suggested (default).
-  kSuggest,
-  // The migration is forced.
-  kForce,
 };
 
 // Structure representing a migration source for a PWA (migrate_from).

@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/manifest_migration_behavior.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
