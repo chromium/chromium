@@ -4,5 +4,8 @@
 
 group("testing_mojom_rust") {
   testonly = true
-  public_deps = [ "import_tests" ]
+  public_deps = [
+    "import_tests",
+    "interop_tests",
+  ]
 }

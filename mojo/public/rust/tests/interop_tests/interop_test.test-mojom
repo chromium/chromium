@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module interop_test.mojom;
+
+import "mojo/public/rust/mojom_value_parser/test_util/parser_unittests.test-mojom";
+
+interface TestService {
+    // Basic types
+    PassFourInts(parser_unittests.mojom.FourInts f) => (parser_unittests.mojom.FourInts f);
+    PassNested(parser_unittests.mojom.TwiceNested t) => (parser_unittests.mojom.TwiceNested t);
+    PassBools(parser_unittests.mojom.TenBoolsAndTwoBytes b) => (parser_unittests.mojom.TenBoolsAndTwoBytes b);
+    PassEnums(parser_unittests.mojom.SomeEnums e) => (parser_unittests.mojom.SomeEnums e);
+
+    // Unions
+    PassUnion(parser_unittests.mojom.BaseUnion u) => (parser_unittests.mojom.BaseUnion u);
+    PassNestedUnion(parser_unittests.mojom.WithManyUnions u) => (parser_unittests.mojom.WithManyUnions u);
+
+    // Collections
+    PassArrays(parser_unittests.mojom.Arrays a) => (parser_unittests.mojom.Arrays a);
+    PassMaps(parser_unittests.mojom.Maps m) => (parser_unittests.mojom.Maps m);
+    PassStrings(parser_unittests.mojom.Strings s) => (parser_unittests.mojom.Strings s);
+
+    // Nullables
+    PassNullableBasics(parser_unittests.mojom.NullableBasics n) => (parser_unittests.mojom.NullableBasics n);
+    PassNullableOthers(parser_unittests.mojom.NullableOthers n) => (parser_unittests.mojom.NullableOthers n);
+
+    // Handles
+    PassHandles(parser_unittests.mojom.Handles h) => (parser_unittests.mojom.Handles h);
+    PassNestedHandles(parser_unittests.mojom.NestedHandles n) => (parser_unittests.mojom.NestedHandles n);
+};

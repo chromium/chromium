@@ -53,7 +53,7 @@ mojom("parser_unittests") {
   testonly = true
   sources = [ "test_util/parser_unittests.test-mojom" ]
   generate_rust = true
-  visibility = [ ":*" ]
+  visibility = [ "//mojo/public/rust/*" ]
 }
 
 rust_static_library("mojom_value_parser_unittests") {

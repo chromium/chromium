@@ -1,0 +1,50 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Tests sending a whole bunch of messages to and from C++ to make sure the
+# encoding is the same.
+rust_static_library("interop_tests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "lib.rs"
+  sources = [ "lib.rs" ]
+  cxx_bindings = [ "lib.rs" ]
+  allow_unsafe = true
+
+  deps = [
+    ":interop_test_cpp",
+    ":interop_test_mojom_rust",
+    "../../bindings",
+    "../../mojom_value_parser:parser_unittests_rust",
+    "../../sequences",
+    "../../sequences:test_cxx",
+    "../../system",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+mojom("interop_test_mojom") {
+  testonly = true
+  sources = [ "interop_test.test-mojom" ]
+  public_deps = [ "//mojo/public/rust/mojom_value_parser:parser_unittests" ]
+  generate_rust = true
+}
+
+source_set("interop_test_cpp") {
+  testonly = true
+  sources = [
+    "interop_test.cc",
+    "interop_test.h",
+  ]
+  deps = [
+    ":interop_test_mojom",
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+}

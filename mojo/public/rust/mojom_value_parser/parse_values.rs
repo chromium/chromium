@@ -658,6 +658,10 @@ where
         ret_names[nested_data.ordinal] = nested_data.field_name;
         ret_values[nested_data.ordinal] = parsed_data;
     }
+
+    // All structured bodies end at an 8-byte alignment
+    skip_to_alignment(data, 8)?;
+
     Ok((ret_names, ret_values))
 }
 
