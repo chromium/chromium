@@ -844,18 +844,21 @@ void ContextualTasksComposeboxHandler::AddFileContext(
     searchbox::mojom::SelectedFileInfoPtr file_info,
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
-  if (auto* session_handle = GetContextualSessionHandle()) {
-    auto token = session_handle->CreateContextToken();
-    pending_context_uploads_.insert(token);
-    std::string mime_type = file_info->mime_type;
-    std::string file_name = file_info->file_name;
-    ContextualSearchboxHandler::page_->AddFileContext(token,
-                                                      std::move(file_info));
-    std::move(callback).Run(token);
-    session_handle->StartFileContextUploadFlow(token, file_name, mime_type,
-                                               std::move(file_bytes),
-                                               CreateImageEncodingOptions());
+  auto* session_handle = GetContextualSessionHandle();
+  if (!session_handle) {
+    std::move(callback).Run(std::nullopt);
+    return;
   }
+  auto token = session_handle->CreateContextToken();
+  pending_context_uploads_.insert(token);
+  std::string mime_type = file_info->mime_type;
+  std::string file_name = file_info->file_name;
+  ContextualSearchboxHandler::page_->AddFileContext(token,
+                                                    std::move(file_info));
+  std::move(callback).Run(token);
+  session_handle->StartFileContextUploadFlow(token, file_name, mime_type,
+                                             std::move(file_bytes),
+                                             CreateImageEncodingOptions());
 }
 
 void ContextualTasksComposeboxHandler::FileSelectionCanceled() {
@@ -965,7 +968,7 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
 // Only runs for non-delayed context. DeleteContext here runs
 // ComposeboxHandler::DeleteContext.
 void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
-    const base::UnguessableToken& token) {
+    const std::optional<base::UnguessableToken>& token) {
   // Remove old visual selection if it exists.
   if (visual_selection_token_.has_value()) {
     ComposeboxHandler::DeleteContext(visual_selection_token_.value(),

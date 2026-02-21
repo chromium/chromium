@@ -169,9 +169,12 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
     std::string image_data_url,
     std::string file_name,
     std::string mime_string,
-    const base::UnguessableToken& file_token) {
+    const std::optional<base::UnguessableToken>& file_token) {
+  if (!file_token.has_value()) {
+    return;
+  }
   auto file_attachment = searchbox::mojom::FileAttachment::New();
-  file_attachment->uuid = file_token;
+  file_attachment->uuid = file_token.value();
   file_attachment->name = file_name;
   file_attachment->mime_type = mime_string;
 

@@ -704,6 +704,10 @@ export class ComposeboxElement extends I18nMixinLit
           },
           bigBuffer);
 
+      if (!token) {
+        continue;
+      }
+
       const attachment: ComposeboxFile = {
         uuid: token,
         name: file.name,

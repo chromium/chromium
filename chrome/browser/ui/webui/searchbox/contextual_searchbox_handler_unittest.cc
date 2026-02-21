@@ -259,7 +259,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_Pdf) {
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::UnguessableToken controller_file_info_token;
-  base::UnguessableToken callback_token;
+  std::optional<base::UnguessableToken> callback_token;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
       .WillOnce(testing::SaveArg<0>(&controller_file_info_token));
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
@@ -289,7 +289,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_Image) {
         image_options = std::move(options_arg);
       });
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
-  base::UnguessableToken callback_token;
+  std::optional<base::UnguessableToken> callback_token;
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
 
   handler().AddFileContext(std::move(file_info), std::move(file_data),
@@ -327,7 +327,7 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
         image_options = std::move(options_arg);
       });
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
-  base::UnguessableToken callback_token;
+  std::optional<base::UnguessableToken> callback_token;
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
 
   handler().AddFileContext(std::move(file_info), std::move(file_data),
@@ -357,14 +357,14 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyDisabled) {
   mojo_base::BigBuffer file_data(test_data_span);
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
-  base::UnguessableToken callback_token;
+  std::optional<base::UnguessableToken> callback_token;
 
   EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
   handler().AddFileContext(std::move(file_info), std::move(file_data),
                            callback.Get());
 
-  EXPECT_TRUE(callback_token.is_empty());
+  EXPECT_FALSE(callback_token.has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
@@ -383,14 +383,14 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
   mojo_base::BigBuffer file_data_1(test_data_span_1);
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback_1;
-  base::UnguessableToken callback_token_1;
+  std::optional<base::UnguessableToken> callback_token_1;
 
   EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
   EXPECT_CALL(callback_1, Run).WillOnce(testing::SaveArg<0>(&callback_token_1));
   handler().AddFileContext(std::move(file_info_1), std::move(file_data_1),
                            callback_1.Get());
 
-  EXPECT_TRUE(callback_token_1.is_empty());
+  EXPECT_FALSE(callback_token_1.has_value());
 
   // Enable policy.
   profile()->GetPrefs()->SetInteger(
@@ -407,14 +407,14 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
   mojo_base::BigBuffer file_data_2(test_data_span_2);
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback_2;
-  base::UnguessableToken callback_token_2;
+  std::optional<base::UnguessableToken> callback_token_2;
 
   EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(1);
   EXPECT_CALL(callback_2, Run).WillOnce(testing::SaveArg<0>(&callback_token_2));
   handler().AddFileContext(std::move(file_info_2), std::move(file_data_2),
                            callback_2.Get());
 
-  EXPECT_FALSE(callback_token_2.is_empty());
+  EXPECT_TRUE(callback_token_2.has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyDisabled) {
@@ -431,7 +431,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyDisabled) {
   std::optional<lens::ImageEncodingOptions> image_options;
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
-  base::UnguessableToken callback_token;
+  std::optional<base::UnguessableToken> callback_token;
 
   EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
@@ -439,7 +439,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyDisabled) {
                                       std::move(file_data), image_options,
                                       callback.Get());
 
-  EXPECT_TRUE(callback_token.is_empty());
+  EXPECT_TRUE(!callback_token.has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
@@ -457,7 +457,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::UnguessableToken controller_file_info_token;
-  base::UnguessableToken callback_token;
+  std::optional<base::UnguessableToken> callback_token;
 
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
       .WillOnce(testing::SaveArg<0>(&controller_file_info_token));
@@ -467,7 +467,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
                                       callback.Get());
 
   EXPECT_EQ(callback_token, controller_file_info_token);
-  EXPECT_FALSE(callback_token.is_empty());
+  EXPECT_TRUE(callback_token.has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {

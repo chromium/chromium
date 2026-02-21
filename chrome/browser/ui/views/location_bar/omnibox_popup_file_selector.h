@@ -53,11 +53,12 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
 
   void OnFileDataReady(std::unique_ptr<FileData> file_data);
 
-  void UpdateSearchboxContextData(lens::MimeType mime_type,
-                                  std::string image_data_url,
-                                  std::string file_name,
-                                  std::string mime_string,
-                                  const base::UnguessableToken& file_token);
+  void UpdateSearchboxContextData(
+      lens::MimeType mime_type,
+      std::string image_data_url,
+      std::string file_name,
+      std::string mime_string,
+      const std::optional<base::UnguessableToken>& file_token);
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
