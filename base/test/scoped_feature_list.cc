@@ -242,7 +242,7 @@ void OverrideFeatures(const std::string& features_list,
 
 // Hex encode params so that special characters do not break formatting.
 std::string HexEncodeString(const std::string& input) {
-  return HexEncode(input.data(), input.size());
+  return HexEncode(input);
 }
 
 // Inverse of HexEncodeString().

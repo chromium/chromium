@@ -4,9 +4,11 @@
 
 #include "gpu/command_buffer/service/logger.h"
 
+#include <inttypes.h>
+
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 
@@ -21,9 +23,9 @@ Logger::Logger(const DebugMarkerManager* debug_marker_manager,
       log_message_count_(0),
       log_synthesized_gl_errors_(true),
       disable_gl_error_limit_(disable_gl_error_limit) {
-  Logger* this_temp = this;
-  this_in_hex_ = std::string("GroupMarkerNotSet(crbug.com/242999)!:") +
-      base::HexEncode(&this_temp, sizeof(this_temp));
+  this_in_hex_ =
+      base::StringPrintf("GroupMarkerNotSet(crbug.com/242999)!:%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(this));
   suppress_performance_logs_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSuppressPerformanceLogs);
