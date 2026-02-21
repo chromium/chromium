@@ -723,6 +723,12 @@ bool GamepadIdList::HasTriggerRumbleSupport(GamepadId gamepad_id) const {
   return kTriggerRumbleGamepadIds.contains(gamepad_id);
 }
 
+// static
+bool GamepadIdList::IsPlayStation5Gamepad(GamepadId gamepad_id) {
+  return gamepad_id == GamepadId::kSonyProduct0ce6 ||
+         gamepad_id == GamepadId::kSonyProduct0df2;
+}
+
 std::vector<std::tuple<uint16_t, uint16_t, XInputType>>
 GamepadIdList::GetGamepadListForTesting() const {
   std::vector<std::tuple<uint16_t, uint16_t, XInputType>> gamepads;

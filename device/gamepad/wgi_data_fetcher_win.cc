@@ -101,12 +101,6 @@ std::optional<GamepadId> GetGamepadId(
                                            product_id);
 }
 
-// Returns true if `gamepad_id` is DualSense or DualSense Edge.
-bool IsPlayStation5Gamepad(GamepadId gamepad_id) {
-  return gamepad_id == GamepadId::kSonyProduct0ce6 ||
-         gamepad_id == GamepadId::kSonyProduct0df2;
-}
-
 // Check if the gamepad should be added by Windows.Gaming.Input. In the
 // situation that a Nintendo or Dualshock4 gamepad is connected, there are
 // dedicated data fetchers designed for these gamepads.
@@ -123,7 +117,7 @@ bool ShouldEnumerateGamepad(GamepadId gamepad_id) {
   }
 
   if (base::FeatureList::IsEnabled(features::kIgnorePS5GamepadsInWgi) &&
-      IsPlayStation5Gamepad(gamepad_id)) {
+      GamepadIdList::IsPlayStation5Gamepad(gamepad_id)) {
     // PlayStation 5 gamepads are handled by the RawInput data fetcher.
     return false;
   }

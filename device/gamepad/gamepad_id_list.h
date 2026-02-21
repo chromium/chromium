@@ -154,6 +154,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadIdList {
   // actuators on its triggers. Returns false otherwise.
   bool HasTriggerRumbleSupport(GamepadId gamepad_id) const;
 
+  // Returns true if |gamepad_id| is a PlayStation 5 DualSense or DualSense
+  // Edge.
+  static bool IsPlayStation5Gamepad(GamepadId gamepad_id);
+
   // Returns the internal list of gamepad info for testing purposes.
   std::vector<std::tuple<uint16_t, uint16_t, XInputType>>
   GetGamepadListForTesting() const;

@@ -93,6 +93,9 @@ class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
 
   bool DisconnectUnrecognizedGamepad(int source_id) override;
 
+  static bool IsSupportedByGameController(uint16_t vendor_id,
+                                          uint16_t product_id);
+
   bool enabled_ = false;
   bool paused_ = false;
   base::apple::ScopedCFTypeRef<IOHIDManagerRef> hid_manager_ref_;
