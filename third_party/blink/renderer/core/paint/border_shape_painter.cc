@@ -70,6 +70,36 @@ Path BorderShapePainter::InnerPath(const ComputedStyle& style,
                                            style.EffectiveZoom(), 1);
 }
 
+Path BorderShapePainter::OverflowClipInnerPath(
+    const ComputedStyle& style,
+    const PhysicalRect& inner_reference_rect) {
+  CHECK(style.HasBorderShape());
+  Path inner_path = InnerPath(style, inner_reference_rect);
+
+  // For single-shape border-shape, the border is drawn as a stroke centered on
+  // the path with the border width as the stroke thickness. The inner edge of
+  // the border is therefore at path - border_width/2. Contract the path inward
+  // by half the border width so that overflow-clipped children do not paint
+  // over the inner half of the border stroke.
+  const StyleBorderShape& border_shape = *style.BorderShape();
+  if (!border_shape.HasSeparateInnerShape()) {
+    DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
+    if (derived_stroke.thickness > 0) {
+      StrokeData stroke_data;
+      stroke_data.SetThickness(derived_stroke.thickness);
+      Path stroke_path = inner_path.StrokePath(stroke_data, AffineTransform());
+      SkOpBuilder builder;
+      builder.add(inner_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+      builder.add(stroke_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
+      SkPath result;
+      if (builder.resolve(&result)) {
+        return Path(result);
+      }
+    }
+  }
+  return inner_path;
+}
+
 Path BorderShapePainter::OuterPathWithOffset(
     const ComputedStyle& style,
     const PhysicalRect& outer_reference_rect,
