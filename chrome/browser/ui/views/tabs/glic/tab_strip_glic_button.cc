@@ -49,6 +49,10 @@ namespace glic {
 
 namespace {
 
+const base::FeatureParam<bool> kAdjustMargins{
+    &features::kGlicButtonAltLabel, "glic-button-alt-label-adjust-margins",
+    true};
+
 constexpr int kHighlightMargin = 2;
 constexpr int kHighlightCornerRadius = 8;
 constexpr int kLabelRightMargin = 8;
@@ -135,6 +139,13 @@ gfx::Insets GetIconMargins(bool label_shown) {
     // Extra left margin if the label is shown.
     left += 2;
   }
+
+  if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel) &&
+      kAdjustMargins.Get()) {
+    // TODO(crbug.com/485624752): Consolidate after launch.
+    right += 1;
+  }
+
   return gfx::Insets().set_left_right(left, right);
 }
 
@@ -284,8 +295,7 @@ TabStripGlicButton::TabStripGlicButton(
     // the same opacity animation whether or not the label has text.
     label()->SetPaintToLayer();
   }
-  label()->SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_right(kLabelRightMargin));
+  SetLabelMargins();
   close_button()->SetProperty(
       views::kMarginsKey, gfx::Insets().set_left_right(
                               HighlightNudgeEnabled() ? kCloseButtonMargin : 0,
@@ -547,8 +557,7 @@ void TabStripGlicButton::ExecuteCommand(int command_id, int event_flags) {
 void TabStripGlicButton::SetText(std::u16string_view text) {
   TabStripNudgeButton::SetText(text);
   // Setting label text seems to clear the margin. Set it again.
-  label()->SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_right(kLabelRightMargin));
+  SetLabelMargins();
 }
 
 bool TabStripGlicButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -933,6 +942,17 @@ void TabStripGlicButton::UpdateInkdropHoverColor(bool is_frame_active) {
                              ? kColorTabBackgroundInactiveHoverFrameActive
                              : kColorTabBackgroundInactiveHoverFrameInactive);
   UpdateColors();
+}
+
+void TabStripGlicButton::SetLabelMargins() {
+  int bottom = 0;
+  if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel) &&
+      kAdjustMargins.Get()) {
+    bottom += 1;
+  }
+  label()->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_right(kLabelRightMargin).set_bottom(bottom));
 }
 
 BEGIN_METADATA(TabStripGlicButton)
