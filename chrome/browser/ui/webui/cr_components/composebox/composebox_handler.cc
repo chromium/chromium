@@ -207,8 +207,8 @@ void ComposeboxHandler::OnThumbnailRemoved() {
   mojo::ReportBadMessage("No thumbnails in composebox input");
 }
 
-void ComposeboxHandler::ClearFiles() {
-  ContextualSearchboxHandler::ClearFiles();
+void ComposeboxHandler::ClearFiles(bool should_block_auto_suggested_tabs) {
+  ContextualSearchboxHandler::ClearFiles(should_block_auto_suggested_tabs);
   // Reset the AIM tool mode to not include file upload if it currently does.
   if (GetInputState().active_tool ==
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {

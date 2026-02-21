@@ -196,7 +196,7 @@ void LensComposeboxHandler::DeleteContext(
   lens_composebox_controller_->DeleteContext(file_token);
 }
 
-void LensComposeboxHandler::ClearFiles() {
+void LensComposeboxHandler::ClearFiles(bool should_block_auto_suggested_tabs) {
   lens_composebox_controller_->ClearFiles();
 }
 

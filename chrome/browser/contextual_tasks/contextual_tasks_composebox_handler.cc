@@ -426,7 +426,7 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
 }
 
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
-  ClearFiles();
+  ClearFiles(/*should_block_auto_suggested_tabs=*/false);
   InitializeInputStateModel();
 }
 
@@ -915,15 +915,21 @@ void ContextualTasksComposeboxHandler::AddTabContext(
                                                     std::move(callback));
 }
 
-void ContextualTasksComposeboxHandler::ClearFiles() {
+void ContextualTasksComposeboxHandler::ClearFiles(
+    bool should_block_auto_suggested_tabs) {
   // Clear all files from the UI.
-  ComposeboxHandler::ClearFiles();
+  ComposeboxHandler::ClearFiles(should_block_auto_suggested_tabs);
   // Clear any delayed tabs.
   delayed_tabs_.clear();
 
   pending_delayed_tab_ids_.clear();
   pending_context_uploads_.clear();
   pending_message_ = std::nullopt;
+
+  if (current_suggestion_ && should_block_auto_suggested_tabs) {
+    blocklisted_suggestions_.insert(*current_suggestion_);
+  }
+  current_suggestion_ = std::nullopt;
 }
 
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
@@ -1064,16 +1070,18 @@ void ContextualTasksComposeboxHandler::DeleteContext(
 
 void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr candidate_tab_info) {
+  current_suggestion_ = std::nullopt;
+
   // Filter the suggested tab info based on blocklisted URLs and update the UI.
   searchbox::mojom::TabInfoPtr filtered_suggestion;
   if (base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksTabAutoSuggestionChipEnabled) &&
       candidate_tab_info &&
       !blocklisted_suggestions_.contains(candidate_tab_info->url)) {
+    current_suggestion_ = candidate_tab_info->url;
     filtered_suggestion = std::move(candidate_tab_info);
   }
 
-  has_suggested_tab_context_ = !filtered_suggestion.is_null();
   SearchboxHandler::page_->UpdateAutoSuggestedTabContext(
       std::move(filtered_suggestion));
 }

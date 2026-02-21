@@ -2159,7 +2159,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
   ASSERT_FALSE(token.is_empty());
 
   // 2. Clear files.
-  handler_->ClearFiles();
+  handler_->ClearFiles(/*should_block_auto_suggested_tabs=*/false);
 
   ASSERT_EQ(handler_->GetNumContextUploading(), 0);
   ASSERT_EQ(handler_->GetNumTabsDelayed(), 0);
@@ -2175,6 +2175,46 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
 
   handler_->CreateAndSendQueryMessage(kQuery);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       ClearFiles_BlockAutoSuggestedTabs) {
+  GURL url("https://example.com");
+  auto tab_info = searchbox::mojom::TabInfo::New();
+  tab_info->url = url;
+  tab_info->title = "Example";
+
+  // 1. Initially, the suggestion should be allowed.
+  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+        EXPECT_TRUE(!received_info.is_null())
+            << "Expected a non-null pointer for received_info.";
+      });
+
+  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+
+  searchbox_page_receiver_.FlushForTesting();
+  EXPECT_TRUE(handler_->has_suggested_tab_context());
+
+  // 2. Blocklist the URL by clearing the files.
+  handler_->ClearFiles(/*should_block_auto_suggested_tabs=*/true);
+
+  searchbox_page_receiver_.FlushForTesting();
+  EXPECT_FALSE(handler_->has_suggested_tab_context());
+
+  // 3. Simulate a title change - tab context should still be filtered out.
+  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+        EXPECT_TRUE(received_info.is_null())
+            << "Expected a null pointer for received_info.";
+      });
+  auto tab_info2 = searchbox::mojom::TabInfo::New();
+  tab_info2->url = url;
+  tab_info2->title = "Example";
+  handler_->UpdateSuggestedTabContext(tab_info2.Clone());
+
+  searchbox_page_receiver_.FlushForTesting();
+  EXPECT_FALSE(handler_->has_suggested_tab_context());
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {

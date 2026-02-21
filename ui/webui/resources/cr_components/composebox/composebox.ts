@@ -904,7 +904,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected onCancelClick_() {
     if (this.hasContent_()) {
       this.resetModes();
-      this.clearAllInputs(/* querySubmitted= */ false);
+      this.clearAllInputs(/* querySubmitted= */ false,
+                          /* shouldBlockAutoSuggestedTabs= */ true);
       this.focusInput();
       this.queryAutocomplete_(/* clearMatches= */ true);
     } else {
@@ -915,7 +916,8 @@ export class ComposeboxElement extends I18nMixinLit
   handleEscapeKeyLogic(): void {
     if (!this.composeboxCloseByEscape_ && this.hasContent_()) {
       this.resetModes();
-      this.clearAllInputs(/* querySubmitted= */ false);
+      this.clearAllInputs(/* querySubmitted= */ false,
+                          /* shouldBlockAutoSuggestedTabs= */ false);
       this.focusInput();
       this.queryAutocomplete_(/* clearMatches= */ true);
     } else {
@@ -1199,7 +1201,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   private closeComposebox_() {
     this.resetModes();
-    this.searchboxHandler_.clearFiles();
+    this.searchboxHandler_.clearFiles(/*shouldBlockAutoSuggestedTabs=*/ false);
     this.resetToolsAndModels();
     this.fire('close-composebox', {composeboxText: this.input_});
 
@@ -1222,7 +1224,8 @@ export class ComposeboxElement extends I18nMixinLit
     // If the composebox is expandable or we should clear it, clear the input
     // after submitting the query.
     if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery_) {
-      this.clearAllInputs(/* querySubmitted= */ true);
+      this.clearAllInputs(/* querySubmitted= */ true,
+                          /* shouldBlockAutoSuggestedTabs= */ false);
     }
 
     if (this.isCollapsible) {
@@ -1468,7 +1471,8 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxHandler_.queryAutocomplete(this.input_, false);
   }
 
-  clearAllInputs(querySubmitted: boolean) {
+  clearAllInputs(
+      querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean) {
     this.clearInput();
     // Let `querySubmit_` handle clearing files if the tool mode is a tool mode
     // that should be cleared after submitting. For all other general
@@ -1484,7 +1488,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (!querySubmitted) {
       // If the query was submitted, the searchbox handler will clear its own
       // uploaded file state when the query submission is handled.
-      this.searchboxHandler_.clearFiles();
+      this.searchboxHandler_.clearFiles(shouldBlockAutoSuggestedTabs);
     }
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
   }

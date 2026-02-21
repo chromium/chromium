@@ -62,7 +62,7 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void OnThumbnailRemoved() override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
-  void ClearFiles() override;
+  void ClearFiles(bool should_block_auto_suggested_tabs) override;
 
  private:
   // Owns this.

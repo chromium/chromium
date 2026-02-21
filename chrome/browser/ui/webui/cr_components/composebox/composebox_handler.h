@@ -67,7 +67,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
-  void ClearFiles() override;
+  void ClearFiles(bool should_block_auto_suggested_tabs) override;
   void ShowContextMenu(const gfx::Point& point) override;
 
   // This is called from either the ComposeboxOmniboxClient when a match is
