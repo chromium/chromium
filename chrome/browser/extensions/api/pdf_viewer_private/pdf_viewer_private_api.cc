@@ -310,7 +310,9 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
 
   glic_service->ToggleUI(tab_interface->GetBrowserWindowInterface(),
                          /*prevent_close=*/true,
-                         glic::mojom::InvocationSource::kPdfSummarizeButton);
+                         glic::mojom::InvocationSource::kPdfSummarizeButton,
+                         /*prompt_suggestion=*/"summarize the pdf",
+                         /*auto_send=*/true);
 
   return RespondNow(NoArguments());
 }
