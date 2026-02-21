@@ -207,17 +207,39 @@ source_set("tests_hook") {
   deps = [ "//base" ]
 }
 
+source_set("tests_hook_helper") {
+  # This target is intentionally not test-only, as the main app depends on it.
+  sources = [
+    "tests_hook_helper.h",
+    "tests_hook_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ios/web/public/session/proto",
+  ]
+}
+
 source_set("tests_fake_hook") {
   # This target is intentionally not test-only, as the main app depends on it.
   sources = [ "tests_fake_hook.mm" ]
   deps = [
     ":tests_hook",
+    "//build:branding_buildflags",
     "//components/commerce/core:shopping_service",
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/public/snackbar:constants",
   ]
+  if (!is_chrome_branded) {
+    deps += [ ":tests_hook_helper" ]
+  }
 }
 
 source_set("perf_tests_hook") {

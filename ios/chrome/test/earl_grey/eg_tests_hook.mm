@@ -456,4 +456,8 @@ CreateContextualSearchService(ProfileIOS* profile) {
   return MockIOSContextualSearchService::CreateTestingProfileService(profile);
 }
 
+void InjectFakeTabsInBrowser(Browser* browser) {
+  // No-op for internal EG2 tests.
+}
+
 }  // namespace tests_hook

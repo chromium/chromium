@@ -67,6 +67,8 @@ namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
+class Browser;
+
 namespace tests_hook {
 
 // Returns true if Gemini eligibility check should be disabled as tests do
@@ -251,6 +253,9 @@ std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
 // The real factory will be used if this hook returns null.
 std::unique_ptr<contextual_search::ContextualSearchService>
 CreateContextualSearchService(ProfileIOS* profile);
+
+// Injects fake tabs into the given browser.
+void InjectFakeTabsInBrowser(Browser* browser);
 
 }  // namespace tests_hook
 

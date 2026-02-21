@@ -187,4 +187,8 @@ CreateContextualSearchService(ProfileIOS* profile) {
   return nullptr;
 }
 
+void InjectFakeTabsInBrowser(Browser* browser) {
+  // No-op for XCUITest.
+}
+
 }  // namespace tests_hook
