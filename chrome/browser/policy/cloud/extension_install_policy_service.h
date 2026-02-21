@@ -135,6 +135,7 @@ class ExtensionInstallPolicyServiceImpl
       initialization_waiters_;
 
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_change_registrar_;
 };
 
 }  // namespace policy

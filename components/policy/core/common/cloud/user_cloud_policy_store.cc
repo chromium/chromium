@@ -263,16 +263,20 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         Validate(
             std::move(cloud_policy), std::move(key), validate_in_background,
             base::BindRepeating(
-                &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation,
+                &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation<
+                    em::CloudPolicySettings>,
                 weak_factory_.GetWeakPtr(), doing_key_rotation,
                 result.key.has_signing_key() ? result.key.signing_key()
                                              : std::string()));
       } else if (IsExtensionInstallPolicyType(policy_type())) {
         ValidateExtensionInstallPolicy(
             std::move(cloud_policy), std::move(key), validate_in_background,
-            base::BindRepeating(&DesktopCloudPolicyStore::
-                                    OnExtensionInstallPolicyToStoreValidated,
-                                weak_factory_.GetWeakPtr()));
+            base::BindRepeating(
+                &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation<
+                    em::ExtensionInstallPolicies>,
+                weak_factory_.GetWeakPtr(), doing_key_rotation,
+                result.key.has_signing_key() ? result.key.signing_key()
+                                             : std::string()));
       } else {
         NOTREACHED();
       }
@@ -355,10 +359,11 @@ void DesktopCloudPolicyStore::ValidateKeyAndSignature(
   }
 }
 
+template <typename PayloadProto>
 void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     bool doing_key_rotation,
     const std::string& signing_key,
-    UserCloudPolicyValidator* validator) {
+    CloudPolicyValidator<PayloadProto>* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     VLOG_POLICY(1, POLICY_PROCESSING)

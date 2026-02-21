@@ -10,8 +10,93 @@
       "pref_name": "extensions.install.cloud_policy_checks_enabled",
       "default_value": false,
       "values_to_test": [
-        true
+        true, false
       ]
     }
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "extensions.install.cloud_policy_checks_enabled": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionInstallCloudPolicyChecksEnabled": true
+        },
+        "policies_settings": {
+          "ExtensionInstallCloudPolicyChecksEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "extensions.install.cloud_policy_checks_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionInstallCloudPolicyChecksEnabled": true
+        },
+        "policies_settings": {
+          "ExtensionInstallPolicyChecksEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "extensions.install.cloud_policy_checks_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionInstallCloudPolicyChecksEnabled": false
+        },
+        "policies_settings": {
+          "ExtensionInstallCloudPolicyChecksEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "extensions.install.cloud_policy_checks_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionInstallCloudPolicyChecksEnabled": false
+        },
+        "policies_settings": {
+          "ExtensionInstallPolicyChecksEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "extensions.install.cloud_policy_checks_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
   }
 ]

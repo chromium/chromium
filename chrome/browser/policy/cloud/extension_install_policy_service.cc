@@ -181,6 +181,12 @@ ExtensionInstallPolicyServiceImpl::ExtensionInstallPolicyServiceImpl(
           &ExtensionInstallPolicyServiceImpl::OnPolicyChecksEnabledChanged,
           base::Unretained(this)));
   OnPolicyChecksEnabledChanged();
+  local_state_change_registrar_.Init(g_browser_process->local_state());
+  local_state_change_registrar_.Add(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled,
+      base::BindRepeating(
+          &ExtensionInstallPolicyServiceImpl::OnPolicyChecksEnabledChanged,
+          base::Unretained(this)));
 
   for (const auto& info : GetPolicyManagerInfos()) {
     // If there is not store available, then that manager does not support
@@ -545,7 +551,9 @@ ExtensionInstallPolicyServiceImpl::GetExtensions() {
 void ExtensionInstallPolicyServiceImpl::OnPolicyChecksEnabledChanged() {
   // TODO(b/449178423): RemovePolicyTypeToFetch() in OnCoreDisconnecting()?
 
-  bool enabled = profile_->GetPrefs()->GetBoolean(
+  bool user_enabled = profile_->GetPrefs()->GetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled);
+  bool machine_enabled = g_browser_process->local_state()->GetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled);
 
   for (const auto& info : GetConnectedPolicyManagerInfos()) {
@@ -553,10 +561,12 @@ void ExtensionInstallPolicyServiceImpl::OnPolicyChecksEnabledChanged() {
       if (!core->client()) {
         continue;
       }
-      if (enabled) {
-        const bool already_has_policy_type =
-            core->client()->HasPolicyTypeToFetch(info.policy_type,
-                                                 std::string());
+      bool is_user_policy =
+          info.policy_type ==
+          dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+      if (is_user_policy ? user_enabled : machine_enabled) {
+        bool already_has_policy_type = core->client()->HasPolicyTypeToFetch(
+            info.policy_type, std::string());
         core->client()->AddPolicyTypeToFetch({info.policy_type, this});
         // In tests the policy client might not always have a real device
         // management service.

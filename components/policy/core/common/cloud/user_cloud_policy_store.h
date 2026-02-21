@@ -136,9 +136,11 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
 
   // Callback invoked to install a just-loaded policy after validation has
   // finished.
-  void InstallLoadedPolicyAfterValidation(bool doing_key_rotation,
-                                          const std::string& signing_key,
-                                          UserCloudPolicyValidator* validator);
+  template <typename PayloadProto>
+  void InstallLoadedPolicyAfterValidation(
+      bool doing_key_rotation,
+      const std::string& signing_key,
+      CloudPolicyValidator<PayloadProto>* validator);
 
   // Callback invoked to store the policy after validation has finished.
   void OnPolicyToStoreValidated(UserCloudPolicyValidator* validator);
