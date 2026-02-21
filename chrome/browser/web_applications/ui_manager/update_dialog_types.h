@@ -92,7 +92,10 @@ enum class WebAppIdentityUpdateResult {
   // The dialog was closed without user action, likely due to another dialog
   // being present, shutdown, or other factors.
   kUnexpectedError = 4,
-  kMaxValue = kUnexpectedError
+  // The dialog was closed by direct user action (e.g., the escape key), and
+  // because the dialog requires immediate action, close the web app entirely.
+  kCloseApp = 5,
+  kMaxValue = kCloseApp
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppIdentityUpdateResult)
 

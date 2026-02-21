@@ -870,7 +870,8 @@ void WebAppBrowserController::OnMetadataObtainedTriggerMigrationDialog(
   web_app::ShowWebAppReviewUpdateDialog(
       app_id(), *identity_update, browser(), start_time,
       base::BindOnce(&WebAppBrowserController::OnMigrationDialogResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     identity_update->is_forced_migration));
 }
 
 void WebAppBrowserController::OnUpdateDialogResult(
@@ -906,6 +907,9 @@ void WebAppBrowserController::OnUpdateDialogResult(
           app_id(), webapps::WebappUninstallSource::kAppMenu,
           browser()->window(), base::DoNothing());
       return;
+    case WebAppIdentityUpdateResult::kCloseApp:
+      // kCloseApp is only used for migration dialogs.
+      NOTREACHED();
     case WebAppIdentityUpdateResult::kAppUninstalledDuringDialog:
     case WebAppIdentityUpdateResult::kUnexpectedError:
       return;
@@ -914,6 +918,7 @@ void WebAppBrowserController::OnUpdateDialogResult(
 }
 
 void WebAppBrowserController::OnMigrationDialogResult(
+    bool is_forced_migration,
     WebAppIdentityUpdateResult result) const {
   CHECK(!browser()->profile()->IsOffTheRecord());
   auto* web_app_provider = WebAppProvider::GetForWebApps(browser()->profile());
@@ -936,7 +941,10 @@ void WebAppBrowserController::OnMigrationDialogResult(
         webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
             webapps::ManifestId(pending_migration_info->manifest_id()));
         const proto::WebAppMigrationBehavior migration_behavior =
-            proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST;
+            is_forced_migration ? proto::WebAppMigrationBehavior::
+                                      WEB_APP_MIGRATION_BEHAVIOR_FORCE
+                                : proto::WebAppMigrationBehavior::
+                                      WEB_APP_MIGRATION_BEHAVIOR_SUGGEST;
         web_app_provider->scheduler().ApplyManifestMigration(
             app_id(), destination_app_id, migration_behavior,
             std::move(keep_alive), std::move(profile_keep_alive),
@@ -944,10 +952,26 @@ void WebAppBrowserController::OnMigrationDialogResult(
       }
       return;
     }
-    case WebAppIdentityUpdateResult::kUninstallApp:
+    case WebAppIdentityUpdateResult::kUninstallApp: {
+      UninstallCompleteCallback complete_callback =
+          is_forced_migration
+              ? base::BindOnce(
+                    [](base::WeakPtr<BrowserWindowInterface> browser,
+                       webapps::UninstallResultCode code) {
+                      if (browser &&
+                          code == webapps::UninstallResultCode::kCancelled) {
+                        chrome::CloseWindow(browser.get());
+                      }
+                    },
+                    browser()->GetWeakPtr())
+              : base::DoNothing();
       web_app_provider->ui_manager().PresentUserUninstallDialog(
           app_id(), webapps::WebappUninstallSource::kAppMenu,
-          browser()->window(), base::DoNothing());
+          browser()->window(), std::move(complete_callback));
+      return;
+    }
+    case WebAppIdentityUpdateResult::kCloseApp:
+      chrome::CloseWindow(browser());
       return;
     case WebAppIdentityUpdateResult::kIgnore:
     case WebAppIdentityUpdateResult::kAppUninstalledDuringDialog:

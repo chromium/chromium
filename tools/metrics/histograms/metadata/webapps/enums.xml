@@ -552,6 +552,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User chose to ignore this app's update"/>
   <int value="3" label="App was uninstalled while the dialog is being shown"/>
   <int value="4" label="Dialog terminated unexpectedly"/>
+  <int value="5" label="Dialog closed the app"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/ui_manager/update_dialog_types.h:WebAppIdentityUpdateResult) -->
