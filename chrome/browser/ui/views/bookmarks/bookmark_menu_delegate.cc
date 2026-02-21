@@ -651,7 +651,15 @@ void BookmarkMenuDelegate::WriteDragData(MenuItemView* sender,
                                  ->second.GetIfNonPermanentNode();
   // Permanent nodes can't be dragged.
   CHECK(node);
-  BookmarkNodeData drag_data(node);
+
+  // When dragging bookmarks across different profiles or browsers, the
+  // bookmark's date_added and date_folder_modified fields must be reset.
+  // Dragging a bookmark within the same profile is a move operation and does
+  // not create a new BookmarkNode. Therefore, the date fields of the
+  // BookmarkNode need to be ignored and do not need to be written into the drag
+  // data.
+  BookmarkNodeData drag_data(
+      node, BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields);
   drag_data.Write(profile_->GetPath(), data);
 }
 

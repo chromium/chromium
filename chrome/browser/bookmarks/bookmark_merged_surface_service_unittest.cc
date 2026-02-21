@@ -644,7 +644,9 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
   // Copy node "f1" to "f2".
   const BookmarkNode* node_to_copy =
       model().bookmark_bar_node()->children()[3].get();
-  const bookmarks::BookmarkNodeData::Element node_data(node_to_copy);
+  const bookmarks::BookmarkNodeData::Element node_data(
+      node_to_copy,
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   const BookmarkParentFolder destination = BookmarkParentFolder::FromFolderNode(
       model().other_node()->children()[3].get());
 
@@ -687,8 +689,10 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
   const BookmarkNode* n1 = model().bookmark_bar_node()->children()[1].get();
   const BookmarkNode* n2 = model().bookmark_bar_node()->children()[2].get();
   std::vector<bookmarks::BookmarkNodeData::Element> nodes_data;
-  nodes_data.emplace_back(n1);
-  nodes_data.emplace_back(n2);
+  nodes_data.emplace_back(
+      n1, bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  nodes_data.emplace_back(
+      n2, bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   const BookmarkParentFolder destination = BookmarkParentFolder::FromFolderNode(
       model().other_node()->children()[3].get());
@@ -712,8 +716,12 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeToPermanentFolder) {
 
   // Copy node "7" and "8" to bookmark bar.
   std::vector<bookmarks::BookmarkNodeData::Element> nodes_data;
-  nodes_data.emplace_back(model().other_node()->children()[1].get());
-  nodes_data.emplace_back(model().other_node()->children()[2].get());
+  nodes_data.emplace_back(
+      model().other_node()->children()[1].get(),
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  nodes_data.emplace_back(
+      model().other_node()->children()[2].get(),
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   const BookmarkParentFolder bb_folder(
       BookmarkParentFolder::BookmarkBarFolder());
 
@@ -735,8 +743,12 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeToPermanentFolder) {
   model().CreateAccountPermanentFolders();
   // Copy node "6" and "F2" to bookmark bar.
   nodes_data.clear();
-  nodes_data.emplace_back(model().other_node()->children()[0].get());
-  nodes_data.emplace_back(model().other_node()->children()[3].get());
+  nodes_data.emplace_back(
+      model().other_node()->children()[0].get(),
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  nodes_data.emplace_back(
+      model().other_node()->children()[3].get(),
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   {
     InSequence sequence;
     // Register second observer.
@@ -799,7 +811,8 @@ TEST_F(BookmarkMergedSurfaceServiceTest, ScopedAddNewNodesReset) {
 
   // Copy node "7" to bookmark bar.
   bookmarks::BookmarkNodeData::Element node_data(
-      model().other_node()->children()[1].get());
+      model().other_node()->children()[1].get(),
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   const BookmarkParentFolder bb_folder(
       BookmarkParentFolder::BookmarkBarFolder());
   InSequence sequence;
@@ -819,7 +832,10 @@ TEST_F(BookmarkMergedSurfaceServiceTest, ScopedAddNewNodesReset) {
   EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(destination, 1u));
 
   service().AddNodesAsCopiesOfNodeData(
-      {bookmarks::BookmarkNodeData::Element(node_to_copy)}, destination, 1);
+      {bookmarks::BookmarkNodeData::Element(
+          node_to_copy, bookmarks::BookmarkNodeData::DateFieldsBehavior::
+                            kPreserveDateFields)},
+      destination, 1);
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 8 f2:[ 9 1 ] ");
 }
 

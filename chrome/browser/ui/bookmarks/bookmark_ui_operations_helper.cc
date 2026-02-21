@@ -176,7 +176,11 @@ void BookmarkUIOperationsHelper::CopyOrCutToClipboard(
     }
   }
   CHECK(!filtered_nodes.empty());
-  BookmarkNodeData(filtered_nodes).WriteToClipboard(is_off_the_record);
+  BookmarkNodeData::DateFieldsBehavior date_fields_behavior =
+      remove_nodes ? BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields
+                   : BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields;
+  BookmarkNodeData(filtered_nodes, date_fields_behavior)
+      .WriteToClipboard(is_off_the_record);
 
   if (remove_nodes) {
     bookmarks::ScopedGroupBookmarkActions group_cut(model);
@@ -207,7 +211,11 @@ void BookmarkUIOperationsHelper::PasteFromClipboard(size_t index) {
     }
     BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
     node.SetTitle(base::ASCIIToUTF16(url.spec()));
-    bookmark_data = BookmarkNodeData(&node);
+
+    // Ignore the `date_added` value set when the BookmarkNode is constructed,
+    // let CloneBookmarkNodeImpl set this value.
+    bookmark_data = BookmarkNodeData(
+        &node, BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields);
   }
   CHECK_LE(index, target_parent()->GetChildrenCount());
   if (bookmark_data.size() == 1 &&
@@ -339,8 +347,7 @@ void BookmarkUIOperationsHelperNonMergedSurfaces::AddNodesAsCopiesOfNodeData(
   CHECK(parent_node());
   bookmarks::ScopedGroupBookmarkActions group_drops(model_);
   bookmarks::CloneBookmarkNode(model_, data.elements, parent_node(),
-                               index_to_add_at,
-                               /*reset_node_times=*/true);
+                               index_to_add_at);
 }
 
 void BookmarkUIOperationsHelperNonMergedSurfaces::MoveBookmarkNodeData(

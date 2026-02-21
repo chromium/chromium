@@ -2132,7 +2132,14 @@ const BookmarkNode* BookmarkBarView::GetNodeForSender(View* sender) const {
 void BookmarkBarView::WriteBookmarkDragData(const BookmarkNode* node,
                                             ui::OSExchangeData* data) {
   DCHECK(node && data);
-  bookmarks::BookmarkNodeData drag_data(node);
+  // When dragging bookmarks across different profiles or browsers, the
+  // bookmark's date_added and date_folder_modified fields must be reset.
+  // Dragging a bookmark within the same profile is a move operation and does
+  // not create a new BookmarkNode. Therefore, the date fields of the
+  // BookmarkNode need to be ignored and do not need to be written into the
+  // drag data.
+  bookmarks::BookmarkNodeData drag_data(
+      node, bookmarks::BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields);
   drag_data.Write(browser_->profile()->GetPath(), data);
 }
 

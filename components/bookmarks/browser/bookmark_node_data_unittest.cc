@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_features.h"
@@ -20,6 +21,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "url/gurl.h"
@@ -37,6 +39,10 @@ class BookmarkNodeDataTest : public testing::Test {
   BookmarkNodeDataTest& operator=(const BookmarkNodeDataTest&) = delete;
 
   void SetUp() override {
+    // OS clipboard is a global resource, which causes flakiness when unit tests
+    // run in parallel. So, use a per-instance test clipboard.
+    ui::TestClipboard::CreateForCurrentThread();
+
     model_ = TestBookmarkClient::CreateModel();
     test::WaitForBookmarkModelToLoad(model_.get());
     bool success = profile_dir_.CreateUniqueTempDir();
@@ -127,7 +133,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
   GURL url(GURL("http://foo.com"));
   const std::u16string title(u"foo.com");
   const BookmarkNode* node = model()->AddURL(root, 0, title, url);
-  BookmarkNodeData drag_data(node);
+  BookmarkNodeData drag_data(
+      node, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   EXPECT_TRUE(drag_data.is_valid());
   ASSERT_EQ(1u, drag_data.size());
   EXPECT_TRUE(drag_data.elements[0].is_url);
@@ -137,7 +144,12 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
   EXPECT_EQ(node->date_folder_modified(),
             drag_data.elements[0].date_folder_modified);
   ui::OSExchangeData data;
-  drag_data.Write(GetProfilePath(), &data);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    drag_data.Write(GetProfilePath(), &data);
+  }
 
   // Now read the data back in.
   ui::OSExchangeData data2(CloneProvider(data));
@@ -148,8 +160,9 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
   EXPECT_TRUE(read_data.elements[0].is_url);
   EXPECT_EQ(url, read_data.elements[0].url);
   EXPECT_EQ(title, read_data.elements[0].title);
-  EXPECT_TRUE(read_data.elements[0].date_added.is_null());
-  EXPECT_TRUE(read_data.elements[0].date_folder_modified.is_null());
+  EXPECT_EQ(node->date_added(), read_data.elements[0].date_added);
+  EXPECT_EQ(node->date_folder_modified(),
+            read_data.elements[0].date_folder_modified);
   EXPECT_TRUE(read_data.GetFirstNode(model(), GetProfilePath()) == node);
 
   // Make sure asking for the node with a different profile returns NULL.
@@ -179,7 +192,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
   model()->AddFolder(g1, 0, u"g11");
   const BookmarkNode* g12 = model()->AddFolder(g1, 0, u"g12");
 
-  BookmarkNodeData drag_data(g12);
+  BookmarkNodeData drag_data(
+      g12, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   EXPECT_TRUE(drag_data.is_valid());
   ASSERT_EQ(1u, drag_data.size());
   EXPECT_EQ(g12->GetTitle(), drag_data.elements[0].title);
@@ -189,7 +203,12 @@ TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
             drag_data.elements[0].date_folder_modified);
 
   ui::OSExchangeData data;
-  drag_data.Write(GetProfilePath(), &data);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    drag_data.Write(GetProfilePath(), &data);
+  }
 
   // Now read the data back in.
   ui::OSExchangeData data2(CloneProvider(data));
@@ -199,8 +218,9 @@ TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
   ASSERT_EQ(1u, read_data.size());
   EXPECT_EQ(g12->GetTitle(), read_data.elements[0].title);
   EXPECT_FALSE(read_data.elements[0].is_url);
-  EXPECT_TRUE(read_data.elements[0].date_added.is_null());
-  EXPECT_TRUE(read_data.elements[0].date_folder_modified.is_null());
+  EXPECT_EQ(g12->date_added(), read_data.elements[0].date_added);
+  EXPECT_EQ(g12->date_folder_modified(),
+            read_data.elements[0].date_folder_modified);
 
   // We should get back the same node when asking for the same profile.
   const BookmarkNode* r_g12 = read_data.GetFirstNode(model(), GetProfilePath());
@@ -229,10 +249,16 @@ TEST_F(BookmarkNodeDataTest, MAYBE_FolderWithChild) {
 
   model()->AddURL(folder, 0, title, url);
 
-  BookmarkNodeData drag_data(folder);
+  BookmarkNodeData drag_data(
+      folder, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   ui::OSExchangeData data;
-  drag_data.Write(GetProfilePath(), &data);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    drag_data.Write(GetProfilePath(), &data);
+  }
 
   // Now read the data back in.
   ui::OSExchangeData data2(CloneProvider(data));
@@ -246,8 +272,9 @@ TEST_F(BookmarkNodeDataTest, MAYBE_FolderWithChild) {
   EXPECT_TRUE(read_child.is_url);
   EXPECT_EQ(title, read_child.title);
   EXPECT_EQ(url, read_child.url);
-  EXPECT_TRUE(read_data.elements[0].date_added.is_null());
-  EXPECT_TRUE(read_data.elements[0].date_folder_modified.is_null());
+  EXPECT_EQ(folder->date_added(), read_data.elements[0].date_added);
+  EXPECT_EQ(folder->date_folder_modified(),
+            read_data.elements[0].date_folder_modified);
   EXPECT_TRUE(read_child.is_url);
 
   // And make sure we get the node back.
@@ -276,9 +303,15 @@ TEST_F(BookmarkNodeDataTest, MAYBE_MultipleNodes) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(folder);
   nodes.push_back(url_node);
-  BookmarkNodeData drag_data(nodes);
+  BookmarkNodeData drag_data(
+      nodes, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   ui::OSExchangeData data;
-  drag_data.Write(GetProfilePath(), &data);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    drag_data.Write(GetProfilePath(), &data);
+  }
 
   // Read the data back in.
   ui::OSExchangeData data2(CloneProvider(data));
@@ -287,8 +320,9 @@ TEST_F(BookmarkNodeDataTest, MAYBE_MultipleNodes) {
   EXPECT_TRUE(read_data.is_valid());
   ASSERT_EQ(2u, read_data.size());
   ASSERT_EQ(1u, read_data.elements[0].children.size());
-  EXPECT_TRUE(read_data.elements[0].date_added.is_null());
-  EXPECT_TRUE(read_data.elements[0].date_folder_modified.is_null());
+  ASSERT_EQ(folder->date_added(), read_data.elements[0].date_added);
+  ASSERT_EQ(folder->date_folder_modified(),
+            read_data.elements[0].date_folder_modified);
 
   const BookmarkNodeData::Element& read_folder = read_data.elements[0];
   EXPECT_FALSE(read_folder.is_url);
@@ -345,7 +379,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   nodes.push_back(url_node);
   nodes.push_back(url_node2);
 
-  data.ReadFromVector(nodes);
+  data.ReadFromVector(
+      nodes, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
@@ -355,8 +390,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 #else
   std::u16string new_line = u"\n";
 #endif
-  combined_text = base::UTF8ToUTF16(url.spec()) + new_line
-    + base::UTF8ToUTF16(url2.spec());
+  combined_text =
+      base::UTF8ToUTF16(url.spec()) + new_line + base::UTF8ToUTF16(url2.spec());
   std::u16string clipboard_result;
   clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
                        /* data_dst = */ nullptr, &clipboard_result);
@@ -375,7 +410,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(folder);
 
-  data.ReadFromVector(nodes);
+  data.ReadFromVector(
+      nodes, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
@@ -403,7 +439,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(folder);
 
-  data.ReadFromVector(nodes);
+  data.ReadFromVector(
+      nodes, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
@@ -430,7 +467,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
   nodes.push_back(url_node);
   nodes.push_back(folder);
 
-  data.ReadFromVector(nodes);
+  data.ReadFromVector(
+      nodes, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
@@ -462,7 +500,8 @@ TEST_F(BookmarkNodeDataTest, MAYBE_MetaInfo) {
   model()->SetNodeMetaInfo(node, "somekey", "somevalue");
   model()->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
 
-  BookmarkNodeData node_data(node);
+  BookmarkNodeData node_data(
+      node, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   ui::OSExchangeData data;
   node_data.Write(GetProfilePath(), &data);
 
@@ -569,6 +608,10 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_InvalidElementCount) {
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_ValidData) {
+  const base::Time parent_added_time = base::Time::Now() - base::Days(1);
+  const base::Time parent_modified_time = parent_added_time - base::Days(2);
+  const base::Time child_added_time = base::Time::Now() - base::Days(3);
+
   base::Pickle pickle;
   base::FilePath().WriteToPickle(&pickle);
   pickle.WriteUInt32(0);  // backward compatibility flag
@@ -579,15 +622,21 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_ValidData) {
   parent_pickle.WriteString("");           // url
   parent_pickle.WriteString16(u"folder");  // title
   parent_pickle.WriteInt64(0);             // id
-  parent_pickle.WriteUInt32(0);            // meta_info_map_size
-  parent_pickle.WriteUInt32(1);            // children_size
+  parent_pickle.WriteInt64(parent_added_time.ToDeltaSinceWindowsEpoch()
+                               .InMicroseconds());  // date_added
+  parent_pickle.WriteInt64(parent_modified_time.ToDeltaSinceWindowsEpoch()
+                               .InMicroseconds());  // modified_time
+  parent_pickle.WriteUInt32(0);                     // meta_info_map_size
+  parent_pickle.WriteUInt32(1);                     // children_size
   // Add a child URL into the folder.
   base::Pickle child_pickle;
   child_pickle.WriteBool(true);                 // is_url
   child_pickle.WriteString("http://foo.com/");  // url
   child_pickle.WriteString16(u"url");           // title
   child_pickle.WriteInt64(1);                   // id
-  child_pickle.WriteUInt32(1);                  // meta_info_map_size
+  child_pickle.WriteInt64(child_added_time.ToDeltaSinceWindowsEpoch()
+                              .InMicroseconds());  // date_added
+  child_pickle.WriteUInt32(1);                     // meta_info_map_size
   child_pickle.WriteString("somekey");
   child_pickle.WriteString("somevalue");
   child_pickle.WriteUInt32(0);  // children_size
@@ -603,8 +652,11 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_ValidData) {
   auto& child_element = parent_element.children[0];
 
   EXPECT_EQ(u"folder", parent_element.title);
+  EXPECT_EQ(parent_added_time, parent_element.date_added);
+  EXPECT_EQ(parent_modified_time, parent_element.date_folder_modified);
   ASSERT_EQ(0u, parent_element.meta_info_map.size());
   EXPECT_EQ(u"url", child_element.title);
+  EXPECT_EQ(child_added_time, child_element.date_added);
   ASSERT_EQ(1u, child_element.meta_info_map.size());
   EXPECT_EQ("somevalue", child_element.meta_info_map["somekey"]);
 }
@@ -621,30 +673,31 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleLegacyFormat) {
   base::Pickle pickle;
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
+    feature_list.InitAndDisableFeature(
         bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
-    BookmarkNodeData(folder).WriteToPickle(base::FilePath(), &pickle);
+    BookmarkNodeData(folder,
+                     BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields)
+        .WriteToPickle(base::FilePath(), &pickle);
   }
 
   BookmarkNodeData bookmark_node_data;
   EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
-
   EXPECT_TRUE(bookmark_node_data.is_valid());
   ASSERT_EQ(1u, bookmark_node_data.size());
   ASSERT_EQ(1u, bookmark_node_data.elements[0].children.size());
   ASSERT_EQ(1u, bookmark_node_data.elements[0].children[0].children.size());
-  EXPECT_EQ(folder->GetTitle(), bookmark_node_data.elements[0].title);
-  EXPECT_EQ(sub_folder->GetTitle(),
-            bookmark_node_data.elements[0].children[0].title);
-  EXPECT_EQ(node->GetTitle(),
-            bookmark_node_data.elements[0].children[0].children[0].title);
 
-  // Verify that the read data contains the same meta info.
-  auto* meta_info_map = node->GetMetaInfoMap();
-  ASSERT_NE(meta_info_map, nullptr);
-  EXPECT_EQ(2u, meta_info_map->size());
-  EXPECT_EQ("somevalue", meta_info_map->at("somekey"));
-  EXPECT_EQ("someothervalue", meta_info_map->at("someotherkey"));
+  const BookmarkNodeData::Element& pasted_folder =
+      bookmark_node_data.elements[0];
+  const BookmarkNodeData::Element& pasted_sub_folder =
+      pasted_folder.children[0];
+  const BookmarkNodeData::Element& pasted_node = pasted_sub_folder.children[0];
+  EXPECT_EQ(pasted_folder.title, folder->GetTitle());
+  EXPECT_EQ(pasted_sub_folder.title, sub_folder->GetTitle());
+  EXPECT_EQ(pasted_node.title, node->GetTitle());
+  ASSERT_EQ(2u, pasted_node.meta_info_map.size());
+  EXPECT_EQ("somevalue", pasted_node.meta_info_map.at("somekey"));
+  EXPECT_EQ("someothervalue", pasted_node.meta_info_map.at("someotherkey"));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickleNewFormat) {
@@ -659,30 +712,131 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleNewFormat) {
   base::Pickle pickle;
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
+    feature_list.InitAndEnableFeature(
         bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
-    BookmarkNodeData(folder).WriteToPickle(base::FilePath(), &pickle);
+    BookmarkNodeData(folder,
+                     BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields)
+        .WriteToPickle(base::FilePath(), &pickle);
   }
 
   BookmarkNodeData bookmark_node_data;
   EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
-
   EXPECT_TRUE(bookmark_node_data.is_valid());
   ASSERT_EQ(1u, bookmark_node_data.size());
   ASSERT_EQ(1u, bookmark_node_data.elements[0].children.size());
   ASSERT_EQ(1u, bookmark_node_data.elements[0].children[0].children.size());
-  EXPECT_EQ(folder->GetTitle(), bookmark_node_data.elements[0].title);
-  EXPECT_EQ(sub_folder->GetTitle(),
-            bookmark_node_data.elements[0].children[0].title);
-  EXPECT_EQ(node->GetTitle(),
-            bookmark_node_data.elements[0].children[0].children[0].title);
 
-  // Verify that the read data contains the same meta info.
-  auto* meta_info_map = node->GetMetaInfoMap();
-  ASSERT_NE(meta_info_map, nullptr);
-  EXPECT_EQ(2u, meta_info_map->size());
-  EXPECT_EQ("somevalue", meta_info_map->at("somekey"));
-  EXPECT_EQ("someothervalue", meta_info_map->at("someotherkey"));
+  const BookmarkNodeData::Element& pasted_folder =
+      bookmark_node_data.elements[0];
+  const BookmarkNodeData::Element& pasted_sub_folder =
+      pasted_folder.children[0];
+  const BookmarkNodeData::Element& pasted_node = pasted_sub_folder.children[0];
+
+  EXPECT_EQ(pasted_folder.title, folder->GetTitle());
+  EXPECT_EQ(pasted_sub_folder.title, sub_folder->GetTitle());
+  EXPECT_EQ(pasted_node.title, node->GetTitle());
+  ASSERT_EQ(2u, pasted_node.meta_info_map.size());
+  EXPECT_EQ("somevalue", pasted_node.meta_info_map.at("somekey"));
+  EXPECT_EQ("someothervalue", pasted_node.meta_info_map.at("someotherkey"));
+}
+
+// Enable the new pickle format and preserve the date fields.
+TEST_F(BookmarkNodeDataTest, ReadFromClipboard_PreserveDate) {
+  const BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"f");
+  const BookmarkNode* sub_folder = model()->AddFolder(folder, 0, u"fs");
+  const BookmarkNode* node =
+      model()->AddURL(sub_folder, 0, u"n", GURL("http://foo.com/"));
+
+  // Set the date_added and date_folder_modified fields for both folders and
+  // url node, and paste them to the clipboard.
+  model()->SetDateAdded(node, base::Time::Now() + base::Days(1));
+  model()->SetDateFolderModified(node, base::Time::Now() + base::Days(2));
+  model()->SetDateAdded(folder, base::Time::Now() + base::Days(3));
+  model()->SetDateFolderModified(folder, base::Time::Now() + base::Days(4));
+  model()->SetDateAdded(sub_folder, base::Time::Now() + base::Days(5));
+  model()->SetDateFolderModified(sub_folder, base::Time::Now() + base::Days(6));
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    BookmarkNodeData(folder,
+                     BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields)
+        .WriteToClipboard(/*is_off_the_record=*/false);
+  }
+
+  // After BookmarkNodeData is loaded from the clipboard, the values of its
+  // date_added and date_folder_modified must match the original configured
+  // values exactly.
+  BookmarkNodeData data;
+  EXPECT_TRUE(data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_TRUE(data.is_valid());
+  ASSERT_EQ(1u, data.size());
+  ASSERT_EQ(1u, data.elements[0].children.size());
+  ASSERT_EQ(1u, data.elements[0].children[0].children.size());
+
+  const BookmarkNodeData::Element& pasted_folder = data.elements[0];
+  const BookmarkNodeData::Element& pasted_sub_folder =
+      pasted_folder.children[0];
+  const BookmarkNodeData::Element& pasted_node = pasted_sub_folder.children[0];
+
+  EXPECT_EQ(folder->GetTitle(), pasted_folder.title);
+  EXPECT_EQ(folder->date_added(), pasted_folder.date_added);
+  EXPECT_EQ(folder->date_folder_modified(), pasted_folder.date_folder_modified);
+  EXPECT_EQ(sub_folder->GetTitle(), pasted_sub_folder.title);
+  EXPECT_EQ(sub_folder->date_added(), pasted_sub_folder.date_added);
+  EXPECT_EQ(sub_folder->date_folder_modified(),
+            pasted_sub_folder.date_folder_modified);
+  EXPECT_EQ(node->GetTitle(), pasted_node.title);
+  EXPECT_EQ(node->date_added(), pasted_node.date_added);
+}
+
+// Enable the new pickle format and ignore the date fields.
+TEST_F(BookmarkNodeDataTest, ReadFromClipboard_IgnoreDate) {
+  const BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"f");
+  const BookmarkNode* sub_folder = model()->AddFolder(folder, 0, u"fs");
+  const BookmarkNode* node =
+      model()->AddURL(sub_folder, 0, u"n", GURL("http://foo.com/"));
+
+  // Set the date_added and date_folder_modified fields for both folders and
+  // url node, and paste them to the clipboard.
+  model()->SetDateAdded(node, base::Time::Now() + base::Days(1));
+  model()->SetDateFolderModified(node, base::Time::Now() + base::Days(2));
+  model()->SetDateAdded(folder, base::Time::Now() + base::Days(3));
+  model()->SetDateFolderModified(folder, base::Time::Now() + base::Days(4));
+  model()->SetDateAdded(sub_folder, base::Time::Now() + base::Days(5));
+  model()->SetDateFolderModified(sub_folder, base::Time::Now() + base::Days(6));
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    BookmarkNodeData(folder,
+                     BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields)
+        .WriteToClipboard(/*is_off_the_record=*/false);
+  }
+
+  BookmarkNodeData data;
+  EXPECT_TRUE(data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_TRUE(data.is_valid());
+  ASSERT_EQ(1u, data.size());
+  ASSERT_EQ(1u, data.elements[0].children.size());
+  ASSERT_EQ(1u, data.elements[0].children[0].children.size());
+
+  const BookmarkNodeData::Element& pasted_folder = data.elements[0];
+  const BookmarkNodeData::Element& pasted_sub_folder =
+      pasted_folder.children[0];
+  const BookmarkNodeData::Element& pasted_node = pasted_sub_folder.children[0];
+  EXPECT_EQ(folder->GetTitle(), pasted_folder.title);
+  EXPECT_TRUE(pasted_folder.date_added.is_null());
+  EXPECT_TRUE(pasted_folder.date_folder_modified.is_null());
+  EXPECT_EQ(sub_folder->GetTitle(), pasted_sub_folder.title);
+  EXPECT_TRUE(pasted_sub_folder.date_added.is_null());
+  EXPECT_TRUE(pasted_sub_folder.date_folder_modified.is_null());
+  EXPECT_EQ(node->GetTitle(), pasted_node.title);
+  EXPECT_TRUE(pasted_node.date_added.is_null());
 }
 #endif
 

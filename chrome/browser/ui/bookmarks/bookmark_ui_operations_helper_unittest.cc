@@ -11,12 +11,14 @@
 #include <type_traits>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -29,6 +31,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -136,7 +139,12 @@ TYPED_TEST(BookmarkUIOperationsHelperTest,
       this->model()->AddFolder(bb_node, 1, u"folder");
   const bookmarks::BookmarkNode* folder_child_node =
       this->model()->AddURL(folder, 0, u"child", GURL("https://foo.com"));
-  bookmarks::BookmarkNodeData bookmark_node_data(folder_child_node);
+
+  // Copy operations need to reset the timestamps; do not initialize the date
+  // fields in BookmarkNodeData.
+  bookmarks::BookmarkNodeData bookmark_node_data(
+      folder_child_node,
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   bookmark_node_data.SetOriginatingProfilePath(this->profile()->GetPath());
 
   internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(bb_node);
@@ -162,7 +170,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest,
       this->model()->AddFolder(bb_node, 1, u"folder");
   const bookmarks::BookmarkNode* folder_child_node =
       this->model()->AddURL(folder, 0, u"child", GURL("https://foo.com"));
-  bookmarks::BookmarkNodeData bookmark_node_data(folder_child_node);
+  bookmarks::BookmarkNodeData bookmark_node_data(
+      folder_child_node,
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   bookmark_node_data.SetOriginatingProfilePath(this->profile()->GetPath());
 
   internal::BookmarkUIOperationsHelper* helper =
@@ -186,7 +196,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, DropBookmarksFromAnotherProfile) {
       this->model()->AddFolder(bb_node, 1, u"folder");
   const bookmarks::BookmarkNode* folder_child_node =
       this->model()->AddURL(folder, 0, u"child", GURL("https://foo.com"));
-  bookmarks::BookmarkNodeData bookmark_node_data(folder_child_node);
+  bookmarks::BookmarkNodeData bookmark_node_data(
+      folder_child_node,
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields);
   // Profile path is empty for `bookmark_node_data`.
   EXPECT_FALSE(
       bookmark_node_data.IsFromProfilePath(this->profile()->GetPath()));
@@ -205,6 +217,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, DropBookmarksFromAnotherProfile) {
       folder->children()[0].get();
   EXPECT_EQ(newly_copied_node->url(), folder_child_node->url());
   EXPECT_EQ(folder->children()[1].get(), folder_child_node);
+  EXPECT_NE(newly_copied_node->date_added(), folder_child_node->date_added());
 }
 
 // `BookmarkNodeData` has a different implementation on Mac. It doesn't use
@@ -466,6 +479,89 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
   helper->PasteFromClipboard(0);
   ASSERT_EQ(1u, bar_folder->children().size());
   EXPECT_EQ(url, bar_folder->children()[0]->url().spec());
+}
+
+// Copying and pasting bookmarks requires resetting the added and modified
+// date.
+TYPED_TEST(BookmarkUIOperationsHelperTest, DateInfo_CopyPaste) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
+  const BookmarkNode* node = model->AddURL(model->bookmark_bar_node(), 1,
+                                           u"foo bar", GURL("https://foo.com"));
+  EXPECT_FALSE(folder->date_added().is_null());
+  EXPECT_FALSE(folder->date_folder_modified().is_null());
+  EXPECT_FALSE(node->date_added().is_null());
+  EXPECT_TRUE(node->date_folder_modified().is_null());
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{folder,
+                                                                     node};
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    internal::BookmarkUIOperationsHelper::CopyToClipboard(
+        model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+        /*is_off_the_record=*/false);
+  }
+
+  // And make sure we can paste a bookmark from the clipboard.
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->bookmark_bar_node());
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  helper->PasteFromClipboard(2);
+  CHECK_EQ(4u, model->bookmark_bar_node()->children().size());
+
+  // Verify that the pasted node contains the different date.
+  const BookmarkNode* pasted_folder =
+      model->bookmark_bar_node()->children()[2].get();
+  const BookmarkNode* pasted_node =
+      model->bookmark_bar_node()->children()[3].get();
+  EXPECT_GT(pasted_folder->date_added(), folder->date_added());
+  EXPECT_GT(pasted_folder->date_folder_modified(),
+            folder->date_folder_modified());
+  EXPECT_GT(pasted_node->date_added(), node->date_added());
+  EXPECT_TRUE(pasted_node->date_folder_modified().is_null());
+}
+
+// Cutting and pasting bookmarks preserves the added and modified date.
+TYPED_TEST(BookmarkUIOperationsHelperTest, DateInfo_CutPaste) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
+  const BookmarkNode* node = model->AddURL(model->bookmark_bar_node(), 1,
+                                           u"foo bar", GURL("https://foo.com"));
+  base::Time folder_date_added = folder->date_added();
+  base::Time folder_date_modified = folder->date_folder_modified();
+  base::Time node_date_added = node->date_added();
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{folder,
+                                                                     node};
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        bookmarks::kEnableBookmarkNodeDataNewPickleFormat);
+    internal::BookmarkUIOperationsHelper::CutToClipboard(
+        model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+        /*is_off_the_record=*/false);
+  }
+
+  // And make sure we can paste a bookmark from the clipboard.
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->other_node());
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  helper->PasteFromClipboard(0);
+  CHECK_EQ(2u, model->other_node()->children().size());
+
+  // Verify that the pasted node contains the same date.
+  const BookmarkNode* pasted_folder = model->other_node()->children()[0].get();
+  const BookmarkNode* pasted_node = model->other_node()->children()[1].get();
+  EXPECT_EQ(folder_date_added, pasted_folder->date_added());
+  EXPECT_EQ(folder_date_modified, pasted_folder->date_folder_modified());
+  EXPECT_EQ(node_date_added, pasted_node->date_added());
+  EXPECT_TRUE(pasted_node->date_folder_modified().is_null());
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

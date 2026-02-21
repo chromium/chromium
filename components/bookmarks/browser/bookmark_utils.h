@@ -59,14 +59,13 @@ class VectorIterator {
 };
 
 // Clones bookmark node, adding newly created nodes to `parent` starting at
-// `index_to_add_at`. If `reset_node_times` is true cloned bookmarks and
-// folders will receive new creation times and folder modification times
-// instead of using the values stored in `elements`.
+// `index_to_add_at`. The cut bookmarks and folders retain the creation time
+// and folder modification time stored in elements. In other cases (e.g.,
+// copying or dragging across different profiles), reset bookmark times.
 void CloneBookmarkNode(BookmarkModel* model,
                        const std::vector<BookmarkNodeData::Element>& elements,
                        const BookmarkNode* parent,
-                       size_t index_to_add_at,
-                       bool reset_node_times);
+                       size_t index_to_add_at);
 
 // Copies nodes onto the clipboard. If `remove_nodes` is true the nodes are
 // removed after copied to the clipboard. The nodes are copied in such a way

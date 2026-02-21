@@ -26,7 +26,7 @@
 namespace base {
 class Pickle;
 class PickleIterator;
-}
+}  // namespace base
 
 #if defined(TOOLKIT_VIEWS)
 namespace ui {
@@ -57,10 +57,26 @@ class BookmarkModel;
 //     // data is valid, contents are in elements.
 
 struct BookmarkNodeData {
+  // DateFieldsBehavior is used to control whether to initialize the
+  // `date_added` and `date_folder_modified` fields in an element with the date
+  // fields of a BookmarkNode. The date fields will be written to the clipboard
+  // when the feature `kEnableBookmarkNodeDataNewPickleFormat` is enabled.
+  enum class DateFieldsBehavior {
+    // Skip initializing the element's date fields, and clone operations need to
+    // reset the timestamps. Cloning includes copy-paste and dragging between
+    // different profiles.
+    kIgnoreDateFields,
+    // Initialize the element's date fields with the date fields from
+    // BookmarkNode. These date fields will be written to the clipboard when the
+    // feature is enabled, bookmarks from a cut-paste operation retain these
+    // timestamps.
+    kPreserveDateFields,
+  };
+
   // Element represents a single node.
   struct Element {
     Element();
-    explicit Element(const BookmarkNode* node);
+    Element(const BookmarkNode* node, DateFieldsBehavior date_fields_behavior);
     Element(const Element& other);
     ~Element();
 
@@ -116,10 +132,11 @@ struct BookmarkNodeData {
   BookmarkNodeData(const BookmarkNodeData& other);
 
   // Created a BookmarkNodeData populated from the arguments.
-  explicit BookmarkNodeData(const BookmarkNode* node);
-  explicit BookmarkNodeData(
-      const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-          nodes);
+  BookmarkNodeData(const BookmarkNode* node,
+                   DateFieldsBehavior date_fields_behavior);
+  BookmarkNodeData(
+      const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+      DateFieldsBehavior date_fields_behavior);
 
   ~BookmarkNodeData();
 
@@ -133,8 +150,8 @@ struct BookmarkNodeData {
   // Returns true if the operation succeeds, which also implies that this
   // contains valid data (is non-empty).
   bool ReadFromVector(
-      const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-          nodes);
+      const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+      DateFieldsBehavior date_fields_behavior);
 
   // Creates a single-bookmark DragData from url/title pair.
   // Returns true if the operation succeeds, which also implies that this

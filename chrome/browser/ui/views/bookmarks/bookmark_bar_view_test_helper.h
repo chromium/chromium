@@ -46,6 +46,12 @@ class BookmarkBarViewTestHelper {
     return bbv_->GetDropLocationModelIndexForTesting();
   }
 
+  void WriteBookmarkDragData(BookmarkBarView* bbv,
+                             const bookmarks::BookmarkNode* node,
+                             ui::OSExchangeData* data) {
+    bbv->WriteBookmarkDragData(node, data);
+  }
+
  private:
   raw_ptr<BookmarkBarView, AcrossTasksDanglingUntriaged> bbv_;
 };

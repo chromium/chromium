@@ -705,12 +705,13 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarks) {
                       GURL("http://www.google.com/"));
 
   // Create and prepare the bookmark node data to be dropped.
-  bookmarks::BookmarkNodeData data({node1, node2});
+  bookmarks::BookmarkNodeData data(
+      {node1, node2},
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.SetOriginatingProfilePath(browser()->profile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
-
 
   // Drop the data. This should move it.
   base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
@@ -732,7 +733,9 @@ TEST_F(BookmarksPageHandlerTest, DropManagedBookmark) {
                       GURL("http://www.google.com/"));
 
   // Create and prepare the bookmark node data to be dropped.
-  bookmarks::BookmarkNodeData data({node1, node2});
+  bookmarks::BookmarkNodeData data(
+      {node1, node2},
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.SetOriginatingProfilePath(browser()->profile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
@@ -771,12 +774,13 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarksInDifferentProfile) {
       GURL("http://www.google2.com/"));
 
   // Create and prepare the bookmark node data to be dropped.
-  bookmarks::BookmarkNodeData data({node1, node2});
+  bookmarks::BookmarkNodeData data(
+      {node1, node2},
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.SetOriginatingProfilePath(different_profile->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
-
 
   // Drop the data in the other browser. This should copy it.
   base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
@@ -803,7 +807,9 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarksWithAccountNodes) {
                       GURL("http://www.google.com/"));
 
   // Create and prepare the bookmark node data to be dropped.
-  bookmarks::BookmarkNodeData data({node1, node2});
+  bookmarks::BookmarkNodeData data(
+      {node1, node2},
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.SetOriginatingProfilePath(browser()->profile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
@@ -841,7 +847,9 @@ TEST_F(BookmarksPageHandlerTest,
       GURL("http://www.google2.com/"));
 
   // Create and prepare the bookmark node data to be dropped.
-  bookmarks::BookmarkNodeData data({node1, node2});
+  bookmarks::BookmarkNodeData data(
+      {node1, node2},
+      bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   data.SetOriginatingProfilePath(different_profile->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())

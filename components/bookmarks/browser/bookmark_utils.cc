@@ -45,28 +45,27 @@ namespace {
 void CloneBookmarkNodeImpl(BookmarkModel* model,
                            const BookmarkNodeData::Element& element,
                            const BookmarkNode* parent,
-                           size_t index_to_add_at,
-                           bool reset_node_times) {
+                           size_t index_to_add_at) {
   // Make sure to not copy non clonable keys.
+  // Bookmarks cut and pasted retain added/folder_modified times; reset
+  // date to current time in other cases.
   BookmarkNode::MetaInfoMap meta_info_map = element.meta_info_map;
   if (element.is_url) {
-    Time date_added = reset_node_times ? Time::Now() : element.date_added;
-    DCHECK(!date_added.is_null());
-
     const BookmarkNode* node = model->AddURL(
         parent, index_to_add_at, element.title, element.url, &meta_info_map);
-    model->SetDateAdded(node, date_added);
-
+    model->SetDateAdded(
+        node, element.date_added.is_null() ? Time::Now() : element.date_added);
   } else {
     const BookmarkNode* cloned_node = model->AddFolder(
         parent, index_to_add_at, element.title, &meta_info_map);
-    if (!reset_node_times) {
-      DCHECK(!element.date_folder_modified.is_null());
+    if (!element.date_added.is_null()) {
+      model->SetDateAdded(cloned_node, element.date_added);
+    }
+    if (!element.date_folder_modified.is_null()) {
       model->SetDateFolderModified(cloned_node, element.date_folder_modified);
     }
     for (int i = 0; i < static_cast<int>(element.children.size()); ++i) {
-      CloneBookmarkNodeImpl(model, element.children[i], cloned_node, i,
-                            reset_node_times);
+      CloneBookmarkNodeImpl(model, element.children[i], cloned_node, i);
     }
   }
 }
@@ -171,14 +170,12 @@ const BookmarkNode* VectorIterator::Next() {
 void CloneBookmarkNode(BookmarkModel* model,
                        const std::vector<BookmarkNodeData::Element>& elements,
                        const BookmarkNode* parent,
-                       size_t index_to_add_at,
-                       bool reset_node_times) {
+                       size_t index_to_add_at) {
   if (!parent->is_folder() || !model) {
     NOTREACHED();
   }
   for (size_t i = 0; i < elements.size(); ++i) {
-    CloneBookmarkNodeImpl(model, elements[i], parent, index_to_add_at + i,
-                          reset_node_times);
+    CloneBookmarkNodeImpl(model, elements[i], parent, index_to_add_at + i);
   }
 
   metrics::RecordCloneBookmarkNode(elements.size());

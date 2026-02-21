@@ -1012,7 +1012,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToMiddle) {
   AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 ");
 
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
@@ -1035,7 +1037,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToMiddle) {
   Mock::VerifyAndClearExpectations(delegate());
 
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   EXPECT_CALL(*delegate(), TrackedOrderingChanged).Times(AtLeast(1));
   // Move O1 to index 3.
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, 3);
@@ -1056,7 +1060,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToBeginning) {
   AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 ");
 
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
   EXPECT_CALL(*delegate(), TrackedOrderingChanged).Times(AtLeast(1));
@@ -1075,7 +1081,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToBeginning) {
             model().bookmark_bar_node()->children()[0].get());
 
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
   EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
             "O2 O1 X Y Z W ");
@@ -1093,7 +1101,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToEnd) {
   AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 ");
 
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
   EXPECT_CALL(*delegate(), TrackedOrderingChanged).Times(AtLeast(1));
@@ -1106,7 +1116,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToEnd) {
 
   // Custom order: "X Y Z W 1 2 O1"
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, 7u);
   EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
             "X Y Z W O1 O2 ");
@@ -1124,9 +1136,15 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToMiddle) {
   AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
 
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
-  new_nodes.emplace_back(model().other_node()->children()[2].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[2].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
@@ -1156,8 +1174,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToMiddle) {
   Mock::VerifyAndClearExpectations(delegate());
 
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[3].get());
-  new_nodes.emplace_back(model().other_node()->children()[4].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[3].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[4].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   EXPECT_CALL(*delegate(), TrackedOrderingChanged).Times(AtLeast(1));
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, 6);
@@ -1182,9 +1204,15 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToBeginning) {
   AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
 
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
-  new_nodes.emplace_back(model().other_node()->children()[2].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[2].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
@@ -1207,8 +1235,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToBeginning) {
             model().bookmark_bar_node()->children()[0].get());
 
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[3].get());
-  new_nodes.emplace_back(model().other_node()->children()[4].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[3].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[4].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   // Expected order: "O4 O5 1 O1 O2 O3 X Y Z W 2 "
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
@@ -1230,9 +1262,15 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToEnd) {
   AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
 
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
-  new_nodes.emplace_back(model().other_node()->children()[2].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[2].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
@@ -1253,8 +1291,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToEnd) {
 
   // Custom order
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[3].get());
-  new_nodes.emplace_back(model().other_node()->children()[4].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[3].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[4].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
 
   // Expected order: "X Y Z W 1 2 O1 O2 O3 O4 O5 "
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, tracker.GetChildrenCount());
@@ -1279,7 +1321,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyNodesFirstAccountChildNode) {
 
   // Copy single node.
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
   EXPECT_CALL(*delegate(), TrackedOrderingChanged).Times(AtLeast(1));
@@ -1297,7 +1341,9 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyNodesNoAccountNodes) {
 
   // Copy single node.
   std::vector<BookmarkNodeData::Element> new_nodes;
-  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[0].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR,
                                          delegate());
   EXPECT_CALL(*delegate(), TrackedOrderingChanged).Times(AtLeast(1));
@@ -1309,8 +1355,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, CopyNodesNoAccountNodes) {
 
   // Copy multiple nodes.
   new_nodes.clear();
-  new_nodes.emplace_back(model().other_node()->children()[1].get());
-  new_nodes.emplace_back(model().other_node()->children()[2].get());
+  new_nodes.emplace_back(
+      model().other_node()->children()[1].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  new_nodes.emplace_back(
+      model().other_node()->children()[2].get(),
+      BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
   tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "O2 O3 1 2 O1 3 ");

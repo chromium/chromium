@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -646,6 +647,37 @@ TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
                     /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kNone);
+}
+
+// Dragging bookmarks within the same profile is a move operation, and all
+// bookmark data remains unchanged.
+TEST_F(BookmarkBarViewTest, DragDropWithinSameProfile_MoveBookmark) {
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  SizeUntilButtonsVisible(7);
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
+  EXPECT_EQ(6u, bookmark_bar_node->children().size());
+
+  ui::OSExchangeData drag_data;
+  const BookmarkNode* node = bookmark_bar_node->children()[5].get();
+  test_helper_->WriteBookmarkDragData(bookmark_bar_view(), node, &drag_data);
+
+  gfx::Point bar_loc;
+  views::View::ConvertPointToScreen(bookmark_bar_view(), &bar_loc);
+  ui::DropTargetEvent target_event(drag_data, gfx::PointF(bar_loc),
+                                   gfx::PointF(bar_loc),
+                                   ui::DragDropTypes::DRAG_MOVE);
+  EXPECT_TRUE(bookmark_bar_view()->CanDrop(drag_data));
+  bookmark_bar_view()->OnDragUpdated(target_event);
+  auto cb = bookmark_bar_view()->GetDropCallback(target_event);
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+
+  ui::mojom::DragOperation output_drag_op;
+  std::move(cb).Run(target_event, output_drag_op,
+                    /*drag_image_layer_owner=*/nullptr);
+  EXPECT_EQ("f a b c d e", GetStringForVisibleButtons());
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
+  EXPECT_EQ(node, bookmark_bar_node->children()[0].get());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
