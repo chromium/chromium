@@ -28,10 +28,12 @@ namespace {
 
 constexpr size_t kArbitrarySize = 64 << 10;
 
+#if !BUILDFLAG(IS_IOS)
 constexpr shared_memory::SharedMemorySwitch::RendezvousKey
     kArbitraryRendezvousKey = 'smsh';
 constexpr shared_memory::SharedMemorySwitch::DescriptorKey
     kArbitraryDescriptorKey = 42;
+#endif
 
 }  // namespace
 

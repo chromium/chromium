@@ -1142,7 +1142,9 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
 
 #if BUILDFLAG(USE_BLINK)
 
+#if !BUILDFLAG(IS_IOS)
 constexpr shared_memory::SharedMemorySwitch::DescriptorKey kFDKey = 42;
+#endif
 
 BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_ENABLED_BY_DEFAULT);
