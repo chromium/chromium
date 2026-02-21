@@ -27,6 +27,7 @@ BANNED_KEYS = [
     "com.apple.developer.web-browser-engine.networking",
     "com.apple.developer.web-browser-engine.rendering",
     "com.apple.developer.web-browser-engine.webcontent",
+    "com.apple.security.hardened-process",
 ]
 
 # Patterns for bundle extension per bundle type.
