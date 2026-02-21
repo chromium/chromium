@@ -5728,8 +5728,8 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kSpatialEntitesDepthHitTest)},
 #endif  // BUILDFLAG(ENABLE_OPENXR)
-    {"webxr-projection-layers", flag_descriptions::kWebXrProjectionLayersName,
-     flag_descriptions::kWebXrProjectionLayersDescription, kOsWin | kOsAndroid,
+    {"webxr-projection-layers", flag_descriptions::kWebXrLayersName,
+     flag_descriptions::kWebXrLayersDescription, kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kWebXRLayers)},
     {"webxr-webgpu-binding", flag_descriptions::kWebXrWebGpuBindingName,
      flag_descriptions::kWebXrWebGpuBindingDescription, kOsWin | kOsAndroid,

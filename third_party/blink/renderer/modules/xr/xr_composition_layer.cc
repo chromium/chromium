@@ -39,15 +39,6 @@ void XRCompositionLayer::setBlendTextureSourceAlpha(bool value) {
   SetModified(true);
 }
 
-std::optional<bool> XRCompositionLayer::chromaticAberrationCorrection() const {
-  return chromatic_aberration_correction_;
-}
-
-void XRCompositionLayer::setChromaticAberrationCorrection(
-    std::optional<bool> value) {
-  chromatic_aberration_correction_ = value;
-}
-
 bool XRCompositionLayer::forceMonoPresentation() const {
   return force_mono_presentation_;
 }

@@ -11892,7 +11892,6 @@ interface XPathResult
 interface XRCompositionLayer : XRLayer
     attribute @@toStringTag
     getter blendTextureSourceAlpha
-    getter chromaticAberrationCorrection
     getter forceMonoPresentation
     getter layout
     getter mipLevels
@@ -11901,7 +11900,6 @@ interface XRCompositionLayer : XRLayer
     method constructor
     method destroy
     setter blendTextureSourceAlpha
-    setter chromaticAberrationCorrection
     setter forceMonoPresentation
     setter opacity
 interface XRDOMOverlayState

@@ -29,8 +29,6 @@ class XRCompositionLayer : public XRLayer {
   V8XRLayerLayout layout() const;
   bool blendTextureSourceAlpha() const;
   void setBlendTextureSourceAlpha(bool value);
-  std::optional<bool> chromaticAberrationCorrection() const;
-  void setChromaticAberrationCorrection(std::optional<bool> value);
   bool forceMonoPresentation() const;
   void setForceMonoPresentation(bool value);
   float opacity() const;
@@ -72,7 +70,6 @@ class XRCompositionLayer : public XRLayer {
 
   const Member<XRGraphicsBinding> binding_;
   bool blend_texture_source_alpha_{true};
-  std::optional<bool> chromatic_aberration_correction_{std::nullopt};
   bool force_mono_presentation_{false};
   float opacity_{1.0};
   uint16_t mip_levels_{1};

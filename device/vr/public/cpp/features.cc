@@ -23,7 +23,7 @@ BASE_FEATURE(kWebXRIncubations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebXrInternals, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables access to WebXR composition layers.
-BASE_FEATURE(kWebXRLayers, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebXRLayers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the orientation sensor based device is enabled.
 BASE_FEATURE(kWebXROrientationSensorDevice,

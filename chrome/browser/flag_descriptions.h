@@ -8112,9 +8112,9 @@ inline constexpr char kPdfUseSkiaRendererDescription[] =
     "Use Skia as the PDF renderer. This flag will have no effect if the "
     "renderer choice is controlled by an enterprise policy.";
 
-inline constexpr char kWebXrProjectionLayersName[] = "WebXR Projection Layers";
-inline constexpr char kWebXrProjectionLayersDescription[] =
-    "Enables use of XRProjectionLayers.";
+inline constexpr char kWebXrLayersName[] = "WebXR Layers";
+inline constexpr char kWebXrLayersDescription[] =
+    "Enables use of WebXR Layers.";
 inline constexpr char kWebXrWebGpuBindingName[] = "WebXR/WebGPU Binding";
 inline constexpr char kWebXrWebGpuBindingDescription[] =
     "Enables rendering with WebGPU for WebXR sessions. WebXR Projection "
