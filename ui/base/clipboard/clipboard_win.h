@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_change_notifier.h"
@@ -179,8 +180,15 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
       ClipboardBuffer buffer,
       const std::optional<DataTransferEndpoint>& data_dst,
       HWND owner_window);
-  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
-  SkBitmap ReadBitmapInternal(ClipboardBuffer buffer) const;
+  // first: PNG bytes (if available), second: bitmap fallback.
+  using ReadPngResult = std::pair<std::vector<uint8_t>, SkBitmap>;
+  static ReadPngResult ReadPngInternal(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      HWND owner_window);
+  static std::vector<uint8_t> ReadPngTypeDataInternal(ClipboardBuffer buffer,
+                                                      HWND owner_window);
+  static SkBitmap ReadBitmapInternal(ClipboardBuffer buffer, HWND owner_window);
 
   // Safely write to system clipboard. Free |handle| on failure.
   // This function takes ownership of the given handle's memory.

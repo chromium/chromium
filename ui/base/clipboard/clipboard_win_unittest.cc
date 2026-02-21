@@ -27,6 +27,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ui {
@@ -394,6 +395,85 @@ TEST_F(ClipboardWinTest, ReadAvailableTypesAsyncEmptyClipboard) {
                                 types_future.GetCallback());
   ASSERT_TRUE(types_future.Wait());
   EXPECT_TRUE(types_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadPngAsyncReturnsPngDataWhenPngFormatPresent) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  std::vector<uint8_t> expected_png;
+  {
+    SkBitmap bitmap = gfx::test::CreateBitmap(2, 3);
+    std::optional<std::vector<uint8_t>> encoded_png =
+        gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap,
+                                              /*discard_transparency=*/false);
+    ASSERT_TRUE(encoded_png.has_value());
+    expected_png = *encoded_png;
+    std::vector<uint8_t> clipboard_png = expected_png;
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType::PngType(),
+                               std::move(clipboard_png));
+  }
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  const auto& png = png_future.Get();
+  ASSERT_GT(png.size(), 0u);
+  EXPECT_EQ(png, expected_png);
+}
+
+TEST_F(ClipboardWinTest, ReadPngAsyncEncodesBitmapWhenOnlyBitmapFormatPresent) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    // Write a minimal 1x1, 32bpp CF_DIB payload: BITMAPINFOHEADER immediately
+    // followed by a single BGRA pixel (4 bytes because biBitCount=32 and the
+    // image is 1x1). With BI_RGB, the 4th byte is typically unused/treated as
+    // alpha by consumers.
+    BITMAPINFOHEADER header = {};
+    header.biSize = sizeof(BITMAPINFOHEADER);
+    header.biWidth = 1;
+    header.biHeight = 1;
+    header.biPlanes = 1;
+    header.biBitCount = 32;
+    header.biCompression = BI_RGB;
+
+    std::vector<uint8_t> dib_data(sizeof(BITMAPINFOHEADER) + 4);
+    base::as_writable_byte_span(dib_data)
+        .first(sizeof(BITMAPINFOHEADER))
+        .copy_from(base::byte_span_from_ref(header));
+    // Pixel data for the single 32bpp DIB pixel (BGRA order).
+    dib_data[sizeof(BITMAPINFOHEADER) + 0] = 0x12;
+    dib_data[sizeof(BITMAPINFOHEADER) + 1] = 0x34;
+    dib_data[sizeof(BITMAPINFOHEADER) + 2] = 0x56;
+    dib_data[sizeof(BITMAPINFOHEADER) + 3] = 0x00;
+
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               std::move(dib_data));
+  }
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  const auto& png = png_future.Get();
+  ASSERT_GT(png.size(), 0u);
+
+  SkBitmap decoded = gfx::PNGCodec::Decode(png);
+  EXPECT_FALSE(decoded.drawsNothing());
+  EXPECT_EQ(decoded.width(), 1);
+  EXPECT_EQ(decoded.height(), 1);
+}
+
+TEST_F(ClipboardWinTest, ReadPngAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  EXPECT_TRUE(png_future.Get().empty());
 }
 
 }  // namespace ui

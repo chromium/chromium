@@ -725,20 +725,25 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
 void ClipboardWin::ReadPng(ClipboardBuffer buffer,
                            const std::optional<DataTransferEndpoint>& data_dst,
                            ReadPngCallback callback) const {
-  RecordRead(ClipboardFormatMetric::kPng);
-  std::vector<uint8_t> data = ReadPngInternal(buffer);
-  // On Windows, PNG and bitmap are separate formats. Read PNG if possible,
-  // otherwise fall back to reading as a bitmap.
-  if (!data.empty()) {
-    std::move(callback).Run(data);
-    return;
-  }
-
-  SkBitmap bitmap = ReadBitmapInternal(buffer);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&clipboard_util::EncodeBitmapToPng, bitmap),
-      std::move(callback));
+  ReadAsync(base::BindOnce(&ClipboardWin::ReadPngInternal, buffer, data_dst),
+            base::BindOnce(
+                [](ReadPngCallback callback, ReadPngResult result) {
+                  if (!result.first.empty()) {
+                    std::move(callback).Run(std::move(result.first));
+                    return;
+                  }
+                  if (result.second.drawsNothing()) {
+                    std::move(callback).Run(std::vector<uint8_t>());
+                    return;
+                  }
+                  base::ThreadPool::PostTaskAndReplyWithResult(
+                      FROM_HERE,
+                      {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+                      base::BindOnce(&clipboard_util::EncodeBitmapToPng,
+                                     std::move(result.second)),
+                      std::move(callback));
+                },
+                std::move(callback)));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -1084,14 +1089,36 @@ void ClipboardWin::ReadAsync(
       std::move(reply_func));
 }
 
-std::vector<uint8_t> ClipboardWin::ReadPngInternal(
-    ClipboardBuffer buffer) const {
+// static
+// |data_dst| is not used, but is kept as it may be used in the future.
+ClipboardWin::ReadPngResult ClipboardWin::ReadPngInternal(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    HWND owner_window) {
+  ReadPngResult result;
+  RecordRead(ClipboardFormatMetric::kPng);
+  result.first = ReadPngTypeDataInternal(buffer, owner_window);
+  // On Windows, PNG and bitmap are separate formats. Read PNG if possible,
+  // otherwise fall back to reading as a bitmap.
+  if (!result.first.empty()) {
+    return result;
+  }
+
+  result.second = ReadBitmapInternal(buffer, owner_window);
+  return result;
+}
+
+// static
+std::vector<uint8_t> ClipboardWin::ReadPngTypeDataInternal(
+    ClipboardBuffer buffer,
+    HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
+  if (!clipboard.Acquire(owner_window)) {
     return std::vector<uint8_t>();
+  }
 
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::PngType().ToFormatEtc().cfFormat);
@@ -1105,13 +1132,16 @@ std::vector<uint8_t> ClipboardWin::ReadPngInternal(
   return std::vector<uint8_t>(result.begin(), result.end());
 }
 
-SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
+// static
+SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
+                                          HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
+  if (!clipboard.Acquire(owner_window)) {
     return SkBitmap();
+  }
 
   // We use a DIB rather than a DDB here since ::GetObject() with the
   // HBITMAP returned from ::GetClipboardData(CF_BITMAP) always reports a color
