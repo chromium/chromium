@@ -125,6 +125,10 @@ struct MouseEvent {
   // Mouse movement information. Provided only when mouse lock is engaged.
   int32? delta_x;
   int32? delta_y;
+
+  // Fractional coordinate information. Provided only for absolute mouse events
+  // (i.e. when mouse lock is *not* engaged).
+  FractionalCoordinate? fractional_coordinate;
 };
 
 // Text input event for input method different from physical keyboards,

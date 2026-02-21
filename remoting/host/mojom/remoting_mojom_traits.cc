@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "remoting/base/source_location.h"
+#include "remoting/host/mojom/desktop_session.mojom-shared.h"
 
 namespace mojo {
 
@@ -374,6 +375,16 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
 
   if (data_view.delta_y().has_value()) {
     out_event->set_delta_y(data_view.delta_y().value());
+  }
+
+  remoting::mojom::FractionalCoordinateDataView fractional_coordinate_data_view;
+  data_view.GetFractionalCoordinateDataView(&fractional_coordinate_data_view);
+
+  if (!fractional_coordinate_data_view.is_null()) {
+    mojo::StructTraits<remoting::mojom::FractionalCoordinateDataView,
+                       ::remoting::protocol::FractionalCoordinate>::
+        Read(fractional_coordinate_data_view,
+             out_event->mutable_fractional_coordinate());
   }
 
   return true;

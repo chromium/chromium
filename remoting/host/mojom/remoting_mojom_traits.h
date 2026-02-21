@@ -1190,6 +1190,14 @@ class StructTraits<remoting::mojom::MouseEventDataView,
     return std::nullopt;
   }
 
+  static std::optional<::remoting::protocol::FractionalCoordinate>
+  fractional_coordinate(const ::remoting::protocol::MouseEvent& event) {
+    if (event.has_fractional_coordinate()) {
+      return event.fractional_coordinate();
+    }
+    return std::nullopt;
+  }
+
   static bool Read(remoting::mojom::MouseEventDataView data_view,
                    ::remoting::protocol::MouseEvent* out_event);
 };
