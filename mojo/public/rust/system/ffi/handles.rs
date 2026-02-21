@@ -93,6 +93,17 @@ impl UntypedHandle {
         // pointer cast is sound.
         handles.as_mut_ptr().cast()
     }
+
+    /// Consume this UntypedHandle and return the underlying raw MojoHandle.
+    ///
+    /// This function gives up ownership of the underlying handle, so the
+    /// caller is responsible for ensuring it does not get copied, and gets
+    /// properly closed.
+    pub fn into_raw_value(self) -> raw_ffi::MojoHandle {
+        let val = self.handle_value.into();
+        std::mem::forget(self);
+        val
+    }
 }
 
 impl Drop for UntypedHandle {

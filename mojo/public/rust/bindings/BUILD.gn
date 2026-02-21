@@ -1,5 +1,4 @@
 import("//build/rust/rust_static_library.gni")
-import("//mojo/public/tools/bindings/mojom.gni")
 
 rust_static_library("bindings") {
   crate_root = "lib.rs"
@@ -16,8 +15,6 @@ rust_static_library("bindings") {
   deps = [
     ":helper_functions_cxx",
     "../mojom_value_parser",
-
-    # "../mojom_value_parser:mojom_value_parser_core",
     "../sequences",
     "../system",
     "//third_party/rust/anyhow/v1:lib",
@@ -43,33 +40,5 @@ rust_static_library("helper_functions_cxx") {
   ]
 
   allow_unsafe = true
-  visibility = [ ":*" ]
-}
-
-rust_static_library("bindings_unittests") {
-  testonly = true
-  is_gtest_unittests = true
-  crate_root = "test/lib.rs"
-  sources = [
-    "test/lib.rs",
-    "test/state_objects.rs",
-    "test/tests.rs",
-  ]
-
-  deps = [
-    ":bindings",
-    ":bindings_unittests_mojom_rust",
-    "../sequences",
-    "../sequences:test_cxx",
-    "../system",
-    "../system/test_util",
-    "//testing/rust_gtest_interop",
-  ]
-}
-
-mojom("bindings_unittests_mojom") {
-  testonly = true
-  sources = [ "test_util/bindings_unittests.test-mojom" ]
-  generate_rust = true
   visibility = [ ":*" ]
 }

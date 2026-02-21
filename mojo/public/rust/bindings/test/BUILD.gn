@@ -1,0 +1,50 @@
+import("//build/rust/rust_static_library.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+rust_static_library("bindings_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  allow_unsafe = true
+  crate_root = "lib.rs"
+  sources = [
+    "cxx.rs",
+    "lib.rs",
+    "state_objects.rs",
+    "tests.rs",
+  ]
+  cxx_bindings = [ "cxx.rs" ]
+
+  deps = [
+    ":bindings_unittests_mojom_rust",
+    ":math_service_cpp",
+    "..:bindings",
+    "../../sequences",
+    "../../sequences:test_cxx",
+    "../../system",
+    "../../system/test_util",
+    "//base",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+source_set("math_service_cpp") {
+  testonly = true
+  sources = [
+    "cpp/add_seven_service.cc",
+    "cpp/add_seven_service.h",
+    "cpp/cxx_shim.cc",
+    "cpp/cxx_shim.h",
+  ]
+  deps = [
+    ":bindings_unittests_mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
+
+mojom("bindings_unittests_mojom") {
+  testonly = true
+  sources = [ "test_util/bindings_unittests.test-mojom" ]
+  generate_rust = true
+  visibility = [ ":*" ]
+}

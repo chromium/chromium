@@ -25,7 +25,7 @@ group("tests") {
   # enable them for at least one known-good configuration.
   if ((is_chromeos || is_linux) && !is_cfi) {
     deps = [
-      "bindings:bindings_unittests",
+      "bindings/test:bindings_unittests",
       "mojom_value_parser:mojom_value_parser_unittests",
       "sequences:rust_sequences_unittests",
       "system:ffi_unittests",
