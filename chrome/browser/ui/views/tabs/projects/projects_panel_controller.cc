@@ -31,6 +31,12 @@ void ProjectsPanelController::OpenTabGroup(const base::Uuid& group_guid,
                       tab_groups::OpeningSource::kOpenedFromProjectsPanel));
 }
 
+void ProjectsPanelController::MoveTabGroup(const base::Uuid& group_guid,
+                                           int new_index) {
+  tab_group_sync_service_->UpdateGroupPosition(group_guid, std::nullopt,
+                                               new_index);
+}
+
 void ProjectsPanelController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -41,7 +47,6 @@ void ProjectsPanelController::RemoveObserver(Observer* observer) {
 
 void ProjectsPanelController::OnInitialized() {
   tab_groups_ = tab_group_sync_service_->GetAllGroups();
-  SortTabGroups();
 
   for (auto& observer : observers_) {
     observer.OnTabGroupsInitialized(tab_groups_);
@@ -51,12 +56,10 @@ void ProjectsPanelController::OnInitialized() {
 void ProjectsPanelController::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
-  tab_groups_.push_back(group);
-  SortTabGroups();
-
-  auto it = std::ranges::find(tab_groups_, group.saved_guid(),
-                              &tab_groups::SavedTabGroup::saved_guid);
-  int index = std::distance(tab_groups_.begin(), it);
+  const int index =
+      std::min(static_cast<int>(tab_groups_.size()),
+               static_cast<int>(group.position().value_or(tab_groups_.size())));
+  tab_groups_.insert(tab_groups_.begin() + index, group);
 
   for (auto& observer : observers_) {
     observer.OnTabGroupAdded(group, index);
@@ -72,22 +75,10 @@ void ProjectsPanelController::OnTabGroupUpdated(
     return;
   }
 
-  int old_index = std::distance(tab_groups_.begin(), existing_group);
-  // If the group's pinned status or position changes, resorting is required.
-  bool needs_sorting = existing_group->is_pinned() != group.is_pinned() ||
-                       existing_group->position() != group.position();
   *existing_group = group;
 
-  std::optional<int> new_index;
-  if (needs_sorting) {
-    SortTabGroups();
-    auto it = std::ranges::find(tab_groups_, group.saved_guid(),
-                                &tab_groups::SavedTabGroup::saved_guid);
-    new_index = std::distance(tab_groups_.begin(), it);
-  }
-
   for (auto& observer : observers_) {
-    observer.OnTabGroupUpdated(group, old_index, new_index);
+    observer.OnTabGroupUpdated(group);
   }
 }
 
@@ -117,28 +108,18 @@ void ProjectsPanelController::OnTabGroupLocalIdChanged(
     return;
   }
 
-  int index = std::distance(tab_groups_.begin(), existing_group);
   existing_group->SetLocalGroupId(local_id);
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupUpdated(*existing_group, index,
-                               /*new_index=*/std::nullopt);
+    observer.OnTabGroupUpdated(*existing_group);
   }
 }
 
-void ProjectsPanelController::SortTabGroups() {
-  std::stable_sort(tab_groups_.begin(), tab_groups_.end(),
-                   [](const tab_groups::SavedTabGroup& left,
-                      const tab_groups::SavedTabGroup& right) {
-                     // Sort pinned groups first.
-                     if (left.is_pinned() != right.is_pinned()) {
-                       return left.is_pinned();
-                     }
-                     if (left.is_pinned()) {
-                       return left.position().value() <
-                              right.position().value();
-                     }
-                     // Sort unpinned groups by creation time (newest first).
-                     return left.creation_time() > right.creation_time();
-                   });
+void ProjectsPanelController::OnTabGroupsReordered(
+    tab_groups::TriggerSource source) {
+  tab_groups_ = tab_group_sync_service_->GetAllGroups();
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupsReordered(tab_groups_);
+  }
 }

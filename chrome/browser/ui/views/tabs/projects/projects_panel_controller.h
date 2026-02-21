@@ -29,11 +29,11 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
         const std::vector<tab_groups::SavedTabGroup>& tab_groups) = 0;
     virtual void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
                                  int index) = 0;
-    virtual void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
-                                   int old_index,
-                                   std::optional<int> new_index) = 0;
+    virtual void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group) = 0;
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
                                    int old_index) = 0;
+    virtual void OnTabGroupsReordered(
+        const std::vector<tab_groups::SavedTabGroup>& tab_groups) = 0;
   };
 
   explicit ProjectsPanelController(
@@ -48,6 +48,9 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
   // Opens the tab group.
   void OpenTabGroup(const base::Uuid& group_guid,
                     BrowserWindowInterface* browser);
+
+  // Moves the tab group to the new index.
+  void MoveTabGroup(const base::Uuid& group_guid, int new_index);
 
   // Add and remove observers.
   void AddObserver(Observer* observer);
@@ -64,6 +67,7 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
   void OnTabGroupLocalIdChanged(
       const base::Uuid& sync_id,
       const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
+  void OnTabGroupsReordered(tab_groups::TriggerSource source) override;
 
  private:
   void SortTabGroups();
