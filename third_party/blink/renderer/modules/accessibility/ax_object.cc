@@ -28,7 +28,8 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
-#include <algorithm>
+#include <math.h>
+
 #include <ostream>
 
 #include "base/auto_reset.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"

@@ -88,7 +88,6 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
               ExceptionState& append_exception_state) const override;
   bool ChildTypeAllowed(NodeType) const override;
 
-  Member<DocumentPartRoot> document_part_root_;
   bool holds_unnotified_children_ = false;
 };
 

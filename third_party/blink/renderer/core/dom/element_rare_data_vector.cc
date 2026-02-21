@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
-#include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -802,11 +801,6 @@ void ScrollTimelineHashSet::Trace(Visitor* visitor) const {
   visitor->Trace(set_);
 }
 
-void NodePartsListData::Trace(Visitor* visitor) const {
-  ElementRareDataField::Trace(visitor);
-  visitor->Trace(parts_list_);
-}
-
 void NodeMutationObserverData::AddTransientRegistration(
     MutationObserverRegistration* registration) {
   transient_registry_.insert(registration);
@@ -842,50 +836,6 @@ ElementRareDataVector* ElementRareDataVector::UnregisterScrollTimeline(
       EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines);
   timeline_set.get().set_.erase(timeline);
   return vec;
-}
-
-ElementRareDataVector* ElementRareDataVector::AddDOMPart(Part& part) {
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  auto [dom_parts_ptr, vec] =
-      EnsureField<NodePartsListData>(FieldId::kDomParts);
-  auto& dom_parts = dom_parts_ptr.get().parts_list_;
-  DCHECK(!std::ranges::contains(dom_parts, &part));
-  dom_parts.push_back(&part);
-  return vec;
-}
-
-void ElementRareDataVector::RemoveDOMPart(Part& part) {
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  NodePartsListData* parts_data =
-      static_cast<NodePartsListData*>(GetField(FieldId::kDomParts));
-  DCHECK(parts_data);
-  PartsList& dom_parts = parts_data->parts_list_;
-  DCHECK(std::ranges::contains(dom_parts, &part));
-  // Common case is that one node has one part:
-  if (dom_parts.size() == 1) {
-    DCHECK_EQ(dom_parts.front(), &part);
-    dom_parts.clear();
-  } else {
-    // This is the very slow case - multiple parts for a single node.
-    TemporaryPartsList new_list;
-    for (auto p : dom_parts) {
-      if (p != &part) {
-        new_list.push_back(p);
-      }
-    }
-    dom_parts.Swap(new_list);
-  }
-  if (dom_parts.empty()) {
-    SetFieldToNullIfExists(FieldId::kDomParts);
-  }
-}
-
-PartsList* ElementRareDataVector::GetDOMParts() const {
-  DCHECK(!HasField(FieldId::kDomParts) ||
-         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  NodePartsListData* parts_data =
-      static_cast<NodePartsListData*>(GetField(FieldId::kDomParts));
-  return parts_data ? &parts_data->parts_list_ : nullptr;
 }
 
 void ElementRareDataVector::IncrementConnectedSubframeCount() {

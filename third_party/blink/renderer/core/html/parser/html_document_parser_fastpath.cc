@@ -1599,13 +1599,6 @@ bool CanUseFastPath(Document& document,
     return false;
   }
 
-  // TODO(crbug.com/1453291) For now, declarative DOM Parts are not supported by
-  // the fast path parser.
-  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled() && template_element &&
-      template_element->hasAttribute(html_names::kParsepartsAttr)) {
-    LogFastPathResult(HtmlFastPathResult::kFailedUnsupportedContextTag);
-    return false;
-  }
   return true;
 }
 

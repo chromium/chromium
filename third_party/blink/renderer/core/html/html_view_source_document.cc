@@ -196,8 +196,6 @@ void HTMLViewSourceDocument::AddSource(
       ProcessCommentToken(source, token);
       break;
     case HTMLToken::kCharacter:
-    case HTMLToken::kDOMPart:
-      // Process DOM Parts as character tokens.
       ProcessCharacterToken(source, token);
       break;
   }

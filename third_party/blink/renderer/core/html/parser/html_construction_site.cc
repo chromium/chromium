@@ -31,18 +31,14 @@
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
-#include "third_party/blink/renderer/core/dom/attribute_part.h"
-#include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_part.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -313,40 +309,15 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
-    if (pending_dom_parts_) {
-      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-      if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-        if (task.dom_parts_needed.needs_node_part) {
-          // Just mark the node as having a node part.
-          task.child->SetHasNodePart();
-        }
-      } else {
-        pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
-                                                      task.dom_parts_needed);
-      }
-    }
     return;
   }
 
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
-    if (pending_dom_parts_) {
-      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-      if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-        if (task.dom_parts_needed.needs_node_part) {
-          // Just mark the node as having a node part.
-          task.child->SetHasNodePart();
-        }
-      } else {
-        pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
-                                                      task.dom_parts_needed);
-      }
-    }
     return;
   }
 
   // All the cases below this point are only used by the adoption agency.
-  DCHECK(!task.dom_parts_needed);
 
   if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild) {
     return ExecuteInsertAlreadyParsedChildTask(task);
@@ -501,7 +472,6 @@ bool HTMLConstructionSite::SanitizeIfNeeded(HTMLConstructionSiteTask& task) {
 
 void HTMLConstructionSite::AttachLater(ContainerNode* parent,
                                        Node* child,
-                                       const DOMPartsNeeded& dom_parts_needed,
                                        bool self_closing) {
   auto* element = DynamicTo<Element>(child);
   DCHECK(is_scripting_content_allowed_ || !element ||
@@ -513,8 +483,6 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
   task.parent = parent;
   task.child = child;
   task.self_closing = self_closing;
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !dom_parts_needed);
-  task.dom_parts_needed = dom_parts_needed;
 
   if (ShouldFosterParent()) {
     FosterParent(task.child);
@@ -575,10 +543,6 @@ HTMLConstructionSite::HTMLConstructionSite(
       attachment_root_(fragment_target && fragment_target->IsDocumentFragment()
                            ? fragment_target
                            : static_cast<ContainerNode*>(&document)),
-      pending_dom_parts_(
-          RuntimeEnabledFeatures::DOMPartsAPIEnabled()
-              ? MakeGarbageCollected<PendingDOMParts>(attachment_root_)
-              : nullptr),
       parser_content_policy_(parser_content_policy),
       is_scripting_content_allowed_(
           ScriptingContentIsAllowed(parser_content_policy)),
@@ -619,7 +583,6 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(active_formatting_elements_);
   visitor->Trace(task_queue_);
   visitor->Trace(pending_text_);
-  visitor->Trace(pending_dom_parts_);
   visitor->Trace(custom_element_registry_);
   visitor->Trace(sanitizer_);
 }
@@ -649,7 +612,7 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
   SetAttributes(element, token);
-  AttachLater(attachment_root_, element, token->GetDOMPartsNeeded());
+  AttachLater(attachment_root_, element);
   open_elements_.PushHTMLHtmlElement(HTMLStackItem::Create(element, token));
 
   ExecuteQueuedTasks();
@@ -920,40 +883,6 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   AttachLater(CurrentNode(), &comment_node);
 }
 
-void HTMLConstructionSite::InsertDOMPart(AtomicHTMLToken* token) {
-  DCHECK_EQ(token->GetType(), HTMLToken::kDOMPart);
-  CHECK(pending_dom_parts_);
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(InParsePartsScope());
-  // Insert an empty comment in place of the part token.
-  Comment& comment_node = *Comment::Create(OwnerDocumentForCurrentNode(), "");
-  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    // Just set a bit on this comment node that it has a NodePart, and change
-    // the content of the comment to kChildNodePartStartCommentData or
-    // kChildNodePartEndCommentData, as appropriate.
-    comment_node.SetHasNodePart();
-    switch (token->DOMPartType()) {
-      case DOMPartTokenType::kChildNodePartStart:
-        comment_node.setData(kChildNodePartStartCommentData);
-        break;
-      case DOMPartTokenType::kChildNodePartEnd:
-        comment_node.setData(kChildNodePartEndCommentData);
-        break;
-    }
-  } else {
-    switch (token->DOMPartType()) {
-      case DOMPartTokenType::kChildNodePartStart:
-        pending_dom_parts_->AddChildNodePartStart(comment_node,
-                                                  token->DOMPartMetadata());
-        break;
-      case DOMPartTokenType::kChildNodePartEnd:
-        pending_dom_parts_->AddChildNodePartEnd(comment_node);
-        break;
-    }
-  }
-  AttachLater(CurrentNode(), &comment_node);
-}
-
 void HTMLConstructionSite::InsertCommentOnDocument(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
   DCHECK(document_);
@@ -971,14 +900,14 @@ void HTMLConstructionSite::InsertHTMLHeadElement(AtomicHTMLToken* token) {
   DCHECK(!ShouldFosterParent());
   head_ = HTMLStackItem::Create(
       CreateElement(token, html_names::xhtmlNamespaceURI), token);
-  AttachLater(CurrentNode(), head_->GetElement(), token->GetDOMPartsNeeded());
+  AttachLater(CurrentNode(), head_->GetElement());
   open_elements_.PushHTMLHeadElement(head_);
 }
 
 void HTMLConstructionSite::InsertHTMLBodyElement(AtomicHTMLToken* token) {
   DCHECK(!ShouldFosterParent());
   Element* body = CreateElement(token, html_names::xhtmlNamespaceURI);
-  AttachLater(CurrentNode(), body, token->GetDOMPartsNeeded());
+  AttachLater(CurrentNode(), body);
   open_elements_.PushHTMLBodyElement(HTMLStackItem::Create(body, token));
   if (document_)
     document_->WillInsertBody();
@@ -994,7 +923,7 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
     UseCounter::Count(OwnerDocumentForCurrentNode(),
                       WebFeature::kDemotedFormElement);
   }
-  AttachLater(CurrentNode(), form_element, token->GetDOMPartsNeeded());
+  AttachLater(CurrentNode(), form_element);
   open_elements_.Push(HTMLStackItem::Create(form_element, token));
 }
 
@@ -1079,21 +1008,14 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   }
 
   if (should_attach_template) {
-    AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
-
-    DocumentFragment* template_content = template_element->content();
-    if (pending_dom_parts_ && template_content &&
-        !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-      pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
-    }
+    AttachLater(CurrentNode(), template_element);
   }
   open_elements_.Push(template_stack_item);
 }
 
 void HTMLConstructionSite::InsertHTMLElement(AtomicHTMLToken* token) {
   Element* element = CreateElement(token, html_names::xhtmlNamespaceURI);
-  AttachLater(CurrentNode(), element, token->GetDOMPartsNeeded());
+  AttachLater(CurrentNode(), element);
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
 
@@ -1105,7 +1027,7 @@ void HTMLConstructionSite::InsertSelfClosingHTMLElementDestroyingToken(
   // doesn't get a chance to tell them that we're done parsing their children.
   AttachLater(CurrentNode(),
               CreateElement(token, html_names::xhtmlNamespaceURI),
-              token->GetDOMPartsNeeded(), /*self_closing*/ true);
+              /*self_closing*/ true);
   // FIXME: Do we want to acknowledge the token's self-closing flag?
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#acknowledge-self-closing-flag
 }
@@ -1144,7 +1066,7 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   }
   SetAttributes(element, token);
   if (is_scripting_content_allowed_)
-    AttachLater(CurrentNode(), element, token->GetDOMPartsNeeded());
+    AttachLater(CurrentNode(), element);
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
 
@@ -1157,9 +1079,7 @@ void HTMLConstructionSite::InsertForeignElement(
 
   Element* element = CreateElement(token, namespace_uri);
   if (is_scripting_content_allowed_ || !element->IsScriptElement()) {
-    DCHECK(!token->GetDOMPartsNeeded());
-    AttachLater(CurrentNode(), element, /*dom_parts_needed*/ {},
-                token->SelfClosing());
+    AttachLater(CurrentNode(), element, token->SelfClosing());
   }
   if (!token->SelfClosing()) {
     open_elements_.Push(HTMLStackItem::Create(element, token, namespace_uri));
@@ -1562,114 +1482,9 @@ void HTMLConstructionSite::FosterParent(Node* node) {
   QueueTask(task, true);
 }
 
-void HTMLConstructionSite::FinishedTemplateElement(DocumentFragment* fragment) {
-  if (!pending_dom_parts_) {
-    return;
-  }
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    pending_dom_parts_->PopPartRoot();
-  }
-}
-
-HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
-    ContainerNode* attachment_root) {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (Document* document = DynamicTo<Document>(attachment_root)) {
-    part_root_stack_.push_back(&document->getPartRoot());
-  } else {
-    DocumentFragment* fragment = DynamicTo<DocumentFragment>(attachment_root);
-    CHECK(fragment) << "Attachment root should be Document or DocumentFragment";
-    part_root_stack_.push_back(&fragment->getPartRoot());
-  }
-}
-
-void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
-    Node& previous_sibling,
-    Vector<String> metadata) {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  // Note that this ChildNodePart is constructed with both `previous_sibling`
-  // and `next_sibling` pointing to the same node, `previous_sibling`. That's
-  // because at this point we will move on to parse the children of this
-  // ChildNodePart, and at that point, we'll need a constructed PartRoot for
-  // those to attach to. So we build this currently-invalid ChildNodePart, and
-  // then update its `next_sibling` later when we find it, rendering it (and
-  // any dependant Parts) valid.
-  ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
-      *CurrentPartRoot(), previous_sibling, previous_sibling,
-      std::move(metadata));
-  part_root_stack_.push_back(new_part);
-}
-
-void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
-    Node& next_sibling) {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  PartRoot* current_part_root = CurrentPartRoot();
-  if (current_part_root->IsDocumentPartRoot()) {
-    // Mismatched opening/closing child parts.
-    return;
-  }
-  ChildNodePart* last_child_node_part =
-      static_cast<ChildNodePart*>(current_part_root);
-  last_child_node_part->setNextSibling(next_sibling);
-  part_root_stack_.pop_back();
-}
-
-void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
-    Node& last_node,
-    const DOMPartsNeeded& dom_parts_needed) {
-  if (!dom_parts_needed) {
-    return;
-  }
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  DCHECK(pending_node_part_metadata_.empty());
-  // For now, there's no syntax for metadata, so just use empty.
-  Vector<String> metadata;
-  if (dom_parts_needed.needs_node_part) {
-    MakeGarbageCollected<NodePart>(*CurrentPartRoot(), last_node, metadata);
-  }
-  if (!dom_parts_needed.needs_attribute_parts.empty()) {
-    Element& element = To<Element>(last_node);
-    for (auto attribute_name : dom_parts_needed.needs_attribute_parts) {
-      MakeGarbageCollected<AttributePart>(*CurrentPartRoot(), element,
-                                          attribute_name, metadata);
-    }
-  }
-}
-
-PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  CHECK(!part_root_stack_.empty());
-  return part_root_stack_.back().Get();
-}
-
-void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  DCHECK(root);
-  return part_root_stack_.push_back(root);
-}
-
-PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  CHECK(!part_root_stack_.empty());
-  PartRoot* popped = part_root_stack_.back();
-  part_root_stack_.pop_back();
-  return popped;
-}
-
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
   visitor->Trace(parent);
   visitor->Trace(next_child);
-}
-
-void HTMLConstructionSite::PendingDOMParts::Trace(Visitor* visitor) const {
-  visitor->Trace(part_root_stack_);
 }
 
 }  // namespace blink

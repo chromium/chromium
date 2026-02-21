@@ -130,12 +130,6 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     DCHECK(LocalName());
     return FindAttributeInVector(Attributes(), attribute_name);
   }
-  bool HasParsePartsAttribute() {
-    if (!LocalName() || !RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
-      return false;
-    }
-    return GetAttributeItem(html_names::kParsepartsAttr);
-  }
 
   html_names::HTMLTag GetHTMLTag() const { return token_name_.GetHTMLTag(); }
 

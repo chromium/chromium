@@ -2217,14 +2217,6 @@
       status: "stable",
     },
     {
-      name: "DOMPartsAPI",
-      status: "experimental",
-      implied_by: ["DOMPartsAPIMinimal"],
-    },
-    {
-      name: "DOMPartsAPIMinimal",
-    },
-    {
       // When enabled, retarget the relatedTarget attribute of drag events.
       // This landed in M146 and can be removed in M148.
       name: "DontLeakShadowTreesInDragEvents",

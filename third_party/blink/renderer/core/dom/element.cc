@@ -110,7 +110,6 @@
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
@@ -1176,12 +1175,6 @@ Element& Element::CloneWithChildren(
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
-  if (data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) && HasNodePart()) {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-    clone.SetHasNodePart();
-  } else if (data.Has(CloneOption::kPreserveDOMParts)) {
-    PartRoot::CloneParts(*this, clone, data);
-  }
 
   // Append the clone to its parent first, before cloning children. If this is
   // done in the reverse order, each new child will receive treeDepth calls to
@@ -1210,12 +1203,6 @@ Element& Element::CloneWithoutChildren(NodeCloningData& data,
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
-  if (data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) && HasNodePart()) {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-    clone.SetHasNodePart();
-  } else if (data.Has(CloneOption::kPreserveDOMParts)) {
-    PartRoot::CloneParts(*this, clone, data);
-  }
   return clone;
 }
 
@@ -9243,22 +9230,10 @@ void Element::SetInnerHTMLInternal(
         // No options; nothing to do.
       }
       ContainerNode* container = this;
-      bool swap_dom_parts{false};
       if (template_element) {
         container = template_element->content();
-        swap_dom_parts =
-            RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
-            template_element->hasAttribute(html_names::kParsepartsAttr);
       }
       ReplaceChildrenWithFragment(container, fragment, exception_state);
-      if (swap_dom_parts &&
-          !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-        // Move the parts list over to the template's content document's
-        // DocumentPartRoot.
-        To<DocumentFragment>(*container)
-            .getPartRoot()
-            .SwapPartsList(fragment->getPartRoot());
-      }
     }
   }
 }

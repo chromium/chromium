@@ -101,14 +101,6 @@ class ScrollTimelineHashSet final
   void Trace(Visitor* visitor) const override;
 };
 
-class NodePartsListData final : public GarbageCollected<NodePartsListData>,
-                                public ElementRareDataField {
- public:
-  PartsList parts_list_;
-
-  void Trace(Visitor* visitor) const override;
-};
-
 // ElementRareDataVector provides sparse storage of fields for Node and Element
 // (most Elements set only 0–3 of the 50+ possible fields). It consists of two
 // parts:
@@ -192,10 +184,6 @@ class CORE_EXPORT ElementRareDataVector final
   [[nodiscard]] ElementRareDataVector* RegisterScrollTimeline(ScrollTimeline*);
   [[nodiscard]] ElementRareDataVector* UnregisterScrollTimeline(
       ScrollTimeline*);
-
-  [[nodiscard]] ElementRareDataVector* AddDOMPart(Part& part);
-  void RemoveDOMPart(Part& part);
-  PartsList* GetDOMParts() const;
 
   // Mostly for accessibility.
   DOMNodeId NodeId() const {
@@ -642,7 +630,6 @@ class CORE_EXPORT ElementRareDataVector final
     kMutationObserverData = 46,
     kFlatTreeNodeData = 47,
     kScrollTimelines = 48,
-    kDomParts = 49,
     kDOMNodeId = 50,
     kMarker = 51,
     kNumFields = 52,

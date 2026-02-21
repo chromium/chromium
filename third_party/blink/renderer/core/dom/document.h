@@ -70,7 +70,6 @@
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_resize_options.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1759,10 +1758,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://crbug.com/1453291
   // The DOM Parts API:
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
-  DocumentPartRoot& getPartRoot();
-  DocumentPartRoot& EnsureDocumentPartRoot();
-  bool DOMPartsInUse() const { return document_part_root_ != nullptr; }
-
   RouteMap* routeMap();
 
   void SetHasCaptureListener() { has_capture_listener_ = true; }
@@ -2982,8 +2977,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // The ordered list of elements that currently have interest (via
   // `interestfor`), in the order they were opened.
   HeapLinkedHashSet<Member<Element>> elements_with_interest_;
-
-  Member<DocumentPartRoot> document_part_root_;
 
   // This flag is used to indicate whether the capture phase of event
   // dispatching can be skipped. When an event listener is added to this

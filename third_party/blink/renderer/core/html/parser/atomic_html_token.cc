@@ -30,7 +30,6 @@ const char* ToString(HTMLToken::TokenType type) {
     DEFINE_STRINGIFY(kComment);
     DEFINE_STRINGIFY(kCharacter);
     DEFINE_STRINGIFY(kEndOfFile);
-    DEFINE_STRINGIFY(kDOMPart);
     DEFINE_STRINGIFY(kProcessingInstruction);
 #undef DEFINE_STRINGIFY
   }

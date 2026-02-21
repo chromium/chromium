@@ -121,17 +121,6 @@ class HTMLElementStack {
   bool InListItemScope(html_names::HTMLTag tag) const;
   bool InTableScope(html_names::HTMLTag tag) const;
   bool InButtonScope(html_names::HTMLTag tag) const;
-  bool InParsePartsScope() const {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !parse_parts_count_);
-    return parse_parts_count_;
-  }
-  void SetDOMPartsAllowedState(DOMPartsAllowed state) {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-    dom_parts_allowed_state_ = state;
-    if (state == DOMPartsAllowed::kAlways) {
-      parse_parts_count_ = 1;
-    }
-  }
 
   bool HasNumberedHeaderElementInScope() const;
 

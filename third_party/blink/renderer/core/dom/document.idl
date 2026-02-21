@@ -219,9 +219,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
     [RuntimeEnabled=AriaNotify,MeasureAs=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
-    // The (experimental) DOM Parts API.
-    [RuntimeEnabled=DOMPartsAPI] DocumentPartRoot getPartRoot();
-
     [RuntimeEnabled=RouteMatching] readonly attribute RouteMap routeMap;
 
     // Event handler attributes

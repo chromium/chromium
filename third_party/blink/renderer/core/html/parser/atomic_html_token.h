@@ -202,23 +202,6 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
-  DOMPartTokenType DOMPartType() const {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-    DCHECK_EQ(type_, HTMLToken::kDOMPart);
-    return dom_part_data_->type_;
-  }
-
-  Vector<String> DOMPartMetadata() const {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-    DCHECK_EQ(type_, HTMLToken::kDOMPart);
-    return dom_part_data_->metadata_;
-  }
-
-  DOMPartsNeeded GetDOMPartsNeeded() {
-    DCHECK_EQ(type_, HTMLToken::kStartTag);
-    return dom_parts_needed_;
-  }
-
   explicit AtomicHTMLToken(HTMLToken& token)
       : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
@@ -227,14 +210,9 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::DOCTYPE:
         doctype_data_ = token.ReleaseDoctypeData();
         break;
-      case HTMLToken::kDOMPart:
-        DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-        dom_part_data_ = token.ReleaseDOMPartData();
-        break;
       case HTMLToken::kEndOfFile:
         break;
       case HTMLToken::kStartTag:
-        dom_parts_needed_ = token.GetDOMPartsNeeded();
         [[fallthrough]];
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();

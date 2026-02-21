@@ -46,9 +46,6 @@
     [CEReactions,Reflect] attribute boolean shadowRootClonable;
     [Reflect] attribute boolean shadowRootSerializable;
 
-    // Used by the DOM Parts API
-    [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
-
     // Used by Scoped Element Registries
     [CEReactions, Reflect, RuntimeEnabled=ScopedCustomElementRegistry] attribute DOMString shadowRootCustomElementRegistry;
 };

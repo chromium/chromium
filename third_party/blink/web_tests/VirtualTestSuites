@@ -858,39 +858,6 @@
     ]
   },
   {
-    "prefix": "dom-parts-disabled",
-    "owners": [
-      "masonf@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/dom/parts",
-      "fast/parser"
-    ],
-    "args": [
-      "--disable-features=DOMPartsAPI,DOMPartsAPIMinimal"
-    ],
-    "expires": "Jun 1, 2026"
-  },
-  {
-    "prefix": "dom-parts-minimal",
-    "owners": [
-      "masonf@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/dom/parts"
-    ],
-    "args": [
-      "--enable-features=DOMPartsAPIMinimal"
-    ],
-    "expires": "Jun 1, 2026"
-  },
-  {
     "prefix": "echo-cancellation-mode-all",
     "platforms": [
       "Win11",

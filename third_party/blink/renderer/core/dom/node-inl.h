@@ -14,18 +14,6 @@
 
 namespace blink {
 
-void Node::AddDOMPart(Part& part) {
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  data_ = EnsureRareData().AddDOMPart(part);
-}
-void Node::RemoveDOMPart(Part& part) {
-  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  EnsureRareData().RemoveDOMPart(part);
-}
-PartsList* Node::GetDOMParts() const {
-  return data_ ? data_->GetDOMParts() : nullptr;
-}
-
 DOMNodeId Node::NodeID(base::PassKey<DOMNodeIds>) const {
   return data_ ? const_cast<const ElementRareDataVector*>(data_.Get())->NodeId()
                : kInvalidDOMNodeId;

@@ -430,9 +430,6 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
   parser_->tokenizer().SetForceNullCharacterReplacement(
       GetInsertionMode() == kTextMode || in_foreign_content);
   parser_->tokenizer().SetShouldAllowCDATA(in_foreign_content);
-  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
-    parser_->tokenizer().SetShouldAllowDOMParts(tree_.InParsePartsScope());
-  }
 
   tree_.ExecuteQueuedTasks();
   // We might be detached now.
@@ -468,9 +465,6 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
       break;
     case HTMLToken::kEndOfFile:
       ProcessEndOfFile(token);
-      break;
-    case HTMLToken::kDOMPart:
-      ProcessDOMPart(token);
       break;
     case HTMLToken::kProcessingInstruction:
       ProcessProcessingInstruction(token);
@@ -1162,11 +1156,6 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   ResetInsertionModeAppropriately();
   if (template_stack_item) {
     DCHECK(template_stack_item->IsElementNode());
-    HTMLTemplateElement* template_element =
-        DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());
-    if (DocumentFragment* template_content = template_element->getContent()) {
-      tree_.FinishedTemplateElement(template_content);
-    }
   }
   return true;
 }
@@ -2414,12 +2403,6 @@ void HTMLTreeBuilder::ProcessComment(AtomicHTMLToken* token) {
   tree_.InsertComment(token);
 }
 
-void HTMLTreeBuilder::ProcessDOMPart(AtomicHTMLToken* token) {
-  DCHECK_EQ(token->GetType(), HTMLToken::kDOMPart);
-  DCHECK(tree_.InParsePartsScope());
-  tree_.InsertDOMPart(token);
-}
-
 void HTMLTreeBuilder::ProcessCharacter(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kCharacter);
   CharacterTokenBuffer buffer(token);
@@ -2863,9 +2846,6 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
     case HTMLToken::kUninitialized:
       NOTREACHED();
     case HTMLToken::DOCTYPE:
-    // TODO(crbug.com/1453291) This needs to be expanded to properly handle
-    // foreign content (e.g. <svg>) inside an element with `parseparts`.
-    case HTMLToken::kDOMPart:
       ParseError(token);
       break;
     case HTMLToken::kProcessingInstruction:

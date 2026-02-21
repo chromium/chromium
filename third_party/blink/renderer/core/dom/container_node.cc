@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/class_collection.h"
-#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -48,8 +47,6 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
-#include "third_party/blink/renderer/core/dom/part.h"
-#include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -1298,7 +1295,7 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
   // As an optimization we don't notify leaf nodes when when inserting
   // into detached subtrees that are not in a shadow tree, unless the
   // node has DOM Parts attached.
-  if (!node.IsContainerNode() && !IsInShadowTree() && !node.GetDOMParts()) {
+  if (!node.IsContainerNode() && !IsInShadowTree()) {
     return;
   }
 
@@ -1366,8 +1363,7 @@ void ContainerNode::NotifyNodeInsertedInternal(
     // As an optimization we don't notify leaf nodes when inserting into
     // detached subtrees that are not in a shadow tree, unless the node has DOM
     // Parts attached.
-    if (!isConnected() && !IsInShadowTree() && !node.IsContainerNode() &&
-        !node.GetDOMParts()) {
+    if (!isConnected() && !IsInShadowTree() && !node.IsContainerNode()) {
       continue;
     }
 
@@ -1397,8 +1393,7 @@ void ContainerNode::NotifyNodeRemoved(Node& root) {
     // of removal when they're not in the Document tree, not in a shadow root,
     // and don't have DOM Parts, since the virtual call to removedFrom is not
     // needed.
-    if (!node.IsContainerNode() && !node.IsInTreeScope() &&
-        !node.GetDOMParts()) {
+    if (!node.IsContainerNode() && !node.IsInTreeScope()) {
       continue;
     }
     node.RemovedFrom(*this);

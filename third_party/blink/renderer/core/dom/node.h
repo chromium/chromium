@@ -1092,9 +1092,6 @@ class CORE_EXPORT Node : public EventTarget {
   void UnregisterScrollTimeline(ScrollTimeline*);
 
   // Defined in node-inl.h.
-  inline void AddDOMPart(Part& part);
-  inline void RemoveDOMPart(Part& part);
-  inline PartsList* GetDOMParts() const;
   inline DOMNodeId NodeID(base::PassKey<DOMNodeIds>) const;
   inline DOMNodeId& EnsureNodeID(base::PassKey<DOMNodeIds>);
 

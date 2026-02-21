@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/dom/character_data.h"
 
 #include "base/numerics/checked_math.h"
-#include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
@@ -243,13 +242,6 @@ Node* CharacterData::Clone(Document& factory,
                            CustomElementRegistry*,
                            ExceptionState& append_exception_state) const {
   CharacterData* clone = CloneWithData(factory, data());
-  if (cloning_data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) &&
-      HasNodePart()) {
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-    clone->SetHasNodePart();
-  } else if (cloning_data.Has(CloneOption::kPreserveDOMParts)) {
-    PartRoot::CloneParts(*this, *clone, cloning_data);
-  }
   if (append_to) {
     append_to->AppendChild(clone, append_exception_state);
   }
