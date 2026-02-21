@@ -214,6 +214,10 @@ export class ContextualTasksAppElement extends CrLitElement {
   // This is needed to keep navigations between non-AIM pages from triggering
   // the input hide/restore callbacks.
   private isNavigatingFromAiPage_: boolean = false;
+  // Tracks the basic mode state before a navigation occurs. This is used to
+  // restore the basic mode state after the navigation, to ensure that if
+  // already in basic mode, the user is returned to basic mode.
+  private basicModeBeforeNavigation_ = this.isInBasicMode_;
 
   override firstUpdated() {
     this.postMessageHandler_ =
@@ -621,6 +625,7 @@ export class ContextualTasksAppElement extends CrLitElement {
                 !!this.signInDomains_.find((domain) => domain === url.host);
             if (this.isAiPage_) {
               this.isNavigatingFromAiPage_ = true;
+              this.basicModeBeforeNavigation_ = this.isInBasicMode_;
               this.isInBasicMode_ = true;
             }
             if (this.forcedEmbeddedPageHost && !isSigninDomain) {
@@ -637,7 +642,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       return;
     }
 
-    this.isInBasicMode_ = false;
+    this.isInBasicMode_ = this.basicModeBeforeNavigation_;
     this.isNavigatingFromAiPage_ = false;
   };
 
