@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "key_value_pair_viewer_browsertest.cc" ]
+
   files = [ "key_value_pair_viewer_test.ts" ]
 
   ts_path_mappings = [

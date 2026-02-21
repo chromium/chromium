@@ -5,6 +5,12 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "lens_overlay_webui_browsertest.cc",
+    "lens_side_panel_pixel_interactive_ui_test.cc",
+    "lens_side_panel_webui_browsertest.cc",
+  ]
+
   is_chrome_untrusted = true
   files = [
     "ghost_loader/ghost_loader_state_test.ts",

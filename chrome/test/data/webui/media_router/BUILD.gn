@@ -9,6 +9,8 @@ assert(!is_android)
 assert(is_chrome_branded)
 
 build_webui_tests("build") {
+  cc_test_files = [ "cast_feedback_ui_browsertest.cc" ]
+
   files = [ "cast_feedback_ui_test.ts" ]
 
   ts_path_mappings = [ "chrome://cast-feedback/*|" + rebase_path(

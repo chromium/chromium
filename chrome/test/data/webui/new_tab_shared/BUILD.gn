@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "new_tab_shared_browsertest.cc" ]
+
   files = [ "customize_buttons/customize_buttons_test.ts" ]
 
   ts_path_mappings =

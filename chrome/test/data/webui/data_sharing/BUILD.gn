@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "data_sharing_browsertest.cc" ]
+
   is_chrome_untrusted = true
   files = [ "mojom_conversion_utils_test.ts" ]
 

@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "flags_browsertest.cc" ]
+
   files = [
     "app_test.ts",
     "deprecated_test.ts",

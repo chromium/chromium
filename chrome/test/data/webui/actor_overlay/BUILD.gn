@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "actor_overlay_browsertest.cc" ]
+
   files = [
     "actor_overlay_test.ts",
     "test_browser_proxy.ts",

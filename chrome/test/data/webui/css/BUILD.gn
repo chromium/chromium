@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "css_browsertest.cc" ]
+
   files = [
     "color_provider_css_colors_test.ts",
     "text_defaults_test.ts",

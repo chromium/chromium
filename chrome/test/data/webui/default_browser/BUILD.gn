@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "default_browser_browsertest.cc" ]
+
   resource_path_prefix = "default_browser"
 
   files = [

@@ -7,6 +7,11 @@ import("../build_webui_tests.gni")
 assert(!is_android)
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "contextual_tasks_browsertest.cc",
+    "contextual_tasks_pixel_interactive_ui_test.cc",
+  ]
+
   files = [
     "app_test.ts",
     "composebox_test.ts",

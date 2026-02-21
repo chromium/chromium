@@ -94,6 +94,8 @@ copy("test_glic_deps") {
 }
 
 build_webui_tests("build") {
+  cc_test_files = [ "glic_browsertest.cc" ]
+
   files = [
     "unit_tests/glic_api_host_test.ts",
     "unit_tests/observable_test.ts",

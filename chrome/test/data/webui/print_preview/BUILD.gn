@@ -8,6 +8,11 @@ assert(!is_chromeos,
        "Desktop Print Preview tests should not be included on CrOS builds")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "print_preview_browsertest.cc",
+    "print_preview_focus_test.cc",
+  ]
+
   files = [
     "advanced_dialog_test.ts",
     "advanced_item_test.ts",

@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "about_sys_browsertest.cc" ]
+
   files = [
     "about_sys_test.ts",
     "test_about_sys_browser_proxy.ts",

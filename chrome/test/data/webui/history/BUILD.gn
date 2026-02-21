@@ -5,6 +5,12 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "history_focus_test.cc",
+    "history_supervised_user_browsertest.cc",
+    "history_ui_browsertest.cc",
+  ]
+
   files = [
     "history_app_test.ts",
     "history_clusters/utils.ts",

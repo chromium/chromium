@@ -5,6 +5,11 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "bookmarks_browsertest.cc",
+    "bookmarks_focus_test.cc",
+  ]
+
   files = [
     "actions_test.ts",
     "app_test.ts",

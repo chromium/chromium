@@ -5,6 +5,8 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "sandbox_browsertest.cc" ]
+
   files = [
     "gpu_test.ts",
     "sandbox_test.ts",

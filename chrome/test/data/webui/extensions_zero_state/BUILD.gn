@@ -8,6 +8,8 @@ import("../build_webui_tests.gni")
 assert(enable_extensions_core, "enable extensions check failed")
 
 build_webui_tests("build") {
+  cc_test_files = [ "zero_state_promo_browsertest.cc" ]
+
   files = [ "zero_state_promo_app_test.ts" ]
 
   ts_path_mappings = [ "chrome://extensions-zero-state/*|" + rebase_path(

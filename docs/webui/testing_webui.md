@@ -143,6 +143,12 @@ directory. Each test file should contain one or more Mocha test suites. Often
 each major custom element of a UI will have its own Mocha test file, as will
 many of the data classes.
 
+A build time check exists as part of `build_webui_tests()` to ensure Mocha test
+files are actually hooked up to a C++ test file. Mocha test files must end with
+the `\_test.ts` suffix. Any other TS supporting files that don't actually hold
+Mocha test cases should not finish with this suffix otherwise the automated
+check will trigger erroneously.
+
 ```ts
 // chrome/test/data/webui/foo_bar/search_box_test.ts
 

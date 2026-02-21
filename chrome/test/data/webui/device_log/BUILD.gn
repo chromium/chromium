@@ -7,6 +7,8 @@ import("../build_webui_tests.gni")
 assert(!is_android)
 
 build_webui_tests("build") {
+  cc_test_files = [ "device_log_ui_browsertest.cc" ]
+
   files = [ "device_log_ui_test.ts" ]
 
   ts_path_mappings =

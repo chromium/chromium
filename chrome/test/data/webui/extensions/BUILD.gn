@@ -8,6 +8,11 @@ import("../build_webui_tests.gni")
 assert(enable_extensions_core, "enable extensions check failed")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "extensions_browsertest.cc",
+    "extensions_focus_test.cc",
+  ]
+
   files = [
     "activity_log_history_item_test.ts",
     "activity_log_history_test.ts",

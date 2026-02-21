@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "privacy_sandbox_internals_browsertest.cc" ]
+
   files = [
     "content_settings_test.ts",
     "privacy_sandbox_internals_test.ts",

@@ -7,6 +7,11 @@ import("../build_webui_tests.gni")
 assert(!is_android)
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "chrome_histograms_browsertest.cc",
+    "chrome_timeticks_browsertest.cc",
+  ]
+
   files = [
     "chrome_histograms_test.ts",
     "chrome_timeticks_test.ts",
