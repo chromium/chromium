@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -190,12 +191,12 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   Browser* browser = self.browser;
-  id<SnapshotStorage> snapshotStorage =
-      SnapshotBrowserAgent::FromBrowser(browser)->snapshot_storage();
   self.mediator = [[InactiveTabsMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
         profilePrefService:browser->GetProfile()->GetPrefs()
-           snapshotStorage:snapshotStorage
+             faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                               browser->GetProfile())
+      snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser)
                 tabsCloser:std::make_unique<TabsCloser>(
                                browser, TabsCloser::ClosePolicy::kAllTabs)];
 }
@@ -225,6 +226,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   self.mediator.delegate = self;
 
   self.viewController.gridViewController.menuProvider = _contextMenuProvider;
+  self.viewController.gridViewController.snapshotAndfaviconDataSource =
+      self.mediator;
 
   // Add the Inactive Tabs view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;

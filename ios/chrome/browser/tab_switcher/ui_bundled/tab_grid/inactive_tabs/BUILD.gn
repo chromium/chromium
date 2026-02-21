@@ -24,6 +24,7 @@ source_set("inactive_tabs") {
     "//components/prefs/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -129,6 +130,28 @@ source_set("inactive_tabs_button_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "inactive_tabs_mediator_unittest.mm" ]
+  deps = [
+    ":inactive_tabs",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/favicon/model:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
 }
 

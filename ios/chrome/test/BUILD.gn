@@ -548,6 +548,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular:unit_tests",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/tests:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:unit_tests",
