@@ -154,31 +154,59 @@ function getAnnotatedRoleForTag(tagName: string): PageContentAnnotatedRole|
   }
 }
 
+// Constants for text size categorization, mirroring Blink's
+// third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.cc.
+const HEADING_1_FONT_SIZE_MULTIPLIER = 2.0;
+const HEADING_3_FONT_SIZE_MULTIPLIER = 1.17;
+const HEADING_5_FONT_SIZE_MULTIPLIER = 0.83;
+const HEADING_6_FONT_SIZE_MULTIPLIER = 0.67;
+
 /**
- * Determines the text size category based on the font size.
+ * Determines the text size category based on the font size. Returns
+ * PageContentTextSize.M if the relative font size can't be computed.
+ * Ratios are based on browser defaults for headings, which are as follows:
+ *
+ * Heading 1: 2em
+ * Heading 2: 1.5em
+ * Heading 3: 1.17em
+ * Heading 4: 1em
+ * Heading 5: 0.83em
+* Heading 6: 0.67em
  *
  * @param fontSize The font size string (e.g., "16px").
+ * @param doc The document to use for root font size reference.
  * @return The corresponding PageContentTextSize category.
  */
-function getTextSizeCategory(fontSize: string): PageContentTextSize {
-  // TODO(crbug.com/475171266): Implement parity for text size extraction.
+function getTextSizeCategory(
+  fontSize: string, doc: Document): PageContentTextSize {
   const size = parseFloat(fontSize);
   if (isNaN(size)) {
     return PageContentTextSize.M;
   }
-  if (size < 12) {
-    return PageContentTextSize.XS;
-  }
-  if (size < 16) {
-    return PageContentTextSize.S;
-  }
-  if (size < 20) {
+
+  const rootStyle = doc.defaultView?.getComputedStyle(doc.documentElement);
+  if (!rootStyle) {
     return PageContentTextSize.M;
   }
-  if (size < 24) {
-    return PageContentTextSize.L;
+
+  const docFontSize = parseFloat(rootStyle.fontSize);
+  if (isNaN(docFontSize) || docFontSize <= 0) {
+    return PageContentTextSize.M;
   }
-  return PageContentTextSize.XL;
+
+  const multiplier = size / docFontSize;
+
+  if (multiplier >= HEADING_1_FONT_SIZE_MULTIPLIER) {
+    return PageContentTextSize.XL;
+  } else if (multiplier >= HEADING_3_FONT_SIZE_MULTIPLIER) {
+    return PageContentTextSize.L;
+  } else if (multiplier >= HEADING_5_FONT_SIZE_MULTIPLIER) {
+    return PageContentTextSize.M;
+  } else if (multiplier >= HEADING_6_FONT_SIZE_MULTIPLIER) {
+    return PageContentTextSize.S;
+  } else {
+    return PageContentTextSize.XS;
+  }
 }
 
 /**
@@ -401,8 +429,9 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
   const weight = style.fontWeight;
   const hasEmphasis = weight === 'bold' || weight === '700' ||
       parseInt(weight) >= 700 || style.fontStyle === 'italic';
-  const textSize = getTextSizeCategory(style.fontSize);
-
+  const textSize = domNode.ownerDocument ?
+    getTextSizeCategory(style.fontSize, domNode.ownerDocument) :
+    PageContentTextSize.M;
   return {
     attributeType: PageContentAttributeType.TEXT,
     annotatedRoles: [],
@@ -410,9 +439,7 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
     textInfo: {
       textContent: maskedText,
       textStyle: {
-        // TODO(crbug.com/475171266): Implement parity for text size and
-        // emphasis extraction.
-        textSize,
+        textSize: textSize,
         hasEmphasis,
         // TODO(crbug.com/474935853): Add text color extraction.
         color: 0,

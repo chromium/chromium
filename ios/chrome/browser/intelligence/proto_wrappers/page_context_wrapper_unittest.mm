@@ -3239,6 +3239,69 @@ TEST_P(
             "Target");
 }
 
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("RichExtraction_Text_Size",
+               RawHtml("<div style=\"font-size: 16px\">"
+                       "<p style=\"font-size: 32px\">Extra Large</p>"
+                       "<p style=\"font-size: 19px\">Large</p>"
+                       "<p style=\"font-size: 16px\">Medium</p>"
+                       "<p style=\"font-size: 11px\">Small</p>"
+                       "<p style=\"font-size: 10px\">Extra Small</p>"
+                       "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(5, root_node.children_nodes_size());
+
+  const std::vector<optimization_guide::proto::TextSize> expected_sizes = {
+      optimization_guide::proto::TEXT_SIZE_XL,         // "Extra Large"
+      optimization_guide::proto::TEXT_SIZE_L,          // "Large"
+      optimization_guide::proto::TEXT_SIZE_M_DEFAULT,  // "Medium"
+      optimization_guide::proto::TEXT_SIZE_S,          // "Small"
+      optimization_guide::proto::TEXT_SIZE_XS,         // "Extra Small"
+  };
+
+  for (size_t i = 0; i < expected_sizes.size(); ++i) {
+    const auto& p_node = root_node.children_nodes(i);
+    ASSERT_EQ(p_node.children_nodes_size(), 1);
+    const auto& text_node = p_node.children_nodes(0);
+    EXPECT_TRUE(text_node.content_attributes()
+                    .text_data()
+                    .text_style()
+                    .has_text_size());
+    EXPECT_EQ(static_cast<int>(expected_sizes[i]),
+              static_cast<int>(text_node.content_attributes()
+                                   .text_data()
+                                   .text_style()
+                                   .text_size()));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

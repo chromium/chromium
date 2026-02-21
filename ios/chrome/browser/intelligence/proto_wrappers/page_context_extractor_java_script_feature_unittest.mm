@@ -13,6 +13,7 @@
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -310,4 +311,64 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   const std::string* title = frame_data->FindString("title");
   ASSERT_TRUE(title);
   EXPECT_EQ(*title, "TreeWalker Test");
+}
+
+// Test the extraction of the text size.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_Text_Size) {
+  const std::string html =
+      "<html><body style=\"font-size: 16px\">"
+      "<p style=\"font-size: 32px\">Extra Large</p>"  // 2.0 -> XL
+      "<p style=\"font-size: 19px\">Large</p>"        // ~1.18 -> L
+      "<p style=\"font-size: 16px\">Medium</p>"       // 1.0 -> M
+      "<p style=\"font-size: 11px\">Small</p>"        // ~0.68 -> S
+      "<p style=\"font-size: 10px\">Extra Small</p>"  // ~0.62 -> XS
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::Value result_value;
+  base::RunLoop run_loop;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*use_apc_v2=*/true, "nonce", base::Seconds(1),
+      base::BindOnce(
+          [](base::RunLoop* r, base::Value* result_value,
+             const base::Value* value) {
+            *result_value = value->Clone();
+            r->Quit();
+          },
+          &run_loop, &result_value));
+  run_loop.Run();
+
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 5u);
+
+  const std::vector<optimization_guide::proto::TextSize> expected_sizes = {
+      optimization_guide::proto::TEXT_SIZE_XL,         // "Extra Large"
+      optimization_guide::proto::TEXT_SIZE_L,          // "Large"
+      optimization_guide::proto::TEXT_SIZE_M_DEFAULT,  // "Medium"
+      optimization_guide::proto::TEXT_SIZE_S,          // "Small"
+      optimization_guide::proto::TEXT_SIZE_XS,         // "Extra Small"
+  };
+
+  for (size_t i = 0; i < expected_sizes.size(); ++i) {
+    const base::DictValue& node = (*children)[i].GetDict();
+    const base::ListValue* node_children = node.FindList("childrenNodes");
+    ASSERT_TRUE(node_children);
+    const base::DictValue& text_node = (*node_children)[0].GetDict();
+
+    std::optional<double> size = text_node.FindDoubleByDottedPath(
+        "contentAttributes.textInfo.textStyle.textSize");
+    int actual_size = static_cast<int>(size.value());
+    EXPECT_EQ(actual_size, static_cast<int>(expected_sizes[i]))
+        << "Failed at text size "
+        << *text_node.FindStringByDottedPath(
+               "contentAttributes.textInfo.textContent");
+  }
 }
