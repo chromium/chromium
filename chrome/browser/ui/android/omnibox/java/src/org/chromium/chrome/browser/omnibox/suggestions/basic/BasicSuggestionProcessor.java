@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
@@ -43,7 +42,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean isBookmarked(GURL url);
     }
 
-    private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final BookmarkState mBookmarkState;
 
     /**
@@ -51,7 +49,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public BasicSuggestionProcessor(AutocompleteUIContext uiContext) {
         super(uiContext);
-        mUrlBarEditingTextProvider = uiContext.textProvider;
         mBookmarkState = uiContext.bookmarkState;
     }
 
@@ -187,13 +184,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
 
-        if (suggestion.getType() != OmniboxSuggestionType.TILE_SUGGESTION
-                && !mUrlBarEditingTextProvider
-                        .getTextWithoutAutocomplete()
-                        .trim()
-                        .equalsIgnoreCase(suggestion.getDisplayText())) {
-            setRemoveOrRefineAction(model, input, suggestion, position);
-        }
+        setRemoveOrRefineAction(model, input, suggestion, position);
     }
 
     protected @Nullable SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {
