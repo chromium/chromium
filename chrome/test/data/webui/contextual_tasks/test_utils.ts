@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -37,3 +39,47 @@ export function installMock<T extends object>(
   installer(mock);
   return mock;
 }
+
+export const mockInputState: InputState = {
+  hintText: '',
+  toolConfigs: [
+    {
+      tool: ComposeboxToolMode.kDeepSearch,
+      hintText: '',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ComposeboxToolMode.kImageGen,
+      hintText: '',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ComposeboxToolMode.kCanvas,
+      hintText: '',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+  ],
+  modelConfigs: [],
+  allowedModels: [],
+  allowedTools: [],
+  allowedInputTypes: [],
+  activeModel: 0,
+  activeTool: 0,
+  disabledModels: [],
+  disabledTools: [],
+  disabledInputTypes: [],
+  inputTypeConfigs: [],
+  toolsSectionConfig: null,
+  modelSectionConfig: null,
+  maxInstances: {},
+  maxTotalInputs: 0,
+};
