@@ -146,7 +146,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.setSelectedPath_(path);
 
     const route = Router.getInstance().getRouteForPath(path);
-    assert(route, 'settings-menu has an entry with an invalid route.');
+    assert(route, `settings-menu encountered invalid path '${path}'`);
     Router.getInstance().navigateTo(
         route, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
