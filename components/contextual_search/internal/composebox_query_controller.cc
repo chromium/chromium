@@ -366,8 +366,10 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
       // Process modality chips.
       added_inputs.add_added_inputs()->CopyFrom(
           file_info->input_data->modality_chip_props->added_input());
-    } else if (file_info->request_id.has_value()) {
-      // Process Lens file uploads.
+    } else if (file_info->request_id.has_value() &&
+               file_info->mime_type != lens::MimeType::kImage) {
+      // Process Lens file non-image uploads. Do not create added inputs for
+      // image uploads.
       lens::LensOverlayLensFile* lens_file =
           added_inputs.add_added_inputs()->mutable_lens_file();
       lens_file->set_vsrid(

@@ -3802,6 +3802,42 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesAddedInputs) {
   EXPECT_EQ(lens_file.vsrid(), GetEncodedRequestInfoForToken(file_token));
 }
 
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_ImageUpload_DoesNotIncludeAddedInputs) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (JPG).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  StartImageFileUploadFlow(file_token, image_bytes, image_options);
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify AddedInputs param is NOT present.
+  std::optional<lens::AddedInputs> added_inputs =
+      GetAddedInputsFromUrl(search_url);
+  ASSERT_FALSE(added_inputs.has_value());
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 TEST_F(ComposeboxQueryControllerTest,
        CreateSearchUrl_StandardSearch_DoesNotIncludeAddedInputs) {
   // Act: Start the session.
