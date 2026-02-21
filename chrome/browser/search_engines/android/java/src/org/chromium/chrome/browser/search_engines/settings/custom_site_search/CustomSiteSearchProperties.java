@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.search_engines.settings.custom_site_search;
 
+import android.graphics.Bitmap;
+import android.view.View.OnClickListener;
+
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
@@ -28,15 +31,16 @@ class CustomSiteSearchProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SITE_NAME =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<String> SITE_URL =
+    public static final WritableObjectPropertyKey<String> SITE_SHORTCUT =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
+    public static final WritableObjectPropertyKey<Bitmap> ICON = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener> ON_CLICK =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TEXT = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Boolean> IS_EXPANDED =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ADAPTER, SITE_NAME, SITE_URL, ON_CLICK, TEXT, IS_EXPANDED
+        ADAPTER, ICON, IS_EXPANDED, ON_CLICK, SITE_NAME, SITE_SHORTCUT, TEXT,
     };
 }

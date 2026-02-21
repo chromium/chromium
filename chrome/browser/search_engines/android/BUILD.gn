@@ -34,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchListPreference.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchMediator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchProperties.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchRecyclerView.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchViewBinder.java",
@@ -136,6 +137,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettingsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineListMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/EditSearchEngineDialogCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchMediatorUnitTest.java",
   ]
   deps = [
     ":java",
@@ -172,6 +174,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 

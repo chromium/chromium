@@ -17,13 +17,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 class CustomSiteSearchViewBinder {
     static class ViewHolder {
         final TextView mTitle;
-        final TextView mUrl;
+        final TextView mShortcut;
+        final ImageView mIcon;
         final TextView mText;
         final ImageView mActionIcon;
 
         public ViewHolder(View view) {
             mTitle = view.findViewById(R.id.name);
-            mUrl = view.findViewById(R.id.url);
+            mShortcut = view.findViewById(R.id.shortcut);
+            mIcon = view.findViewById(R.id.favicon);
             mText = view.findViewById(R.id.text);
             mActionIcon = view.findViewById(R.id.action_icon);
         }
@@ -33,10 +35,12 @@ class CustomSiteSearchViewBinder {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (CustomSiteSearchProperties.SITE_NAME == propertyKey) {
             holder.mTitle.setText(model.get(CustomSiteSearchProperties.SITE_NAME));
-        } else if (CustomSiteSearchProperties.SITE_URL == propertyKey) {
-            holder.mUrl.setText(model.get(CustomSiteSearchProperties.SITE_URL));
+        } else if (CustomSiteSearchProperties.SITE_SHORTCUT == propertyKey) {
+            holder.mShortcut.setText(model.get(CustomSiteSearchProperties.SITE_SHORTCUT));
+        } else if (CustomSiteSearchProperties.ICON == propertyKey) {
+            holder.mIcon.setImageBitmap(model.get(CustomSiteSearchProperties.ICON));
         } else if (CustomSiteSearchProperties.ON_CLICK == propertyKey) {
-            view.setOnClickListener(v -> model.get(CustomSiteSearchProperties.ON_CLICK).run());
+            view.setOnClickListener(v -> model.get(CustomSiteSearchProperties.ON_CLICK));
         } else if (CustomSiteSearchProperties.TEXT == propertyKey) {
             holder.mText.setText(model.get(CustomSiteSearchProperties.TEXT));
         } else if (CustomSiteSearchProperties.IS_EXPANDED == propertyKey) {

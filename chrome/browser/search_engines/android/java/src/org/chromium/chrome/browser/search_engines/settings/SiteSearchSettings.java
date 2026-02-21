@@ -67,7 +67,9 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                 findPreference(CUSTOM_SITE_SEARCH_LIST_PREF);
         if (customSiteSearchPref != null) {
             if (mSiteSearchCoordinator == null) {
-                mSiteSearchCoordinator = new CustomSiteSearchCoordinator(getContext());
+                mSiteSearchCoordinator =
+                        new CustomSiteSearchCoordinator(
+                                getContext(), getProfile(), customSiteSearchPref);
             }
         }
     }
