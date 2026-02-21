@@ -123,23 +123,47 @@ std::vector<int> GetTipsPriorityRankingList() {
   }
 
   if (features::kTrustAndSafety.Get()) {
-    tips_list.emplace_back(
-        TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+    if (features::kEnableEnhancedSafeBrowsingTip.Get()) {
+      tips_list.emplace_back(
+          TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+    }
+    if (features::kEnableQuickDeleteTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+    }
+    if (features::kEnableGoogleLensTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
+    }
+    if (features::kEnableBottomOmniboxTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+    }
   } else if (features::kEssential.Get()) {
-    tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
-    tips_list.emplace_back(
-        TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
+    if (features::kEnableQuickDeleteTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+    }
+    if (features::kEnableBottomOmniboxTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+    }
+    if (features::kEnableEnhancedSafeBrowsingTip.Get()) {
+      tips_list.emplace_back(
+          TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+    }
+    if (features::kEnableGoogleLensTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
+    }
   } else if (features::kNewFeatures.Get()) {
-    tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
-    tips_list.emplace_back(
-        TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+    if (features::kEnableGoogleLensTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
+    }
+    if (features::kEnableBottomOmniboxTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+    }
+    if (features::kEnableQuickDeleteTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+    }
+    if (features::kEnableEnhancedSafeBrowsingTip.Get()) {
+      tips_list.emplace_back(
+          TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+    }
   }
   return tips_list;
 }

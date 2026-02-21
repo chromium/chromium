@@ -241,6 +241,22 @@ constexpr base::FeatureParam<int> kWindowTimeMinutes{&kAndroidTipsNotifications,
                                                      "window_time_minutes",
                                                      /*default_value=*/120};
 
+constexpr base::FeatureParam<bool> kEnableEnhancedSafeBrowsingTip{
+    &kAndroidTipsNotifications, "enable_enhanced_safe_browsing_tip",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kEnableQuickDeleteTip{
+    &kAndroidTipsNotifications, "enable_quick_delete_tip",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kEnableGoogleLensTip{
+    &kAndroidTipsNotifications, "enable_google_lens_tip",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kEnableBottomOmniboxTip{
+    &kAndroidTipsNotifications, "enable_bottom_omnibox_tip",
+    /*default_value=*/true};
+
 BASE_FEATURE(kAndroidTipsNotificationsV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace segmentation_platform::features
