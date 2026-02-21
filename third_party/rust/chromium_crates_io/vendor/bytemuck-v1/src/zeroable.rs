@@ -231,6 +231,7 @@ impl_unsafe_marker_for_simd!(
 unsafe impl<T, const N: usize> Zeroable for core::simd::Simd<T, N>
 where
   T: core::simd::SimdElement + Zeroable,
+  core::simd::LaneCount<N>: core::simd::SupportedLaneCount,
 {
 }
 
