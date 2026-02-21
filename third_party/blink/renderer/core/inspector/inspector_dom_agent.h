@@ -312,6 +312,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
   void UpdateScrollableFlag(Node* node, std::optional<bool>);
+  void UpdateAdRelatedState(Node& node, bool is_ad_related);
   void UpdateAffectedByStartingStylesFlag(Node* node, std::optional<bool>);
 
   Node* NodeForId(int node_id) const;

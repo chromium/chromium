@@ -103,6 +103,7 @@
         "FrameOwnerContentUpdated",
         "NodeCreated",
         "UpdateScrollableFlag",
+        "UpdateAdRelatedState",
         "UpdateAffectedByStartingStylesFlag",
         "PseudoElementCreated",
         "TopLayerElementsChanged",

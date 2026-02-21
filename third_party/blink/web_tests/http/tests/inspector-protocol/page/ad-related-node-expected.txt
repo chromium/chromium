@@ -1,0 +1,11 @@
+Tests ad-tagging on arbitrary node elements via DOM.adRelatedStateUpdated and DOM.Node.isAdRelated
+
+--- Testing DOM.adRelatedStateUpdated Event Dispatch ---
+Event Triggered: DOM.adRelatedStateUpdated
+Event nodeId matches target: true
+Event isAdRelated: true
+
+--- Testing Static Serialization ---
+Node localName: span
+Node isAdRelated (via describeNode): true
+

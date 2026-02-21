@@ -183,6 +183,7 @@ domain DOM
       experimental optional boolean isScrollable
       experimental optional boolean affectedByStartingStyles
       experimental optional array of StyleSheetId adoptedStyleSheets
+      experimental optional boolean isAdRelated
 
   # A structure to hold the top-level node of a detached tree and an array of its retained descendants.
   type DetachedElementInfo extends object
@@ -911,6 +912,14 @@ domain DOM
       DOM.NodeId nodeId
       # If the node is scrollable.
       boolean isScrollable
+
+  # Fired when a node's ad related state changes.
+  experimental event adRelatedStateUpdated
+    parameters
+      # The id of the node.
+      DOM.NodeId nodeId
+      # If the node is ad related.
+      boolean isAdRelated
 
   # Fired when a node's starting styles changes.
   experimental event affectedByStartingStylesFlagUpdated

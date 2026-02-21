@@ -139,6 +139,10 @@ inline CoreProbeSink* ToCoreProbeSink(CoreProbeSink* sink) {
   return sink;
 }
 
+inline CoreProbeSink* ToCoreProbeSink(Node& node) {
+  return ToCoreProbeSink(node.GetDocument());
+}
+
 inline CoreProbeSink* ToCoreProbeSink(Node* node) {
   return node ? ToCoreProbeSink(node->GetDocument()) : nullptr;
 }

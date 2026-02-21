@@ -2260,6 +2260,10 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       force_push_children = true;
     }
 
+    if (element->IsAdRelated()) {
+      value->setIsAdRelated(true);
+    }
+
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
       if (DocumentFragment* content = template_element->content()) {
         value->setTemplateContent(
@@ -2900,6 +2904,16 @@ void InspectorDOMAgent::UpdateScrollableFlag(
   GetFrontend()->scrollableFlagUpdated(nodeId, override_flag.has_value()
                                                    ? override_flag.value()
                                                    : isNodeScrollable(node));
+}
+
+void InspectorDOMAgent::UpdateAdRelatedState(Node& node, bool is_ad_related) {
+  int nodeId = BoundNodeId(&node);
+  // If node is not mapped yet -> ignore the event.
+  if (!nodeId) {
+    return;
+  }
+
+  GetFrontend()->adRelatedStateUpdated(nodeId, is_ad_related);
 }
 
 void InspectorDOMAgent::UpdateAffectedByStartingStylesFlag(

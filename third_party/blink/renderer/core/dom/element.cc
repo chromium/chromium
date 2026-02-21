@@ -8848,6 +8848,8 @@ void Element::SetIsAdRelated() {
   DCHECK(!IsA<HTMLFrameOwnerElement>(this));
 
   UnpackAndRefresh(EnsureRareData().EnsureDisplayAdElementMonitor(this));
+
+  probe::UpdateAdRelatedState(*this, /*is_ad_related=*/true);
 }
 
 bool Element::IsAdRelated() const {
