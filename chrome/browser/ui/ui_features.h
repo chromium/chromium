@@ -30,6 +30,8 @@ BASE_DECLARE_FEATURE(kDseIntegrity);
 BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif
 
+BASE_DECLARE_FEATURE(kDesktopGlowUp);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Controls how extensions show up in the main menu. When enabled, if the
