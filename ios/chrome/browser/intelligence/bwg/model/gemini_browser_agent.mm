@@ -312,7 +312,6 @@ void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
     return;
   }
 
-  fullscreen_controller_->ExitFullscreen();
   CGFloat offset =
       GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
   ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
@@ -670,6 +669,11 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
   RecordFloatyShownFromSource(source);
   is_floaty_temporarily_hidden_ = false;
+
+  // Exit fullscreen to prepare floaty for incoming response stream.
+  if (source == gemini::FloatyUpdateSource::ForcedFromQueryResponse) {
+    fullscreen_controller_->ExitFullscreen();
+  }
 
   base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
   [UIView animateWithDuration:kFloatyAnimationDuration
