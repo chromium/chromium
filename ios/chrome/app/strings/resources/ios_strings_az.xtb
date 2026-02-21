@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Qrupu saxlayın</translation>
 <translation id="1853692000353488670">Yeni gizli panel</translation>
 <translation id="1854463785401910334">Açıq tabları axtarın</translation>
+<translation id="1860609647735325606">Gemini ilə izah edin</translation>
 <translation id="1861067954551502701">{count,plural, =1{Parol {position}/{count}}other{Parol {position}/{count}}}</translation>
 <translation id="1861262398884155592">Qovluq boşdur</translation>
 <translation id="1864266050569350424">Parolu yadda saxladığınız saytda giriş parolu sahəsinə toxunun.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Hamısını açın</translation>
 <translation id="2536991091671391962">Yadda saxlanmış parolları istənilən cihazda istifadə edə bilərsiniz. <ph name="EMAIL" /> üçün Google Parol Menecerində yadda saxlanır.</translation>
 <translation id="2538103551183528357">Gizli, parol</translation>
+<translation id="2538705697765638552">Məlumatlarınızı yadda saxlayın və Google məhsullarında formaları doldurmaq kimi işləri daha tez yerinə yetirin. <ph name="USER_EMAIL" /> üçün məlumatı Google Pulqabıda idarə edə bilərsiniz.</translation>
 <translation id="2539748786028143624">Təkmil qorumanı aktiv edin…</translation>
 <translation id="2540111494300686866">Dialoqların qarşısını alın</translation>
 <translation id="2542268842667970959">"Təhlükəsizlik yoxlanışı" seçimini gizlədin</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Parol Google Hesabında ({EMAIL}) yadda saxlandı}other{Parollar Google Hesabında ({EMAIL}) yadda saxlandı}}</translation>
 <translation id="2791174088547598693">Parol əlavə edin…</translation>
 <translation id="2793703503584038325">Parol seçin və "paylaşın" ikonuna toxunun</translation>
+<translation id="2793804887899597849">Məlumat yalnız cihazda yadda saxlanıldı</translation>
 <translation id="2797029671965852011">Tarixi göstərin</translation>
 <translation id="2797302972324086597">Ölkə kodu</translation>
 <translation id="2798263827270599246">Defolt tema</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Linza ilə axtarış edin</translation>
 <translation id="3575426792457739946">Bütün yüklənmiş profillər bu siyahıda göstərilir.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, təşkilatınız tərəfindən idarə olunur.</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> güncəllənsin?</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
 <translation id="3587482841069643663">Hamısı</translation>
 <translation id="3587885837929752825">Təşkilat Google Hesabında yadda saxlanan datanı məhdudlaşdırır.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">İmport edin</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ayarlarını<ph name="END_BOLD" /> açın</translation>
 <translation id="3858860766373142691">Ad</translation>
+<translation id="386224966259596343">Növbəti dəfə müvafiq formanı doldurduğunuz zaman bu məlumatı Pulqabıda yadda saxlamaq şansınız olacaq.</translation>
 <translation id="3868495844258915202">Tam URL-i göstərin</translation>
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
 <translation id="3878657761594430423">Vərəq tutucu</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Yardımı göstərin</translation>
 <translation id="4095483462103784441">Yeni tab qrupu yaradın</translation>
 <translation id="4099756562043439968">Xatırladıcı ayarlayın</translation>
+<translation id="4101867642407836771"><ph name="USER_EMAIL" /> üçün Google Pulqabıda.</translation>
 <translation id="4108998448622696017">Təhlükəli hadisələr baş verdikdə onları aşkarlayır və sizə xəbərdarlıq edir.</translation>
 <translation id="4111985840824673503">Hamısını oxunmuş kimi qeyd edin</translation>
 <translation id="411254640334432676">Endirmə uğursuz oldu.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Parolları dəyişin</translation>
 <translation id="4120936477286528673">Bu sayt davamlı olaraq başqa tətbiq açmağa çalışır.</translation>
 <translation id="4121993058175073134">Növbəti raport datasını göndərmək üçün Ayarlar tətbiqində e-poçt hesabınızı sazlayın.</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> yadda saxlanılsın?</translation>
 <translation id="4133139945030148655">Tam hazırsınız</translation>
 <translation id="4133265950310064865">Təkmil Qoruma</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" /> <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="4854068532375923088">"Gemini"-ın kameranızdan istifadə etməsinə icazə verin</translation>
+<translation id="4860114370595561279">Yadda saxladığınız məlumat cihazda saxlanır</translation>
 <translation id="4860895144060829044">Zəng</translation>
 <translation id="4861953997778766866">Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
 <translation id="4865063548323785458">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yadda saxlayın və avtomatik doldurun</translation>
@@ -1235,6 +1243,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5559567453458728487">Vebdə tapılan ölçü vahidlərini çevirin</translation>
 <translation id="556042886152191864">Düymə</translation>
 <translation id="5565871407246142825">Kredit kartları</translation>
+<translation id="5566623128829375608">Cihazınızda yadda saxlayır.</translation>
 <translation id="5567439033041178034">ƏTRAFLI MƏLUMAT</translation>
 <translation id="5578795271662203820">Bu şəkil üçün <ph name="SEARCH_ENGINE" /> axtarın</translation>
 <translation id="5579012242779565775">Oxu siyahısını gizlədin</translation>
@@ -1650,7 +1659,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6964300328304469089">Seçilib: <ph name="NAME" /> (<ph name="EMAIL" />). Hesab seçin.</translation>
 <translation id="6964760285928603117">Qrupdan Çıxarın</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Peşəkar şəkil yaradın</translation>
 <translation id="6973630695168034713">Qovluqlar</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979737339423435258">Hər zaman</translation>
@@ -2178,6 +2186,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8829809207373502270">Bu giriş açarı artıq işləmir. O, <ph name="WEBSITE" /> veb-saytından silinib və qısa müddətdən sonra buradan silinəcək. <ph name="BEGIN_LINK" />Giriş açarı haqqında<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Deaktiv tabları bağlayın</translation>
 <translation id="8837654851594567190">Naşir üzrə çeşidləyin</translation>
+<translation id="884351711508006491">Məlumatınız cihazda yadda saxlanılır.</translation>
 <translation id="8844136307393039959">İzlədiyiniz məhsulun qiyməti düşüb</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> üçün şəkil Google Fotoda yadda saxlanır…</translation>
 <translation id="8849001918648564819">Gizli</translation>
@@ -2185,7 +2194,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8856643812068084733">Arxivlər</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> cihazına göndərilir…</translation>
 <translation id="8863431381414769983">Google Xəritədən istiqamət və yerli məlumat əldə edin</translation>
-<translation id="8867879594900082274">Redaktələriniz yalnız bu cihazda bərkidilmiş saytlara tətbiq ediləcək.</translation>
 <translation id="8871974300055371298">Məzmun ayarları</translation>
 <translation id="8877788021141246043">Xatırlatma ayarlayın</translation>
 <translation id="8879604564928138696">Sınamaq üçün iki dəfə toxunun</translation>

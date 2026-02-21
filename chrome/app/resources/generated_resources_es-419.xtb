@@ -354,7 +354,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1221825588892235038">Solo selección</translation>
 <translation id="1222835797152767346">Establece un PIN para que sea más fácil acceder</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requiere una licencia</translation>
-<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta configuración.</translation>
 <translation id="1225177025209879837">Procesando la solicitud...</translation>
 <translation id="1227107020813934021">Encuentra escáneres de documentos</translation>
@@ -1052,6 +1051,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1695510246756136088">No se puede establecer la conexión a Internet. Vuelve a intentarlo.</translation>
 <translation id="1696214930320482113">Los perfiles te permiten separar el trabajo, la vida personal y el entretenimiento sin que tengas que cambiar de navegador. Agrega un perfil nuevo ahora.</translation>
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Para proteger tu dispositivo, solo ejecuta o instala software de fuentes o desarrolladores que sean de confianza.</translation>
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No accedas con cuentas sensibles.</translation>
 <translation id="1697122132646041614">La opción No me gusta abre un formulario para enviar comentarios detallados sobre los motivos por los que no te gustan estos resultados.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
@@ -3608,7 +3608,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Se agotó el papel</translation>
 <translation id="3435896845095436175">Habilitar</translation>
-<translation id="3436118221454753036">Pregúntale al Modo IA</translation>
+<translation id="3436118221454753036">Preguntarle al Modo IA</translation>
 <translation id="3437072258256045988">Administra tu actividad en las Apps con Gemini</translation>
 <translation id="3437397693214267762">Consulta tus archivos de SharePoint y OneDrive, y el calendario de Outlook</translation>
 <translation id="3438633801274389918">Ninja</translation>
@@ -5864,6 +5864,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4943927218331934807">Se requiere la contraseña</translation>
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> aloja este servicio de autenticación</translation>
 <translation id="4945439665401275950">Para configurar una huella dactilar, haz que tu hijo toque el botón de encendido. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Mostrar el botón del panel de proyectos</translation>
 <translation id="4946998421534856407">Selector + flecha hacia arriba</translation>
 <translation id="4947376546135294974">Datos del sitio que estás visitando</translation>
 <translation id="4948370357877377178">Continúa con tus tareas</translation>
@@ -6098,7 +6099,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="51143538739122961">Inserta tu llave de seguridad y presiónala</translation>
 <translation id="5115309401544567011">Conecta el dispositivo <ph name="DEVICE_TYPE" /> a una fuente de alimentación.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verificar tu identidad para autocompletar información sensible</translation>
 <translation id="5116315184170466953">La opción Me gusta envía comentarios que indican que te gusta esta sugerencia de grupo de pestañas</translation>
 <translation id="5116628073786783676">Gu&amp;ardar audio como...</translation>
 <translation id="5117139026559873716">Desconecta el teléfono de tu <ph name="DEVICE_TYPE" />. Ya no se conectarán automáticamente.</translation>
@@ -6696,6 +6696,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carga optimizada</translation>
 <translation id="5529554942700688235">Resumen del ahorro de memoria: <ph name="MEMORY_VALUE" /> liberados</translation>
+<translation id="5529693968082667490">Mostrar el botón de búsqueda de pestañas</translation>
 <translation id="5530977410273748884">Para guardar la contraseña en el Administrador de contraseñas de Google, haz clic en la llave</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
@@ -6742,7 +6743,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
 <translation id="5562588178647493983">Si deseas obtener más información, comunícate con tu administrador</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
-<translation id="5563234215388768762">Busca en Google o escribe una URL</translation>
+<translation id="5563234215388768762">Buscar en Google o escribir una URL</translation>
 <translation id="5563698194918415761">La política de red o un servidor proxy bloquearon la actualización.</translation>
 <translation id="5563824734298958390">¿Quieres salir del grupo de pestañas?</translation>
 <translation id="5565735124758917034">Activo</translation>
@@ -7563,7 +7564,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6135826623269483856">No pueden administrar las ventanas de todas tus pantallas</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6136287496450963112">Tu llave de seguridad no está protegida con un PIN. Para administrar las huellas dactilares, crea uno.</translation>
-<translation id="6136637346277431354">Agregar pestañas y otras cosas</translation>
+<translation id="6136637346277431354">Agregar pestañas y más</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6141988275892716286">Confirmar la descarga</translation>
@@ -8245,6 +8246,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6613267708691765962">Buscando software malicioso…</translation>
 <translation id="6615455863669487791">Mostrarme</translation>
 <translation id="6618013221808317456">No permitir que los sitios usen la optimización de JavaScript</translation>
+<translation id="6618154741503063152">No se pudo subir. No se permiten archivos adjuntos.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">El sitio puede hacer un seguimiento de tu ubicación</translation>
 <translation id="6619243162837544323">Estado de la red</translation>
@@ -9341,7 +9343,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7368927539449986686">Edita las búsquedas en el sitio</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Administrar dispositivos USB</translation>
-<translation id="73750335798090836">Para obtener una protección adicional, usa siempre tu huella dactilar, rostro o algún otro tipo de bloqueo de pantalla cuando uses información sensible, como documentos de viaje y de identidad</translation>
 <translation id="7376124766545122644">No se pudo usar este vínculo. Para intentarlo nuevamente, verifica que el vínculo comience con "http://" o "https://".</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
 <translation id="7377250337652426186">Para retroceder más de 1 página, mantén presionado el botón Atrás.</translation>
@@ -10055,7 +10056,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7848244988854036372">Abrir todo (<ph name="URL_COUNT" />) en un grupo nuevo de pestañas</translation>
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> para <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Abrir &amp;imagen en una pestaña nueva</translation>
-<translation id="784934925303690534">Intervalo de tiempo</translation>
+<translation id="784934925303690534">Período</translation>
 <translation id="7850320739366109486">No interrumpir</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos con ChromeOS envíen informes automáticos, podemos priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en el que falló ChromeOS, qué funciones usas, la cantidad de memoria que usas en general y datos de uso y diagnóstico sobre las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo con ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
@@ -10342,6 +10343,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8034399942062051455">La optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Intercambiar con la vista superior</translation>
 <translation id="8035059678007243127">Página de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Mostrar el botón de grupos de pestañas guardados</translation>
 <translation id="8036193484521570992">Ayuda a mejorar Autocompletar</translation>
 <translation id="8036504271468642248">Oración anterior</translation>
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>

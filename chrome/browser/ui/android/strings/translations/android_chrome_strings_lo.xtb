@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ໄດ້ຢຸດບໍ່ໃຫ້ເວັບໄຊນີ້ສົ່ງການແຈ້ງເຕືອນເນື່ອງຈາກມີສະແປມ ຫຼື ເນື້ອຫາຫຼອກລວງ}other{Chrome ໄດ້ຢຸດບໍ່ໃຫ້ເວັບໄຊເຫຼົ່ານີ້ສົ່ງການແຈ້ງເຕືອນເນື່ອງຈາກມີສະແປມ ຫຼື ເນື້ອຫາຫຼອກລວງ}}</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ແຖບຢູ່ອຸປະກອນນີ້}other{# ແຖບຢູ່ອຸປະກອນນີ້}}</translation>
+<translation id="4198268995694216131">ເວັບໄຊເພີ່ມເຕີມ</translation>
 <translation id="4198423547019359126">ບໍ່ມີບ່ອນບັນທຶກການດາວໂຫຼດທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ທ່ານໃຊ້ໃນເວັບໄຊນີ້</translation>
 <translation id="4214315110991671325">ຫາກທ່ານອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ໄດ້, Chrome ອາດໃຊ້ພວກມັນສຳລັບການໂຫຼດກ່ອນລ່ວງໜ້າ.</translation>
@@ -1018,6 +1019,7 @@
 <translation id="5304593522240415983">ບ່ອນໃສ່ຂໍ້ມູນນີ້​ບໍ່​ສາ​ມາດ​ໃຫ້ຫວ່າງ​ເປົ່າໄດ້</translation>
 <translation id="5306014156308790439">ປຸ່ມເພີ່ມໃສ່ໃນຄໍເລັກຊັນປິດການນຳໃຊ້ຢູ່</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
+<translation id="5313967007315987356">ເພີ່ມ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="5316947901395241499">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານປິດການບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5319359161174645648">Google ແນະນຳໃຫ້ໃຊ້ Chrome</translation>
@@ -1543,6 +1545,7 @@
 <translation id="7314734791127433392">ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານໄດ້</translation>
 <translation id="7324354302972299151">ສົ່ງຄຳຮ້ອງຂໍ “Do Not Track”</translation>
 <translation id="7333041109965360609">ຍົກເລີກການສະໝັກຮັບຂໍ້ມູນຈາກການແຈ້ງເຕືອນແລ້ວ</translation>
+<translation id="7335766481146072567">ກົດສືບຕໍ່</translation>
 <translation id="7336259382292148213">ການແຈ້ງເຕືອນປອດໄພດີ</translation>
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
 <translation id="7340958967809483333">ຕົວເລືອກສຳລັບ Discover</translation>
@@ -1752,6 +1755,7 @@
 <translation id="813082847718468539">ເບິ່ງຂໍ້ມູນເວັບໄຊທ໌</translation>
 <translation id="8135406045838672858">PDF ທີ່ດາວໂຫຼດແລ້ວຈະເປີດຂຶ້ນໂດຍອັດຕະໂນມັດດ້ວຍ <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">ທ່ານບໍ່ຈຳເປັນຕ້ອງຈື່ລະຫັດຜ່ານນີ້. ລະບົບຈະບັນທຶກໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
+<translation id="8151185429379586178">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
 <translation id="8152331954420209374">ເຂົ້າໄປ Lens</translation>
 <translation id="8153206878708357851">ເປີດ/ປິດການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ</translation>
 <translation id="8154784523622173959">ປັບແຕ່ງພື້ນຫຼັງຂອງໜ້ານີ້ໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
@@ -1831,6 +1835,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊແລ້ວ 1 ລາຍການ}other{ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊແລ້ວ # ລາຍການ}}</translation>
 <translation id="8453310803815879010">ເລີ່ມກມ Dino</translation>
 <translation id="8455675988389029454">ຮັບບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆໃນທຸກອຸປະກອນຂອງທ່ານ</translation>
+<translation id="8458341576712814616">ທາງລັດ</translation>
 <translation id="8458413889418591446">ເພື່ອກັບຄືນໄປຫາເວັບໄຊທີ່ທ່ານເຄີຍເຂົ້າເບິ່ງໄດ້ຢ່າງວ່ອງໄວ, ໃຫ້ຊິ້ງປະຫວັດ ແລະ ແຖບຂອງທ່ານ</translation>
 <translation id="84594714173170813">ໃຊ້ຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ</translation>
 <translation id="8460448946170646641">ກວດສອບການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຫຼັກ</translation>
@@ -1855,6 +1860,7 @@
 <translation id="8559961053328923750">Chrome ຈໍາກັດຈໍານວນຂໍ້ມູນທັງໝົດທີ່ເວັບໄຊສາມາດແບ່ງປັນຜ່ານໂປຣແກຣມທ່ອງເວັບເພື່ອວັດແທກປະສິດທິພາບການໂຄສະນາ</translation>
 <translation id="8559990750235505898">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
 <translation id="8560602726703398413">ຊອກລາຍການອ່ານຂອງທ່ານໃນ Bookmarks</translation>
+<translation id="85618473456579127">ແຕະໂປຣໄຟລ໌ຢູ່ເທິງສຸດເບື້ອງຂວາ</translation>
 <translation id="8565021320663436446">ລຶບ <ph name="MEMBER_FULL_NAME" /> ອອກບໍ?</translation>
 <translation id="8570677896027847510">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="8571213806525832805">4 ອາທິດຜ່ານມາ</translation>

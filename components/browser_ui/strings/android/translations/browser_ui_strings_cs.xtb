@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Soubory, které může tento web prohlížet nebo upravovat</translation>
 <translation id="1073417869336441572">Pomozte nám vylepšit Chrome tím, že nám sdělíte, proč jste povolili soubory cookie třetích stran. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Můžete požádat o zobrazení verze webů pro počítače</translation>
-<translation id="1085696779717592361">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="1126523729897810826">Pokud Chrome chcete využít na maximum, proveďte níže uvedené navrhované akce</translation>
 <translation id="113098737392899175">Když je připojená klávesnice, procházet stránky pomocí textového kurzoru</translation>
 <translation id="1148624853678088576">Vše je nastaveno!</translation>
@@ -194,12 +193,12 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2802908157808345702">Nepovolovat webům zobrazovat vyskakovací okna ani používat přesměrování</translation>
 <translation id="2814830417943086299">Chrome teď zobrazuje vaše nedávné karty v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2848335882304088250">Teď Chrome na svém zařízení můžete využívat na maximum.</translation>
 <translation id="2850913818900871965">Požadovat mobilní zobrazení</translation>
 <translation id="2870560284913253234">Weby</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2891975107962658722">Blokovat webu ukládání dat do zařízení</translation>
 <translation id="2903493209154104877">Adresy</translation>
-<translation id="2910701580606108292">Před povolením spuštění chráněného obsahu na webu se zeptat</translation>
 <translation id="2918484639460781603">Přejít na nastavení</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2939338015096024043">Když je tato možnost zapnutá, weby mohou žádat o sledování polohy kamery a o informace o okolí. Když je vypnutá, weby nemohou sledovat polohu kamery ani získat informace o okolí.</translation>
@@ -301,7 +300,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3924858949939391676">Po zapnutí režimu čtení zobrazit odkazy</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
 <translation id="3934905113567851655">Velikost změníte stažením prstů</translation>
-<translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
 <translation id="3955321697524543127">Nepovolovat webům připojení k zařízením USB</translation>
 <translation id="3965467402665811906">Weby mohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
@@ -514,7 +512,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="6171020522141473435">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení Bluetooth. Když je vypnutá, weby nemohou používat zařízení Bluetooth.</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
 <translation id="6181444274883918285">Přidat výjimku pro konkrétní web</translation>
-<translation id="6192792657125177640">Výjimky</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Zítra začne Chrome soubory cookie opět blokovat}few{Za # dny budou soubory cookie opět zablokovány}many{Za # dne budou soubory cookie opět zablokovány}other{Za # dní budou soubory cookie opět zablokovány}}</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
@@ -637,7 +634,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7573594921350120855">Weby obvykle používají videokameru ke komunikačním funkcím, jako je videohovor</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Před <ph name="NUM_MONTHS_ONE" /> měsícem}few{Před <ph name="NUM_MONTHS_MANY" /> měsíci}many{Před <ph name="NUM_MONTHS_MANY" /> měsíce}other{Před <ph name="NUM_MONTHS_MANY" /> měsíci}}</translation>
-<translation id="757524316907819857">Bránit webům v přehrávání chráněného obsahu</translation>
 <translation id="7586676035079382730">Oznámení nejsou povolena</translation>
 <translation id="7594634374516752650">Telefon je připojen k zařízení Bluetooth</translation>
 <translation id="7617547684249261169">Můžete smazat část nebo celou svou historii, soubory cookie, data webů a další položky</translation>

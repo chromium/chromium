@@ -739,6 +739,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppat aviseringar från den här webbplatsen på grund av spam eller bedrägligt innehåll}other{Chrome har stoppat aviseringar från de här webbplatserna på grund av spam eller bedrägligt innehåll}}</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flik på den här enheten}other{# flikar på den här enheten}}</translation>
+<translation id="4198268995694216131">Ytterligare webbplatser</translation>
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Har använts på den här webbplatsen</translation>
 <translation id="4214315110991671325">Om du tillåter cookies kan Chrome använda dem för att läsa in innehåll i förväg.</translation>
@@ -1019,6 +1020,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5304593522240415983">Fältet får inte vara tomt</translation>
 <translation id="5306014156308790439">Lägg till i samling har inaktiverats</translation>
 <translation id="5308380583665731573">Anslut</translation>
+<translation id="5313967007315987356">Lägg till webbplats</translation>
 <translation id="5316947901395241499">Funktionen för att spara lösenord har inaktiverats av administratören</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319359161174645648">Google rekommenderar Chrome</translation>
@@ -1544,6 +1546,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7314734791127433392">Det går inte att kontrollera lösenorden</translation>
 <translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>
 <translation id="7333041109965360609">Du har slutat prenumerera på aviseringar</translation>
+<translation id="7335766481146072567">Tryck på Fortsätt</translation>
 <translation id="7336259382292148213">Aviseringar ser bra ut</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7340958967809483333">Alternativ för Förslag</translation>
@@ -1753,6 +1756,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8135406045838672858">Nedladdade PDF-filer öppnas automatiskt med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering.</translation>
+<translation id="8151185429379586178">Verktyg för utvecklare</translation>
 <translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8153206878708357851">Aktivera/inaktivera textmarkörläget</translation>
 <translation id="8154784523622173959">Anpassa bakgrunden på den här sidan</translation>
@@ -1832,6 +1836,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Behörigheter har tagits bort från 1 webbplats}other{Behörigheter har tagits bort från # webbplatser}}</translation>
 <translation id="8453310803815879010">Starta Dino-spelet</translation>
 <translation id="8455675988389029454">Använda samma bokmärken, lösenord med mera på alla enheter</translation>
+<translation id="8458341576712814616">Genväg</translation>
 <translation id="8458413889418591446">Synkronisera flikar och historik för att snabbt återgå till webbplatser du har besökt</translation>
 <translation id="84594714173170813">Fortsätt använda Chrome-data i Google-kontot</translation>
 <translation id="8460448946170646641">Granska viktiga säkerhets- och integritetskontroller</translation>
@@ -1856,6 +1861,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8559961053328923750">Chrome begränsar den totala mängden data som webbplatser kan dela via webbläsaren för att mäta annonsresultatet</translation>
 <translation id="8559990750235505898">Erbjud översättning av sidor till andra språk</translation>
 <translation id="8560602726703398413">Du hittar läslistan under Bokmärken</translation>
+<translation id="85618473456579127">Tryck på Profil uppe till höger</translation>
 <translation id="8565021320663436446">Vill du ta bort <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Det går inte att ladda ned filen på ett säkert sätt</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>

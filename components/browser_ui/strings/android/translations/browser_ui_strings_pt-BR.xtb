@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Arquivos que este site pode ver ou editar</translation>
 <translation id="1073417869336441572">Ajude a melhorar o Chrome informando por que você permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
-<translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="1126523729897810826">Para aproveitar o Chrome ao máximo, use as configurações sugeridas abaixo.</translation>
 <translation id="113098737392899175">Acessar páginas com um cursor de texto quando um teclado está conectado</translation>
 <translation id="1148624853678088576">Está tudo pronto!</translation>
@@ -194,12 +193,12 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="2802908157808345702">Não permitir que os sites exibam pop-ups e usem redirecionamentos</translation>
 <translation id="2814830417943086299">Agora, o Chrome mostra suas guias recentes na lista de apps e nos resultados da pesquisa do dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2848335882304088250">Você já pode aproveitar tudo o que o Chrome tem a oferecer no seu dispositivo.</translation>
 <translation id="2850913818900871965">Solicitar versão para dispositivos móveis</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2891975107962658722">Impedir que sites salvem dados no seu dispositivo</translation>
 <translation id="2903493209154104877">Endereços</translation>
-<translation id="2910701580606108292">Perguntar antes de permitir que sites mostrem conteúdo protegido</translation>
 <translation id="2918484639460781603">Ir para as configurações</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando essa configuração está ativada, os sites podem pedir para rastrear a posição da câmera e saber mais sobre o ambiente à sua volta. Quando está desativada, os sites não podem rastrear a posição da câmera nem saber mais sobre o ambiente à sua volta.</translation>
@@ -301,7 +300,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3924858949939391676">Mostrar links quando o Modo de Leitura estiver ativado</translation>
 <translation id="3933121352599513978">Fechar solicitações indesejadas (recomendado)</translation>
 <translation id="3934905113567851655">Faça um gesto de pinça para redimensionar</translation>
-<translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="3955321697524543127">Não permitir que os sites se conectem a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sites podem pedir para usar informações que salvaram sobre você</translation>
 <translation id="3967822245660637423">Download concluído</translation>
@@ -514,7 +512,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="6171020522141473435">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos Bluetooth. Quando está desativada, os sites não podem usar dispositivos Bluetooth.</translation>
 <translation id="6177128806592000436">Sua conexão com esse site não é segura</translation>
 <translation id="6181444274883918285">Adicionar site às exceções</translation>
-<translation id="6192792657125177640">Exceções</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{O Chrome vai bloquear os cookies de novo amanhã}one{# dia até que os cookies sejam bloqueados de novo}other{# dias até que os cookies sejam bloqueados de novo}}</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
@@ -637,7 +634,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7573594921350120855">Os sites geralmente usam a câmera de vídeo para recursos de comunicação, como chat por vídeo</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> mês atrás}one{<ph name="NUM_MONTHS_MANY" /> mês atrás}other{<ph name="NUM_MONTHS_MANY" /> meses atrás}}</translation>
-<translation id="757524316907819857">Impedir que sites mostrem conteúdo protegido</translation>
 <translation id="7586676035079382730">Acesso às notificações não permitido</translation>
 <translation id="7594634374516752650">Conectado a um dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Você pode excluir alguns ou todos os dados do seu histórico, cookies, dados do sites e muito mais</translation>

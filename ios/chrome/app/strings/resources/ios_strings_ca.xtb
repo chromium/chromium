@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4854068532375923088">Permet que Gemini utilitzi la càmera</translation>
+<translation id="4860114370595561279">La informació desada s'emmagatzema al dispositiu</translation>
 <translation id="4860895144060829044">Truca</translation>
 <translation id="4861953997778766866">Tothom pot fer canvis als teus grups de pestanyes compartits</translation>
 <translation id="4865063548323785458">Desa les contrasenyes i emplena-les automàticament per iniciar la sessió fàcilment en llocs web i aplicacions</translation>
@@ -1650,7 +1651,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6964300328304469089">Selecció actual: <ph name="NAME" />, <ph name="EMAIL" />. Tria un compte.</translation>
 <translation id="6964760285928603117">Suprimeix del grup</translation>
 <translation id="6965382102122355670">D'acord</translation>
-<translation id="6967355534157677591">Crea imatges Pro</translation>
 <translation id="6973630695168034713">Carpetes</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Sempre</translation>
@@ -2185,7 +2185,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8856643812068084733">Arxius</translation>
 <translation id="8863067612494559785">S'està enviant a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtén indicacions i informació local de Google Maps</translation>
-<translation id="8867879594900082274">Els canvis només s'aplicaran als llocs web fixats en aquest dispositiu.</translation>
 <translation id="8871974300055371298">Configuració del contingut</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8879604564928138696">Fes doble toc per provar-ho</translation>

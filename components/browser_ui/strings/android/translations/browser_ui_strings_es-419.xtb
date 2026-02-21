@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Archivos que este sitio puede ver o editar</translation>
 <translation id="1073417869336441572">Cuéntanos por qué habilitaste las cookies de terceros para ayudarnos a mejorar Chrome. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puedes solicitar ver la versión para computadoras de los sitios</translation>
-<translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1126523729897810826">Completa estas acciones sugeridas para aprovechar Chrome al máximo</translation>
 <translation id="113098737392899175">Navega por las páginas con un cursor de texto cuando se conecta un teclado</translation>
 <translation id="1148624853678088576">Todo listo</translation>
@@ -199,7 +198,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2891975107962658722">Bloquea la opción de que un sitio guarde datos en tu dispositivo</translation>
 <translation id="2903493209154104877">Direcciones</translation>
-<translation id="2910701580606108292">Preguntar antes de permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2932883381142163287">Informar sobre abusos</translation>
 <translation id="2939338015096024043">Cuando esta opción está activada, los sitios pueden solicitar permiso para rastrear la posición de la cámara y obtener información sobre tu entorno. Cuando está desactivada, los sitios no pueden rastrear la posición de la cámara ni obtener información sobre tu entorno.</translation>
@@ -301,7 +299,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3924858949939391676">Muesta vínculos una vez que se active el Modo de lectura</translation>
 <translation id="3933121352599513978">Contraer solicitudes no deseadas (recomendado)</translation>
 <translation id="3934905113567851655">Pellizca para cambiar el tamaño</translation>
-<translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
 <translation id="3955321697524543127">No permitir que los sitios se conecten a dispositivos USB</translation>
 <translation id="3965467402665811906">Los sitios pueden solicitar permiso para usar la información que guardaron sobre ti</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -514,7 +511,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="6171020522141473435">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos Bluetooth. Cuando está desactivada, los sitios no pueden usar dispositivos Bluetooth.</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>
 <translation id="6181444274883918285">Agregar excepción de sitio</translation>
-<translation id="6192792657125177640">Excepciones</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome volverá a bloquear las cookies mañana}other{Faltan # días para que se vuelvan a bloquear las cookies}}</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6205314730813004066">Privacidad en los anuncios</translation>
@@ -637,7 +633,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7573594921350120855">Por lo general los sitios usan la cámara de video para habilitar funciones de comunicación, como la de videochat.</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Hace <ph name="NUM_MONTHS_ONE" /> mes}other{Hace <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
-<translation id="757524316907819857">Impedir que los sitios reproduzcan contenido protegido</translation>
 <translation id="7586676035079382730">No se permiten las notificaciones</translation>
 <translation id="7594634374516752650">Conectado a un dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Puedes borrar tu historial, cookies, datos de sitios y más de forma parcial o por completo</translation>

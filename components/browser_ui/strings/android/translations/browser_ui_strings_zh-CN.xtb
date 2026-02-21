@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
-<translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1126523729897810826">完成下方操作建议，充分利用 Chrome</translation>
 <translation id="113098737392899175">连接到键盘时，使用文本光标浏览网页</translation>
 <translation id="1148624853678088576">搞定了！</translation>
@@ -199,7 +198,6 @@
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2891975107962658722">禁止某个网站将数据保存在您的设备上</translation>
 <translation id="2903493209154104877">地址</translation>
-<translation id="2910701580606108292">需先询问，得到许可后才允许网站播放受保护的内容</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2932883381142163287">举报滥用行为</translation>
 <translation id="2939338015096024043">开启此设置后，网站可以请求跟踪您的摄像头位置并了解您周围的环境。关闭此设置后，网站无法跟踪您的摄像头位置，也无法了解您周围的环境。</translation>
@@ -301,7 +299,6 @@
 <translation id="3924858949939391676">在阅读模式开启后显示链接</translation>
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3934905113567851655">双指张合即可调整大小</translation>
-<translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
 <translation id="3955321697524543127">不允许网站连接到 USB 设备</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3967822245660637423">下载完毕</translation>
@@ -514,7 +511,6 @@
 <translation id="6171020522141473435">开启此设置后，网站可以请求使用蓝牙设备。关闭此设置后，网站无法使用蓝牙设备。</translation>
 <translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
 <translation id="6181444274883918285">添加例外网站</translation>
-<translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 将于明天再次屏蔽 Cookie}other{Chrome 将于 # 天后再次屏蔽 Cookie}}</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
@@ -637,7 +633,6 @@
 <translation id="7561196759112975576">永远</translation>
 <translation id="7573594921350120855">网站通常会使用您的摄像头以实现通信功能（例如视频聊天）</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 个月前}other{<ph name="NUM_MONTHS_MANY" /> 个月前}}</translation>
-<translation id="757524316907819857">禁止网站播放受保护的内容</translation>
 <translation id="7586676035079382730">已拒绝授予通知权限</translation>
 <translation id="7594634374516752650">已连接到蓝牙设备</translation>
 <translation id="7617547684249261169">您可以删除部分或全部历史记录、Cookie、网站数据等</translation>
@@ -656,7 +651,7 @@
 <translation id="7771089277295008211">用于说明如何保存密码的底部动作条已关闭</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
-<translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="780301667611848630">不用了</translation>
 <translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
 <translation id="7805832099057502789">“新标签页”页面外观底部动作条已按最大高度显示</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>

@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4854068532375923088">Թույլատրեք Gemini-ին օգտագործել ձեր տեսախցիկը</translation>
+<translation id="4860114370595561279">Ձեր պահած տեղեկությունները պահվում են ձեր սարքում</translation>
 <translation id="4860895144060829044">Զանգել</translation>
 <translation id="4861953997778766866">Ցանկացած օգտատեր կարող է փոփոխություններ կատարել ներդիրների ընդհանուր խմբերում</translation>
 <translation id="4865063548323785458">Պահեք և ավտոմատ լրացրեք ձեր գաղտնաբառերը՝ հեշտությամբ մուտք գործելով կայքեր և հավելվածներ</translation>
@@ -1650,7 +1651,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6964300328304469089">Ներկայումս ընտրված է <ph name="NAME" /> (<ph name="EMAIL" />) հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="6964760285928603117">Հեռացնել խմբից</translation>
 <translation id="6965382102122355670">Եղավ</translation>
-<translation id="6967355534157677591">Պատկերների ստեղծում (Pro)</translation>
 <translation id="6973630695168034713">Պանակներ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
@@ -2185,7 +2185,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8856643812068084733">Արխիվներ</translation>
 <translation id="8863067612494559785">Ներդիրն ուղարկվում է <ph name="DEVICE_NAME" />-ին…</translation>
 <translation id="8863431381414769983">Ստացեք երթուղիներ և օգտակար տեղեկություններ Google Քարտեզներից</translation>
-<translation id="8867879594900082274">Փոփոխությունները կկիրառվեն միայն այս սարքում ամրացված կայքերի նկատմամբ։</translation>
 <translation id="8871974300055371298">Բովանդակության կարգավորումներ</translation>
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8879604564928138696">Կրկնակի հպեք փորձելու համար</translation>

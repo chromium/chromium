@@ -541,7 +541,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3305130791745726624">An Geräte senden</translation>
-<translation id="3305795716056605962">Seiten über die Schaltfläche „Weitere Optionen“ übersetzen lassen</translation>
+<translation id="3305795716056605962">Seiten über den Button „Weitere Optionen“ übersetzen lassen</translation>
 <translation id="3307355280394823921">Verlauf öffnen</translation>
 <translation id="3309978850836730073">Der Lesemodus ist immer hier verfügbar</translation>
 <translation id="331080746368555063">Eine private Website kann beispielsweise das Intranet deines Unternehmens sein</translation>
@@ -727,6 +727,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>
 <translation id="414128724510021958">Desktopwebsites werden standardmäßig angefordert</translation>
 <translation id="4162867837470729563">Die Liste der Freigabeoptionen ist vollständig geöffnet.</translation>
+<translation id="4165077084524712774">Weitere Tools</translation>
 <translation id="4170011742729630528">Der Dienst ist momentan nicht verfügbar. Bitte versuche es später erneut.</translation>
 <translation id="4170577491341606575">Daten werden abgerufen\u2026</translation>
 <translation id="4177222230309051052">Alle deine Lesezeichen abrufen</translation>
@@ -738,6 +739,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome hat verhindert, dass diese Website Benachrichtigungen sendet, weil sie Spam oder irreführende Inhalte enthält}other{Chrome hat verhindert, dass diese Websites Benachrichtigungen senden, weil sie Spam oder irreführende Inhalte enthalten}}</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 Tab auf diesem Gerät}other{# Tabs auf diesem Gerät}}</translation>
+<translation id="4198268995694216131">Zusätzliche Websites</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Von dir auf dieser Website verwendet</translation>
 <translation id="4214315110991671325">Wenn du Cookies erlaubst, kann Chrome diese beim Vorabladen verwenden.</translation>
@@ -1018,6 +1020,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5304593522240415983">Dieses Feld darf nicht leer sein.</translation>
 <translation id="5306014156308790439">„Zur Sammlung hinzufügen“ deaktiviert</translation>
 <translation id="5308380583665731573">Verbinden</translation>
+<translation id="5313967007315987356">Website hinzufügen</translation>
 <translation id="5316947901395241499">Das Speichern von Passwörtern wurde von deinem Administrator deaktiviert</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319359161174645648">Google empfiehlt Chrome</translation>
@@ -1460,6 +1463,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6980258170429555165">Das Menü „<ph name="MENU_NAME" />“ ist hervorgehoben.</translation>
 <translation id="6983306615164277634">Alternativ kannst du auch die Adressleiste gedrückt halten, um die Position zu ändern.</translation>
 <translation id="6987047470128880212">Der Inkognitomodus ist auf diesem Gerät nicht verfügbar</translation>
+<translation id="6989358895283601928">Speichern und drucken</translation>
 <translation id="6996145122199359148">Diese Seite herunterladen</translation>
 <translation id="7013762323294215682">Dieser Passkey wird in deinem Passwortmanager gespeichert. Jeder, der Zugriff darauf hat, kann diesen Passkey verwenden.</translation>
 <translation id="7020741890149022655">Zur Leseliste hinzufügen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7314734791127433392">Passwörter können nicht geprüft werden</translation>
 <translation id="7324354302972299151">„Do Not Track“-Anfrage senden</translation>
 <translation id="7333041109965360609">Du erhältst keine Benachrichtigungen mehr</translation>
+<translation id="7335766481146072567">Tippe auf „Weiter“.</translation>
 <translation id="7336259382292148213">Benachrichtigungen sehen sicher aus</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>
@@ -1752,6 +1757,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8135406045838672858">Heruntergeladene PDFs werden automatisch mit <ph name="APP_NAME" /> geöffnet</translation>
 <translation id="8137562778192957619">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager gespeichert.</translation>
+<translation id="8151185429379586178">Entwicklertools</translation>
 <translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8153206878708357851">Tastaturnavigation ein-/ausschalten</translation>
 <translation id="8154784523622173959">Personalisiere den Hintergrund dieser Seite</translation>
@@ -1831,6 +1837,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Berechtigungen von 1 Website entfernt}other{Berechtigungen von # Websites entfernt}}</translation>
 <translation id="8453310803815879010">Dino-Spiel starten</translation>
 <translation id="8455675988389029454">Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten aufrufen</translation>
+<translation id="8458341576712814616">Kürzel</translation>
 <translation id="8458413889418591446">Wenn du deinen Verlauf und deine Tabs synchronisierst, kannst du bereits besuchte Websites schnell wieder aufrufen</translation>
 <translation id="84594714173170813">Chrome-Daten in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="8460448946170646641">Die wichtigsten Datenschutz- und Sicherheitseinstellungen überprüfen</translation>
@@ -1855,13 +1862,14 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8559961053328923750">Chrome beschränkt die Gesamtmenge an Daten, die Websites über den Browser zur Analyse der Werbeleistung teilen können</translation>
 <translation id="8559990750235505898">Übersetzung von fremdsprachigen Seiten anbieten</translation>
 <translation id="8560602726703398413">In den Lesezeichen findest du deine Leseliste</translation>
+<translation id="85618473456579127">Tippe rechts oben auf dein Profil</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> entfernen?</translation>
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8580435650274205305">Ablaufdatum, erforderlich</translation>
 <translation id="8582529315803410153">Hier werden deine Tabs von anderen Geräten angezeigt</translation>
 <translation id="8585103689515290060">Autofill-Services</translation>
-<translation id="859046281437143747">Über die Schaltfläche „Weitere Optionen“ kannst du den Preis beobachten</translation>
+<translation id="859046281437143747">Über den Button „Weitere Optionen“ kannst du den Preis beobachten</translation>
 <translation id="859064343657890103">„<ph name="TAB_GROUP_TITLE" />“-Tabgruppe gelöscht</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>
 <translation id="8602358303461588329">In Chrome anmelden, geschlossen.</translation>

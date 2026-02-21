@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Ffeiliau y gall y wefan hon eu gweld neu eu golygu</translation>
 <translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Gallwch ofyn am weld y fersiwn bwrdd gwaith o wefannau</translation>
-<translation id="1085696779717592361">Defnyddiwch Chrome yn Ddiofyn</translation>
 <translation id="1126523729897810826">Cwblhewch y gweithredoedd a awgrymir isod i gael y gorau o Chrome</translation>
 <translation id="113098737392899175">Llywio tudalennau gyda chyrchwr testun pan fydd bysellfwrdd wedi'i atodi</translation>
 <translation id="1148624853678088576">Rydych yn barod i fynd!</translation>
@@ -194,12 +193,12 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="2802908157808345702">Peidio â chaniatáu i wefannau anfon ffenestri naid a defnyddio ailgyfeiriadau</translation>
 <translation id="2814830417943086299">Mae Chrome bellach yn dangos eich tabiau diweddar yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="2822354292072154809">Ydych yn siŵr eich bod am ailosod yr holl ganiatadau gwefan ar gyfer <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2848335882304088250">Byddwch nawr yn manteisio i'r eithaf ar Chrome ar eich dyfais.</translation>
 <translation id="2850913818900871965">Gofyn am wedd symudol</translation>
 <translation id="2870560284913253234">Gwefan</translation>
 <translation id="2874939134665556319">Trac blaenorol</translation>
 <translation id="2891975107962658722">Rhwystro gwefan rhag cadw data ar eich dyfais</translation>
 <translation id="2903493209154104877">Cyfeiriadau</translation>
-<translation id="2910701580606108292">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
 <translation id="2918484639460781603">Mynd i'r gosodiadau</translation>
 <translation id="2932883381142163287">Rhoi gwybod am gamddefnydd</translation>
 <translation id="2939338015096024043">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am olrhain lleoliad eich camera a dysgu am eich amgylchoedd. Pan fydd wedi'i ddiffodd, ni all gwefannau olrhain lleoliad eich camera na dysgu am eich amgylchoedd.</translation>
@@ -301,7 +300,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3924858949939391676">Dangos dolenni unwaith y bydd y Modd Darllen ymlaen</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
 <translation id="3934905113567851655">Pinsiwch i newid y maint</translation>
-<translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
 <translation id="3955321697524543127">Peidio â chaniatáu i wefannau gysylltu â dyfeisiau USB</translation>
 <translation id="3965467402665811906">Gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'u cadw amdanoch chi</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
@@ -514,7 +512,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="6171020522141473435">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio dyfeisiau Bluetooth. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau Bluetooth.</translation>
 <translation id="6177128806592000436">Nid yw eich cysylltiad â'r wefan hon yn ddiogel</translation>
 <translation id="6181444274883918285">Ychwanegu eithriad gwefan</translation>
-<translation id="6192792657125177640">Eithriadau</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Bydd Chrome yn rhwystro cwcis eto yfory}zero{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}two{# ddiwrnod nes bydd cwcis yn cael eu rhwystro eto}few{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}many{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}other{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}}</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
 <translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
@@ -637,7 +634,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7573594921350120855">Mae gwefannau fel arfer yn defnyddio'ch camera fideo ar gyfer nodweddion cyfathrebu megis sgwrsio fideo</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> mis yn ôl}zero{<ph name="NUM_MONTHS_MANY" /> misoedd yn ôl}two{<ph name="NUM_MONTHS_MANY" /> fis yn ôl}few{<ph name="NUM_MONTHS_MANY" /> mis yn ôl}many{<ph name="NUM_MONTHS_MANY" /> mis yn ôl}other{<ph name="NUM_MONTHS_MANY" /> mis yn ôl}}</translation>
-<translation id="757524316907819857">Rhwystro gwefannau rhag chwarae cynnwys gwarchodedig</translation>
 <translation id="7586676035079382730">Ni chaniateir hysbysiadau</translation>
 <translation id="7594634374516752650">Wedi cysylltu â dyfais Bluetooth</translation>
 <translation id="7617547684249261169">Gallwch ddileu rhywfaint neu'r cyfan o'ch hanes, cwcis, data gwefan a rhagor</translation>

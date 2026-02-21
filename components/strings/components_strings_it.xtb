@@ -2571,6 +2571,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5114987907971894280">realtà virtuale</translation>
 <translation id="5115232566827194440">Override della sessione Ospite gestita limitata</translation>
 <translation id="5115563688576182185">(a 64 bit)</translation>
+<translation id="5116015291385561204">Verifica la tua identità per la compilazione automatica di informazioni sensibili</translation>
 <translation id="5120526915373271910">Film per la famiglia</translation>
 <translation id="5122786942953798871">Busta (cotone)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3970,6 +3971,7 @@ Ulteriori dettagli:
 <translation id="7372973238305370288">risultato della ricerca</translation>
 <translation id="7374461526650987610">Gestori di protocollo</translation>
 <translation id="7374733840632556089">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chrome. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chrome vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
+<translation id="73750335798090836">Per una maggiore protezione, usa sempre l'impronta, il volto o un altro metodo di blocco schermo quando usi informazioni sensibili come documenti di viaggio e di identità</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nessun sito autorizzato}=1{1 sito autorizzato}other{# siti autorizzati}}</translation>
 <translation id="7375818412732305729">Viene allegato un file</translation>
 <translation id="7376031331622621328">Riquadro inferiore di informazioni sul prodotto</translation>
@@ -4610,7 +4612,7 @@ Ulteriori dettagli:
 <translation id="8355270400102541638">Contesto arresto anomalo locale:</translation>
 <translation id="8363502534493474904">Disattivare la modalità aereo</translation>
 <translation id="8363929499301563123">Cookie dei siti web (lo stato di accesso sui siti web visitati di recente verrà conservato)</translation>
-<translation id="8364627913115013041">Non impostato.</translation>
+<translation id="8364627913115013041">Non impostata.</translation>
 <translation id="8366057325711477500">Notizie dal mondo</translation>
 <translation id="836616551641291797">Scopri di più su come viene gestito il tuo browser</translation>
 <translation id="8367705492654390392">Chiedi qualsiasi cosa</translation>

@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{අයාචිත හෝ රැවටිලිකාර අන්තර්ගතය නිසා Chrome මෙම අඩවියෙන් දැනුම්දීම් යැවීම නතර කර ඇත}one{අයාචිත හෝ රැවටිලිකාර අන්තර්ගතය නිසා Chrome මෙම අඩවිවලට දැනුම්දීම් යැවීම නතර කර ඇත}other{අයාචිත හෝ රැවටිලිකාර අන්තර්ගතය නිසා Chrome මෙම අඩවිවලට දැනුම්දීම් යැවීම නතර කර ඇත}}</translation>
 <translation id="4195643157523330669">නව ටැබයක විවෘත කරන්න</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{මෙම උපාංගයෙහි 1 පටිත්තක්}one{මෙම උපාංගයෙහි පටිති #ක්}other{මෙම උපාංගයෙහි පටිති #ක්}}</translation>
+<translation id="4198268995694216131">අතිරේක අඩවි</translation>
 <translation id="4198423547019359126">බාගැනීම් ස්ථාන කිසිවක් නැත</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ඔබ මෙම අඩවියෙහි භාවිතා කළා</translation>
 <translation id="4214315110991671325">ඔබ කුකිවලට ඉඩ දුනහොත්, Chrome ඒවා පූර්ව පූරණය සඳහා භාවිත කළ හැකිය.</translation>
@@ -1018,6 +1019,7 @@
 <translation id="5304593522240415983">මෙම ඉඩ හිස්ව තැබිය නොහැක</translation>
 <translation id="5306014156308790439">එකතුවට එක් කිරීම අබල කෙරේ</translation>
 <translation id="5308380583665731573">සම්බන්ධ කරන්න</translation>
+<translation id="5313967007315987356">අඩවිය එක් කරන්න</translation>
 <translation id="5316947901395241499">මුරපද සුරැකීම ඔබේ පරිපාලක විසින් ක්‍රියා විරහිත කර ඇත</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5319359161174645648">Google විසින් Chrome නිර්දේශ කරයි</translation>
@@ -1543,6 +1545,7 @@
 <translation id="7314734791127433392">මුරපද පරීක්ෂා කළ නොහැක</translation>
 <translation id="7324354302972299151">"නිරීක්‍ෂණ නොකරන්න" ඉල්ලීමක් යවන්න</translation>
 <translation id="7333041109965360609">දැනුම්දීම් වලින් ග්‍රාහක නොවුණි</translation>
+<translation id="7335766481146072567">ඉදිරියට යන්න ඔබන්න</translation>
 <translation id="7336259382292148213">දැනුම්දීම් හොඳ බව පෙනේ</translation>
 <translation id="7339898014177206373">නව කවුළුව</translation>
 <translation id="7340958967809483333">Discover සඳහා විකල්ප</translation>
@@ -1752,6 +1755,7 @@
 <translation id="813082847718468539">අඩවි තොරතුරු පෙන්වන්න</translation>
 <translation id="8135406045838672858">බාගත කළ PDFs <ph name="APP_NAME" /> සමග ස්වයංක්‍රීයව විවෘත වේ</translation>
 <translation id="8137562778192957619">ඔබට මෙම මුරපදය මතක තබා ගැනීමට අවශ්‍ය නොවනු ඇත. එය Google මුරපද කළමනාකරු වෙත සුරකිනු ඇත.</translation>
+<translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
 <translation id="8152331954420209374">Lens වෙත යන්න</translation>
 <translation id="8153206878708357851">කැරට් බ්‍රවුස් කිරීම ටොගල් කරන්න</translation>
 <translation id="8154784523622173959">මෙම පිටුවේ පසුබිම පුද්ගලායනය කරන්න</translation>
@@ -1831,6 +1835,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 අඩවියකින් අවසර ඉවත් කරන ලදි}one{භාවිත නොකළ අඩවි #කින් අවසර ඉවත් කරන ලදි}other{භාවිත නොකළ අඩවි #කින් අවසර ඉවත් කරන ලදි}}</translation>
 <translation id="8453310803815879010">Dino ක්‍රීඩාව ආරම්භ කරන්න</translation>
 <translation id="8455675988389029454">ඔබේ සියලු ම උපාංග මත ඔබේ පිටුසන්, මුරපද, සහ තවත් දේ ලබා ගන්න</translation>
+<translation id="8458341576712814616">කෙටි මඟ</translation>
 <translation id="8458413889418591446">ඔබ පිවිසි අඩවි වෙත ඉක්මනින් ආපසු යාමට, ඔබේ ඉතිහාසය සහ පටිති සමමුහුර්ත කරන්න</translation>
 <translation id="84594714173170813">ඔබේ Google ගිණුමේ Chrome දත්ත දිගටම භාවිතා කරන්න</translation>
 <translation id="8460448946170646641">ප්‍රධාන පෞද්ගලිකත්ව සහ ආරක්ෂක පාලන සමාලෝචනය කරන්න</translation>
@@ -1855,6 +1860,7 @@
 <translation id="8559961053328923750">දැන්වීම් කාර්ය සාධනය මැනීමට අඩවිවලට බ්‍රව්සරය හරහා බෙදා ගත හැකි මුළු දත්ත ප්‍රමාණය Chrome සීමා කරයි</translation>
 <translation id="8559990750235505898">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
 <translation id="8560602726703398413">පිටුසන් තුළ ඔබගේ කියවීම් ලැයිස්තුව සොයා ගන්න</translation>
+<translation id="85618473456579127">ඉහළ දකුණේ පැතිකඩ තට්ටු කරන්න</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ඉවත් කරන්න ද?</translation>
 <translation id="8570677896027847510">ගොනුව සුරක්ෂිතව බාගැනීමට නොහැකිය</translation>
 <translation id="8571213806525832805">පසුගිය සති 4</translation>

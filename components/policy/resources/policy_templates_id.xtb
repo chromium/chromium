@@ -4721,6 +4721,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4154221011709068799">Larang perangkat penyimpanan eksternal</translation>
 <translation id="415445772247959702">Web Store (didukung sejak versi 89)</translation>
+<translation id="415631927748520887">Jika kebijakan ini disetel ke Benar (True), Aplikasi Chrome akan terus berjalan dalam sesi Kios, terlepas dari pengaktifan Aplikasi Chrome default.
+
+Jika kebijakan ini tidak disetel atau disetel ke Salah (False), perilaku default yang ditentukan di perangkat akan digunakan.
+
+Jika mencoba meluncurkan Aplikasi Chrome yang dinonaktifkan, pengguna akan menerima pesan yang menjelaskan alasan aplikasi tidak diluncurkan dan menyarankan pengguna menghubungi departemen IT-nya.
+
+Nilai kebijakan ini akan diterapkan hingga penghentian penggunaan Aplikasi Chrome di sesi Kios, yang diperkirakan akan terjadi pada M151.</translation>
 <translation id="4157003184375321727">Laporkan versi OS dan firmware</translation>
 <translation id="4157594634940419685">Izinkan akses ke printer CUPS native</translation>
 <translation id="4158531549614162499">Aktifkan sinkronisasi Google Drive melalui koneksi seluler</translation>

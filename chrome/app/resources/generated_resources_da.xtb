@@ -355,7 +355,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Kun det markerede</translation>
 <translation id="1222835797152767346">Angiv en pinkode for at gøre det nemmere at logge ind</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> kræver licens</translation>
-<translation id="1223498995510244364">Opsummer</translation>
 <translation id="1223853788495130632">Din administrator anbefaler en bestemt værdi for denne indstilling.</translation>
 <translation id="1225177025209879837">Behandler anmodning...</translation>
 <translation id="1227107020813934021">Find dokumentscannere</translation>
@@ -1057,6 +1056,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1695510246756136088">Der kunne ikke oprettes forbindelse til internettet. Prøv igen.</translation>
 <translation id="1696214930320482113">Profiler giver dig mulighed for at adskille arbejde, fritid og spil uden at skifte til en anden browser. Tilføj en ny profil nu.</translation>
 <translation id="1696555181932908973">Du kan prøve at fortsætte på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måder.</translation>
+<translation id="1696685050160038195">For at beskytte din enhed skal du kun køre og installere software fra pålidelige kilder og udviklere.</translation>
 <translation id="169675691788639886">Enheden har en SSH-server konfigureret. Undlad at logge ind med følsomme konti.</translation>
 <translation id="1697122132646041614">Hvis du giver et dislike, åbnes der en formular, hvor du kan indsende detaljeret feedback om, hvorfor du ikke kan lide disse resultater.</translation>
 <translation id="1697532407822776718">Fuldført</translation>
@@ -5882,6 +5882,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4943927218331934807">Adgangskode er påkrævet</translation>
 <translation id="4944310289250773232">Denne godkendelsestjeneste hostes af <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Du kan konfigurere et fingeraftryk ved at få dit barn til at røre afbryderknappen. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Knappen Vis projektpanel</translation>
 <translation id="4946998421534856407">appliste + pil op</translation>
 <translation id="4947376546135294974">Data fra det website, du besøger</translation>
 <translation id="4948370357877377178">Fortsæt med dine opgaver</translation>
@@ -6116,7 +6117,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="51143538739122961">Indsæt din sikkerhedsnøgle, og tryk på den</translation>
 <translation id="5115309401544567011">Slut din <ph name="DEVICE_TYPE" /> til en strømkilde.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verificer din identitet for at bruge autofyld i forbindelse med følsomme oplysninger</translation>
 <translation id="5116315184170466953">Hvis du giver et like, indsendes der feedback om, at du kan lide dette fanegruppeforslag</translation>
 <translation id="5116628073786783676">Ge&amp;m lyd som...</translation>
 <translation id="5117139026559873716">Afbryd forbindelsen mellem din telefon og din <ph name="DEVICE_TYPE" />. Der oprettes ikke længere automatisk forbindelse.</translation>
@@ -6714,6 +6714,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installeres</translation>
 <translation id="5527822190489075064">Optimeret opladning</translation>
 <translation id="5529554942700688235">Oversigt over hukommelsesbesparelser, <ph name="MEMORY_VALUE" /> er frigjort</translation>
+<translation id="5529693968082667490">Knappen Vis fanesøgning</translation>
 <translation id="5530977410273748884">Klik på nøglen for at gemme din adgangskode i Google Adgangskodeadministrator</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vil gerne</translation>
@@ -8265,6 +8266,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6613267708691765962">Søger efter malware…</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6618013221808317456">Tillad ikke, at websites anvender JavaScript-optimering</translation>
+<translation id="6618154741503063152">Det er ikke muligt at uploade. Vedhæftede filer er ikke tilladt.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Websitet kan spore din lokation</translation>
 <translation id="6619243162837544323">Netværkstilstand</translation>
@@ -9361,7 +9363,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7368927539449986686">Rediger websitesøgning</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Administrer USB-enheder</translation>
-<translation id="73750335798090836">Af sikkerhedshensyn bør du altid bruge dit fingeraftryk, ansigtsgenkendelse eller en anden skærmlås, når du anvender følsomme oplysninger som f.eks. rejse- og identitetsdokumenter</translation>
 <translation id="7376124766545122644">Dette link kan ikke bruges. Sørg for, at dit link starter med "http://" eller "https://", før du prøver igen.</translation>
 <translation id="7376553024552204454">Fremhæv musemarkøren, når den bevæger sig</translation>
 <translation id="7377250337652426186">Klik på knappen Tilbage, og hold den nede for at gå mere end 1 side tilbage.</translation>
@@ -10362,6 +10363,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8034399942062051455">V8-optimering er deaktiveret</translation>
 <translation id="8034697324150621782">Byt med øverste visning</translation>
 <translation id="8035059678007243127">Inkognitoside i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Knappen Vis gemte fanegrupper</translation>
 <translation id="8036193484521570992">Hjælp med at forbedre Autofyld</translation>
 <translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8037117027592400564">Læs hele teksten højt ved hjælp af talesyntese</translation>

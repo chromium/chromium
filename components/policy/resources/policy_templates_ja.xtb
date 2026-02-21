@@ -11808,6 +11808,21 @@ M119 よりデフォルトで無効になります）。
 <translation id="9051019223077908578">ログイン画面でインストールするアプリと拡張機能のリストを設定する</translation>
 <translation id="9053841574218808519">期限切れでないプラグインを常に実行する</translation>
 <translation id="9055866143096316150">画面の wake lock のリクエストをシステムの wake lock のリクエストに引き下げる</translation>
+<translation id="9056262797461453462"><ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーを設定すると、特定の URL をウェブページで読み込まないようブロックできます。管理者は、ブロックする URL パターンのリストを指定できます。このポリシーを未設定のままにした場合、ブラウザで URL はブロックされません。<ph name="URL_ALLOWLIST_POLICY_NAME" /> で最大 1,000 件の例外を定義できます。URL パターンの指定方法（https://support.google.com/chrome/a?p=url_blocklist_filter_format）をご確認ください。
+
+注: このポリシーは、動的に読み込まれるデータを含むページ内の JavaScript URL には適用されません。たとえば、example.com/abc をブロックした場合でも、XMLHTTPRequest を使用して example.com を読み込むことができます。また、このポリシーを設定した場合も、ウェブページで JavaScript History API を使用して、アドレスバーに表示される URL をブロック対象の URL に更新することは可能です。
+
+<ph name="PRODUCT_NAME" /> バージョン 73 以降では、「javascript://*」の URL をブロックできますが、ブロックされるのはアドレスバーに入力された JavaScript やブックマークレットなどの JavaScript に限られます。
+
+<ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
+
+注: 「chrome://*」と「chrome-untrusted://*」の内部 URL をブロックすると、予期しないエラーが発生したり、一部のケースでは回避されたりする可能性があります。内部 URL をブロックする代わりに、使用できる具体的なポリシーがないか確認してください。例を示します。
+
+- chrome://settings/certificates をブロックする代わりに <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> を使用します。
+
+- chrome-untrusted://crosh をブロックする代わりに <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> を使用します。
+
+- devtools://* をブロックする代わりに、<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> のいずれかのポリシーを使用します。</translation>
 <translation id="9057159618445405645">Chrome ブラウザのデフォルトの動作を使用する</translation>
 <translation id="9061455386353325110"><ph name="PRODUCT_NAME" /> で、生成 AI を使用してフォームの内容を正確に把握し、より多くの項目に入力できるようにするかどうかを指定します。
 

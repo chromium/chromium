@@ -2574,6 +2574,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115232566827194440">Restricted managed Guest session override</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">Verify that it's you to autofill sensitive info</translation>
 <translation id="5120526915373271910">Family films</translation>
 <translation id="5122786942953798871">Envelope (cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3974,6 +3975,7 @@ Additional details:
 <translation id="7372973238305370288">search result</translation>
 <translation id="7374461526650987610">Protocol Handlers</translation>
 <translation id="7374733840632556089">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chrome. While some legitimate cases for monitoring do exist, like on a school or company network, Chrome wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
+<translation id="73750335798090836">For added protection, always use your fingerprint, face or other screen lock when you use sensitive info like travel and identity docs</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No sites allowed}=1{1 site allowed}other{# sites allowed}}</translation>
 <translation id="7375818412732305729">File is attached</translation>
 <translation id="7376031331622621328">Commerce bottom sheet</translation>

@@ -2575,6 +2575,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5114987907971894280">realidad virtual</translation>
 <translation id="5115232566827194440">Anulación de la sesión de invitado administrada y restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116015291385561204">Verificar tu identidad para autocompletar información sensible</translation>
 <translation id="5120526915373271910">Películas para la familia</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
@@ -3975,6 +3976,7 @@ Detalles adicionales:
 <translation id="7372973238305370288">resultado de búsqueda</translation>
 <translation id="7374461526650987610">Controladores de protocolos</translation>
 <translation id="7374733840632556089">Se produjo este problema debido a un certificado que tú o alguien más instaló en el dispositivo. El certificado se usa para interceptar y supervisar redes, y no es de confianza para Chrome. Si bien existen usos legítimos de la supervisión, como en el caso de redes de empresas o instituciones educativas, Chrome quiere asegurarse de que estás al tanto de esta situación, aunque no puedas impedirlo. La supervisión puede ocurrir en cualquier navegador o app que acceda a la Web.</translation>
+<translation id="73750335798090836">Para obtener una protección adicional, usa siempre tu huella dactilar, rostro o algún otro tipo de bloqueo de pantalla cuando uses información sensible, como documentos de viaje y de identidad</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No se permiten sitios}=1{Se permite 1 sitio}other{Se permiten # sitios}}</translation>
 <translation id="7375818412732305729">Se adjuntó un archivo</translation>
 <translation id="7376031331622621328">Hoja inferior del comercio</translation>

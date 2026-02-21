@@ -62,7 +62,7 @@
 <translation id="1096545575934602868">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren werden verworfen.</translation>
 <translation id="1097803577928227769">Nationalparks, Naturschutzgebiete, Parks und botanische Gärten</translation>
 <translation id="1099928364755383720">automatische Bild-im-Bild-Modus</translation>
-<translation id="1100782917270858593">Schaltfläche „Weiter stöbern“ – drücke die Eingabetaste, um weiter zu recherchieren und relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
+<translation id="1100782917270858593">Button „Weiter stöbern“ – drücke die Eingabetaste, um weiter zu recherchieren und relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="1101672080107056897">Fehleraktion</translation>
 <translation id="1104409666019087579">Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.</translation>
 <translation id="1104860668737945357">Button „Passwörter verwalten“ – aktivieren, um in den Chrome-Einstellungen Passwörter abzurufen und zu verwalten</translation>
@@ -957,7 +957,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2505268675989099013">Konto schützen</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (Bedingungen gelten)</translation>
 <translation id="2512101340618156538">Nicht zugelassen (Standardeinstellung)</translation>
-<translation id="2512413427717747692">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – Drück die Eingabetaste, um Chrome in den iOS-Einstellungen als Standardbrowser für das System festzulegen</translation>
+<translation id="2512413427717747692">Button „Google Chrome als Standardbrowser festlegen“ – drücke die Eingabetaste, um Chrome in den iOS-Einstellungen als Standardbrowser für das System festzulegen</translation>
 <translation id="2514548229949738417">Haus &amp; Garten</translation>
 <translation id="2515629240566999685">Signal an deinem Standort prüfen</translation>
 <translation id="2515761554693942801">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit Touch ID durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst deren <ph name="LINK_TEXT" />.</translation>
@@ -2572,6 +2572,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5114987907971894280">Virtual Reality</translation>
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
 <translation id="5115563688576182185">(64-Bit)</translation>
+<translation id="5116015291385561204">Identität bestätigen, um vertrauliche Daten automatisch ausfüllen zu lassen</translation>
 <translation id="5120526915373271910">Filme für die ganze Familie</translation>
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
@@ -3972,6 +3973,7 @@ Weitere Details:
 <translation id="7372973238305370288">Suchergebnis</translation>
 <translation id="7374461526650987610">Protokoll-Handler</translation>
 <translation id="7374733840632556089">Du siehst diesen Fehler aufgrund eines Zertifikats, das auf deinem Gerät installiert ist. Chrome vertraut dem Zertifikat nicht, weil es Netzwerke unterbrechen und überwachen kann. Natürlich gibt es berechtigte Gründe für eine Überwachung, z. B. im Netzwerk von Schulen oder Unternehmen. Trotzdem soll sichergestellt werden, dass du über die Überwachung informiert bist, selbst wenn du sie nicht unterbinden kannst. Die Überwachung ist in jedem Browser und jeder Anwendung mit Webzugriff möglich.</translation>
+<translation id="73750335798090836">Für zusätzlichen Schutz solltest du immer deinen Fingerabdruck, die Gesichtserkennung oder eine andere Displaysperre verwenden, wenn du vertrauliche Daten wie Reise- und Ausweisdokumente verwendest</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Keine Websites zugelassen}=1{1 Website zugelassen}other{# Websites zugelassen}}</translation>
 <translation id="7375818412732305729">Datei angehängt</translation>
 <translation id="7376031331622621328">Ansicht mit Preisinformationen am unteren Rand</translation>
@@ -4540,7 +4542,7 @@ Weitere Details:
 <translation id="824968735947741546">„<ph name="SOURCE" />“ (automatisch erkannt) wird in die Sprache „<ph name="TARGET" />“ übersetzt</translation>
 <translation id="8250094606476360498">Diese Adresse ist momentan auf diesem Gerät gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="ACCOUNT" />).</translation>
 <translation id="8251493595871259082">Adresse mit weniger Eingaben ausfüllen</translation>
-<translation id="8252991034201168845">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – drücke die Eingabetaste, um die Bedienungshilfen in den Chrome OS-Einstellungen zu personalisieren</translation>
+<translation id="8252991034201168845">Button „Einstellungen für Bedienungshilfen verwalten“ – drücke die Eingabetaste, um die Bedienungshilfen in den Chrome OS-Einstellungen zu personalisieren</translation>
 <translation id="8253091569723639551">Rechnungsadresse ist erforderlich</translation>
 <translation id="8257387598443225809">Diese App wurde für Mobilgeräte entwickelt</translation>
 <translation id="8259239120149678929">Fernsehdokumentationen und Sachfilme</translation>

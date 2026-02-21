@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Gruppe beibehalten</translation>
 <translation id="1853692000353488670">Neuer Inkognitotab</translation>
 <translation id="1854463785401910334">In geöffneten Tabs suchen</translation>
+<translation id="1860609647735325606">Von Gemini erklären lassen</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} von {count} Passwort}other{{position} von {count} Passwörtern}}</translation>
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
 <translation id="1864266050569350424">Tippe auf einer Website, für die du ein Passwort gespeichert hast, auf das Feld für das Anmeldepasswort.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Alle öffnen</translation>
 <translation id="2536991091671391962">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
+<translation id="2538705697765638552">Wenn du deine Informationen speicherst, kannst du viele Dinge schneller erledigen, z. B. Formulare in Google-Produkten ausfüllen. Du kannst deine Informationen für <ph name="USER_EMAIL" /> in Google Wallet verwalten.</translation>
 <translation id="2539748786028143624">Erweiterten Schutz aktivieren…</translation>
 <translation id="2540111494300686866">Dialogfelder unterdrücken</translation>
 <translation id="2542268842667970959">Sicherheitscheck ausblenden</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Passwort in deinem Google-Konto ({EMAIL}) gespeichert}other{Passwörter in deinem Google-Konto ({EMAIL}) gespeichert}}</translation>
 <translation id="2791174088547598693">Passwort hinzufügen…</translation>
 <translation id="2793703503584038325">Wähle ein Passwort aus und tippe auf das Symbol „Teilen“</translation>
+<translation id="2793804887899597849">Informationen nur auf Gerät gespeichert</translation>
 <translation id="2797029671965852011">Verlauf anzeigen</translation>
 <translation id="2797302972324086597">Ländercode</translation>
 <translation id="2798263827270599246">Standarddesign</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Mit Lens suchen</translation>
 <translation id="3575426792457739946">Diese Liste enthält alle geladenen Profile.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, von deiner Organisation verwaltet.</translation>
+<translation id="3580448612293054698">„<ph name="ENTITY_TYPE" />“ aktualisieren?</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Deine Organisation legt fest, was du in deinem Google-Konto speichern kannst.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importieren</translation>
 <translation id="3857113360369572832">Öffne die <ph name="BEGIN_BOLD" />Safari-Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="386224966259596343">Du kannst diese Informationen in Wallet speichern, wenn du das nächste Mal ein entsprechendes Formular ausfüllst.</translation>
 <translation id="3868495844258915202">Vollständige URL anzeigen</translation>
 <translation id="3875783148670536197">So gehts</translation>
 <translation id="3878657761594430423">Sheet Grabber</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Hilfe anzeigen</translation>
 <translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
 <translation id="4099756562043439968">Erinnerung einrichten</translation>
+<translation id="4101867642407836771">In Google Wallet für <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend.</translation>
 <translation id="4111985840824673503">Alle als gelesen markieren</translation>
 <translation id="411254640334432676">Fehler beim Download</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Passwörter ändern</translation>
 <translation id="4120936477286528673">Diese Website versucht wiederholt, eine andere App zu öffnen.</translation>
 <translation id="4121993058175073134">Zum Senden von Exportdaten E-Mail-Konto in App "Einstellungen" konfigurieren</translation>
+<translation id="4129768137228347731">„<ph name="ENTITY_TYPE" />“ speichern?</translation>
 <translation id="4133139945030148655">Einrichtung abgeschlossen</translation>
 <translation id="4133265950310064865">Erweitertes Safe Browsing</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4854068532375923088">Gemini die Verwendung deiner Kamera erlauben</translation>
+<translation id="4860114370595561279">Deine gespeicherten Informationen werden auf deinem Gerät gespeichert</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4861953997778766866">Jeder kann Änderungen an deinen freigegebenen Tabgruppen vornehmen</translation>
 <translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch ausfüllen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
@@ -1235,6 +1243,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5559567453458728487">Im Web gefundene Maßeinheiten umrechnen</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5565871407246142825">Kreditkarten</translation>
+<translation id="5566623128829375608">Wird auf deinem Gerät gespeichert.</translation>
 <translation id="5567439033041178034">Weitere Informationen</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="5579012242779565775">Leseliste ausblenden</translation>
@@ -1307,7 +1316,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5767099457279594162">Passwort wurde nicht geteilt</translation>
 <translation id="5768870767339201169">Dort weitermachen, wo du aufgehört hast</translation>
 <translation id="5779117921996157216">{count,plural, =1{Du nutzt {count} kompromittiertes Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} kompromittierte Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>
-<translation id="5791632441210678828">Schaltfläche zum Sortieren für den „Folge ich“-Feed.</translation>
+<translation id="5791632441210678828">Button zum Sortieren für den „Folge ich“-Feed.</translation>
 <translation id="5799263916847593256">Öffnen, um die Preisentwicklung zu sehen.</translation>
 <translation id="5803566855766646066">Möchtest du diese neue Karte wirklich verwerfen?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
@@ -1650,7 +1659,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6964300328304469089">Aktuell ausgewählt: <ph name="NAME" />, <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Bild mit Pro erstellen</translation>
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Gesamte Zeit</translation>
@@ -2178,6 +2186,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8829809207373502270">Dieser Passkey funktioniert nicht mehr. Er wurde von <ph name="WEBSITE" /> gelöscht und wird demnächst auch von hier entfernt. <ph name="BEGIN_LINK" />Info zu Passkeys<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Alle inaktiven Tabs schließen</translation>
 <translation id="8837654851594567190">Nach Publisher sortieren</translation>
+<translation id="884351711508006491">Deine Informationen werden auf deinem Gerät gespeichert.</translation>
 <translation id="8844136307393039959">Preissenkung bei deinem beobachteten Produkt</translation>
 <translation id="8848286253339013170">Bild für <ph name="USER_EMAIL" /> wird in Google Fotos gespeichert…</translation>
 <translation id="8849001918648564819">Verborgen</translation>
@@ -2185,7 +2194,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8856643812068084733">Archive</translation>
 <translation id="8863067612494559785">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="8863431381414769983">Wegbeschreibungen und lokale Informationen bei Google Maps abrufen</translation>
-<translation id="8867879594900082274">Deine Änderungen gelten nur für deine angepinnten Websites auf diesem Gerät.</translation>
 <translation id="8871974300055371298">Inhaltseinstellungen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8879604564928138696">Doppeltippen, um es auszuprobieren</translation>

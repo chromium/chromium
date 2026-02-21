@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Filer, som dette website kan se eller redigere</translation>
 <translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan anmode om at se computerversionen af websites</translation>
-<translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1126523729897810826">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chrome</translation>
 <translation id="113098737392899175">Naviger på sider med en tekstmarkør, når der er tilsluttet et tastatur</translation>
 <translation id="1148624853678088576">Så er du klar</translation>
@@ -199,7 +198,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2874939134665556319">Forrige nummer</translation>
 <translation id="2891975107962658722">Bloker et website på en måde, hvor det ikke kan gemme data på din enhed</translation>
 <translation id="2903493209154104877">Adresser</translation>
-<translation id="2910701580606108292">Spørg, før websites begynder at afspille beskyttet indhold</translation>
 <translation id="2918484639460781603">Gå til indstillinger</translation>
 <translation id="2932883381142163287">Rapportér misbrug</translation>
 <translation id="2939338015096024043">Når dette er slået til, kan websites anmode om tilladelse til at registrere din kameraposition og få oplysninger om dine omgivelser. Når dette er slået fra, kan websites ikke registrere din kameraposition eller få oplysninger om dine omgivelser.</translation>
@@ -301,7 +299,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3924858949939391676">Vis links, når Læsetilstand er aktiveret</translation>
 <translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
 <translation id="3934905113567851655">Knib fingrene sammen for at tilpasse størrelse</translation>
-<translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
 <translation id="3955321697524543127">Tillad ikke, at websites opretter forbindelse til USB-enheder</translation>
 <translation id="3965467402665811906">Websites kan anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
@@ -514,7 +511,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6171020522141473435">Når dette er slået til, kan websites anmode om tilladelse til at bruge Bluetooth-enheder. Når dette er slået fra, kan websites ikke bruge Bluetooth-enheder.</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>
 <translation id="6181444274883918285">Tilføj en undtagelse for et website</translation>
-<translation id="6192792657125177640">Undtagelser</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{I morgen blokerer Chrome cookies igen}one{Cookies blokeres igen om # dag}other{Cookies blokeres igen om # dage}}</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6205314730813004066">Privatliv vedrørende annoncering</translation>
@@ -637,7 +633,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7573594921350120855">Websites bruger normalt dit videokamera til kommunikationsformål såsom videochat</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{For <ph name="NUM_MONTHS_ONE" /> måned siden}one{For <ph name="NUM_MONTHS_MANY" /> måned siden}other{For <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
-<translation id="757524316907819857">Bloker afspilning af beskyttet indhold på websites</translation>
 <translation id="7586676035079382730">Notifikationer er ikke tilladt</translation>
 <translation id="7594634374516752650">Forbundet til en Bluetooth-enhed</translation>
 <translation id="7617547684249261169">Du kan slette dele af eller hele din historik og dele af eller alle cookies, websitedata og meget mere</translation>

@@ -354,7 +354,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1221825588892235038">Ainult valitud</translation>
 <translation id="1222835797152767346">Sisselogimise hõlbustamiseks määrake PIN-kood</translation>
 <translation id="1223484782328004593">Rakendus <ph name="APP_NAME" /> nõuab litsentsi</translation>
-<translation id="1223498995510244364">Kokkuvõte</translation>
 <translation id="1223853788495130632">Teie administraator soovitab seade jaoks kindlat väärtust.</translation>
 <translation id="1225177025209879837">Päringu töötlemine ...</translation>
 <translation id="1227107020813934021">Dokumendiskannerite otsimine</translation>
@@ -1056,6 +1055,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1695510246756136088">Internetiga ei saa ühendust luua. Proovige uuesti.</translation>
 <translation id="1696214930320482113">Profiilid võimaldavad teil tööalast, isiklikku ja mängimisega seotud sirvimist lahus hoida, ilma et peaksite teisele brauserile lülituma. Lisage uus profiil kohe.</translation>
 <translation id="1696555181932908973">Võite proovida teenuses <ph name="SITE_ETLD_PLUS_ONE" /> jätkamiseks teisi võimalusi.</translation>
+<translation id="1696685050160038195">Seadme turvalisuse tagamiseks käitage ja installige ainult usaldusväärsetest allikatest ja usaldusväärsetelt arendajatelt pärit tarkvara.</translation>
 <translation id="169675691788639886">Seadme puhul on seadistatud SSH-server. Ärge logige sisse tundlikku teavet sisaldava kontoga.</translation>
 <translation id="1697122132646041614">Mittemeeldivaks märkimine avab vormi üksikasjaliku tagasiside saatmiseks selle kohta, miks teile need tulemused ei meeldi.</translation>
 <translation id="1697532407822776718">Kõik on valmis!</translation>
@@ -5871,6 +5871,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4943927218331934807">Parool on nõutav</translation>
 <translation id="4944310289250773232">Autentimisteenust hostib <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Sõrmejälje seadistamiseks paluge lapsel puudutada toitenuppu. Teie lapse sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata seadmest <ph name="DEVICE_TYPE" /> kunagi väljapoole.</translation>
+<translation id="4946215577126251136">Kuva projektide paneeli nupp</translation>
 <translation id="4946998421534856407">käivitaja + ülesnool</translation>
 <translation id="4947376546135294974">Andmed saidilt, mida külastate</translation>
 <translation id="4948370357877377178">Jätkake oma ülesannetega</translation>
@@ -6105,7 +6106,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="51143538739122961">Sisestage oma turvavõti ja puudutage seda</translation>
 <translation id="5115309401544567011">Ühendage seade <ph name="DEVICE_TYPE" /> toiteallikaga.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Delikaatse teabe automaatselt täitmiseks isiku kinnitamine</translation>
 <translation id="5116315184170466953">Meeldivaks märkimine saadab tagasisidet, et vahelehegruppide soovitamine meeldib teile</translation>
 <translation id="5116628073786783676">Sa&amp;lvesta heli nimega...</translation>
 <translation id="5117139026559873716">Katkestage telefoni ja seadme <ph name="DEVICE_TYPE" /> ühendus. Need ei loo edaspidi automaatselt ühendust.</translation>
@@ -6703,6 +6703,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installimine</translation>
 <translation id="5527822190489075064">Optimeeritud laadimine</translation>
 <translation id="5529554942700688235">Mälumahu säästmise kokkuvõte, vabastati <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">Kuva vahekaardi otsingu nupp</translation>
 <translation id="5530977410273748884">Parooli salvestamiseks Google’i paroolihaldurisse klõpsake klahvi</translation>
 <translation id="5532223876348815659">Üldine</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> soovib</translation>
@@ -8252,6 +8253,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6613267708691765962">Pahavara otsimine …</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
 <translation id="6618013221808317456">Ära luba saitidel JavaScripti optimeerimist kasutada</translation>
+<translation id="6618154741503063152">Seda faili ei saa üles laadida. Manused pole lubatud.</translation>
 <translation id="6619058681307408113">Reaprinteriprotokoll (LPD)</translation>
 <translation id="661907246513853610">Sait võib teie asukohta jälgida</translation>
 <translation id="6619243162837544323">Võrgu olek</translation>
@@ -9348,7 +9350,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7368927539449986686">Saidiotsingu muutmine</translation>
 <translation id="7370592524170198497">Etherneti EAP:</translation>
 <translation id="7374376573160927383">USB-seadmete haldamine</translation>
-<translation id="73750335798090836">Kaitse tugevdamiseks kasutage delikaatse teabe (nt reisi- ja isikut tõendavate dokumentide) kasutamisel alati sõrmejälge, näotuvastust või muud ekraanilukku.</translation>
 <translation id="7376124766545122644">Seda linki ei saa kasutada. Enne uuesti proovimist veenduge, et link algaks protokolliga „http://“ või „https://“.</translation>
 <translation id="7376553024552204454">Tõsta hiirekursor esile, kui see liigub</translation>
 <translation id="7377250337652426186">Rohkem kui ühe lehekülje võrra tagasi liikumiseks klõpsake nuppu Tagasi ja hoidke seda all.</translation>
@@ -10349,6 +10350,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8034399942062051455">V8 optimeerimine on välja lülitatud</translation>
 <translation id="8034697324150621782">Vaheta ülemise vaatega</translation>
 <translation id="8035059678007243127">Vahemälu tagasi-edasiliikumiseks inkognito lehel: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Kuva salvestatud vahelehegruppide nupp</translation>
 <translation id="8036193484521570992">Aidake automaattäitefunktsiooni täiustada</translation>
 <translation id="8036504271468642248">Eelmine lause</translation>
 <translation id="8037117027592400564">Kogu kõnesünteesil põhineva teksti lugemine</translation>

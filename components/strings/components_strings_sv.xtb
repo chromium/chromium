@@ -2574,6 +2574,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5114987907971894280">virtuell verklighet</translation>
 <translation id="5115232566827194440">Åsidosättning av begränsning för hanterad gästsession</translation>
 <translation id="5115563688576182185">(64 bitar)</translation>
+<translation id="5116015291385561204">Verifiera din identitet för att autofylla känsliga uppgifter</translation>
 <translation id="5120526915373271910">Familjefilmer</translation>
 <translation id="5122786942953798871">Kuvert (bomull)</translation>
 <translation id="5123063207673082822">helgen</translation>
@@ -3974,6 +3975,7 @@ Mer information.
 <translation id="7372973238305370288">sökresultat</translation>
 <translation id="7374461526650987610">Protokollhanterare</translation>
 <translation id="7374733840632556089">Det här problemet uppstår på grund av ett certifikat som du eller någon annan har installerat på enheten. Certifikatet är känt för att användas för att övervaka och fånga upp nätverkstrafik och är inte betrott i Chrome. Även om det kan vara berättigat med övervakning i vissa fall, t.ex. i ett skol- eller företagsnätverk, vill vi göra dig medveten om vad som pågår även om du inte kan göra något åt det. Alla webbläsare och appar som använder internet omfattas av övervakningen.</translation>
+<translation id="73750335798090836">Använd alltid fingeravtryck, ansiktet eller ett annat skärmlås när du använder känsliga uppgifter som rese- och identitetshandlingar för extra skydd</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Inga webbplatser tillåts}=1{1 webbplats tillåts}other{# webbplatser tillåts}}</translation>
 <translation id="7375818412732305729">Fil bifogas</translation>
 <translation id="7376031331622621328">Ark för handel på nedre delen av skärmen</translation>

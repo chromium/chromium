@@ -354,7 +354,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1221825588892235038">Només la selecció</translation>
 <translation id="1222835797152767346">Defineix un PIN per iniciar la sessió més fàcilment</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requereix una llicència</translation>
-<translation id="1223498995510244364">Resumeix</translation>
 <translation id="1223853788495130632">L'administrador us recomana un valor específic per a aquesta configuració.</translation>
 <translation id="1225177025209879837">S'està processant la sol·licitud...</translation>
 <translation id="1227107020813934021">Cerca escàners de documents</translation>
@@ -1055,6 +1054,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1695510246756136088">No es pot connectar a Internet. Torna-ho a provar.</translation>
 <translation id="1696214930320482113">Els perfils et permeten separar la feina, la vida personal i l'entreteniment sense haver de canviar de navegador. Afegeix un perfil nou ara.</translation>
 <translation id="1696555181932908973">Pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Per protegir el dispositiu, et recomanem que només executis i instal·lis programari de fonts i desenvolupadors de confiança.</translation>
 <translation id="169675691788639886">El dispositiu té configurat un servidor SSH. No iniciïs la sessió amb comptes relacionats amb informació sensible.</translation>
 <translation id="1697122132646041614">El botó No m'agrada obre un formulari per enviar comentaris detallats sobre per què no t'agraden aquests resultats.</translation>
 <translation id="1697532407822776718">Tot a punt!</translation>
@@ -5863,6 +5863,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4943927218331934807">Cal una contrasenya</translation>
 <translation id="4944310289250773232">Aquest servei d'autenticació s'allotja a <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Per configurar una impremta digital, fes que el teu fill toqui el botó d'engegada. Les dades de l'empremta digital del teu fill s'emmagatzemen de manera segura i no surten mai del dispositiu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Mostra el botó Tauler de projectes</translation>
 <translation id="4946998421534856407">menú d'aplicacions+fletxa amunt</translation>
 <translation id="4947376546135294974">Dades del lloc web que estàs visitant</translation>
 <translation id="4948370357877377178">Continua les teves tasques</translation>
@@ -6097,7 +6098,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="51143538739122961">Insereix la clau de seguretat i toca-la</translation>
 <translation id="5115309401544567011">Endolla el dispositiu <ph name="DEVICE_TYPE" /> a una font d'alimentació.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verifica la teva identitat per emplenar automàticament informació sensible</translation>
 <translation id="5116315184170466953">La icona M'agrada indica que aquest suggeriment de grup de pestanyes t'agrada</translation>
 <translation id="5116628073786783676">De&amp;sa l'àudio com a...</translation>
 <translation id="5117139026559873716">Desconnecta el telèfon del dispositiu <ph name="DEVICE_TYPE" />. Es deixaran de connectar automàticament.</translation>
@@ -6695,6 +6695,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, s'està instal·lant</translation>
 <translation id="5527822190489075064">Càrrega optimitzada</translation>
 <translation id="5529554942700688235">Resum de l'estalvi de memòria: <ph name="MEMORY_VALUE" /> alliberats</translation>
+<translation id="5529693968082667490">Mostra el botó Cerca de pestanyes</translation>
 <translation id="5530977410273748884">Per desar la contrasenya al gestor de contrasenyes de Google, fes clic a la clau</translation>
 <translation id="5532223876348815659">General</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vol</translation>
@@ -8242,6 +8243,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6613267708691765962">S'està cercant programari maliciós...</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6618013221808317456">No permetis que els llocs web utilitzin l'optimització de JavaScript</translation>
+<translation id="6618154741503063152">No es pot penjar. No es permeten els fitxers adjunts.</translation>
 <translation id="6619058681307408113">Protocol Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">El lloc web pot fer un seguiment de la teva ubicació</translation>
 <translation id="6619243162837544323">Estat de la xarxa</translation>
@@ -9338,7 +9340,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7368927539449986686">Edita la cerca al lloc web</translation>
 <translation id="7370592524170198497">EAP d'Ethernet:</translation>
 <translation id="7374376573160927383">Gestiona els dispositius USB</translation>
-<translation id="73750335798090836">Per millorar la protecció, utilitza sempre l'empremta digital, la cara o un altre bloqueig de pantalla quan facis servir informació sensible, com ara documents de viatge i d'identitat</translation>
 <translation id="7376124766545122644">No es pot fer servir aquest enllaç. Comprova que l'enllaç comenci amb "http://" o "https://" i torna-ho a provar.</translation>
 <translation id="7376553024552204454">Destaca el cursor del ratolí quan es mogui</translation>
 <translation id="7377250337652426186">Per tornar enrere més d'una pàgina, fes clic i mantén premut el botó Enrere.</translation>
@@ -10339,6 +10340,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8034399942062051455">L'optimització de V8 està desactivada</translation>
 <translation id="8034697324150621782">Canvia per la visualització superior</translation>
 <translation id="8035059678007243127">Pàgina d'incògnit desada a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Mostra el botó Grups de pestanyes desats</translation>
 <translation id="8036193484521570992">Ajuda a millorar la funció Emplenament automàtic</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Llegeix tot el text en veu alta mitjançant una síntesi de veu</translation>

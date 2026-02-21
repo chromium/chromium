@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">이 사이트에서 볼 수 있거나 수정할 수 있는 파일</translation>
 <translation id="1073417869336441572">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
-<translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
 <translation id="1126523729897810826">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
 <translation id="113098737392899175">키보드가 연결되어 있을 때 텍스트 커서로 페이지 탐색</translation>
 <translation id="1148624853678088576">모든 설정이 완료되었습니다.</translation>
@@ -199,7 +198,6 @@
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2891975107962658722">사이트가 기기에 데이터를 저장하지 못하도록 차단</translation>
 <translation id="2903493209154104877">주소</translation>
-<translation id="2910701580606108292">사이트에서 보호된 콘텐츠를 재생하도록 허용하기 전에 확인</translation>
 <translation id="2918484639460781603">설정으로 이동</translation>
 <translation id="2932883381142163287">악용사례 신고</translation>
 <translation id="2939338015096024043">사용 설정하면 사이트에서 카메라 위치 추적 및 주변 환경 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 카메라 위치를 추적하거나 주변 환경을 확인할 수 없습니다.</translation>
@@ -301,7 +299,6 @@
 <translation id="3924858949939391676">읽기 모드가 켜지면 링크 표시</translation>
 <translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
 <translation id="3934905113567851655">손가락을 모으거나 벌려 크기를 조절하세요.</translation>
-<translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
 <translation id="3955321697524543127">사이트에서 USB 기기에 연결하도록 허용하지 않음</translation>
 <translation id="3965467402665811906">사이트에서 나에 관해 저장된 정보 사용을 요청할 수 있음</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
@@ -514,7 +511,6 @@
 <translation id="6171020522141473435">사용 설정하면 사이트에서 블루투스 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 블루투스 기기를 사용할 수 없습니다.</translation>
 <translation id="6177128806592000436">이 사이트는 보안 연결(HTTPS)이 사용되지 않았습니다.</translation>
 <translation id="6181444274883918285">사이트 예외 추가</translation>
-<translation id="6192792657125177640">예외</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{내일 Chrome에서 다시 쿠키를 차단합니다}other{#일 후 쿠키가 다시 차단됩니다}}</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
@@ -637,7 +633,6 @@
 <translation id="7561196759112975576">항상</translation>
 <translation id="7573594921350120855">사이트에서는 일반적으로 영상 채팅과 같은 커뮤니케이션 기능에 동영상 카메라를 사용합니다.</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" />개월 전}other{<ph name="NUM_MONTHS_MANY" />개월 전}}</translation>
-<translation id="757524316907819857">사이트에서 보호된 콘텐츠를 재생하지 못하도록 차단</translation>
 <translation id="7586676035079382730">알림이 허용되지 않음</translation>
 <translation id="7594634374516752650">블루투스 기기에 연결됨</translation>
 <translation id="7617547684249261169">방문 기록, 쿠키, 사이트 데이터 등을 일부 또는 모두 삭제할 수 있습니다.</translation>

@@ -2574,6 +2574,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5114987907971894280">virtuelna realnost</translation>
 <translation id="5115232566827194440">Zamena ograničene upravljane sesije gosta</translation>
 <translation id="5115563688576182185">(64-bitni)</translation>
+<translation id="5116015291385561204">Potvrdite identitet da biste automatski popunili osetljive informacije</translation>
 <translation id="5120526915373271910">Porodični filmovi</translation>
 <translation id="5122786942953798871">Koverta (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
@@ -3973,6 +3974,7 @@ Dodatni detalji:
 <translation id="7372973238305370288">rezultat pretrage</translation>
 <translation id="7374461526650987610">Obrađivači protokola</translation>
 <translation id="7374733840632556089">Ovaj problem se javlja zbog sertifikata koji ste vi ili neko drugi instalirali na uređaju. Sertifikat se koristi za nadgledanje i presretanje mreža i Chrome ga ne smatra pouzdanim. Iako postoje pojedini opravdani razlozi za nadgledanje, na primer na školskoj ili poslovnoj mreži, Chrome želi da budete svesni da se to događa, čak i ako to ne možete da sprečite. Nadgledanje je moguće u bilo kom pregledaču ili aplikaciji koja pristupa vebu.</translation>
+<translation id="73750335798090836">Radi dodatne zaštite, uvek koristite otisak prsta, lice ili drugi način otključavanja ekrana kada koristite osetljive informacije kao što su dokumenti za putovanja i lična dokumenta</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nijedan sajt nije dozvoljen}=1{1 sajt je dozvoljen}one{# sajt je dozvoljen}few{# sajta su dozvoljena}other{# sajtova je dozvoljeno}}</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
 <translation id="7376031331622621328">Donja tabela za trgovinu</translation>

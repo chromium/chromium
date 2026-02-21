@@ -738,6 +738,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped this site from sending notifications because of spam or deceptive content}other{Chrome stopped these sites from sending notifications because of spam or deceptive content}}</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab on this device}other{# tabs on this device}}</translation>
+<translation id="4198268995694216131">Additional sites</translation>
 <translation id="4198423547019359126">No available download locations</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • You used on this site</translation>
 <translation id="4214315110991671325">If you allow cookies, Chrome may use them for preloading.</translation>
@@ -1018,6 +1019,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5304593522240415983">This field cannot be blank</translation>
 <translation id="5306014156308790439">Disabled Add to collection</translation>
 <translation id="5308380583665731573">Connect</translation>
+<translation id="5313967007315987356">Add site</translation>
 <translation id="5316947901395241499">Password saving has been turned off by your administrator</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
@@ -1543,6 +1545,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7314734791127433392">Can't check passwords</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
+<translation id="7335766481146072567">Press continue</translation>
 <translation id="7336259382292148213">Notifications look good</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
@@ -1752,6 +1755,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="813082847718468539">View site information</translation>
 <translation id="8135406045838672858">Downloaded PDFs automatically open with <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
+<translation id="8151185429379586178">Developer tools</translation>
 <translation id="8152331954420209374">Go to Lens</translation>
 <translation id="8153206878708357851">Toggle Caret Browsing</translation>
 <translation id="8154784523622173959">Personalise the background of this page</translation>
@@ -1831,6 +1835,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Permissions removed from 1 site}other{Permissions removed from # sites}}</translation>
 <translation id="8453310803815879010">Start Dino game</translation>
 <translation id="8455675988389029454">Get your bookmarks, passwords and more on all your devices</translation>
+<translation id="8458341576712814616">Shortcut</translation>
 <translation id="8458413889418591446">To quickly get back to sites that you've visited, sync your history and tabs</translation>
 <translation id="84594714173170813">Keep using the Chrome data in your Google Account</translation>
 <translation id="8460448946170646641">Review key privacy and security controls</translation>
@@ -1855,6 +1860,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8559961053328923750">Chrome limits the total amount of data that sites can share through the browser to measure ad performance</translation>
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
 <translation id="8560602726703398413">Find your reading list in Bookmarks</translation>
+<translation id="85618473456579127">Tap profile in top right</translation>
 <translation id="8565021320663436446">Remove <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">File can’t be downloaded securely</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>

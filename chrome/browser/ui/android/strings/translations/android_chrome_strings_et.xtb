@@ -738,6 +738,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome peatas saidil märguannete saatmise rämpssisu või petliku sisu tõttu.}other{Chrome peatas saitidel märguannete saatmise rämpssisu või petliku sisu tõttu.}}</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 vahekaart selles seadmes}other{# vahekaarti selles seadmes}}</translation>
+<translation id="4198268995694216131">Täiendavad saidid</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Kasutasite sellel saidil</translation>
 <translation id="4214315110991671325">Kui lubate küpsised, võib Chrome neid kasutada eellaadimise jaoks.</translation>
@@ -1018,6 +1019,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5304593522240415983">See väli ei tohi olla tühi</translation>
 <translation id="5306014156308790439">Valik Lisa kogusse on keelatud</translation>
 <translation id="5308380583665731573">Ühendamine</translation>
+<translation id="5313967007315987356">Lisa sait</translation>
 <translation id="5316947901395241499">Administraator on paroolide salvestamise välja lülitanud</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5319359161174645648">Google soovitab Chrome'i</translation>
@@ -1543,6 +1545,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7314734791127433392">Paroole ei saa kontrollida</translation>
 <translation id="7324354302972299151">„Do Not Track” taotluse saatmine</translation>
 <translation id="7333041109965360609">Märguannete tellimus on tühistatud</translation>
+<translation id="7335766481146072567">Vajutage nuppu Jätka</translation>
 <translation id="7336259382292148213">Teie märguanded näivad turvalised</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7340958967809483333">Funktsiooni Discover valikud</translation>
@@ -1752,6 +1755,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="813082847718468539">Kuvab saidi teabe</translation>
 <translation id="8135406045838672858">Allalaaditud PDF-id avatakse automaatselt rakendusega <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Te ei pea seda parooli meelde jätma. See salvestatakse Google'i paroolihaldurisse.</translation>
+<translation id="8151185429379586178">Arendaja tööriistad</translation>
 <translation id="8152331954420209374">Ava Lens</translation>
 <translation id="8153206878708357851">Sisestusmärgiga sirvimise sisse-/väljalülitamine</translation>
 <translation id="8154784523622173959">Selle lehe tausta isikupärastamine</translation>
@@ -1831,6 +1835,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Load eemaldati ühelt saidilt}other{Load eemaldati # saidilt}}</translation>
 <translation id="8453310803815879010">Dinosaurusemängu alustamine</translation>
 <translation id="8455675988389029454">Kõigis oma seadmetes järjehoidjatele, paroolidele ja muule juurdepääsemine</translation>
+<translation id="8458341576712814616">Otsetee</translation>
 <translation id="8458413889418591446">Külastatud saitidele kiiresti naasmiseks sünkroonige ajalugu ja vahelehed</translation>
 <translation id="84594714173170813">Jätkake Chrome'i andmete kasutamist Google'i kontol</translation>
 <translation id="8460448946170646641">Vaadake üle peamised privaatsus- ja turvaseaded</translation>
@@ -1855,6 +1860,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8559961053328923750">Chrome piirab nende andmete hulka, mida saidid saavad reklaamide toimivuse mõõtmiseks brauseri kaudu jagada</translation>
 <translation id="8559990750235505898">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="8560602726703398413">Lugemisloendi leiate järjehoidjatest</translation>
+<translation id="85618473456579127">Puudutage ülaosas paremal profiili</translation>
 <translation id="8565021320663436446">Kas eemaldada konto <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Faili ei saa turvaliselt alla laadida</translation>
 <translation id="8571213806525832805">Viimased 4 nädalat</translation>

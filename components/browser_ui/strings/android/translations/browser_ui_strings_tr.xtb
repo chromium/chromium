@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Bu sitenin görüntüleyebileceği veya düzenleyebileceği dosyalar</translation>
 <translation id="1073417869336441572">Üçüncü taraf çerezlerine neden izin verdiğinizi bize bildirerek Chrome'u iyileştirmemize yardımcı olun. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Sitelerin masaüstü sürümünü görüntülemeyi talep edebilirsiniz</translation>
-<translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
 <translation id="1126523729897810826">Chrome'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın</translation>
 <translation id="113098737392899175">Klavye bağlıyken sayfalarda metin imleciyle gezin</translation>
 <translation id="1148624853678088576">Hazırsınız!</translation>
@@ -199,7 +198,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2874939134665556319">Önceki parça</translation>
 <translation id="2891975107962658722">Bir sitenin cihazınıza veri kaydetmesini engelleyin</translation>
 <translation id="2903493209154104877">Adresler</translation>
-<translation id="2910701580606108292">Sitelerin korumalı içeriği oynatmasına izin verilmeden önce size sorulur</translation>
 <translation id="2918484639460781603">Ayarlara git</translation>
 <translation id="2932883381142163287">Kötüye kullanım bildir</translation>
 <translation id="2939338015096024043">Bu düğme açıkken siteler kameranızın konumunu izlemek ve çevreniz hakkında bilgi edinmek isteyebilir. Düğme kapalıyken siteler kameranızın konumunu izleyemez veya çevreniz hakkında bilgi edinemez.</translation>
@@ -301,7 +299,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3924858949939391676">Okuma Modu açıldıktan sonra bağlantılar görüntülenir</translation>
 <translation id="3933121352599513978">İstenmeyen istekleri daralt (önerilir)</translation>
 <translation id="3934905113567851655">Yeniden boyutlandırmak için iki parmağınızı kullanın</translation>
-<translation id="3955193568934677022">Sitelerin korumalı içeriği oynatmasına izin ver (önerilir)</translation>
 <translation id="3955321697524543127">Sitelerin USB cihazlara bağlanmasına izin verme</translation>
 <translation id="3965467402665811906">Siteler, hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
@@ -514,7 +511,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="6171020522141473435">Bu düğme açıkken siteler Bluetooth cihazları kullanmak isteyebilir. Düğme kapalıyken siteler Bluetooth cihazları kullanamaz.</translation>
 <translation id="6177128806592000436">Bu siteye bağlantınız güvenli değil</translation>
 <translation id="6181444274883918285">Site istisnası ekle</translation>
-<translation id="6192792657125177640">İstisnalar</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome yarın çerezleri tekrar engelleyecek}other{Çerezlerin tekrar engellenmesine # gün kaldı}}</translation>
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6205314730813004066">Reklam gizliliği</translation>
@@ -637,7 +633,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7573594921350120855">Görüntülü sohbet gibi iletişim özelliklerinin kullanılması için siteler genellikle video kameranızı kullanır</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay önce}other{<ph name="NUM_MONTHS_MANY" /> ay önce}}</translation>
-<translation id="757524316907819857">Sitelerin korumalı içeriği oynatmasını engellenir</translation>
 <translation id="7586676035079382730">Bildirimlere izin verilmiyor</translation>
 <translation id="7594634374516752650">Bir Bluetooth aygıtına bağlı</translation>
 <translation id="7617547684249261169">Geçmişiniz, çerezleriniz, site verileriniz ve diğer öğelerinizin bir kısmını veya tamamını silebilirsiniz</translation>

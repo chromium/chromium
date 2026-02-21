@@ -4651,6 +4651,13 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4154221011709068799">Harici depolama cihazlarına izin verme</translation>
 <translation id="415445772247959702">Web Mağazası (sürüm 89'dan beri destekleniyor)</translation>
+<translation id="415631927748520887">Bu politikanın Doğru değerine ayarlanması, Chrome Uygulamalarının varsayılan Chrome Uygulamaları etkinleştirmesinden bağımsız olarak Kiosk oturumunda çalışmaya devam etmesini sağlar.
+
+Bu politika ayarlanmadan bırakılır veya Yanlış değerine ayarlanırsa cihazda tanımlanan varsayılan davranış kullanılır.
+
+Devre dışı bırakılmış bir Chrome Uygulaması başlatılmaya çalışıldığında, kullanıcıya uygulamanın neden başlatılamadığına dair bir mesaj gösterilir ve BT departmanlarıyla iletişime geçmeleri önerilir.
+
+Bu politikanın geçerliliği, Kiosk oturumlarında Chrome Uygulamaları desteğinin sonlandırılmasına kadar devam edecektir. Bu değişikliğin M151 sürümünde gerçekleşmesi beklenmektedir.</translation>
 <translation id="4157003184375321727">İşletim sistemi ve donanım yazılımı sürümünü rapor et</translation>
 <translation id="4157594634940419685">Yerel CUPS yazıcılarına erişim izni ver</translation>
 <translation id="4158531549614162499">Hücresel bağlantılar üzerinden Google Drive senkronizasyonunu etkinleştir</translation>

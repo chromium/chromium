@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Fitxers que aquest lloc web pot visualitzar o editar</translation>
 <translation id="1073417869336441572">Ajuda'ns a millorar Chrome explicant-nos per què has permès les galetes de tercers. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
-<translation id="1085696779717592361">Utilitza Chrome de manera predeterminada</translation>
 <translation id="1126523729897810826">Completa aquestes accions suggerides per treure el màxim profit de Chrome</translation>
 <translation id="113098737392899175">Navega per les pàgines amb un cursor de text quan hi hagi un teclat connectat</translation>
 <translation id="1148624853678088576">Ja esteu a punt</translation>
@@ -199,7 +198,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2891975107962658722">Impedeix que un lloc web desi dades al dispositiu</translation>
 <translation id="2903493209154104877">Adreces</translation>
-<translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
 <translation id="2918484639460781603">Ves a la configuració</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2939338015096024043">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de la posició de la càmera i obtenir informació sobre el teu entorn. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de la posició de la càmera ni obtenir informació sobre el teu entorn.</translation>
@@ -301,7 +299,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3924858949939391676">Mostra els enllaços quan el mode de lectura estigui activat</translation>
 <translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3934905113567851655">Pinça per canviar la mida</translation>
-<translation id="3955193568934677022">Permet que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
 <translation id="3955321697524543127">No permetis que els llocs web es connectin a dispositius USB</translation>
 <translation id="3965467402665811906">Els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
@@ -514,7 +511,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6171020522141473435">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius Bluetooth. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius Bluetooth.</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
 <translation id="6181444274883918285">Afegeix una excepció de lloc web</translation>
-<translation id="6192792657125177640">Excepcions</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome tornarà a bloquejar les galetes demà}other{# dies perquè es tornin a bloquejar les galetes}}</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
@@ -637,7 +633,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7573594921350120855">Els llocs web solen utilitzar la càmera de vídeo per a funcions de comunicació com ara el xat de vídeo</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Fa <ph name="NUM_MONTHS_ONE" /> mes}other{Fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
-<translation id="757524316907819857">Impedeix que els llocs web reprodueixin contingut protegit</translation>
 <translation id="7586676035079382730">No està permès utilitzar les notificacions</translation>
 <translation id="7594634374516752650">Connectat a un dispositiu Bluetooth</translation>
 <translation id="7617547684249261169">Pots suprimir l'historial, les galetes, les dades dels llocs web i més en la seva totalitat o bé una part</translation>

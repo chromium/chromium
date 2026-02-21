@@ -727,6 +727,7 @@
 <translation id="4137746084635924146">डिव्हाइसची सध्याची भाषा</translation>
 <translation id="414128724510021958">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती केली आहे</translation>
 <translation id="4162867837470729563">पूर्ण उघडलेली शेअरिंग पर्यायांची सूची.</translation>
+<translation id="4165077084524712774">आणखी टूल</translation>
 <translation id="4170011742729630528">सेवा उपलब्ध नाही; नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4170577491341606575">तुमचा आशय मिळवत आहे\u2026</translation>
 <translation id="4177222230309051052">तुमचे सर्व बुकमार्क मिळवा</translation>
@@ -738,6 +739,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{स्पॅम किंवा फसवा आशय यामुळे Chrome ने या साइटला नोटिफिकेशन पाठवण्यापासून थांबवले आहे}other{स्पॅम किंवा फसवा आशय यामुळे Chrome ने या साइटना नोटिफिकेशन पाठवण्यापासून थांबवले आहे}}</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
+<translation id="4198268995694216131">अतिरिक्त साइट</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • तुम्ही या साइटवर वापरले होते</translation>
 <translation id="4214315110991671325">तुम्ही कुकीना अनुमती दिल्यास, Chrome प्रीलोडिंगसाठी त्यांचा वापर करू शकते.</translation>
@@ -1018,6 +1020,7 @@
 <translation id="5304593522240415983">हे फील्ड रिक्त ठेवता येणार नाही</translation>
 <translation id="5306014156308790439">संग्रहामध्ये जोडा बंद केले आहे</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
+<translation id="5313967007315987356">साइट जोडा</translation>
 <translation id="5316947901395241499">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पासवर्ड सेव्ह करणे बंद केले आहे</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319359161174645648">Google Chrome ची शिफारस करते</translation>
@@ -1460,6 +1463,7 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> मेनू हायलाइट केला आहे.</translation>
 <translation id="6983306615164277634">अ‍ॅड्रेस बारचे स्थान हलवण्यासाठी तुम्ही त्याला स्‍पर्श करून धरूनदेखील ठेवू शकता.</translation>
 <translation id="6987047470128880212">या डिव्हाइसवर गुप्त मोड उपलब्ध नाही</translation>
+<translation id="6989358895283601928">सेव्ह करा आणि प्रिंट करा</translation>
 <translation id="6996145122199359148">हे पेज डाउनलोड करा</translation>
 <translation id="7013762323294215682">ही पासकी तुमच्या Password Manager मध्ये सेव्ह केली जाईल. याचा अ‍ॅक्सेस असलेले कोणीही ही पासकी वापरू शकेल.</translation>
 <translation id="7020741890149022655">वाचन सूचीमध्ये जोडा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@
 <translation id="7314734791127433392">पासवर्ड तपासू शकत नाही</translation>
 <translation id="7324354302972299151">“Do Not Track” विनंती पाठवा</translation>
 <translation id="7333041109965360609">सूचनांचे सदस्यत्व रद्द करा</translation>
+<translation id="7335766481146072567">पुढे सुरू ठेवा प्रेस करा</translation>
 <translation id="7336259382292148213">नोटिफिकेशनशी संबंधित कोणतीही समस्या नाही</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
@@ -1752,6 +1757,7 @@
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
 <translation id="8135406045838672858">डाउनलोड केलेल्या PDFs <ph name="APP_NAME" /> सह आपोआप उघडतात</translation>
 <translation id="8137562778192957619">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो Google Password Manager यामध्ये सेव्ह केला जाईल.</translation>
+<translation id="8151185429379586178">डेव्हलपर टूल</translation>
 <translation id="8152331954420209374">Lens वर जा</translation>
 <translation id="8153206878708357851">कॅरेट ब्राउझिंग टॉगल करा</translation>
 <translation id="8154784523622173959">या पेजचे बॅकग्राउंड पर्सनलाइझ करा</translation>
@@ -1831,6 +1837,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{एका साइटवरून परवानग्या काढून टाकल्या आहेत}other{# साइटवरून परवानग्या काढून टाकल्या आहेत}}</translation>
 <translation id="8453310803815879010">Dino गेम सुरू करा</translation>
 <translation id="8455675988389029454">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवा</translation>
+<translation id="8458341576712814616">शॉर्टकट</translation>
 <translation id="8458413889418591446">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी तुमचा इतिहास आणि टॅब सिंक करा</translation>
 <translation id="84594714173170813">तुमच्या Google खाते मधील Chrome डेटा वापरणे सुरू ठेवा</translation>
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
@@ -1855,6 +1862,7 @@
 <translation id="8559961053328923750">जाहिरात परफॉर्मन्स मोजण्यासाठी साइट ब्राउझरद्वारे शेअर करू शकतील अशा एकूण डेटाचे प्रमाण Chrome मर्यादित करते</translation>
 <translation id="8559990750235505898">पेज अन्य भाषांमध्ये भाषांतरित करण्यास ऑफर करा</translation>
 <translation id="8560602726703398413">बुकमार्क मध्ये तुमची वाचन सूची शोधा</translation>
+<translation id="85618473456579127">सर्वात वरती उजवीकडे प्रोफाइलवर टॅप करा</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> यांना काढून टाकायचे आहे का?</translation>
 <translation id="8570677896027847510">फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>

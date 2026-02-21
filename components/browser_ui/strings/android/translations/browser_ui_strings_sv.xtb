@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Filer som webbplatsen kan visa eller redigera</translation>
 <translation id="1073417869336441572">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
-<translation id="1085696779717592361">Använd Chrome som standard</translation>
 <translation id="1126523729897810826">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome</translation>
 <translation id="113098737392899175">Navigera på sidor med en textmarkör när ett tangentbord är anslutet</translation>
 <translation id="1148624853678088576">Nu är det klart!</translation>
@@ -199,7 +198,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2874939134665556319">Föregående spår</translation>
 <translation id="2891975107962658722">Blockera en webbplats från att spara data på enheten</translation>
 <translation id="2903493209154104877">Adresser</translation>
-<translation id="2910701580606108292">Fråga innan webbplatser tillåts att spela upp skyddat innehåll</translation>
 <translation id="2918484639460781603">Öppna Inställningar</translation>
 <translation id="2932883381142163287">Anmäl otillåten användning</translation>
 <translation id="2939338015096024043">När detta är aktiverat kan webbplatser be om att registrera kamerans position och få mer information om din omgivning. När detta är inaktiverat får webbplatser inte registrera kamerans position eller få mer information om din omgivning.</translation>
@@ -301,7 +299,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3924858949939391676">Visa länkar när läsläget är aktiverat</translation>
 <translation id="3933121352599513978">Komprimera oönskade begäranden (rekommenderas)</translation>
 <translation id="3934905113567851655">Nyp för att ändra storlek</translation>
-<translation id="3955193568934677022">Tillåt att skyddat innehåll spelas upp på webbplatser (rekommenderas)</translation>
 <translation id="3955321697524543127">Tillåt inte att webbplatser ansluter till USB-enheter</translation>
 <translation id="3965467402665811906">Webbplatser får begära tillstånd att använda uppgifter som de har sparat om dig</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
@@ -514,7 +511,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6171020522141473435">När detta är aktiverat kan webbplatser be om att få använda Bluetooth-enheter. När detta är inaktiverat får webbplatser inte använda Bluetooth-enheter.</translation>
 <translation id="6177128806592000436">Anslutningen till webbplatsen är inte säker</translation>
 <translation id="6181444274883918285">Lägg till en webbplats i undantagen</translation>
-<translation id="6192792657125177640">Undantag</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Cookies blockeras i Chrome igen i morgon}other{# dagar tills cookies blockeras igen}}</translation>
 <translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
@@ -637,7 +633,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7573594921350120855">Åtkomst till videokameran brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{<ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
-<translation id="757524316907819857">Blockera webbplatser från att spela upp skyddat innehåll</translation>
 <translation id="7586676035079382730">Aviseringar tillåts inte</translation>
 <translation id="7594634374516752650">Ansluten till en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan radera all eller delar av din historik, dina cookies, webbplatsdata med mera</translation>

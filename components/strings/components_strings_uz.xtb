@@ -2569,6 +2569,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5114987907971894280">virtual reallik</translation>
 <translation id="5115232566827194440">Mehmon seansini oʻzgartirish taqiqlangan</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
+<translation id="5116015291385561204">Maxfiy axborotni avtomatik kiritish uchun shaxsingizni tasdiqlang</translation>
 <translation id="5120526915373271910">Oilaviy filmlar</translation>
 <translation id="5122786942953798871">Konvert (paxta qogʻoz)</translation>
 <translation id="5123063207673082822">Dam olish kunlari</translation>
@@ -3967,6 +3968,7 @@ Batafsil axborot:
 <translation id="7372973238305370288">qidiruv natijasi</translation>
 <translation id="7374461526650987610">Protokollarga ishlov beruvchilar</translation>
 <translation id="7374733840632556089">Bu muammo qurilmangizda oʻrnatilgan sertifikat sababli yuz berishi ham mumkin. Bunday sertifikat ishonchli hisoblanmaydi, chunki u odatda tarmoqdagi maʼlumotlarni kuzatish va olish uchun foydalaniladi. Bunday funksiyadan ish joylarida yoki taʼlim muassasalarida foydalanishadi. Nima boʻlganda ham biz ushbu sertifikat mavjudligi haqida sizni ogohlantirmoqchimiz. Har qanday internetga ulangan brauzer yoki ilovada faoliyatni kuzatish mumkin.</translation>
+<translation id="73750335798090836">Qoʻshimcha himoya maqsadlarida sayohat va shaxsni tasdiqlovchi hujjatlar kabi maxfiy maʼlumotlarni kiritishda barmoq izi, yuz yoki boshqa ekran qulfidan foydalaning</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Hech qaysi saytga ruxsat berilmagan}=1{1 ta saytga ruxsat berilgan}other{# ta saytga ruxsat berilgan}}</translation>
 <translation id="7375818412732305729">Fayl biriktirilishi</translation>
 <translation id="7376031331622621328">Mahsulot haqidagi quyi ekran</translation>

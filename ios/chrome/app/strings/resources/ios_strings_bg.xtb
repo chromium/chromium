@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Запазване на групата</translation>
 <translation id="1853692000353488670">Нов раздел „инкогнито“</translation>
 <translation id="1854463785401910334">Търсене в отворените раздели</translation>
+<translation id="1860609647735325606">Обяснение с Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} от {count} парола}other{{position} от {count} пароли}}</translation>
 <translation id="1861262398884155592">Тази папка е празна</translation>
 <translation id="1864266050569350424">На сайт, за който сте запазили парола, докоснете полето за въвеждане на парола за вход.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Отваряне на всички</translation>
 <translation id="2536991091671391962">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в Google Мениджър на пароли за <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скрита парола</translation>
+<translation id="2538705697765638552">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете да управлявате информацията си в Google Wallet за <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Включване на подобрената защита…</translation>
 <translation id="2540111494300686866">Блокиране на диалоговите прозорци</translation>
 <translation id="2542268842667970959">Скриване на „Проверка на безопасността“</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Паролата е запазена в профила ви в Google {EMAIL}}other{Паролите са запазени в профила ви в Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Добавяне на парола…</translation>
 <translation id="2793703503584038325">Изберете парола и докоснете иконата за споделяне.</translation>
+<translation id="2793804887899597849">Информацията е запазена само на устройството</translation>
 <translation id="2797029671965852011">Показване на историята</translation>
 <translation id="2797302972324086597">Код на държавата</translation>
 <translation id="2798263827270599246">Основна тема</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Търсене с Обектив</translation>
 <translation id="3575426792457739946">Този списък съдържа всички заредени потребителски профили.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />. Управлява се от организацията ви.</translation>
+<translation id="3580448612293054698">Да се актуализира ли „<ph name="ENTITY_TYPE" />“?</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3587885837929752825">Организацията ви ограничава това, което можете да запазвате в профила си в Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Импортиране</translation>
 <translation id="3857113360369572832">Отворете <ph name="BEGIN_BOLD" />настройките на Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Име</translation>
+<translation id="386224966259596343">Ще имате възможност да запазите тази информация в Wallet следващия път, когато попълвате съответен формуляр.</translation>
 <translation id="3868495844258915202">Показване на пълния URL адрес</translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
 <translation id="3878657761594430423">Приспособление за хващане на листа</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Показване на помощна информация</translation>
 <translation id="4095483462103784441">Създаване на нова група раздели</translation>
 <translation id="4099756562043439968">Задаване на напомняне</translation>
+<translation id="4101867642407836771">В Google Wallet за <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Открива опасни събития, когато се случват, и ви предупреждава за тях.</translation>
 <translation id="4111985840824673503">Означаване на всичко като прочетено</translation>
 <translation id="411254640334432676">Изтеглянето не бе успешно.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Промяна на паролите ви</translation>
 <translation id="4120936477286528673">Този сайт многократно се опитва да отвори друго приложение.</translation>
 <translation id="4121993058175073134">За изпращане на експ. данни от мрежата конфиг. имейла си в Настройки.</translation>
+<translation id="4129768137228347731">Да се запази ли „<ph name="ENTITY_TYPE" />“?</translation>
 <translation id="4133139945030148655">Всичко е настроено</translation>
 <translation id="4133265950310064865">Подобрена защита</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4854068532375923088">Разрешаване на Gemini да използва камерата ви</translation>
+<translation id="4860114370595561279">Запазената от вас информация се съхранява на устройството ви</translation>
 <translation id="4860895144060829044">Обаждане</translation>
 <translation id="4861953997778766866">Всеки може да прави промени в споделените от вас групи раздели</translation>
 <translation id="4865063548323785458">Запазвайте и попълвайте автоматично паролите си, за да влизате лесно в сайтове и приложения</translation>
@@ -1235,6 +1243,7 @@
 <translation id="5559567453458728487">Преобразуване на мерни единици, намерени в мрежата</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5565871407246142825">Кредитни карти</translation>
+<translation id="5566623128829375608">Запазва се на устройството ви.</translation>
 <translation id="5567439033041178034">НАУЧЕТЕ ПОВЕЧЕ</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Скриване на „Списък за четене“</translation>
@@ -1650,7 +1659,6 @@
 <translation id="6964300328304469089">Понастоящем сте избрали: <ph name="NAME" /> (<ph name="EMAIL" />). Изберете профил.</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Създаване на изображение Pro</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979737339423435258">За цялото време</translation>
@@ -2178,6 +2186,7 @@
 <translation id="8829809207373502270">Този ключ за достъп вече не работи. Той бе изтрит от <ph name="WEBSITE" /> и скоро ще бъде изтрит и оттук. <ph name="BEGIN_LINK" />Всичко за ключовете за достъп<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Затваряне на всички неактивни</translation>
 <translation id="8837654851594567190">Сортиране по издател</translation>
+<translation id="884351711508006491">Информацията ви се запазва на устройството ви.</translation>
 <translation id="8844136307393039959">Понижение на цената на проследявания от вас продукт</translation>
 <translation id="8848286253339013170">Изображението в Google Снимки се запазва за <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скрито</translation>
@@ -2185,7 +2194,6 @@
 <translation id="8856643812068084733">Архиви</translation>
 <translation id="8863067612494559785">Изпраща се до <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Получавайте упътвания и местна информация от Google Карти</translation>
-<translation id="8867879594900082274">Редакциите ви ще се прилагат само за фиксираните от вас сайтове на това устройство.</translation>
 <translation id="8871974300055371298">Настройки за съдържанието</translation>
 <translation id="8877788021141246043">„Set a reminder“ („Задай напомняне“)</translation>
 <translation id="8879604564928138696">Докоснете два пъти за изпробване</translation>

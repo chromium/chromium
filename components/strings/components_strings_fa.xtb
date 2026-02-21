@@ -670,7 +670,7 @@
 <translation id="2090451897496479509">برای اطلاعات بیشتر با ارائه‌دهنده تماس بگیرید</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">صدا</translation>
-<translation id="2093184051799735948">جستجو کردن در <ph name="ENGINE_NAME" /> یا تایپ کردن نشانی وب</translation>
+<translation id="2093184051799735948">جستجو در <ph name="ENGINE_NAME" /> یا تایپ کردن نشانی وب</translation>
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
 <translation id="2094505752054353250">عدم تطابق دامنه</translation>
 <translation id="2094704029599359040">اطلاعات نسخه</translation>
@@ -2575,6 +2575,7 @@
 <translation id="5114987907971894280">واقعیت مجازی</translation>
 <translation id="5115232566827194440">ملغی کردن جلسه مهمان مدیریت‌شده محدود</translation>
 <translation id="5115563688576182185">(۶۴ بیت)</translation>
+<translation id="5116015291385561204">برای تکمیل خودکار اطلاعات حساس، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="5120526915373271910">فیلم‌های خانوادگی</translation>
 <translation id="5122786942953798871">پاکت (پنبه‌ای)</translation>
 <translation id="5123063207673082822">آخر هفته</translation>
@@ -2613,7 +2614,7 @@
 <translation id="5164928537947209380">‏نتایج این ابزار هوش مصنوعی آزمایشی همیشه صحیح نیست. برای بهبود آن، محتوایتان به Google ارسال می‌شود.
     <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5169827969064885044">‏ممکن است دسترسی به حساب سازمانتان را از دست بدهید یا به سرقت هویت دچار شوید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
-<translation id="5171045022955879922">جستجو یا تایپ نشانی وب</translation>
+<translation id="5171045022955879922">جستجو یا تایپ کردن نشانی وب</translation>
 <translation id="5172758083709347301">دستگاه</translation>
 <translation id="5177076414499237632">آشنایی با منبع و موضوع این صفحه</translation>
 <translation id="5179490652562926740">تنظیمات تأیید پرداخت ذخیره شد</translation>
@@ -3975,6 +3976,7 @@
 <translation id="7372973238305370288">نتیجه جستجو</translation>
 <translation id="7374461526650987610">کنترل‌کننده‌های پروتکل</translation>
 <translation id="7374733840632556089">‏علت این مشکل وجود یکی از گواهی‌هایی است که شما یا فردی دیگر در دستگاهتان نصب کرده‌اید. از این گواهی برای نظارت بر شبکه‌ها و رهگیری آن‌ها استفاده می‌شود و مورداعتماد Chrome نیست. علی‌رغم وجود برخی موارد قانونی برای نظارت، مثلاً نظارت بر شبکه‌های مدارس و شرکت‌ها، Chrome می‌خواهد مطمئن شود که شما از این جریان آگاهی دارید، حتی اگر نتوانید آن را متوقف کنید. نظارت ممکن است در هر مرورگر یا برنامه‌ای که به وب دسترسی دارد انجام شود.</translation>
+<translation id="73750335798090836">برای محافظت بیشتر، هنگام استفاده از اطلاعات حساس مثل مدارک سفر و هویت، همیشه از اثر انگشت، چهره، یا قفل صفحه دیگری استفاده کنید</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{هیچ سایتی اجازه ندارد}=1{یک سایت اجازه دارد}one{# سایت اجازه دارد}other{# سایت اجازه دارد}}</translation>
 <translation id="7375818412732305729">فایل پیوست شده است</translation>
 <translation id="7376031331622621328">برگ زیرین تجارت</translation>
@@ -4962,7 +4964,7 @@
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8959288490306482616">برنزه ۳</translation>
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />پیشنهادات:<ph name="MARKUP_2" />مطمئن شوید اتصال داده دارید<ph name="MARKUP_3" />بعداً این صفحه وب را بار کردن مجدد کنید<ph name="MARKUP_4" />آدرسی را که وارد کرده‌اید، بررسی کنید<ph name="MARKUP_5" /></translation>
+<translation id="8963213021028234748"><ph name="MARKUP_1" />پیشنهادات:<ph name="MARKUP_2" />مطمئن شوید اتصال داده دارید<ph name="MARKUP_3" />بعداً این صفحه وب را مجدداً بار کنید<ph name="MARKUP_4" />آدرسی را که وارد کرده‌اید، بررسی کنید<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">فایل‌های محلی شما تا <ph name="HOURS" /> ساعت دیگر حذف خواهد شد</translation>
 <translation id="8968766641738584599">ذخیره کارت</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>

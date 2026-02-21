@@ -1398,6 +1398,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="323585066388831737">E kuqe e çelur</translation>
 <translation id="3235902901585019063">Skedarët lokalë do të fshihen më <ph name="DATE_TIME" />. Sigurohu që të dhënat kritike personale ose të biznesit të ruhen në nivel të jashtëm.</translation>
 <translation id="3236212803136366317">Përfitimet e kartave</translation>
+<translation id="3237427677128462778">Nuk mund të ruhet në "Portofolin e Google"</translation>
 <translation id="3238395604961564389">Hape lidhjen në një dritare të fshehtë</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar pamjen e shfletuesit tënd</translation>
 <translation id="3240791268468473923">Kredenciali i pagesës së sigurt pa fletë përkatëse kredenciali është i hapur</translation>
@@ -2535,6 +2536,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="5048293684454354469">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak të personalizuara. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, shtyp "Tab" për më shumë shkurtore kërkimi që ofrohen pas këtij sugjerimi kërkimi</translation>
+<translation id="5052488928733955073">Problem me plotësimin e informacioneve të tua. Kontrollo lidhjen tënde.</translation>
 <translation id="5052517576853118371">Temat aktive</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për ta dërguar këta skedarë duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="5056587122125565772">Krijo një imazh</translation>
@@ -2574,6 +2576,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5114987907971894280">realiteti virtual</translation>
 <translation id="5115232566827194440">Anulimi i seancës së vizitorit të menaxhuar të kufizuar</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">Verifiko që je ti për të plotësuar automatikisht informacionet delikate</translation>
 <translation id="5120526915373271910">Filma për familjen</translation>
 <translation id="5122786942953798871">Zarf (pambuk)</translation>
 <translation id="5123063207673082822">Fundjavë</translation>
@@ -2832,6 +2835,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5521782189689806907">Mobilieri</translation>
 <translation id="5523118979700054094">Emri i politikës</translation>
 <translation id="5523588073846127669">Tregtari nuk e pranon këtë kartë virtuale</translation>
+<translation id="5524476634211040742">Mëso më shumë rreth IA-së dhe privatësisë</translation>
 <translation id="5525755241743357906">Skedari u kopjua ose u zhvendos</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e ChromeOS.</translation>
 <translation id="55293785478302737">Qepje anësore</translation>
@@ -3651,6 +3655,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6850286078059909152">Ngjyra e tekstit</translation>
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
 <translation id="6854691830678097752">Për përfundim më të shpejtë të blerjes, ruaje këtë kod CVC në llogarinë tënde, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Pastro formularin për të përdorur opsionin e "Paguaj më vonë"</translation>
 <translation id="6857776781123259569">Menaxho fjalëkalimet...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Mund të kërkojë të kalojë në modalitetin "figurë brenda figurës"</translation>
@@ -3972,6 +3977,7 @@ Detaje shtesë:
 <translation id="7372973238305370288">rezultati i kërkimit</translation>
 <translation id="7374461526650987610">Përpunuesit e protokollit</translation>
 <translation id="7374733840632556089">Ky problem ndodh për shkak të një certifikate që instalove ti ose dikush tjetër në pajisjen tënde. Certifikata njihet se është përdorur për të monitoruar dhe ndërhyrë në rrjete dhe nuk është e besuar nga Chrome. Megjithëse ekzistojnë disa raste legjitime për monitorimin, si p.sh. një rrjet shkolle ose kompanie, Chrome dëshiron të sigurohet që je në dijeni se kjo ndodh, edhe nëse nuk arrin ta ndalosh. Monitorimi mund të ndodhë në çdo shfletues ose aplikacion që ka qasje në ueb.</translation>
+<translation id="73750335798090836">Për më shumë mbrojtje, përdor gjithmonë gjurmën e gishtit, fytyrën ose një kyçje tjetër ekrani kur përdor informacione delikate, si p.sh. dokumentet e udhëtimit dhe të identitetit</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nuk lejohet asnjë sajt}=1{Lejohet 1 sajt}other{Lejohen # sajte}}</translation>
 <translation id="7375818412732305729">Skedari është bashkëngjitur</translation>
 <translation id="7376031331622621328">Fleta e poshtme e tregtisë</translation>

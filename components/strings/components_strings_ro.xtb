@@ -2574,6 +2574,7 @@
 <translation id="5114987907971894280">Realitate virtuală</translation>
 <translation id="5115232566827194440">Modificarea sesiunii gestionate și restricționate pentru invitați</translation>
 <translation id="5115563688576182185">(64 de biți)</translation>
+<translation id="5116015291385561204">Confirmă-ți identitatea pentru a completa automat informații sensibile</translation>
 <translation id="5120526915373271910">Filme pentru toată familia</translation>
 <translation id="5122786942953798871">Plic (bumbac)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3974,6 +3975,7 @@ Detalii suplimentare:
 <translation id="7372973238305370288">rezultat al căutării</translation>
 <translation id="7374461526650987610">Handlere pentru protocoale</translation>
 <translation id="7374733840632556089">Această problemă apare din cauza unui certificat pe care tu sau altcineva l-ați instalat pe dispozitiv. Certificatul este folosit pentru a monitoriza și a intercepta rețelele, nefiind autorizat de Chrome. Deși există cazuri legitime pentru monitorizare, de exemplu, într-o rețea de la școală sau de la serviciu, Chrome vrea să se asigure că știi ce se întâmplă, chiar dacă nu poți opri acest lucru. Monitorizarea se poate face în orice browser sau aplicație care intră pe web.</translation>
+<translation id="73750335798090836">Pentru protecție sporită, folosește întotdeauna amprenta, fața sau altă modalitate de blocare a ecranului când folosești informații sensibile, cum ar fi documentele de călătorie și actele de identitate</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Niciun site permis}=1{Un site permis}few{# site-uri permise}other{# de site-uri permise}}</translation>
 <translation id="7375818412732305729">Fișierul este atașat</translation>
 <translation id="7376031331622621328">Foaia din partea de jos pentru comerț</translation>

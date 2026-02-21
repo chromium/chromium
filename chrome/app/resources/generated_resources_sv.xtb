@@ -354,7 +354,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Endast markering</translation>
 <translation id="1222835797152767346">Ange en pinkod så att det blir enklare att logga in</translation>
 <translation id="1223484782328004593">Licens krävs för <ph name="APP_NAME" /></translation>
-<translation id="1223498995510244364">Sammanfatta</translation>
 <translation id="1223853788495130632">Administratören rekommenderar ett specifikt värde för den här inställningen.</translation>
 <translation id="1225177025209879837">Begäran bearbetas ...</translation>
 <translation id="1227107020813934021">Hitta dokumentskannrar</translation>
@@ -1056,6 +1055,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1695510246756136088">Det gick inte att ansluta till internet. Försök igen.</translation>
 <translation id="1696214930320482113">Med profiler kan du hålla isär jobb, privatliv och underhållning utan att behöva byta webbläsare. Lägg till en ny profil nu.</translation>
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Skydda enheten genom att bara köra och installera mjukvara från betrodda källor och utvecklare.</translation>
 <translation id="169675691788639886">Det har konfigurerats en SSH-server på enheten. Logga inte in med känsliga konton.</translation>
 <translation id="1697122132646041614">En Gillar inte-markering öppnar ett formulär där du kan ange detaljerad feedback om varför du inte gillar dessa resultat.</translation>
 <translation id="1697532407822776718">Färdigt!</translation>
@@ -5880,6 +5880,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4943927218331934807">Lösenord krävs</translation>
 <translation id="4944310289250773232">Den här autentiseringstjänsten tillhandahålls av <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Låt ditt barn trycka på av/på-knappen om fingeravtryck ska användas. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Visa knappen för projektpanelen</translation>
 <translation id="4946998421534856407">Appstartaren + uppåtpil</translation>
 <translation id="4947376546135294974">Data från webbplatsen du besöker</translation>
 <translation id="4948370357877377178">Fortsätt med dina uppgifter</translation>
@@ -6114,7 +6115,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="51143538739122961">Sätt i säkerhetsnyckeln och tryck på den</translation>
 <translation id="5115309401544567011">Anslut <ph name="DEVICE_TYPE" /> till en strömkälla.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verifiera din identitet för att autofylla känsliga uppgifter</translation>
 <translation id="5116315184170466953">Gilla-markera för att visa att du gillar den föreslagna flikgruppen</translation>
 <translation id="5116628073786783676">S&amp;para ljud som...</translation>
 <translation id="5117139026559873716">Koppla från telefonen från <ph name="DEVICE_TYPE" />. De ansluts inte längre till varandra automatiskt.</translation>
@@ -6712,6 +6712,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installerar</translation>
 <translation id="5527822190489075064">Optimerad laddning</translation>
 <translation id="5529554942700688235">Översikt över minnesbesparing, <ph name="MEMORY_VALUE" /> har frigjorts</translation>
+<translation id="5529693968082667490">Visa knappen för Sök bland flikar</translation>
 <translation id="5530977410273748884">Spara lösenordet i Google Lösenordshantering genom att klicka på nyckeln</translation>
 <translation id="5532223876348815659">Globalt</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vill</translation>
@@ -8261,6 +8262,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6613267708691765962">Söker efter skadlig kod …</translation>
 <translation id="6615455863669487791">Visa mig</translation>
 <translation id="6618013221808317456">Tillåt inte att webbplatser använder JavaScript-optimering</translation>
+<translation id="6618154741503063152">Det gick inte att ladda upp. Bilagor är inte tillåtna.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Webbplatsen kan spåra din plats</translation>
 <translation id="6619243162837544323">Nätverksstatus</translation>
@@ -9357,7 +9359,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7368927539449986686">Redigera webbplatssökning</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Hantera USB-enheter</translation>
-<translation id="73750335798090836">Använd alltid fingeravtryck, ansiktet eller ett annat skärmlås när du använder känsliga uppgifter som rese- och identitetshandlingar för extra skydd</translation>
 <translation id="7376124766545122644">Det gick inte att använda länken. Kontrollera att länken börjar med http:// eller https:// och försök igen.</translation>
 <translation id="7376553024552204454">Markera muspekaren när den är i rörelse</translation>
 <translation id="7377250337652426186">Om du vill gå tillbaka fler än en sida klickar du och håller kvar Tillbaka.</translation>
@@ -10358,6 +10359,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8034399942062051455">V8-optimering är inaktiverat</translation>
 <translation id="8034697324150621782">Byt med den övre vyn</translation>
 <translation id="8035059678007243127">Inkognitosida i vilocacheminne: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Visa knappen för sparade flikgrupper</translation>
 <translation id="8036193484521570992">Hjälp till att förbättra autofyll</translation>
 <translation id="8036504271468642248">Föregående mening</translation>
 <translation id="8037117027592400564">Läsa all text som läses upp med syntetiskt tal</translation>

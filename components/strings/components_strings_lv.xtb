@@ -2572,6 +2572,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5114987907971894280">virtuālā realitāte</translation>
 <translation id="5115232566827194440">Ierobežotas, pārvaldītas viesa sesijas ignorēšana</translation>
 <translation id="5115563688576182185">(64 bitu)</translation>
+<translation id="5116015291385561204">Verificēt identitāti, lai automātiski aizpildītu sensitīvu informāciju</translation>
 <translation id="5120526915373271910">Ģimenes filmas</translation>
 <translation id="5122786942953798871">Aploksne (kokvilna)</translation>
 <translation id="5123063207673082822">Nedēļas nogale</translation>
@@ -3972,6 +3973,7 @@ Papildu informācija:
 <translation id="7372973238305370288">meklēšanas rezultāts</translation>
 <translation id="7374461526650987610">Protokolu apdarinātāji</translation>
 <translation id="7374733840632556089">Šīs problēmas iemesls ir sertifikāts, kuru jūs vai kāds cits ir instalējis jūsu ierīcē. Ir zināms, ka šis sertifikāts tiek izmantots tīklu pārraudzībai un pārtveršanai, un pārlūks Chrome tam neuzticas. Lai gan pastāv daži likumīgi pārraudzības gadījumi, piemēram, skolas vai uzņēmuma tīklā, pārlūks Chrome vēlas pārliecināties, ka esat par to informēts, pat ja nevarat to apturēt. Pārraudzība var notikt jebkurā pārlūkā vai lietojumprogrammā ar piekļuvi tīmeklim.</translation>
+<translation id="73750335798090836">Lai nodrošinātu papildu aizsardzību, vienmēr lietojiet pirksta nospiedumu, seju vai citu ekrāna bloķēšanas opciju, kad izmantojat sensitīvu informāciju, piemēram, ceļojumu un identitātes dokumentus.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nav atļauta neviena vietne}=1{Atļauta 1 vietne}zero{Atļautas # vietnes}one{Atļauta # vietne}other{Atļautas # vietnes}}</translation>
 <translation id="7375818412732305729">Tiek pievienots fails</translation>
 <translation id="7376031331622621328">Komercijas ekrāna apakšdaļas lapa</translation>

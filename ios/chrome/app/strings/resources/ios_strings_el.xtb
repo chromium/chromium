@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Διατήρηση ομάδας</translation>
 <translation id="1853692000353488670">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="1854463785401910334">Αναζήτηση σε ανοικτές καρτέλες</translation>
+<translation id="1860609647735325606">Επεξήγηση με το Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} από {count} κωδικό πρόσβασης}other{{position} από {count} κωδικούς πρόσβασης}}</translation>
 <translation id="1861262398884155592">Αυτός ο φάκελος είναι άδειος</translation>
 <translation id="1864266050569350424">Σε έναν ιστότοπο στον οποίο έχετε αποθηκεύσει έναν κωδικό πρόσβασης, πατήστε το πεδίο Κωδικός πρόσβασης σύνδεσης.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Άνοιγμα όλων</translation>
 <translation id="2536991091671391962">Μπορείτε να χρησιμοποιείτε τους αποθηκευμένους κωδικούς πρόσβασης σε οποιαδήποτε συσκευή. Αποθηκεύονται στον Διαχειριστή κωδικών πρόσβασης Google για τον λογαριασμό <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Κρυφός κωδικός</translation>
+<translation id="2538705697765638552">Αποθηκεύστε τις πληροφορίες σας και ολοκληρώστε πιο γρήγορα εργασίες, όπως τη συμπλήρωση φορμών σε όλα τα προϊόντα Google. Μπορείτε να διαχειριστείτε τις πληροφορίες σας στο Πορτοφόλι Google για τον χρήστη <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Ενεργοποίηση Βελτιωμένης προστασίας…</translation>
 <translation id="2540111494300686866">Απόκρυψη παραθύρων διαλόγου</translation>
 <translation id="2542268842667970959">Απόκρυψη Ελέγχου ασφαλείας</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, {EMAIL}}other{Οι κωδικοί πρόσβασης αποθηκεύτηκαν στον Λογαριασμό σας Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Προσθήκη κωδικού πρόσβασης…</translation>
 <translation id="2793703503584038325">Επιλέξτε έναν κωδικό πρόσβασης και πατήστε το εικονίδιο κοινής χρήσης</translation>
+<translation id="2793804887899597849">Οι πληροφορίες αποθηκεύτηκαν μόνο στη συσκευή</translation>
 <translation id="2797029671965852011">Εμφάνιση ιστορικού</translation>
 <translation id="2797302972324086597">Κωδικός χώρας</translation>
 <translation id="2798263827270599246">Προεπιλεγμένο θέμα</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Αναζήτηση με το Lens</translation>
 <translation id="3575426792457739946">Αυτή η λίστα περιέχει όλα τα φορτωμένα προφίλ.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
+<translation id="3580448612293054698">Ενημέρωση <ph name="ENTITY_TYPE" />;</translation>
 <translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
 <translation id="3587482841069643663">Όλες</translation>
 <translation id="3587885837929752825">Ο οργανισμός σας περιορίζει το περιεχόμενο που μπορείτε να αποθηκεύσετε στον Λογαριασμό σας Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Εισαγωγή</translation>
 <translation id="3857113360369572832">Ανοίξτε τις <ph name="BEGIN_BOLD" />Ρυθμίσεις στο Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Όνομα</translation>
+<translation id="386224966259596343">Θα έχετε την ευκαιρία να αποθηκεύσετε αυτές τις πληροφορίες στο Πορτοφόλι την επόμενη φορά που θα συμπληρώσετε μια σχετική φόρμα.</translation>
 <translation id="3868495844258915202">Εμφάνιση πλήρους URL</translation>
 <translation id="3875783148670536197">Οδηγίες</translation>
 <translation id="3878657761594430423">Συλλέκτης φύλλων</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Εμφάνιση βοήθειας</translation>
 <translation id="4095483462103784441">Δημιουργία νέας ομάδας καρτελών</translation>
 <translation id="4099756562043439968">Ορισμός υπενθύμισης</translation>
+<translation id="4101867642407836771">Στο Πορτοφόλι Google για τον χρήστη<ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Εντοπίζει και σας προειδοποιεί για επικίνδυνα συμβάντα, όταν αυτά εμφανίζονται.</translation>
 <translation id="4111985840824673503">Επισήμανση όλων ως αναγνωσμένων</translation>
 <translation id="411254640334432676">Αποτυχία λήψης.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Αλλαγή κωδικών πρόσβασης</translation>
 <translation id="4120936477286528673">Αυτός ο ιστότοπος προσπαθεί επανειλημμένως να ανοίξει μια άλλη εφαρμογή.</translation>
 <translation id="4121993058175073134">Για αποστ. δεδομ.εξαγ.δικτ.,διαμορφ. το email σας στην εφ. "Ρυθμίσεις"</translation>
+<translation id="4129768137228347731">Αποθήκευση <ph name="ENTITY_TYPE" />;</translation>
 <translation id="4133139945030148655">Είστε έτοιμοι</translation>
 <translation id="4133265950310064865">Βελτιωμένη ασφάλεια</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="4854068532375923088">Επιτρέψτε στο Gemini να χρησιμοποιεί την κάμερά σας</translation>
+<translation id="4860114370595561279">Οι αποθηκευμένες πληροφορίες φυλάσσονται στη συσκευή σας</translation>
 <translation id="4860895144060829044">Κλήση</translation>
 <translation id="4861953997778766866">Όλοι μπορούν να κάνουν αλλαγές στις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="4865063548323785458">Αποθηκεύστε και συμπληρώστε αυτόματα τους κωδικούς πρόσβασης για εύκολη σύνδεση σε ιστοτόπους και εφαρμογές</translation>
@@ -1235,6 +1243,7 @@
 <translation id="5559567453458728487">Μετατροπή μονάδων μέτρησης που υπάρχουν στον ιστό</translation>
 <translation id="556042886152191864">Κουμπί</translation>
 <translation id="5565871407246142825">Πιστωτικές κάρτες</translation>
+<translation id="5566623128829375608">Αποθηκεύεται στη συσκευή σας.</translation>
 <translation id="5567439033041178034">ΜΑΘΕΤΕ ΠΕΡΙΣΣΟΤΕΡΑ</translation>
 <translation id="5578795271662203820">Αναζήτηση <ph name="SEARCH_ENGINE" /> για την εικόνα</translation>
 <translation id="5579012242779565775">Απόκρυψη Λίστας ανάγνωσης</translation>
@@ -1651,7 +1660,6 @@
 <translation id="6964300328304469089">Τρέχουσα επιλογή: <ph name="NAME" />, <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="6964760285928603117">Κατάργηση από την ομάδα</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Δημιουργία εικόνας Pro</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Από την αρχή</translation>
@@ -2179,6 +2187,7 @@
 <translation id="8829809207373502270">Αυτό το κλειδί πρόσβασης δεν λειτουργεί πλέον. Διαγράφηκε από το <ph name="WEBSITE" /> και θα διαγραφεί σύντομα και από εδώ. <ph name="BEGIN_LINK" />Σχετικά με τα κλειδιά πρόσβασης<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Κλείσιμο όλων των ανενεργών</translation>
 <translation id="8837654851594567190">Ταξινόμηση με βάση τον εκδότη</translation>
+<translation id="884351711508006491">Οι πληροφορίες αποθηκεύονται στη συσκευή σας.</translation>
 <translation id="8844136307393039959">Πτώση τιμής στο προϊόν παρακολούθησης</translation>
 <translation id="8848286253339013170">Αποθήκευση εικόνας στις Φωτογραφίες Google για τον λογαριασμό <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Κρυφή</translation>
@@ -2186,7 +2195,6 @@
 <translation id="8856643812068084733">Αρχεία</translation>
 <translation id="8863067612494559785">Αποστολή σε <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Λάβετε οδηγίες και τοπικές πληροφορίες από τους Χάρτες Google</translation>
-<translation id="8867879594900082274">Οι αλλαγές θα εφαρμοστούν μόνο στους καρφιτσωμένους ιστοτόπους σε αυτή τη συσκευή.</translation>
 <translation id="8871974300055371298">Ρυθμίσεις περιεχομένου</translation>
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8879604564928138696">Πατήστε δύο φορές για δοκιμή</translation>

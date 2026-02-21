@@ -354,7 +354,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1221825588892235038">Net seleksie</translation>
 <translation id="1222835797152767346">Stel ’n PIN om dit makliker te maak om aan te meld</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> vereis 'n lisensie</translation>
-<translation id="1223498995510244364">Som op</translation>
 <translation id="1223853788495130632">Jou administrateur beveel 'n spesifieke waarde vir hierdie instelling aan.</translation>
 <translation id="1225177025209879837">Verwerk tans versoek …</translation>
 <translation id="1227107020813934021">Soek dokumentskandeerders</translation>
@@ -1056,6 +1055,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1695510246756136088">Kan nie aan die internet koppel nie. Probeer weer.</translation>
 <translation id="1696214930320482113">Met profiele kan jy werk, persoonlike aktiwiteite en speletjies skei sonder om na ’n ander blaaier oor te skakel. Voeg nou ’n nuwe profiel by.</translation>
 <translation id="1696555181932908973">Jy kan ander maniere probeer om voort te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Jy moet net sagteware van betroubare bronne en ontwikkelaars gebruik en installeer om jou toestel veilig te hou.</translation>
 <translation id="169675691788639886">SSH-bediener is vir toestel opgestel. Moenie met sensitiewe rekeninge aanmeld nie.</translation>
 <translation id="1697122132646041614">Afduim maak ’n vorm oop vir die indien van gedetailleerde terugvoer oor hoekom jy nie van hierdie resultate hou nie.</translation>
 <translation id="1697532407822776718">Als is nou reg!</translation>
@@ -5880,6 +5880,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4943927218331934807">Wagwoord is nodig</translation>
 <translation id="4944310289250773232">Hierdie stawingdiens word gehou deur <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Laat jou kind aan die aan/af-skakelaar raak om die vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
+<translation id="4946215577126251136">Wys projektepaneelknoppie</translation>
 <translation id="4946998421534856407">lanseerder + oppyl</translation>
 <translation id="4947376546135294974">Data van die webwerf wat jy besoek</translation>
 <translation id="4948370357877377178">Gaan voort met jou take</translation>
@@ -6114,7 +6115,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="51143538739122961">Sit jou sekuriteitsleutel in en raak daaraan</translation>
 <translation id="5115309401544567011">Prop jou <ph name="DEVICE_TYPE" /> by 'n kragbron in.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verifieer dat dit jy is om sensitiewe inligting te outovul</translation>
 <translation id="5116315184170466953">Opduim stuur terugvoer dat jy van hierdie oortjiegroepvoorstel hou</translation>
 <translation id="5116628073786783676">Stoor oudio as …</translation>
 <translation id="5117139026559873716">Ontkoppel jou foon van jou <ph name="DEVICE_TYPE" />. Hulle sal nie meer outomaties koppel nie.</translation>
@@ -6712,6 +6712,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installeer tans</translation>
 <translation id="5527822190489075064">Geoptimeerde laai</translation>
 <translation id="5529554942700688235">Opsomming van geheuebesparing: <ph name="MEMORY_VALUE" /> is beskikbaar gemaak</translation>
+<translation id="5529693968082667490">Wys oortjiesoekknoppie</translation>
 <translation id="5530977410273748884">Klik die sleutel om jou wagwoord in Google Wagwoordbestuurder te stoor.</translation>
 <translation id="5532223876348815659">Globaal</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wil</translation>
@@ -8262,6 +8263,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6613267708691765962">Skandeer tans vir wanware …</translation>
 <translation id="6615455863669487791">Wys my</translation>
 <translation id="6618013221808317456">Moenie werwe toelaat om JavaScript-optimering te gebruik nie</translation>
+<translation id="6618154741503063152">Kan nie oplaai nie. Aanhegsels word nie toegelaat nie.</translation>
 <translation id="6619058681307408113">Lyndrukkerdaemoon (LPD)</translation>
 <translation id="661907246513853610">Werf kan jou ligging naspoor</translation>
 <translation id="6619243162837544323">Netwerktoestand</translation>
@@ -9357,7 +9359,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7368927539449986686">Wysig werfsoektog</translation>
 <translation id="7370592524170198497">Ethernet-EAP:</translation>
 <translation id="7374376573160927383">Bestuur USB-toestelle</translation>
-<translation id="73750335798090836">Gebruik vir ekstra beskerming altyd jou vingerafdruk, gesig of ander skermslot wanneer jy sensitiewe inligting soos reis- en identiteitdokumente gebruik</translation>
 <translation id="7376124766545122644">Kan nie hierdie skakel gebruik nie. Kyk dat jou skakel met “http://” of “https://” begin om weer te probeer.</translation>
 <translation id="7376553024552204454">Lig die muismerker uit wanneer dit beweeg</translation>
 <translation id="7377250337652426186">Klik en hou die Terug-knoppie om meer as 1 bladsy terug te gaan.</translation>
@@ -10357,6 +10358,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8034399942062051455">V8-optimering is af</translation>
 <translation id="8034697324150621782">Ruil met boaansig</translation>
 <translation id="8035059678007243127">Incognito-terug-vorentoe-kasgegeue-bladsy: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Wys knoppie vir gestoorde oortjiegroepe</translation>
 <translation id="8036193484521570992">Help om outovul te verbeter</translation>
 <translation id="8036504271468642248">Vorige sin</translation>
 <translation id="8037117027592400564">Lees alle teks uitgespreek met gesintetiseerde spraak</translation>

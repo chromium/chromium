@@ -727,6 +727,7 @@
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
 <translation id="4162867837470729563">分享選項清單宜家顯示喺成個畫面。</translation>
+<translation id="4165077084524712774">更多工具</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4170577491341606575">正在擷取資料…</translation>
 <translation id="4177222230309051052">取得所有書籤</translation>
@@ -738,6 +739,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{由於此網站傳送垃圾或欺詐內容，Chrome 已禁止其傳送通知}other{由於這些網站傳送垃圾或欺詐內容，Chrome 已禁止其傳送通知}}</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此裝置上的 1 個分頁}other{此裝置上的 # 個分頁}}</translation>
+<translation id="4198268995694216131">其他網站</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 你曾用於此網站</translation>
 <translation id="4214315110991671325">如果您允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
@@ -1018,6 +1020,7 @@
 <translation id="5304593522240415983">這個欄位不得留空</translation>
 <translation id="5306014156308790439">已停用「新增至訊息集」功能</translation>
 <translation id="5308380583665731573">連線</translation>
+<translation id="5313967007315987356">新增網站</translation>
 <translation id="5316947901395241499">管理員已關閉密碼儲存功能</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
@@ -1460,6 +1463,7 @@
 <translation id="6980258170429555165">突顯咗「<ph name="MENU_NAME" />」選單。</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
 <translation id="6987047470128880212">這部裝置不支援無式痕分頁</translation>
+<translation id="6989358895283601928">儲存並列印</translation>
 <translation id="6996145122199359148">下載此網頁</translation>
 <translation id="7013762323294215682">此密鑰將會儲存至密碼管理工具。任何擁有存取權的使用者都可使用此密鑰。</translation>
 <translation id="7020741890149022655">新增至閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@
 <translation id="7314734791127433392">無法檢查密碼</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
+<translation id="7335766481146072567">按一下 [繼續]</translation>
 <translation id="7336259382292148213">通知權限沒有問題</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
@@ -1752,6 +1757,7 @@
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟已下載的 PDF</translation>
 <translation id="8137562778192957619">您不需記住此密碼。系統會將密碼儲存至「Google 密碼管理工具」。</translation>
+<translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8152331954420209374">前往「智能鏡頭」</translation>
 <translation id="8153206878708357851">切換鍵盤瀏覽</translation>
 <translation id="8154784523622173959">自訂此頁面的背景</translation>
@@ -1831,6 +1837,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 # 個網站的權限}}</translation>
 <translation id="8453310803815879010">啟動恐龍遊戲</translation>
 <translation id="8455675988389029454">在任何裝置上存取書籤、密碼及其他設定</translation>
+<translation id="8458341576712814616">快捷字詞</translation>
 <translation id="8458413889418591446">如要快速重溫你瀏覽過的網站，可同步記錄和分頁</translation>
 <translation id="84594714173170813">繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8460448946170646641">查看重要的私隱和安全控制項</translation>
@@ -1855,6 +1862,7 @@
 <translation id="8559961053328923750">Chrome 會限制網站為評估廣告成效而透過瀏覽器分享的總資料量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="8560602726703398413">在書籤中尋找閱讀清單</translation>
+<translation id="85618473456579127">輕按右上方的個人檔案</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>

@@ -738,6 +738,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome het weens strooipos of misleidende inhoud hierdie werf gekeer om kennisgewings te stuur}other{Chrome het weens strooipos of misleidende inhoud hierdie werwe gekeer om kennisgewings te stuur}}</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 oortjie op hierdie toestel}other{# oortjies op hierdie toestel}}</translation>
+<translation id="4198268995694216131">Bykomende werwe</translation>
 <translation id="4198423547019359126">Geen beskikbare aflaailiggings nie</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Jy het op hierdie werf gebruik</translation>
 <translation id="4214315110991671325">As jy webkoekies toelaat, kan Chrome hulle vir vooraflaai gebruik.</translation>
@@ -1018,6 +1019,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5304593522240415983">Hierdie veld mag nie leeg wees nie</translation>
 <translation id="5306014156308790439">Gedeaktiveer: Voeg by versameling</translation>
 <translation id="5308380583665731573">Koppel</translation>
+<translation id="5313967007315987356">Voeg werf by</translation>
 <translation id="5316947901395241499">Die stoor van wagwoorde is deur jou administrateur afgeskakel</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5319359161174645648">Google beveel Chrome aan</translation>
@@ -1543,6 +1545,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7314734791127433392">Kan nie wagwoorde kontroleer nie</translation>
 <translation id="7324354302972299151">Stuur ’n “Do Not Track”-versoek</translation>
 <translation id="7333041109965360609">Uitgeteken van kennisgewings</translation>
+<translation id="7335766481146072567">Druk gaan voort</translation>
 <translation id="7336259382292148213">Kennisgewings lyk goed</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7340958967809483333">Opsies vir Ontdek</translation>
@@ -1752,6 +1755,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8135406045838672858">Afgelaaide PDF’s maak met <ph name="APP_NAME" /> outomaties oop</translation>
 <translation id="8137562778192957619">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal in Google Wagwoordbestuurder gestoor word.</translation>
+<translation id="8151185429379586178">Ontwikkelaarnutsgoed</translation>
 <translation id="8152331954420209374">Gaan na Lens</translation>
 <translation id="8153206878708357851">Skakel Karetblaai aan of af</translation>
 <translation id="8154784523622173959">Personaliseer die agtergrond van hierdie bladsy</translation>
@@ -1831,6 +1835,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Toestemmings is van 1 werf verwyder}other{Toestemmings is van # werwe verwyder}}</translation>
 <translation id="8453310803815879010">Begin Dinosourusspeletjie</translation>
 <translation id="8455675988389029454">Kry jou boekmerke, wagwoorde en meer op al jou toestelle</translation>
+<translation id="8458341576712814616">Kortpad</translation>
 <translation id="8458413889418591446">Sinkroniseer jou geskiedenis en oortjies om vinnig terug te gaan na werwe wat jy besoek het</translation>
 <translation id="84594714173170813">Hou aan om die Chrome-data in jou Google-rekening te gebruik</translation>
 <translation id="8460448946170646641">Gaan belangrike privaatheid- en sekuriteitkontroles na</translation>
@@ -1855,6 +1860,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8559961053328923750">Chrome beperk die totale hoeveelheid data wat werwe deur die blaaier kan deel om advertensiewerkverrigting te meet</translation>
 <translation id="8559990750235505898">Aanbieding om bladsye in ander tale te vertaal</translation>
 <translation id="8560602726703398413">Kry jou leeslys in Boekmerke</translation>
+<translation id="85618473456579127">Tik op profiel regs bo</translation>
 <translation id="8565021320663436446">Verwyder <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Lêer kan nie veilig afgelaai word nie</translation>
 <translation id="8571213806525832805">Afgelope vier weke</translation>

@@ -355,7 +355,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1221825588892235038">Numai elementele selectate</translation>
 <translation id="1222835797152767346">Setează un cod PIN ca să te conectezi mai ușor</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> necesită licență</translation>
-<translation id="1223498995510244364">Rezumă</translation>
 <translation id="1223853788495130632">Administratorul dvs. recomandă o valoare specifică pentru această setare.</translation>
 <translation id="1225177025209879837">Se procesează solicitarea...</translation>
 <translation id="1227107020813934021">Găsește scanere de documente</translation>
@@ -1056,6 +1055,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1695510246756136088">Nu se poate conecta la internet. Încearcă din nou.</translation>
 <translation id="1696214930320482113">Cu ajutorul profilurilor, poți să separi serviciul, activitățile personale și divertismentul fără să treci la alt browser. Adaugă un profil nou acum.</translation>
 <translation id="1696555181932908973">Poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Pentru a-ți păstra dispozitivul în siguranță, trebuie să rulezi și să instalezi numai software de la surse și dezvoltatori de încredere.</translation>
 <translation id="169675691788639886">Dispozitivul are serverul SSH configurat. Nu te conecta folosind conturi cu informații sensibile.</translation>
 <translation id="1697122132646041614">Nu îmi place deschide un formular pentru a trimite feedback detaliat despre motivele pentru care nu apreciezi aceste rezultate.</translation>
 <translation id="1697532407822776718">Ești gata!</translation>
@@ -5866,6 +5866,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4943927218331934807">Trebuie să introduci o parolă</translation>
 <translation id="4944310289250773232">Acest serviciu de autentificare este găzduit de <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Pentru a configura amprenta, solicită-i copilului tău să atingă butonul de pornire. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Afișează butonul panoului cu proiecte</translation>
 <translation id="4946998421534856407">Lansator + săgeată în sus</translation>
 <translation id="4947376546135294974">Date de la site-ul pe care îl accesezi</translation>
 <translation id="4948370357877377178">Continuă activitățile</translation>
@@ -6100,7 +6101,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="51143538739122961">Introdu cheia de securitate și atinge-o</translation>
 <translation id="5115309401544567011">Conectează dispozitivul <ph name="DEVICE_TYPE" /> la o sursă de alimentare.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Confirmă-ți identitatea pentru a completa automat informații sensibile</translation>
 <translation id="5116315184170466953">Mesajul Îmi place trimite feedbackul că îți place această sugestie de grup de file</translation>
 <translation id="5116628073786783676">Sal&amp;vează conținutul audio ca...</translation>
 <translation id="5117139026559873716">Deconectează telefonul de la <ph name="DEVICE_TYPE" />. Nu se va mai conecta automat.</translation>
@@ -6697,6 +6697,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, se instalează</translation>
 <translation id="5527822190489075064">Încărcare optimizată</translation>
 <translation id="5529554942700688235">Rezumat privind economiile de memorie, memorie eliberată: <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">Afișează butonul Căutarea filelor</translation>
 <translation id="5530977410273748884">Pentru a salva parola în Managerul de parole Google, dă clic pe cheie</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dorește să</translation>
@@ -8248,6 +8249,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6613267708691765962">Se caută programe malware...</translation>
 <translation id="6615455863669487791">Afișează</translation>
 <translation id="6618013221808317456">Nu permite site-urilor să folosească optimizarea JavaScript</translation>
+<translation id="6618154741503063152">Încărcarea nu a reușit. Atașamentele nu sunt permise.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site-ul poate să îți urmărească locația</translation>
 <translation id="6619243162837544323">Starea rețelei</translation>
@@ -9344,7 +9346,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7368927539449986686">Editează căutarea pe site</translation>
 <translation id="7370592524170198497">EAP Ethernet:</translation>
 <translation id="7374376573160927383">Gestionează dispozitivele USB</translation>
-<translation id="73750335798090836">Pentru protecție sporită, folosește întotdeauna amprenta, fața sau altă modalitate de blocare a ecranului când folosești informații sensibile, cum ar fi documentele de călătorie și actele de identitate</translation>
 <translation id="7376124766545122644">Linkul nu poate fi folosit. Verifică dacă linkul începe cu http:// sau https:// pentru a încerca din nou.</translation>
 <translation id="7376553024552204454">Evidențiază cursorul mouse-ului când se mișcă</translation>
 <translation id="7377250337652426186">Pentru a merge înapoi cu mai multe pagini, dă clic lung pe butonul Înapoi.</translation>
@@ -10345,6 +10346,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8034399942062051455">Optimizarea V8 este dezactivată</translation>
 <translation id="8034697324150621782">Schimbă cu afișarea de sus</translation>
 <translation id="8035059678007243127">Pagină incognito din memoria cache înainte-înapoi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Afișează butonul grupurilor de file salvate</translation>
 <translation id="8036193484521570992">Ajută la îmbunătățirea completării automate</translation>
 <translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8037117027592400564">Citește tot textul rostit folosind vorbirea sintetizată</translation>

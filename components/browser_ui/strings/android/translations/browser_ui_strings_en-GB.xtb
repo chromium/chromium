@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Files this site can view or edit</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
-<translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1126523729897810826">Complete these suggested actions below to get the most out of Chrome</translation>
 <translation id="113098737392899175">Navigate pages with a text cursor when a keyboard is attached</translation>
 <translation id="1148624853678088576">You’re all set!</translation>
@@ -199,7 +198,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2891975107962658722">Block a site from saving data on your device</translation>
 <translation id="2903493209154104877">Addresses</translation>
-<translation id="2910701580606108292">Ask before allowing sites to play protected content</translation>
 <translation id="2918484639460781603">Go to settings</translation>
 <translation id="2932883381142163287">Report abuse</translation>
 <translation id="2939338015096024043">When on, sites can ask to track your camera position and learn about your surroundings. When off, sites can't track your camera position or learn about your surroundings.</translation>
@@ -301,7 +299,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="3924858949939391676">Show links once Reading mode is on</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3934905113567851655">Pinch to resize</translation>
-<translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
 <translation id="3955321697524543127">Don't allow sites to connect to USB devices</translation>
 <translation id="3965467402665811906">Sites can ask to use information that they've saved about you</translation>
 <translation id="3967822245660637423">Download complete</translation>
@@ -514,7 +511,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="6171020522141473435">When on, sites can ask to use Bluetooth devices. When off, sites can't use Bluetooth devices.</translation>
 <translation id="6177128806592000436">Your connection to this site is not secure</translation>
 <translation id="6181444274883918285">Add site exception</translation>
-<translation id="6192792657125177640">Exceptions</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome will block cookies again tomorrow}other{# days until cookies are blocked again}}</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
@@ -637,7 +633,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="7561196759112975576">Always</translation>
 <translation id="7573594921350120855">Sites usually use your video camera for communication features like video chatting</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> month ago}other{<ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
-<translation id="757524316907819857">Block sites from playing protected content</translation>
 <translation id="7586676035079382730">Notifications not allowed</translation>
 <translation id="7594634374516752650">Connected to a Bluetooth device</translation>
 <translation id="7617547684249261169">You can delete some or all of your history, cookies, site data and more</translation>

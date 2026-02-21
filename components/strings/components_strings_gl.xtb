@@ -2574,6 +2574,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5114987907971894280">realidade virtual</translation>
 <translation id="5115232566827194440">Omisión da sesión de convidado xestionada e restrinxida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116015291385561204">Verifica a túa identidade para autocompletar a información confidencial</translation>
 <translation id="5120526915373271910">Películas para toda a familia</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
@@ -3973,6 +3974,7 @@ Detalles adicionais:
 <translation id="7372973238305370288">resultado da busca</translation>
 <translation id="7374461526650987610">Controladores de protocolo</translation>
 <translation id="7374733840632556089">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chrome non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chrome quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
+<translation id="73750335798090836">Se queres contar con protección adicional, usa sempre a impresión dixital, o recoñecemento facial ou outro bloqueo de pantalla cando uses información confidencial, como documentos de identidade ou de viaxe</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Non hai sitios permitidos}=1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="7375818412732305729">Anéxase un ficheiro</translation>
 <translation id="7376031331622621328">Panel inferior do comercio</translation>

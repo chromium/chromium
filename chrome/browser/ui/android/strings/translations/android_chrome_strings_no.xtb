@@ -727,6 +727,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
 <translation id="414128724510021958">Nettsteder for datamaskiner blir forespurt som standard</translation>
 <translation id="4162867837470729563">Listen over delingsalternativer er åpnet i full høyde.</translation>
+<translation id="4165077084524712774">Flere verktøy</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="4170577491341606575">Henter tingene dine\u2026</translation>
 <translation id="4177222230309051052">Få alle bokmerkene dine</translation>
@@ -738,6 +739,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppet dette nettstedet fra å sende varsler på grunn av søppelpost eller villedende innhold}other{Chrome har stoppet disse nettstedene fra å sende varsler på grunn av søppelpost eller villedende innhold}}</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enheten}other{# faner på denne enheten}}</translation>
+<translation id="4198268995694216131">Flere nettsteder</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Du har brukt kontoen på dette nettstedet</translation>
 <translation id="4214315110991671325">Hvis du tillater informasjonskapsler, kan Chrome bruke dem ved forhåndslasting.</translation>
@@ -1018,6 +1020,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5304593522240415983">Dette feltet må fylles ut</translation>
 <translation id="5306014156308790439">Deaktiverte Legg til i samling</translation>
 <translation id="5308380583665731573">Koble til</translation>
+<translation id="5313967007315987356">Legg til et nettsted</translation>
 <translation id="5316947901395241499">Administratoren din har slått av lagring av passord</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
@@ -1460,6 +1463,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6980258170429555165"><ph name="MENU_NAME" />-menyen er uthevet.</translation>
 <translation id="6983306615164277634">Du kan også trykke og holde på adressefeltet for å endre posisjonen.</translation>
 <translation id="6987047470128880212">Inkognito er ikke tilgjengelig på denne enheten</translation>
+<translation id="6989358895283601928">Lagre og skriv ut</translation>
 <translation id="6996145122199359148">Last ned denne siden</translation>
 <translation id="7013762323294215682">Denne passnøkkelen lagres i passordlagringen. Alle som har tilgang til den, kan bruke denne passnøkkelen.</translation>
 <translation id="7020741890149022655">Legg til på leselisten <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
 <translation id="7333041109965360609">Du har meldt deg av varsler</translation>
+<translation id="7335766481146072567">Trykk på Fortsett</translation>
 <translation id="7336259382292148213">Varsler ser bra ut</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7340958967809483333">Alternativer for Discover</translation>
@@ -1752,6 +1757,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
 <translation id="8135406045838672858">Nedlastede PDF-filer åpnes automatisk med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring.</translation>
+<translation id="8151185429379586178">Utviklerverktøy</translation>
 <translation id="8152331954420209374">Gå til Lens</translation>
 <translation id="8153206878708357851">Slå markørsurfing av/på</translation>
 <translation id="8154784523622173959">Tilpass bakgrunnen på denne siden</translation>
@@ -1831,6 +1837,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Tillatelser er fjernet fra 1 nettsted}other{Tillatelser er fjernet fra # nettsteder}}</translation>
 <translation id="8453310803815879010">Start dinosaurspillet</translation>
 <translation id="8455675988389029454">Få bokmerker, passord med mer på alle enhetene dine</translation>
+<translation id="8458341576712814616">Snarvei</translation>
 <translation id="8458413889418591446">For å komme raskt tilbake til nettsteder du har besøkt, synkroniser loggen og fanene dine</translation>
 <translation id="84594714173170813">Fortsett å bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="8460448946170646641">Gjennomgå viktige personvern- og sikkerhetskontroller</translation>
@@ -1855,6 +1862,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8559961053328923750">Chrome begrenser den totale mengden data nettsteder kan dele via nettleseren for å måle annonseresultater</translation>
 <translation id="8559990750235505898">Tilby å oversette sider på andre språk</translation>
 <translation id="8560602726703398413">Finn leselisten din i Bokmerker</translation>
+<translation id="85618473456579127">Trykk på profilen din øverst til høyre</translation>
 <translation id="8565021320663436446">Vil du fjerne <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Filen kan ikke lastes ned sikkert</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>

@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">ગ્રૂપ રાખો</translation>
 <translation id="1853692000353488670">નવી છુપી ટેબ</translation>
 <translation id="1854463785401910334">ખુલ્લા ટૅબમાં શોધો</translation>
+<translation id="1860609647735325606">Gemini વડે સમજાવો</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}માંથી {position} નંબરનો પાસવર્ડ}one{{count}માંથી {position} નંબરનો પાસવર્ડ}other{{count}માંથી {position} નંબરનો પાસવર્ડ}}</translation>
 <translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1864266050569350424">તમે જે સાઇટ પર પાસવર્ડ સાચવ્યો છે, તેના પર સાઇન ઇન પાસવર્ડ ફીલ્ડ પર ટૅપ કરો.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">બધા ખોલો</translation>
 <translation id="2536991091671391962">તમે કોઈપણ ડિવાઇસ પર સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો. તેમને <ph name="EMAIL" /> માટેના Google Password Managerમાં સાચવવામાં આવે છે.</translation>
 <translation id="2538103551183528357">છુપાવેલો, પાસવર્ડ</translation>
+<translation id="2538705697765638552">તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="USER_EMAIL" /> માટે Google Walletમાં તમારી માહિતી મેનેજ કરી શકો છો.</translation>
 <translation id="2539748786028143624">વધારેલું સંરક્ષણ ચાલુ કરો…</translation>
 <translation id="2540111494300686866">સંવાદો અટકાવો</translation>
 <translation id="2542268842667970959">"સલામતી માટે તપાસ" છુપાવો</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યો}one{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યો}other{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યા}}</translation>
 <translation id="2791174088547598693">પાસવર્ડ ઉમેરો…</translation>
 <translation id="2793703503584038325">કોઈ પાસવર્ડ પસંદ કરો અને “શેર કરો” આઇકન પર ટૅપ કરો</translation>
+<translation id="2793804887899597849">માહિતી માત્ર ડિવાઇસ પર જ સાચવવામાં આવી છે</translation>
 <translation id="2797029671965852011">ઇતિહાસ બતાવો</translation>
 <translation id="2797302972324086597">દેશનો કોડ</translation>
 <translation id="2798263827270599246">ડિફૉલ્ટ થીમ</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Lens વડે શોધો</translation>
 <translation id="3575426792457739946">લોડ થયેલી બધી પ્રોફાઇલ આ સૂચિમાં છે.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" />ને અપડેટ કરીએ?</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3587482841069643663">બધા</translation>
 <translation id="3587885837929752825">તમારી સંસ્થા તમે તમારા Google એકાઉન્ટમાં શુંં સાચવી શકો છો તે મર્યાદિત કરે છે.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">આયાત કરો</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safariના સેટિંગ<ph name="END_BOLD" /> ખોલો</translation>
 <translation id="3858860766373142691">નામ</translation>
+<translation id="386224966259596343">આગલી વખતે જ્યારે તમે સંબંધિત ફોર્મ ભરો, ત્યારે તમને આ માહિતી Walletમાં સાચવવાની તક મળશે.</translation>
 <translation id="3868495844258915202">સંપૂર્ણ URL બતાવો</translation>
 <translation id="3875783148670536197">મને બતાવો કે કેવી રીતે</translation>
 <translation id="3878657761594430423">શીટ ગ્રેબર</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">સહાય બતાવો</translation>
 <translation id="4095483462103784441">નવું ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="4099756562043439968">રિમાઇન્ડર સેટ કરો</translation>
+<translation id="4101867642407836771"><ph name="USER_EMAIL" /> માટે Google Walletમાં.</translation>
 <translation id="4108998448622696017">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તે શોધીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
 <translation id="4111985840824673503">બધી વાંચ્યા વગરની તરીકે માર્ક કરો</translation>
 <translation id="411254640334432676">ડાઉનલોડ નિષ્ફળ થયું.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">તમારા પાસવર્ડ બદલો</translation>
 <translation id="4120936477286528673">આ સાઇટ વારંવાર અન્ય ઍપ્લિકેશન ખોલવાનો પ્રયાસ કરી રહી છે.</translation>
 <translation id="4121993058175073134">ચોખ્ખો-નિકાસ ડેટા મોકલવા માટે, કૃપા કરીને સેટિંગ એપ્લિકેશનમાં તમારા ઇમેઇલ એકાઉન્ટને ગોઠવો.</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" />ને સાચવીએ?</translation>
 <translation id="4133139945030148655">હવે તમે ઉપયોગ કરવા માટે તૈયાર છો</translation>
 <translation id="4133265950310064865">વધારેલું સંરક્ષણ</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">ઑટો</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4854068532375923088">“Gemini”ને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
+<translation id="4860114370595561279">તમારી સાચવેલી માહિતી તમારા ડિવાઇસ પર સ્ટોર કરવામાં આવે છે</translation>
 <translation id="4860895144060829044">કૉલ કરો</translation>
 <translation id="4861953997778766866">દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબ ગ્રૂપમાં ફેરફાર કરી શકે છે</translation>
 <translation id="4865063548323785458">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે તમારા પાસવર્ડ સાચવો અને તેને ઑટોમૅટિક રીતે ભરો</translation>
@@ -1235,6 +1243,7 @@
 <translation id="5559567453458728487">વેબ પર મળેલા માપના એકમોનું રૂપાંતરણ કરો</translation>
 <translation id="556042886152191864">બટન</translation>
 <translation id="5565871407246142825">ક્રેડિટ કાર્ડ્સ</translation>
+<translation id="5566623128829375608">તમારા ડિવાઇસમાં સાચવે છે.</translation>
 <translation id="5567439033041178034">વધુ જાણો</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
 <translation id="5579012242779565775">વાંચન સૂચિ છુપાવો</translation>
@@ -1650,7 +1659,6 @@
 <translation id="6964300328304469089">હાલમાં <ph name="NAME" />, <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
 <translation id="6964760285928603117">ગ્રૂપમાંથી દૂર કરો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
-<translation id="6967355534157677591">Pro મૉડલ વડે છબીઓ જનરેટ કરો</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">હંમેશાં</translation>
@@ -2178,6 +2186,7 @@
 <translation id="8829809207373502270">આ પાસકી હવે કામ કરતી નથી. તેને <ph name="WEBSITE" />માંથી ડિલીટ કરવામાં આવી હતી અને ટૂંક સમયમાં અહીંથી પણ ડિલીટ કરવામાં આવશે. <ph name="BEGIN_LINK" />પાસકી વિશે<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
 <translation id="8837654851594567190">પબ્લિશર મુજબ સૉર્ટ કરો</translation>
+<translation id="884351711508006491">તમારી માહિતી તમારા ડિવાઇસમાં સાચવવામાં આવી છે.</translation>
 <translation id="8844136307393039959">તમે ટ્રૅક કરેલી પ્રોડક્ટની કિંમતમાં ઘટાડો</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી રહ્યાં છીએ…</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
@@ -2185,7 +2194,6 @@
 <translation id="8856643812068084733">આર્કાઇવ</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ…</translation>
 <translation id="8863431381414769983">Google Maps દ્વારા દિશાનિર્દેશો અને સ્થાન માહિતી મેળવો</translation>
-<translation id="8867879594900082274">તમારા ફેરફારો માત્ર આ ડિવાઇસ પર તમારી પિન કરેલી સાઇટ પર જ લાગુ થશે.</translation>
 <translation id="8871974300055371298">કન્ટેન્ટ સેટિંગ</translation>
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8879604564928138696">અજમાવવા માટે બે વાર ટૅપ કરો</translation>

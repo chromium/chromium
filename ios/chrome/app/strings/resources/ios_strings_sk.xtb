@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="4854068532375923088">Povoľte aplikácii Gemini používať kameru</translation>
+<translation id="4860114370595561279">Uložené informácie sa ukladajú vo vašom zariadení</translation>
 <translation id="4860895144060829044">Volajte</translation>
 <translation id="4861953997778766866">Zdieľané skupiny kariet môže upravovať ktokoľvek</translation>
 <translation id="4865063548323785458">Ukladajte a automaticky dopĺňajte heslá, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách</translation>
@@ -1650,7 +1651,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6964300328304469089">Aktuálne vybrané: <ph name="NAME" />, <ph name="EMAIL" />. Vyberte účet.</translation>
 <translation id="6964760285928603117">Odstrániť zo skupiny</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Vytvoriť obrázok Pro</translation>
 <translation id="6973630695168034713">Priečinky</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6979737339423435258">Celé obdobie</translation>
@@ -2185,7 +2185,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8856643812068084733">Archívy</translation>
 <translation id="8863067612494559785">Posiela sa do zariadenia <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Získavajte trasy a miestne informácie z Máp Google</translation>
-<translation id="8867879594900082274">Vaše úpravy sa budú vzťahovať iba na pripnuté weby v tomto zariadení.</translation>
 <translation id="8871974300055371298">Nastavenia obsahu</translation>
 <translation id="8877788021141246043">Nastaviť pripomenutie</translation>
 <translation id="8879604564928138696">Vyskúšajte dvojitým klepnutím</translation>

@@ -374,7 +374,7 @@
 <translation id="2306265833370324042">显示<ph name="SEARCH_ENGINE_NAME" />详细信息</translation>
 <translation id="2309265394777270359">关闭标签页</translation>
 <translation id="2311077293164383652">关闭固定标签页</translation>
-<translation id="2316129865977710310">不用了，谢谢</translation>
+<translation id="2316129865977710310">不用了</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
 <translation id="2323697864063408084">在锁屏状态下或以横幅形式接收通知，绝不错过任何重要信息</translation>
@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">自动</translation>
 <translation id="4850886885716139402">查看</translation>
 <translation id="4854068532375923088">允许“Gemini”使用摄像头</translation>
+<translation id="4860114370595561279">您保存的信息会存储在您的设备上</translation>
 <translation id="4860895144060829044">致电</translation>
 <translation id="4861953997778766866">所有人都可以更改您分享的标签页分组</translation>
 <translation id="4865063548323785458">保存并自动填充密码，轻松登录网站和应用</translation>
@@ -1407,7 +1408,7 @@
 <translation id="6151006591088192882">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="6152340033632117531">闲置</translation>
 <translation id="6152406514676263192">开启同步功能后，您便会看到系统根据您的兴趣推荐的最相关的内容。</translation>
-<translation id="6159839020698489198">可选</translation>
+<translation id="6159839020698489198">选填</translation>
 <translation id="6160780110287872296">下载文件？</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6168647875670665004">文章推荐</translation>
@@ -1650,7 +1651,6 @@
 <translation id="6964300328304469089">目前选择的是：<ph name="NAME" />，<ph name="EMAIL" />。请选择一个账号。</translation>
 <translation id="6964760285928603117">从分组中移除</translation>
 <translation id="6965382102122355670">确定</translation>
-<translation id="6967355534157677591">生成图片（Pro 版）</translation>
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979737339423435258">时间不限</translation>
@@ -1855,7 +1855,7 @@
 <translation id="7757015014239760147">无用户名 ••••••</translation>
 <translation id="775755486779745798">自动填充失效月份 <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">紫罗兰色主题</translation>
-<translation id="7759809451544302770">可选</translation>
+<translation id="7759809451544302770">选填</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772948288262733182">欢迎回来</translation>
@@ -1867,7 +1867,7 @@
 <translation id="7795253248079882669">点按<ph name="BEGIN_BOLD" />导出<ph name="END_BOLD" /></translation>
 <translation id="7801064017114765401">电脑</translation>
 <translation id="7802239711290932774">使用建议的密码：</translation>
-<translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="780301667611848630">不用了</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7812377703891978671">您可选择“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”来访问您的所有浏览记录。</translation>
 <translation id="78146569776629510">下载内容</translation>
@@ -2185,7 +2185,6 @@
 <translation id="8856643812068084733">归档文件</translation>
 <translation id="8863067612494559785">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
-<translation id="8867879594900082274">您所做的修改只会应用于此设备上固定的网站。</translation>
 <translation id="8871974300055371298">内容设置</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8879604564928138696">点按两次即可试用</translation>

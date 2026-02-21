@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="4854068532375923088">‏السماح لـ Gemini باستخدام الكاميرا</translation>
+<translation id="4860114370595561279">إنّ معلوماتك المحفوظة يتم تخزينها على جهازك</translation>
 <translation id="4860895144060829044">اتصال</translation>
 <translation id="4861953997778766866">يمكن للجميع إجراء تغييرات على مجموعات علامات التبويب المشتركة</translation>
 <translation id="4865063548323785458">بإمكانك الآن حفظ كلمات المرور وملؤها تلقائيًا لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات</translation>
@@ -1648,7 +1649,6 @@
 <translation id="6964300328304469089">الحساب الذي تم اختياره حاليًا هو "<ph name="NAME" />" ‏(<ph name="EMAIL" />). اختَر حسابًا.</translation>
 <translation id="6964760285928603117">الإزالة من المجموعة</translation>
 <translation id="6965382102122355670">حسنًا</translation>
-<translation id="6967355534157677591">إنشاء صور احترافية</translation>
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
@@ -2184,7 +2184,6 @@
 <translation id="8856643812068084733">الأرشيفات</translation>
 <translation id="8863067612494559785">جارٍ إرسال علامة التبويب إلى <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
-<translation id="8867879594900082274">لن يتم تطبيق التعديلات إلّا على المواقع الإلكترونية المثبَّتة على هذا الجهاز.</translation>
 <translation id="8871974300055371298">إعدادات المحتوى</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8879604564928138696">انقر مرّتين للتجربة</translation>

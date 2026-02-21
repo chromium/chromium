@@ -12172,6 +12172,21 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> deze logboeken st
 <translation id="9051019223077908578">De lijst met geïnstalleerde apps en extensies configureren op het inlogscherm</translation>
 <translation id="9053841574218808519">Plug-ins die niet verouderd zijn, altijd uitvoeren</translation>
 <translation id="9055866143096316150">Wake lock-verzoeken voor het scherm verlagen naar wake lock-verzoeken voor het systeem</translation>
+<translation id="9056262797461453462">Als je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen. Beheerders kunnen de lijst met URL-patronen aangeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de browser. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest. Dit beleid voorkomt ook niet dat webpagina's de URL die in de omnibox wordt getoond, updaten naar een geblokkeerde site via de JavaScript History API.
+
+Vanaf versie 73 van <ph name="PRODUCT_NAME" /> kun je javascript://*-URL's blokkeren. Dit heeft alleen gevolgen voor JavaScript dat in de adresbalk wordt ingevoerd of voor bijvoorbeeld bookmarklets.
+
+Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de modus zonder interface.
+
+Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert, kan dit leiden tot onverwachte fouten of kan de blokkering worden omzeild in speciale gevallen. In plaats van bepaalde interne URL's te blokkeren, kun je beter checken of er specifiekere beleidsregels beschikbaar zijn. Bijvoorbeeld:
+
+- Gebruik <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> in plaats van chrome://settings/certificates te blokkeren.
+
+- Gebruik <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> in plaats van chrome-untrusted://crosh te blokkeren.
+
+- Gebruik een van de beleidsregels <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> of <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> in plaats van devtools://* te blokkeren.</translation>
 <translation id="9057159618445405645">Het standaardgedrag van de Chrome-browser gebruiken</translation>
 <translation id="9061455386353325110">Hiermee bepaal je of gebruikers <ph name="PRODUCT_NAME" /> generatieve AI kunnen laten gebruiken om formulieren beter te begrijpen en meer velden te laten invullen.
 

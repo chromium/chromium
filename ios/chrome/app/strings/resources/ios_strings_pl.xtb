@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Zachowaj grupę</translation>
 <translation id="1853692000353488670">Nowa karta incognito</translation>
 <translation id="1854463785401910334">Wyszukiwanie w otwartych kartach</translation>
+<translation id="1860609647735325606">Wyjaśnij za pomocą Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} z {count} hasła}few{{position} z {count} haseł}many{{position} z {count} haseł}other{{position} z {count} hasła}}</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1864266050569350424">Na stronie, na której zapisano hasło, kliknij pole hasła do logowania.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Ukryte, hasło</translation>
+<translation id="2538705697765638552">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Informacjami możesz zarządzać w Portfelu Google na koncie <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Włącz silniejszą ochronę…</translation>
 <translation id="2540111494300686866">Ukryj okna dialogowe</translation>
 <translation id="2542268842667970959">Ukryj „Kontrolę zabezpieczeń”</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Hasło zostało zapisane na Twoim koncie Google {EMAIL}}few{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}many{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}other{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Dodaj hasło…</translation>
 <translation id="2793703503584038325">Wybierz hasło i kliknij ikonę udostępniania</translation>
+<translation id="2793804887899597849">Informacje zostały zapisane tylko na urządzeniu</translation>
 <translation id="2797029671965852011">Pokaż historię</translation>
 <translation id="2797302972324086597">Kod kraju</translation>
 <translation id="2798263827270599246">Motyw domyślny</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
 <translation id="3575426792457739946">Ta lista zawiera wszystkie wczytane profile.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, zarządzane przez Twoją organizację.</translation>
+<translation id="3580448612293054698">Zaktualizować: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3587885837929752825">Twoja organizacja nie zezwala na zapisywanie niektórych typów danych na koncie Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importuj</translation>
 <translation id="3857113360369572832">Otwórz <ph name="BEGIN_BOLD" />ustawienia Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nazwa</translation>
+<translation id="386224966259596343">Przy następnym wypełnianiu odpowiedniego formularza będziesz mieć możliwość zapisania tych informacji w Portfelu.</translation>
 <translation id="3868495844258915202">Pokaż pełny URL</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
 <translation id="3878657761594430423">Uchwyt arkusza</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4095483462103784441">Utwórz nową grupę kart</translation>
 <translation id="4099756562043439968">Ustaw przypomnienie</translation>
+<translation id="4101867642407836771">W Portfelu Google na koncie <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4111985840824673503">Oznacz wszystkie jako przeczytane</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Zmień hasła</translation>
 <translation id="4120936477286528673">Ta witryna podejmuje próby otwarcia innej aplikacji.</translation>
 <translation id="4121993058175073134">Aby wysłać dane net-export, skonfiguruj konto e-mail w aplikacji Ustawienia.</translation>
+<translation id="4129768137228347731">Zapisać: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Wszystko gotowe</translation>
 <translation id="4133265950310064865">Silniejsza ochrona</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4850886885716139402">Wyświetl</translation>
 <translation id="4854068532375923088">Zezwól „Gemini” na korzystanie z aparatu</translation>
+<translation id="4860114370595561279">Zapisane informacje są przechowywane na urządzeniu</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4861953997778766866">Każdy może wprowadzać zmiany w udostępnionych grupach kart</translation>
 <translation id="4865063548323785458">Zapisuj i automatycznie uzupełniaj hasła, aby łatwo logować się na stronach i w aplikacjach</translation>
@@ -1235,6 +1243,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5559567453458728487">Przelicz jednostki miary znalezione w internecie</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5565871407246142825">Karty kredytowe</translation>
+<translation id="5566623128829375608">Zapisuje informacje na urządzeniu.</translation>
 <translation id="5567439033041178034">WIĘCEJ INFORMACJI</translation>
 <translation id="5578795271662203820">Szukaj tej grafiki w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ukryj opcję Do przeczytania</translation>
@@ -1650,7 +1659,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6964300328304469089"><ph name="NAME" />, obecnie wybrano <ph name="EMAIL" />. Wybierz konto.</translation>
 <translation id="6964760285928603117">Usuń z grupy</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Utwórz obraz Pro</translation>
 <translation id="6973630695168034713">Foldery</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6979737339423435258">Od początku</translation>
@@ -2178,6 +2186,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8829809207373502270">Ten klucz dostępu już nie działa. Został usunięty ze strony <ph name="WEBSITE" /> i wkrótce zostanie usunięty również tutaj. <ph name="BEGIN_LINK" />Informacje o kluczach dostępu<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Zamknij wszystkie nieaktywne</translation>
 <translation id="8837654851594567190">Sortuj według wydawcy</translation>
+<translation id="884351711508006491">Twoje informacje są zapisywane na urządzeniu.</translation>
 <translation id="8844136307393039959">Obniżka ceny obserwowanego produktu</translation>
 <translation id="8848286253339013170">Zapisuję obraz w Zdjęciach Google użytkownika <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Ukryte</translation>
@@ -2185,7 +2194,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8856643812068084733">Archiwa</translation>
 <translation id="8863067612494559785">Przesyłam (<ph name="DEVICE_NAME" />)…</translation>
 <translation id="8863431381414769983">Uzyskiwanie wskazówek dojazdu i informacji lokalnych z Map Google</translation>
-<translation id="8867879594900082274">Twoje zmiany będą dotyczyć tylko przypiętych witryn na tym urządzeniu.</translation>
 <translation id="8871974300055371298">Ustawienia treści</translation>
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8879604564928138696">Kliknij dwukrotnie, aby spróbować</translation>

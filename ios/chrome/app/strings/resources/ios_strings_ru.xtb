@@ -44,7 +44,7 @@
 <translation id="1136104150802877429">Показывать отзывы</translation>
 <translation id="1142371195993008685">Отключить уведомления "<ph name="FEATURE_NAME" />"</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
-<translation id="1149401351239820326">Месяц окончания срока действия</translation>
+<translation id="1149401351239820326">Срок действия: месяц</translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1161663161838091892">Чтобы продолжить, синхронизируйте вкладки и историю</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} кредитная карта}one{{count} кредитная карта}few{{count} кредитные карты}many{{count} кредитных карт}other{{count} кредитной карты}}</translation>
@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Оставить</translation>
 <translation id="1853692000353488670">Новая вкладка инкогнито</translation>
 <translation id="1854463785401910334">Поиск по открытым вкладкам</translation>
+<translation id="1860609647735325606">Попросить Gemini объяснить</translation>
 <translation id="1861067954551502701">{count,plural, =1{Пароль {position} из {count}}one{Пароль {position} из {count}}few{Пароль {position} из {count}}many{Пароль {position} из {count}}other{Пароль {position} из {count}}}</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1864266050569350424">На сайте, где вы сохранили пароль, нажмите на поле пароля для входа.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Открыть все</translation>
 <translation id="2536991091671391962">Вы можете использовать сохраненные пароли на любом устройстве. Они сохраняются в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скрытый пароль</translation>
+<translation id="2538705697765638552">Сохраните информацию, чтобы быстрее выполнять действия, например заполнять формы в продуктах Google. Вы можете управлять данными Google Кошелька в аккаунте <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Включить улучшенную защиту</translation>
 <translation id="2540111494300686866">Блокировать диалоговые окна</translation>
 <translation id="2542268842667970959">Скрыть проверку безопасности</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль сохранен в вашем аккаунте Google ({EMAIL}).}one{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}few{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}many{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}other{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}}</translation>
 <translation id="2791174088547598693">Добавить пароль</translation>
 <translation id="2793703503584038325">Выберите пароль и нажмите на значок "Поделиться".</translation>
+<translation id="2793804887899597849">Данные сохранены только на устройстве</translation>
 <translation id="2797029671965852011">Показать историю</translation>
 <translation id="2797302972324086597">Код страны</translation>
 <translation id="2798263827270599246">Тема по умолчанию</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
 <translation id="3575426792457739946">В списке указаны все загруженные профили.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, управляется вашей организацией.</translation>
+<translation id="3580448612293054698">Обновить данные типа "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Импортировать</translation>
 <translation id="3857113360369572832">Откройте <ph name="BEGIN_BOLD" />Настройки Safari<ph name="END_BOLD" />.</translation>
 <translation id="3858860766373142691">Название</translation>
+<translation id="386224966259596343">Вы сможете сохранить эту информацию в Кошельке, когда в следующий раз будете заполнять подходящую форму.</translation>
 <translation id="3868495844258915202">Показать URL полностью</translation>
 <translation id="3875783148670536197">Подробнее</translation>
 <translation id="3878657761594430423">Маркер нижнего экрана</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Справочная информация</translation>
 <translation id="4095483462103784441">Создать новую группу вкладок</translation>
 <translation id="4099756562043439968">Создать напоминание</translation>
+<translation id="4101867642407836771">Они обновятся в Google Кошельке пользователя <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
 <translation id="4111985840824673503">Отметить все как прочитанные</translation>
 <translation id="411254640334432676">Ошибка при скачивании</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Измените пароли</translation>
 <translation id="4120936477286528673">Этот сайт много раз пытается открыть другое приложение.</translation>
 <translation id="4121993058175073134">Чтобы отправлять очищенные данные для экспорта, задайте соответствующие параметры аккаунта электронной почты в приложении "Настройки".</translation>
+<translation id="4129768137228347731">Сохранить данные типа "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="4133139945030148655">Всё готово</translation>
 <translation id="4133265950310064865">Улучшенная защита</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="4854068532375923088">Разрешите Gemini использовать камеру</translation>
+<translation id="4860114370595561279">Данные сохраняются на вашем устройстве.</translation>
 <translation id="4860895144060829044">Позвонить</translation>
 <translation id="4861953997778766866">Любой может изменять ваши группы вкладок с общим доступом</translation>
 <translation id="4865063548323785458">Сохраняйте пароли, чтобы они автоматически вводились при входе в аккаунты на сайтах и в приложениях.</translation>
@@ -1106,7 +1114,7 @@
 <translation id="5079950360618752063">Использовать предложенный пароль</translation>
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5085558938118581974">Поиск вкладок на синхронизированных устройствах</translation>
-<translation id="508645147179720015">Примечание не должно быть длиннее 1000 символов</translation>
+<translation id="508645147179720015">Примечание не должно быть длиннее 1000 символов.</translation>
 <translation id="5087098519049306025">Отслеживание цен</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
 <translation id="5096619236864235">Ключи доступа сохранены в Google Менеджере паролей для аккаунта</translation>
@@ -1235,6 +1243,7 @@
 <translation id="5559567453458728487">Определять единицы измерения и предлагать конвертировать их на страницах</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5565871407246142825">Банковские карты</translation>
+<translation id="5566623128829375608">Они будут сохранены на устройстве.</translation>
 <translation id="5567439033041178034">ПОДРОБНЕЕ</translation>
 <translation id="5578795271662203820">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Скрыть раздел "Список для чтения"</translation>
@@ -1650,7 +1659,6 @@
 <translation id="6964300328304469089">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" /> (<ph name="NAME" />).</translation>
 <translation id="6964760285928603117">Удалить из группы</translation>
 <translation id="6965382102122355670">ОК</translation>
-<translation id="6967355534157677591">Создать изображение (Pro)</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979737339423435258">Все время</translation>
@@ -1947,7 +1955,7 @@
 <translation id="8037713009824540257">Добавить сайт</translation>
 <translation id="8040407350301524547">Чтобы узнать, как добраться до места, нажмите "Проложить маршрут".</translation>
 <translation id="804427445359061970">Здесь вы найдете свои вкладки с других устройств</translation>
-<translation id="8058655154417507695">Год окончания срока действия</translation>
+<translation id="8058655154417507695">Срок действия: год</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладки}many{{count} закладок}other{{count} закладки}}</translation>
 <translation id="8059533439631660104">Сворачивает раздел.</translation>
 <translation id="8061584726507121204">История</translation>
@@ -2178,6 +2186,7 @@
 <translation id="8829809207373502270">Ключ доступа больше не действителен. Он был удален с сайта <ph name="WEBSITE" /> и скоро будет удален из этого сервиса. <ph name="BEGIN_LINK" />О ключах доступа<ph name="END_LINK" />.</translation>
 <translation id="8831208860914609320">Закрыть все неактивные вкладки</translation>
 <translation id="8837654851594567190">Сортировать по издателю</translation>
+<translation id="884351711508006491">Данные сохранены на вашем устройстве.</translation>
 <translation id="8844136307393039959">Цена отслеживаемого товара снизилась</translation>
 <translation id="8848286253339013170">Сохраняем изображение в Google Фото в аккаунте <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скрытые</translation>
@@ -2185,7 +2194,6 @@
 <translation id="8856643812068084733">Архивы</translation>
 <translation id="8863067612494559785">Отправка на устройство <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Прокладывайте маршруты и получайте полезную информацию в Google Картах</translation>
-<translation id="8867879594900082274">Изменения будут применены только к закрепленным сайтам на этом устройстве.</translation>
 <translation id="8871974300055371298">Настройки контента</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8879604564928138696">Чтобы попробовать, нажмите дважды</translation>

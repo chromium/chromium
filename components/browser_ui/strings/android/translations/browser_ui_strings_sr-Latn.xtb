@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
-<translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
 <translation id="1126523729897810826">Obavite ove predložene radnje u nastavku da biste iskoristili Chrome na najbolji način</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću kursora za tekst kada je priključena tastatura</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
@@ -199,7 +198,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="2874939134665556319">Prethodna pesma</translation>
 <translation id="2891975107962658722">Onemogućite da sajt čuva podatke na uređaju</translation>
 <translation id="2903493209154104877">Adrese</translation>
-<translation id="2910701580606108292">Pitaj pre nego što dozvoliš sajtovima da puštaju zaštićeni sadržaj</translation>
 <translation id="2918484639460781603">Idi na podešavanja</translation>
 <translation id="2932883381142163287">Prijavi zloupotrebu</translation>
 <translation id="2939338015096024043">Kada je uključeno, sajtovi mogu da traže da prate položaj kamere i saznaju više o okruženju. Kada je isključeno, sajtovi ne mogu da prate položaj kamere niti da saznaju više o okruženju.</translation>
@@ -301,7 +299,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3924858949939391676">Prikazujte linkove kada je Režim čitanja uključen</translation>
 <translation id="3933121352599513978">Skupi neželjene zahteve (preporučeno)</translation>
 <translation id="3934905113567851655">Uštinite da biste promenili veličinu</translation>
-<translation id="3955193568934677022">Dozvoli sajtovima da puštaju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3955321697524543127">Ne dozvoljavaj sajtovima da se povezuju sa USB uređajima</translation>
 <translation id="3965467402665811906">Sajtovi mogu da zatraže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
@@ -514,7 +511,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6171020522141473435">Kada je uključeno, sajtovi mogu da traže da koriste Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da koriste Bluetooth uređaje.</translation>
 <translation id="6177128806592000436">Veza sa ovim sajtom nije bezbedna</translation>
 <translation id="6181444274883918285">Dodaj izuzetak za sajtove</translation>
-<translation id="6192792657125177640">Izuzeci</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome će sutra ponovo blokirati kolačiće}one{# dan dok se kolačići ponovo ne blokiraju}few{# dana dok se kolačići ponovo ne blokiraju}other{# dana dok se kolačići ponovo ne blokiraju}}</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6205314730813004066">Privatnost sa oglasima</translation>
@@ -637,7 +633,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7561196759112975576">Uvek</translation>
 <translation id="7573594921350120855">Sajtovi obično koriste video kameru za potrebe funkcija komunikacije poput video četa</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Pre <ph name="NUM_MONTHS_ONE" /> mesec}one{Pre <ph name="NUM_MONTHS_MANY" /> mesec}few{Pre <ph name="NUM_MONTHS_MANY" /> meseca}other{Pre <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
-<translation id="757524316907819857">Blokiraj da sajtovi puštaju zaštićeni sadržaj</translation>
 <translation id="7586676035079382730">Obaveštenja nisu dozvoljena</translation>
 <translation id="7594634374516752650">Povezan je sa Bluetooth uređajem</translation>
 <translation id="7617547684249261169">Možete da izbrišete delove ili celu istoriju, kolačiće, podatke o sajtovima i drugo</translation>

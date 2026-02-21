@@ -727,6 +727,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4137746084635924146">Huidige apparaattaal</translation>
 <translation id="414128724510021958">Desktopsites standaard aangevraagd</translation>
 <translation id="4162867837470729563">Lijst met deelopties op volledige hoogte.</translation>
+<translation id="4165077084524712774">Meer tools</translation>
 <translation id="4170011742729630528">De service is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="4170577491341606575">Je gegevens ophalen\u2026</translation>
 <translation id="4177222230309051052">Haal al je bookmarks op</translation>
@@ -738,6 +739,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome heeft voorkomen dat deze site meldingen stuurt vanwege spam of misleidende content}other{Chrome heeft voorkomen dat deze sites meldingen sturen vanwege spam of misleidende content}}</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tabblad op dit apparaat}other{# tabbladen op dit apparaat}}</translation>
+<translation id="4198268995694216131">Meer sites</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Door jou gebruikt op deze site</translation>
 <translation id="4214315110991671325">Als je cookies toestaat, kan Chrome deze voor vooraf laden gebruiken.</translation>
@@ -1018,6 +1020,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5304593522240415983">Dit veld mag niet leeg zijn</translation>
 <translation id="5306014156308790439">Toevoegen aan collectie staat uit</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
+<translation id="5313967007315987356">Site toevoegen</translation>
 <translation id="5316947901395241499">Wachtwoord opslaan is uitgezet door je beheerder</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319359161174645648">Google beveelt Chrome aan</translation>
@@ -1460,6 +1463,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6980258170429555165">Het menu <ph name="MENU_NAME" /> is gemarkeerd.</translation>
 <translation id="6983306615164277634">Je kunt ook je vinger op de adresbalk houden om de positie te wijzigen.</translation>
 <translation id="6987047470128880212">Incognito is niet beschikbaar op dit apparaat.</translation>
+<translation id="6989358895283601928">Opslaan en afdrukken</translation>
 <translation id="6996145122199359148">Deze pagina downloaden</translation>
 <translation id="7013762323294215682">Deze toegangssleutel wordt opgeslagen in je wachtwoordmanager. Iedereen met toegang kan deze toegangssleutel gebruiken.</translation>
 <translation id="7020741890149022655">Toevoegen aan leeslijst <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7314734791127433392">Kan wachtwoorden niet checken</translation>
 <translation id="7324354302972299151">Een Do Not Track-verzoek sturen</translation>
 <translation id="7333041109965360609">Afgemeld voor meldingen</translation>
+<translation id="7335766481146072567">Tik op Doorgaan</translation>
 <translation id="7336259382292148213">Meldingen zien er goed uit</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7340958967809483333">Opties voor Discover</translation>
@@ -1752,6 +1757,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8135406045838672858">Gedownloade pdf's worden automatisch geopend met <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager.</translation>
+<translation id="8151185429379586178">Ontwikkelaarstools</translation>
 <translation id="8152331954420209374">Naar Lens</translation>
 <translation id="8153206878708357851">Browsen met navigatietoetsen aan-/uitzetten</translation>
 <translation id="8154784523622173959">De achtergrond van deze pagina personaliseren</translation>
@@ -1831,6 +1837,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Rechten verwijderd voor 1 site}other{Rechten verwijderd voor # sites}}</translation>
 <translation id="8453310803815879010">Dino-game starten</translation>
 <translation id="8455675988389029454">Je bookmarks, wachtwoorden en meer op al je apparaten gebruiken</translation>
+<translation id="8458341576712814616">Snelkoppeling</translation>
 <translation id="8458413889418591446">Synchroniseer je geschiedenis en tabbladen om snel terug te gaan naar sites die je hebt bezocht</translation>
 <translation id="84594714173170813">Blijf de Chrome-gegevens in je Google-account gebruiken</translation>
 <translation id="8460448946170646641">Neem belangrijke privacy- en beveiligingsopties door</translation>
@@ -1855,6 +1862,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8559961053328923750">Chrome beperkt de totale hoeveelheid gegevens die sites via de browser kunnen delen om de advertentieprestaties te meten</translation>
 <translation id="8559990750235505898">Aanbieden pagina's in andere talen te vertalen</translation>
 <translation id="8560602726703398413">Bekijk je leeslijst in Bookmarks</translation>
+<translation id="85618473456579127">Tik rechtsboven op Profiel</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> verwijderen?</translation>
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>

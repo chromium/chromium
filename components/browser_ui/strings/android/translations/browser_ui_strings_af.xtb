@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Lêers wat hierdie werf kan bekyk of wysig</translation>
 <translation id="1073417869336441572">Help ons om Chrome te verbeter deur ons te vertel hoekom jy derdepartywebkoekies toegelaat het. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Jy kan vra om die rekenaarweergawe van werwe te sien</translation>
-<translation id="1085696779717592361">Gebruik Chrome by verstek</translation>
 <translation id="1126523729897810826">Voltooi die voorgestelde handelinge hier onder om Chrome ten beste te benut.</translation>
 <translation id="113098737392899175">Navigeer bladsy met ’n teksskermpyltjie as daar ’n sleutelbord aangeheg is</translation>
 <translation id="1148624853678088576">Jy's gereed!</translation>
@@ -199,7 +198,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="2874939134665556319">Vorige snit</translation>
 <translation id="2891975107962658722">Keer ’n werf om data op jou toestel te stoor</translation>
 <translation id="2903493209154104877">Adresse</translation>
-<translation id="2910701580606108292">Vra voordat werwe toegelaat word om beskermde inhoud te speel</translation>
 <translation id="2918484639460781603">Gaan na instellings</translation>
 <translation id="2932883381142163287">Gee misbruik aan</translation>
 <translation id="2939338015096024043">Wanneer dit aan is, kan werwe vra om jou kameraposisie na te spoor en meer te leer oor jou omgewing. Wanneer dit af is, kan werwe nie jou kameraposisie naspoor of meer oor jou omgewing leer nie.</translation>
@@ -301,7 +299,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3924858949939391676">Wys skakels sodra Leesmodus aan is</translation>
 <translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
 <translation id="3934905113567851655">Knyp om grootte te verander</translation>
-<translation id="3955193568934677022">Laat werwe toe om beskermde inhoud te speel (aanbeveel)</translation>
 <translation id="3955321697524543127">Moenie werwe toelaat om aan USB-toestelle te koppel nie</translation>
 <translation id="3965467402665811906">Werwe kan vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
@@ -514,7 +511,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="6171020522141473435">Wanneer dit aan is, kan werwe vra om Bluetooth-toestelle te gebruik. Wanneer dit af is, kan werwe nie Bluetooth-toestelle gebruik nie.</translation>
 <translation id="6177128806592000436">Jou verbinding aan hierdie werf is nie veilig nie</translation>
 <translation id="6181444274883918285">Voeg werfuitsondering by</translation>
-<translation id="6192792657125177640">Uitsonderings</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome sal more weer webkoekies blokkeer}other{# dae totdat webkoekies weer geblokkeer word}}</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
 <translation id="6205314730813004066">Advertensieprivaatheid</translation>
@@ -637,7 +633,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7561196759112975576">Altyd</translation>
 <translation id="7573594921350120855">Werwe gebruik gewoonlik jou videokamera vir kommunikasiekenmerke soos videoklets</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand gelede}other{<ph name="NUM_MONTHS_MANY" /> maande gelede}}</translation>
-<translation id="757524316907819857">Blokkeer werwe om beskermde inhoud te speel</translation>
 <translation id="7586676035079382730">Kennisgewings nie toegelaat nie</translation>
 <translation id="7594634374516752650">Aan ’n Bluetooth-toestel gekoppel</translation>
 <translation id="7617547684249261169">Jy kan sommige of al jou geskiedenis, webkoekies, werfdata en meer uitvee</translation>

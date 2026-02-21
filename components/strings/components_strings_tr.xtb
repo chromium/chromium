@@ -2574,6 +2574,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5114987907971894280">sanal gerçeklik</translation>
 <translation id="5115232566827194440">Kısıtlanmış yönetilen misafir oturumunun geçersiz kılınması</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
+<translation id="5116015291385561204">Hassas bilgileri otomatik doldurmak için kimliğimi doğrula</translation>
 <translation id="5120526915373271910">Aile Filmleri</translation>
 <translation id="5122786942953798871">Zarf (Pamuk)</translation>
 <translation id="5123063207673082822">Hafta sonu</translation>
@@ -3974,6 +3975,7 @@ Ek ayrıntılar:
 <translation id="7372973238305370288">arama sonucu</translation>
 <translation id="7374461526650987610">Protokol işleyicileri</translation>
 <translation id="7374733840632556089">Bu sorunun nedeni sizin veya başka birinin cihazınıza yüklediği bir sertifika olabilir. Sertifikanın ağa müdahale etmek ve izlemek amacıyla kullanıldığı bilindiğinden, Chrome bu sertifikaya güvenmez. Okul veya şirket ağı gibi izlemenin meşru olduğu durumlar vardır. İzlemeyi durduramasanız bile Chrome yine de farkında olmanızı sağlamak ister. Web’e erişen her tarayıcı ve uygulamada izleme yapılabilir.</translation>
+<translation id="73750335798090836">Seyahat ve kimlik belgeleri gibi hassas bilgileri kullanırken daha fazla koruma için her zaman parmak izinizi, yüzünüzü veya başka bir ekran kilidi kullanın</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Hiçbir siteye izin verilmiyor}=1{1 siteye izin veriliyor}other{# siteye izin veriliyor}}</translation>
 <translation id="7375818412732305729">Dosya ekleme</translation>
 <translation id="7376031331622621328">Ticari alt sayfa</translation>

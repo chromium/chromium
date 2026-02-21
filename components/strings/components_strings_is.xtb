@@ -2574,6 +2574,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5114987907971894280">sýndarveruleika</translation>
 <translation id="5115232566827194440">Hnekkja takmarkaðri og stýrðri gestalotu</translation>
 <translation id="5115563688576182185">(64 bita)</translation>
+<translation id="5116015291385561204">Staðfestu að þetta sért þú til að fylla sjálfkrafa út viðkvæmar upplýsingar</translation>
 <translation id="5120526915373271910">Fjölskyldumyndir</translation>
 <translation id="5122786942953798871">Umslag (bómull)</translation>
 <translation id="5123063207673082822">Helgi</translation>
@@ -3973,6 +3974,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7372973238305370288">leitarniðurstaða</translation>
 <translation id="7374461526650987610">Hjálparforrit fyrir samskiptareglur</translation>
 <translation id="7374733840632556089">Þetta vandamál tengist vottorði sem þú eða einhver annar setti upp í tækinu þínu. Vitað er að þetta vottorð er notað til að fylgjast með og grípa inn í netkerfi og Chrome treystir því ekki. Þrátt fyrir að notkun þess geti í einhverjum tilvikum átt rétt á sér, svo sem á skóla- eða fyrirtækjaneti, vill Chrome tryggja að þú vitir af því, þó að þú getir ekki komið í veg fyrir notkun þess. Eftirlit getur átt sér stað í öllum vöfrum eða forritum sem nota vefinn.</translation>
+<translation id="73750335798090836">Notaðu alltaf fingrafar, andlit eða annan skjálás þegar þú notar viðkvæmar upplýsingar eins og vegabréf og persónuskilríki til að tryggja aukna vernd.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Engin vefsvæði leyfð}=1{1 vefsvæði leyft}one{# vefsvæði leyft}other{# vefsvæði leyfð}}</translation>
 <translation id="7375818412732305729">Skrá er hengd við</translation>
 <translation id="7376031331622621328">Viðskiptablað neðst</translation>

@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Manter grupo</translation>
 <translation id="1853692000353488670">Nova guia anônima</translation>
 <translation id="1854463785401910334">Pesquisar guias abertas</translation>
+<translation id="1860609647735325606">Explicar com o Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} senha}one{{position} de {count} senha}other{{position} de {count} senhas}}</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1864266050569350424">Em um site em que você salvou uma senha, toque no campo de senha de login.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Senha oculta</translation>
+<translation id="2538705697765638552">Salve suas informações e agilize ações como o preenchimento de formulários em produtos do Google. Você pode gerenciar esses dados na Carteira do Google de <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Ativar a proteção reforçada…</translation>
 <translation id="2540111494300686866">Bloquear caixas de diálogo</translation>
 <translation id="2542268842667970959">Ocultar a "Confirmação de segurança"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Senha salva na sua Conta do Google {EMAIL}}one{Senha salva na sua Conta do Google {EMAIL}}other{Senhas salvas na sua Conta do Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Adicionar senha…</translation>
 <translation id="2793703503584038325">Selecione uma senha e toque no ícone de compartilhamento</translation>
+<translation id="2793804887899597849">Informações salvas apenas no dispositivo</translation>
 <translation id="2797029671965852011">Mostrar histórico</translation>
 <translation id="2797302972324086597">Código do país</translation>
 <translation id="2798263827270599246">Tema padrão</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3575426792457739946">Esta lista contém todos os perfis carregados.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerenciado pela sua organização.</translation>
+<translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
 <translation id="3587482841069643663">Todas</translation>
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importar</translation>
 <translation id="3857113360369572832">Abra as <ph name="BEGIN_BOLD" />Configurações do Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="386224966259596343">Você poderá salvar essas informações na Carteira na próxima vez que preencher um formulário relevante.</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
 <translation id="3878657761594430423">Barra para ajustar a planilha</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Mostrar "Ajuda"</translation>
 <translation id="4095483462103784441">Criar novo grupo de guias</translation>
 <translation id="4099756562043439968">Definir um lembrete</translation>
+<translation id="4101867642407836771">Na Carteira do Google de <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
 <translation id="4111985840824673503">Marcar tudo como lido</translation>
 <translation id="411254640334432676">Falha no download.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Mudar suas senhas</translation>
 <translation id="4120936477286528673">O site está tentando repetidamente abrir outro aplicativo.</translation>
 <translation id="4121993058175073134">Para enviar dados de exportação líquida, configure sua conta de e-mail no aplicativo "Configurações".</translation>
+<translation id="4129768137228347731">Salvar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Está tudo pronto</translation>
 <translation id="4133265950310064865">Proteção reforçada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -860,7 +867,7 @@
 <translation id="421070604241073551">Ao ativar essa opção, os dados serão salvos na sua Conta do Google. Ao desativá-la, os dados serão salvos apenas neste dispositivo.</translation>
 <translation id="4224534474590365556">Fechar mais de 99 guias inativas?</translation>
 <translation id="422474357428465195">Você tem vários problemas de senha que podem colocar sua segurança em risco.</translation>
-<translation id="422477017457571619">Proteção com tecnologia de IA em tempo real contra sites, extensões e downloads perigosos com base nos seus dados de navegação enviados ao Google</translation>
+<translation id="422477017457571619">Proteção com tecnologia de IA em tempo real contra sites, extensões e downloads perigosos com base nos seus dados de navegação enviados ao Google.</translation>
 <translation id="4231395118547300571">Notificações da Confirmação de segurança ativadas</translation>
 <translation id="4232817129213135694">Configurar chaves de acesso para este dispositivo</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">Automática</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854068532375923088">Permitir que o "Gemini" use sua câmera</translation>
+<translation id="4860114370595561279">As informações salvas são armazenadas no seu dispositivo</translation>
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
 <translation id="4865063548323785458">Salve e preencha automaticamente suas senhas para fazer login em sites e apps com facilidade</translation>
@@ -1235,6 +1243,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5559567453458728487">Converta unidades de medida encontradas na Web</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5565871407246142825">Cartões de crédito</translation>
+<translation id="5566623128829375608">Fazer isso salva as informações no seu dispositivo.</translation>
 <translation id="5567439033041178034">SAIBA MAIS</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar a lista de leitura</translation>
@@ -1650,7 +1659,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Criar imagem Pro</translation>
 <translation id="6973630695168034713">Pastas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Todo o período</translation>
@@ -2178,6 +2186,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8829809207373502270">Essa chave de acesso não funciona mais. Ela foi excluída de <ph name="WEBSITE" /> e será excluída daqui em breve. <ph name="BEGIN_LINK" />Sobre chaves de acesso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Fechar todas as guias inativas</translation>
 <translation id="8837654851594567190">Ordenar por publisher</translation>
+<translation id="884351711508006491">Suas informações estão salvas no dispositivo.</translation>
 <translation id="8844136307393039959">Redução no preço do produto monitorado</translation>
 <translation id="8848286253339013170">Salvando imagem no Google Fotos de <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Oculto</translation>
@@ -2185,7 +2194,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8856643812068084733">Arquivos</translation>
 <translation id="8863067612494559785">Enviando para <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Receber rotas e informações locais no Google Maps</translation>
-<translation id="8867879594900082274">Suas edições só serão aplicadas aos sites fixados neste dispositivo.</translation>
 <translation id="8871974300055371298">Configurações de conteúdo</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8879604564928138696">Toque duas vezes para testar</translation>

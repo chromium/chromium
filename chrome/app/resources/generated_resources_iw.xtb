@@ -356,7 +356,6 @@
 <translation id="1221825588892235038">בחירה בלבד</translation>
 <translation id="1222835797152767346">אפשר להגדיר קוד אימות כדי שיהיה יותר קל להיכנס לחשבון</translation>
 <translation id="1223484782328004593">נדרש רישיון כדי להשתמש ב-<ph name="APP_NAME" /></translation>
-<translation id="1223498995510244364">סיכום</translation>
 <translation id="1223853788495130632">מנהל המערכת ממליץ על ערך מסוים עבור הגדרה זו.</translation>
 <translation id="1225177025209879837">עיבוד הבקשה מתבצע...</translation>
 <translation id="1227107020813934021">חיפוש של סורקי מסמכים</translation>
@@ -1055,6 +1054,7 @@
 <translation id="1695510246756136088">לא ניתן להתחבר לאינטרנט. אפשר לנסות שוב.</translation>
 <translation id="1696214930320482113">פרופילים מאפשרים לך להפריד בין עבודה, שימוש אישי ומשחקים בלי לעבור לדפדפן אחר. אפשר להוסיף פרופיל חדש עכשיו.</translation>
 <translation id="1696555181932908973">אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">כדי לשמור על אבטחת המכשיר, מומלץ להפעיל ולהתקין תוכנות ממקורות וממפתחים מהימנים בלבד.</translation>
 <translation id="169675691788639886">‏למכשיר מוגדר שרת SSH. אין להיכנס לחשבונות רגישים.</translation>
 <translation id="1697122132646041614">בסימון דיסלייק, נפתח טופס לשליחת משוב מפורט על הסיבה לכך שלא אהבת את התוצאות האלה.</translation>
 <translation id="1697532407822776718">הכול מוכן!</translation>
@@ -5879,6 +5879,7 @@
 <translation id="4943927218331934807">נדרשת סיסמה</translation>
 <translation id="4944310289250773232">שירות האימות הזה מתארח בדומיין <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בכפתור ההפעלה. נתוני טביעות האצבע של הילד או הילדה מאוחסנים באופן מאובטח ואף פעם לא נשלחים מה-<ph name="DEVICE_TYPE" /> הזה.</translation>
+<translation id="4946215577126251136">הצגת הכפתור של חלונית הפרויקטים</translation>
 <translation id="4946998421534856407">מרכז האפליקציות + חץ למעלה</translation>
 <translation id="4947376546135294974">נתונים מהאתר שאליו נכנסת</translation>
 <translation id="4948370357877377178">המשך המשימות</translation>
@@ -6113,7 +6114,6 @@
 <translation id="51143538739122961">צריך להכניס את מפתח האבטחה ולגעת בו</translation>
 <translation id="5115309401544567011">חבר את ה-<ph name="DEVICE_TYPE" /> למקור חשמל.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">כדי למלא אוטומטית מידע רגיש, צריך לאמת את הזהות שלך</translation>
 <translation id="5116315184170466953">בסימון לייק, נשלח משוב שאהבת את ההצעה הזו לקבוצת כרטיסיות.</translation>
 <translation id="5116628073786783676">&amp;שמירת אודיו כ...</translation>
 <translation id="5117139026559873716">יש לנתק את הטלפון מה-<ph name="DEVICE_TYPE" />. הם לא יחוברו יותר באופן אוטומטי.</translation>
@@ -6711,6 +6711,7 @@
 <translation id="5527597176701279474"><ph name="APP_NAME" />, בתהליך התקנה</translation>
 <translation id="5527822190489075064">טעינה יעילה</translation>
 <translation id="5529554942700688235">סיכום החיסכון בזיכרון, הנפח שהתפנה: <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">הצגת הכפתור של חיפוש בכרטיסיות</translation>
 <translation id="5530977410273748884">‏כדי לשמור את הסיסמה במנהל הסיסמאות של Google, צריך ללחוץ על המפתח</translation>
 <translation id="5532223876348815659">גלובלי</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> מבקש</translation>
@@ -8264,6 +8265,7 @@
 <translation id="6613267708691765962">מתבצעת סריקה לאיתור תוכנה זדונית…</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6618013221808317456">‏אין הרשאה לאתרים להשתמש באופטימיזציה של JavaScript</translation>
+<translation id="6618154741503063152">אין אפשרות העלאה. אסור לצרף קבצים.</translation>
 <translation id="6619058681307408113">‎Line Printer Daemon (LPD)‎</translation>
 <translation id="661907246513853610">האתר רשאי לעקוב אחרי המיקום שלך</translation>
 <translation id="6619243162837544323">מצב רשת</translation>
@@ -9360,7 +9362,6 @@
 <translation id="7368927539449986686">עריכת החיפוש באתר</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">‏ניהול התקני USB</translation>
-<translation id="73750335798090836">כדי להוסיף שכבת הגנה למידע רגיש כמו מסמכי נסיעה ומסמכים מזהים, צריך להשתמש תמיד גם בטביעת אצבע, בזיהוי פנים או בשיטה אחרת לפתיחת הנעילה</translation>
 <translation id="7376124766545122644">‏אי אפשר להשתמש בקישור הזה. יש לבדוק אם הקישור מתחיל ב-'http://‎' או ב-'https://‎' ולנסות שוב.</translation>
 <translation id="7376553024552204454">הדגשת סמן העכבר כשהסמן בתנועה</translation>
 <translation id="7377250337652426186">כדי לחזור לכמה דפים, לוחצים לחיצה ארוכה על כפתור 'הקודם'.</translation>
@@ -10361,6 +10362,7 @@
 <translation id="8034399942062051455">‏האופטימיזציה של V8 מושבתת</translation>
 <translation id="8034697324150621782">החלפה עם התצוגה העליונה</translation>
 <translation id="8035059678007243127">הדף האנונימי השמור במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">הצגת הכפתור של קבוצות הכרטיסיות השמורות</translation>
 <translation id="8036193484521570992">עזרה בשיפור של המילוי האוטומטי</translation>
 <translation id="8036504271468642248">המשפט הקודם</translation>
 <translation id="8037117027592400564">קריאת כל הטקסט הנאמר באמצעות דיבור מסונתז</translation>

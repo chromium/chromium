@@ -2570,6 +2570,7 @@
 <translation id="5114987907971894280">virtual reallıq</translation>
 <translation id="5115232566827194440">Məhdud idarə olunan qonaq sessiyasının əvəzlənməsi</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">Həssas məlumatların avtomatik doldurulması üçün kimliyinizi doğrulayın</translation>
 <translation id="5120526915373271910">Ailə filmləri</translation>
 <translation id="5122786942953798871">Zərf (pambıq)</translation>
 <translation id="5123063207673082822">Həftəsonu</translation>
@@ -3969,6 +3970,7 @@
 <translation id="7372973238305370288">axtarış nəticəsi</translation>
 <translation id="7374461526650987610">Protokol nizamlayıcıları</translation>
 <translation id="7374733840632556089">Bu xətanın səbəbi cihazınızda siz və ya başqası tərəfindən quraşdırılmış sertifikatdır. Sertifikat şəbəkələrə nəzarət etmək və onları bloklamaq üçün istifadə olunur və Chrome ona etibar etmir. Məktəb və ya şirkət şəbəkəsi kimi bəzi hallarda qanuni nəzarətə icazə verilsə də, Chrome qarşısını ala bilməsəniz də, bunun baş verdiyini bilmənizi istəyir. Nəzarət vebə girişi olan istənilən brauzer və ya tətbiqdə baş verə bilər.</translation>
+<translation id="73750335798090836">Əlavə qorunma üçün səyahət və kimlik sənədləri kimi həssas məlumatlardan istifadə edərkən həmişə barmaq izi, üz və ya digər ekran kilidindən istifadə edin</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Saytlara icazə verilmir}=1{1 sayta icazə verilir}other{# sayta icazə verilir}}</translation>
 <translation id="7375818412732305729">Fayl qoşulub</translation>
 <translation id="7376031331622621328">Ticarət üzrə aşağıdakı vərəq</translation>

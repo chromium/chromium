@@ -2573,6 +2573,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5114987907971894280">virtualna stvarnost</translation>
 <translation id="5115232566827194440">Nadjačavanje ograničene upravljane gostujuće sesije</translation>
 <translation id="5115563688576182185">(64-bitni)</translation>
+<translation id="5116015291385561204">Potvrdite svoj identitet da bi se automatski popunili osjetljivi podaci</translation>
 <translation id="5120526915373271910">Obiteljski filmovi</translation>
 <translation id="5122786942953798871">Omotnica (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
@@ -3973,6 +3974,7 @@ Dodatne pojedinosti:
 <translation id="7372973238305370288">rezultat pretraživanja</translation>
 <translation id="7374461526650987610">Rukovatelji protokolima</translation>
 <translation id="7374733840632556089">Do ovog problema dolazi zbog certifikata koji ste vi ili neka druga osoba instalirali na ovaj uređaj. Certifikat se upotrebljava za nadzor i presretanje mreža i Chrome ga ne smatra pouzdanim. Iako postoje opravdani razlozi za nadziranje, kao na primjer na školskoj mreži ili mreži tvrtke, Chrome želi da budete svjesni da se to događa, čak i ako to ne možete spriječiti. Nadziranje je moguće u bilo kojem pregledniku ili aplikaciji koja pristupa webu.</translation>
+<translation id="73750335798090836">Radi dodatne zaštite uvijek upotrebljavajte otisak prsta, lice ili neki drugi oblik zaključavanja zaslona kad upotrebljavate osjetljive podatke kao što su putni dokumenti i osobni dokumenti</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nije dopuštena nijedna web-lokacija}=1{Dopuštena je jedna web-lokacija}one{Dopuštena je # web-lokacija}few{Dopuštene su # web-lokacije}other{Dopušteno je # web-lokacija}}</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
 <translation id="7376031331622621328">Donja tablica trgovine</translation>

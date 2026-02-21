@@ -2574,6 +2574,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5114987907971894280">navidezna resničnost</translation>
 <translation id="5115232566827194440">Preglasitev za omejeno upravljano gostujočo sejo</translation>
 <translation id="5115563688576182185">(64-bitno)</translation>
+<translation id="5116015291385561204">Za samodejno izpolnjevanje občutljivih podatkov potrdite, da ste to vi</translation>
 <translation id="5120526915373271910">Družinski filmi</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Konec tedna</translation>
@@ -3974,6 +3975,7 @@ Dodatne podrobnosti:
 <translation id="7372973238305370288">rezultat iskanja</translation>
 <translation id="7374461526650987610">Rutine za obravnavanje protokolov</translation>
 <translation id="7374733840632556089">Do te težave pride zaradi potrdila, ki ste ga vi ali nekdo drug namestili v napravo. To potrdilo se je v preteklosti uporabljalo za prestrezanje in nadzor v omrežjih, zato ga Chrome ne obravnava kot zaupanja vrednega. Čeprav obstajajo nekateri legitimni primeri nadzora, denimo v šolah ali omrežjih v podjetjih, se želi Chrome prepričati, da se nadzora zavedate, tudi če ga ne morete preprečiti. Do nadzora lahko pride v katerem koli brskalniku ali aplikaciji, ki dostopa do spleta.</translation>
+<translation id="73750335798090836">Zaradi dodatne zaščite pri uporabi občutljivih podatkov, kot so potovalni in osebni dokumenti, vedno uporabite prstni odtis, obraz ali drugo zaklepanje zaslona</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Dovoljeni niso za nobeno spletno mesto}=1{Dovoljeni so za 1 spletno mesto}one{Dovoljeni so za # spletno mesto}two{Dovoljeni so za # spletni mesti}few{Dovoljeni so za # spletna mesta}other{Dovoljeni so za # spletnih mest}}</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
 <translation id="7376031331622621328">Razdelek na dnu zaslona za trgovino</translation>

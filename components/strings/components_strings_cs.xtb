@@ -2570,6 +2570,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5114987907971894280">virtuální realita</translation>
 <translation id="5115232566827194440">Přepsání omezené spravované relace hosta</translation>
 <translation id="5115563688576182185">(64bitový)</translation>
+<translation id="5116015291385561204">Před automatickým vyplněním citlivých údajů požadovat ověření totožnosti</translation>
 <translation id="5120526915373271910">Rodinné filmy</translation>
 <translation id="5122786942953798871">Obálka (bavlněná)</translation>
 <translation id="5123063207673082822">Víkend</translation>
@@ -3968,6 +3969,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7372973238305370288">výsledek vyhledávání</translation>
 <translation id="7374461526650987610">Obslužné nástroje protokolů</translation>
 <translation id="7374733840632556089">K tomuto problému dochází kvůli certifikátu, který jste vy nebo někdo jiný nainstalovali do zařízení. O certifikátu je známo, že se používá ke sledování a zachytávání provozu v sítích, a Chrome mu nedůvěřuje. Ačkoliv sledování v některých případech (například ve školní nebo firemní síti) může být legitimní a nemůžete mu zabránit, Chrome se chce ujistit, že o něm víte. Ke sledování může docházet v kterémkoliv prohlížeči nebo aplikaci, které přistupují k webu.</translation>
+<translation id="73750335798090836">Pro dodatečnou ochranu při používání citlivých údajů, jako jsou cestovní a identifikační doklady, vždy vyžadovat otisk prstu, obličej nebo jiný způsob odemknutí obrazovky</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nejsou povoleny žádné weby}=1{Je povolen 1 web}few{Jsou povoleny # weby}many{Je povoleno # webu}other{Je povoleno # webů}}</translation>
 <translation id="7375818412732305729">Připojení souboru</translation>
 <translation id="7376031331622621328">Spodní panel obchodu</translation>

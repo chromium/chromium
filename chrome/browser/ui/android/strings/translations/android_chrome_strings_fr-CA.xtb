@@ -738,6 +738,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a empêché ce site d'envoyer des notifications en raison de la présence de contenu indésirable ou trompeur}one{Chrome a empêché ce site d'envoyer des notifications en raison de la présence de contenu indésirable ou trompeur}other{Chrome a empêché ces sites d'envoyer des notifications en raison de la présence de contenu indésirable ou trompeur}}</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Un onglet sur cet appareil}one{# onglets sur cet appareil}other{# onglets sur cet appareil}}</translation>
+<translation id="4198268995694216131">Sites supplémentaires</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Vous l'avez utilisé sur ce site</translation>
 <translation id="4214315110991671325">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement.</translation>
@@ -1018,6 +1019,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
 <translation id="5306014156308790439">Option Ajouter à la collection désactivée</translation>
 <translation id="5308380583665731573">Connecter</translation>
+<translation id="5313967007315987356">Ajouter un site</translation>
 <translation id="5316947901395241499">L'enregistrement des mots de passe est désactivé par votre administrateur</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
@@ -1753,6 +1755,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
 <translation id="8135406045838672858">Les fichiers PDF téléchargés s'ouvrent automatiquement avec <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
+<translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8152331954420209374">Accéder à Lentille</translation>
 <translation id="8153206878708357851">Activer/Désactiver la navigation au clavier</translation>
 <translation id="8154784523622173959">Personnalisez l'arrière-plan de cette page</translation>
@@ -1832,6 +1835,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Autorisations retirées pour 1 site}one{Autorisations retirées pour # site}other{Autorisations retirées pour # sites}}</translation>
 <translation id="8453310803815879010">Commencer le jeu du dinosaure</translation>
 <translation id="8455675988389029454">Accédez à vos favoris, à vos mots de passe et à d'autres données sur tous vos appareils</translation>
+<translation id="8458341576712814616">Raccourci</translation>
 <translation id="8458413889418591446">Pour retrouver rapidement les sites que vous avez visités, synchronisez votre historique et vos onglets</translation>
 <translation id="84594714173170813">Continuer à utiliser les données Chrome dans votre compte Google</translation>
 <translation id="8460448946170646641">Passer en revue les principaux paramètres de confidentialité et de sécurité</translation>

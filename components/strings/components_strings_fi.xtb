@@ -2575,6 +2575,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5114987907971894280">virtuaalitodellisuus</translation>
 <translation id="5115232566827194440">Rajoitetun hallinnoidun vierailijakäyttökerran ohitus</translation>
 <translation id="5115563688576182185">(64-bittinen)</translation>
+<translation id="5116015291385561204">Vahvista henkilöllisyytesi, jotta arkaluontoiset tiedot voidaan täyttää automaattisesti</translation>
 <translation id="5120526915373271910">Koko perheen elokuvat</translation>
 <translation id="5122786942953798871">Kirjekuori (puuvilla)</translation>
 <translation id="5123063207673082822">Viikonloppu</translation>
@@ -3975,6 +3976,7 @@ Lisätietoja:
 <translation id="7372973238305370288">hakutulos</translation>
 <translation id="7374461526650987610">Protokollien käsittelijät</translation>
 <translation id="7374733840632556089">Tämän virheen syynä on varmenne, jonka sinä tai joku muu asensi laitteellesi. Varmennetta on aiemmin käytetty verkkojen valvontaan ja kaappaamiseen, eikä Chrome luota siihen. Valvomiselle voi olla oikea syy esimerkiksi oppilaitoksen tai yrityksen verkossa, mutta Chrome haluaa sinun tietävän valvonnasta, vaikket voi lopettaa sitä. Valvonta voi tapahtua missä tahansa selaimessa tai sovelluksessa, jolla on pääsy verkkoon.</translation>
+<translation id="73750335798090836">Paranna suojausta käyttämällä aina sormenjälkeä, kasvoja tai muuta näytön lukituksen avaustapaa, kun käytät arkaluontoisia tietoja, kuten matka- ja henkilötodistuksia</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ei sallittuja sivustoja}=1{1 sivusto sallittu}other{# sivustoa sallittu}}</translation>
 <translation id="7375818412732305729">Tiedosto on liitetty</translation>
 <translation id="7376031331622621328">Kaupan alapaneeli</translation>

@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome הפסיק להציג ההתראות מהאתר הזה בגלל ספאם או תוכן מטעה}one{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}two{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}other{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}}</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{כרטיסייה אחת במכשיר הזה}one{# כרטיסיות במכשיר הזה}two{# כרטיסיות במכשיר הזה}other{# כרטיסיות במכשיר הזה}}</translation>
+<translation id="4198268995694216131">אתרים נוספים</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
 <translation id="4209029522667123437">‫<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • החשבון שהשתמשת בו באתר הזה</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
@@ -1018,6 +1019,7 @@
 <translation id="5304593522240415983">שדה זה לא יכול להיות ריק</translation>
 <translation id="5306014156308790439">הלחצן 'הוספה לאוסף' מושבת</translation>
 <translation id="5308380583665731573">התחברות</translation>
+<translation id="5313967007315987356">הוספת אתר</translation>
 <translation id="5316947901395241499">האפשרות לשמור סיסמאות הושבתה על ידי האדמין</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
@@ -1543,6 +1545,7 @@
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
 <translation id="7333041109965360609">ביטלת את ההרשמה לקבלת התראות</translation>
+<translation id="7335766481146072567">לוחצים על המשך</translation>
 <translation id="7336259382292148213">נראה שהכול בסדר בהתראות</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7340958967809483333">‏אפשרויות של Discover</translation>
@@ -1752,6 +1755,7 @@
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8135406045838672858">‏קובצי PDF ייפתחו באופן אוטומטי באמצעות <ph name="APP_NAME" /> אחרי ההורדה</translation>
 <translation id="8137562778192957619">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google.</translation>
+<translation id="8151185429379586178">כלים למפתחים</translation>
 <translation id="8152331954420209374">‏מעבר אל Lens</translation>
 <translation id="8153206878708357851">החלפת המצב של הדפדוף עם סמן טקסט</translation>
 <translation id="8154784523622173959">התאמה אישית של הרקע של הדף הזה</translation>
@@ -1831,6 +1835,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ההרשאות הוסרו מאתר אחד}one{ההרשאות הוסרו מ-# אתרים}two{ההרשאות הוסרו מ-# אתרים}other{ההרשאות הוסרו מ-# אתרים}}</translation>
 <translation id="8453310803815879010">‏הפעלת המשחק Dino</translation>
 <translation id="8455675988389029454">יש לך אפשרות לקבל גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
+<translation id="8458341576712814616">קיצור דרך</translation>
 <translation id="8458413889418591446">אחרי סנכרון ההיסטוריה והכרטיסיות אפשר יהיה לחזור במהירות לאתרים שביקרת בהם</translation>
 <translation id="84594714173170813">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
@@ -1855,6 +1860,7 @@
 <translation id="8559961053328923750">‏ב-Chrome מוגדרת מגבלה על כמות הנתונים הכוללת שאתרים רשאים לשתף דרך הדפדפן כדי למדוד את ביצועי המודעות</translation>
 <translation id="8559990750235505898">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="8560602726703398413">ניתן למצוא את רשימת הקריאה בקטע 'סימניות'</translation>
+<translation id="85618473456579127">לוחצים על הפרופיל בפינה השמאלית העליונה</translation>
 <translation id="8565021320663436446">להסיר את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>

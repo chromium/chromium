@@ -253,7 +253,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Vert clair</translation>
-<translation id="1406370515365284486">Vos modes de paiement seront toujours enregistrés</translation>
+<translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
 <translation id="1406812885827747674">Autoriser cette fois-ci</translation>
 <translation id="14070772729708640">Les fichiers ont bien été importés dans <ph name="FOLDER_NAME" /> sur <ph name="CLOUD_PROVIDER" /></translation>
@@ -422,7 +422,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1656489000284462475">Enlèvement</translation>
 <translation id="1658111267661135323">TV et vidéo</translation>
 <translation id="1658918301167915956">Appareils Bluetooth</translation>
-<translation id="1662550410081243962">Enregistrer et saisir les modes de paiement</translation>
+<translation id="1662550410081243962">Enregistrer et préremplir les modes de paiement</translation>
 <translation id="1662980953334786797">Même ordre</translation>
 <translation id="1663943134801823270">Les cartes et les adresses proviennent de Chrome. Vous pouvez les gérer dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Photopolymère pour flexographie</translation>
@@ -433,7 +433,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
 <translation id="1688718429648938412">Enregistrez la carte de fidélité dans Wallet</translation>
-<translation id="1689333818294560261">Pseudo</translation>
+<translation id="1689333818294560261">Nom de la carte</translation>
 <translation id="1692622044604477956">Infos sur les films et horaires des séances</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les thèmes qui datent de plus de quatre semaines. À mesure que vous continuez de naviguer, un thème peut réapparaître dans la liste. Vous pouvez aussi bloquer certains thèmes pour empêcher que Chrome les partage avec les sites, et désactiver les thèmes d'annonces à tout moment dans les paramètres Chrome.</translation>
 <translation id="1699651774646344471">Vous pouvez désormais utiliser les adresses de votre compte Google</translation>
@@ -2574,6 +2574,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5114987907971894280">réalité virtuelle</translation>
 <translation id="5115232566827194440">Ignorer la session Invité gérée restreinte</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116015291385561204">Confirmer votre identité pour compléter automatiquement des informations sensibles</translation>
 <translation id="5120526915373271910">Films tous publics</translation>
 <translation id="5122786942953798871">Enveloppe (coton)</translation>
 <translation id="5123063207673082822">Week-end</translation>
@@ -3975,6 +3976,7 @@ Informations supplémentaires :
 <translation id="7372973238305370288">résultat de recherche</translation>
 <translation id="7374461526650987610">Gestionnaires de protocoles</translation>
 <translation id="7374733840632556089">Ce problème est dû à un certificat installé sur votre appareil par vous-même ou par quelqu'un d'autre. Ce certificat est utilisé pour surveiller et intercepter des réseaux, et n'est pas approuvé par Chrome. Bien qu'il existe des cas légitimes de surveillance (sur un réseau scolaire ou d'entreprise, par exemple), Chrome souhaite s'assurer que vous êtes au courant de cette activité, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire sur n'importe quel navigateur ou application qui accède au Web.</translation>
+<translation id="73750335798090836">Pour plus de sécurité, utilisez toujours votre empreinte digitale, votre visage ou une autre méthode de déverrouillage de l'écran lorsque vous utilisez des informations sensibles comme des documents de voyage et d'identité</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Aucun site autorisé}=1{1 site autorisé}one{# site autorisé}other{# sites autorisés}}</translation>
 <translation id="7375818412732305729">Fichier joint</translation>
 <translation id="7376031331622621328">Bottom sheet de commerce</translation>

@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{由於偵測到垃圾/欺詐內容，因此 Chrome 已停止顯示來自該網站的通知}other{由於偵測到垃圾/欺詐內容，因此 Chrome 已停止顯示來自這些網站的通知}}</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{這部裝置上的 1 個分頁}other{這部裝置上的 # 個分頁}}</translation>
+<translation id="4198268995694216131">其他網站</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 你在這個網站使用過</translation>
 <translation id="4214315110991671325">如果你允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
@@ -1018,6 +1019,7 @@
 <translation id="5304593522240415983">這個欄位不能留空</translation>
 <translation id="5306014156308790439">「新增到珍藏內容」功能已停用</translation>
 <translation id="5308380583665731573">連線</translation>
+<translation id="5313967007315987356">新增網站</translation>
 <translation id="5316947901395241499">系統管理員已關閉密碼儲存功能</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
@@ -1543,6 +1545,7 @@
 <translation id="7314734791127433392">無法檢查密碼</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
+<translation id="7335766481146072567">按下「繼續」。</translation>
 <translation id="7336259382292148213">通知權限沒有問題</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7340958967809483333">探索的選項</translation>
@@ -1752,6 +1755,7 @@
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟下載的 PDF</translation>
 <translation id="8137562778192957619">你不需要記住這組密碼，系統會將密碼儲存至 Google 密碼管理工具中。</translation>
+<translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8152331954420209374">開啟智慧鏡頭</translation>
 <translation id="8153206878708357851">切換鍵盤瀏覽模式</translation>
 <translation id="8154784523622173959">自訂此頁面的背景</translation>
@@ -1831,6 +1835,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 # 個網站的權限}}</translation>
 <translation id="8453310803815879010">啟動恐龍遊戲</translation>
 <translation id="8455675988389029454">在任何裝置上存取書籤、密碼及其他設定</translation>
+<translation id="8458341576712814616">搜尋捷徑</translation>
 <translation id="8458413889418591446">如要快速造訪先前瀏覽的網站，請同步處理歷史記錄和分頁</translation>
 <translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8460448946170646641">查看最重要的隱私權和安全性控制項</translation>
@@ -1855,6 +1860,7 @@
 <translation id="8559961053328923750">對於收集用來評估廣告成效的資料，Chrome 會限制網站可透過瀏覽器分享的資料總量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="8560602726703398413">在書籤中尋找閱讀清單</translation>
+<translation id="85618473456579127">輕觸右上方的「個人資料」</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>

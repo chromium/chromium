@@ -2574,6 +2574,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5114987907971894280">rhithwirionedd</translation>
 <translation id="5115232566827194440">Diystyriad sesiwn gwestai a reolir gyfyngedig</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">Cadarnhewch mai chi sydd yno i awtolenwi gwybodaeth sensitif</translation>
 <translation id="5120526915373271910">Ffilmiau i'r Teulu</translation>
 <translation id="5122786942953798871">Amlen (Cotwm)</translation>
 <translation id="5123063207673082822">Penwythnos</translation>
@@ -3973,6 +3974,7 @@ Manylion ychwanegol:
 <translation id="7372973238305370288">canlyniad chwilio</translation>
 <translation id="7374461526650987610">Trinyddion protocol</translation>
 <translation id="7374733840632556089">Mae'r broblem hon yn digwydd oherwydd tystysgrif rydych chi neu rywun arall wedi'i gosod ar eich dyfais. Mae'n hysbys bod y dystysgrif yn cael ei defnyddio i fonitro a rhyng-gipio rhwydweithiau, ac nid yw Chrome yn ymddiried ynddi. Er bod rhai achosion dilys yn bodoli ar gyfer monitro, fel ar rwydwaith ysgol neu gwmni, mae Chrome am sicrhau eich bod yn ymwybodol ei fod yn digwydd, hyd yn oed os na allwch ei atal. Gallai monitro ddigwydd mewn unrhyw borwr neu raglen sy'n defnyddio'r we.</translation>
+<translation id="73750335798090836">I gael amddiffyniad ychwanegol, defnyddiwch eich ôl-bys, wyneb, neu glo sgrîn arall bob amser pan fyddwch yn defnyddio gwybodaeth sensitif megis dogfennau teithio a hunaniaeth</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ni chaniateir unrhyw wefannau}=1{Caniateir 1 gwefan}two{Caniateir # wefan}few{Caniateir # gwefan}many{Caniateir # gwefan}other{Caniateir # gwefan}}</translation>
 <translation id="7375818412732305729">Mae'r ffeil wedi'i hatodi</translation>
 <translation id="7376031331622621328">Dalen waelod masnach</translation>

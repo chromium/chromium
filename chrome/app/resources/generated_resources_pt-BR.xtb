@@ -355,7 +355,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1221825588892235038">Apenas seleção</translation>
 <translation id="1222835797152767346">Defina um PIN para facilitar o login</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requer uma licença</translation>
-<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">Seu administrador recomenda um valor específico para esta configuração.</translation>
 <translation id="1225177025209879837">Processando solicitação...</translation>
 <translation id="1227107020813934021">Encontrar scanners</translation>
@@ -1057,6 +1056,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1695510246756136088">Não foi possível se conectar à internet. Tente novamente.</translation>
 <translation id="1696214930320482113">Com os perfis, você separa o trabalho, a vida pessoal e o lazer sem ter que mudar de navegador. Adicione um perfil agora.</translation>
 <translation id="1696555181932908973">Há outras maneiras de continuar no <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Para proteger seu dispositivo, use apenas softwares de fontes e desenvolvedores confiáveis.</translation>
 <translation id="169675691788639886">O dispositivo tem um servidor SSH configurado. Não faça login usando contas confidenciais.</translation>
 <translation id="1697122132646041614">O botão "Não gostei" abre um formulário para enviar comentários detalhados sobre o motivo de você não ter gostado desses resultados.</translation>
 <translation id="1697532407822776718">Tudo pronto!</translation>
@@ -2174,6 +2174,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="244231003699905658">Endereço inválido. Verifique o endereço e tente novamente.</translation>
 <translation id="2442916515643169563">Sombra do texto</translation>
 <translation id="2443487764245141020">Talvez os sites também precisem reconhecer seu dispositivo com um identificador</translation>
+<translation id="2444091518615234627">Envia menos dados para o Google (por exemplo, partes de URLs)</translation>
 <translation id="244475495405467108">Fechar guias à esquerda</translation>
 <translation id="2444874983932528148">Continue de onde parou</translation>
 <translation id="2445081178310039857">O diretório raiz da extensão é obrigatório.</translation>
@@ -5881,6 +5882,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4943927218331934807">Senha necessária</translation>
 <translation id="4944310289250773232">Este serviço de autenticação é hospedado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Para configurar a impressão digital, peça para a criança tocar no botão liga/desliga. Os dados de impressão digital da criança são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Mostrar botão do painel de projetos</translation>
 <translation id="4946998421534856407">acesso rápido + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que você está visitando</translation>
 <translation id="4948370357877377178">Continue suas tarefas</translation>
@@ -6115,7 +6117,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="51143538739122961">Insira sua chave de segurança e toque nela</translation>
 <translation id="5115309401544567011">Conecte seu <ph name="DEVICE_TYPE" /> a uma fonte de energia.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Confirme sua identidade para preencher automaticamente informações sensíveis</translation>
 <translation id="5116315184170466953">"Gostei" envia feedback informando que você gostou desta sugestão de grupo de guias</translation>
 <translation id="5116628073786783676">Sal&amp;var áudio como...</translation>
 <translation id="5117139026559873716">Desconecte o smartphone do <ph name="DEVICE_TYPE" />. Eles não se conectarão mais um ao outro automaticamente.</translation>
@@ -6693,6 +6694,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5510775624736435856">Ver descrições de imagens do Google</translation>
 <translation id="5511379779384092781">Muito pequeno</translation>
 <translation id="5511823366942919280">Você quer mesmo configurar este dispositivo como um "Shark"?</translation>
+<translation id="5512511240775436189">Envia mais dados para o Google (por exemplo, URLs, conteúdo da página e muito mais)</translation>
 <translation id="5512739112435045339">Libere espaço no dispositivo. Depois, tente fazer o download novamente</translation>
 <translation id="5513807280330619196">Calculadora</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6713,11 +6715,13 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carregamento otimizado</translation>
 <translation id="5529554942700688235">Resumo da economia de memória: <ph name="MEMORY_VALUE" /> liberados</translation>
+<translation id="5529693968082667490">Mostrar botão de pesquisa em todas as guias</translation>
 <translation id="5530977410273748884">Para salvar a senha no Gerenciador de senhas do Google, clique no ícone de chave</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quer</translation>
 <translation id="5533343601674003130">Serviço de PDF</translation>
 <translation id="5535769176698670170">Trocar com a visualização de cima</translation>
+<translation id="5537395135310061418">Protege você na web com a melhor segurança do Google</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5539070192556911367">Não é possível acessar o Google</translation>
 <translation id="5541091577812545428">A senha não foi alterada</translation>
@@ -6878,6 +6882,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5639549361331209298">Recarrega esta página; pressione para ver mais opções</translation>
 <translation id="5640133431808313291">Gerenciar chaves de segurança</translation>
 <translation id="5640159004008030285">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, <ph name="BEGIN_LINK" />salve-a na sua Conta do Google<ph name="END_LINK" />.</translation>
+<translation id="5640322514952298438">Prioriza a velocidade do site</translation>
 <translation id="5641608986289282154">Começar a usar o <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Editor de imagem da captura de tela</translation>
 <translation id="5641715878999557094"><ph name="EXTENSION_NAME" /> mudou a página que aparece quando você clica no botão "Página inicial".</translation>
@@ -8088,6 +8093,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6494483173119160146">O dispositivo encontrou um erro irrecuperável. Redefina o dispositivo e tente de novo. Isso vai apagar todos os dados do usuário.</translation>
 <translation id="6495266441917713704">Não foi possível transferir o Wi-Fi</translation>
 <translation id="6495453178162183932">O tema foi atualizado para o padrão do Chrome</translation>
+<translation id="6496542321576111907">Oferece segurança robusta. Você pode ativar recursos adicionais.</translation>
 <translation id="6496641546298525838">Seu dispositivo</translation>
 <translation id="6497784818439587832">Mude o tamanho da tela para aumentar ou diminuir os itens nela.</translation>
 <translation id="6497789971060331894">Rolagem reversa do mouse</translation>
@@ -8265,6 +8271,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6613267708691765962">Procurando malware...</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6618013221808317456">Não permitir que os sites usem a otimização de JavaScript</translation>
+<translation id="6618154741503063152">Não foi possível fazer upload. Anexos não são permitidos.</translation>
 <translation id="6619058681307408113">Daemon de impressora de linha (LPD)</translation>
 <translation id="661907246513853610">O site pode rastrear seu local</translation>
 <translation id="6619243162837544323">Estado da rede</translation>
@@ -9361,7 +9368,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7368927539449986686">Editar a Pesquisa no site</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Gerenciar dispositivos USB</translation>
-<translation id="73750335798090836">Para ter mais proteção, sempre use sua impressão digital, rosto ou outro bloqueio de tela ao acessar informações sensíveis, como documentos de viagem e de identidade</translation>
 <translation id="7376124766545122644">Não é possível usar esse link. Confira se o link começa com "http://" ou "https://" e tente de novo.</translation>
 <translation id="7376553024552204454">Destacar o cursor do mouse quando ele estiver se movendo</translation>
 <translation id="7377250337652426186">Para voltar mais de uma página, clique e mantenha pressionado o botão "Voltar".</translation>
@@ -10362,6 +10368,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8034399942062051455">A otimização do V8 está desativada</translation>
 <translation id="8034697324150621782">Trocar com a visualização de cima</translation>
 <translation id="8035059678007243127">Página de navegação anônima salva em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Mostrar botão do grupos de guias salvos</translation>
 <translation id="8036193484521570992">Ajude a melhorar o preenchimento automático</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Ler todo texto falado usando voz sintetizada</translation>
@@ -11527,6 +11534,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8809147117840417135">Verde-água</translation>
 <translation id="8811862054141704416">Acesso ao microfone no Crostini</translation>
+<translation id="8811881249098640048">Diminui a velocidade de alguns sites desconhecidos</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 senha foi salva apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}one{{PASSWORD_COUNT} senha foi salva apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}other{{PASSWORD_COUNT} senhas foram salvas apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}}</translation>
 <translation id="8813199641941291474">Controle e reprogramação bloqueados para dispositivos MIDI</translation>
 <translation id="8813698869395535039">Não é possível fazer login em <ph name="USERNAME" /></translation>

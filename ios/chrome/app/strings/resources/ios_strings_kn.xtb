@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1853692000353488670">ಹೊಸ ಅದೃಶ್ಯ ವಿಂಡೋ</translation>
 <translation id="1854463785401910334">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="1860609647735325606">Gemini ಮೂಲಕ ವಿವರಿಸಿ</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} ರಲ್ಲಿ {position} ಪಾಸ್‌ವರ್ಡ್‌}one{{count} ರಲ್ಲಿ {position} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{count} ರಲ್ಲಿ {position} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1864266050569350424">ನೀವು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್‌ ಮಾಡಿದ ಸೈಟ್‌ನಲ್ಲಿ, ಸೈನ್‌-ಇನ್‌ ಪಾಸ್‌ವರ್ಡ್ ಫೀಲ್ಡ್‌ ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="2536991091671391962">ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೀವು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು. ಅವುಗಳನ್ನು <ph name="EMAIL" /> ನ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2538103551183528357">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="2538705697765638552">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಫಾರ್ಮ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವಂತಹ ಕೆಲಸಗಳನ್ನು ವೇಗವಾಗಿ ಮಾಡಿ. <ph name="USER_EMAIL" /> ಗಾಗಿ Google Wallet ನಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="2539748786028143624">ವರ್ಧಿತ ಸುರಕ್ಷತೆಯನ್ನು ಆನ್ ಮಾಡಿ…</translation>
 <translation id="2540111494300686866">ಡೈಲಾಗ್‌ಗಳನ್ನು ನಿಗ್ರಹಿಸಿ</translation>
 <translation id="2542268842667970959">"ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆ" ಮರೆಮಾಡಿ</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}}</translation>
 <translation id="2791174088547598693">ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಸೇರಿಸಿ…</translation>
 <translation id="2793703503584038325">ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು "ಹಂಚಿಕೆ" ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="2793804887899597849">ಮಾಹಿತಿಯನ್ನು ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2797029671965852011">ಇತಿಹಾಸವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2797302972324086597">ರಾಷ್ಟ್ರ ಕೋಡ್</translation>
 <translation id="2798263827270599246">ಡೀಫಾಲ್ಟ್ ಥೀಮ್</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Lens ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3575426792457739946">ಈ ಪಟ್ಟಿಯು ಎಲ್ಲಾ ಲೋಡ್ ಮಾಡಿದ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿದೆ.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3581564640715911333">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3587885837929752825">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಏನನ್ನು ಸಂಗ್ರಹಿಸಬಹುದು ಎಂಬುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">ಇಂಪೋರ್ಟ್</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_BOLD" /> ತೆರೆಯಿರಿ</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
+<translation id="386224966259596343">ಮುಂದಿನ ಬಾರಿ ನೀವು ಸಂಬಂಧಿತ ಫಾರ್ಮ್ ಅನ್ನು ಭರ್ತಿ ಮಾಡಿದಾಗ ಈ ಮಾಹಿತಿಯನ್ನು Wallet ನಲ್ಲಿ ಸೇವ್ ಮಾಡುವ ಅವಕಾಶವನ್ನು ನೀವು ಹೊಂದಿರುತ್ತೀರಿ.</translation>
 <translation id="3868495844258915202">ಸಂಪೂರ್ಣ URL ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3875783148670536197">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="3878657761594430423">ಶೀಟ್ ಗ್ರಾಬರ್</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">ಸಹಾಯವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4095483462103784441">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ರಚಿಸಿ</translation>
 <translation id="4099756562043439968">ರಿಮೈಂಡರ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
+<translation id="4101867642407836771"><ph name="USER_EMAIL" /> ಗಾಗಿ Google Wallet ನಲ್ಲಿ.</translation>
 <translation id="4108998448622696017">ಅಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸಿದಾಗ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="4111985840824673503">ಎಲ್ಲವನ್ನೂ ಓದಿರುವುದು ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="411254640334432676">ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="4120936477286528673">ಈ ಸೈಟ್‌ ಪದೇಪದೇ ಇನ್ನೊಂದು ಆ್ಯಪ್‌ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="4121993058175073134">ಒಟ್ಟು ರಫ್ತು ಡೇಟಾ ಕಳುಹಿಸಲು, ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ಖಾತೆಯನ್ನು ಸೆಟ್ಟಿಂಗ್‌‌ಗಳ ಅಪ್ಲಿಕೇಶನ್‌‌ನಲ್ಲಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಿ.</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> ಅನ್ನು ಸೇವ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="4133139945030148655">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿದ್ದೀರಿ</translation>
 <translation id="4133265950310064865">ವರ್ಧಿತ ಸುರಕ್ಷತೆ</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="4854068532375923088">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು "Gemini" ಗೆ ಅನುಮತಿಸಿ</translation>
+<translation id="4860114370595561279">ನಿಮ್ಮ ಸೇವ್‌ ಮಾಡಲಾದ ಮಾಹಿತಿಯನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆ</translation>
 <translation id="4860895144060829044">ಕರೆ</translation>
 <translation id="4861953997778766866">ನಿಮ್ಮ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳಿಗೆ ಪ್ರತಿಯೊಬ್ಬರೂ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು</translation>
 <translation id="4865063548323785458">ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
@@ -1235,6 +1243,7 @@
 <translation id="5559567453458728487">ವೆಬ್‌ನಲ್ಲಿ ಕಂಡುಬರುವ ಮಾಪನ ಯೂನಿಟ್‌ಗಳನ್ನು ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5565871407246142825">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು</translation>
+<translation id="5566623128829375608">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="5567439033041178034">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5578795271662203820">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಾಡಿ</translation>
 <translation id="5579012242779565775">ಓದುವ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -1650,7 +1659,6 @@
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> ಅನ್ನು ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="6964760285928603117">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
-<translation id="6967355534157677591">Pro ಬಳಸಿ ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="6973630695168034713">ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
@@ -2178,6 +2186,7 @@
 <translation id="8829809207373502270">ಈ ಪಾಸ್‌ಕೀ ಇನ್ನು ಮುಂದೆ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ. ಇದನ್ನು <ph name="WEBSITE" /> ನಿಂದ ಅಳಿಸಲಾಗಿದೆ ಹಾಗೂ ಶೀಘ್ರದಲ್ಲೇ ಇಲ್ಲಿಂದಲೂ ಅಳಿಸಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK" />ಪಾಸ್‌ಕೀಗಳ ಕುರಿತು<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ಎಲ್ಲಾ ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="8837654851594567190">ಪ್ರಕಾಶಕರ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
+<translation id="884351711508006491">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8844136307393039959">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿರುವ ಉತ್ಪನ್ನದ ದರ ಇಳಿಕೆ</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> ಗಾಗಿ Google Photos ನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಉಳಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>
@@ -2185,7 +2194,6 @@
 <translation id="8856643812068084733">ಆರ್ಕೈವ್‌ಗಳು</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="8863431381414769983">Google Maps ನಿಂದ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಿರಿ</translation>
-<translation id="8867879594900082274">ನಿಮ್ಮ ಎಡಿಟ್‌ಗಳು ಈ ಸಾಧನದಲ್ಲಿನ ನಿಮ್ಮ ಪಿನ್ ಮಾಡಿದ ಸೈಟ್‌ಗಳಿಗೆ ಮಾತ್ರ ಅನ್ವಯಿಸುತ್ತವೆ.</translation>
 <translation id="8871974300055371298">ಕಂಟೆಂಟ್‍ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8877788021141246043">ಜ್ಞಾಪನೆಯನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="8879604564928138696">ಪ್ರಯತ್ನಿಸಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>

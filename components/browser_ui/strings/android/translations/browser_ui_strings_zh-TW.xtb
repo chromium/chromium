@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">這個網站可以查看或編輯的檔案</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
-<translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1126523729897810826">完成下列建議動作，充分運用 Chrome 的各項功能</translation>
 <translation id="113098737392899175">接上鍵盤時，使用文字游標瀏覽頁面</translation>
 <translation id="1148624853678088576">大功告成！</translation>
@@ -199,7 +198,6 @@
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2891975107962658722">禁止特定網站將資料儲存到裝置</translation>
 <translation id="2903493209154104877">地址</translation>
-<translation id="2910701580606108292">允許網站播放受保護的內容前，必須先詢問你</translation>
 <translation id="2918484639460781603">前往設定</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
 <translation id="2939338015096024043">如果啟用，網站就可以要求追蹤攝影機位置，並瞭解周遭環境動靜。如果停用，網站將無法追蹤攝影機位置，也無法瞭解周遭環境動靜。</translation>
@@ -301,7 +299,6 @@
 <translation id="3924858949939391676">開啟朗讀模式後顯示連結</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3934905113567851655">雙指撥動即可調整大小</translation>
-<translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3955321697524543127">禁止網站連線至 USB 裝置</translation>
 <translation id="3965467402665811906">網站可以要求使用與你相關的既有資訊</translation>
 <translation id="3967822245660637423">下載完成</translation>
@@ -514,7 +511,6 @@
 <translation id="6171020522141473435">如果啟用，網站就可以要求使用藍牙裝置。如果停用，網站將無法使用藍牙裝置。</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>
 <translation id="6181444274883918285">新增例外網站</translation>
-<translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{# 天後將再次封鎖 Cookie}}</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
@@ -637,7 +633,6 @@
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="7573594921350120855">網站通常會使用你的攝影機提供通訊功能 (例如視訊通訊)</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前}other{<ph name="NUM_MONTHS_MANY" /> 個月前}}</translation>
-<translation id="757524316907819857">禁止網站播放受保護的內容</translation>
 <translation id="7586676035079382730">不允許通知</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7617547684249261169">你可以刪除部分或全部的歷史記錄、Cookie、網站資料和其他資料</translation>

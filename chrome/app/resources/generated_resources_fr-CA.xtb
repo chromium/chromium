@@ -355,7 +355,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1221825588892235038">Imprimer seulement la sélection</translation>
 <translation id="1222835797152767346">Définir un NIP pour faciliter la connexion à cet appareil</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> nécessite une licence</translation>
-<translation id="1223498995510244364">Résumer</translation>
 <translation id="1223853788495130632">Votre administrateur recommande une valeur particulière pour ce paramètre.</translation>
 <translation id="1225177025209879837">Traitement de la demande en cours…</translation>
 <translation id="1227107020813934021">Trouver des numériseurs de documents</translation>
@@ -6105,7 +6104,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="51143538739122961">Insérez votre clé de sécurité et touchez-la</translation>
 <translation id="5115309401544567011">Veuillez brancher votre <ph name="DEVICE_TYPE" /> sur une source d'alimentation.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Confirmer qu'il s'agit bien de vous pour remplir automatiquement les infos sensibles</translation>
 <translation id="5116315184170466953">La mention J'aime soumet des commentaires indiquant que vous aimez cette suggestion de groupe d'onglets</translation>
 <translation id="5116628073786783676">En&amp;registrer le fichier audio sous...</translation>
 <translation id="5117139026559873716">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" />. Ils ne se connecteront plus automatiquement.</translation>
@@ -9350,7 +9348,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7368927539449986686">Modifier la recherche sur le site</translation>
 <translation id="7370592524170198497">Ethernet EAP :</translation>
 <translation id="7374376573160927383">Gérer les appareils USB</translation>
-<translation id="73750335798090836">Pour une protection accrue, utilisez toujours votre empreinte digitale, votre visage ou un autre moyen de verrouillage de l'écran lorsque vous utilisez des infos sensibles telles que des documents de voyage et d'identité</translation>
 <translation id="7376124766545122644">Impossible d'utiliser ce lien. Vérifiez que votre lien commence par « http:// » ou par « https:// », puis réessayez.</translation>
 <translation id="7376553024552204454">Mettre le curseur de la souris en surbrillance lorsque vous le déplacez</translation>
 <translation id="7377250337652426186">Pour revenir en arrière de plus d'une page, cliquez sur le bouton Précédent et maintenez-le enfoncé.</translation>

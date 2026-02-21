@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Samodejno</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="4854068532375923088">Aplikaciji »Gemini« omogočite uporabo fotoaparata</translation>
+<translation id="4860114370595561279">Shranjeni podatki so shranjeni v napravi</translation>
 <translation id="4860895144060829044">Pokličite</translation>
 <translation id="4861953997778766866">Vsi lahko spreminjajo vaše deljene skupine zavihkov</translation>
 <translation id="4865063548323785458">Shranite in samodejno izpolnite gesla, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah</translation>
@@ -1650,7 +1651,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6964300328304469089">Trenutno izbrano: <ph name="NAME" />, <ph name="EMAIL" />. Izberite račun.</translation>
 <translation id="6964760285928603117">Odstranitev iz skupine</translation>
 <translation id="6965382102122355670">V redu</translation>
-<translation id="6967355534157677591">Ustvarjanje slike Pro</translation>
 <translation id="6973630695168034713">Mape</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Od začetka</translation>
@@ -2185,7 +2185,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8856643812068084733">Arhivi</translation>
 <translation id="8863067612494559785">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Pridobivanje navodil za pot in lokalnih informacij iz Google Zemljevidov</translation>
-<translation id="8867879594900082274">Vaši popravki bodo veljali samo za pripeta spletna mesta v tej napravi.</translation>
 <translation id="8871974300055371298">Nastavitve vsebine</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8879604564928138696">Dvakrat se dotaknite, če želite poskusiti</translation>

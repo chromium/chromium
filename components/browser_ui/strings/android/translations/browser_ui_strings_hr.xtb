@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Datoteke koje ova web-lokacija može pregledavati ili uređivati</translation>
 <translation id="1073417869336441572">Recite nam zašto ste dopustili kolačiće trećih strana i pomognite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Pošaljite svoje dojmove<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete zatražiti prikaz verzije web-lokacija za računala</translation>
-<translation id="1085696779717592361">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="1126523729897810826">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću pokazivača za tekst kad je tipkovnica povezana</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
@@ -199,7 +198,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="2874939134665556319">Prethodna pjesma</translation>
 <translation id="2891975107962658722">Blokiraj web-lokaciju kako ne bi spremala podatke na uređaju</translation>
 <translation id="2903493209154104877">Adrese</translation>
-<translation id="2910701580606108292">Web-lokacije moraju tražiti dopuštenje za reprodukciju zaštićenog sadržaja</translation>
 <translation id="2918484639460781603">Idite na postavke</translation>
 <translation id="2932883381142163287">Prijavi zloupotrebu</translation>
 <translation id="2939338015096024043">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za praćenje položaja kamere i podatke o vašoj okolini. Kad je ta postavka isključena, web-lokacije ne mogu pratiti položaj kamere niti saznati više o vašoj okolini.</translation>
@@ -301,7 +299,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3924858949939391676">Prikaži veze nakon uključivanja načina za čitanje</translation>
 <translation id="3933121352599513978">Sažmite neželjene zahtjeve (preporučeno)</translation>
 <translation id="3934905113567851655">Spojite prste za promjenu veličine</translation>
-<translation id="3955193568934677022">Web-lokacije mogu reproducirati zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3955321697524543127">Ne dopuštaj web-lokacijama povezivanje s USB uređajima</translation>
 <translation id="3965467402665811906">Web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
@@ -514,7 +511,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="6171020522141473435">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu Bluetooth uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati Bluetooth uređaje.</translation>
 <translation id="6177128806592000436">Veza s web-lokacijom nije sigurna</translation>
 <translation id="6181444274883918285">Dodaj iznimku za web-lokaciju</translation>
-<translation id="6192792657125177640">Iznimke</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome će sutra ponovno blokirati kolačiće}one{Kolačići će se ponovo blokirati za # dan}few{Kolačići će se ponovo blokirati za # dana}other{Kolačići će se ponovo blokirati za # dana}}</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6205314730813004066">Zaštita privatnosti u online oglašavanju</translation>
@@ -637,7 +633,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7573594921350120855">Web-lokacije obično upotrebljavaju vašu videokameru radi komunikacijskih značajki poput videochata</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Prije <ph name="NUM_MONTHS_ONE" /> mjesec}one{Prije <ph name="NUM_MONTHS_MANY" /> mjesec}few{Prije <ph name="NUM_MONTHS_MANY" /> mjeseca}other{Prije <ph name="NUM_MONTHS_MANY" /> mjeseci}}</translation>
-<translation id="757524316907819857">Web-lokacijama nije dopušteno reproduciranje zaštićenog sadržaja</translation>
 <translation id="7586676035079382730">Obavijesti nisu dopuštene</translation>
 <translation id="7594634374516752650">Povezano s Bluetooth uređajem</translation>
 <translation id="7617547684249261169">Povijest, kolačiće, podatke web-lokacije i druge podatke možete izbrisati djelomično ili u potpunosti</translation>

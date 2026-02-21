@@ -738,6 +738,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome impediu este site de enviar notificações devido a spam ou conteúdo enganoso}other{O Chrome impediu estes sites de enviar notificações devido a spam ou conteúdo enganoso}}</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 separador neste dispositivo}other{# separadores neste dispositivo}}</translation>
+<translation id="4198268995694216131">Sites adicionais</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Usada neste site</translation>
 <translation id="4214315110991671325">Se permitir cookies, o Chrome pode utilizá-los para o pré-carregamento.</translation>
@@ -1018,6 +1019,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5304593522240415983">Este campo não pode estar em branco</translation>
 <translation id="5306014156308790439">Botão Adicionar à coleção desativado</translation>
 <translation id="5308380583665731573">Ligar</translation>
+<translation id="5313967007315987356">Adicionar site</translation>
 <translation id="5316947901395241499">O seu administrador desativou a gravação de palavras-passe</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">A Google recomenda o Chrome</translation>
@@ -1543,6 +1545,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7314734791127433392">Não é possível verificar as palavras-passe</translation>
 <translation id="7324354302972299151">Enviar um pedido "Do Not Track"</translation>
 <translation id="7333041109965360609">Anulou a subscrição de notificações</translation>
+<translation id="7335766481146072567">Prima Continuar</translation>
 <translation id="7336259382292148213">As notificações parecem estar corretas</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7340958967809483333">Opções para o Discover</translation>
@@ -1752,6 +1755,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8135406045838672858">Os PDFs transferidos são abertos automaticamente com a app <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google.</translation>
+<translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8152331954420209374">Aceder ao Lens</translation>
 <translation id="8153206878708357851">Ativar/desativar Navegação por cursor</translation>
 <translation id="8154784523622173959">Personalize o fundo desta página</translation>
@@ -1831,6 +1835,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Autorizações removidas de 1 site}other{Autorizações removidas de # sites}}</translation>
 <translation id="8453310803815879010">Inicie o jogo Dino</translation>
 <translation id="8455675988389029454">Tenha os marcadores, as palavras-passe e muito mais em todos os seus dispositivos</translation>
+<translation id="8458341576712814616">Atalho</translation>
 <translation id="8458413889418591446">Para voltar rapidamente aos sites que visitou, sincronize o histórico e os separadores</translation>
 <translation id="84594714173170813">Continue a usar os dados do Chrome na sua Conta Google</translation>
 <translation id="8460448946170646641">Reveja os principais controlos de privacidade e segurança</translation>
@@ -1855,6 +1860,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8559961053328923750">O Chrome limita a quantidade total de dados que os sites podem partilhar através do navegador para medir o desempenho dos anúncios</translation>
 <translation id="8559990750235505898">Propor a tradução de páginas noutros idiomas</translation>
 <translation id="8560602726703398413">Encontre a sua lista de leitura nos Marcadores.</translation>
+<translation id="85618473456579127">Toque em Perfil na parte superior direita</translation>
 <translation id="8565021320663436446">Remover <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Não é possível transferir o ficheiro em segurança</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>

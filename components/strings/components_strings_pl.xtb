@@ -2574,6 +2574,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5114987907971894280">rzeczywistość wirtualna</translation>
 <translation id="5115232566827194440">Zastąpienie zarządzanej sesji gościa z ograniczonym dostępem</translation>
 <translation id="5115563688576182185">(64-bitowa)</translation>
+<translation id="5116015291385561204">Potwierdzaj tożsamość w celu autouzupełniania informacji poufnych</translation>
 <translation id="5120526915373271910">Kino familijne</translation>
 <translation id="5122786942953798871">Koperta (bawełna)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3974,6 +3975,7 @@ Dodatkowe informacje:
 <translation id="7372973238305370288">wynik wyszukiwania</translation>
 <translation id="7374461526650987610">Obsługa protokołów</translation>
 <translation id="7374733840632556089">Ten problem pojawia się z powodu certyfikatu zainstalowanego na tym urządzeniu przez Ciebie lub inną osobę. Ten certyfikat jest używany do monitorowania i przechwytywania ruchu sieciowego. Chrome mu nie ufa. Choć w pewnych przypadkach (np. w sieci szkolnej lub firmowej) monitorowanie jest uzasadnione i legalne, Chrome będzie Cię o tym powiadamiać, nawet jeśli nie możesz nic na to poradzić. Monitorowanie może odbywać się w każdej przeglądarce lub aplikacji, która ma dostęp do sieci.</translation>
+<translation id="73750335798090836">Aby zwiększyć ochronę, gdy używasz informacji poufnych, takich jak dokumenty podróżne czy dowód tożsamości, zawsze używaj odcisku palca, skanu twarzy lub innej metody odblokowywania ekranu</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Brak witryn z dostępem}=1{1 witryna z dostępem}few{# witryny z dostępem}many{# witryn z dostępem}other{# witryny z dostępem}}</translation>
 <translation id="7375818412732305729">Dołączono plik</translation>
 <translation id="7376031331622621328">Plansza dolna Handel</translation>

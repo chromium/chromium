@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="4854068532375923088">ອະນຸຍາດໃຫ້ “Gemini” ໃຊ້ກ້ອງຂອງທ່ານ</translation>
+<translation id="4860114370595561279">ລະບົບຈະຈັດເກັບຂໍ້ມູນທີ່ບັນທຶກໄວ້ຂອງທ່ານໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4860895144060829044">ໂທ</translation>
 <translation id="4861953997778766866">ທຸກຄົນສາມາດປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນຂອງທ່ານໄດ້</translation>
 <translation id="4865063548323785458">ບັນທຶກ ແລະ ຕື່ມລະຫັດຜ່ານຂອງທ່ານອັດຕະໂນມັດເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບຕ່າງໆໄດ້ຢ່າງງ່າຍດາຍ</translation>
@@ -1650,7 +1651,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> ເລືອກຢູ່ຕອນນີ້. ເລືອກບັນຊີ.</translation>
 <translation id="6964760285928603117">ລຶບອອກຈາກກຸ່ມ</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
-<translation id="6967355534157677591">ສ້າງຮູບພາບດ້ວຍ Pro</translation>
 <translation id="6973630695168034713">ໂຟ​ລ​ເດີ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">ທຸກເວລາ</translation>
@@ -2185,7 +2185,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8856643812068084733">ແຟ້ມຈັດເກັບ</translation>
 <translation id="8863067612494559785">ກຳລັງສົ່ງຫາ <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">ຂໍເສັ້ນທາງ ແລະ ຂໍ້ມູນໃນທ້ອງຖິ່ນຈາກ Google ແຜນທີ່</translation>
-<translation id="8867879594900082274">ການແກ້ໄຂຂອງທ່ານຈະມີຜົນກັບເວັບໄຊທີ່ປັກໝຸດໄວ້ຂອງທ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="8871974300055371298">ການ​ຕັ້ງ​ຄ່າ​ເນື້ອ​ໃນ</translation>
 <translation id="8877788021141246043">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="8879604564928138696">ແຕະສອງເທື່ອເພື່ອລອງໃຊ້</translation>

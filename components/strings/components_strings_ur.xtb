@@ -2220,7 +2220,7 @@
 <translation id="4523580145196408446">لنک ہے</translation>
 <translation id="4523643381056109546">علامتی تختی</translation>
 <translation id="4524138615196389145">‏اب سے WebAuthn کے استعمال سے تیزی سے اپنے کارڈز کی تصدیق کریں</translation>
-<translation id="45243788195988825"><ph name="TOPIC" /> کو مسدود کریں</translation>
+<translation id="45243788195988825"><ph name="TOPIC" /> کو بلاک کریں</translation>
 <translation id="4528888973346221791">دفتری پروفائل کی معلومات (جیسے آپ کا صارف نام)</translation>
 <translation id="4530347922939905757">ٹیکسٹ پیغام</translation>
 <translation id="4531477351494678589">ورچوئل کارڈ نمبر:</translation>
@@ -2575,6 +2575,7 @@
 <translation id="5114987907971894280">ورچوئل رئیلٹی</translation>
 <translation id="5115232566827194440">نظم کردہ ممنوع مہمان کا سیشن اوور رائیڈ کریں</translation>
 <translation id="5115563688576182185">(64 بٹ)</translation>
+<translation id="5116015291385561204">توثیق کریں کہ حساس معلومات کو آٹو فل کرنے والے آپ ہی ہیں</translation>
 <translation id="5120526915373271910">فیملی موویز</translation>
 <translation id="5122786942953798871">لفافہ (کاٹن)</translation>
 <translation id="5123063207673082822">ویک اینڈ</translation>
@@ -3975,6 +3976,7 @@
 <translation id="7372973238305370288">تلاش کا نتیجہ</translation>
 <translation id="7374461526650987610">پروٹوکول ہینڈلرز</translation>
 <translation id="7374733840632556089">‏آپ کے آلہ پر آپ یا کسی اور کے ذریعہ انسٹال کردہ سرٹیفکیٹ کی وجہ سے یہ مسئلہ پیش آتا ہے۔ اس سرٹیفکیٹ کو نیٹ ورکس مانیٹر کرنے اور منقطع کرنے کے استعمال کے لیے جانا جاتا ہے، اور یہ Chrome کی طرف سے قابل اعتماد نہیں ہے۔ جبکہ مانیٹرنگ کے لئے کچھ جائز صورتیں موجود ہیں، جیسے اسکول یا کمپنی کے نیٹ ورک پر، Chrome یقینی بنانا چاہتا ہے کہ آپ ہونے والی چیزوں سے وافق ہیں، چاہے آپ اسے روک نہیں سکتے۔ مانیٹرنگ کسی بھی براؤزر یا ایپلیکیشن میں ہو سکتی ہے جسے ویب تک رسائی حاصل ہے۔</translation>
+<translation id="73750335798090836">اضافی تحفظ کے لیے، آپ کے سفر اور شناختی دستاویزات جیسی حساس معلومات استعمال کرنے پر ہمیشہ اپنے فنگر پرنٹ، چہرے یا دیگر اسکرین لاک کا استعمال کریں</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{کسی سائٹ کی اجازت نہیں ہے}=1{1 سائٹ کی اجازت ہے}other{# سائٹس کی اجازت ہے}}</translation>
 <translation id="7375818412732305729">فائل منسلک کی جاتی ہے</translation>
 <translation id="7376031331622621328">کامرس سے متعلق نیچے کی شیٹ</translation>
@@ -4520,7 +4522,7 @@
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">‏‎14 x 18 انچ</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>
-<translation id="8220602974062798186"><ph name="TOPIC" /> کو اور کسی بھی متعلقہ موضوع کو مسدود کریں؟</translation>
+<translation id="8220602974062798186"><ph name="TOPIC" /> کو اور کسی بھی متعلقہ موضوع کو بلاک کریں؟</translation>
 <translation id="8223142476690844338">آداب <ph name="USER_NAME" />، آپ کے ذہن میں کیا ہے؟</translation>
 <translation id="8226408512771130794">‫<ph name="KEYWORD_SHORTCUT" />، <ph name="KEYWORD_SUFFIX" /> سے پوچھیں</translation>
 <translation id="8228419419708659934">دو صفحہ کا منظر</translation>

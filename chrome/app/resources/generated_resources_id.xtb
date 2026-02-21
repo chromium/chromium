@@ -354,7 +354,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1221825588892235038">Khusus yang terpilih</translation>
 <translation id="1222835797152767346">Setel PIN untuk memudahkan proses login</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> memerlukan lisensi</translation>
-<translation id="1223498995510244364">Ringkasan</translation>
 <translation id="1223853788495130632">Administrator Anda menyarankan nilai tertentu untuk setelan ini.</translation>
 <translation id="1225177025209879837">Memproses permintaan...</translation>
 <translation id="1227107020813934021">Temukan pemindai dokumen</translation>
@@ -1056,6 +1055,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1695510246756136088">Tidak dapat terhubung ke internet. Coba lagi.</translation>
 <translation id="1696214930320482113">Profil memungkinkan Anda memisahkan pekerjaan, aktivitas pribadi, dan hiburan tanpa beralih ke browser lain. Tambahkan profil baru sekarang.</translation>
 <translation id="1696555181932908973">Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Untuk menjaga keamanan perangkat Anda, sebaiknya hanya jalankan dan instal software dari sumber dan developer tepercaya.</translation>
 <translation id="169675691788639886">Perangkat memiliki server SSH yang dikonfigurasi. Jangan login dengan akun sensitif.</translation>
 <translation id="1697122132646041614">Memberi tanda Tidak suka akan membuka formulir untuk mengirim masukan mendetail tentang alasan Anda tidak menyukai hasil ini.</translation>
 <translation id="1697532407822776718">Anda sudah siap!</translation>
@@ -5879,6 +5879,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4943927218331934807">Sandi diperlukan</translation>
 <translation id="4944310289250773232">Layanan autentikasi ini dihosting oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Untuk menyiapkan sidik jari, minta anak Anda menyentuh tombol daya. Data sidik jari anak Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" /> ini.</translation>
+<translation id="4946215577126251136">Tampilkan tombol panel project</translation>
 <translation id="4946998421534856407">Peluncur + panah atas</translation>
 <translation id="4947376546135294974">Data dari situs yang Anda kunjungi</translation>
 <translation id="4948370357877377178">Lanjutkan tugas Anda</translation>
@@ -6113,7 +6114,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="51143538739122961">Masukkan kunci keamanan Anda, lalu sentuh</translation>
 <translation id="5115309401544567011">Harap colokkan perangkat <ph name="DEVICE_TYPE" /> ke sumber listrik.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verifikasi diri Anda untuk mengisi otomatis info sensitif</translation>
 <translation id="5116315184170466953">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai saran grup tab ini</translation>
 <translation id="5116628073786783676">Sim&amp;pan Audio Sebagai...</translation>
 <translation id="5117139026559873716">Putuskan sambungan ponsel Anda dari <ph name="DEVICE_TYPE" />. Keduanya tidak akan lagi terhubung secara otomatis.</translation>
@@ -6711,6 +6711,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, menginstal</translation>
 <translation id="5527822190489075064">Pengisian daya optimal</translation>
 <translation id="5529554942700688235">Ringkasan penghematan memori, <ph name="MEMORY_VALUE" /> dikosongkan</translation>
+<translation id="5529693968082667490">Tampilkan tombol penelusuran tab</translation>
 <translation id="5530977410273748884">Untuk menyimpan sandi Anda ke Pengelola Sandi Google, klik kunci</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ingin</translation>
@@ -8260,6 +8261,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6613267708691765962">Memindai malware...</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
 <translation id="6618013221808317456">Jangan izinkan situs menggunakan pengoptimalan JavaScript</translation>
+<translation id="6618154741503063152">Tidak dapat mengupload. Lampiran tidak diizinkan.</translation>
 <translation id="6619058681307408113">Daemon Printer Baris (LPD)</translation>
 <translation id="661907246513853610">Situs dapat melacak lokasi Anda</translation>
 <translation id="6619243162837544323">Status Jaringan</translation>
@@ -9356,7 +9358,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7368927539449986686">Edit penelusuran situs</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Kelola perangkat USB</translation>
-<translation id="73750335798090836">Sebagai perlindungan tambahan, selalu gunakan sidik jari, wajah, atau kunci layar lain saat Anda menggunakan info sensitif seperti dokumen perjalanan dan identitas</translation>
 <translation id="7376124766545122644">Tidak dapat menggunakan link ini. Periksa apakah link Anda diawali dengan 'http://' atau 'https://' untuk mencoba lagi.</translation>
 <translation id="7376553024552204454">Sorot kursor mouse saat kursor berpindah</translation>
 <translation id="7377250337652426186">Untuk kembali ke lebih dari 1 halaman, klik lama tombol Kembali.</translation>
@@ -10356,6 +10357,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8034399942062051455">Pengoptimalan V8 nonaktif</translation>
 <translation id="8034697324150621782">Tukar dengan Tampilan Atas</translation>
 <translation id="8035059678007243127">Halaman Samaran yang Disimpan di Back/Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Tampilkan tombol grup tab tersimpan</translation>
 <translation id="8036193484521570992">Bantu Tingkatkan Isi Otomatis</translation>
 <translation id="8036504271468642248">Kalimat sebelumnya</translation>
 <translation id="8037117027592400564">Membaca semua teks yang diucapkan menggunakan ucapan yang disintesis</translation>

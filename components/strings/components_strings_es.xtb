@@ -433,7 +433,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="168693727862418163">No se ha podido validar el valor de esta política con su esquema y se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
 <translation id="1688718429648938412">Guardar tarjeta de fidelización en Wallet</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Nombre</translation>
 <translation id="1692622044604477956">Carteleras y horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, los temas pueden volver a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios, así como desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="1699651774646344471">Ya puedes usar direcciones de tu cuenta de Google</translation>
@@ -532,7 +532,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1839331950812095887">unas palabras que resuman lo que piensas</translation>
 <translation id="1839551713262164453">No se ha podido hacer la validación de los valores de la política porque se han producido errores</translation>
 <translation id="1840009953725035797">Sistemas de home cinema</translation>
-<translation id="184153295865602321">Para una mayor protección, usa siempre tu huella digital, tu cara u otro bloqueo de pantalla cuando pagues con Autocompletar</translation>
+<translation id="184153295865602321">Para una mayor protección, usa siempre la huella digital, cara u otro método de desbloqueo de pantalla cuando pagues con Autocompletar</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="184517536440397176">Tu padre, madre o tutor/a debe darte permiso para visitar este sitio web. Antes de que se lo pidas, tenemos que asegurarnos de que eres tú.</translation>
 <translation id="1846432862466000825">Plástico (archivo)</translation>
@@ -2194,7 +2194,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="448363931695049633">Pizzerías</translation>
 <translation id="4489023393592172404">Sobre Kaku 4</translation>
-<translation id="4489977488133295402">Verifica que eres tú para autocompletar métodos de pago</translation>
+<translation id="4489977488133295402">Verificar que eres tú para autocompletar métodos de pago</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Cifrar contraseñas sincronizadas con tu cuenta de Google</translation>
 <translation id="4493480324863638523">La URL no es válida. Debe ser una URL con una estructura estándar, como "http://example.com" o "https://example.com".</translation>
@@ -2574,6 +2574,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5114987907971894280">realidad virtual</translation>
 <translation id="5115232566827194440">Anulación de sesión de invitado administrada restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116015291385561204">Verificar que eres tú para autocompletar información sensible</translation>
 <translation id="5120526915373271910">Películas familiares</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
@@ -3974,6 +3975,7 @@ Más información:
 <translation id="7372973238305370288">resultado de búsqueda</translation>
 <translation id="7374461526650987610">Controladores de protocolos</translation>
 <translation id="7374733840632556089">Este problema se debe a un certificado que tú u otra persona habéis instalado en el dispositivo. Chrome no confía en este certificado porque hay constancia de que se utiliza para interceptar y vigilar redes. En algunos casos, dicha vigilancia es legítima (por ejemplo, en las redes de centros educativos o empresas), pero Chrome quiere asegurarse de que estás al corriente de ello, aunque no puedas evitarlo. La vigilancia puede afectar a todos los navegadores y las aplicaciones que accedan a Internet.</translation>
+<translation id="73750335798090836">Para una mayor protección, usa siempre tu huella digital, tu cara u otro método de desbloqueo de pantalla cuando uses información sensible, como documentos de viaje y de identidad</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ningún sitio permitido}=1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="7375818412732305729">Se ha adjuntado un archivo</translation>
 <translation id="7376031331622621328">Hoja inferior de comercio</translation>

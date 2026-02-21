@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4854068532375923088">"Gemini"ın kameranızı kullanmasına izin verin</translation>
+<translation id="4860114370595561279">Kaydedilen bilgileriniz cihazınızda saklanır.</translation>
 <translation id="4860895144060829044">Telefon et</translation>
 <translation id="4861953997778766866">Herkes, paylaşılan sekme gruplarınızda değişiklik yapabilir</translation>
 <translation id="4865063548323785458">Sitelerde ve uygulamalarda kolayca oturum açmak için şifrelerinizi kaydedin ve otomatik olarak doldurun</translation>
@@ -1650,7 +1651,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6964300328304469089">Şu anda <ph name="NAME" />, <ph name="EMAIL" /> seçili. Bir hesap seçin.</translation>
 <translation id="6964760285928603117">Gruptan Kaldır</translation>
 <translation id="6965382102122355670">Tamam</translation>
-<translation id="6967355534157677591">Pro ile görüntü üret</translation>
 <translation id="6973630695168034713">Klasörler</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Tüm zamanlar</translation>
@@ -2185,7 +2185,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8856643812068084733">Arşivler</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> cihazına gönderiliyor…</translation>
 <translation id="8863431381414769983">Google Haritalar'dan yol tarifi ve bölgenizle ilgili bilgiler alın</translation>
-<translation id="8867879594900082274">Düzenlemeleriniz yalnızca bu cihazdaki sabitlenmiş sitelerinize uygulanır.</translation>
 <translation id="8871974300055371298">İçerik ayarları</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8879604564928138696">Denemek için iki kez dokunun</translation>

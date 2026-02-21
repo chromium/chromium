@@ -2574,6 +2574,7 @@
 <translation id="5114987907971894280">가상 현실</translation>
 <translation id="5115232566827194440">제한된 관리 게스트 세션 재정의</translation>
 <translation id="5115563688576182185">(64비트)</translation>
+<translation id="5116015291385561204">본인 인증을 완료하여 민감한 정보 자동 완성</translation>
 <translation id="5120526915373271910">가족 영화</translation>
 <translation id="5122786942953798871">봉투(면)</translation>
 <translation id="5123063207673082822">주말</translation>
@@ -3974,6 +3975,7 @@
 <translation id="7372973238305370288">검색결과</translation>
 <translation id="7374461526650987610">프로토콜 핸들러</translation>
 <translation id="7374733840632556089">나 또는 다른 사용자가 기기에 설치한 인증서로 인해 이 문제가 발생할 수 있습니다. 이 인증서는 네트워크를 모니터링하고 가로막는 데 사용되는 것으로 알려져 있으며, Chrome에서 신뢰하지 않습니다. 학교나 회사 네트워크에서 발생하는 합법적인 모니터링도 존재합니다. 사용자가 멈출 수는 없더라도 모니터링이 이뤄지고 있다는 사실을 Chrome에서는 알립니다. 모니터링은 웹에 액세스하는 모든 브라우저 또는 애플리케이션에서 이뤄집니다.</translation>
+<translation id="73750335798090836">보안을 강화하려면 여행 및 신원 확인 문서와 같은 민감한 정보를 사용할 때 항상 지문, 얼굴 인식 또는 기타 화면 잠금을 사용하세요</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{허용된 사이트 없음}=1{허용된 사이트 1개}other{허용된 사이트 #개}}</translation>
 <translation id="7375818412732305729">파일 첨부됨</translation>
 <translation id="7376031331622621328">상거래 하단 시트</translation>

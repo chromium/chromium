@@ -2574,6 +2574,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5114987907971894280">realitat virtual</translation>
 <translation id="5115232566827194440">Substitució de la sessió de convidat gestionada restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116015291385561204">Verifica la teva identitat per emplenar automàticament informació sensible</translation>
 <translation id="5120526915373271910">Pel·lícules familiars</translation>
 <translation id="5122786942953798871">Sobre (cotó)</translation>
 <translation id="5123063207673082822">Cap de setmana</translation>
@@ -3974,6 +3975,7 @@ Detalls addicionals:
 <translation id="7372973238305370288">resultat de la cerca</translation>
 <translation id="7374461526650987610">Gestors de protocol</translation>
 <translation id="7374733840632556089">Aquest problema es produeix a causa d'un certificat que tu o una altra persona heu instal·lat al dispositiu. Se sap que aquest certificat s'utilitza per supervisar i interceptar xarxes, i Chrome no hi confia. Tot i que hi ha casos en què és legítim dur a terme una supervisió, per exemple, en el cas d'una empresa o d'un centre educatiu, Chrome vol assegurar-se que estiguis al cas d'aquesta situació, encara que no la puguis evitar. La supervisió es pot produir en qualsevol navegador o aplicació que accedeixi al web.</translation>
+<translation id="73750335798090836">Per millorar la protecció, utilitza sempre l'empremta digital, la cara o un altre bloqueig de pantalla quan facis servir informació sensible, com ara documents de viatge i d'identitat</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No es permet cap lloc web}=1{Es permet 1 lloc web}other{Es permeten # llocs web}}</translation>
 <translation id="7375818412732305729">S'adjunta un fitxer</translation>
 <translation id="7376031331622621328">Full inferior de comerç</translation>

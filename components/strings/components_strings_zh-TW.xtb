@@ -2572,6 +2572,7 @@
 <translation id="5114987907971894280">虛擬實境</translation>
 <translation id="5115232566827194440">有限制的受管理訪客工作階段的覆寫值</translation>
 <translation id="5115563688576182185">(64 位元)</translation>
+<translation id="5116015291385561204">驗證身分才能自動填入私密資訊</translation>
 <translation id="5120526915373271910">適合闔家觀賞的電影</translation>
 <translation id="5122786942953798871">信封 (棉紙)</translation>
 <translation id="5123063207673082822">週末</translation>
@@ -3545,7 +3546,7 @@
 <translation id="6677738644213083042">切換至這個分頁</translation>
 <translation id="6679354743514146922">Chrome 瀏覽器正嘗試在 <ph name="APP_NAME" /> 中填入密碼。</translation>
 <translation id="668132230070712111">影片已儲存至 Google 雲端硬碟</translation>
-<translation id="6681790815630918386">信用卡驗證碼已儲存</translation>
+<translation id="6681790815630918386">信用卡安全碼已儲存</translation>
 <translation id="6683022854667115063">耳罩式耳機</translation>
 <translation id="6687230248707087982">信封 (普通紙)</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
@@ -3972,6 +3973,7 @@
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
+<translation id="73750335798090836">安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{未允許任何網站}=1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="7375818412732305729">附加檔案</translation>
 <translation id="7376031331622621328">商務底部功能表</translation>

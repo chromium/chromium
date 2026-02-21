@@ -727,6 +727,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4137746084635924146">Aktualny język urządzenia</translation>
 <translation id="414128724510021958">Domyślnie żądanie stron w wersji na komputery</translation>
 <translation id="4162867837470729563">Lista opcji udostępniania jest otwarta na całą wysokość.</translation>
+<translation id="4165077084524712774">Więcej narzędzi</translation>
 <translation id="4170011742729630528">Usługa jest niedostępna. Spróbuj ponownie później.</translation>
 <translation id="4170577491341606575">Pobieram Twoje rzeczy\u2026</translation>
 <translation id="4177222230309051052">Zobacz wszystkie swoje zakładki</translation>
@@ -738,6 +739,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome nie zezwala tej witrynie na wysyłanie powiadomień z powodu spamu lub treści wprowadzających w błąd}few{Chrome nie zezwala tym witrynom na wysyłanie powiadomień z powodu spamu lub treści wprowadzających w błąd}many{Chrome nie zezwala tym witrynom na wysyłanie powiadomień z powodu spamu lub treści wprowadzających w błąd}other{Chrome nie zezwala tym witrynom na wysyłanie powiadomień z powodu spamu lub treści wprowadzających w błąd}}</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta na tym urządzeniu}few{# karty na tym urządzeniu}many{# kart na tym urządzeniu}other{# karty na tym urządzeniu}}</translation>
+<translation id="4198268995694216131">Dodatkowe witryny</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Używane w tej witrynie</translation>
 <translation id="4214315110991671325">Jeśli zezwolisz na pliki cookie, Chrome może ich używać z wstępnym wczytywaniem.</translation>
@@ -1018,6 +1020,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5304593522240415983">To pole nie może być puste</translation>
 <translation id="5306014156308790439">Wyłączony przycisk Dodaj do kolekcji</translation>
 <translation id="5308380583665731573">Połącz</translation>
+<translation id="5313967007315987356">Dodaj stronę</translation>
 <translation id="5316947901395241499">Zapisywanie haseł zostało wyłączone przez administratora</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5319359161174645648">Google zaleca Chrome</translation>
@@ -1460,6 +1463,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6980258170429555165">Menu <ph name="MENU_NAME" /> jest wyróżnione.</translation>
 <translation id="6983306615164277634">Możesz też kliknąć i przytrzymać pasek adresu, aby zmienić jego pozycję.</translation>
 <translation id="6987047470128880212">Na tym urządzeniu tryb incognito jest niedostępny</translation>
+<translation id="6989358895283601928">Zapisz i wydrukuj</translation>
 <translation id="6996145122199359148">Pobierz tę stronę</translation>
 <translation id="7013762323294215682">Ten klucz dostępu zostanie zapisany w Menedżerze haseł. Każdy, kto ma do niego dostęp, będzie mógł użyć tego klucza.</translation>
 <translation id="7020741890149022655">Dodaj do listy Do przeczytania <ph name="BEGIN_NEW" />Nowe<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7314734791127433392">Nie udało się sprawdzić haseł</translation>
 <translation id="7324354302972299151">Wysyłaj żądanie „Do Not Track”</translation>
 <translation id="7333041109965360609">Zrezygnowano z otrzymywania powiadomień</translation>
+<translation id="7335766481146072567">Kliknij Dalej</translation>
 <translation id="7336259382292148213">Powiadomienia wyglądają dobrze</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7340958967809483333">Opcje kart Discover</translation>
@@ -1752,6 +1757,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8135406045838672858">Pobrane pliki PDF otwierają się automatycznie w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nie musisz zapamiętywać tego hasła. Zapisze je Menedżer haseł Google.</translation>
+<translation id="8151185429379586178">Narzędzia dla deweloperów</translation>
 <translation id="8152331954420209374">Przejdź do Obiektywu</translation>
 <translation id="8153206878708357851">Przełącz przeglądanie przy użyciu kursora</translation>
 <translation id="8154784523622173959">Spersonalizuj tło tej strony</translation>
@@ -1831,6 +1837,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Usunięto uprawnienia z 1 witryny}few{Usunięto uprawnienia z # witryn}many{Usunięto uprawnienia z # witryn}other{Usunięto uprawnienia z # witryny}}</translation>
 <translation id="8453310803815879010">Rozpocznij grę z dinozaurem</translation>
 <translation id="8455675988389029454">Korzystanie z zakładek, haseł i innych ustawień na wszystkich urządzeniach</translation>
+<translation id="8458341576712814616">Skrót</translation>
 <translation id="8458413889418591446">Aby szybko wracać do odwiedzonych stron, włącz synchronizację historii i kart</translation>
 <translation id="84594714173170813">Nadal korzystaj z danych Chrome na koncie Google</translation>
 <translation id="8460448946170646641">Informacje o najważniejszych funkcjach prywatności i bezpieczeństwa</translation>
@@ -1855,6 +1862,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8559961053328923750">Chrome ogranicza łączną ilość danych, które witryny mogą udostępniać za pomocą przeglądarki, aby mierzyć skuteczność reklam</translation>
 <translation id="8559990750235505898">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="8560602726703398413">Swoją listę Do przeczytania znajdziesz w zakładkach</translation>
+<translation id="85618473456579127">Kliknij profil w prawym górnym rogu</translation>
 <translation id="8565021320663436446">Usunąć użytkownika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Nie można pobrać pliku w bezpieczny sposób</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>

@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">ይህ ጣቢያ ማየት ወይም አርትዖት ማድረግ የሚችላቸው ፋይሎች</translation>
 <translation id="1073417869336441572">የሦስተኛ ወገን ኩኪዎችን ለምን እንደፈቀዱ ለእኛ በመንገር Chrome እንድናሻሽል ያግዙን። <ph name="BEGIN_LINK" />ግብረመልስ ይላኩ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">የጣቢያዎችን የዴስክቶፕ ስሪት ለማየት መጠየቅ ይችላሉ</translation>
-<translation id="1085696779717592361">በነባሪነት Chromeን ይጠቀሙ</translation>
 <translation id="1126523729897810826">ከChrome ምርጡን ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ ድርጊቶች ያጠናቅቁ።</translation>
 <translation id="113098737392899175">የቁልፍ ሰሌዳ ተያይዞ ሳለ በጽሑፍ ጠቋሚ ገጾችን ያስሱ</translation>
 <translation id="1148624853678088576">ተዘጋጅተዋል!</translation>
@@ -194,12 +193,12 @@
 <translation id="2802908157808345702">ጣቢያዎች ብቅ-ባዮችን እንዲልኩ እና አቅጣጫ ማዞሮችን እንዲጠቀሙ አትፍቀድ</translation>
 <translation id="2814830417943086299">Chrome አሁን የቅርብ ጊዜ ትሮችዎን በመሣሪያዎ መተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ ያሳያል። ይህን በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="2822354292072154809">እርግጠኛ ነዎት ሁሉንም የ<ph name="CHOSEN_OBJECT_NAME" /> ጣቢያ ፈቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
+<translation id="2848335882304088250">አሁን በመሣሪያዎ ላይ ከChrome ምርጡን ያገኛሉ።</translation>
 <translation id="2850913818900871965">የሞባይል ዕይታ ይጠይቁ</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
 <translation id="2891975107962658722">አንድ ጣቢያ በመሣሪያዎ ላይ ውሂብ እንዳያስቀምጥ ያግዱት</translation>
 <translation id="2903493209154104877">አድራሻዎች</translation>
-<translation id="2910701580606108292">ጣቢያዎች ጥበቃ የሚደረግለትን ይዘትን እንዲያጫውቱ ከመፍቀድ በፊት ጠይቅ</translation>
 <translation id="2918484639460781603">ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="2932883381142163287">የአላግባብ መጠቀምን ሪፖርት ያድርጉ</translation>
 <translation id="2939338015096024043">ሲበራ፣ ጣቢያዎች የካሜራዎን ቦታ ለመከታተል እና ስለ አካባቢዎ ለማወቅ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የካሜራዎን ቦታ መከታተል ወይም ስለ አካባቢዎ ማወቅ አይችሉም።</translation>
@@ -301,7 +300,6 @@
 <translation id="3924858949939391676">አንዴ የንባብ ሁነታ ከበራ በኋላ አገናኞችን አሳይ</translation>
 <translation id="3933121352599513978">ያልተፈለጉ ጥያቄዎችን ሰብስብ (የሚመከር)</translation>
 <translation id="3934905113567851655">መጠኑን ለመቀየር ይቆንጥጡ</translation>
-<translation id="3955193568934677022">ጥበቃ የሚደረግበትን ይዘት እንዲያጫውቱ ለጣቢያዎች ፍቀድ (የሚመከር)</translation>
 <translation id="3955321697524543127">ጣቢያዎች ከዩኤስቢ መሣሪያዎች ጋር እንዲገናኙ አይፍቀዱ</translation>
 <translation id="3965467402665811906">ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ሊጠይቁዎት ይችላሉ</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
@@ -514,7 +512,6 @@
 <translation id="6171020522141473435">ሲበራ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን ለመጠቀም መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="6177128806592000436">ወደዚህ ጣቢያ ያልዎት ግንኙነት ደህንነቱ አስተማማኝ አይደለም</translation>
 <translation id="6181444274883918285">ለየት ያለ ጣቢያን አክል</translation>
-<translation id="6192792657125177640">የተለዩ</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome ነገ እንደገና ኩኪዎችን ያግዳል}one{ኩኪዎች እንደገና እስከሚታገዱ ድረስ # ቀናት}other{ኩኪዎች እንደገና እስከሚታገዱ ድረስ # ቀናት}}</translation>
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
 <translation id="6205314730813004066">የማስታወቂያ ግላዊነት</translation>
@@ -637,7 +634,6 @@
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="7573594921350120855">ጣቢያዎች አብዛኛውን ጊዜ የቪዲዮ ካሜራዎን እንደ የቪዲዮ ውይይት ላሉ የመገናኛ ባህሪዎች ይጠቀሙበታል</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_MONTHS_ONE" /> ወር በፊት}one{ከ<ph name="NUM_MONTHS_MANY" /> ወር በፊት}other{ከ<ph name="NUM_MONTHS_MANY" /> ወራት በፊት}}</translation>
-<translation id="757524316907819857">ጣቢያዎች ጥበቃ የሚደረግለትን ይዘት እንዳያጫውቱ ያግዱ</translation>
 <translation id="7586676035079382730">ማሳወቂያዎች አይፈቀዱም</translation>
 <translation id="7594634374516752650">ከብሉቱዝ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="7617547684249261169">የእርስዎን አንዳንድ ወይም ሁሉንም ታሪክ፣ ኩኪዎች፣ የጣቢያ ውሂቦች እና ሌሎችም መሰረዝ ይችላሉ</translation>

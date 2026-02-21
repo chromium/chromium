@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Webgune honek ikusi edo edita ditzakeen fitxategiak</translation>
 <translation id="1073417869336441572">Lagun iezaguzu Chrome hobetzen: esan iezaguzu zergatik eman duzun hirugarrenen cookieak erabiltzeko baimena. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Webguneen ordenagailuetarako bertsioa ikusteko eska dezakezu</translation>
-<translation id="1085696779717592361">Erabili Chrome modu lehenetsian</translation>
 <translation id="1126523729897810826">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko</translation>
 <translation id="113098737392899175">Nabigatu orrietatik testu-kurtsorea erabilita teklatu bat erantsita dagoenean</translation>
 <translation id="1148624853678088576">Prest zaude!</translation>
@@ -199,7 +198,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="2874939134665556319">Aurreko pista</translation>
 <translation id="2891975107962658722">Ez utzi webgune bati zure gailuan datuak gordetzen</translation>
 <translation id="2903493209154104877">Helbideak</translation>
-<translation id="2910701580606108292">Webguneei eduki babestua erreproduzitzeko baimena eman aurretik, eskatu onespena</translation>
 <translation id="2918484639460781603">Joan ezarpenetara</translation>
 <translation id="2932883381142163287">Eman erabilera okerren berri</translation>
 <translation id="2939338015096024043">Aktibatuta dagoenean, webguneek kameraren posizioaren jarraipena egiteko eta zure inguruari buruzko informazioa lortzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute egin kameraren posizioaren jarraipena, ezta zure inguruari buruzko informazioa lortu ere.</translation>
@@ -301,7 +299,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3924858949939391676">Erakutsi estekak irakurtzeko modua aktibatuta dagoenean</translation>
 <translation id="3933121352599513978">Tolestu nahi ez diren eskaerak (gomendatua)</translation>
 <translation id="3934905113567851655">Atximurkatu tamaina aldatzeko</translation>
-<translation id="3955193568934677022">Baimendu webguneei eduki babestua erreproduzitzea (gomendatua)</translation>
 <translation id="3955321697524543127">Ez eman USB bidezko gailuetara konektatzeko baimena webguneei</translation>
 <translation id="3965467402665811906">Zuri buruz gordetako informazioa erabiltzeko baimena eska dezakete webguneek</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
@@ -514,7 +511,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="6171020522141473435">Aktibatuta dagoenean, webguneek Bluetooth bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili Bluetooth bidezko gailurik.</translation>
 <translation id="6177128806592000436">Webgune honetarako konexioa ez da guztiz segurua</translation>
 <translation id="6181444274883918285">Gehitu webgune bat salbuespen gisa</translation>
-<translation id="6192792657125177640">Salbuespenak</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Bihar blokeatuko ditu cookieak berriro Chrome-k}other{# egun barru blokeatuko dira berriro cookieak}}</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
@@ -637,7 +633,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7573594921350120855">Webguneek bideokamera erabili ohi dute bideodeiak eta antzeko komunikazio-eginbideak eskaintzeko</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Duela <ph name="NUM_MONTHS_ONE" /> hilabete}other{Duela <ph name="NUM_MONTHS_MANY" /> hilabete}}</translation>
-<translation id="757524316907819857">Ez utzi webguneei eduki babestua erreproduzitzen</translation>
 <translation id="7586676035079382730">Ukatu da jakinarazpenak bidaltzeko baimena</translation>
 <translation id="7594634374516752650">Bluetooth bidezko gailu batera konektatuta zaude</translation>
 <translation id="7617547684249261169">Historia, cookieak, webguneetako datuak eta beste datu batzuk ezaba ditzakezu, guztiak edo batzuk bakarrik</translation>

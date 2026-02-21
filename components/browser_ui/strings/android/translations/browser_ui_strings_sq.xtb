@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Skedarët që mund të shikojë ose modifikojë ky sajt</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
-<translation id="1085696779717592361">Përdor Chrome si parazgjedhje</translation>
 <translation id="1126523729897810826">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chrome</translation>
 <translation id="113098737392899175">Navigo te faqet me një kursor teksti kur lidhet një tastierë</translation>
 <translation id="1148624853678088576">Je gati!</translation>
@@ -194,12 +193,12 @@
 <translation id="2802908157808345702">Mos lejo që sajtet të dërgojnë dritare kërcyese apo të përdorin ridrejtimet</translation>
 <translation id="2814830417943086299">Chrome tani shfaq skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2848335882304088250">Tani do të përfitosh më shumë nga Chrome në pajisjen tënde.</translation>
 <translation id="2850913818900871965">Kërko pamjen për celular</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
 <translation id="2891975107962658722">Blloko një sajt që të mos ruajë të dhëna në pajisjen tënde</translation>
 <translation id="2903493209154104877">Adresat</translation>
-<translation id="2910701580606108292">Pyet përpara se sajtet të lejohen të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2918484639460781603">Shko te cilësimet</translation>
 <translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2939338015096024043">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të gjurmojnë pozicionin e kamerës dhe të mësojnë për ambientin tënd rrethues. Kur cilësimi është joaktiv, sajtet nuk mund të gjurmojnë pozicionin e kamerës apo të mësojnë për ambientin tënd rrethues.</translation>
@@ -301,7 +300,6 @@
 <translation id="3924858949939391676">Shfaq lidhjet pasi të jetë aktivizuar "Modaliteti i leximit"</translation>
 <translation id="3933121352599513978">Palos kërkesat e padëshiruara (rekomandohet)</translation>
 <translation id="3934905113567851655">Afro gishtat për të ndryshuar përmasat</translation>
-<translation id="3955193568934677022">Lejo që sajtet të luajnë përmbajtje të mbrojtur (rekomandohet)</translation>
 <translation id="3955321697524543127">Mos lejo që sajtet të lidhen me pajisjet me USB</translation>
 <translation id="3965467402665811906">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
@@ -514,7 +512,6 @@
 <translation id="6171020522141473435">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet me Bluetooth. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet me Bluetooth.</translation>
 <translation id="6177128806592000436">Lidhja jote me këtë sajt nuk është e sigurt</translation>
 <translation id="6181444274883918285">Shto përjashtim për sajt</translation>
-<translation id="6192792657125177640">Përjashtimet</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome do t'i bllokojë kukit përsëri nesër}other{# ditë derisa kukit të bllokohen përsëri}}</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
@@ -637,7 +634,6 @@
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7573594921350120855">Sajtet përdorin zakonisht videokamerën tënde për veçoritë e komunikimit si biseda me video</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> muaj më parë}other{<ph name="NUM_MONTHS_MANY" /> muaj më parë}}</translation>
-<translation id="757524316907819857">Blloko sajtet që të mos luajnë përmbajtje të mbrojtura</translation>
 <translation id="7586676035079382730">Njoftimet nuk lejohen</translation>
 <translation id="7594634374516752650">U lidh me një pajisje me Bluetooth</translation>
 <translation id="7617547684249261169">Mund të fshish disa ose të gjitha nga historiku, kukit, të dhënat e sajteve etj.</translation>

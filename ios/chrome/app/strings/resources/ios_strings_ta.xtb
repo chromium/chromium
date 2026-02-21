@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">தானியங்கு</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="4854068532375923088">உங்கள் கேமராவை “Gemini” பயன்படுத்த அனுமதியுங்கள்</translation>
+<translation id="4860114370595561279">உங்களின் சேமிக்கப்பட்ட தகவல்கள் உங்கள் சாதனத்தில் சேமிக்கப்படும்</translation>
 <translation id="4860895144060829044">அழை</translation>
 <translation id="4861953997778766866">நீங்கள் பகிரும் பக்கக் குழுக்களில் எல்லோரும் மாற்றங்களைச் செய்யலாம்</translation>
 <translation id="4865063548323785458">தளங்களிலும் ஆப்ஸிலும் எளிதாக உள்நுழைய உங்கள் கடவுச்சொற்களைச் சேமித்துவிட்டு தானாக நிரப்பலாம்</translation>
@@ -1650,7 +1651,6 @@
 <translation id="6964300328304469089">தற்போது தேர்ந்தெடுக்கப்பட்டுள்ளது: <ph name="NAME" />, <ph name="EMAIL" />. கணக்கைத் தேர்வுசெய்யும்.</translation>
 <translation id="6964760285928603117">குழுவிலிருந்து அகற்று</translation>
 <translation id="6965382102122355670">சரி</translation>
-<translation id="6967355534157677591">Pro மூலம் படத்தை உருவாக்கு</translation>
 <translation id="6973630695168034713">ஃபோல்டர்கள்</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">இதுவரை அனைத்தும்</translation>
@@ -2185,7 +2185,6 @@
 <translation id="8856643812068084733">காப்பகங்கள்</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" />க்கு அனுப்புகிறது…</translation>
 <translation id="8863431381414769983">Google Mapsஸில் இருந்து வழிகளையும் உள்ளூர் தகவல்களையும் பெறலாம்</translation>
-<translation id="8867879594900082274">இந்தச் சாதனத்தில் நீங்கள் பின் செய்துள்ள தளங்களுக்கு மட்டுமே உங்கள் மாற்றங்கள் பொருந்தும்.</translation>
 <translation id="8871974300055371298">உள்ளடக்க அமைப்புகள்</translation>
 <translation id="8877788021141246043">நினைவூட்டலை அமை</translation>
 <translation id="8879604564928138696">முயல இருமுறை தட்டவும்</translation>

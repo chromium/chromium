@@ -355,7 +355,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Eingöngu val</translation>
 <translation id="1222835797152767346">Stilltu PIN-númer til að auðvelda þér innskráningu</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> krefst leyfis</translation>
-<translation id="1223498995510244364">Samantekt</translation>
 <translation id="1223853788495130632">Kerfisstjórinn þinn ráðleggur tiltekið gildi fyrir þessa stillingu.</translation>
 <translation id="1225177025209879837">Vinnur úr beiðni...</translation>
 <translation id="1227107020813934021">Finna skjalaskanna</translation>
@@ -1057,6 +1056,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1695510246756136088">Ekki er hægt að tengjast internetinu. Reyndu aftur.</translation>
 <translation id="1696214930320482113">Prófílar gera þér kleift að aðskilja vinnu, einkamál og leiki án þess að skipta yfir í annan vafra. Bættu nýjum prófíl við núna.</translation>
 <translation id="1696555181932908973">Þú getur prófað aðrar leiðir til að halda áfram í <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Til að halda tækinu þínu öruggu ættirðu eingöngu að keyra og setja upp hugbúnað frá traustum uppruna og þróunaraðilum.</translation>
 <translation id="169675691788639886">Tæki er með SSH-þjón stilltan. Ekki skrá þig inn með viðkvæmum reikningum.</translation>
 <translation id="1697122132646041614">Þumall niður opnar eyðublað þar sem hægt er að skrá ítarlegar upplýsingar um það hvers vegna þér líkar ekki við þessar niðurstöður.</translation>
 <translation id="1697532407822776718">Nú er allt tilbúið!</translation>
@@ -5881,6 +5881,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4943927218331934807">Aðgangsorð þarf</translation>
 <translation id="4944310289250773232">Þessi auðkenningarþjónusta er hýst af <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Láttu barnið snerta aflrofann til að setja upp fingrafar. Fingrafaragögn barnsins eru í öruggri geymslu og fara aldrei út fyrir þetta <ph name="DEVICE_TYPE" /> tæki.</translation>
+<translation id="4946215577126251136">Hnappurinn „Sýna verkefnasvæði“</translation>
 <translation id="4946998421534856407">ræsilykill + ör upp</translation>
 <translation id="4947376546135294974">Gögn frá vefsvæðinu sem þú heimsækir</translation>
 <translation id="4948370357877377178">Haltu áfram með verkefnin þín</translation>
@@ -6115,7 +6116,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="51143538739122961">Stingdu öryggislykli í samband og snertu hann</translation>
 <translation id="5115309401544567011">Stingdu <ph name="DEVICE_TYPE" /> í samband við rafmagn.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Staðfestu að þetta sért þú til að fylla sjálfkrafa út viðkvæmar upplýsingar</translation>
 <translation id="5116315184170466953">Þumall upp sendir ábendingu um að þér líki við þessa tillögu að flipahóp</translation>
 <translation id="5116628073786783676">&amp;Vista hljóð sem...</translation>
 <translation id="5117139026559873716">Aftengdu símann frá <ph name="DEVICE_TYPE" />. Tækin munu ekki lengur tengjast sjálfkrafa.</translation>
@@ -6713,6 +6713,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5527597176701279474">Setur upp <ph name="APP_NAME" /></translation>
 <translation id="5527822190489075064">Fínstillt hleðsla</translation>
 <translation id="5529554942700688235">Samantekt á minnissparnaði, <ph name="MEMORY_VALUE" /> losað/losuð</translation>
+<translation id="5529693968082667490">Sýna hnapp fyrir flipaleit</translation>
 <translation id="5530977410273748884">Ýttu á lykilinn til að vista aðgangsorðið þitt í Google-aðgangsorðastjórnun</translation>
 <translation id="5532223876348815659">Altækt</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vill</translation>
@@ -8264,6 +8265,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6613267708691765962">Leitar að spilliforritum...</translation>
 <translation id="6615455863669487791">Sýndu mér</translation>
 <translation id="6618013221808317456">Ekki leyfa vefsvæðum að nota JavaScript-fínstillingu</translation>
+<translation id="6618154741503063152">Ekki tókst að hlaða upp. Viðhengi eru ekki leyfð.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Vefsvæði getur rakið staðsetningu þína</translation>
 <translation id="6619243162837544323">Staða nets</translation>
@@ -9359,7 +9361,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7368927539449986686">Breyta leit fyrir vefsvæði</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Stjórna USB-tækjum</translation>
-<translation id="73750335798090836">Notaðu alltaf fingrafar, andlit eða annan skjálás þegar þú notar viðkvæmar upplýsingar eins og vegabréf og persónuskilríki til að tryggja aukna vernd.</translation>
 <translation id="7376124766545122644">Ekki er hægt að nota þennan tengil. Athugaðu hvort tengillinn hefst á „http://“ eða „https://“ og reyndu aftur.</translation>
 <translation id="7376553024552204454">Auðkenna músarbendilinn þegar hann hreyfist</translation>
 <translation id="7377250337652426186">Haltu inni bakkhnappinum til að fara til baka um fleiri en 1 síðu.</translation>
@@ -10359,6 +10360,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8034399942062051455">Slökkt er á fínstillingu V8</translation>
 <translation id="8034697324150621782">Víxla við efra yfirlit</translation>
 <translation id="8035059678007243127">Huliðssíða í skyndiminni til baka / áfram: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Hnappurinn „Sýna vistaða flipahópa“</translation>
 <translation id="8036193484521570992">Hjálpaðu til við að bæta sjálfvirka útfyllingu</translation>
 <translation id="8036504271468642248">Fyrri setning</translation>
 <translation id="8037117027592400564">Lesa allan talaðan texta með talgervli</translation>

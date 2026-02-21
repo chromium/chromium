@@ -2570,6 +2570,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5114987907971894280">virtuálna realita</translation>
 <translation id="5115232566827194440">Prepísanie relácie hosťa s obmedzeným spravovaním</translation>
 <translation id="5115563688576182185">(64-bitová verzia)</translation>
+<translation id="5116015291385561204">Ak chcete automaticky dopĺňať citlivé údaje, overte svoju totožnosť</translation>
 <translation id="5120526915373271910">Rodinné filmy</translation>
 <translation id="5122786942953798871">Obálka (bavlna)</translation>
 <translation id="5123063207673082822">Víkend</translation>
@@ -3969,6 +3970,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7372973238305370288">výsledok vyhľadávania</translation>
 <translation id="7374461526650987610">Obslužné nástroje protokolov</translation>
 <translation id="7374733840632556089">Tento problém je spôsobený certifikátom, ktorý bol v zariadení nainštalovaný vami alebo niekým iným. O tomto certifikáte je známe, že sa pomocou neho sledujú a narúšajú siete. Chrome mu nedôveruje. Niekedy existujú legitímne prípady sledovania, napríklad v školskej alebo firemnej sieti. Chrome sa však chce uistiť, či viete, že k tomu dochádza (aj keď to nemôžete zastaviť). Sledovanie môže prebiehať v ktoromkoľvek prehliadači alebo aplikácii s prístupom na internet.</translation>
+<translation id="73750335798090836">Pri používaní citlivých údajov, ako sú cestovné doklady a doklady totožnosti, vždy používajte odtlačok prsta, tvár alebo inú zámku obrazovky. Zvýšite tým zabezpečenie.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nie sú povolené žiadne weby}=1{1 povolený web}few{# povolené weby}many{# sites allowed}other{# povolených webov}}</translation>
 <translation id="7375818412732305729">Priloženie súboru</translation>
 <translation id="7376031331622621328">Dolný hárok obchodu</translation>

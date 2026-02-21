@@ -2575,6 +2575,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5114987907971894280">virtualioji realybė</translation>
 <translation id="5115232566827194440">Apribotos valdomos svečio sesijos nepaisymas</translation>
 <translation id="5115563688576182185">(64 bitų)</translation>
+<translation id="5116015291385561204">Patvirtinkite savo tapatybę, kad galėtumėte automatiškai užpildyti neskelbtiną informaciją</translation>
 <translation id="5120526915373271910">Šeimai skirti filmai</translation>
 <translation id="5122786942953798871">Vokas (medvilninis)</translation>
 <translation id="5123063207673082822">Savaitgalis</translation>
@@ -3975,6 +3976,7 @@ Papildoma išsami informacija:
 <translation id="7372973238305370288">paieškos rezultatas</translation>
 <translation id="7374461526650987610">Protokolų doroklės</translation>
 <translation id="7374733840632556089">Ši problema kyla dėl sertifikato, kurį jūs ar kitas asmuo įdiegėte įrenginyje. Žinoma, kad sertifikatas naudojamas tinklams stebėti ir nuskaityti ir nėra patikimas sistemoje „Chrome“. Kai kurie stebėjimo atvejai yra teisėti, pvz., mokyklos ar įmonės tinkle, bet „Chrome“ nori būti tikra, kad apie stebėjimą būsite informuoti, net jei jo nutraukti negalite. Stebėjimas galimas bet kurioje naršyklėje ar programoje, iš kurių pasiekiamas žiniatinklis.</translation>
+<translation id="73750335798090836">Jei norite užtikrinti papildomą apsaugą, visada naudokite piršto atspaudą, atpažinimą pagal veidą ar kitą ekrano užraktą, kai naudojate neskelbtiną informaciją, pvz., kelionių ir tapatybės dokumentus</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nėra leidžiamų svetainių}=1{Leidžiama viena svetainė}one{Leidžiama # svetainė}few{Leidžiamos # svetainės}many{Leidžiama # svetainės}other{Leidžiama # svetainių}}</translation>
 <translation id="7375818412732305729">Pridėtas failas</translation>
 <translation id="7376031331622621328">Prekybos apatinis lapas</translation>

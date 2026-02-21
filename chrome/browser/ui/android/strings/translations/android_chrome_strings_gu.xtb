@@ -727,6 +727,7 @@
 <translation id="4137746084635924146">ડિવાઇસની હાલની ભાષા</translation>
 <translation id="414128724510021958">ડિફૉલ્ટ તરીકે વિનંતી કરાયેલી ડેસ્કટૉપ સાઇટ</translation>
 <translation id="4162867837470729563">શેરિંગના વિકલ્પોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી છે.</translation>
+<translation id="4165077084524712774">વધુ ટૂલ</translation>
 <translation id="4170011742729630528">સેવા ઉપલબ્ધ નથી; પછી ફરીથી પ્રયાસ કરો</translation>
 <translation id="4170577491341606575">તમારું કન્ટેન્ટ મેળવી રહ્યાં છીએ\u2026</translation>
 <translation id="4177222230309051052">તમારા બધા બુકમાર્ક મેળવો</translation>
@@ -738,6 +739,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}one{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}other{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}}</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{આ ડિવાઇસ પર 1 ટૅબ}one{આ ડિવાઇસ પર # ટૅબ}other{આ ડિવાઇસ પર # ટૅબ}}</translation>
+<translation id="4198268995694216131">વધારાની સાઇટ</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • તમે આ સાઇટ પર ઉપયોગ કર્યો છે</translation>
 <translation id="4214315110991671325">જો તમે કુકીને મંજૂરી આપો, તો Chrome પહેલેથી લોડ કરવા માટે તેમનો ઉપયોગ કરી શકે છે.</translation>
@@ -1018,6 +1020,7 @@
 <translation id="5304593522240415983">આ ફીલ્ડ ખાલી હોઈ શકતું નથી</translation>
 <translation id="5306014156308790439">'સંગ્રહમાં ઉમેરો' બટન બંધ કર્યું છે</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
+<translation id="5313967007315987356">સાઈટ ઉમેરો</translation>
 <translation id="5316947901395241499">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
@@ -1460,6 +1463,7 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> મેનૂ હાઇલાઇટ કરેલું છે.</translation>
 <translation id="6983306615164277634">તમે આ સ્થિતિને બદલવા માટે ઍડ્રેસ બારને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
 <translation id="6987047470128880212">છૂપી ટૅબ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
+<translation id="6989358895283601928">સાચવો અને પ્રિન્ટ કરો</translation>
 <translation id="6996145122199359148">આ પેજ ડાઉનલોડ કરો</translation>
 <translation id="7013762323294215682">આ પાસકી તમારા Password Managerમાં સાચવવામાં આવશે. આ પાસકીની ઍક્સેસ ધરાવનારી કોઈપણ વ્યક્તિ તેનો ઉપયોગ કરી શકશે.</translation>
 <translation id="7020741890149022655">વાંચન સૂચિમાં ઉમેરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
@@ -1753,6 +1757,7 @@
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
 <translation id="8135406045838672858">ડાઉનલોડ કરેલી PDFs <ph name="APP_NAME" /> વડે ઑટોમૅટિક રીતે ખુલે છે</translation>
 <translation id="8137562778192957619">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને Google Password Managerમાં સાચવવામાં આવશે.</translation>
+<translation id="8151185429379586178">વિકાસકર્તા સાધનો</translation>
 <translation id="8152331954420209374">Lens પર જાઓ</translation>
 <translation id="8153206878708357851">કૅરેટ બ્રાઉઝિંગને ટૉગલ કરો</translation>
 <translation id="8154784523622173959">આ પેજનું બૅકગ્રાઉન્ડ મનગમતું બનાવો</translation>
@@ -1832,6 +1837,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 સાઇટમાંથી પરવાનગીઓ કાઢી નાખી}one{# સાઇટમાંથી પરવાનગીઓ કાઢી નાખી}other{# સાઇટમાંથી પરવાનગીઓ કાઢી નાખી}}</translation>
 <translation id="8453310803815879010">Dino ગેમ શરૂ કરો</translation>
 <translation id="8455675988389029454">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું મેળવો</translation>
+<translation id="8458341576712814616">શૉર્ટકટ</translation>
 <translation id="8458413889418591446">તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ઇતિહાસ અને ટૅબને સિંક કરો</translation>
 <translation id="84594714173170813">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="8460448946170646641">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>

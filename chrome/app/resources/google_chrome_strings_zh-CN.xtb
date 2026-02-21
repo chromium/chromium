@@ -611,7 +611,7 @@
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
-<translation id="7450541714075000668">文本已复制</translation>
+<translation id="7450541714075000668">已复制文字</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="7477130805345743099">Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="7481213027396403996">获享 Chrome 最强大的安全保护</translation>
@@ -708,7 +708,7 @@
 <translation id="835927394551949760">询问 Google</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8366770919198174997">降低性能，但提高 Chrome 防范攻击的能力</translation>
-<translation id="8367705492654390392">请提出任何问题</translation>
+<translation id="8367705492654390392">有问题，尽管问</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8377158135256176353">在 Chrome Canary 版中开启/关闭 Gemini</translation>
 <translation id="8387459386171870978">继续使用 Chrome</translation>

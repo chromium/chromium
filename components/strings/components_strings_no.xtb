@@ -2574,6 +2574,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5114987907971894280">virtuell virkelighet</translation>
 <translation id="5115232566827194440">Overstyring av begrenset, administrert gjesteøkt</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">Bekreft at det er deg, for å autofylle sensitiv informasjon</translation>
 <translation id="5120526915373271910">Familiefilmer</translation>
 <translation id="5122786942953798871">Konvolutt (bomull)</translation>
 <translation id="5123063207673082822">Helg</translation>
@@ -3973,6 +3974,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7372973238305370288">søkeresultat</translation>
 <translation id="7374461526650987610">Protokollbehandlere</translation>
 <translation id="7374733840632556089">Dette problemet oppstår på grunn av et sertifikat du eller noen andre har installert på enheten. Det er kjent at sertifikatet brukes til nettverksavlytting og -overvåking, og Chrome stoler ikke på det. Selv om det finnes legitime bruksområder for overvåking, f.eks. på skole- eller bedriftsnettverk, vil Chrome sørge for at du er klar over at det foregår, selv om du ikke kan stoppe det. Overvåking kan skje i alle nettlesere og applikasjoner som bruker nettet.</translation>
+<translation id="73750335798090836">For å få ekstra beskyttelse kan du alltid bruke fingeravtrykk, ansiktet eller en annen skjermlås når du bruker sensitiv info, for eksempel reise- og legitimasjonsdokumenter</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ingen nettsteder er tillatt}=1{1 nettsted er tillatt}other{# nettsteder er tillatt}}</translation>
 <translation id="7375818412732305729">Filer legges ved</translation>
 <translation id="7376031331622621328">Feltet nederst for handel</translation>

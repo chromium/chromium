@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Failid, mida see sait saab vaadata või muuta</translation>
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saate paluda saitide lauaarvuti versiooni nägemist</translation>
-<translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1126523729897810826">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
 <translation id="113098737392899175">Lehtedel navigeerimine tekstikursoriga, kui klaviatuur on ühendatud</translation>
 <translation id="1148624853678088576">Teil on kõik seadistatud!</translation>
@@ -199,7 +198,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2891975107962658722">Teatud saidi puhul teie seadmesse andmete salvestamise blokeerimine</translation>
 <translation id="2903493209154104877">Aadressid</translation>
-<translation id="2910701580606108292">Küsi enne saitidel kaitstud sisu esitamise lubamist</translation>
 <translation id="2918484639460781603">Ava seaded</translation>
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
 <translation id="2939338015096024043">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera asendi jälgimiseks ja teie ümbruse kohta teabe saamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamera asendit jälgida ega teie ümbruse kohta teavet saada.</translation>
@@ -301,7 +299,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3924858949939391676">Kui lugemisrežiim on sisse lülitatud, kuvatakse lingid</translation>
 <translation id="3933121352599513978">Ahenda soovimatud taotlused (soovitatud)</translation>
 <translation id="3934905113567851655">Suuruse muutmiseks liigutage sõrmi kokku.</translation>
-<translation id="3955193568934677022">Luba saitidel esitada kaitstud sisu (soovitatav)</translation>
 <translation id="3955321697524543127">Ära luba saitidel USB-seadmetega ühendust luua</translation>
 <translation id="3965467402665811906">Saidid saavad küsida luba kasutada teie kohta salvestatud teavet</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
@@ -514,7 +511,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="6171020522141473435">Kui see on sisse lülitatud, võivad saidid küsida luba Bluetooth-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid Bluetooth-seadmeid kasutada.</translation>
 <translation id="6177128806592000436">Teie ühendus selle saidiga pole turvaline</translation>
 <translation id="6181444274883918285">Lisa saidi erand</translation>
-<translation id="6192792657125177640">Erandid</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome blokeerib homme küpsisefailid uuesti}other{Küpsisefailid blokeeritakse uuesti # päeva pärast}}</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
@@ -637,7 +633,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7561196759112975576">Alati</translation>
 <translation id="7573594921350120855">Saidid kasutavad teie videokaamerat tavaliselt suhtlusfunktsioonide jaoks, näiteks videovestluseks</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> kuu tagasi}other{<ph name="NUM_MONTHS_MANY" /> kuud tagasi}}</translation>
-<translation id="757524316907819857">Saitidel kaitstud sisu esitamise blokeerimine</translation>
 <translation id="7586676035079382730">Märguanded ei ole lubatud</translation>
 <translation id="7594634374516752650">Ühendatud Bluetooth-seadmega</translation>
 <translation id="7617547684249261169">Saate kustutada osa või kogu oma ajaloo, küpsisefailid, saidiandmed ja palju muud</translation>

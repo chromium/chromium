@@ -2574,6 +2574,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115232566827194440">Pinaghihigpitang override ng pinapamahalaang session ng bisita</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">I-verify na ikaw ito para mag-autofill ng sensitibong impormasyon</translation>
 <translation id="5120526915373271910">Mga Pelikulang Pampamilya</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3974,6 +3975,7 @@ Mga karagdagang detalye:
 <translation id="7372973238305370288">resulta ng paghahanap</translation>
 <translation id="7374461526650987610">Mga tagapangasiwa ng protocol</translation>
 <translation id="7374733840632556089">Nangyayari ang problemang ito dahil sa isang certificate na na-install mo o ng ibang tao sa iyong device. Kilala ang certificate sa pagsubaybay at pag-intercept ng mga network, at hindi ito pinagkakatiwalaan ng Chrome. Bagama't mayroong mga lehitimong kaso ng pagsubaybay, gaya sa network sa paaralan o kumpanya, gustong tiyakin ng Chrome na alam mong nangyayari ito, kahit na hindi mo ito mapipigilan. Posibleng mangyari ang pagsubaybay sa anumang browser o application na nag-a-access ng web.</translation>
+<translation id="73750335798090836">Para sa karagdagang proteksyon, palaging gamitin ang iyong fingerprint, mukha, o iba pang screen lock kapag gumagamit ka ng sensitibong impormasyon tulad ng mga dokumento sa pagbiyahe at pagkakakilanlan</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Walang pinapayagang site}=1{1 site ang pinapayagan}one{# site ang pinapayagan}other{# na site ang pinapayagan}}</translation>
 <translation id="7375818412732305729">Nag-attach ng file</translation>
 <translation id="7376031331622621328">Bottom sheet ng commerce</translation>

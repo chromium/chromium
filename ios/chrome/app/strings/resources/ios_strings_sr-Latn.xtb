@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4854068532375923088">Dozvolite Gemini-ju da koristi kameru</translation>
+<translation id="4860114370595561279">Sačuvane informacije se čuvaju na uređaju</translation>
 <translation id="4860895144060829044">Pozovite</translation>
 <translation id="4861953997778766866">Svi mogu da unose promene u deljene grupe kartica</translation>
 <translation id="4865063548323785458">Čuvajte i automatski popunjavajte lozinke da biste se lako prijavljivali na sajtove i u aplikacije</translation>
@@ -1650,7 +1651,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6964300328304469089">Trenutno je izabrano <ph name="NAME" />, <ph name="EMAIL" />. Odaberite nalog.</translation>
 <translation id="6964760285928603117">Ukloni iz grupe</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
-<translation id="6967355534157677591">Napravite sliku Pro</translation>
 <translation id="6973630695168034713">Direktorijumi</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6979737339423435258">Oduvek</translation>
@@ -2185,7 +2185,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8856643812068084733">Arhive</translation>
 <translation id="8863067612494559785">Šalje se korisniku <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Dobijajte uputstva i lokalne informacije od Google mapa</translation>
-<translation id="8867879594900082274">Izmene će se primenjivati samo na zakačene sajtove na ovom uređaju.</translation>
 <translation id="8871974300055371298">Podešavanja sadržaja</translation>
 <translation id="8877788021141246043">Podesi podsetnik</translation>
 <translation id="8879604564928138696">Dvaput dodirnite da biste probali</translation>

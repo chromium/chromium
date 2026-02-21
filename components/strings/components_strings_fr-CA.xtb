@@ -2574,6 +2574,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5114987907971894280">Réalité virtuelle</translation>
 <translation id="5115232566827194440">Annulation de la session d'invité gérée limitée</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116015291385561204">Confirmer qu'il s'agit bien de vous pour remplir automatiquement les infos sensibles</translation>
 <translation id="5120526915373271910">Films de famille</translation>
 <translation id="5122786942953798871">Enveloppe (coton)</translation>
 <translation id="5123063207673082822">Fin de semaine</translation>
@@ -3973,6 +3974,7 @@ Détails supplémentaires :
 <translation id="7372973238305370288">résultat de la recherche</translation>
 <translation id="7374461526650987610">Gestionnaires de protocoles</translation>
 <translation id="7374733840632556089">Ce problème survient en raison d'un certificat installé, par vous ou quelqu'un d'autre, sur votre appareil. Le certificat n'est pas considéré comme fiable par Chrome, parce qu'on sait qu'il est utilisé pour surveiller et intercepter les réseaux. Certains cas requièrent de la surveillance, comme un réseau scolaire ou d'entreprise, mais Chrome vous le mentionne pour que vous sachiez que cette surveillance se produit, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire dans tous les navigateurs et toutes les applications qui accèdent au Web.</translation>
+<translation id="73750335798090836">Pour une protection accrue, utilisez toujours votre empreinte digitale, votre visage ou un autre moyen de verrouillage de l'écran lorsque vous utilisez des infos sensibles telles que des documents de voyage et d'identité</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Aucun site autorisé}=1{1 site autorisé}one{# site autorisé}other{# sites autorisés}}</translation>
 <translation id="7375818412732305729">Un fichier est joint</translation>
 <translation id="7376031331622621328">Zone de contenu dans le bas de l'écran concernant le commerce</translation>

@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automat</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4854068532375923088">Permite ca Gemini să utilizeze camera</translation>
+<translation id="4860114370595561279">Informațiile salvate sunt stocate pe dispozitiv</translation>
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4861953997778766866">Oricine poate să facă modificări în grupurile de file la care se permite accesul</translation>
 <translation id="4865063548323785458">Salvează și completează automat parolele pentru a te conecta cu ușurință la site-uri și aplicații</translation>
@@ -1650,7 +1651,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6964300328304469089">Ai selectat: <ph name="NAME" />, <ph name="EMAIL" />. Alege un cont.</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Creează o imagine Pro</translation>
 <translation id="6973630695168034713">Dosare</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Dintotdeauna</translation>
@@ -2185,7 +2185,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8856643812068084733">Arhive</translation>
 <translation id="8863067612494559785">Se trimit la <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Primește indicații de orientare și informații locale de la Google Maps</translation>
-<translation id="8867879594900082274">Modificările se vor aplica numai site-urilor fixate de pe acest dispozitiv.</translation>
 <translation id="8871974300055371298">Setări de conținut</translation>
 <translation id="8877788021141246043">Setează un memento</translation>
 <translation id="8879604564928138696">Atinge de două ori pentru a încerca</translation>

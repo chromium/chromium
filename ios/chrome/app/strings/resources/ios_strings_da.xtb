@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4850886885716139402">Se</translation>
 <translation id="4854068532375923088">Giv "Gemini" tilladelse til at bruge dit kamera</translation>
+<translation id="4860114370595561279">Dine gemte oplysninger gemmes på din enhed</translation>
 <translation id="4860895144060829044">Ring op</translation>
 <translation id="4861953997778766866">Alle kan ændre dine delte fanegrupper</translation>
 <translation id="4865063548323785458">Gem og autofyld dine adgangskoder for nemt at logge ind på websites og i apps</translation>
@@ -1650,7 +1651,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Opret billede (Pro)</translation>
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6979737339423435258">Al tid</translation>
@@ -2185,7 +2185,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8856643812068084733">Arkiver</translation>
 <translation id="8863067612494559785">Sender til <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Få rutevejledning og lokale oplysninger fra Google Maps</translation>
-<translation id="8867879594900082274">Dine redigeringer gælder kun for dine fastgjorte websites på denne enhed.</translation>
 <translation id="8871974300055371298">Indholdsindstillinger</translation>
 <translation id="8877788021141246043">Opret en påmindelse</translation>
 <translation id="8879604564928138696">Tryk to gange for at prøve</translation>

@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{ସ୍ପାମ କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ଏହି ସାଇଟକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}other{ସ୍ପାମ କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ଏହି ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}}</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ଏହି ଡିଭାଇସରେ 1ଟି ଟାବ}other{ଏହି ଡିଭାଇସରେ #ଟି ଟାବ}}</translation>
+<translation id="4198268995694216131">ଅତିରିକ୍ତ ସାଇଟ</translation>
 <translation id="4198423547019359126">କୌଣସି ଡାଉନ୍‍‍‍ଲୋଡ୍ ହୋଇଥିବା ଲୋକେସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ଆପଣ ଏହି ସାଇଟରେ ବ୍ୟବହାର କରିଛନ୍ତି</translation>
 <translation id="4214315110991671325">ଯଦି ଆପଣ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତି, ତେବେ Chrome ସେଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରିବା ପାଇଁ ବ୍ୟବହାର କରିପାରେ।</translation>
@@ -1018,6 +1019,7 @@
 <translation id="5304593522240415983">ଏହି କ୍ଷେତ୍ରକୁ ଖାଲି ଛଡ଼ାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5306014156308790439">'ସଂଗ୍ରହରେ ଯୋଗ କରନ୍ତୁ'କୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5308380583665731573">ସଂଯୋଗ କରନ୍ତୁ</translation>
+<translation id="5313967007315987356">ସାଇଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5316947901395241499">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପାସୱାର୍ଡ ସେଭ କରିବା ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
 <translation id="5319359161174645648">Google Chromeକୁ ସୁପାରିଶ କରୁଛି</translation>
@@ -1542,6 +1544,7 @@
 <translation id="7314734791127433392">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7324354302972299151">ଏକ “Do Not Track” ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
 <translation id="7333041109965360609">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକର ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି</translation>
+<translation id="7335766481146072567">ଜାରି ରଖନ୍ତୁକୁ ଦବାନ୍ତୁ</translation>
 <translation id="7336259382292148213">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଠିକ ଲାଗୁଛି</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="7340958967809483333">Discover ପାଇଁ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -1751,6 +1754,7 @@
 <translation id="813082847718468539">ସାଇଟ୍‍ର ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="8135406045838672858">ଡାଉନଲୋଡ କରାଯାଇଥିବା PDFଗୁଡ଼ିକ <ph name="APP_NAME" /> ମାଧ୍ୟମରେ ସ୍ୱତଃ ଖୋଲିଥାଏ</translation>
 <translation id="8137562778192957619">ଆପଣଙ୍କୁ ଏହି ପାସୱାର୍ଡ ମନେ ରଖିବା ଆବଶ୍ୟକ ହେବ ନାହିଁ। Google Password Managerରେ ଏହା ସେଭ ହୋଇଯିବ।</translation>
+<translation id="8151185429379586178">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="8152331954420209374">Lensକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8153206878708357851">କେରେଟ ବ୍ରାଉଜିଂକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8154784523622173959">ଏହି ପୃଷ୍ଠାର ବେକଗ୍ରାଉଣ୍ଡକୁ ପର୍ସନାଲାଇଜ କରନ୍ତୁ</translation>
@@ -1830,6 +1834,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}other{# ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}}</translation>
 <translation id="8453310803815879010">Dino ଗେମ୍ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="8455675988389029454">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଆନ୍ତୁ</translation>
+<translation id="8458341576712814616">ସର୍ଟକଟ୍</translation>
 <translation id="8458413889418591446">ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକୁ ଶୀଘ୍ର ଫେରିବା ପାଇଁ ଆପଣଙ୍କ ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="84594714173170813">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8460448946170646641">ମୁଖ୍ୟ ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
@@ -1854,6 +1859,7 @@
 <translation id="8559961053328923750">ବିଜ୍ଞାପନ ପରଫରମାନ୍ସ ମାପିବା ପାଇଁ ବ୍ରାଉଜର ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକ ସେୟାର କରିପାରୁଥିବା ଡାଟାର ମୋଟ ପରିମାଣକୁ Chrome ସୀମିତ କରେ</translation>
 <translation id="8559990750235505898">ଅନ୍ୟ ଭାଷାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରିବାକୁ ଅଫର୍ ଦିଅନ୍ତୁ</translation>
 <translation id="8560602726703398413">ବୁକମାର୍କରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଖୋଜନ୍ତୁ</translation>
+<translation id="85618473456579127">ଶୀର୍ଷ ଡାହାଣରେ ପ୍ରୋଫାଇଲରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />ଙ୍କୁ କାଢ଼ିବେ?</translation>
 <translation id="8570677896027847510">ଫାଇଲକୁ ସୁରକ୍ଷିତ ଭାବେ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8571213806525832805">ବିଗତ 4 ସପ୍ତାହ</translation>

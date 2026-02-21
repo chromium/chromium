@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Bu saytın görə və ya redaktə edə biləcəyi fayllar</translation>
 <translation id="1073417869336441572">Üçüncü tərəf kukilərinə icazə vermə səbəbinizi bildirərək Chrome-u təkmilləşdirməyə kömək edin. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saytların masaüstü versiyasına baxmağı istəyə bilərsiniz</translation>
-<translation id="1085696779717592361">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="1126523729897810826">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilən əməliyyatları tamamlayın</translation>
 <translation id="113098737392899175">Klaviatura qoşulduqda mətn kursoru ilə səhifələrə keçin</translation>
 <translation id="1148624853678088576">Tam hazırsınız!</translation>
@@ -194,12 +193,12 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2802908157808345702">Saytlara popap bildirişlər göndərmək və yönləndirmələrdən istifadə etmək icazəsi verməyin</translation>
 <translation id="2814830417943086299">Chrome indi cihazın tətbiq siyahısında və axtarış nəticələrində son tabları göstərir. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
+<translation id="2848335882304088250">Artıq cihazda Chrome-dan maksimum yararlanacaqsınız.</translation>
 <translation id="2850913818900871965">Mobil görünüş tələb edin</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
 <translation id="2891975107962658722">Saytın cihazınızda data saxlamasını bloklayın</translation>
 <translation id="2903493209154104877">Ünvanlar</translation>
-<translation id="2910701580606108292">Saytlar qorunan kontenti göstərmədən öncə icazə tələb edilsin</translation>
 <translation id="2918484639460781603">Ayarlara keçin</translation>
 <translation id="2932883381142163287">Sui-istifadəni xəbər verin</translation>
 <translation id="2939338015096024043">Aktiv ediləndə saytlar kamera mövqeyini izləmək və ətrafınız haqqında məlumat əldə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar kamera mövqeyini izləyə və ya ətrafınız haqqında məlumat əldə edə bilməz.</translation>
@@ -301,7 +300,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3924858949939391676">Oxu rejimi aktiv olduqdan sonra keçidləri göstərin</translation>
 <translation id="3933121352599513978">Lazımsız sorğuları yığcamlaşdırın (tövsiyə edilir)</translation>
 <translation id="3934905113567851655">Ölçüsünü dəyişdirmək üçün barmaqlarınızı birləşdirin</translation>
-<translation id="3955193568934677022">Saytlara qorunan datanı oxumağa icazə verin (tövsiyə olunur)</translation>
 <translation id="3955321697524543127">Saytlara USB cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="3965467402665811906">Saytlar haqqınızda yadda saxlanılan məlumatdan istifadə etmək istəyə bilər</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
@@ -514,7 +512,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="6171020522141473435">Aktiv ediləndə saytlar Bluetooth cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar Bluetooth cihazlarından istifadə edə bilməz.</translation>
 <translation id="6177128806592000436">Bu sayta olan bağlantınız güvənli deyil</translation>
 <translation id="6181444274883918285">Sayt istisnası əlavə edin</translation>
-<translation id="6192792657125177640">İstisnalar</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome sabah kukiləri yenidən bloklayacaq}other{Kukilərin yenidən bloklanmasına # gün qalıb}}</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
@@ -637,7 +634,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7573594921350120855">Saytlar adətən video çat kimi ünsiyyət xüsusiyyətləri üçün video kameranızdan istifadə edir</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay əvvəl}other{<ph name="NUM_MONTHS_MANY" /> ay əvvəl}}</translation>
-<translation id="757524316907819857">Saytların qorunan kontenti oxutmasını blok edin</translation>
 <translation id="7586676035079382730">Bildirişlərə icazə verilmir</translation>
 <translation id="7594634374516752650">Bluetooth cihazına qoşulub</translation>
 <translation id="7617547684249261169">Tarixçə, kukilər, sayt məlumatları və digərlərinin bir qismini və ya hamısını silə bilərsiniz</translation>

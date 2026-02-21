@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Filer dette nettstedet kan se eller redigere</translation>
 <translation id="1073417869336441572">Hjelp oss med å forbedre Chrome ved å fortelle oss hvorfor du tillot informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan be om å få datamaskinversjonen av nettsteder</translation>
-<translation id="1085696779717592361">Bruk Chrome som standard</translation>
 <translation id="1126523729897810826">Fullfør de foreslåtte handlingene nedenfor for å få mest mulig ut av Chrome</translation>
 <translation id="113098737392899175">Naviger på sider med en tekstmarkør når et tastatur er koblet til</translation>
 <translation id="1148624853678088576">Du er klar.</translation>
@@ -194,12 +193,12 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="2802908157808345702">Ikke la nettsteder sende forgrunnsvinduer eller bruke viderekoblinger</translation>
 <translation id="2814830417943086299">Chrome viser nå de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2848335882304088250">Nå får du mest mulig ut av Chrome på enheten din.</translation>
 <translation id="2850913818900871965">Be om mobilvisning</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
 <translation id="2891975107962658722">Blokker et nettsted fra å lagre data på enheten din</translation>
 <translation id="2903493209154104877">Adresser</translation>
-<translation id="2910701580606108292">Spør før nettsteder kan spille av beskyttet innhold</translation>
 <translation id="2918484639460781603">Gå til Innstillinger</translation>
 <translation id="2932883381142163287">Rapporter uriktig bruk</translation>
 <translation id="2939338015096024043">Når dette er på, kan nettsteder be om å få spore kameraposisjonen din og finne ut mer om omgivelsene dine. Når dette er av, kan ikke nettsteder spore kameraposisjonen din eller finne ut mer om omgivelsene dine.</translation>
@@ -301,7 +300,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="3924858949939391676">Vis linker når lesemodus er på</translation>
 <translation id="3933121352599513978">Skjul uønskede forespørsler (anbefales)</translation>
 <translation id="3934905113567851655">Klyp for å endre størrelse</translation>
-<translation id="3955193568934677022">Gi nettsteder tillatelse til å spille av beskyttet innhold (anbefales)</translation>
 <translation id="3955321697524543127">Ikke la nettsteder koble til USB-enheter</translation>
 <translation id="3965467402665811906">Nettsteder kan be om å få bruke informasjon de har lagret om deg</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
@@ -514,7 +512,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="6171020522141473435">Når dette er på, kan nettsteder be om å få bruke Bluetooth-enheter. Når dette er av, kan ikke nettsteder bruke Bluetooth-enheter.</translation>
 <translation id="6177128806592000436">Tilkoblingen til dette nettstedet er ikke sikker</translation>
 <translation id="6181444274883918285">Legg til et nettsted som unntak</translation>
-<translation id="6192792657125177640">Unntak</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome begynner å blokkere informasjonskapsler igjen i morgen}other{# dager til informasjonskapsler blir blokkert igjen}}</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
@@ -637,7 +634,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7573594921350120855">Nettsteder bruker vanligvis videokameraet ditt for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{For <ph name="NUM_MONTHS_ONE" /> måned siden}other{For <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
-<translation id="757524316907819857">Blokkér nettsteder fra å spille av beskyttet innhold</translation>
 <translation id="7586676035079382730">Varsler er ikke tillatt</translation>
 <translation id="7594634374516752650">Koblet til en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan slette deler av eller hele loggen din, informasjonskapsler, nettstedsdata med mer</translation>

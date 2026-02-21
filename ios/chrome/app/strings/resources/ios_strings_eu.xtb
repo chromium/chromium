@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="4850886885716139402">Ikusi</translation>
 <translation id="4854068532375923088">Eman kamera erabiltzeko baimena "Gemini" aplikazioari</translation>
+<translation id="4860114370595561279">Gordetako informazioa gailuan gordetzen da</translation>
 <translation id="4860895144060829044">Deitu</translation>
 <translation id="4861953997778766866">Guztiek egin ditzakete aldaketak zure fitxa talde partekatuetan</translation>
 <translation id="4865063548323785458">Gorde pasahitzak eta bete itzazu automatikoki webgune eta aplikazioetan saioa erraz hasteko</translation>
@@ -1650,7 +1651,6 @@
 <translation id="6964300328304469089">Orain <ph name="NAME" /> (<ph name="EMAIL" />) dago hautatuta. Aukeratu kontu bat.</translation>
 <translation id="6964760285928603117">Kendu taldetik</translation>
 <translation id="6965382102122355670">Ados</translation>
-<translation id="6967355534157677591">Sortu irudi bat Pro bidez</translation>
 <translation id="6973630695168034713">Karpetak</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Guztiak</translation>
@@ -2185,7 +2185,6 @@
 <translation id="8856643812068084733">Artxiboak</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="8863431381414769983">Lortu jarraibideak eta tokiko informazioa Google Maps-en bidez</translation>
-<translation id="8867879594900082274">Aldaketak gailu honetan ainguratuta dauzkazun webguneei soilik aplikatuko zaizkie.</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
 <translation id="8877788021141246043">Ezarri gogorarazpen bat</translation>
 <translation id="8879604564928138696">Saiatzeko, sakatu birritan</translation>

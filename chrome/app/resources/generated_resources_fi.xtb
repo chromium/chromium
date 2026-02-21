@@ -354,7 +354,6 @@
 <translation id="1221825588892235038">Vain valinta</translation>
 <translation id="1222835797152767346">Helpota sisäänkirjautumista valitsemalla PIN-koodi</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> edellyttää lisenssiä</translation>
-<translation id="1223498995510244364">Tee yhteenveto</translation>
 <translation id="1223853788495130632">Järjestelmänvalvoja suosittelee tälle asetukselle tiettyä arvoa.</translation>
 <translation id="1225177025209879837">Käsitellään pyyntöä…</translation>
 <translation id="1227107020813934021">Etsi dokumenttiskannereita</translation>
@@ -1056,6 +1055,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1695510246756136088">Internetyhteyttä ei voi muodostaa. Yritä uudelleen.</translation>
 <translation id="1696214930320482113">Profiilien avulla voit pitää työn, henkilökohtaiset asiat ja pelaamisen erillään vaihtamatta toiseen selaimeen. Lisää uusi profiili nyt.</translation>
 <translation id="1696555181932908973">Voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Käytä ja asenna vain luotetuista lähteistä ja luotetuilta kehittäjiltä peräisin olevia ohjelmistoja, jotta laitteesi pysyy suojattuna.</translation>
 <translation id="169675691788639886">Laitteelle on määritetty SSH-palvelin. Älä kirjaudu sisään arkaluontoisilla tileillä.</translation>
 <translation id="1697122132646041614">En tykkää ‑painike avaa lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et pidä näistä tuloksista.</translation>
 <translation id="1697532407822776718">Kaikki on valmista.</translation>
@@ -5876,6 +5876,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4943927218331934807">Salasana tarvitaan</translation>
 <translation id="4944310289250773232">Todennuspalvelun tarjoaa <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan virtapainiketta. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="4946215577126251136">Näytä projektipaneeli ‑painike</translation>
 <translation id="4946998421534856407">käynnistysohjelma + ylänuoli</translation>
 <translation id="4947376546135294974">Data sivustolta, jolla olet</translation>
 <translation id="4948370357877377178">Jatka tehtäviä</translation>
@@ -6110,7 +6111,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="51143538739122961">Aseta suojausavain ja kosketa sitä</translation>
 <translation id="5115309401544567011">Liitä <ph name="DEVICE_TYPE" /> virtalähteeseen.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Vahvista henkilöllisyytesi, jotta arkaluontoiset tiedot voidaan täyttää automaattisesti</translation>
 <translation id="5116315184170466953">Tykkään-palaute lähettää palautetta, että pidät tästä välilehtiryhmäehdotuksesta</translation>
 <translation id="5116628073786783676">T&amp;allenna audiotiedosto nimellä...</translation>
 <translation id="5117139026559873716">Irrota <ph name="DEVICE_TYPE" /> puhelimesta. Niitä ei enää yhdistetä automaattisesti.</translation>
@@ -6708,6 +6708,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, asennetaan</translation>
 <translation id="5527822190489075064">Optimoitu lataus</translation>
 <translation id="5529554942700688235">Muistinsäästön yhteenveto, <ph name="MEMORY_VALUE" /> vapautettu</translation>
+<translation id="5529693968082667490">Näytä välilehtihaku -painike</translation>
 <translation id="5530977410273748884">Jos haluat tallentaa salasanan Google Salasanoihin, klikkaa avainta</translation>
 <translation id="5532223876348815659">Maailmanlaajuinen</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> pyytää lupaa</translation>
@@ -8257,6 +8258,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6613267708691765962">Haittaohjelmien tarkistus käynnissä…</translation>
 <translation id="6615455863669487791">Näytä</translation>
 <translation id="6618013221808317456">Älä salli sivustojen käyttää JavaScript-optimointia</translation>
+<translation id="6618154741503063152">Ei voi ladata. Liitteitä ei sallita.</translation>
 <translation id="6619058681307408113">Line Printer Daemon ‑protokolla (LPD)</translation>
 <translation id="661907246513853610">Sivusto voi seurata sijaintiasi</translation>
 <translation id="6619243162837544323">Verkon tila</translation>
@@ -9353,7 +9355,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7368927539449986686">Muokkaa sivustohakua</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">USB-laitteiden valinnat</translation>
-<translation id="73750335798090836">Paranna suojausta käyttämällä aina sormenjälkeä, kasvoja tai muuta näytön lukituksen avaustapaa, kun käytät arkaluontoisia tietoja, kuten matka- ja henkilötodistuksia</translation>
 <translation id="7376124766545122644">Linkkiä ei voi käyttää. Tarkista, että linkin alussa on "http://" tai "https://", ja yritä uudelleen.</translation>
 <translation id="7376553024552204454">Korosta hiiren osoitinta, kun se liikkuu</translation>
 <translation id="7377250337652426186">Voit palata taaksepäin yhtä sivua kauemmas klikkaamalla pitkään Takaisin-painiketta.</translation>
@@ -10354,6 +10355,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8034399942062051455">V8-optimointi on poissa päältä</translation>
 <translation id="8034697324150621782">Vaihda ylänäkymään</translation>
 <translation id="8035059678007243127">Siirtymisvälimuistissa oleva incognito-sivu: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Näytä tallennetut välilehtiryhmät ‑painike</translation>
 <translation id="8036193484521570992">Auta parantamaan automaattista täyttöä</translation>
 <translation id="8036504271468642248">Edellinen lause</translation>
 <translation id="8037117027592400564">Käyttää kaikkea puhesynteesin avulla luettua tekstiä</translation>

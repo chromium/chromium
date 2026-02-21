@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Tự động</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4854068532375923088">Cho phép "Gemini" sử dụng camera của bạn</translation>
+<translation id="4860114370595561279">Thông tin đã lưu được lưu trữ trên thiết bị của bạn</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4861953997778766866">Mọi người đều có thể thay đổi nhóm thẻ bạn đã chia sẻ</translation>
 <translation id="4865063548323785458">Lưu và tự động điền mật khẩu để dễ dàng đăng nhập vào các trang web và ứng dụng</translation>
@@ -1106,7 +1107,7 @@
 <translation id="5079950360618752063">Sử dụng mật khẩu đề xuất</translation>
 <translation id="5083464117946352670">Không thể xác định kích thước tệp.</translation>
 <translation id="5085558938118581974">Tìm kiếm trên thẻ của các thiết bị đã đồng bộ hoá</translation>
-<translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
+<translation id="508645147179720015">Ghi chú vượt quá giới hạn là 1000 ký tự</translation>
 <translation id="5087098519049306025">Theo dõi giá</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
 <translation id="5096619236864235">Đã lưu khoá truy cập vào Trình quản lý mật khẩu của Google cho</translation>
@@ -1650,7 +1651,6 @@
 <translation id="6964300328304469089">Bạn hiện đang chọn <ph name="NAME" />, <ph name="EMAIL" />. Chọn một tài khoản.</translation>
 <translation id="6964760285928603117">Xóa khỏi nhóm</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Tạo hình ảnh bằng bản Pro</translation>
 <translation id="6973630695168034713">Thư mục</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
@@ -2185,7 +2185,6 @@
 <translation id="8856643812068084733">Kho lưu trữ</translation>
 <translation id="8863067612494559785">Đang gửi tới <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Xem đường đi và thông tin về địa phương từ Google Maps</translation>
-<translation id="8867879594900082274">Nội dung chỉnh sửa bạn thực hiện sẽ chỉ áp dụng cho các trang web được ghim trên thiết bị này.</translation>
 <translation id="8871974300055371298">Cài đặt nội dung</translation>
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
 <translation id="8879604564928138696">Nhấn đúp để dùng thử</translation>

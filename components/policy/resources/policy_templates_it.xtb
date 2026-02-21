@@ -4617,6 +4617,13 @@ Se questa policy viene impostata su False, <ph name="PRODUCT_NAME" /> non utiliz
 <translation id="4150201353443180367">Display</translation>
 <translation id="4154221011709068799">Non consentire dispositivi di archiviazione esterni</translation>
 <translation id="415445772247959702">Web Store (supportato dalla versione 89)</translation>
+<translation id="415631927748520887">Se questa policy viene impostata su True, le app di Chrome possono continuare a essere eseguite in una sessione kiosk, indipendentemente dall'abilitazione predefinita delle app di Chrome.
+
+Se questa policy non viene configurata o se viene impostata su False, verrà usato il comportamento predefinito definito sul dispositivo.
+
+Se si tenta di avviare un'app di Chrome disabilitata, all'utente viene mostrato un messaggio che spiega perché l'app non è stata avviata e che suggerisce di contattare il reparto IT.
+
+Il valore di questa policy verrà rispettato fino al ritiro delle app di Chrome nelle sessioni kiosk, previsto per la versione M151.</translation>
 <translation id="4157003184375321727">Indica versione sistema operativo e firmware</translation>
 <translation id="4157594634940419685">Consenti l'accesso a stampanti CUPS native</translation>
 <translation id="4158531549614162499">Attiva la sincronizzazione Google Drive tramite reti cellulari</translation>

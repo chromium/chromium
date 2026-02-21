@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Спам, хууран мэхэлсэн контентын улмаас Chrome энэ сайтыг мэдэгдэл илгээхийг нь зогсоосон}other{Спам, хууран мэхэлсэн контентын улмаас Chrome эдгээр сайтыг мэдэгдэл илгээхийг нь зогсоосон}}</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Энэ төхөөрөмжийн 1 таб}other{Энэ төхөөрөмжийн # таб}}</translation>
+<translation id="4198268995694216131">Бусад сайт</translation>
 <translation id="4198423547019359126">Татах боломжтой байршил алга</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Та энэ сайт дээр ашигласан</translation>
 <translation id="4214315110991671325">Та күүкиг зөвшөөрсөн тохиолдолд тэдгээрийг Chrome урьдчилан ачаалахад ашиглаж магадгүй.</translation>
@@ -1018,6 +1019,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5304593522240415983">Энэ талбар хоосон орхиж болохгүй</translation>
 <translation id="5306014156308790439">Цуглуулгад нэмэхийг идэвхгүй болгосон</translation>
 <translation id="5308380583665731573">Холбо</translation>
+<translation id="5313967007315987356">Сайт нэмэх</translation>
 <translation id="5316947901395241499">Нууц үг хадгалахыг танай администратор унтраасан</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
@@ -1198,6 +1200,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="610630277578876674">Мессеж болон бусад зүйл дэх холбоосыг түргэн нээгээрэй</translation>
 <translation id="6108923351542677676">Тохиргоо хийгдэж байна...</translation>
 <translation id="6112702117600201073">Хуудсыг дахин сэргээж байна</translation>
+<translation id="612221930823678863"><ph name="QUERY" />-тай URL-г асуулгын оронд байршуулж болно</translation>
 <translation id="6122831415929794347">Аюулгүй үзэх онцлогийг унтраах уу?</translation>
 <translation id="6124936178263837501">Спам биш гэж мэдээлэх</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />-н байгаа табын бүлэгт нэгдэх</translation>
@@ -1543,6 +1546,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7314734791127433392">Нууц үгийг шалгах боломжгүй</translation>
 <translation id="7324354302972299151">“Do Not Track” хүсэлт илгээх</translation>
 <translation id="7333041109965360609">Мэдэгдлийн захиалгаа цуцалсан</translation>
+<translation id="7335766481146072567">Үргэлжлүүлэх дээр дарна уу</translation>
 <translation id="7336259382292148213">Мэдэгдэл хэвийн байна</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7340958967809483333">Discover-н сонголт</translation>
@@ -1752,6 +1756,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="813082847718468539">Сайтын мэдээллийг үзэх</translation>
 <translation id="8135406045838672858">Татсан PDF-үүдийг автоматаар <ph name="APP_NAME" />-р нээнэ</translation>
 <translation id="8137562778192957619">Та энэ нууц үгийг санах шаардлагагүй болно. Үүнийг Google Password Manager-т хадгална.</translation>
+<translation id="8151185429379586178">Хөгжүүлэгчийн багажнууд</translation>
 <translation id="8152331954420209374">Lens рүү очих</translation>
 <translation id="8153206878708357851">Caret Browsing-г асаах/унтраах</translation>
 <translation id="8154784523622173959">Энэ хуудасны дэвсгэрийг хувийн болгох</translation>
@@ -1831,6 +1836,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 сайтын зөвшөөрлийг хассан}other{# сайтын зөвшөөрлийг хассан}}</translation>
 <translation id="8453310803815879010">Дино тоглоом эхлүүлэх</translation>
 <translation id="8455675988389029454">Хавчуурга, нууц үг болон бусад зүйлээ бүгдийг нь төхөөрөмжүүддээ аваарай</translation>
+<translation id="8458341576712814616">Товчлол</translation>
 <translation id="8458413889418591446">Зочилсон сайтдаа түргэн буцаж очихын тулд түүх, табаа синк хийнэ үү</translation>
 <translation id="84594714173170813">Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлжлүүлэн ашиглана уу</translation>
 <translation id="8460448946170646641">Нууцлал болон аюулгүй байдлын үндсэн хяналтуудыг шалгана уу</translation>
@@ -1855,6 +1861,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8559961053328923750">Chrome нь зарын гүйцэтгэлийг хэмжихийн тулд хөтчөөр дамжуулан сайтуудын хуваалцаж болох нийт өгөгдлийн хэмжээг хязгаарладаг</translation>
 <translation id="8559990750235505898">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
 <translation id="8560602726703398413">Хавчуургаас унших жагсаалтаа олно уу</translation>
+<translation id="85618473456579127">Баруун дээд талд байгаа профайл дээр товшино уу</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />-г хасах уу?</translation>
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>

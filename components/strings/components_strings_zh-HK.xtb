@@ -2573,6 +2573,7 @@
 <translation id="5114987907971894280">虛擬實境﻿</translation>
 <translation id="5115232566827194440">受限制的受管理訪客工作階段的覆寫值</translation>
 <translation id="5115563688576182185">(64 位元)</translation>
+<translation id="5116015291385561204">驗證身分以自動填入敏感資料</translation>
 <translation id="5120526915373271910">家庭電影</translation>
 <translation id="5122786942953798871">信封 (棉紙)</translation>
 <translation id="5123063207673082822">週末</translation>
@@ -3973,6 +3974,7 @@
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
 <translation id="7374733840632556089">此問題由您或其他人在裝置上安裝的憑證而導致。由於憑證曾用作監控及網絡攔截，因此不獲 Chrome 信任。雖然有些監控理由合理 (例如學校或公司網絡)，且無法停止有關監控，但 Chrome 仍希望就此通知您。任何使用網絡的瀏覽器和應用程式都可能受到監控。</translation>
+<translation id="73750335798090836">建議在使用旅遊和身分證明文件等敏感資料時，一律使用指紋、面孔或其他螢幕鎖定方式驗證以加強保安</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{未允許任何網站}=1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="7375818412732305729">已附加檔案</translation>
 <translation id="7376031331622621328">商務頁底面板</translation>

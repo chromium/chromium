@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Bu sayt ochishi yoki tahrirlashi mumkin fayllar</translation>
 <translation id="1073417869336441572">Tashqi cookie fayllarga nega ruxsat berganingiz sababini yozish orqali Chromeni yaxshilashimizga yordam bering. <ph name="BEGIN_LINK" />Fikr-mulohaza<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saytlarning kompyuter versiyasini ochishga ruxsat soʻrash mumkin</translation>
-<translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="1126523729897810826">Chromedan maksimal foydalanish uchun quyidagi tavsiya etilgan amallarni bajaring</translation>
 <translation id="113098737392899175">Klaviatura ulanganda sahifalarni matn kursori bilan kezing</translation>
 <translation id="1148624853678088576">Tayyor!</translation>
@@ -194,12 +193,12 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="2802908157808345702">Saytlarga qalqib chiquvchi oynalar ochish yoki tashrifni yoʻnaltirish taqiqlansin</translation>
 <translation id="2814830417943086299">Chrome endi oxirgi varaqlarni qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqaradi. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> uchun barcha sayt ruxsatnomalari ilk holatga qaytarilsinmi?</translation>
+<translation id="2848335882304088250">Endi qurilmangizda Chromedan unumli foydalanasiz.</translation>
 <translation id="2850913818900871965">Mobil versiyani ochish</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
 <translation id="2891975107962658722">Sayt maʼlumotlarni qurilmangizga saqlashini taqiqlash</translation>
 <translation id="2903493209154104877">Manzillar</translation>
-<translation id="2910701580606108292">Himoyalangan kontentni ijro etishdan avval ruxsat so‘ralsin</translation>
 <translation id="2918484639460781603">Sozlamalarni ochish</translation>
 <translation id="2932883381142163287">Shikoyat xabari yuborish</translation>
 <translation id="2939338015096024043">Yoniq boʻlsa, saytlar kamerangiz joylashuvini kuzatish va atrofingiz haqida bilishni soʻrashi mumkin. Oʻchirilsa, kuzata olmaydi va atrofingizdagi narsalarni bila olmaydi.</translation>
@@ -301,7 +300,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3924858949939391676">Oʻqish rejimi yoqilgandan keyin havolalarni koʻrsatish</translation>
 <translation id="3933121352599513978">Keraksiz soʻrovlarni yigʻish (tavsiya etiladi)</translation>
 <translation id="3934905113567851655">Hajmini oʻzgartirish uchun chimding</translation>
-<translation id="3955193568934677022">Saytlarga himoyalangan kontentni ijro qilish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="3955321697524543127">Saytlarga USB qurilmalarga ulanishni taqiqlash</translation>
 <translation id="3965467402665811906">Saytlar shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
@@ -514,7 +512,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="6171020522141473435">Yoqilsa, saytlar Bluetooth qurilmalardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
 <translation id="6177128806592000436">Bu sayt bilan o‘rnatilgan aloqa himoyalanmagan.</translation>
 <translation id="6181444274883918285">Istisno sayt qo‘shish</translation>
-<translation id="6192792657125177640">Istisno saytlar</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome cookie fayllarni ertadan yana bloklaydi}other{Cookie fayllar yana bloklanishiga # kun qoldi}}</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
@@ -637,7 +634,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="7573594921350120855">Saytlar odatda video muloqot kabi aloqa funksiyalari uchun video kamerangizdan foydalanadi</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> oy oldin}other{<ph name="NUM_MONTHS_MANY" /> oy oldin}}</translation>
-<translation id="757524316907819857">Saytlarga himoyalangan kontent ijrosini taqiqlash</translation>
 <translation id="7586676035079382730">Bildirishnomalarga kirishga ruxsat berilmagan</translation>
 <translation id="7594634374516752650">Bluetooth qurilmaga ulandi</translation>
 <translation id="7617547684249261169">Tarix, cookie fayllar, sayt maʼlumotlarini toʻliq yoki qisman oʻchirishingiz mumkin</translation>

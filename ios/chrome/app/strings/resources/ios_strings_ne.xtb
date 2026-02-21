@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4854068532375923088">“Gemini” लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
+<translation id="4860114370595561279">तपाईंको सेभ गरिएको जानकारी तपाईंको डिभाइसमा भण्डारण गरिन्छ</translation>
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
 <translation id="4861953997778766866">तपाईंले सेयर गर्नुभएका ट्याब समूहहरूमा सबै जनाले परिवर्तन गर्न सक्छन्</translation>
 <translation id="4865063548323785458">साइट र एपहरूमा सजिलैसँग साइन इन गर्न आफ्ना पासवर्डहरू सेभ गर्नुहोस् र स्वतः भर्नुहोस्</translation>
@@ -1650,7 +1651,6 @@
 <translation id="6964300328304469089">अहिले <ph name="NAME" />, <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="6964760285928603117">समूहबाट हटाउनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
-<translation id="6967355534157677591">Pro प्रयोग गरी फोटो बनाउनुहोस्</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
@@ -2185,7 +2185,6 @@
 <translation id="8856643812068084733">अभिलेखहरू</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> मा पठाइँदै छ…</translation>
 <translation id="8863431381414769983">Google नक्साबाट जाने बाटो र स्थानीय जानकारी प्राप्त गर्नुहोस्</translation>
-<translation id="8867879594900082274">तपाईंले गरेका परिवर्तनहरू यो डिभाइसमा पिन गरिएका साइटहरूमा मात्र लागू हुने छन्।</translation>
 <translation id="8871974300055371298">विषयवस्तु सेटिङहरू</translation>
 <translation id="8877788021141246043">कुनै रिमाइन्डर सेट गर्नुहोस्</translation>
 <translation id="8879604564928138696">यसलाई प्रयोग गरी हेर्न डबल ट्याप गर्नुहोस्</translation>

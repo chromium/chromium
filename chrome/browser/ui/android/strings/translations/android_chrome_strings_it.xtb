@@ -738,6 +738,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedito a questo sito di inviare notifiche a causa di spam o contenuto ingannevole}other{Chrome ha impedito a questi siti di inviare notifiche a causa di spam o contenuto ingannevole}}</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 scheda su questo dispositivo}other{# schede su questo dispositivo}}</translation>
+<translation id="4198268995694216131">Altri siti</translation>
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
 <translation id="4209029522667123437">Utilizzato su questo sito: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4214315110991671325">Se consenti i cookie, Chrome potrebbe usarli per il caricamento.</translation>
@@ -1018,6 +1019,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
 <translation id="5306014156308790439">Opzione Aggiungi alla raccolta disattivata</translation>
 <translation id="5308380583665731573">Connetti</translation>
+<translation id="5313967007315987356">Aggiungi sito</translation>
 <translation id="5316947901395241499">Il salvataggio delle password è stato disattivato dall'amministratore</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319359161174645648">Google consiglia Chrome</translation>
@@ -1543,6 +1545,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7314734791127433392">Impossibile controllare le password</translation>
 <translation id="7324354302972299151">Invia una richiesta "Do Not Track"</translation>
 <translation id="7333041109965360609">Hai annullato l'iscrizione alle notifiche</translation>
+<translation id="7335766481146072567">Premi Continua</translation>
 <translation id="7336259382292148213">Non ci sono problemi con le notifiche</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7340958967809483333">Opzioni per Discover</translation>
@@ -1752,6 +1755,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8135406045838672858">I PDF scaricati si aprono automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google.</translation>
+<translation id="8151185429379586178">Strumenti per sviluppatori</translation>
 <translation id="8152331954420209374">Vai a Lens</translation>
 <translation id="8153206878708357851">Attiva/disattiva la navigazione con cursore</translation>
 <translation id="8154784523622173959">Personalizza lo sfondo di questa pagina</translation>
@@ -1831,6 +1835,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Autorizzazioni rimosse da 1 sito}other{Autorizzazioni rimosse da # siti}}</translation>
 <translation id="8453310803815879010">Inizia il gioco Dino</translation>
 <translation id="8455675988389029454">Trova i preferiti, le password e altri dati su tutti i dispositivi</translation>
+<translation id="8458341576712814616">Scorciatoia</translation>
 <translation id="8458413889418591446">Per tornare rapidamente ai siti che hai visitato, sincronizza la cronologia e le schede</translation>
 <translation id="84594714173170813">Continua a usare i dati di Chrome nel tuo Account Google</translation>
 <translation id="8460448946170646641">Esamina i controlli per la privacy e la sicurezza più importanti</translation>
@@ -1855,6 +1860,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8559961053328923750">Chrome limita la quantità totale di dati che i siti possono condividere tramite il browser per misurare il rendimento dell'annuncio</translation>
 <translation id="8559990750235505898">Proponi di tradurre le pagine in altre lingue</translation>
 <translation id="8560602726703398413">Trova il tuo elenco di lettura nei preferiti</translation>
+<translation id="85618473456579127">Tocca profilo in alto a destra</translation>
 <translation id="8565021320663436446">Rimuovere <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Impossibile scaricare il file in modo sicuro</translation>
 <translation id="8571213806525832805">Ultime 4 settimane</translation>

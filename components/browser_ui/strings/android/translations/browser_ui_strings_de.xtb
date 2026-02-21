@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Dateien, die von dieser Website aufgerufen oder bearbeitet werden können</translation>
 <translation id="1073417869336441572">Sag uns, warum du Drittanbieter-Cookies zugelassen hast, und hilf uns so, Chrome zu verbessern. <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kannst die Desktopversion von Websites anfordern</translation>
-<translation id="1085696779717592361">Standardmäßig Chrome verwenden</translation>
 <translation id="1126523729897810826">Mit den unten vorgeschlagenen Aktionen lässt sich das Beste aus Chrome herausholen</translation>
 <translation id="113098737392899175">Auf den Seiten mithilfe eines Textcursors bewegen, wenn eine Tastatur angeschlossen ist</translation>
 <translation id="1148624853678088576">Fertig!</translation>
@@ -194,12 +193,12 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="2802908157808345702">Websites dürfen weder Pop-up-Fenster senden noch Weiterleitungen verwenden</translation>
 <translation id="2814830417943086299">Chrome zeigt deine zuletzt geöffneten Tabs jetzt in der App-Liste und in den Suchergebnissen deines Geräts an. Diese Funktion lässt sich jederzeit in den Chrome-Einstellungen deaktivieren.</translation>
 <translation id="2822354292072154809">Möchtest du wirklich alle Websiteberechtigungen für <ph name="CHOSEN_OBJECT_NAME" /> zurücksetzen?</translation>
+<translation id="2848335882304088250">Jetzt kannst du Chrome auf deinem Gerät optimal nutzen.</translation>
 <translation id="2850913818900871965">Mobile Ansicht anfordern</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
 <translation id="2891975107962658722">Eine Website daran hindern, Daten auf deinem Gerät zu speichern</translation>
 <translation id="2903493209154104877">Adressen</translation>
-<translation id="2910701580606108292">Fragen, bevor die Wiedergabe geschützter Inhalte auf Websites zugelassen wird</translation>
 <translation id="2918484639460781603">Zu den Einstellungen wechseln</translation>
 <translation id="2932883381142163287">Missbrauch melden</translation>
 <translation id="2939338015096024043">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Kameraposition erfassen und mehr über deine Umgebung ermitteln dürfen. Wenn er deaktiviert ist, können Websites deine Kameraposition nicht erfassen und nichts über deine Umgebung ermitteln.</translation>
@@ -301,7 +300,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="3924858949939391676">Links anzeigen, sobald der Lesemodus aktiviert ist</translation>
 <translation id="3933121352599513978">Unerwünschte Anfragen minimieren (empfohlen)</translation>
 <translation id="3934905113567851655">Auseinander- und zusammenziehen, um die Größe anzupassen</translation>
-<translation id="3955193568934677022">Wiedergabe geschützter Inhalte auf Websites zulassen (empfohlen)</translation>
 <translation id="3955321697524543127">Websites dürfen keine Verbindung mit USB-Geräten herstellen</translation>
 <translation id="3965467402665811906">Websites dürfen darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
@@ -514,7 +512,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="6171020522141473435">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Bluetooth-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine Bluetooth-Geräte verwenden.</translation>
 <translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
 <translation id="6181444274883918285">Ausnahme für Website hinzufügen</translation>
-<translation id="6192792657125177640">Ausnahmen</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome blockiert morgen wieder Cookies}other{Noch # Tage, bis Cookies wieder blockiert werden}}</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
@@ -637,7 +634,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7573594921350120855">Websites verwenden deine Videokamera normalerweise für Kommunikationsfunktionen wie Videochats</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_MONTHS_ONE" /> Monat}other{Vor <ph name="NUM_MONTHS_MANY" /> Monaten}}</translation>
-<translation id="757524316907819857">Wiedergabe von geschützten Inhalten für Websites blockieren</translation>
 <translation id="7586676035079382730">Benachrichtigungen nicht zulässig</translation>
 <translation id="7594634374516752650">Mit einem Bluetooth-Gerät verbunden</translation>
 <translation id="7617547684249261169">Verlauf, Cookies, Websitedaten und mehr teilweise oder ganz löschen</translation>

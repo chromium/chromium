@@ -356,7 +356,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1221825588892235038">Tikai atlase</translation>
 <translation id="1222835797152767346">Lai pierakstīšanās būtu ērtāka, iestatiet PIN</translation>
 <translation id="1223484782328004593">Lietotnei <ph name="APP_NAME" /> ir nepieciešama licence</translation>
-<translation id="1223498995510244364">Apkopot</translation>
 <translation id="1223853788495130632">Jūsu administrators šim iestatījumam iesaka konkrētu vērtību.</translation>
 <translation id="1225177025209879837">Notiek pieprasījuma apstrāde...</translation>
 <translation id="1227107020813934021">Dokumentu skeneru atrašana</translation>
@@ -1057,6 +1056,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1695510246756136088">Nevar izveidot savienojumu ar internetu. Mēģiniet vēlreiz.</translation>
 <translation id="1696214930320482113">Izmantojot profilus, varat nodalīt darba, personīgos un spēļu kontus, nepārslēdzoties uz citu pārlūku. Pievienojiet jaunu profilu tūlīt.</translation>
 <translation id="1696555181932908973">Varat izmēģināt citus veidus, kā turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Lai aizsargātu ierīci, ieteicams izpildīt un instalēt tikai programmatūru, kas iegūta no uzticamiem avotiem un izstrādātājiem.</translation>
 <translation id="169675691788639886">Ierīcei ir konfigurēts SSH serveris. Nepierakstieties, izmantojot sensitīvus kontus.</translation>
 <translation id="1697122132646041614">Nospiežot pogu “Nepatīk”, tiek atvērta veidlapa, kurā var sniegt detalizētas atsauksmes par to, kāpēc jums nepatīk šie rezultāti.</translation>
 <translation id="1697532407822776718">Gatavs!</translation>
@@ -5867,6 +5867,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4943927218331934807">Jāievada parole</translation>
 <translation id="4944310289250773232">Šo autentifikācijas pakalpojumu mitina <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Lai varētu iestatīt pirksta nospiedumu, bērnam ir jāpieskaras barošanas pogai. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="4946215577126251136">Rādīt projektu paneļa pogu</translation>
 <translation id="4946998421534856407">palaidēja taustiņš + augšupvērstās bultiņas taustiņš</translation>
 <translation id="4947376546135294974">Dati no jūsu apmeklētās vietnes</translation>
 <translation id="4948370357877377178">Turpiniet uzdevumu izpildi</translation>
@@ -6101,7 +6102,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="51143538739122961">Ievietojiet drošības atslēgu un pieskarieties tai</translation>
 <translation id="5115309401544567011">Lūdzu, pievienojiet savu <ph name="DEVICE_TYPE" /> ierīci strāvas avotam.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verificēt identitāti, lai automātiski aizpildītu sensitīvu informāciju</translation>
 <translation id="5116315184170466953">Nospiežot pogu “Patīk”, varat norādīt, ka jums patīk šis ciļņu grupas ieteikums.</translation>
 <translation id="5116628073786783676">Sag&amp;labāt audio kā...</translation>
 <translation id="5117139026559873716">Atvienojiet tālruni no <ph name="DEVICE_TYPE" /> ierīces. Ierīces vairs netiks automātiski savienotas.</translation>
@@ -6698,6 +6698,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5527597176701279474"><ph name="APP_NAME" />, notiek instalēšana…</translation>
 <translation id="5527822190489075064">Optimizēta uzlāde</translation>
 <translation id="5529554942700688235">Atmiņas ietaupījuma kopsavilkums; atbrīvotā vieta: <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">Rādīt pogu meklēšanai cilnēs</translation>
 <translation id="5530977410273748884">Lai saglabātu savu paroli Google paroļu pārvaldniekā, noklikšķiniet uz atslēgas ikonas</translation>
 <translation id="5532223876348815659">Visā pasaulē</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> pieprasa:</translation>
@@ -8248,6 +8249,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6613267708691765962">Notiek ļaunprātīgas programmatūras meklēšana…</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6618013221808317456">Neļaut vietnēm izmantot JavaScript optimizāciju</translation>
+<translation id="6618154741503063152">Nevar augšupielādēt. Pielikumi nav atļauti.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Vietne var izsekot jūsu atrašanās vietu.</translation>
 <translation id="6619243162837544323">Tīkla statuss</translation>
@@ -9344,7 +9346,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7368927539449986686">Rediģējiet meklēšanu vietnē</translation>
 <translation id="7370592524170198497">Tīkla Ethernet EAP:</translation>
 <translation id="7374376573160927383">Pārvaldīt USB ierīces</translation>
-<translation id="73750335798090836">Lai nodrošinātu papildu aizsardzību, vienmēr lietojiet pirksta nospiedumu, seju vai citu ekrāna bloķēšanas opciju, kad izmantojat sensitīvu informāciju, piemēram, ceļojumu un identitātes dokumentus.</translation>
 <translation id="7376124766545122644">Nevar izmantot šo saiti. Pārbaudiet, vai jūsu saite sākas ar “http://” vai “https://”, lai mēģinātu vēlreiz.</translation>
 <translation id="7376553024552204454">Izcelt peles kursoru, kad tas tiek kustināts</translation>
 <translation id="7377250337652426186">Lai pārietu atpakaļ vairākas lappuses, noklikšķiniet uz pogas Atpakaļ un turiet.</translation>
@@ -10345,6 +10346,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8034399942062051455">V8 optimizācija ir izslēgta</translation>
 <translation id="8034697324150621782">Apmainīt vietām ar augšdaļas skatu</translation>
 <translation id="8035059678007243127">Pilnīgas saglabāšanas kešatmiņā saglabātā inkognito lapa:<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Rādīt saglabāto ciļņu grupu pogu</translation>
 <translation id="8036193484521570992">Palīdzēt uzlabot automātisko aizpildi</translation>
 <translation id="8036504271468642248">Iepriekšējais teikums</translation>
 <translation id="8037117027592400564">Lasīt visu tekstu, kas izrunāts, izmantojot sintezēto runu</translation>

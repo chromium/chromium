@@ -354,7 +354,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1221825588892235038">Vetëm zgjedhja</translation>
 <translation id="1222835797152767346">Cakto një kod PIN për ta bërë më të lehtë të identifikohesh</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> kërkon një licencë</translation>
-<translation id="1223498995510244364">Përmblidh</translation>
 <translation id="1223853788495130632">Administratori yt rekomandon një vlerë specifike për këtë cilësim.</translation>
 <translation id="1225177025209879837">Po përpunon kërkesën...</translation>
 <translation id="1227107020813934021">Gjej skanerë të dokumenteve</translation>
@@ -2158,6 +2157,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="244231003699905658">Adresë e pavlefshme. Kontrollo adresën dhe provo përsëri.</translation>
 <translation id="2442916515643169563">Hija e tekstit</translation>
 <translation id="2443487764245141020">Sajtet mund të kenë nevojë po ashtu ta njohin pajisjen tënde duke përdorur një identifikues</translation>
+<translation id="2444091518615234627">Dërgon më pak të dhëna te Google (p.sh. pjesë të URL-ve)</translation>
 <translation id="244475495405467108">Mbyll skedat në të majtë</translation>
 <translation id="2444874983932528148">Vazhdo me lehtësi aty ku e ke lënë</translation>
 <translation id="2445081178310039857">Kërkohet direktoria rrënjë e shtesës.</translation>
@@ -3347,6 +3347,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3248902735035392926">Siguria ka rëndësi. Gjej një moment <ph name="BEGIN_LINK" />për të kontrolluar shtesat e tua tani<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Sinkronizimi i skedarëve</translation>
 <translation id="3251759466064201842">&lt;Jo pjesë e certifikatës&gt;</translation>
+<translation id="3252169590975855820">Mund të qasesh në të te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="325238099842880997">Cakto rregulla dixhitale bazë për t'i ndihmuar fëmijët të luajnë, të eksplorojnë dhe të bëjnë detyrat e shkollës në shtëpi</translation>
 <translation id="3253225298092156258">Nuk ofrohet</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Liro hapësirën në <ph name="CLOUD_PROVIDER" /> për të kopjuar këtë skedar}other{Liro hapësirën në <ph name="CLOUD_PROVIDER" /> për të kopjuar këta skedarë}}</translation>
@@ -6099,7 +6100,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="51143538739122961">Fut kodin e sigurisë dhe preke</translation>
 <translation id="5115309401544567011">Lidhe pajisjen tënde <ph name="DEVICE_TYPE" /> me një burim energjie.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verifiko që je ti për të plotësuar automatikisht informacionet delikate</translation>
 <translation id="5116315184170466953">Opsioni i gishtave tregon se të pëlqen ky sugjerim për grupin e skedave</translation>
 <translation id="5116628073786783676">Ru&amp;aje audion si...</translation>
 <translation id="5117139026559873716">Shkëpute telefonin nga pajisja jote <ph name="DEVICE_TYPE" />. Ato nuk do të lidhen më automatikisht.</translation>
@@ -6676,6 +6676,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5510775624736435856">Merr përshkrimet e imazhit nga Google</translation>
 <translation id="5511379779384092781">Tepër i vogël</translation>
 <translation id="5511823366942919280">Je i sigurt që dëshiron ta konfigurosh këtë pajisje si një "Peshkaqen"?</translation>
+<translation id="5512511240775436189">Dërgon më shumë të dhëna te Google (p.sh. URL-të, përmbajtjet e faqeve etj.)</translation>
 <translation id="5512739112435045339">Liro hapësirë në pajisjen tënde. Më pas, provo ta shkarkosh përsëri</translation>
 <translation id="5513807280330619196">Makina llogaritëse</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6702,6 +6703,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dëshiron</translation>
 <translation id="5533343601674003130">Shërbimi i skedarëve PDF</translation>
 <translation id="5535769176698670170">Ndërro me pamjen lart</translation>
+<translation id="5537395135310061418">Të mbron në ueb me sigurinë më të mirë të Google</translation>
 <translation id="5537725057119320332">Transmeto</translation>
 <translation id="5539070192556911367">Google nuk mund të arrihet</translation>
 <translation id="5541091577812545428">Fjalëkalimi nuk u ndryshua</translation>
@@ -6861,6 +6863,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5639549361331209298">Ringarkoje këtë faqe, mbaj shtypur për të parë më shumë opsione</translation>
 <translation id="5640133431808313291">Menaxho çelësat e sigurisë</translation>
 <translation id="5640159004008030285">Ky fjalëkalim ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, <ph name="BEGIN_LINK" />ruaje në "Llogarinë tënde të Google"<ph name="END_LINK" />.</translation>
+<translation id="5640322514952298438">I jep përparësi shpejtësisë së sajtit</translation>
 <translation id="5641608986289282154">Fillo të përdorësh <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Modifikuesi i imazhit të pamjes së ekranit</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur klikon te butoni i faqes kryesore.</translation>
@@ -8071,6 +8074,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6494483173119160146">Pajisja ndeshi një gabim të parikuperueshëm. Rivendose pajisjen (kjo do të spastrojë të gjitha të dhënat e përdoruesit) dhe provo përsëri.</translation>
 <translation id="6495266441917713704">Wi-Fi nuk mund të transferohet</translation>
 <translation id="6495453178162183932">Tema u përditësua me parazgjedhjen e Chrome</translation>
+<translation id="6496542321576111907">Ofron siguri të fortë. Mund të zgjedhësh që të aktivizosh veçori shtesë.</translation>
 <translation id="6496641546298525838">Pajisja jote</translation>
 <translation id="6497784818439587832">Ndrysho madhësinë e ekranit për t'i bërë më të vegjël ose më të mëdhenj artikujt në ekran</translation>
 <translation id="6497789971060331894">Lëvizja e kundërt e miut</translation>
@@ -9342,7 +9346,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7368927539449986686">Modifiko kërkimin në sajt</translation>
 <translation id="7370592524170198497">EAP-ja e eternetit:</translation>
 <translation id="7374376573160927383">Menaxho pajisjet USB</translation>
-<translation id="73750335798090836">Për më shumë mbrojtje, përdor gjithmonë gjurmën e gishtit, fytyrën ose një kyçje tjetër ekrani kur përdor informacione delikate, si p.sh. dokumentet e udhëtimit dhe të identitetit</translation>
 <translation id="7376124766545122644">Kjo lidhje nuk mund të përdoret. Kontrollo që lidhja të fillojë me "http://" ose "https://" për ta provuar përsëri.</translation>
 <translation id="7376553024552204454">Thekso kursorin e miut kur është në lëvizje</translation>
 <translation id="7377250337652426186">Për t'u kthyer prapa më shumë se 1 faqe, kliko dhe mbaj shtypur butonin "Pas".</translation>
@@ -11507,6 +11510,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8808686172382650546">Macja</translation>
 <translation id="8809147117840417135">Gurkali e çelur</translation>
 <translation id="8811862054141704416">Qasja te mikrofoni i Crostini</translation>
+<translation id="8811881249098640048">Ngadalëson disa sajte të panjohura</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 fjalëkalim është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google". Kjo do të pastrojë gjithashtu çdo dublikatë.}other{{PASSWORD_COUNT} fjalëkalime janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google". Kjo do të pastrojë gjithashtu çdo dublikatë.}}</translation>
 <translation id="8813199641941291474">Kontrolli dhe riprogramimi i pajisjeve MIDI është bllokuar</translation>
 <translation id="8813698869395535039">Nuk mund të identifikohet në <ph name="USERNAME" /></translation>
@@ -11648,6 +11652,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që të rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> sot.}other{<ph name="MANAGER" /> kërkon që të rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> para afatit.}}</translation>
 <translation id="8902667442496790482">Hap cilësimet e "Zgjidh që të thuhet"</translation>
 <translation id="8903733144777177139">Qasja te mikrofoni është bllokuar</translation>
+<translation id="8904787158537906492">Lidhja u kopjua në kujtesën e fragmenteve</translation>
 <translation id="890518297681039136">Operacioni dështoi për shkak të një arsyeje të panjohur.</translation>
 <translation id="8905253417215700291">"<ph name="GOOGLE_PASSWORD_MANAGER" />" krijoi një fjalëkalim të fortë për këtë uebsajt</translation>
 <translation id="890616557918890486">Ndrysho burimin</translation>

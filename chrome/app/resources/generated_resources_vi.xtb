@@ -354,7 +354,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1221825588892235038">Chỉ lựa chọn</translation>
 <translation id="1222835797152767346">Đặt mã PIN để đăng nhập dễ dàng hơn</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> yêu cầu giấy phép</translation>
-<translation id="1223498995510244364">Tóm tắt</translation>
 <translation id="1223853788495130632">Quản trị viên của bạn đề xuất một giá trị cụ thể cho cài đặt này.</translation>
 <translation id="1225177025209879837">Đang xử lý yêu cầu...</translation>
 <translation id="1227107020813934021">Tìm trình quét tài liệu</translation>
@@ -1056,6 +1055,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1695510246756136088">Không thể kết nối Internet. Hãy thử lại.</translation>
 <translation id="1696214930320482113">Hồ sơ giúp bạn tách biệt công việc, cuộc sống cá nhân và giải trí mà không cần chuyển sang một trình duyệt khác. Thêm hồ sơ mới ngay.</translation>
 <translation id="1696555181932908973">Bạn có thể thử những cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Để đảm bảo an toàn cho thiết bị, bạn chỉ nên chạy và cài đặt phần mềm từ những nguồn và nhà phát triển đáng tin cậy.</translation>
 <translation id="169675691788639886">Thiết bị đã định cấu hình máy chủ SSH. Không đăng nhập bằng các tài khoản nhạy cảm.</translation>
 <translation id="1697122132646041614">Nút Không thích sẽ mở ra một biểu mẫu để bạn gửi phản hồi chi tiết về lý do bạn không thích các kết quả này.</translation>
 <translation id="1697532407822776718">Bạn đã hoàn tất!</translation>
@@ -5880,6 +5880,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4943927218331934807">Cần nhập mật khẩu</translation>
 <translation id="4944310289250773232">Dịch vụ xác thực này do <ph name="SAML_DOMAIN" /> lưu trữ</translation>
 <translation id="4945439665401275950">Để thiết lập vân tay, con bạn cần chạm vào nút nguồn. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên chiếc <ph name="DEVICE_TYPE" /> này.</translation>
+<translation id="4946215577126251136">Hiện nút Bảng điều khiển dự án</translation>
 <translation id="4946998421534856407">trình chạy + mũi tên lên</translation>
 <translation id="4947376546135294974">Dữ liệu từ trang web mà bạn đang truy cập</translation>
 <translation id="4948370357877377178">Tiếp tục các việc cần làm</translation>
@@ -6065,7 +6066,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5084686326967545037">Làm theo các bước trên thiết bị của bạn</translation>
 <translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
 <translation id="5086082738160935172">HID</translation>
-<translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
+<translation id="508645147179720015">Ghi chú vượt quá giới hạn là 1000 ký tự</translation>
 <translation id="5087249366037322692">Được thêm bởi bên thứ ba</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
 <translation id="5087864757604726239">quay lại</translation>
@@ -6114,7 +6115,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="51143538739122961">Cắm và chạm vào khóa bảo mật</translation>
 <translation id="5115309401544567011">Hãy cắm <ph name="DEVICE_TYPE" /> của bạn vào nguồn điện.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Xác minh danh tính của bạn để tự động điền thông tin nhạy cảm</translation>
 <translation id="5116315184170466953">Nút Thích gửi phản hồi cho biết bạn thích đề xuất nhóm thẻ này</translation>
 <translation id="5116628073786783676">Lư&amp;u Âm thanh Dưới dạng...</translation>
 <translation id="5117139026559873716">Ngắt kết nối điện thoại khỏi <ph name="DEVICE_TYPE" />. Hai thiết bị này sẽ không tự động kết nối nữa.</translation>
@@ -6712,6 +6712,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, đang cài đặt</translation>
 <translation id="5527822190489075064">Sạc tối ưu hoá</translation>
 <translation id="5529554942700688235">Thông tin tóm tắt mức tiết kiệm bộ nhớ, đã giải phóng <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">Hiện nút Tìm thẻ</translation>
 <translation id="5530977410273748884">Để lưu mật khẩu vào Trình quản lý mật khẩu của Google, hãy nhấp vào phím</translation>
 <translation id="5532223876348815659">Toàn cầu</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> muốn</translation>
@@ -8261,6 +8262,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6613267708691765962">Đang quét tìm phần mềm độc hại...</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
 <translation id="6618013221808317456">Không cho phép các trang web sử dụng tính năng tối ưu hoá JavaScript</translation>
+<translation id="6618154741503063152">Không tải lên được. Không cho phép đính kèm tệp.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Trang web có thể theo dõi vị trí của bạn</translation>
 <translation id="6619243162837544323">Trạng thái mạng</translation>
@@ -9359,7 +9361,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7368927539449986686">Chỉnh sửa công cụ tìm kiếm trên trang web</translation>
 <translation id="7370592524170198497">Giao thức xác thực mở rộng (EAP) Ethernet:</translation>
 <translation id="7374376573160927383">Quản lý các thiết bị USB</translation>
-<translation id="73750335798090836">Nhằm tăng khả năng bảo vệ, hãy luôn dùng vân tay, khuôn mặt hoặc phương thức khoá màn hình khác khi bạn dùng thông tin nhạy cảm như giấy tờ tuỳ thân và giấy tờ đi lại</translation>
 <translation id="7376124766545122644">Không dùng được đường liên kết này. Hãy kiểm tra xem đường liên kết bắt đầu bằng "http:/" hay "https://" rồi thử lại.</translation>
 <translation id="7376553024552204454">Đánh dấu con trỏ chuột khi đang di chuyển</translation>
 <translation id="7377250337652426186">Để quay lại nhiều trang, hãy nhấp và giữ nút Quay lại.</translation>
@@ -10360,6 +10361,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8034399942062051455">Đã tắt tính năng tối ưu hoá V8</translation>
 <translation id="8034697324150621782">Hoán đổi với dạng xem trên cùng</translation>
 <translation id="8035059678007243127">Trang ẩn danh lưu trong bộ nhớ đệm cho thao tác tiến/lùi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Hiện nút Nhóm thẻ đã lưu</translation>
 <translation id="8036193484521570992">Góp phần cải thiện tính năng Tự động điền</translation>
 <translation id="8036504271468642248">Câu trước</translation>
 <translation id="8037117027592400564">Đọc tất cả văn bản được nói bằng giọng nói tổng hợp</translation>

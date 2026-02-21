@@ -2568,6 +2568,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
 <translation id="5115563688576182185">(64-bits)</translation>
+<translation id="5116015291385561204">Laten verifiëren dat jij het bent om gevoelige informatie automatisch in te vullen</translation>
 <translation id="5120526915373271910">Familiefilms</translation>
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3967,6 +3968,7 @@ Aanvullende informatie:
 <translation id="7372973238305370288">zoekresultaat</translation>
 <translation id="7374461526650987610">Protocolhandlers</translation>
 <translation id="7374733840632556089">Dit probleem doet zich voor als gevolg van een certificaat dat jij of iemand anders heeft geïnstalleerd op je apparaat. Het certificaat staat erom bekend dat het wordt gebruikt voor netwerkmonitoring en -onderschepping en wordt niet vertrouwd door Chrome. Hoewel er ook legitieme certificaten bestaan, bijvoorbeeld op een school- of zakelijk netwerk, wil Chrome zeker weten dat je begrijpt wat er gebeurt, ook als je het niet kunt tegenhouden. Monitoring kan plaatsvinden in elke browser of app met toegang tot internet.</translation>
+<translation id="73750335798090836">Gebruik altijd je vingerafdruk, gezicht of andere schermvergrendeling voor extra beveiliging als je gevoelige informatie gebruikt, zoals reis- en identiteitsdocumenten</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Geen sites toegestaan}=1{1 site toegestaan}other{# sites toegestaan}}</translation>
 <translation id="7375818412732305729">Bestand wordt bijgevoegd</translation>
 <translation id="7376031331622621328">Blad onderaan voor Handel</translation>

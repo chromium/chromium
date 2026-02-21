@@ -4544,6 +4544,13 @@ Si elle est définie sur False, <ph name="PRODUCT_NAME" /> n'utilisera pas les n
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4154221011709068799">Interdire les appareils de stockage externe</translation>
 <translation id="415445772247959702">Web Store (compatible depuis la version 89)</translation>
+<translation id="415631927748520887">Si cette règle est définie sur "True", les Applications Chrome peuvent continuer à s'exécuter dans une session Kiosque, quel que soit leur état d'activation par défaut.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur "False", le comportement par défaut défini sur l'appareil est appliqué.
+
+Si l'utilisateur tente de lancer une Application Chrome désactivée, un message lui indique pourquoi elle n'a pas été lancée et lui suggère de contacter son service informatique.
+
+La valeur de cette règle sera respectée jusqu'à l'abandon des Applications Chrome dans les sessions Kiosque, qui devrait avoir lieu dans la version M151.</translation>
 <translation id="4157003184375321727">Indiquer la version du système d'exploitation et du micrologiciel</translation>
 <translation id="4157594634940419685">Autoriser l'accès à des imprimantes CUPS en natif</translation>
 <translation id="4158531549614162499">Activer la synchronisation de Google Drive via des connexions au réseau mobile</translation>

@@ -357,7 +357,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1221825588892235038">Samo izbor</translation>
 <translation id="1222835797152767346">Nastavite kodo PIN, če si želite olajšati prijavo</translation>
 <translation id="1223484782328004593">Aplikacija <ph name="APP_NAME" /> zahteva licenco</translation>
-<translation id="1223498995510244364">Povzemi</translation>
 <translation id="1223853788495130632">Skrbnik priporoča za to nastavitev posebno vrednost.</translation>
 <translation id="1225177025209879837">Obdelava zahteve ...</translation>
 <translation id="1227107020813934021">Iskanje optičnih bralnikov dokumentov</translation>
@@ -1059,6 +1058,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1695510246756136088">Internetne povezave ni mogoče vzpostaviti. Poskusite znova.</translation>
 <translation id="1696214930320482113">Profili vam omogočajo, da ločite službo, osebne zadeve in zabavo, ne da bi preklopili na drug brskalnik. Dodajte nov profil.</translation>
 <translation id="1696555181932908973">Na <ph name="SITE_ETLD_PLUS_ONE" /> lahko poskusite nadaljevati na druge načine.</translation>
+<translation id="1696685050160038195">Če želite poskrbeti za varnost naprave, uporabljajte in nameščajte samo programsko opremo iz zaupanja vrednih virov in zaupanja vrednih razvijalcev.</translation>
 <translation id="169675691788639886">Naprava ima konfiguriran strežnik SSH. Ne prijavljajte se z občutljivimi računi.</translation>
 <translation id="1697122132646041614">S palcem dol odprete obrazec za pošiljanje podrobnih povratnih informacij glede tega, zakaj vam ti rezultati niso všeč.</translation>
 <translation id="1697532407822776718">Pripravljeni ste.</translation>
@@ -5882,6 +5882,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4943927218331934807">Zahtevano je geslo</translation>
 <translation id="4944310289250773232">Storitev preverjanja pristnosti gosti <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Če želite nastaviti prstni odtis, naj se otrok dotakne gumba za vklop. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Gumb za prikaz podokna s projekti</translation>
 <translation id="4946998421534856407">zaganjalnik in puščica gor</translation>
 <translation id="4947376546135294974">Podatki s spletnega mesta, ki ste ga obiskali</translation>
 <translation id="4948370357877377178">Nadaljujte opravila</translation>
@@ -6116,7 +6117,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="51143538739122961">Vstavite varnostni ključ in se ga dotaknite</translation>
 <translation id="5115309401544567011">Priključite napravo <ph name="DEVICE_TYPE" /> v vir napajanja.</translation>
 <translation id="5115338116365931134">Enotna prijava</translation>
-<translation id="5116015291385561204">Za samodejno izpolnjevanje občutljivih podatkov potrdite, da ste to vi</translation>
 <translation id="5116315184170466953">S palcem gor pošljete povratne informacije, da vam je ta predlog skupine zavihkov všeč</translation>
 <translation id="5116628073786783676">Shr&amp;ani zvok kot ...</translation>
 <translation id="5117139026559873716">Prekličite povezavo telefona in naprave <ph name="DEVICE_TYPE" />. Ne bosta se več samodejno povezala.</translation>
@@ -6714,6 +6714,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, nameščanje</translation>
 <translation id="5527822190489075064">Optimizirano polnjenje</translation>
 <translation id="5529554942700688235">Povzetek prihranka pomnilnika, <ph name="MEMORY_VALUE" /> sproščeno</translation>
+<translation id="5529693968082667490">Prikaz gumba za iskanje zavihkov</translation>
 <translation id="5530977410273748884">Če želite geslo shraniti v Googlovem upravitelju gesel, kliknite ključ</translation>
 <translation id="5532223876348815659">Globalno</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> želi</translation>
@@ -8271,6 +8272,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6613267708691765962">Iskanje zlonamerne programske opreme …</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6618013221808317456">Spletnim mestom ni dovoljena uporaba optimizacije za JavaScript</translation>
+<translation id="6618154741503063152">Ni mogoče naložiti. Priloge niso dovoljene.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Spletno mesto lahko spremlja vašo lokacijo</translation>
 <translation id="6619243162837544323">Stanje omrežja</translation>
@@ -9367,7 +9369,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7368927539449986686">Urejanje iskanja po spletnem mestu</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Upravljanje naprav USB</translation>
-<translation id="73750335798090836">Zaradi dodatne zaščite pri uporabi občutljivih podatkov, kot so potovalni in osebni dokumenti, vedno uporabite prstni odtis, obraz ali drugo zaklepanje zaslona</translation>
 <translation id="7376124766545122644">Te povezave ni mogoče uporabiti. Preverite, ali se povezava začne s »http://« ali »https://«, če želite poskusiti znova.</translation>
 <translation id="7376553024552204454">Označitev miškinega kazalca med premikanjem</translation>
 <translation id="7377250337652426186">Če se želite vrniti za več kot 1 stran, kliknite in pridržite gumb Nazaj.</translation>
@@ -10368,6 +10369,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8034399942062051455">Optimizacija mehanizma V8 je izklopljena</translation>
 <translation id="8034697324150621782">Zamenjava s pogledom z vrha</translation>
 <translation id="8035059678007243127">Anonimna stran v predpomnilniku za hitro obnovitev strani: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Gumb za prikaz shranjenih skupin zavihkov</translation>
 <translation id="8036193484521570992">Pomagajte izboljšati samodejno izpolnjevanje</translation>
 <translation id="8036504271468642248">Prejšnji stavek</translation>
 <translation id="8037117027592400564">Branje in izgovarjava vsega besedila z uporabo sintetiziranega govora</translation>

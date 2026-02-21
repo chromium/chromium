@@ -2574,6 +2574,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115232566827194440">Tilsidesættelse af begrænset administreret gæstesession</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116015291385561204">Verificer din identitet for at bruge autofyld i forbindelse med følsomme oplysninger</translation>
 <translation id="5120526915373271910">Familiefilm</translation>
 <translation id="5122786942953798871">Kuvert (bomuld)</translation>
 <translation id="5123063207673082822">Weekend</translation>
@@ -3974,6 +3975,7 @@ Yderligere oplysninger:
 <translation id="7372973238305370288">søgeresultat</translation>
 <translation id="7374461526650987610">Protokolhåndtering</translation>
 <translation id="7374733840632556089">Dette problem opstår på grund af et certifikat, som du eller en anden har installeret på din enhed. Certifikatet anvendes ofte til at overvåge og opfange netværk, og Chrome har ikke tillid til det. Der findes legitime årsager til at overvåge, f.eks. på skole- og virksomhedsnetværk, men Chrome vil sikre, at du er bevidst om det, når det sker, også selvom du ikke kan stoppe det. Overvågning kan finde sted i enhver browser eller app, der har adgang til nettet.</translation>
+<translation id="73750335798090836">Af sikkerhedshensyn bør du altid bruge dit fingeraftryk, ansigtsgenkendelse eller en anden skærmlås, når du anvender følsomme oplysninger som f.eks. rejse- og identitetsdokumenter</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ingen websites er tilladt}=1{1 website er tilladt}one{# website er tilladt}other{# websites er tilladt}}</translation>
 <translation id="7375818412732305729">En fil vedhæftes</translation>
 <translation id="7376031331622621328">Feltet i bunden med handelsoplysninger</translation>

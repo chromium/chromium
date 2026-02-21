@@ -738,6 +738,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavijesti s te web-lokacije zbog neželjenog ili obmanjujućeg sadržaja}one{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}few{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}other{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}}</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na ovom uređaju}one{# kartica na ovom uređaju}few{# kartice na ovom uređaju}other{# kartica na ovom uređaju}}</translation>
+<translation id="4198268995694216131">Dodatne web lokacije</translation>
 <translation id="4198423547019359126">Lokacije preuzimanja nisu dostupne</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Upotrijebili ste na ovoj web-lokaciji</translation>
 <translation id="4214315110991671325">Ako dopustite kolačiće, Chrome ih može koristiti za predučitavanje.</translation>
@@ -1018,6 +1019,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5304593522240415983">To polje ne može biti prazno</translation>
 <translation id="5306014156308790439">Onemogućeno Dodaj u zbirku</translation>
 <translation id="5308380583665731573">Poveži</translation>
+<translation id="5313967007315987356">Dodaj web-lokaciju</translation>
 <translation id="5316947901395241499">Administrator je isključio spremanje zaporki</translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
@@ -1543,6 +1545,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7314734791127433392">Provjera zaporki nije uspjela</translation>
 <translation id="7324354302972299151">Slanje zahtjeva "Do Not Track"</translation>
 <translation id="7333041109965360609">Otkazana je pretplata na obavijesti</translation>
+<translation id="7335766481146072567">Pritisnite nastavi</translation>
 <translation id="7336259382292148213">Obavijesti izgledaju dobro</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
@@ -1752,6 +1755,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
 <translation id="8135406045838672858">Preuzeti PDF-ovi automatski se otvaraju u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki.</translation>
+<translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152331954420209374">Otvori Objektiv</translation>
 <translation id="8153206878708357851">Uključi/isključi pregledavanje kursorom</translation>
 <translation id="8154784523622173959">Personalizirajte pozadinu ove stranice</translation>
@@ -1831,6 +1835,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Dopuštenja su uklonjena s jedne web-lokacije}one{Dopuštenja su uklonjena s # web-lokacije}few{Dopuštenja su uklonjena s # web-lokacije}other{Dopuštenja su uklonjena s # web-lokacija}}</translation>
 <translation id="8453310803815879010">Pokrenite igru s dinosaurom</translation>
 <translation id="8455675988389029454">Pristup oznakama, zaporkama i drugim podacima na svim vašim uređajima</translation>
+<translation id="8458341576712814616">Prečac</translation>
 <translation id="8458413889418591446">Da biste se brzo vratili na web-lokacije koje ste posjetili, sinkronizirajte povijest i kartice</translation>
 <translation id="84594714173170813">Nastavite upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="8460448946170646641">Pregledajte ključne kontrole privatnosti i sigurnosti</translation>
@@ -1855,6 +1860,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8559961053328923750">Chrome ograničava ukupnu količinu podataka koje web-lokacije mogu dijeliti putem preglednika radi mjerenja izvedbe oglasa</translation>
 <translation id="8559990750235505898">Ponudi prevođenje stranica na druge jezike</translation>
 <translation id="8560602726703398413">Pronađite svoj popis za čitanje u Google oznakama</translation>
+<translation id="85618473456579127">Dodirnite profil u gornjem desnom kutu</translation>
 <translation id="8565021320663436446">Želite li da se ukloni <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Datoteka se ne može sigurno preuzeti</translation>
 <translation id="8571213806525832805">Posljednja 4 tjedna</translation>

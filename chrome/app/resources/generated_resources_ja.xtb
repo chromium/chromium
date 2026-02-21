@@ -354,7 +354,6 @@
 <translation id="1221825588892235038">選択したコンテンツのみ</translation>
 <translation id="1222835797152767346">PIN を設定して簡単にログイン</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> を使用するにはライセンスが必要です</translation>
-<translation id="1223498995510244364">要約</translation>
 <translation id="1223853788495130632">この設定には管理者が特定の値を推奨しています。</translation>
 <translation id="1225177025209879837">リクエストを処理しています...</translation>
 <translation id="1227107020813934021">ドキュメント スキャナを検出</translation>
@@ -1054,6 +1053,7 @@
 <translation id="1695510246756136088">インターネットに接続できません。もう一度お試しください。</translation>
 <translation id="1696214930320482113">プロフィールを使用すると、別のブラウザに切り替えることなく、仕事、プライベート、趣味でブラウジング環境を分けることができます。新しいプロフィールを今すぐ追加しましょう。</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
+<translation id="1696685050160038195">デバイスを安全に保つには、信頼できる提供元とデベロッパーのソフトウェアのみを実行し、インストールするようにしてください。</translation>
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
 <translation id="1697122132646041614">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
@@ -2155,6 +2155,7 @@
 <translation id="244231003699905658">無効なアドレスです。アドレスを確認してから、もう一度お試しください。</translation>
 <translation id="2442916515643169563">テキストの影</translation>
 <translation id="2443487764245141020">サイトで識別子を使用したデバイスの認識も必要となる場合があります</translation>
+<translation id="2444091518615234627">Google に限られたデータを送信します（URL の一部など）</translation>
 <translation id="244475495405467108">左側のタブを閉じる</translation>
 <translation id="2444874983932528148">前回中断したところから簡単に再開できます</translation>
 <translation id="2445081178310039857">拡張機能のルート ディレクトリを指定してください。</translation>
@@ -5855,6 +5856,7 @@
 <translation id="4943927218331934807">パスワードを入力してください</translation>
 <translation id="4944310289250773232">この認証サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="4945439665401275950">指紋を設定するには、お子様に電源ボタンをタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
+<translation id="4946215577126251136">プロジェクト パネルのボタンを表示する</translation>
 <translation id="4946998421534856407">ランチャー+上矢印</translation>
 <translation id="4947376546135294974">アクセスしているサイトのデータ</translation>
 <translation id="4948370357877377178">タスクを続行</translation>
@@ -6089,7 +6091,6 @@
 <translation id="51143538739122961">セキュリティ キーを挿入し、タップしてください</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> を電源に接続してください。</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">機密情報を自動入力する際に本人確認を行う</translation>
 <translation id="5116315184170466953">高く評価すると、このタブグループの提案が気に入ったというフィードバックが送信されます</translation>
 <translation id="5116628073786783676">名前を付けてオーディオを保存(&amp;V)...</translation>
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" /> からスマートフォンを切断します。以降、自動接続は行われなくなります。</translation>
@@ -6663,6 +6664,7 @@
 <translation id="5510775624736435856">Google から画像の説明を取得</translation>
 <translation id="5511379779384092781">特小</translation>
 <translation id="5511823366942919280">このデバイスを「Shark」として設定してもよろしいですか？</translation>
+<translation id="5512511240775436189">Google に一定のデータを送信します（URL、ページ コンテンツなど）</translation>
 <translation id="5512739112435045339">デバイスの空き容量を増やしてから、もう一度ダウンロードをお試しください</translation>
 <translation id="5513807280330619196">電卓</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6683,11 +6685,13 @@
 <translation id="5527597176701279474"><ph name="APP_NAME" />、インストール中</translation>
 <translation id="5527822190489075064">充電の最適化</translation>
 <translation id="5529554942700688235">メモリ節約の概要、<ph name="MEMORY_VALUE" /> を解放しました</translation>
+<translation id="5529693968082667490">タブ検索のボタンを表示する</translation>
 <translation id="5530977410273748884">Google パスワード マネージャーにパスワードを保存するには、鍵アイコンをクリックします</translation>
 <translation id="5532223876348815659">グローバル</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> が次の許可を求めています</translation>
 <translation id="5533343601674003130">PDF サービス</translation>
 <translation id="5535769176698670170">上のビューと入れ替え</translation>
+<translation id="5537395135310061418">Google の最高水準のセキュリティでウェブを利用するユーザーを保護します</translation>
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5539070192556911367">Google に接続できません</translation>
 <translation id="5541091577812545428">パスワードは変更されませんでした</translation>
@@ -6847,6 +6851,7 @@
 <translation id="5639549361331209298">このページを再読み込みするには、詳細オプションが表示されるまで押し続けます</translation>
 <translation id="5640133431808313291">セキュリティ キーの管理</translation>
 <translation id="5640159004008030285">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。</translation>
+<translation id="5640322514952298438">サイトの速度が優先されます</translation>
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> のご利用開始</translation>
 <translation id="5641648607875312660">スクリーンショット画像エディタ</translation>
 <translation id="5641715878999557094">「<ph name="EXTENSION_NAME" />」により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
@@ -8057,6 +8062,7 @@
 <translation id="6494483173119160146">デバイスで修復不可能なエラーが発生しました。デバイスをリセットして（すべてのユーザーデータが消去されます）、もう一度お試しください。</translation>
 <translation id="6495266441917713704">Wi-Fi で転送できません</translation>
 <translation id="6495453178162183932">テーマが Chrome のデフォルトに更新されました</translation>
+<translation id="6496542321576111907">強力なセキュリティで保護します。追加機能を有効にすることもできます。</translation>
 <translation id="6496641546298525838">デバイス</translation>
 <translation id="6497784818439587832">画面上の項目のサイズを変えるには、表示サイズを変更します</translation>
 <translation id="6497789971060331894">マウスの逆スクロール</translation>
@@ -8231,6 +8237,7 @@
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="6618013221808317456">サイトで JavaScript 最適化の使用を許可しない</translation>
+<translation id="6618154741503063152">アップロードできません。添付ファイルは許可されていません。</translation>
 <translation id="6619058681307408113">ラインプリンタ デーモン（LPD）</translation>
 <translation id="661907246513853610">サイトに現在地の追跡が許可されています</translation>
 <translation id="6619243162837544323">ネットワークの状態</translation>
@@ -9326,7 +9333,6 @@
 <translation id="7368927539449986686">サイト内検索を編集</translation>
 <translation id="7370592524170198497">イーサネット EAP:</translation>
 <translation id="7374376573160927383">USB デバイスを管理する</translation>
-<translation id="73750335798090836">セキュリティを強化するため、旅券や身分証明書などの機密情報を使用する際に、指紋認証や顔認証などの画面ロックを常に使用します</translation>
 <translation id="7376124766545122644">このリンクは使用できません。リンクが「http://」または「https://」で始まっていることを確認して、もう一度お試しください。</translation>
 <translation id="7376553024552204454">移動時にマウスカーソルを強調表示する</translation>
 <translation id="7377250337652426186">いくつか前のページに戻るには、「戻る」ボタンを長押しします。</translation>
@@ -10326,6 +10332,7 @@
 <translation id="8034399942062051455">V8 の最適化がオフになっています</translation>
 <translation id="8034697324150621782">上のビューと入れ替え</translation>
 <translation id="8035059678007243127">バックフォワード キャッシュのシークレット ページ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">保存したタブグループのボタンを表示する</translation>
 <translation id="8036193484521570992">自動入力の改善にご協力ください</translation>
 <translation id="8036504271468642248">前の文</translation>
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
@@ -11490,6 +11497,7 @@
 <translation id="8808686172382650546">ネコ</translation>
 <translation id="8809147117840417135">明るい青緑</translation>
 <translation id="8811862054141704416">Crostini のマイクへのアクセス</translation>
+<translation id="8811881249098640048">一部の未知のサイトの動作を遅くします</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{PASSWORD_COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
 <translation id="8813199641941291474">MIDI デバイスの操作と再プログラムがブロックされています</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> にログインできません</translation>

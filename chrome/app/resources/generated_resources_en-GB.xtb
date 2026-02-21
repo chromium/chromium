@@ -354,7 +354,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1221825588892235038">Selection only</translation>
 <translation id="1222835797152767346">Set a PIN to make it easier to sign in</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requires a licence</translation>
-<translation id="1223498995510244364">Summarise</translation>
 <translation id="1223853788495130632">Your administrator recommends a specific value for this setting.</translation>
 <translation id="1225177025209879837">Processing request...</translation>
 <translation id="1227107020813934021">Find document scanners</translation>
@@ -1056,6 +1055,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1695510246756136088">Can't connect to the Internet. Try again.</translation>
 <translation id="1696214930320482113">Profiles let you separate work, personal and play without switching to another browser. Add a new profile now.</translation>
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">To keep your device secure, you should only run and install software from trusted sources and developers.</translation>
 <translation id="169675691788639886">Device has SSH server configured. Do not sign in with sensitive accounts.</translation>
 <translation id="1697122132646041614">Thumbs down opens a form for submitting detailed feedback on why you dislike these results.</translation>
 <translation id="1697532407822776718">You're all set!</translation>
@@ -5880,6 +5880,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4943927218331934807">Password needed</translation>
 <translation id="4944310289250773232">This authentication service is hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">To set up fingerprint, get your child to touch the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Show projects panel button</translation>
 <translation id="4946998421534856407">launcher + up arrow</translation>
 <translation id="4947376546135294974">Data from the site that you're visiting</translation>
 <translation id="4948370357877377178">Continue your tasks</translation>
@@ -6114,7 +6115,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="51143538739122961">Insert your security key and touch it</translation>
 <translation id="5115309401544567011">Please plug your <ph name="DEVICE_TYPE" /> into a power source.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verify that it's you to autofill sensitive info</translation>
 <translation id="5116315184170466953">Thumbs up submits feedback that you like this tab group suggestion</translation>
 <translation id="5116628073786783676">Sa&amp;ve Audio As...</translation>
 <translation id="5117139026559873716">Disconnect your phone from your <ph name="DEVICE_TYPE" />. They will no longer connect automatically.</translation>
@@ -6712,6 +6712,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installing</translation>
 <translation id="5527822190489075064">Optimised charging</translation>
 <translation id="5529554942700688235">Memory savings summary, <ph name="MEMORY_VALUE" /> freed up</translation>
+<translation id="5529693968082667490">Show tab search button</translation>
 <translation id="5530977410273748884">To save your password to Google Password Manager, click the key</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
@@ -8261,6 +8262,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6613267708691765962">Scanning for malware...</translation>
 <translation id="6615455863669487791">Show me</translation>
 <translation id="6618013221808317456">Don't allow sites to use JavaScript optimisation</translation>
+<translation id="6618154741503063152">Can't upload. Attachments are not allowed.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site can track your location</translation>
 <translation id="6619243162837544323">Network state</translation>
@@ -9357,7 +9359,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7368927539449986686">Edit Site Search</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Manage USB devices</translation>
-<translation id="73750335798090836">For added protection, always use your fingerprint, face or other screen lock when you use sensitive info like travel and identity docs</translation>
 <translation id="7376124766545122644">Can't use this link. Check that your link starts with 'http://' or 'https://' to try again.</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
 <translation id="7377250337652426186">To go back more than one page, click and hold the Back button.</translation>
@@ -10358,6 +10359,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8034399942062051455">V8 optimisation is off</translation>
 <translation id="8034697324150621782">Swap with top view</translation>
 <translation id="8035059678007243127">Incognito back-forward cached page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Show saved tab groups button</translation>
 <translation id="8036193484521570992">Help improve auto-fill</translation>
 <translation id="8036504271468642248">Previous sentence</translation>
 <translation id="8037117027592400564">Read all text spoken using synthesised speech</translation>

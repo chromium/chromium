@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Fișierele pe care le poate vedea sau modifica acest site</translation>
 <translation id="1073417869336441572">Ajută-ne să îmbunătățim Chrome spunându-ne de ce ai permis cookie-urile terță parte. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Poți solicita să vezi versiunea pentru computer a site-urilor</translation>
-<translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
 <translation id="1126523729897810826">Finalizează mai jos aceste acțiuni sugerate, pentru a profita din plin de Chrome</translation>
 <translation id="113098737392899175">Navighează în pagini folosind cursorul pentru text când este conectată o tastatură</translation>
 <translation id="1148624853678088576">Ești gata!</translation>
@@ -199,7 +198,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="2874939134665556319">Melodia anterioară</translation>
 <translation id="2891975107962658722">Nu permite unui site să salveze date pe dispozitiv</translation>
 <translation id="2903493209154104877">Adrese</translation>
-<translation id="2910701580606108292">Întreabă înainte de a permite site-urilor să redea conținut protejat</translation>
 <translation id="2918484639460781603">Accesați setările</translation>
 <translation id="2932883381142163287">Raportează un abuz</translation>
 <translation id="2939338015096024043">Când opțiunea este activată, site-urile pot solicita permisiunea de a urmări poziția camerei și de a afla informații despre împrejurimile tale. Când opțiunea este dezactivată, site-urile nu pot să urmărească poziția camerei sau să afle informații despre împrejurimile tale.</translation>
@@ -301,7 +299,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3924858949939391676">Afișează linkurile după activarea modului de lectură</translation>
 <translation id="3933121352599513978">Restrânge solicitările nedorite (recomandat)</translation>
 <translation id="3934905113567851655">Ciupește pentru redimensionare</translation>
-<translation id="3955193568934677022">Permite site-urilor să redea conținutul protejat (recomandat)</translation>
 <translation id="3955321697524543127">Nu permite site-urilor să se conecteze la dispozitive USB</translation>
 <translation id="3965467402665811906">Site-urile pot solicita permisiunea de a folosi informațiile pe care le-au salvat despre tine</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
@@ -514,7 +511,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="6171020522141473435">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive Bluetooth. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive Bluetooth.</translation>
 <translation id="6177128806592000436">Conexiunea la acest site nu este sigură</translation>
 <translation id="6181444274883918285">Adaugă o excepție privind site-urile</translation>
-<translation id="6192792657125177640">Excepții</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome va bloca din nou cookie-urile mâine}few{# zile până când cookie-urile vor fi blocate din nou}other{# de zile până când cookie-urile vor fi blocate din nou}}</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6205314730813004066">Confidențialitatea anunțurilor</translation>
@@ -637,7 +633,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="7573594921350120855">Site-urile folosesc de obicei camera video pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Acum <ph name="NUM_MONTHS_ONE" /> lună}few{Acum <ph name="NUM_MONTHS_MANY" /> luni}other{Acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
-<translation id="757524316907819857">Împiedică site-urile să redea conținutul protejat</translation>
 <translation id="7586676035079382730">Notificările nu sunt permise</translation>
 <translation id="7594634374516752650">Conectat la un dispozitiv Bluetooth</translation>
 <translation id="7617547684249261169">Poți să ștergi parțial sau integral istoricul, cookie-urile, datele privind site-urile și multe altele</translation>

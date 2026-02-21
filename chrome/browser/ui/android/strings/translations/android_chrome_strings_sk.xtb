@@ -738,6 +738,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome zastavil odosielanie upozornení z tohto webu pre spam alebo klamlivý obsah}few{Chrome zastavil odosielanie upozornení z týchto webov pre spam alebo klamlivý obsah}many{Chrome stopped these sites from sending notifications because of spam or deceptive content}other{Chrome zastavil odosielanie upozornení z týchto webov pre spam alebo klamlivý obsah}}</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta v tomto zariadení}few{# karty v tomto zariadení}many{# tabs on this device}other{# kariet v tomto zariadení}}</translation>
+<translation id="4198268995694216131">Ďalšie weby</translation>
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Použili ste na tomto webe</translation>
 <translation id="4214315110991671325">Keď povolíte súbory cookies, Chrome môže pomocou nich prednačítavať.</translation>
@@ -1018,6 +1019,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5304593522240415983">Toto pole nesmie byť prázdne</translation>
 <translation id="5306014156308790439">Tlačidlo Pridať do zbierky je deaktivované</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
+<translation id="5313967007315987356">Pridať web</translation>
 <translation id="5316947901395241499">Ukladanie hesiel vypol váš správca</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319359161174645648">Google odporúča Chrome</translation>
@@ -1543,6 +1545,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7314734791127433392">Heslá sa nepodarilo skontrolovať</translation>
 <translation id="7324354302972299151">Odoslanie žiadosti Do Not Track</translation>
 <translation id="7333041109965360609">Odber upozornení bol zrušený</translation>
+<translation id="7335766481146072567">Stlačte Pokračovať</translation>
 <translation id="7336259382292148213">Upozornenia sú v poriadku</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7340958967809483333">Možnosti kanála Objaviť</translation>
@@ -1752,6 +1755,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="813082847718468539">Zobraziť informácie o webe</translation>
 <translation id="8135406045838672858">Stiahnuté súbory PDF sa automaticky otvoria pomocou aplikácie <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Toto heslo si nebudete musieť pamätať. Uloží sa do Správcu hesiel Google.</translation>
+<translation id="8151185429379586178">Nástroje pre vývojárov</translation>
 <translation id="8152331954420209374">Prejsť na Lens</translation>
 <translation id="8153206878708357851">Prepnutie kurzorového prehliadania</translation>
 <translation id="8154784523622173959">Prispôsobte si pozadie tejto stránky</translation>
@@ -1831,6 +1835,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Boli odstránené povolenia 1 webu}few{Boli odstránené povolenia # webom}many{Permissions removed from # sites}other{Boli odstránené povolenia # webom}}</translation>
 <translation id="8453310803815879010">Spustiť hru s dinosaurom</translation>
 <translation id="8455675988389029454">Majte k dispozícii svoje záložky, heslá a ďalší obsah vo všetkých zariadeniach</translation>
+<translation id="8458341576712814616">Skratka</translation>
 <translation id="8458413889418591446">Ak sa chcete rýchlo vrátiť na weby, ktoré ste navštívili, synchronizujte si históriu a karty</translation>
 <translation id="84594714173170813">Naďalej používajte údaje Chromu vo svojom účte Google</translation>
 <translation id="8460448946170646641">Skontrolujte hlavné ovládacie prvky ochrany súkromia a zabezpečenia</translation>
@@ -1855,6 +1860,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8559961053328923750">Chrome obmedzuje celkové množstvo údajov na meranie výkonnosti reklám, ktoré môžu weby zdieľať prostredníctvom prehliadača</translation>
 <translation id="8559990750235505898">Ponúkať preklad stránok v ďalších jazykoch</translation>
 <translation id="8560602726703398413">Čitateľský zoznam nájdete v záložkách</translation>
+<translation id="85618473456579127">Vpravo hore klepnite na profil</translation>
 <translation id="8565021320663436446">Chcete odobrať člena <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Súbor sa nedá bezpečne stiahnuť</translation>
 <translation id="8571213806525832805">Posledné 4 týždne</translation>

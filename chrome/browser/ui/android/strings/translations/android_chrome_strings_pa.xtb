@@ -727,6 +727,7 @@
 <translation id="4137746084635924146">ਡੀਵਾਈਸ ਦੀ ਮੌਜੂਦਾ ਭਾਸ਼ਾ</translation>
 <translation id="414128724510021958">ਡੈਸਕਟਾਪ ਸਾਈਟਾਂ ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਬੇਨਤੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="4162867837470729563">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
+<translation id="4165077084524712774">ਹੋਰ ਟੂਲ</translation>
 <translation id="4170011742729630528">ਸੇਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ; ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4170577491341606575">ਤੁਹਾਡਾ ਡਾਟਾ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ\u2026</translation>
 <translation id="4177222230309051052">ਆਪਣੇ ਸਾਰੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -738,6 +739,7 @@
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{ਸਪੈਮ ਜਾਂ ਭਰਮਾਊ ਸਮੱਗਰੀ ਦੇ ਕਾਰਨ Chrome ਨੇ ਇਸ ਸਾਈਟ ਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਦਿੱਤਾ ਹੈ}one{ਸਪੈਮ ਜਾਂ ਭਰਮਾਊ ਸਮੱਗਰੀ ਦੇ ਕਾਰਨ Chrome ਨੇ ਇਸ ਸਾਈਟ ਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਦਿੱਤਾ ਹੈ}other{ਸਪੈਮ ਜਾਂ ਭਰਮਾਊ ਸਮੱਗਰੀ ਦੇ ਕਾਰਨ Chrome ਨੇ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਦਿੱਤਾ ਹੈ}}</translation>
 <translation id="4195643157523330669">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ਇਸ ਡੀਵਾਈਸ 'ਤੇ 1 ਟੈਬ}one{ਇਸ ਡੀਵਾਈਸ 'ਤੇ # ਟੈਬ}other{ਇਸ ਡੀਵਾਈਸ 'ਤੇ # ਟੈਬਾਂ}}</translation>
+<translation id="4198268995694216131">ਵਧੀਕ ਸਾਈਟਾਂ</translation>
 <translation id="4198423547019359126">ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਕੋਈ ਟਿਕਾਣਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਵਰਤੋਂ ਕੀਤੀ</translation>
 <translation id="4214315110991671325">ਜੇ ਤੁਸੀਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿੰਦੇ ਹੋ, ਤਾਂ Chrome ਉਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਨ ਲਈ ਵਰਤ ਸਕਦਾ ਹੈ।</translation>
@@ -1018,6 +1020,7 @@
 <translation id="5304593522240415983">ਇਹ ਖੇਤਰ ਖਾਲੀ ਨਹੀਂ ਛੱਡਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="5306014156308790439">'ਸੰਗ੍ਰਹਿ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ' ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
+<translation id="5313967007315987356">ਸਾਈਟ ਜੋੜੋ</translation>
 <translation id="5316947901395241499">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319359161174645648">Google, Chrome ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ</translation>
@@ -1460,6 +1463,7 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> ਮੀਨੂ ਉਜਾਗਰ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="6983306615164277634">ਤੁਸੀਂ ਜਗ੍ਹਾ ਬਦਲਣ ਲਈ ਪਤਾ ਬਾਰ ਨੂੰ ਸਪਰਸ਼ ਕਰ ਕੇ ਵੀ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6987047470128880212">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="6989358895283601928">ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="6996145122199359148">ਇਸ ਪੰਨੇ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7013762323294215682">ਇਹ ਪਾਸਕੀ ਤੁਹਾਡੇ Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਹੋ ਜਾਵੇਗੀ। ਇਸ ਪਾਸਕੀ ਤੱਕ ਪਹੁੰਚ ਵਾਲਾ ਕੋਈ ਵੀ ਵਿਅਕਤੀ ਇਸਦੀ ਵਰਤੋਂ ਕਰ ਸਕੇਗਾ।</translation>
 <translation id="7020741890149022655">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@
 <translation id="7314734791127433392">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="7324354302972299151">“Do Not Track” ਬੇਨਤੀ ਭੇਜੋ</translation>
 <translation id="7333041109965360609">ਸੂਚਨਾਵਾਂ ਤੋਂ ਅਣਸਬਸਕ੍ਰਾਈਬ ਕਰੋ</translation>
+<translation id="7335766481146072567">'ਜਾਰੀ ਰੱਖੋ' ਦਬਾਓ</translation>
 <translation id="7336259382292148213">ਸੂਚਨਾਵਾਂ ਸੰਬੰਧੀ ਕੋਈ ਸਮੱਸਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="7339898014177206373">ਨਵੀਂ window</translation>
 <translation id="7340958967809483333">'ਡਿਸਕਵਰ' ਲਈ ਵਿਕਲਪ</translation>
@@ -1752,6 +1757,7 @@
 <translation id="813082847718468539">ਸਾਈਟ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
 <translation id="8135406045838672858">ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ PDF ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="8137562778192957619">ਤੁਹਾਨੂੰ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਪਵੇਗੀ। ਇਸਨੂੰ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="8151185429379586178">ਵਿਕਾਸਕਾਰ ਟੂਲਾਂ</translation>
 <translation id="8152331954420209374">Lens 'ਤੇ ਜਾਓ</translation>
 <translation id="8153206878708357851">ਕੈਰਟ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="8154784523622173959">ਇਸ ਪੰਨੇ ਦੇ ਬੈਕਗ੍ਰਾਊਂਡ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
@@ -1831,6 +1837,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ}one{# ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ}other{# ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ}}</translation>
 <translation id="8453310803815879010">Dino ਗੇਮ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8455675988389029454">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8458341576712814616">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="8458413889418591446">ਜੋ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖੀਆਂ ਹਨ ਉਨ੍ਹਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਜਾਣ ਲਈ, ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="84594714173170813">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8460448946170646641">ਪ੍ਰਮੁੱਖ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਕੰਟਰੋਲਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -1855,6 +1862,7 @@
 <translation id="8559961053328923750">Chrome ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪਨ ਲਈ ਸਾਈਟਾਂ ਵੱਲੋਂ ਬ੍ਰਾਊਜ਼ਰ ਰਾਹੀਂ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਕੁੱਲ ਡਾਟੇ ਨੂੰ ਸੀਮਤ ਕਰਦਾ ਹੈ</translation>
 <translation id="8559990750235505898">ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="8560602726703398413">ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਨੂੰ ਬੁੱਕਮਾਰਕ ਵਿੱਚ ਲੱਭੋ</translation>
+<translation id="85618473456579127">ਸਿਖਰ 'ਤੇ ਸੱਜੇ ਪਾਸੇ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="8565021320663436446">ਕੀ <ph name="MEMBER_FULL_NAME" /> ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="8570677896027847510">ਫ਼ਾਈਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8571213806525832805">ਪਿਛਲੇ 4 ਹਫ਼ਤੇ</translation>

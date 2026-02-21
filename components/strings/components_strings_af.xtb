@@ -2574,6 +2574,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5114987907971894280">virtuele realiteit</translation>
 <translation id="5115232566827194440">Beperkte bestuurde gastesessietersydestelling</translation>
 <translation id="5115563688576182185">(64 bis)</translation>
+<translation id="5116015291385561204">Verifieer dat dit jy is om sensitiewe inligting te outovul</translation>
 <translation id="5120526915373271910">Gesinsflieks</translation>
 <translation id="5122786942953798871">Koevert (katoen)</translation>
 <translation id="5123063207673082822">Naweek</translation>
@@ -3973,6 +3974,7 @@ Bykomende besonderhede:
 <translation id="7372973238305370288">soekresultaat</translation>
 <translation id="7374461526650987610">Protokolhanteerders</translation>
 <translation id="7374733840632556089">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chrome vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chrome seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of app met toegang tot die web plaasvind.</translation>
+<translation id="73750335798090836">Gebruik vir ekstra beskerming altyd jou vingerafdruk, gesig of ander skermslot wanneer jy sensitiewe inligting soos reis- en identiteitdokumente gebruik</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Geen werwe toegelaat nie}=1{1 werf toegelaat}other{# werwe toegelaat}}</translation>
 <translation id="7375818412732305729">Lêer is aangeheg</translation>
 <translation id="7376031331622621328">Handel se onderste blad</translation>

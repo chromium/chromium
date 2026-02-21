@@ -1415,7 +1415,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3266367459139339908">Estamos lançando novas formas de limitar o que os sites podem saber sobre você ao mostrar anúncios personalizados, por exemplo:</translation>
 <translation id="3266793032086590337">Valor (conflitante)</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
-<translation id="3270041629388773465">Finalize suas compras mais rápido com os CVCs salvos</translation>
+<translation id="3270041629388773465">Salve os CVCs e agilize suas compras</translation>
 <translation id="3270343151253360050">Escolha outra forma de pagamento para concluir a compra</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> quer se conectar</translation>
@@ -2574,6 +2574,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5114987907971894280">realidade virtual</translation>
 <translation id="5115232566827194440">Substituição da sessão de visitante gerenciada restrita</translation>
 <translation id="5115563688576182185">64 bits</translation>
+<translation id="5116015291385561204">Confirme sua identidade para preencher automaticamente informações sensíveis</translation>
 <translation id="5120526915373271910">Filmes para a família</translation>
 <translation id="5122786942953798871">Envelope (algodão)</translation>
 <translation id="5123063207673082822">Final de semana</translation>
@@ -3174,7 +3175,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
 <translation id="6089505343295765444">As guias excluídas do histórico do Chrome ainda vão aparecer nas tabelas de comparação</translation>
 <translation id="6091115085465716987">Logotipo da Google Wallet</translation>
-<translation id="6091691259076781835">Para agilizar a finalização de compras, salve este CVC no seu dispositivo</translation>
+<translation id="6091691259076781835">Para agilizar suas compras, salve este CVC no seu dispositivo</translation>
 <translation id="6093599771645355227">Amarelo 1</translation>
 <translation id="6093795393556121384">Seu cartão foi verificado</translation>
 <translation id="6094253940069566294">Editar veículo</translation>
@@ -3974,6 +3975,7 @@ Mais detalhes:
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Manipuladores de protocolo</translation>
 <translation id="7374733840632556089">Esse problema acontece devido a um certificado que você ou outra pessoa instalou no dispositivo. O certificado é conhecido por ser usado para monitorar e interceptar redes, e o Chrome não o considera confiável. Embora casos legítimos de monitoramento existam, como em redes de escolas ou empresas, o Chrome quer ter certeza de que você está ciente de tudo o que está acontecendo, mesmo que você não possa fazer nada para impedir isso. O monitoramento pode acontecer em qualquer navegador ou aplicativo que acesse a Web.</translation>
+<translation id="73750335798090836">Para ter mais proteção, sempre use sua impressão digital, rosto ou outro bloqueio de tela ao acessar informações sensíveis, como documentos de viagem e de identidade</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nenhum site permitido}=1{1 site permitido}one{# site permitido}other{# sites permitidos}}</translation>
 <translation id="7375818412732305729">Um arquivo é anexado</translation>
 <translation id="7376031331622621328">Página inferior de comércio</translation>

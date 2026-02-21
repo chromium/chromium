@@ -738,6 +738,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome on estänyt sivustoa lähettämästä ilmoituksia roskasisällön tai vilpillisen sisällön vuoksi}other{Chrome on estänyt näitä sivustoja lähettämästä ilmoituksia roskasisällön tai vilpillisen sisällön vuoksi}}</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 välilehti tällä laitteella}other{# välilehteä tällä laitteella}}</translation>
+<translation id="4198268995694216131">Lisää sivustoja</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Käytit tällä sivustolla</translation>
 <translation id="4214315110991671325">Jos sallit evästeet, Chrome voi käyttää niitä esilataamiseen.</translation>
@@ -1018,6 +1019,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5304593522240415983">Kenttä ei voi olla tyhjä.</translation>
 <translation id="5306014156308790439">Lisää kokoelmaan ‑painike ei käytössä</translation>
 <translation id="5308380583665731573">Muodosta yhteys</translation>
+<translation id="5313967007315987356">Lisää sivusto</translation>
 <translation id="5316947901395241499">Järjestelmänvalvoja on laittanut salasanojen tallennuksen pois päältä</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5319359161174645648">Google suosittelee Chromea</translation>
@@ -1543,6 +1545,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7314734791127433392">Salasanojen tarkistaminen ei onnistu</translation>
 <translation id="7324354302972299151">Lähetä Do Not Track ‐pyyntö</translation>
 <translation id="7333041109965360609">Ilmoitusten tilaus peruttu</translation>
+<translation id="7335766481146072567">Valitse Jatka</translation>
 <translation id="7336259382292148213">Ilmoitukset näyttävät hyviltä</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7340958967809483333">Discover-asetukset</translation>
@@ -1752,6 +1755,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8135406045838672858">Ladatut PDF-tiedostot avautuvat automaattisesti sovelluksella <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Google Salasanoihin.</translation>
+<translation id="8151185429379586178">Kehittäjän työkalut</translation>
 <translation id="8152331954420209374">Siirry Lensiin</translation>
 <translation id="8153206878708357851">Näppäimistöselaaminen päälle/pois</translation>
 <translation id="8154784523622173959">Personoi tämän sivun taustaa</translation>
@@ -1831,6 +1835,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Luvat poistettu 1 sivustolta}other{Luvat poistettu # sivustolta}}</translation>
 <translation id="8453310803815879010">Aloita Dino-peli</translation>
 <translation id="8455675988389029454">Kirjanmerkit, salasanat ja muut tiedot kaikille laitteille</translation>
+<translation id="8458341576712814616">Pikakomento</translation>
 <translation id="8458413889418591446">Synkronoimalla historian ja välilehdet voit palata nopeasti aiemmin käymillesi sivustoille</translation>
 <translation id="84594714173170813">Jatka Chrome-datan käyttöä Google-tilillä</translation>
 <translation id="8460448946170646641">Tarkista tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
@@ -1855,6 +1860,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8559961053328923750">Mainosten suoriutumisen mittaamiseksi Chrome rajoittaa mainosten kautta jaettavan datan kokonaismäärää selaimen kautta</translation>
 <translation id="8559990750235505898">Tarjoudu kääntämään vierailla kielillä kirjoitettuja sivuja</translation>
 <translation id="8560602726703398413">Etsi lukulistasi kirjanmerkeistä</translation>
+<translation id="85618473456579127">Napauta profiilia oikeasta yläkulmasta</translation>
 <translation id="8565021320663436446">Poistetaanko <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Tiedostoa ei voi ladata turvallisesti</translation>
 <translation id="8571213806525832805">Viimeiset neljä viikkoa</translation>

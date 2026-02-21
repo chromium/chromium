@@ -164,7 +164,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1680919990519905526">Comprar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020y se cerrarán después de <ph name="MONTHS_ARCHIVED" /> meses</translation>
 <translation id="1687482373098770139">Pronto verás contenido de <ph name="SITE_NAME" /> y sobre el canal en Siguiendo. Los sitios y las búsquedas que sigues se guardan en tu cuenta de Google. Puedes gestionar lo que sigues en la configuración en cualquier momento.</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Nombre</translation>
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">¿Cambiar tus ajustes del tema oscuro?</translation>
 <translation id="1702907158640575240">Navegador gestionado</translation>
@@ -738,6 +738,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedido que este sitio envíe notificaciones debido a spam o contenido engañoso}other{Chrome ha impedido que estos sitios envíen notificaciones debido a spam o contenido engañoso}}</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestaña en este dispositivo}other{# pestañas en este dispositivo}}</translation>
+<translation id="4198268995694216131">Más sitios</translation>
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Usado en este sitio</translation>
 <translation id="4214315110991671325">Si permites las cookies, es posible que Chrome las use para la precarga.</translation>
@@ -1018,6 +1019,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5304593522240415983">Este campo no puede estar vacío</translation>
 <translation id="5306014156308790439">Añadir a colección inhabilitado</translation>
 <translation id="5308380583665731573">Conectar</translation>
+<translation id="5313967007315987356">Añadir sitio</translation>
 <translation id="5316947901395241499">Tu administrador ha desactivado la función de guardar contraseñas</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
@@ -1543,6 +1545,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7314734791127433392">No se pueden comprobar las contraseñas</translation>
 <translation id="7324354302972299151">Enviar una solicitud "Do Not Track"</translation>
 <translation id="7333041109965360609">Has anulado tu suscripción a las notificaciones</translation>
+<translation id="7335766481146072567">Pulsa Continuar</translation>
 <translation id="7336259382292148213">Las notificaciones están bien</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones de Discover</translation>
@@ -1752,6 +1755,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="813082847718468539">Ver información del sitio</translation>
 <translation id="8135406045838672858">Los PDFs descargados se abren automáticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google.</translation>
+<translation id="8151185429379586178">DevTools</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8153206878708357851">Activar o desactivar la navegación por cursor de texto</translation>
 <translation id="8154784523622173959">Personaliza el fondo de esta página</translation>
@@ -1831,6 +1835,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Permisos eliminados de 1 sitio}other{Permisos eliminados de # sitios}}</translation>
 <translation id="8453310803815879010">Iniciar juego del dinosaurio</translation>
 <translation id="8455675988389029454">Accede a tus marcadores, contraseñas y más en todos tus dispositivos</translation>
+<translation id="8458341576712814616">Atajo</translation>
 <translation id="8458413889418591446">Para volver rápidamente a los sitios que has visitado, sincroniza tu historial y tus pestañas</translation>
 <translation id="84594714173170813">Sigue usando los datos de Chrome en tu cuenta de Google</translation>
 <translation id="8460448946170646641">Revisa los controles principales de privacidad y seguridad</translation>
@@ -1855,6 +1860,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8559961053328923750">Chrome limita la cantidad total de datos que los sitios pueden compartir a través del navegador para medir el rendimiento de los anuncios.</translation>
 <translation id="8559990750235505898">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="8560602726703398413">Consulta tu lista de lectura en Marcadores</translation>
+<translation id="85618473456579127">Toca el perfil arriba a la derecha</translation>
 <translation id="8565021320663436446">¿Quitar a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">El archivo no se puede descargar de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>

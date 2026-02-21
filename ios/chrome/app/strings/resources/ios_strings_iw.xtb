@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4854068532375923088">‏מתן הרשאה ל-"Gemini" להשתמש במצלמה</translation>
+<translation id="4860114370595561279">המידע השמור שלך מאוחסן במכשיר</translation>
 <translation id="4860895144060829044">תרימו טלפון</translation>
 <translation id="4861953997778766866">כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
 <translation id="4865063548323785458">אפשר לשמור את הסיסמאות ולמלא אותן באופן אוטומטי כדי להיכנס בקלות לאתרים ולאפליקציות</translation>
@@ -1650,7 +1651,6 @@
 <translation id="6964300328304469089">החשבון הנוכחי: <ph name="NAME" />, <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="6964760285928603117">הסרה מהקבוצה</translation>
 <translation id="6965382102122355670">אישור</translation>
-<translation id="6967355534157677591">‏יצירת תמונות במצב Pro</translation>
 <translation id="6973630695168034713">תיקיות</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
@@ -2185,7 +2185,6 @@
 <translation id="8856643812068084733">ארכיונים</translation>
 <translation id="8863067612494559785">מתבצעת העברה אל <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏קבלת מסלול הגעה ומידע מקומי ממפות Google</translation>
-<translation id="8867879594900082274">השינויים שביצעת יחולו רק על האתרים שהצמדת במכשיר הזה.</translation>
 <translation id="8871974300055371298">הגדרות תוכן</translation>
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8879604564928138696">אפשר ללחוץ לחיצה כפולה כדי לנסות</translation>

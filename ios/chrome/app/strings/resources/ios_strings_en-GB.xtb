@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4854068532375923088">Allow 'Gemini' to use your camera</translation>
+<translation id="4860114370595561279">Your saved information is stored on your device</translation>
 <translation id="4860895144060829044">Call</translation>
 <translation id="4861953997778766866">Everyone can make changes to your shared tab groups</translation>
 <translation id="4865063548323785458">Save and autofill your passwords to easily sign in to sites and apps</translation>
@@ -1650,7 +1651,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="6964760285928603117">Remove from group</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Create image Pro</translation>
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">All time</translation>
@@ -2185,7 +2185,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8856643812068084733">Archives</translation>
 <translation id="8863067612494559785">Sending to <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Get directions and local info from Google Maps</translation>
-<translation id="8867879594900082274">Your edits will only apply to your pinned sites on this device.</translation>
 <translation id="8871974300055371298">Content settings</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8879604564928138696">Double tap to try</translation>

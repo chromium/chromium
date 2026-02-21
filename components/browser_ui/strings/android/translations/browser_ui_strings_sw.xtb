@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Faili ambazo tovuti hii inaweza kuona au kubadilisha</translation>
 <translation id="1073417869336441572">Tusaidie kuboresha Chrome kwa kutuambia kwa nini umeruhusu vidakuzi vya mshirika mwingine. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Unaweza kuomba kuona toleo la eneokazi la tovuti</translation>
-<translation id="1085696779717592361">Tumia Chrome Kwa Chaguomsingi</translation>
 <translation id="1126523729897810826">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome</translation>
 <translation id="113098737392899175">Sogeza kwenye kurasa ukitumia kiteuzi cha maandishi wakati umeunganisha kibodi</translation>
 <translation id="1148624853678088576">Uko tayari kutumia!</translation>
@@ -199,7 +198,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="2874939134665556319">Wimbo uliotangulia</translation>
 <translation id="2891975107962658722">Zuia tovuti isihifadhi data kwenye kifaa chako</translation>
 <translation id="2903493209154104877">Anwani</translation>
-<translation id="2910701580606108292">Iulize kabla ya kuruhusu tovuti kucheza maudhui yanayolindwa</translation>
 <translation id="2918484639460781603">Nenda kwenye mipangilio</translation>
 <translation id="2932883381142163287">Ripoti matumizi mabaya</translation>
 <translation id="2939338015096024043">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kufuatilia mkao wa kamera yako na kutambua mazingira yako. Kikizimwa, tovuti haziwezi kufuatilia mkao wa kamera yako au kutambua mazingira yako.</translation>
@@ -301,7 +299,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3924858949939391676">Onyesha viungo baada ya kuwasha Hali ya Kusoma</translation>
 <translation id="3933121352599513978">Kunja maombi yasiyotakikana (inapendekezwa)</translation>
 <translation id="3934905113567851655">Bana ili ubadilishe ukubwa</translation>
-<translation id="3955193568934677022">Ruhusu tovuti zicheze maudhui yanayolindwa (inapendekezwa)</translation>
 <translation id="3955321697524543127">Usiruhusu tovuti ziunganishe kwenye vifaa vya USB</translation>
 <translation id="3965467402665811906">Tovuti zinaweza kuomba zitumie taarifa ambazo zimehifadhi kukuhusu</translation>
 <translation id="3967822245660637423">Imemaliza kupakua</translation>
@@ -514,7 +511,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="6171020522141473435">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya Bluetooth. Kikizimwa, tovuti haziwezi kutumia vifaa vya Bluetooth.</translation>
 <translation id="6177128806592000436">Muunganisho wako kwenye tovuti hii si salama</translation>
 <translation id="6181444274883918285">Ongeza tovuti mpya kwenye orodha ya vighairi</translation>
-<translation id="6192792657125177640">Vighairi</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome itazuia vidakuzi tena kesho}other{Zimesalia siku # kabla vidakuzi vizuiwe tena}}</translation>
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
 <translation id="6205314730813004066">Faragha ya matangazo</translation>
@@ -637,7 +633,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="7561196759112975576">Kila wakati</translation>
 <translation id="7573594921350120855">Tovuti hutumia kamera yako ya video kwa ajili ya vipengele vya mawasiliano kama vile kupiga gumzo la video</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Mwezi <ph name="NUM_MONTHS_ONE" /> uliopita}other{Miezi <ph name="NUM_MONTHS_MANY" /> iliyopita}}</translation>
-<translation id="757524316907819857">Zuia tovuti zisicheze maudhui yanayolindwa</translation>
 <translation id="7586676035079382730">Ufikiaji wa arifa hauruhusiwi</translation>
 <translation id="7594634374516752650">Imeunganishwa kwenye Kifaa chenye Bluetooth</translation>
 <translation id="7617547684249261169">Unaweza kufuta historia, vidakuzi, data yako yote ya tovuti au sehemu yake na mengineyo</translation>

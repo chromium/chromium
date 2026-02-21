@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">เก็บกลุ่มไว้</translation>
 <translation id="1853692000353488670">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1854463785401910334">ค้นหาในแท็บที่เปิดอยู่</translation>
+<translation id="1860609647735325606">อธิบายด้วย Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{รหัสผ่าน {position} จาก {count} รายการ}other{รหัสผ่าน {position} จาก {count} รายการ}}</translation>
 <translation id="1861262398884155592">โฟลเดอร์นี้ว่างเปล่า</translation>
 <translation id="1864266050569350424">ในเว็บไซต์ที่คุณบันทึกรหัสผ่านไว้ ให้แตะช่องรหัสผ่านสำหรับลงชื่อเข้าใช้</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
 <translation id="2536991091671391962">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google แล้วสำหรับ <ph name="EMAIL" /></translation>
 <translation id="2538103551183528357">รหัสผ่านแบบซ่อน</translation>
+<translation id="2538705697765638552">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถจัดการข้อมูลใน Google Wallet สำหรับ <ph name="USER_EMAIL" /> ได้</translation>
 <translation id="2539748786028143624">เปิดใช้การปกป้องที่ดียิ่งขึ้น…</translation>
 <translation id="2540111494300686866">ระงับกล่องโต้ตอบ</translation>
 <translation id="2542268842667970959">ซ่อน "การตรวจสอบความปลอดภัย"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{บันทึกรหัสผ่านไว้ในบัญชี Google {EMAIL} แล้ว}other{บันทึกรหัสผ่านไว้ในบัญชี Google {EMAIL} แล้ว}}</translation>
 <translation id="2791174088547598693">เพิ่มรหัสผ่าน…</translation>
 <translation id="2793703503584038325">เลือกรหัสผ่านแล้วแตะไอคอน "แชร์"</translation>
+<translation id="2793804887899597849">บันทึกข้อมูลลงในอุปกรณ์เท่านั้น</translation>
 <translation id="2797029671965852011">แสดงประวัติ</translation>
 <translation id="2797302972324086597">รหัสประเทศ</translation>
 <translation id="2798263827270599246">ธีมเริ่มต้น</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
 <translation id="3575426792457739946">รายการนี้มีโปรไฟล์ที่โหลดทั้งหมด</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" /> จัดการโดยองค์กร</translation>
+<translation id="3580448612293054698">อัปเดต <ph name="ENTITY_TYPE" /> ไหม</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">นำเข้า</translation>
 <translation id="3857113360369572832">เปิด<ph name="BEGIN_BOLD" />การตั้งค่า Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">ชื่อ</translation>
+<translation id="386224966259596343">คุณจะมีโอกาสบันทึกข้อมูลนี้ลงใน Wallet เมื่อกรอกแบบฟอร์มที่เกี่ยวข้องครั้งถัดไป</translation>
 <translation id="3868495844258915202">แสดง URL แบบเต็ม</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3878657761594430423">เครื่องมือจับชีต</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">แสดงความช่วยเหลือ</translation>
 <translation id="4095483462103784441">สร้างกลุ่มแท็บใหม่</translation>
 <translation id="4099756562043439968">ตั้งค่าการช่วยเตือน</translation>
+<translation id="4101867642407836771">ใน Google Wallet สำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="4108998448622696017">ตรวจหาและเตือนคุณเมื่อเกิดเหตุการณ์อันตราย</translation>
 <translation id="4111985840824673503">ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว</translation>
 <translation id="411254640334432676">การดาวน์โหลดล้มเหลว</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">เปลี่ยนรหัสผ่าน</translation>
 <translation id="4120936477286528673">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่นอยู่เรื่อยๆ</translation>
 <translation id="4121993058175073134">หากต้องการส่งข้อมูล net-export โปรดกำหนดค่าบัญชีอีเมลของคุณในแอปการตั้งค่า</translation>
+<translation id="4129768137228347731">บันทึก <ph name="ENTITY_TYPE" /> ไหม</translation>
 <translation id="4133139945030148655">พร้อมใช้งานแล้ว</translation>
 <translation id="4133265950310064865">การปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1035,6 +1042,7 @@
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4854068532375923088">อนุญาตให้ "Gemini" ใช้กล้อง</translation>
+<translation id="4860114370595561279">ระบบจะเก็บข้อมูลที่บันทึกไว้ในอุปกรณ์ของคุณ</translation>
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4861953997778766866">ทุกคนจะเปลี่ยนแปลงกลุ่มแท็บที่แชร์ของคุณได้</translation>
 <translation id="4865063548323785458">บันทึกและป้อนรหัสผ่านอัตโนมัติเพื่อลงชื่อเข้าใช้เว็บไซต์และแอปต่างๆ ได้อย่างง่ายดาย</translation>
@@ -1235,6 +1243,7 @@
 <translation id="5559567453458728487">แปลงหน่วยวัดที่พบในเว็บ</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
 <translation id="5565871407246142825">บัตรเครดิต</translation>
+<translation id="5566623128829375608">บันทึกลงในอุปกรณ์</translation>
 <translation id="5567439033041178034">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="5578795271662203820">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">ซ่อน "เรื่องรออ่าน"</translation>
@@ -1650,7 +1659,6 @@
 <translation id="6964300328304469089">เลือก <ph name="NAME" />, <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
 <translation id="6964760285928603117">นำออกจากกลุ่ม</translation>
 <translation id="6965382102122355670">ตกลง</translation>
-<translation id="6967355534157677591">สร้างรูปภาพด้วย Pro</translation>
 <translation id="6973630695168034713">โฟลเดอร์</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
@@ -2178,6 +2186,7 @@
 <translation id="8829809207373502270">พาสคีย์นี้ใช้งานไม่ได้แล้ว เนื่องจากถูกลบออกจาก <ph name="WEBSITE" /> และจะถูกลบออกจากที่นี่ในเร็วๆ นี้ <ph name="BEGIN_LINK" />เกี่ยวกับพาสคีย์<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>
 <translation id="8837654851594567190">จัดเรียงตามผู้เผยแพร่เนื้อหา</translation>
+<translation id="884351711508006491">ระบบจะบันทึกข้อมูลของคุณลงในอุปกรณ์</translation>
 <translation id="8844136307393039959">สินค้าที่คุณติดตามราคาต่ำลง</translation>
 <translation id="8848286253339013170">กำลังบันทึกรูปภาพใน Google Photos สำหรับ <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
@@ -2185,7 +2194,6 @@
 <translation id="8856643812068084733">ที่เก็บถาวร</translation>
 <translation id="8863067612494559785">กำลังส่งไปยัง <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">ขอเส้นทางและข้อมูลในพื้นที่จาก Google Maps</translation>
-<translation id="8867879594900082274">การแก้ไขจะมีผลกับเว็บไซต์ที่ปักหมุดไว้ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="8871974300055371298">การตั้งค่าเนื้อหา</translation>
 <translation id="8877788021141246043">ตั้งการช่วยเตือน</translation>
 <translation id="8879604564928138696">แตะสองครั้งเพื่อลองใช้</translation>

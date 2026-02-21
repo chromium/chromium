@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Les fichiers que ce site peut afficher ou modifier</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les témoins tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Vous pouvez demander à voir la version pour ordinateur de bureau des sites</translation>
-<translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1126523729897810826">Effectuez les actions suggérées ci-dessous pour tirer le meilleur parti de Chrome</translation>
 <translation id="113098737392899175">Parcourir les pages à l'aide d'un curseur de texte lorsqu'un clavier est connecté</translation>
 <translation id="1148624853678088576">Vous êtes prêt(e)!</translation>
@@ -199,7 +198,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="2874939134665556319">Chanson précédente</translation>
 <translation id="2891975107962658722">Empêcher un site d'enregistrer des données sur votre appareil</translation>
 <translation id="2903493209154104877">Adresses</translation>
-<translation id="2910701580606108292">Demander avant d'autoriser les sites à lire du contenu protégé</translation>
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2939338015096024043">Lorsque cette option est activée, les sites peuvent demander à suivre la position de votre appareil photo et à en savoir plus sur votre environnement. Lorsqu'elle est désactivée, les sites ne peuvent pas suivre la position de votre appareil photo ni en savoir plus sur votre environnement.</translation>
@@ -301,7 +299,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3924858949939391676">Afficher les liens une fois le mode Lecture activé</translation>
 <translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
 <translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
-<translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
 <translation id="3955321697524543127">Ne pas autoriser les sites à se connecter à des appareils USB</translation>
 <translation id="3965467402665811906">Les sites peuvent demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -514,7 +511,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="6171020522141473435">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils Bluetooth. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils Bluetooth.</translation>
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6181444274883918285">Ajouter une exception pour le site</translation>
-<translation id="6192792657125177640">Exceptions</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome bloquera à nouveau les témoins demain}one{# jour jusqu'à ce que les témoins soient bloqués à nouveau}other{# jours jusqu'à ce que les témoins soient bloqués à nouveau}}</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
@@ -637,7 +633,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7573594921350120855">Les sites utilisent généralement votre caméra vidéo pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{il y a <ph name="NUM_MONTHS_ONE" /> mois}one{il y a <ph name="NUM_MONTHS_MANY" /> mois}other{il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
-<translation id="757524316907819857">Empêcher les sites de lire du contenu protégé</translation>
 <translation id="7586676035079382730">Accès aux notifications non autorisé</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
 <translation id="7617547684249261169">Vous pouvez supprimer une partie ou l'intégralité de votre historique, de vos témoins, de vos données relatives aux sites et plus</translation>

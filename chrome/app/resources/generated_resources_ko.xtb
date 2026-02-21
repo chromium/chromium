@@ -354,7 +354,6 @@
 <translation id="1221825588892235038">선택 영역만</translation>
 <translation id="1222835797152767346">더 쉽게 로그인할 수 있도록 PIN 설정하기</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 라이선스 필요</translation>
-<translation id="1223498995510244364">요약해 보세요</translation>
 <translation id="1223853788495130632">관리자가 이 설정에 대해 특정 값을 추천합니다.</translation>
 <translation id="1225177025209879837">요청을 처리하는 중...</translation>
 <translation id="1227107020813934021">문서 스캐너 찾기</translation>
@@ -1056,6 +1055,7 @@
 <translation id="1695510246756136088">인터넷에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="1696214930320482113">프로필을 사용하면 다른 브라우저로 전환하지 않고도 업무, 개인, 엔터테인먼트용으로 구분할 수 있습니다. 지금 새 프로필을 추가해 보세요</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
+<translation id="1696685050160038195">기기를 안전하게 보호하려면 신뢰할 수 있는 출처 및 개발자의 소프트웨어만 실행하고 설치해야 합니다</translation>
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697122132646041614">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="1697532407822776718">설정 완료</translation>
@@ -5881,6 +5881,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4943927218331934807">비밀번호 필요</translation>
 <translation id="4944310289250773232">이 인증 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅합니다</translation>
 <translation id="4945439665401275950">지문을 설정하려면 자녀가 전원 버튼을 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다</translation>
+<translation id="4946215577126251136">프로젝트 패널 버튼 표시</translation>
 <translation id="4946998421534856407">런처 + 위쪽 화살표</translation>
 <translation id="4947376546135294974">방문 중인 사이트의 데이터</translation>
 <translation id="4948370357877377178">작업 계속하기</translation>
@@ -6115,7 +6116,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="51143538739122961">보안 키를 삽입하고 터치하세요.</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" />을(를) 전원에 연결하세요.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">본인 인증을 완료하여 민감한 정보 자동 완성</translation>
 <translation id="5116315184170466953">좋아요를 누르면 이 탭 그룹 추천이 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="5116628073786783676">오디오를 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" />에서 휴대전화를 연결 해제합니다. 더 이상 자동으로 연결되지 않습니다.</translation>
@@ -6713,6 +6713,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, 설치 중</translation>
 <translation id="5527822190489075064">최적화된 충전</translation>
 <translation id="5529554942700688235">메모리 절약 요약, <ph name="MEMORY_VALUE" /> 확보됨</translation>
+<translation id="5529693968082667490">탭 검색 버튼 표시</translation>
 <translation id="5530977410273748884">Google 비밀번호 관리자에 비밀번호를 저장하려면 해당 키를 클릭하세요.</translation>
 <translation id="5532223876348815659">전체</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
@@ -7580,7 +7581,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6135826623269483856">모든 디스플레이의 창 관리 허용 안함</translation>
 <translation id="6136285399872347291">백스페이스</translation>
 <translation id="6136287496450963112">보안 키가 PIN으로 보호되어 있지 않습니다. 지문을 관리하려면 먼저 PIN을 만드세요.</translation>
-<translation id="6136637346277431354">탭 등 추가</translation>
+<translation id="6136637346277431354">탭 및 기타 정보 활용</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="6140948187512243695">세부정보 표시</translation>
 <translation id="6141988275892716286">다운로드 확인</translation>
@@ -8262,6 +8263,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6613267708691765962">멀웨어 검사 중...</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6618013221808317456">사이트에서 JavaScript 최적화를 사용하도록 허용하지 않음</translation>
+<translation id="6618154741503063152">업로드할 수 없습니다. 첨부파일은 허용되지 않습니다.</translation>
 <translation id="6619058681307408113">라인 프린터 데몬(LPD)</translation>
 <translation id="661907246513853610">사이트에서 내 위치를 추적할 수 있습니다.</translation>
 <translation id="6619243162837544323">네트워크 상태</translation>
@@ -9358,7 +9360,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7368927539449986686">사이트 검색 편집</translation>
 <translation id="7370592524170198497">이더넷 EAP:</translation>
 <translation id="7374376573160927383">USB 기기 관리</translation>
-<translation id="73750335798090836">보안을 강화하려면 여행 및 신원 확인 문서와 같은 민감한 정보를 사용할 때 항상 지문, 얼굴 인식 또는 기타 화면 잠금을 사용하세요</translation>
 <translation id="7376124766545122644">이 링크를 사용할 수 없습니다. 링크가 'http://' 또는 'https://'로 시작하는지 확인한 후 다시 시도해 보세요.</translation>
 <translation id="7376553024552204454">이동 시 마우스 커서 강조표시</translation>
 <translation id="7377250337652426186">두 개 이상의 페이지로 돌아가려면 뒤로 버튼을 길게 클릭하세요.</translation>
@@ -10359,6 +10360,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8034399942062051455">V8 최적화가 사용 중지됨</translation>
 <translation id="8034697324150621782">상단 뷰와 바꾸기</translation>
 <translation id="8035059678007243127">시크릿 모드 뒤로-앞으로 캐시 페이지: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">저장된 탭 그룹 버튼 표시</translation>
 <translation id="8036193484521570992">자동 완성 개선에 참여하기</translation>
 <translation id="8036504271468642248">이전 문장</translation>
 <translation id="8037117027592400564">음성 출력 기능을 사용한 모든 음성 텍스트 조회</translation>

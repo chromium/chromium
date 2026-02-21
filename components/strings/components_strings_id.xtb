@@ -2574,6 +2574,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115232566827194440">Penggantian sesi tamu terkelola yang dibatasi</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
+<translation id="5116015291385561204">Verifikasi diri Anda untuk mengisi otomatis info sensitif</translation>
 <translation id="5120526915373271910">Film Keluarga</translation>
 <translation id="5122786942953798871">Amplop (Katun)</translation>
 <translation id="5123063207673082822">Akhir pekan</translation>
@@ -3972,6 +3973,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7372973238305370288">hasil penelusuran</translation>
 <translation id="7374461526650987610">Penangan protokol</translation>
 <translation id="7374733840632556089">Masalah ini terjadi karena sertifikat yang diinstal di perangkat oleh Anda atau orang lain. Sertifikat ini diketahui sebagai sertifikat yang digunakan untuk memantau dan melakukan intersepsi jaringan dan tidak dipercaya oleh Chrome. Walau terdapat beberapa kasus pemantauan yang sah, seperti pada jaringan sekolah atau perusahaan, Chrome ingin memastikan Anda mengetahui adanya pemantauan ini, meskipun Anda tidak dapat menghentikannya. Pemantauan dapat terjadi di browser atau aplikasi yang mengakses web.</translation>
+<translation id="73750335798090836">Sebagai perlindungan tambahan, selalu gunakan sidik jari, wajah, atau kunci layar lain saat Anda menggunakan info sensitif seperti dokumen perjalanan dan identitas</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Tidak ada situs yang diizinkan}=1{1 situs diizinkan}other{# situs diizinkan}}</translation>
 <translation id="7375818412732305729">File dilampirkan</translation>
 <translation id="7376031331622621328">Sheet bawah commerce</translation>

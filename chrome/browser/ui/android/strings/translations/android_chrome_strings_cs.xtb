@@ -727,6 +727,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4137746084635924146">Aktuální jazyk zařízení</translation>
 <translation id="414128724510021958">Ve výchozím nastavení jsou požadovány weby pro počítače</translation>
 <translation id="4162867837470729563">Seznam možností sdílení je otevřený na celou výšku.</translation>
+<translation id="4165077084524712774">Další nástroje</translation>
 <translation id="4170011742729630528">Služba není k dispozici, zkuste to později.</translation>
 <translation id="4170577491341606575">Načítání vašich věcí\u2026</translation>
 <translation id="4177222230309051052">Získejte všechny své záložky</translation>
@@ -738,6 +739,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome tomuto webu kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}few{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}many{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}other{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}}</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta na tomto zařízení}few{# karty na tomto zařízení}many{# karty na tomto zařízení}other{# karet na tomto zařízení}}</translation>
+<translation id="4198268995694216131">Další weby</translation>
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Použili jste na tomhle webu</translation>
 <translation id="4214315110991671325">Pokud máte povolené soubory cookie, může je Chrome používat k předběžnému načítání.</translation>
@@ -1018,6 +1020,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5304593522240415983">Toto pole nesmí být prázdné</translation>
 <translation id="5306014156308790439">Zakázané tlačítko Přidat do sbírky</translation>
 <translation id="5308380583665731573">Připojení</translation>
+<translation id="5313967007315987356">Přidat web</translation>
 <translation id="5316947901395241499">Administrátor ukládání hesel vypnul</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
@@ -1460,6 +1463,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6980258170429555165">Je zvýrazněna nabídka <ph name="MENU_NAME" />.</translation>
 <translation id="6983306615164277634">Pozici můžete změnit také podržením adresního řádku.</translation>
 <translation id="6987047470128880212">Na tomto zařízení není anonymní režim dostupný</translation>
+<translation id="6989358895283601928">Uložit a vytisknout</translation>
 <translation id="6996145122199359148">Stáhnout tuto stránku</translation>
 <translation id="7013762323294215682">Tento přístupový klíč bude uložen do vašeho správce hesel. Bude ho moci použít kdokoli, kdo k němu bude mít přístup.</translation>
 <translation id="7020741890149022655">Přidat do seznamu četby <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
@@ -1543,6 +1547,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
 <translation id="7333041109965360609">Odběr oznámení byl odhlášen</translation>
+<translation id="7335766481146072567">Stiskněte Pokračovat</translation>
 <translation id="7336259382292148213">Oznámení vypadají v pořádku</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7340958967809483333">Možnosti funkce Objevit</translation>
@@ -1752,6 +1757,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="813082847718468539">Zobrazit informace o webu</translation>
 <translation id="8135406045838672858">Stažené soubory PDF se automaticky otevírají pomocí aplikace <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
+<translation id="8151185429379586178">Nástroje pro vývojáře</translation>
 <translation id="8152331954420209374">Přejít do prostředí Lens</translation>
 <translation id="8153206878708357851">Přepnout procházení pomocí kurzoru</translation>
 <translation id="8154784523622173959">Přizpůsobit pozadí této stránky</translation>
@@ -1831,6 +1837,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Byla odebrána oprávnění 1 webu}few{Byla odebrána oprávnění # webům}many{Byla odebrána oprávnění # webu}other{Byla odebrána oprávnění # webům}}</translation>
 <translation id="8453310803815879010">Spustit dinosauří hru</translation>
 <translation id="8455675988389029454">Mějte své záložky, hesla a další obsah na všech svých zařízeních</translation>
+<translation id="8458341576712814616">Zkratka</translation>
 <translation id="8458413889418591446">Pokud chcete mít možnost rychle se vrátit na navštívené weby, synchronizujte svou historii a karty.</translation>
 <translation id="84594714173170813">Pokračujte v používání dat prohlížeče Chrome ve svém účtu Google</translation>
 <translation id="8460448946170646641">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení</translation>
@@ -1855,6 +1862,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8559961053328923750">Chrome omezuje celkové množství dat, které mohou weby prostřednictvím prohlížeče sdílet za účelem měření výkonu reklam.</translation>
 <translation id="8559990750235505898">Nabízet překlad stránek v jiných jazycích</translation>
 <translation id="8560602726703398413">Seznam četby naleznete v záložkách</translation>
+<translation id="85618473456579127">Vpravo nahoře klepněte na profil</translation>
 <translation id="8565021320663436446">Odstranit účet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Soubor nelze bezpečně stáhnout</translation>
 <translation id="8571213806525832805">Poslední 4 týdny</translation>

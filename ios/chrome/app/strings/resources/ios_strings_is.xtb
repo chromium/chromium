@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4854068532375923088">Leyfa „Gemini“ að nota myndavélina</translation>
+<translation id="4860114370595561279">Vistuðu upplýsingarnar þínar eru geymdar í tækinu</translation>
 <translation id="4860895144060829044">Hringja</translation>
 <translation id="4861953997778766866">Allir geta gert breytingar á samnýttu flipahópunum þínum</translation>
 <translation id="4865063548323785458">Vistaðu og fylltu aðgangsorð sjálfkrafa út til að skrá þig inn á vefsvæði og forrit á einfaldan hátt</translation>
@@ -1650,7 +1651,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6964300328304469089">Núverandi val: <ph name="NAME" />, <ph name="EMAIL" /> Veldu reikning.</translation>
 <translation id="6964760285928603117">Fjarlægja úr hópi</translation>
 <translation id="6965382102122355670">Í lagi</translation>
-<translation id="6967355534157677591">Búa til mynd Pro</translation>
 <translation id="6973630695168034713">Möppur</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Frá upphafi</translation>
@@ -2185,7 +2185,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8856643812068084733">Geymslur</translation>
 <translation id="8863067612494559785">Sendir í <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Fáðu leiðarlýsingar og staðbundnar upplýsingar frá Google-kortum</translation>
-<translation id="8867879594900082274">Breytingarnar þínar munu aðeins gilda um festu vefsvæðin þín í þessu tæki.</translation>
 <translation id="8871974300055371298">Efnisstillingar</translation>
 <translation id="8877788021141246043">Stilla áminningu</translation>
 <translation id="8879604564928138696">Ýttu tvisvar til að prófa</translation>

@@ -354,7 +354,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1221825588892235038">Apenas a seleção</translation>
 <translation id="1222835797152767346">Defina um PIN para facilitar o início de sessão</translation>
 <translation id="1223484782328004593">A app <ph name="APP_NAME" /> requer uma licença</translation>
-<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">O gestor recomenda um valor específico para esta definição.</translation>
 <translation id="1225177025209879837">A processar o pedido...</translation>
 <translation id="1227107020813934021">Encontre leitores de documentos</translation>
@@ -1055,6 +1054,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1695510246756136088">Não é possível ligar à Internet. Tente novamente.</translation>
 <translation id="1696214930320482113">Os perfis permitem-lhe separar o trabalho, a vida pessoal e o entretenimento sem mudar para outro navegador. Adicione um novo perfil agora.</translation>
 <translation id="1696555181932908973">Pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Para manter o seu dispositivo seguro, só deve executar e instalar software de origens e programadores fidedignos.</translation>
 <translation id="169675691788639886">O dispositivo tem o servidor SSH configurado. Não inicie sessão com contas confidenciais.</translation>
 <translation id="1697122132646041614">A opção Não gosto abre um formulário para enviar feedback detalhado sobre o motivo pelo qual não gosta destes resultados.</translation>
 <translation id="1697532407822776718">Está tudo pronto!</translation>
@@ -5868,6 +5868,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4943927218331934807">Palavra-passe necessária</translation>
 <translation id="4944310289250773232">Este serviço de autenticação é alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Para configurar a impressão digital, peça à criança para tocar no botão ligar/desligar. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Mostrar botão de painel de projetos</translation>
 <translation id="4946998421534856407">Launcher + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que está a visitar</translation>
 <translation id="4948370357877377178">Continue as suas tarefas</translation>
@@ -6102,7 +6103,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="51143538739122961">Insira a chave de segurança e toque na mesma.</translation>
 <translation id="5115309401544567011">Ligue o seu <ph name="DEVICE_TYPE" /> a uma fonte de alimentação.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Valide a sua identidade para preencher automaticamente informações confidenciais</translation>
 <translation id="5116315184170466953">A opção Gosto envia feedback a indicar que gosta desta sugestão de grupos de separadores</translation>
 <translation id="5116628073786783676">Gua&amp;rdar Áudio Como...</translation>
 <translation id="5117139026559873716">Desassocie o seu telemóvel do <ph name="DEVICE_TYPE" />. Deixarão de se ligar um ao outro automaticamente.</translation>
@@ -6700,6 +6700,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, a instalar</translation>
 <translation id="5527822190489075064">Carregamento otimizado</translation>
 <translation id="5529554942700688235">Resumo da poupança de memória, <ph name="MEMORY_VALUE" /> libertados</translation>
+<translation id="5529693968082667490">Mostrar botão de pesquisa de separadores</translation>
 <translation id="5530977410273748884">Para guardar a sua palavra-passe no Gestor de Palavras-passe da Google, clique na tecla</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quer</translation>
@@ -8250,6 +8251,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6613267708691765962">A verificar a existência de software malicioso…</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6618013221808317456">Não permitir que os sites usem a otimização do JavaScript</translation>
+<translation id="6618154741503063152">Não é possível carregar. Os anexos não são permitidos.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">O site pode monitorizar a sua localização.</translation>
 <translation id="6619243162837544323">Estado da rede</translation>
@@ -9346,7 +9348,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7368927539449986686">Edite a pesquisa no site</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Gerir dispositivos USB</translation>
-<translation id="73750335798090836">Para proteção adicional, use sempre a sua impressão digital, rosto ou outro bloqueio de ecrã quando usar informações confidenciais, como documentos de viagem e de identidade</translation>
 <translation id="7376124766545122644">Não é possível usar este link. Verifique se começa com "http://" ou "https://" para tentar novamente.</translation>
 <translation id="7376553024552204454">Realçar o cursor do rato ao ser movido</translation>
 <translation id="7377250337652426186">Para retroceder mais do que 1 página, clique sem soltar no botão anterior.</translation>
@@ -10347,6 +10348,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8034399942062051455">A otimização do V8 está desativada</translation>
 <translation id="8034697324150621782">Trocar com vista superior</translation>
 <translation id="8035059678007243127">Página de Navegação anónima na cache para a frente/para trás: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Mostrar botão de grupos de separadores guardados</translation>
 <translation id="8036193484521570992">Ajudar a melhorar o preenchimento automático</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Ler todo o texto falado através da voz sintetizada</translation>

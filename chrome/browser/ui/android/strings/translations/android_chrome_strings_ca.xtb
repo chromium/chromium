@@ -738,6 +738,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedit que aquest lloc web enviï notificacions perquè conté contingut brossa o enganyós}other{Chrome ha impedit que aquests llocs web enviïn notificacions perquè contenen contingut brossa o enganyós}}</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestanya en aquest dispositiu}other{# pestanyes en aquest dispositiu}}</translation>
+<translation id="4198268995694216131">Llocs web addicionals</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • L'has utilitzat en aquest lloc web</translation>
 <translation id="4214315110991671325">Si permets les galetes, Chrome pot utilitzar-les per a la precàrrega.</translation>
@@ -1018,6 +1019,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5304593522240415983">Aquest camp no pot estar en blanc</translation>
 <translation id="5306014156308790439">Afegeix a la col·lecció desactivat</translation>
 <translation id="5308380583665731573">Connecta</translation>
+<translation id="5313967007315987356">Afegeix un lloc web</translation>
 <translation id="5316947901395241499">L'administrador ha desactivat l'opció de desar contrasenyes</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
@@ -1543,6 +1545,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7314734791127433392">No es poden comprovar les contrasenyes</translation>
 <translation id="7324354302972299151">Envia una sol·licitud Do Not Track</translation>
 <translation id="7333041109965360609">Has cancel·lat la subscripció a les notificacions</translation>
+<translation id="7335766481146072567">Prem Continua</translation>
 <translation id="7336259382292148213">Les notificacions estan bé</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7340958967809483333">Opcions per a Discover</translation>
@@ -1752,6 +1755,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
 <translation id="8135406045838672858">Els PDF baixats s'obren automàticament amb <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google.</translation>
+<translation id="8151185429379586178">Eines per a desenvolupadors</translation>
 <translation id="8152331954420209374">Ves a Lens</translation>
 <translation id="8153206878708357851">Commutar la navegació amb cursor de text</translation>
 <translation id="8154784523622173959">Personalitza el fons d'aquesta pàgina</translation>
@@ -1831,6 +1835,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{S'han suprimit els permisos d'1 lloc web}other{S'han suprimit els permisos de # llocs web}}</translation>
 <translation id="8453310803815879010">Inicia el joc del dinosaure</translation>
 <translation id="8455675988389029454">Accedeix a les teves adreces d'interès, contrasenyes i més en tots els teus dispositius</translation>
+<translation id="8458341576712814616">Drecera</translation>
 <translation id="8458413889418591446">Per tornar ràpidament als llocs web que has visitat, sincronitza l'historial i les pestanyes</translation>
 <translation id="84594714173170813">Continua utilitzant les dades de Chrome al teu Compte de Google</translation>
 <translation id="8460448946170646641">Revisa els controls principals de privadesa i seguretat</translation>
@@ -1855,6 +1860,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8559961053328923750">Chrome limita la quantitat total de dades que els llocs web poden compartir a través del navegador per mesurar el rendiment dels anuncis</translation>
 <translation id="8559990750235505898">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="8560602726703398413">Troba la teva llista de lectura a les adreces d'interès</translation>
+<translation id="85618473456579127">Toca el perfil a la part superior dreta</translation>
 <translation id="8565021320663436446">Vols suprimir <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">El fitxer no es pot baixar de manera segura</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>

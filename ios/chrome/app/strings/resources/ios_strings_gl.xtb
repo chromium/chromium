@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Automático</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4854068532375923088">Permite que Gemini use a túa cámara</translation>
+<translation id="4860114370595561279">A información gardada almacénase no teu dispositivo</translation>
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4861953997778766866">Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="4865063548323785458">Garda e autocompleta os contrasinais para poder iniciar sesión facilmente nos sitios e nas aplicacións</translation>
@@ -1650,7 +1651,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" /> Escolle unha conta.</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
-<translation id="6967355534157677591">Crear imaxe Pro</translation>
 <translation id="6973630695168034713">Cartafoles</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Desde sempre</translation>
@@ -2185,7 +2185,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8856643812068084733">Arquivos</translation>
 <translation id="8863067612494559785">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Recibe indicacións e información local de Google Maps</translation>
-<translation id="8867879594900082274">Os cambios só se aplicarán aos sitios que fixases neste dispositivo.</translation>
 <translation id="8871974300055371298">Configuración de contido</translation>
 <translation id="8877788021141246043">Definir un recordatorio</translation>
 <translation id="8879604564928138696">Toca dúas veces para tentalo</translation>

@@ -552,7 +552,7 @@
 <translation id="3020183492814296499">میان‌برها</translation>
 <translation id="3021342271734507256">برای جستجو کردن می‌توانید هر چیزی را روی صفحه‌نمایش خود بکشید، برجسته کنید، یا روی آن تک‌ضرب بزنید</translation>
 <translation id="3023690182746510369">منتظر بمانید تا بااستفاده از هوش مصنوعی، رویداد تقویمتان را براساس محتوای این صفحه تقویت کنیم.</translation>
-<translation id="3030138564564344289">سعی مجدد برای بارگیری</translation>
+<translation id="3030138564564344289">تلاش مجدد برای بارگیری</translation>
 <translation id="3032704072014531631">‏فوراً دسترسی به گروه زبانه‌های «<ph name="GROUP_NAME" />» را ازدست خواهید داد، و <ph name="USER_NAME" />‏ (<ph name="USER_EMAIL" />) دیگر نمی‌تواند در سرویس‌های Google با شما تعامل داشته باشد</translation>
 <translation id="3034496853223708513">‏دسترسی <ph name="USER_NAME" />‏ (<ph name="USER_EMAIL" />) به گروه زبانه‌های «<ph name="GROUP_NAME" />» فوراً برداشته می‌شود، و او دیگر نمی‌تواند در سرویس‌های Google با شما تعامل داشته باشد</translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="4854068532375923088">‏به «Gemini» اجازه دهید از دوربینتان استفاده کند.</translation>
+<translation id="4860114370595561279">اطلاعات ذخیره‌شده شما در دستگاهتان ذخیره می‌شود</translation>
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4861953997778766866">همه می‌توانند در گروه‌های زبانه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
 <translation id="4865063548323785458">گذرواژه‌ها و گذرکلیدهایتان را ذخیره و تکمیل خودکار کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید</translation>
@@ -1650,7 +1651,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6964300328304469089">درحال‌حاضر <ph name="EMAIL" />، <ph name="NAME" /> انتخاب شده است. حسابی انتخاب کنید.</translation>
 <translation id="6964760285928603117">برداشتن از گروه</translation>
 <translation id="6965382102122355670">تأیید</translation>
-<translation id="6967355534157677591">‏ساختن تصویر با مدل Pro</translation>
 <translation id="6973630695168034713">پوشه‌ها</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
@@ -2185,7 +2185,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8856643812068084733">بایگانی</translation>
 <translation id="8863067612494559785">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏دریافت مسیر و اطلاعات محلی از Google Maps</translation>
-<translation id="8867879594900082274">ویرایش‌هایتان فقط برای سایت‌های سنجاق‌شده در این دستگاه اعمال خواهند شد.</translation>
 <translation id="8871974300055371298">تنظیمات محتوا</translation>
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>
 <translation id="8879604564928138696">برای امتحان کردن، دو تک‌ضرب بزنید</translation>

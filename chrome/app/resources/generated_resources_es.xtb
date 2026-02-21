@@ -354,7 +354,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1221825588892235038">Solo contenido seleccionado</translation>
 <translation id="1222835797152767346">Configura un PIN para que sea más fácil iniciar sesión</translation>
 <translation id="1223484782328004593">Para usar <ph name="APP_NAME" />, se necesita una licencia</translation>
-<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta opción.</translation>
 <translation id="1225177025209879837">Procesando solicitud...</translation>
 <translation id="1227107020813934021">Buscar escáneres de documentos</translation>
@@ -1042,7 +1041,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1686785653877010442">Los sitios suelen enviar notificaciones para informarte sobre las últimas noticias o mensajes de chat.</translation>
 <translation id="168715261339224929">Activa la sincronización para ver tus marcadores en todos tus dispositivos.</translation>
 <translation id="1688935057616748272">Escribe una letra</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Nombre</translation>
 <translation id="168991973552362966">Añadir una impresora cercana</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración de pantalla dividida</translation>
@@ -1055,6 +1054,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1695510246756136088">No se puede establecer la conexión a Internet. Inténtalo de nuevo.</translation>
 <translation id="1696214930320482113">Los perfiles te permiten separar el trabajo, la vida personal y el ocio sin tener que cambiar de navegador. Añade un perfil nuevo ahora.</translation>
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Para proteger tu dispositivo, ejecuta e instala únicamente software de fuentes y desarrolladores de confianza.</translation>
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No inicies sesión con cuentas sensibles.</translation>
 <translation id="1697122132646041614">No me gusta abre un formulario para enviar comentarios detallados sobre por qué no te han gustado estos resultados.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
@@ -5866,6 +5866,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4943927218331934807">Contraseña requerida</translation>
 <translation id="4944310289250773232">Este servicio de autenticación está alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Para configurar la huella digital, pídele a tu hijo/a que toque el botón de encendido. Los datos de la huella digital de tu hijo/a se almacenarán de forma segura y nunca saldrán de este <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Mostrar botón de panel de proyectos</translation>
 <translation id="4946998421534856407">Tecla del menú de aplicaciones + flecha hacia arriba</translation>
 <translation id="4947376546135294974">Datos del sitio que estás visitando</translation>
 <translation id="4948370357877377178">Continuar con tus tareas</translation>
@@ -6100,7 +6101,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="51143538739122961">Inserta tu llave de seguridad y tócala</translation>
 <translation id="5115309401544567011">Enchufa tu <ph name="DEVICE_TYPE" /> a una fuente de alimentación.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Verificar que eres tú para autocompletar información sensible</translation>
 <translation id="5116315184170466953">Si haces clic en "Me gusta", indicarás que esta sugerencia de grupo de pestañas te ha gustado</translation>
 <translation id="5116628073786783676">G&amp;uardar audio como...</translation>
 <translation id="5117139026559873716">Desvincula tu teléfono del <ph name="DEVICE_TYPE" />. Dejarán de conectarse automáticamente.</translation>
@@ -6697,6 +6697,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carga optimizada</translation>
 <translation id="5529554942700688235">Resumen de ahorro; memoria liberada: <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">Mostrar botón de búsqueda de pestañas</translation>
 <translation id="5530977410273748884">Para guardar tu contraseña en el Gestor de contraseñas de Google, haz clic en la llave</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
@@ -8246,6 +8247,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6613267708691765962">Buscando malware...</translation>
 <translation id="6615455863669487791">Ver</translation>
 <translation id="6618013221808317456">No permitir que los sitios usen la optimización de JavaScript</translation>
+<translation id="6618154741503063152">No se puede subir. No se admiten archivos adjuntos.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">El sitio web puede registrar tu ubicación</translation>
 <translation id="6619243162837544323">Estado de la red</translation>
@@ -9342,7 +9344,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7368927539449986686">Editar búsqueda en el sitio</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Gestionar dispositivos USB</translation>
-<translation id="73750335798090836">Para una mayor protección, usa siempre tu huella digital, tu cara u otro método de desbloqueo de pantalla cuando uses información sensible, como documentos de viaje y de identidad</translation>
 <translation id="7376124766545122644">No se puede usar este enlace. Comprueba que el enlace empieza por "http://" o "https://" y vuelve a intentarlo.</translation>
 <translation id="7376553024552204454">Resaltar el cursor del ratón al moverlo</translation>
 <translation id="7377250337652426186">Para retroceder más de una página, mantén pulsado el botón para volver.</translation>
@@ -10343,6 +10344,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8034399942062051455">La optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Intercambiar con vista superior</translation>
 <translation id="8035059678007243127">Página de incógnito almacenada en la caché de páginas completas: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Mostrar botón de grupos de pestañas guardados</translation>
 <translation id="8036193484521570992">Ayuda a mejorar Autocompletar</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Leer todo el texto hablado con la conversión de texto a voz</translation>

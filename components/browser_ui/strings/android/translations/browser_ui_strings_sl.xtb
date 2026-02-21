@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">Datoteke, ki si jih to spletno mesto lahko ogleda ali jih uredi</translation>
 <translation id="1073417869336441572">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Zahtevate lahko namizno različico spletnih mest</translation>
-<translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
 <translation id="1126523729897810826">Če želite kar najbolje izkoristiti Chrome, upoštevajte ta predlagana dejanja</translation>
 <translation id="113098737392899175">Premikanje po straneh s kazalcem besedila, ko je priključena tipkovnica</translation>
 <translation id="1148624853678088576">Pripravljeni ste!</translation>
@@ -199,7 +198,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2874939134665556319">Prejšnja skladba</translation>
 <translation id="2891975107962658722">Blokiranje spletnim mestom shranjevanje podatkov v napravi.</translation>
 <translation id="2903493209154104877">Naslovi</translation>
-<translation id="2910701580606108292">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="2918484639460781603">Pojdi v nastavitve</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
 <translation id="2939338015096024043">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo spremljanje položaja kamere in pridobivanje informacij o vaši okolici. Če je ta možnost izklopljena, spletna mesta ne smejo spremljati položaja kamere ali pridobivati informacij o vaši okolici.</translation>
@@ -301,7 +299,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3924858949939391676">Prikaz povezav, ko je način za branje vklopljen</translation>
 <translation id="3933121352599513978">Strni neželene zahteve (priporočeno)</translation>
 <translation id="3934905113567851655">Primaknite ali razmaknite prsta za spreminjanje velikosti</translation>
-<translation id="3955193568934677022">Dovoli spletnim mestom predvajanje zaščitene vsebine (priporočeno)</translation>
 <translation id="3955321697524543127">Spletnim mestom ni dovoljeno povezovanje z napravami USB.</translation>
 <translation id="3965467402665811906">Spletna mesta lahko zahtevajo uporabo podatkov, ki so jih shranila o vas</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
@@ -514,7 +511,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="6171020522141473435">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav Bluetooth. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav Bluetooth.</translation>
 <translation id="6177128806592000436">Povezava s tem spletnim mestom ni varna</translation>
 <translation id="6181444274883918285">Dodaj izjemo za spletno mesto</translation>
-<translation id="6192792657125177640">Izjeme</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome bo znova blokiral piškotke jutri}one{Še # dan in piškotki bodo znova blokirani}two{Še # dneva in piškotki bodo znova blokirani}few{Še # dni in piškotki bodo znova blokirani}other{Še # dni in piškotki bodo znova blokirani}}</translation>
 <translation id="6196640612572343990">Blokiraj piškotke tretjih oseb</translation>
 <translation id="6205314730813004066">Zasebnost pri oglaševanju</translation>
@@ -637,7 +633,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7561196759112975576">Vedno</translation>
 <translation id="7573594921350120855">Spletna mesta običajno uporabljajo vašo videokamero za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Pred <ph name="NUM_MONTHS_ONE" /> mesecem}one{Pred <ph name="NUM_MONTHS_MANY" /> mesecem}two{Pred <ph name="NUM_MONTHS_MANY" /> mesecema}few{Pred <ph name="NUM_MONTHS_MANY" /> meseci}other{Pred <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
-<translation id="757524316907819857">Prepreči spletnim mestom predvajanje zaščitene vsebine</translation>
 <translation id="7586676035079382730">Obvestila niso dovoljena</translation>
 <translation id="7594634374516752650">Povezano z napravo Bluetooth</translation>
 <translation id="7617547684249261169">Izbrišete lahko del ali celotno zgodovino, piškotke, podatke spletnih mest in drugo</translation>

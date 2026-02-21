@@ -354,7 +354,6 @@
 <translation id="1221825588892235038">Yalnızca seçilen</translation>
 <translation id="1222835797152767346">Oturum açmayı kolaylaştırmak için PIN ayarlayın</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> lisans gerektiriyor</translation>
-<translation id="1223498995510244364">Özetle</translation>
 <translation id="1223853788495130632">Yöneticiniz bu ayar için belirli bir değer öneriyor.</translation>
 <translation id="1225177025209879837">İstek işleniyor...</translation>
 <translation id="1227107020813934021">Belge tarayıcı bulun</translation>
@@ -1055,6 +1054,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1695510246756136088">İnternet bağlantısı kurulamıyor. Tekrar deneyin.</translation>
 <translation id="1696214930320482113">Profiller, başka bir tarayıcıya geçmeden iş, kişisel ve eğlence amaçlı kullanımlarınızı ayırmanıza olanak tanır. Hemen yeni bir profil ekleyin.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> sitesine devam etmek için başka yöntemler deneyebilirsiniz.</translation>
+<translation id="1696685050160038195">Cihazınızın güvenliğini sağlamak için yalnızca güvendiğiniz kaynaklardan ve geliştiricilerden edindiğiniz yazılımları çalıştırıp yüklemelisiniz.</translation>
 <translation id="169675691788639886">Cihazın SSH sunucusu yapılandırılmış. Hassas içerik barındıran hesaplarda oturum açmayın.</translation>
 <translation id="1697122132646041614">Beğenmeme düğmesini tıkladığınızda bu sonuçları neden beğenmediğinize dair ayrıntılı geri bildirim gönderebileceğiniz bir form açılır.</translation>
 <translation id="1697532407822776718">Artık hazırsınız!</translation>
@@ -5863,6 +5863,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4943927218331934807">Şifre gerekiyor</translation>
 <translation id="4944310289250773232">Bu kimlik doğrulama hizmeti <ph name="SAML_DOMAIN" /> tarafından barındırılıyor.</translation>
 <translation id="4945439665401275950">Parmak izini ayarlamak için çocuğunuzun güç düğmesine dokunması gerekir. Çocuğunuzun parmak izi verileri güvenli bir şekilde depolanır ve her zaman <ph name="DEVICE_TYPE" /> cihazınızda tutulur.</translation>
+<translation id="4946215577126251136">Projeler paneli düğmesini göster</translation>
 <translation id="4946998421534856407">başlatıcı  + yukarı ok</translation>
 <translation id="4947376546135294974">Ziyaret ettiğiniz sitedeki veriler</translation>
 <translation id="4948370357877377178">Görevlerinize devam edin</translation>
@@ -6097,7 +6098,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="51143538739122961">Güvenlik anahtarınızı takın ve anahtara dokunun</translation>
 <translation id="5115309401544567011">Lütfen <ph name="DEVICE_TYPE" /> cihazınızı bir güç kaynağına takın.</translation>
 <translation id="5115338116365931134">TOA</translation>
-<translation id="5116015291385561204">Hassas bilgileri otomatik doldurmak için kimliğimi doğrula</translation>
 <translation id="5116315184170466953">Beğenme düğmesini tıkladığınızda bu sekme grubu önerisinin hoşunuza gittiğine dair geri bildirim gönderilir</translation>
 <translation id="5116628073786783676">Sesi Farklı Kay&amp;det...</translation>
 <translation id="5117139026559873716">Telefonunuzun <ph name="DEVICE_TYPE" /> cihazınızla olan bağlantısını kesin. Bundan böyle otomatik olarak bağlanmazlar.</translation>
@@ -6694,6 +6694,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" /> yükleniyor</translation>
 <translation id="5527822190489075064">Optimize edilmiş şarj</translation>
 <translation id="5529554942700688235">Bellek tasarrufu özeti, <ph name="MEMORY_VALUE" /> yer açıldı</translation>
+<translation id="5529693968082667490">Sekme arama düğmesini göster</translation>
 <translation id="5530977410273748884">Şifrenizi Google Şifre Yöneticisi'ne kaydetmek için anahtarı tıklayın</translation>
 <translation id="5532223876348815659">Evrensel</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> şunu yapmak istiyor:</translation>
@@ -8244,6 +8245,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6613267708691765962">Kötü amaçlı yazılım taranıyor...</translation>
 <translation id="6615455863669487791">Göster</translation>
 <translation id="6618013221808317456">Sitelerin JavaScript optimizasyonunu kullanmasına izin verme</translation>
+<translation id="6618154741503063152">Yüklenemiyor. Eklere izin verilmiyor.</translation>
 <translation id="6619058681307408113">Satır Yazıcı Arka Plan Programı (LPD)</translation>
 <translation id="661907246513853610">Site, konumunuzu izleyebilir</translation>
 <translation id="6619243162837544323">Ağ Durumu</translation>
@@ -9340,7 +9342,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7368927539449986686">Site aramasını düzenleyin</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">USB cihazları yönet</translation>
-<translation id="73750335798090836">Seyahat ve kimlik belgeleri gibi hassas bilgileri kullanırken daha fazla koruma için her zaman parmak izinizi, yüzünüzü veya başka bir ekran kilidi kullanın</translation>
 <translation id="7376124766545122644">Bu bağlantı kullanılamıyor. Tekrar denemek için bağlantınızın "http://" ya da "https://" ile başladığından emin olun.</translation>
 <translation id="7376553024552204454">Hareket ederken fare imlecini vurgula</translation>
 <translation id="7377250337652426186">Birden fazla sayfadan geri dönmek için Geri düğmesini tıklayıp basılı tutun.</translation>
@@ -10340,6 +10341,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8034399942062051455">V8 optimizasyonu kapalı</translation>
 <translation id="8034697324150621782">Üst görünümle değiştir</translation>
 <translation id="8035059678007243127">Gizli Geri/İleri Önbelleğe Alınmış Sayfa: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Kayıtlı sekme grupları düğmesini göster</translation>
 <translation id="8036193484521570992">Otomatik doldurma özelliğinin iyileştirilmesine yardım edin</translation>
 <translation id="8036504271468642248">Önceki cümle</translation>
 <translation id="8037117027592400564">Sentezlenmiş konuşma özelliği kullanılarak söylenen tüm metni okuma</translation>

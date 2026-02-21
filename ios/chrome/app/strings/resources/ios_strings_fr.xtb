@@ -195,7 +195,7 @@
 <translation id="1668001730617725852">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="168389590065701766">Vous pouvez désormais ouvrir Google Lens depuis la barre d'adresse et effectuer une recherche sur tout ce que vous voyez</translation>
-<translation id="1689333818294560261">Pseudo</translation>
+<translation id="1689333818294560261">Nom de la carte</translation>
 <translation id="169048873465870056">Supprimer l'onglet et le groupe ?</translation>
 <translation id="1698090540708020240">Importer des mots de passe</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> favoris sélectionnés.</translation>
@@ -1035,6 +1035,7 @@
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="4854068532375923088">Autorisez Gemini à utiliser votre appareil photo</translation>
+<translation id="4860114370595561279">Vos informations enregistrées sont stockées sur votre appareil</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4861953997778766866">Tout le monde peut modifier vos groupes d'onglets partagés</translation>
 <translation id="4865063548323785458">Enregistrez et saisissez automatiquement vos mots de passe pour vous connecter facilement à des sites et applis</translation>
@@ -1534,7 +1535,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6559301491397835130">{count,plural, =1{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans "{title}". Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6565899972286925956">Créez ce que vous voulez</translation>
-<translation id="6571070086367343653">Modifier la carte de paiement</translation>
+<translation id="6571070086367343653">Modifier la carte de crédit</translation>
 <translation id="6574092468346088891">Activer les notifications du contrôle de sécurité</translation>
 <translation id="6579867704846662339">Vous pouvez choisir d'ouvrir les URL entrantes d'autres applis en navigation privée.</translation>
 <translation id="6583087784430677195">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Saisir automatiquement les mots de passe".</translation>
@@ -1650,7 +1651,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6964300328304469089">Actuellement sélectionné : <ph name="NAME" />, <ph name="EMAIL" />. Choisissez un compte.</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6967355534157677591">Créer une image Pro</translation>
 <translation id="6973630695168034713">Dossiers</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Depuis le début</translation>
@@ -2185,7 +2185,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8856643812068084733">Archives</translation>
 <translation id="8863067612494559785">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtenez un itinéraire et des informations locales depuis Google Maps</translation>
-<translation id="8867879594900082274">Vos modifications ne s'appliqueront qu'aux sites que vous avez épinglés sur cet appareil.</translation>
 <translation id="8871974300055371298">Paramètres du contenu</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8879604564928138696">Appuyez deux fois pour essayer</translation>

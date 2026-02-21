@@ -355,7 +355,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1221825588892235038">Sélection uniquement</translation>
 <translation id="1222835797152767346">Définissez un code pour vous connecter plus facilement</translation>
 <translation id="1223484782328004593">Une licence est requise pour utiliser <ph name="APP_NAME" /></translation>
-<translation id="1223498995510244364">Obtenez un résumé</translation>
 <translation id="1223853788495130632">Votre administrateur recommande une valeur spécifique pour ce paramètre.</translation>
 <translation id="1225177025209879837">Traitement de la demande en cours…</translation>
 <translation id="1227107020813934021">Rechercher des scanners de documents</translation>
@@ -1043,7 +1042,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1686785653877010442">Les sites envoient généralement des notifications pour vous transmettre des alertes info ou vous informer que vous avez reçu un message dans un chat.</translation>
 <translation id="168715261339224929">Activez la synchronisation pour accéder à vos favoris sur tous vos appareils.</translation>
 <translation id="1688935057616748272">Saisissez une lettre</translation>
-<translation id="1689333818294560261">Pseudo</translation>
+<translation id="1689333818294560261">Nom de la carte</translation>
 <translation id="168991973552362966">Ajouter une imprimante à proximité</translation>
 <translation id="1689945336726856614">Copier l'&amp;URL</translation>
 <translation id="1690068335127678634">Configuration de l'écran partagé</translation>
@@ -1056,6 +1055,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1695510246756136088">Impossible de se connecter à Internet. Réessayez.</translation>
 <translation id="1696214930320482113">Les profils vous permettent de séparer vos activités professionnelles, personnelles et de divertissement sans changer de navigateur. Ajoutez un profil maintenant.</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Pour protéger votre appareil, nous vous recommandons d'exécuter et d'installer uniquement des logiciels provenant de développeurs et de sources fiables.</translation>
 <translation id="169675691788639886">Serveur SSH configuré sur l'appareil. Ne vous connectez pas avec un compte sensible.</translation>
 <translation id="1697122132646041614">"Je n'aime pas" permet d'ouvrir un formulaire où indiquer précisément pourquoi ces résultats ne vous conviennent pas.</translation>
 <translation id="1697532407822776718">Tout est prêt !</translation>
@@ -5865,6 +5865,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4943927218331934807">Mot de passe requis</translation>
 <translation id="4944310289250773232">Ce service d'authentification est hébergé par <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le bouton Marche/Arrêt. Les données de son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946215577126251136">Afficher le bouton du panneau des projets</translation>
 <translation id="4946998421534856407">Lanceur d'applications+Flèche vers le haut</translation>
 <translation id="4947376546135294974">Données du site que vous consultez</translation>
 <translation id="4948370357877377178">Continuez vos tâches</translation>
@@ -6099,7 +6100,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="51143538739122961">Insérez votre clé de sécurité et appuyez dessus</translation>
 <translation id="5115309401544567011">Veuillez brancher votre appareil <ph name="DEVICE_TYPE" /> à une source d'alimentation.</translation>
 <translation id="5115338116365931134">SSO</translation>
-<translation id="5116015291385561204">Confirmer votre identité pour compléter automatiquement des informations sensibles</translation>
 <translation id="5116315184170466953">"J'aime" indique que cette suggestion de groupe d'onglets vous convient</translation>
 <translation id="5116628073786783676">En&amp;registrer le fichier audio sous...</translation>
 <translation id="5117139026559873716">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" />. Ils ne se connecteront plus automatiquement.</translation>
@@ -6696,6 +6696,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5527597176701279474">Installation de <ph name="APP_NAME" /> en cours</translation>
 <translation id="5527822190489075064">Recharge optimisée</translation>
 <translation id="5529554942700688235">Récapitulatif des économies de mémoire, <ph name="MEMORY_VALUE" /> libérés</translation>
+<translation id="5529693968082667490">Afficher le bouton de recherche dans les onglets</translation>
 <translation id="5530977410273748884">Pour enregistrer votre mot de passe dans le Gestionnaire de mots de passe de Google, cliquez sur la clé</translation>
 <translation id="5532223876348815659">Raccourcis globaux</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
@@ -8248,6 +8249,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6613267708691765962">Recherche de logiciels malveillants…</translation>
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6618013221808317456">Ne pas autoriser les sites à utiliser l'optimisation JavaScript</translation>
+<translation id="6618154741503063152">Importation impossible. Les pièces jointes ne sont pas autorisées.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Le site peut vous localiser</translation>
 <translation id="6619243162837544323">État du réseau</translation>
@@ -9344,7 +9346,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7368927539449986686">Modifier une recherche sur un site</translation>
 <translation id="7370592524170198497">EAP Ethernet :</translation>
 <translation id="7374376573160927383">Gérer les appareils USB</translation>
-<translation id="73750335798090836">Pour plus de sécurité, utilisez toujours votre empreinte digitale, votre visage ou une autre méthode de déverrouillage de l'écran lorsque vous utilisez des informations sensibles comme des documents de voyage et d'identité</translation>
 <translation id="7376124766545122644">Impossible d'utiliser ce lien. Vérifiez qu'il commence par "http://" ou "https://", puis réessayez.</translation>
 <translation id="7376553024552204454">Mettre en surbrillance le curseur de la souris lorsqu'il se déplace</translation>
 <translation id="7377250337652426186">Pour revenir en arrière de plus d'une page, cliquez de manière prolongée sur le bouton Retour.</translation>
@@ -10345,6 +10346,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8034399942062051455">L'optimisation V8 est désactivée</translation>
 <translation id="8034697324150621782">Remplacer par la vue du haut</translation>
 <translation id="8035059678007243127">Page de navigation privée en cache amélioré : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Afficher le bouton des groupes d'onglets enregistrés</translation>
 <translation id="8036193484521570992">Aidez-nous à améliorer la saisie automatique</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8037117027592400564">Accéder à l'ensemble du texte énoncé à l'aide de la synthèse vocale</translation>
@@ -11068,7 +11070,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8518942514525208851">Masquer le langage vulgaire</translation>
 <translation id="8520238089740349550">Échec : téléchargement local bloqué</translation>
 <translation id="8523493869875972733">Conserver les modifications</translation>
-<translation id="8523849605371521713">Ajoutée en raison des règles</translation>
+<translation id="8523849605371521713">Ajoutée par une règle</translation>
 <translation id="8524594273111932386">Recherche+Flèche vers le bas</translation>
 <translation id="8524817717332153865">Le micro et l'appareil photo sont désactivés dans les paramètres système Mac</translation>
 <translation id="8524841856047224176">Personnalisez l'arrière-plan de votre caméra pour les appels vidéo et plus</translation>

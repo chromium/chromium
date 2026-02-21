@@ -7,7 +7,6 @@
 <translation id="1070329623210597193">此網站可以查看或編輯的檔案</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可要求查看桌面版網站</translation>
-<translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="1126523729897810826">完成下列建議操作，充分運用 Chrome 的各項功能</translation>
 <translation id="113098737392899175">接駁鍵盤後，使用文字游標瀏覽頁面</translation>
 <translation id="1148624853678088576">您已完成全部設定！</translation>
@@ -194,12 +193,12 @@
 <translation id="2802908157808345702">不允許網站傳送彈出式視窗和使用重新導向</translation>
 <translation id="2814830417943086299">Chrome 現在會於裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
+<translation id="2848335882304088250">你現可在裝置上充分運用 Chrome 的功能。</translation>
 <translation id="2850913818900871965">要求使用流動裝置檢視模式</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2891975107962658722">禁止網站在裝置上儲存資料</translation>
 <translation id="2903493209154104877">地址</translation>
-<translation id="2910701580606108292">網站播放受保護內容前先詢問您</translation>
 <translation id="2918484639460781603">前往設定</translation>
 <translation id="2932883381142163287">舉報濫用</translation>
 <translation id="2939338015096024043">開咗之後，網站可以要求追蹤你嘅攝錄機位置同收集周圍環境嘅資料。閂咗之後，網站唔可以追蹤你嘅攝錄機位置或者收集周圍環境嘅資料。</translation>
@@ -301,7 +300,6 @@
 <translation id="3924858949939391676">開啟「閱讀模式」後顯示連結</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3934905113567851655">兩指縮放即可調整大小</translation>
-<translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3955321697524543127">不允許網站連接 USB 裝置</translation>
 <translation id="3965467402665811906">網站可要求使用與你相關的既有資料</translation>
 <translation id="3967822245660637423">下載完成</translation>
@@ -514,7 +512,6 @@
 <translation id="6171020522141473435">開咗之後，網站可以要求使用藍牙裝置。閂咗之後，網站唔可以使用藍牙裝置。</translation>
 <translation id="6177128806592000436">你與此網站的連線並不安全</translation>
 <translation id="6181444274883918285">新增例外網站</translation>
-<translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{系統將於 # 天後再次封鎖 Cookie}}</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
@@ -637,7 +634,6 @@
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7573594921350120855">網站通常會使用攝錄機提供通訊功能，例如視像通訊</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前}other{<ph name="NUM_MONTHS_MANY" /> 個月前}}</translation>
-<translation id="757524316907819857">禁止網站播放受保護內容</translation>
 <translation id="7586676035079382730">唔批准通知</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7617547684249261169">你可以刪除部分或全部記錄、Cookie、網站資料等</translation>

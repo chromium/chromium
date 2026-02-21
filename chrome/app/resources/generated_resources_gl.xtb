@@ -354,7 +354,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1221825588892235038">Só selección</translation>
 <translation id="1222835797152767346">Define un PIN para que sexa máis fácil iniciar sesión</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> require unha licenza</translation>
-<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">O administrador recomenda un valor específico para esta configuración.</translation>
 <translation id="1225177025209879837">Procesando solicitude...</translation>
 <translation id="1227107020813934021">Busca escáneres de documentos</translation>
@@ -1054,6 +1053,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1695510246756136088">Non hai conexión a Internet Téntao de novo.</translation>
 <translation id="1696214930320482113">Os perfís permítenche separar o traballo, a vida persoal e o tempo de lecer sen ter que cambiar de navegador. Engade un novo perfil agora.</translation>
 <translation id="1696555181932908973">Podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="1696685050160038195">Para manter protexido o teu dispositivo, executa e instala só software procedente de fontes e programadores de confianza.</translation>
 <translation id="169675691788639886">O dispositivo ten configurado un servidor SSH. Non inicies sesión con contas confidenciais.</translation>
 <translation id="1697122132646041614">Ao premer Non me gusta, abrirase un formulario para enviar comentarios detallados sobre o motivo polo que non che gustan estes resultados.</translation>
 <translation id="1697532407822776718">Listo!</translation>
@@ -5869,6 +5869,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4943927218331934807">Necesítase un contrasinal</translation>
 <translation id="4944310289250773232">Este servizo de autenticación está aloxado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o botón de acendido. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
+<translation id="4946215577126251136">Mostrar botón de panel de proxectos</translation>
 <translation id="4946998421534856407">menú de aplicacións + frecha arriba</translation>
 <translation id="4947376546135294974">Datos do sitio que estás visitando</translation>
 <translation id="4948370357877377178">Continúa coas túas tarefas</translation>
@@ -6103,7 +6104,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="51143538739122961">Introduce a túa chave de seguranza e tócaa</translation>
 <translation id="5115309401544567011">Enchufa o dispositivo <ph name="DEVICE_TYPE" /> a unha fonte de alimentación.</translation>
 <translation id="5115338116365931134">Inicio de sesión único</translation>
-<translation id="5116015291385561204">Verifica a túa identidade para autocompletar a información confidencial</translation>
 <translation id="5116315184170466953">Coa opción Gústame indicas que che gusta esta suxestión de grupo de pestanas</translation>
 <translation id="5116628073786783676">G&amp;ardar audio como...</translation>
 <translation id="5117139026559873716">Desconecta o teléfono do <ph name="DEVICE_TYPE" /> e deixarán de conectarse automaticamente.</translation>
@@ -6701,6 +6701,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carga optimizada</translation>
 <translation id="5529554942700688235">Resumo do aforro de memoria. Espazo liberado: <ph name="MEMORY_VALUE" /></translation>
+<translation id="5529693968082667490">Mostrar botón Busca de pestanas</translation>
 <translation id="5530977410273748884">Para gardar o teu contrasinal no xestor de contrasinais de Google, fai clic na clave</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quere:</translation>
@@ -8247,6 +8248,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6618013221808317456">Non permitir que os sitios usen a optimización de JavaScript</translation>
+<translation id="6618154741503063152">Produciuse un erro na carga. Non se permiten os anexos.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">O sitio pode facer un seguimento da túa localización</translation>
 <translation id="6619243162837544323">Estado da rede</translation>
@@ -9342,7 +9344,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7368927539449986686">Editar a busca do sitio</translation>
 <translation id="7370592524170198497">EAP de Ethernet:</translation>
 <translation id="7374376573160927383">Xestionar dispositivos USB</translation>
-<translation id="73750335798090836">Se queres contar con protección adicional, usa sempre a impresión dixital, o recoñecemento facial ou outro bloqueo de pantalla cando uses información confidencial, como documentos de identidade ou de viaxe</translation>
 <translation id="7376124766545122644">Non se pode usar esta ligazón. Comproba que comece por "http://" ou "https://" e téntao de novo.</translation>
 <translation id="7376553024552204454">Destacar o cursor do rato cando se move</translation>
 <translation id="7377250337652426186">Para retroceder máis de 1 páxina, fai clic sen soltar no botón Atrás.</translation>
@@ -10342,6 +10343,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8034399942062051455">A optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Cambiar pola vista superior</translation>
 <translation id="8035059678007243127">Páxina de incógnito almacenada na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036143516314698610">Mostrar botón Grupos de pestanas gardados</translation>
 <translation id="8036193484521570992">Axuda a mellorar a función Autocompletar</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Ler o texto falado coa síntese de voz</translation>
