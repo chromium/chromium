@@ -5,8 +5,8 @@
 # Configuration for an Android-14 (U, API 34) AVD on google_apis on x86_64
 
 emulator_package {
-  package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
+  package_name: "chromium/third_party/android_sdk/public/emulator/linux-amd64"
+  version: "QgDCxG9OzoQx04LpwnENgTz3gby5-Kyx6Rsv5yl91p4C"  # 36.4.9 (Stable)
 }
 
 system_image_package {
