@@ -71,6 +71,8 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
 
 #if !BUILDFLAG(IS_CHROMEOS)
     client_ = std::make_unique<MockCloudPolicyClient>();
+    client_->SetDMToken("dm_token");
+    client_->SetClientId("client_id");
     auto* manager = profile_->GetUserCloudPolicyManager();
     CHECK(manager);
     manager->Init(&schema_registry_);
@@ -264,43 +266,39 @@ TEST_F(ExtensionInstallPolicyServiceTest, PolicyUpdateNotifiesObservers) {
 TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
   UserCloudPolicyManager* manager = profile()->GetUserCloudPolicyManager();
   ASSERT_TRUE(manager);
-  ASSERT_TRUE(manager->core()->client());
+  std::unique_ptr<MockCloudPolicyClient> client =
+      std::make_unique<MockCloudPolicyClient>();
+  client->SetDMToken("dm_token");
+  client->SetClientId("client_id");
+  ASSERT_TRUE(manager->extension_install_core()->client());
 
   {
     // This EIPS should now be in types_to_fetch().
-    EXPECT_THAT(manager->core()->client()->types_to_fetch(),
-                testing::UnorderedElementsAre(
-                    PolicyTypeToFetch(dm_protocol::GetChromeUserPolicyType(),
-                                      std::string()),
-                    PolicyTypeToFetch(
-                        dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-                        service_.get())));
+    EXPECT_THAT(manager->extension_install_core()->client()->types_to_fetch(),
+                testing::UnorderedElementsAre(PolicyTypeToFetch(
+                    dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+                    service_.get())));
 
     // Disable the feature, it should get removed from types_to_fetch().
     profile()->GetPrefs()->SetBoolean(
         extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled,
         false);
-    EXPECT_THAT(manager->core()->client()->types_to_fetch(),
-                testing::UnorderedElementsAre(PolicyTypeToFetch(
-                    dm_protocol::GetChromeUserPolicyType(), std::string())));
+    EXPECT_TRUE(
+        manager->extension_install_core()->client()->types_to_fetch().empty());
 
     // Re-enable the feature, it should get re-added to types_to_fetch().
     profile()->GetPrefs()->SetBoolean(
         extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled,
         true);
-    EXPECT_THAT(manager->core()->client()->types_to_fetch(),
-                testing::UnorderedElementsAre(
-                    PolicyTypeToFetch(dm_protocol::GetChromeUserPolicyType(),
-                                      std::string()),
-                    PolicyTypeToFetch(
-                        dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-                        service_.get())));
+    EXPECT_THAT(manager->extension_install_core()->client()->types_to_fetch(),
+                testing::UnorderedElementsAre(PolicyTypeToFetch(
+                    dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+                    service_.get())));
   }
 
   service_->Shutdown();
-  EXPECT_THAT(manager->core()->client()->types_to_fetch(),
-              testing::UnorderedElementsAre(PolicyTypeToFetch(
-                  dm_protocol::GetChromeUserPolicyType(), std::string())));
+  EXPECT_TRUE(
+      manager->extension_install_core()->client()->types_to_fetch().empty());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

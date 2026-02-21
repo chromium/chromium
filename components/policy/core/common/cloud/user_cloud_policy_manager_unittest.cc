@@ -62,7 +62,8 @@ class UserCloudPolicyManagerTest : public testing::Test {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extension_install_store_ = new MockUserCloudPolicyStore(
         dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
-    EXPECT_CALL(*extension_install_store_, Load());
+    // Never allowed unless explicitly initialized.
+    EXPECT_CALL(*extension_install_store_, Load()).Times(0);
 #endif
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     manager_ = std::make_unique<UserCloudPolicyManager>(

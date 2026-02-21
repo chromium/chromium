@@ -60,7 +60,7 @@ class ProfileCloudPolicyManagerTest : public testing::Test {
     EXPECT_CALL(*store_, Load());
     extension_install_store_ = new MockProfileCloudPolicyStore(
         dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
-    EXPECT_CALL(*extension_install_store_, Load());
+    EXPECT_CALL(*extension_install_store_, Load()).Times(0);
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     manager_ = std::make_unique<ProfileCloudPolicyManager>(
         std::unique_ptr<ProfileCloudPolicyStore>(store_),
@@ -96,9 +96,6 @@ TEST_F(ProfileCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   store_->policy_map_ = policy_map_.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(1);
   store_->NotifyStoreLoaded();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_install_store_->NotifyStoreLoaded();
-#endif
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_CALL(*store_, Clear());

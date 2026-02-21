@@ -64,6 +64,12 @@ void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback,
     std::move(callback).Run(false);
     return;
   }
+  // The client has not yet been setup to etch policies or is not supposed to
+  // fetch any policies, bail out.
+  if (!client_->HasPolicyTypeToFetch()) {
+    std::move(callback).Run(false);
+    return;
+  }
   VLOG_POLICY(1, CBCM_ENROLLMENT)
       << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
       << "Triggering policy refresh";
@@ -220,25 +226,20 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
   }
   client_->set_last_policy_timestamp(policy_timestamp);
 
-  // TODO(crbug.com/483099777): Reenable signature verification once a good
-  // solution is found. This is temporarily disabled to avoid breaking existing
-  // enterprise policy fetches.
-  if (!IsExtensionInstallPolicyType(policy_type_)) {
-    // Public key version.
-    if (policy && policy->has_public_key_version()) {
-      VLOG_POLICY(1, CBCM_ENROLLMENT)
-          << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
-          << "Policy from store has public key version, setting it in the "
-            "client."
-          << policy->public_key_version();
-      client_->set_public_key_version(policy->public_key_version());
-    } else {
-      VLOG_POLICY(1, CBCM_ENROLLMENT)
-          << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
-          << "Policy from store does not have public key version, clearing it in "
-            "the client.";
-      client_->clear_public_key_version();
-    }
+  // Public key version.
+  if (policy && policy->has_public_key_version()) {
+    VLOG_POLICY(1, CBCM_ENROLLMENT)
+        << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
+        << "Policy from store has public key version, setting it in the "
+           "client."
+        << policy->public_key_version();
+    client_->set_public_key_version(policy->public_key_version());
+  } else {
+    VLOG_POLICY(1, CBCM_ENROLLMENT)
+        << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
+        << "Policy from store does not have public key version, clearing it in "
+           "the client.";
+    client_->clear_public_key_version();
   }
 
   // Finally, set up registration if necessary.

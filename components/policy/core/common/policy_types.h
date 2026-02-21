@@ -161,6 +161,9 @@ enum class PolicyFetchReason {
   // Policy fetch triggered by the ExtensionInstallPolicyService before an
   // extension is installed.
   kExtensionInstall,
+  // Policy fetch triggered by the ExtensionInstallPolicyService during
+  // initialization.
+  kExtensionInstallInitialization,
 };
 
 }  // namespace policy

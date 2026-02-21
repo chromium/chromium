@@ -119,9 +119,4 @@ const char* CloudPolicyInvalidator::CloudPolicyInvalidationHandler::
   return CloudPolicyInvalidator::GetPolicyInvalidationMetricName(scope);
 }
 
-CloudPolicyStore*
-CloudPolicyInvalidator::CloudPolicyInvalidationHandler::GetCloudPolicyStore()
-    const {
-  return core()->store();
-}
 }  // namespace policy

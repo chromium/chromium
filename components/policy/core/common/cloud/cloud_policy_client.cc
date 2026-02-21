@@ -159,6 +159,8 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::UNNECESSARY_DISCONNECT;
     case PolicyFetchReason::kExtensionInstall:
       return Request::EXTENSION_INSTALL;
+    case PolicyFetchReason::kExtensionInstallInitialization:
+      return Request::EXTENSION_INSTALL_INITIALIZATION;
   }
   NOTREACHED();
 }

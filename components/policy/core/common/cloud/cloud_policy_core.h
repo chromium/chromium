@@ -66,7 +66,6 @@ class POLICY_EXPORT CloudPolicyCore {
   CloudPolicyCore(const std::string& policy_type,
                   const std::string& settings_entity_id,
                   CloudPolicyStore* store,
-                  CloudPolicyStore* extension_install_store,
                   const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                   network::NetworkConnectionTrackerGetter
                       network_connection_tracker_getter);
@@ -80,22 +79,8 @@ class POLICY_EXPORT CloudPolicyCore {
   CloudPolicyStore* store() { return store_; }
   const CloudPolicyStore* store() const { return store_; }
 
-  CloudPolicyStore* extension_install_store() {
-    return extension_install_store_;
-  }
-  const CloudPolicyStore* extension_install_store() const {
-    return extension_install_store_;
-  }
-
   CloudPolicyService* service() { return service_.get(); }
   const CloudPolicyService* service() const { return service_.get(); }
-
-  CloudPolicyService* extension_install_service() {
-    return extension_install_service_.get();
-  }
-  const CloudPolicyService* extension_install_service() const {
-    return extension_install_service_.get();
-  }
 
   CloudPolicyRefreshScheduler* refresh_scheduler() {
     return refresh_scheduler_.get();
@@ -151,6 +136,13 @@ class POLICY_EXPORT CloudPolicyCore {
   void ConnectForTesting(std::unique_ptr<CloudPolicyService> service,
                          std::unique_ptr<CloudPolicyClient> client);
 
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() {
+    return task_runner_;
+  }
+
+  const std::string& policy_type() const { return policy_type_; }
+  const std::string& settings_entity_id() const { return settings_entity_id_; }
+
  private:
   // Updates the refresh scheduler on refresh delay changes.
   void UpdateRefreshDelayFromPref();
@@ -158,12 +150,10 @@ class POLICY_EXPORT CloudPolicyCore {
   std::string policy_type_;
   std::string settings_entity_id_;
   raw_ptr<CloudPolicyStore> store_;
-  raw_ptr<CloudPolicyStore> extension_install_store_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   network::NetworkConnectionTrackerGetter network_connection_tracker_getter_;
   std::unique_ptr<CloudPolicyClient> client_;
   std::unique_ptr<CloudPolicyService> service_;
-  std::unique_ptr<CloudPolicyService> extension_install_service_;
   std::unique_ptr<CloudPolicyRefreshScheduler> refresh_scheduler_;
   std::unique_ptr<RemoteCommandsService> remote_commands_service_;
   std::unique_ptr<IntegerPrefMember> refresh_delay_;

@@ -62,7 +62,6 @@ class ReportingServerConnector::TestEnvironment {
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<policy::DeviceManagementService> device_management_service_;
   std::unique_ptr<::policy::CloudPolicyStore> store_;
-  std::unique_ptr<::policy::CloudPolicyStore> extension_install_store_;
   std::unique_ptr<::policy::CloudPolicyCore> core_;
 };
 }  // namespace reporting

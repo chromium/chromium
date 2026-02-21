@@ -134,16 +134,13 @@ class PolicyInvalidator : public invalidation::InvalidationListener::Observer,
 
     bool IsCoreReady() const {
       return core_->IsConnected() && core_->refresh_scheduler() &&
-             GetCloudPolicyStore();
+             core_->store();
     }
 
     virtual const char* GetPolicyRefreshMetricName(
         PolicyInvalidationScope scope) = 0;
     virtual const char* GetPolicyInvalidationMetricName(
         PolicyInvalidationScope scope) = 0;
-
-    // Returns the cloud policy store that is handled by this invalidator.
-    virtual CloudPolicyStore* GetCloudPolicyStore() const = 0;
 
     CloudPolicyCore* core() const { return core_; }
 

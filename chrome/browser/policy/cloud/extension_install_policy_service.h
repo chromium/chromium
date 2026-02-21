@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/disable_reason.h"
@@ -106,7 +108,15 @@ class ExtensionInstallPolicyServiceImpl
   void Shutdown() override;
 
  private:
-  CloudPolicyManager* GetUserCloudPolicyManagerIfConnected() const;
+  class ClientInitializationWaiter;
+
+  struct PolicyManagerInfo {
+    raw_ref<CloudPolicyManager> manager;
+    std::string policy_type;
+  };
+
+  std::vector<PolicyManagerInfo> GetPolicyManagerInfos() const;
+  std::vector<PolicyManagerInfo> GetConnectedPolicyManagerInfos() const;
 
   // Adds or removes from CloudPolicyClient::types_to_fetch_ based on
   // the current value of the pref
@@ -115,8 +125,14 @@ class ExtensionInstallPolicyServiceImpl
 
   void NotifyExtensionInstallPolicyUpdated();
 
+  void OnCloudPolicyManagerReady(CloudPolicyManager* manager);
+
   base::ObserverList<ExtensionInstallPolicyService::Observer> observers_;
-  raw_ptr<Profile> profile_;
+  raw_ref<Profile> profile_;
+
+  base::flat_map<CloudPolicyManager*,
+                 std::unique_ptr<ClientInitializationWaiter>>
+      initialization_waiters_;
 
   PrefChangeRegistrar pref_change_registrar_;
 };

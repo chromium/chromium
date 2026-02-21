@@ -138,7 +138,6 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
       core_(dm_protocol::kChromePublicAccountPolicyType,
             store_->account_id(),
             store_.get(),
-            /*extension_install_store=*/nullptr,
             task_runner,
             base::BindRepeating(&content::GetNetworkConnectionTracker)),
       policy_update_callback_(policy_update_callback),
