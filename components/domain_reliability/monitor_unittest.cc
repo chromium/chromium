@@ -84,6 +84,7 @@ class DomainReliabilityMonitorTest : public testing::Test {
 
   ~DomainReliabilityMonitorTest() override {
     monitor_.Shutdown();
+    time_ = nullptr;
   }
 
   static RequestInfo MakeRequestInfo() {
@@ -127,7 +128,7 @@ class DomainReliabilityMonitorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<net::URLRequestContext> url_request_context_;
-  raw_ptr<MockTime, DanglingUntriaged> time_;
+  raw_ptr<MockTime> time_;
   DomainReliabilityMonitor monitor_;
   DomainReliabilityMonitor::RequestInfo request_;
 };
