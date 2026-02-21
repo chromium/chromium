@@ -121,6 +121,9 @@ class PLATFORM_EXPORT ElasticOverscrollController {
     // MomentumAnimated, and is initialized in EnterStateMomentumAnimated.
     gfx::Vector2dF momentum_animation_initial_stretch;
     gfx::Vector2dF momentum_animation_initial_velocity;
+
+    // Whether this entry is currently receiving momentum events.
+    bool is_in_momentum_phase = false;
   };
 
   // These methods that are "real" should only be called if the associated event
