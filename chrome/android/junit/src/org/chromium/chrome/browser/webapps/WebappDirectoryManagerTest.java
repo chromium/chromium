@@ -13,17 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowApplication;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -32,10 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests that directories for WebappActivities are managed correctly. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@Config(manifest = Config.NONE)
 public class WebappDirectoryManagerTest {
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
@@ -65,7 +59,7 @@ public class WebappDirectoryManagerTest {
                             @Override
                             public void onWebappDataStorageRetrieved(WebappDataStorage storage) {}
                         });
-        ShadowApplication.runBackgroundTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -157,6 +151,6 @@ public class WebappDirectoryManagerTest {
 
     private void runCleanup() {
         WebappDirectoryManager.cleanUpDirectories();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 }

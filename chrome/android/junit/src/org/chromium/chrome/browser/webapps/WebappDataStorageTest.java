@@ -19,13 +19,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -41,10 +39,7 @@ import java.util.concurrent.TimeUnit;
  * expected.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {BackgroundShadowAsyncTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@Config(manifest = Config.NONE)
 public class WebappDataStorageTest {
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
@@ -111,8 +106,7 @@ public class WebappDataStorageTest {
                                 assertTrue(expected.sameAs(actual));
                             }
                         });
-        BackgroundShadowAsyncTask.runBackgroundTasks();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertTrue(mCallbackCalled);
     }
@@ -123,8 +117,7 @@ public class WebappDataStorageTest {
         Bitmap expectedImage = createBitmap();
         String imageAsString = BitmapHelper.encodeBitmapAsString(expectedImage);
         WebappDataStorage.open("test").updateSplashScreenImage(imageAsString);
-        BackgroundShadowAsyncTask.runBackgroundTasks();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 imageAsString,

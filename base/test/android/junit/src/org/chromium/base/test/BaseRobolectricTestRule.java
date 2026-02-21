@@ -157,4 +157,8 @@ public class BaseRobolectricTestRule implements TestRule {
     public static int runAllBackgroundAndUi() {
         return RobolectricUtil.runAllBackgroundAndUi();
     }
+
+    public static PausedExecutorService getPausedExecutor() {
+        return sPausedExecutor;
+    }
 }

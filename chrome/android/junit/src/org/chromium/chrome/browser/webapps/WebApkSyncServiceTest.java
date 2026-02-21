@@ -20,13 +20,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 import org.w3c.dom.Document;
 
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
@@ -45,10 +43,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Tests the WebApkSyncService class */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {BackgroundShadowAsyncTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@Config(manifest = Config.NONE)
 public class WebApkSyncServiceTest {
     private static final String START_URL = "https://example.com/start";
     private static final String MANIFEST_ID = "https://example.com/id";
@@ -98,8 +93,7 @@ public class WebApkSyncServiceTest {
                                 helper.notifyCalled();
                             }
                         });
-        BackgroundShadowAsyncTask.runBackgroundTasks();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         helper.waitForOnly();
 
         return WebappRegistry.getInstance().getWebappDataStorage(webappId);

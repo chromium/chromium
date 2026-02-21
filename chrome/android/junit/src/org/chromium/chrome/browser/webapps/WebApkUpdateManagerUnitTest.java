@@ -33,10 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -45,8 +42,6 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
@@ -83,10 +78,7 @@ import java.util.Map;
 
 /** Unit tests for WebApkUpdateManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {BackgroundShadowAsyncTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@Config(manifest = Config.NONE)
 public class WebApkUpdateManagerUnitTest {
     @Mock public Activity mActivityMock;
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -417,8 +409,7 @@ public class WebApkUpdateManagerUnitTest {
                                 helper.notifyCalled();
                             }
                         });
-            BackgroundShadowAsyncTask.runBackgroundTasks();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         helper.waitForOnly();
     }
@@ -736,7 +727,6 @@ public class WebApkUpdateManagerUnitTest {
     public void setUp() throws Exception {
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
-        PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
 
         WebApkUpdateManagerJni.setInstanceForTesting(new TestWebApkUpdateManagerJni());
 
@@ -926,7 +916,7 @@ public class WebApkUpdateManagerUnitTest {
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(updateManager.updateRequested());
         assertEquals(NAME, updateManager.requestedUpdateName());
         assertEquals(MANIFEST_ID, updateManager.requestedAppKey());
@@ -956,7 +946,7 @@ public class WebApkUpdateManagerUnitTest {
 
         updateManager.onDestroy();
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse(updateManager.updateRequested());
     }
 
@@ -1800,7 +1790,7 @@ public class WebApkUpdateManagerUnitTest {
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(updateManager.updateRequested());
         assertEquals(NAME, updateManager.requestedUpdateName());
 
