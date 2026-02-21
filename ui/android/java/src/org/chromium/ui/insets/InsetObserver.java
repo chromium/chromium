@@ -14,6 +14,7 @@ import static androidx.core.view.WindowInsetsCompat.Type.systemGestures;
 import static androidx.core.view.WindowInsetsCompat.Type.systemOverlays;
 import static androidx.core.view.WindowInsetsCompat.Type.tappableElement;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -66,6 +67,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             new WindowInsetsConsumer[InsetConsumerSource.COUNT];
 
     private final ImmutableWeakReference<View> mRootViewReference;
+    private final ImmutableWeakReference<Context> mContextReference;
     // Insets to be added to the current safe area.
     private int mBottomInsetsForEdgeToEdge;
     private final Rect mDisplayCutoutRect;
@@ -232,14 +234,19 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * Creates an instance of {@link InsetObserver}.
      *
      * @param rootViewWeakRef A weak reference to the root view of the app.
+     * @param contextWeakRef A weak reference to the context.
      * @param enableKeyboardOverlayMode Whether the keyboard can be considered to be in "overlay"
      *     mode, where its inset shouldn't affect the size of the viewport.
+     * @param enableExtraEdgeToEdgeLogging Whether extra logs should be emitted related to
+           insets and edge-to-edge state.
      */
     public InsetObserver(
             ImmutableWeakReference<View> rootViewWeakRef,
+            ImmutableWeakReference<Context> contextWeakRef,
             boolean enableKeyboardOverlayMode,
             boolean enableExtraEdgeToEdgeLogging) {
         mRootViewReference = rootViewWeakRef;
+        mContextReference = contextWeakRef;
         mEnableKeyboardOverlayMode = enableKeyboardOverlayMode;
         mEnableExtraEdgeToEdgeLogging = enableExtraEdgeToEdgeLogging;
         mWindowInsets = new Rect();
@@ -621,16 +628,24 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private void updateCurrentSafeArea() {
         // When display cutout already included in the system bar insets, do not consider it as safe
         // area.
-        Insets systemBarInsets =
-                getLastRawWindowInsets() == null
-                        ? Insets.NONE
-                        : getLastRawWindowInsets().getInsets(WindowInsetsCompat.Type.systemBars());
+        Insets extraInsets = Insets.NONE;
+        Context context = mContextReference.get();
+        if (getLastRawWindowInsets() != null && context != null) {
+            boolean shouldPadDisplayCutout =
+                    WindowInsetsUtils.shouldPadDisplayCutout(getLastRawWindowInsets(), context);
+            extraInsets =
+                    getLastRawWindowInsets()
+                            .getInsets(
+                                    shouldPadDisplayCutout
+                                            ? systemBars() + displayCutout()
+                                            : systemBars());
+        }
         Rect newSafeArea =
                 new Rect(
-                        Math.max(0, mDisplayCutoutRect.left - systemBarInsets.left),
-                        Math.max(0, mDisplayCutoutRect.top - systemBarInsets.top),
-                        Math.max(0, mDisplayCutoutRect.right - systemBarInsets.right),
-                        Math.max(0, mDisplayCutoutRect.bottom - systemBarInsets.bottom));
+                        Math.max(0, mDisplayCutoutRect.left - extraInsets.left),
+                        Math.max(0, mDisplayCutoutRect.top - extraInsets.top),
+                        Math.max(0, mDisplayCutoutRect.right - extraInsets.right),
+                        Math.max(0, mDisplayCutoutRect.bottom - extraInsets.bottom));
         newSafeArea.bottom += mBottomInsetsForEdgeToEdge;
         // If the safe area has not changed then we should stop now.
         if (newSafeArea.equals(mCurrentSafeArea)) {

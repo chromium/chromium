@@ -18,6 +18,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -85,6 +86,7 @@ public class InsetObserverTest {
 
     @Mock private InsetObserver.WindowInsetObserver mObserver;
 
+    @Mock private Context mContext;
     @Mock private WindowInsetsCompat mInsets;
     @Mock private WindowInsetsCompat mModifiedInsets;
     @Mock private WindowInsets mNonCompatInsets;
@@ -151,6 +153,7 @@ public class InsetObserverTest {
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
+                        new ImmutableWeakReference<>(mContext),
                         /* enableKeyboardOverlayMode= */ true,
                         /* enableExtraEdgeToEdgeLogging= */ false);
         mInsetObserver.addObserver(mObserver);
@@ -422,6 +425,7 @@ public class InsetObserverTest {
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
+                        new ImmutableWeakReference<>(mContext),
                         /* enableKeyboardOverlayMode= */ true,
                         /* enableExtraEdgeToEdgeLogging= */ false);
         assertEquals(
@@ -436,6 +440,7 @@ public class InsetObserverTest {
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
+                        new ImmutableWeakReference<>(mContext),
                         /* enableKeyboardOverlayMode= */ true,
                         /* enableExtraEdgeToEdgeLogging= */ false);
         WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
@@ -507,6 +512,7 @@ public class InsetObserverTest {
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
+                        new ImmutableWeakReference<>(mContext),
                         /* enableKeyboardOverlayMode= */ true,
                         /* enableExtraEdgeToEdgeLogging= */ false);
         WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
@@ -578,6 +584,7 @@ public class InsetObserverTest {
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
+                        new ImmutableWeakReference<>(mContext),
                         /* enableKeyboardOverlayMode= */ true,
                         /* enableExtraEdgeToEdgeLogging= */ false);
         WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
@@ -649,6 +656,7 @@ public class InsetObserverTest {
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
+                        new ImmutableWeakReference<>(mContext),
                         /* enableKeyboardOverlayMode= */ true,
                         /* enableExtraEdgeToEdgeLogging= */ false);
         WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);

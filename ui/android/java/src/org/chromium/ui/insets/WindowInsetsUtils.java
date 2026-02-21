@@ -4,16 +4,25 @@
 
 package org.chromium.ui.insets;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.RegionIterator;
+import android.util.DisplayMetrics;
 import android.util.Size;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 
 import androidx.core.graphics.Insets;
+import androidx.core.view.DisplayCutoutCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsCompat.Type;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -305,6 +314,66 @@ public final class WindowInsetsUtils {
         final Rect rect = new Rect();
         while (it.next(rect)) {
             rectConsumer.onResult(rect);
+        }
+    }
+
+    // Determine if padding is necessary according to WindowManager.LayoutParams. This is intended
+    // to keep the behavior for Android 15-.
+    // Ref: https://developer.android.com/develop/ui/views/layout/display-cutout
+    public static boolean shouldPadDisplayCutout(
+            @Nullable WindowInsetsCompat insets, Context context) {
+        if (insets == null) return true;
+
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) {
+            Log.w(TAG, "should not receive window insets in non-activity context.");
+            return false;
+        }
+
+        DisplayCutoutCompat cutout = insets.getDisplayCutout();
+        if (cutout == null) return false;
+
+        int cutoutMode = activity.getWindow().getAttributes().layoutInDisplayCutoutMode;
+        switch (cutoutMode) {
+            case WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS:
+                return false;
+            case WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER:
+                return true;
+            case WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES:
+                // For web compatibility, we should add padding when insets does not overlap with
+                // system bars.
+                DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
+                boolean isPortrait = displayMetrics.widthPixels < displayMetrics.heightPixels;
+
+                if (isPortrait) {
+                    // width < height, top / bottom are the short edge.
+                    return cutout.getSafeInsetLeft() > 0 || cutout.getSafeInsetRight() > 0;
+                }
+                // else: height > width, left / right are the short edges
+                return cutout.getSafeInsetTop() > 0 || cutout.getSafeInsetBottom() > 0;
+
+            default: // LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+                assert cutoutMode
+                        == WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+                // From Android's doc: The window is allowed to extend into the DisplayCutout area,
+                // only if the DisplayCutout is fully contained within a system bar or the
+                // DisplayCutout is not deeper than 16 dp.
+
+                Insets systemInsets = insets.getInsets(Type.systemBars());
+                Insets systemAndCutoutInsets =
+                        insets.getInsets(Type.systemBars() + Type.displayCutout());
+                if (systemInsets.equals(systemAndCutoutInsets)) {
+                    return false;
+                }
+
+                float density = activity.getResources().getDisplayMetrics().density;
+                RectF rect =
+                        new RectF(
+                                cutout.getSafeInsetLeft() / density,
+                                cutout.getSafeInsetTop() / density,
+                                cutout.getSafeInsetRight() / density,
+                                cutout.getSafeInsetBottom() / density);
+                return (rect.left > 16 || rect.top > 16 || rect.right > 16 || rect.bottom > 16);
         }
     }
 }

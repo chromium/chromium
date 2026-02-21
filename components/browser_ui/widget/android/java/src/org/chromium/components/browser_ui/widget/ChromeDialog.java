@@ -73,6 +73,7 @@ public class ChromeDialog extends ComponentDialog {
             mInsetObserver =
                     new InsetObserver(
                             new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()),
+                            new ImmutableWeakReference<>(mActivity),
                             // Keyboard overlay mode is enabled by default and is currently only
                             // relevant to the DeferredImeWindowInsetApplicationCallback.
                             /* enableKeyboardOverlayMode= */ true,

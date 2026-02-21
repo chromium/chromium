@@ -787,6 +787,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private InsetObserver createInsetObserver() {
         return new InsetObserver(
                 new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()),
+                new ImmutableWeakReference<>(this),
                 ChromeFeatureList.sAccountForSuppressedKeyboardInsets.isEnabled(),
                 ChromeFeatureList.sEdgeToEdgeExtraLogs.isEnabled());
     }
