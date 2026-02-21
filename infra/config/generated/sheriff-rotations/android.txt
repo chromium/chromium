@@ -26,6 +26,7 @@ ci/android-16-x64-rel
 ci/android-androidx-packager
 ci/android-archive-rel
 ci/android-arm64-archive-rel
+ci/android-bfcache-rel
 ci/android-binary-size-generator
 ci/android-cast-arm-dbg
 ci/android-cast-arm-rel

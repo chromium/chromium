@@ -18,6 +18,7 @@ chromium/try/android-16-x64-rel
 chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-compile-dbg
 chromium/try/android-arm64-rel
+chromium/try/android-bfcache-rel
 chromium/try/android-cast-arm-dbg
 chromium/try/android-cast-arm-rel
 chromium/try/android-cast-arm64-dbg
