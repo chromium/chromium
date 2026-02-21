@@ -175,9 +175,9 @@ std::string GetPendingRequestUrls(network::TestURLLoaderFactory& factory) {
 
 std::string GeneratePendingRequestsDebugMsg(
     network::TestURLLoaderFactory& factory,
-    const std::string& expected_url_spec) {
-  return "Pending requests: " + GetPendingRequestUrls(factory) +
-         "\nExpected: " + expected_url_spec;
+    std::string_view expected_url_spec) {
+  return base::StrCat({"Pending requests: ", GetPendingRequestUrls(factory),
+                       "\nExpected: ", expected_url_spec});
 }
 
 // A fixture to initialize and operate on the execution environment.

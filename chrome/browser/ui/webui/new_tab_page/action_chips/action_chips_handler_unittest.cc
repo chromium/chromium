@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -482,20 +483,14 @@ TEST_F(
             actual_chips = std::move(action_chips);
             run_loop.Quit();
           });
-  std::vector<ActionChipPtr> chips;
-  chips.push_back(ActionChip::New("title1", "subtitle1", "suggention1",
-                                  ChipType::kDeepSearch,
-                                  SuggestTemplateInfo::New(), nullptr));
-  chips.push_back(ActionChip::New("title2", "subtitle2", "suggention2",
-                                  ChipType::kDeepSearch,
-                                  SuggestTemplateInfo::New(), nullptr));
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
-      .WillOnce(
-          [&chips](
-              base::optional_ref<const tabs::TabInterface>,
-              base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
-            std::move(callback).Run(std::move(chips));
-          });
+      .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
+          ActionChip::New("title1", "subtitle1", "suggention1",
+                          ChipType::kDeepSearch, SuggestTemplateInfo::New(),
+                          nullptr),
+          ActionChip::New("title2", "subtitle2", "suggention2",
+                          ChipType::kDeepSearch, SuggestTemplateInfo::New(),
+                          nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();
@@ -518,12 +513,7 @@ TEST_F(ActionChipsHandlerTest,
             run_loop.Quit();
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
-      .WillOnce(
-          [](base::optional_ref<const tabs::TabInterface>,
-             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
-            // Return no chip
-            std::move(callback).Run(std::vector<ActionChipPtr>());
-          });
+      .WillOnce(base::test::RunOnceCallback<1>(std::vector<ActionChipPtr>()));
 
   // Act
   handler().StartActionChipsRetrieval();
@@ -545,13 +535,8 @@ TEST_F(ActionChipsHandlerTest,
             run_loop.Quit();
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
-      .WillOnce(
-          [](base::optional_ref<const tabs::TabInterface>,
-             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
-            std::vector<ActionChipPtr> chips;
-            chips.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
-            std::move(callback).Run(std::move(chips));
-          });
+      .WillOnce(base::test::RunOnceCallback<1>(
+          MakeActionChipsVector(MakeActionChip(CreateStaticDeepSearchChip()))));
   handler().StartActionChipsRetrieval();
   run_loop.Run();
   EXPECT_THAT(actual_chips, IsEmpty());
@@ -572,13 +557,8 @@ TEST_F(ActionChipsHandlerTest,
             run_loop.Quit();
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
-      .WillOnce(
-          [](base::optional_ref<const tabs::TabInterface>,
-             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
-            std::vector<ActionChipPtr> chips;
-            chips.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
-            std::move(callback).Run(std::move(chips));
-          });
+      .WillOnce(base::test::RunOnceCallback<1>(
+          MakeActionChipsVector(MakeActionChip(CreateStaticDeepSearchChip()))));
   handler().StartActionChipsRetrieval();
   run_loop.Run();
   EXPECT_FALSE(actual_chips.empty());
@@ -657,9 +637,9 @@ TEST_F(ActionChipsHandlerTest, ContextSharingDisabled) {
 
   // Assert
   // Expect only the tool chips, no recent tab chip.
-  std::vector<ActionChipPtr> expected;
-  expected.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
-  expected.push_back(MakeActionChip(CreateStaticImageGenerationChip()));
+  auto expected =
+      MakeActionChipsVector(MakeActionChip(CreateStaticDeepSearchChip()),
+                            MakeActionChip(CreateStaticImageGenerationChip()));
 
   std::vector<Matcher<ActionChipPtr>> matchers;
   std::transform(expected.begin(), expected.end(), std::back_inserter(matchers),

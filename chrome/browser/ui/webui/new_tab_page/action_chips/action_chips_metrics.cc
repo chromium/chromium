@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -52,7 +53,7 @@ void RecordActionChipsRequestStatus(
 }
 
 void RecordImpressionMetrics(
-    const std::vector<action_chips::mojom::ActionChipPtr>& chips) {
+    base::span<const action_chips::mojom::ActionChipPtr> chips) {
   for (const auto& chip : chips) {
     base::UmaHistogramEnumeration("NewTabPage.ActionChips.Shown", chip->type);
   }
