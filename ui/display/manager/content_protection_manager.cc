@@ -181,8 +181,14 @@ void ContentProtectionManager::KillTasks() {
                   [this](const auto& pair) { return !GetDisplay(pair.first); });
   }
 
-  // Fire failure callbacks.
-  tasks_ = {};
+  // Move |tasks_| to new queue first before firing each task's failure
+  // callback. This avoids issues if a re-entrant call is made when tasks are
+  // being killed.
+  base::queue<std::unique_ptr<Task>> tasks;
+  tasks.swap(tasks_);
+  tasks = {};
+
+  CHECK(tasks_.empty());
 
   ToggleDisplaySecurityPolling();
 }
