@@ -83,8 +83,7 @@ LoadState TcpConnectJob::GetLoadState() const {
 }
 
 bool TcpConnectJob::HasEstablishedConnection() const {
-  // TODO(https://crbug.com/484073410): Implement this.
-  return true;
+  return has_established_connection_;
 }
 
 ConnectionAttempts TcpConnectJob::GetConnectionAttempts() const {

@@ -234,6 +234,12 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // the address of any connected socket before use, in case it changes.
   bool is_svcb_optional_ = true;
 
+  // True once a connection has been established. Only relevant when waiting a
+  // crypto ready, after establishing a connection. Per spec of
+  // ConnectJob::HasEstablishedConnection(), once set to true, will not be
+  // cleared, even if the connection is ultimately disabled.
+  bool has_established_connection_ = false;
+
   // IP that was used, in the case of success.
   std::optional<IPEndPoint> final_address_;
 

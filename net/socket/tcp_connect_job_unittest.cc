@@ -163,6 +163,10 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
     ASSERT_THAT(test_delegate_->socket()->GetPeerAddress(&actual_ip_endpoint),
                 IsOk());
     EXPECT_EQ(actual_ip_endpoint, expected_ip_endpoint);
+    // If there's a connection, HasEstablishedConnection() must be true. May or
+    // may not be true when there's no connection, so can't do anything by
+    // default in the failure path.
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   }
 
   // Combines InitConnectJob() and connect_job_->Connect(). Mostly used for
@@ -253,6 +257,7 @@ TEST_F(TcpConnectJobTest, DnsErrorAsync) {
       ->set_resolve_error_info(kResolveErrorInfo)
       .CompleteStartAsynchronously(ERR_FAILED);
   InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
 }
 
@@ -271,6 +276,7 @@ TEST_F(TcpConnectJobTest, DnsErrorDuringConnect) {
           .CallOnServiceEndpointRequestFinished(ERR_FAILED);
     }));
     InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
   }
 }
@@ -286,11 +292,16 @@ TEST_F(TcpConnectJobTest, DnsErrorAfterConnectStart) {
       request->set_crypto_ready(crypto_ready)
           .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
           .CallOnServiceEndpointsUpdated();
+
       connect_completer.WaitForConnect();
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
       request->set_resolve_error_info(kResolveErrorInfo)
           .CallOnServiceEndpointRequestFinished(ERR_FAILED);
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     }));
     InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
   }
 }
@@ -305,11 +316,14 @@ TEST_F(TcpConnectJobTest, DnsErrorAfterConnectComplete) {
     request->set_crypto_ready(false)
         .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
         .CallOnServiceEndpointsUpdated();
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     connect_completer.WaitForConnectAndComplete(OK);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     request->set_resolve_error_info(kResolveErrorInfo)
         .CallOnServiceEndpointRequestFinished(ERR_FAILED);
   }));
   InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
 }
 
@@ -322,6 +336,7 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsSyncConnect) {
   AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV4Endpoint1);
   InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
                           /*expect_sync_result=*/true);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
 }
 
@@ -331,6 +346,7 @@ TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsSyncConnect) {
       .CompleteStartSynchronously(OK);
   AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
   InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/true);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
 TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsAsyncConnect) {
@@ -342,6 +358,7 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsAsyncConnect) {
   AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
   InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
                           /*expect_sync_result=*/false);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
 }
 
@@ -351,6 +368,7 @@ TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsAsyncConnect) {
       .CompleteStartSynchronously(OK);
   AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
   InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
 TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsSyncConnect) {
@@ -362,6 +380,7 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsSyncConnect) {
   AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV4Endpoint1);
   InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
                           /*expect_sync_result=*/false);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
 }
 
@@ -371,6 +390,7 @@ TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsSyncConnect) {
       .CompleteStartAsynchronously(OK);
   AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
   InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
 TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsAsyncConnect) {
@@ -382,6 +402,7 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsAsyncConnect) {
   AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
   InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
                           /*expect_sync_result=*/false);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
 }
 
@@ -391,6 +412,7 @@ TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsAsyncConnect) {
       .CompleteStartAsynchronously(OK);
   AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
   InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
 // Test the case where DNS never completes, but is crypto ready and provides an
@@ -410,6 +432,7 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessPartialDns) {
     AddConnect(MockConnect(connect, OK), kIpV4Endpoint1);
     InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
                             /*expect_sync_result=*/false);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
   }
 }
@@ -432,7 +455,9 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessThenCryptoReady) {
       auto request = host_resolver_.AddFakeRequest();
       request->set_start_callback(base::BindLambdaForTesting([&]() {
         request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+        EXPECT_FALSE(connect_job_->HasEstablishedConnection());
         connect_completer.WaitForConnectAndComplete(OK);
+        EXPECT_TRUE(connect_job_->HasEstablishedConnection());
         if (dns_completes) {
           request->set_crypto_ready(true)
               .set_aliases(kDnsAliases)
@@ -446,6 +471,7 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessThenCryptoReady) {
       InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
                               /*expect_sync_result=*/false);
       EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
   }
 }
@@ -464,7 +490,9 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessThenCryptoReady2) {
       auto request = host_resolver_.AddFakeRequest();
       request->set_start_callback(base::BindLambdaForTesting([&]() {
         request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+        EXPECT_FALSE(connect_job_->HasEstablishedConnection());
         connect_completer.WaitForConnectAndComplete(OK);
+        EXPECT_TRUE(connect_job_->HasEstablishedConnection());
 
         // A superfluous OnServiceEndpointsUpdated() event. We could add more
         // endpoints, but it's not needed for this test. It should not cause the
@@ -903,7 +931,9 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartNoUsableIps) {
     // Even if the connection completes, without crypto ready being set, the
     // ConnectJob won't complete.
     if (connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     // DNS request completes, at which point we learn that no IPs are usable.
@@ -915,13 +945,16 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartNoUsableIps) {
     // Currently, we wait for complete before checking if the destination is
     // usable again.
     if (!connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     // It is a little weird to fail with this error when we actually did get
     // some IP addresses, but this is what we currently do.
     EXPECT_THAT(test_delegate_->WaitForResult(),
                 IsError(ERR_NAME_NOT_RESOLVED));
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
 }
@@ -957,7 +990,9 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartDifferentUsableIp) {
     // Even if the connection completes, without crypto ready being set, the
     // ConnectJob won't complete.
     if (connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     // DNS request completes, at which point we learn that no IPs are usable.
@@ -969,11 +1004,14 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartDifferentUsableIp) {
     // Currently, we wait for complete before checking if the destination is
     // usable again.
     if (!connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
     CheckConnection(kIpV6Endpoint1, service_endpoint_https);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
 }
@@ -1009,7 +1047,9 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartSameUsableIp) {
     // Even if the connection completes, without crypto ready being set, the
     // ConnectJob won't complete.
     if (connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     // DNS request completes, at which point we learn that no IPs are usable.
@@ -1019,11 +1059,14 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartSameUsableIp) {
         .CallOnServiceEndpointRequestFinished(OK);
 
     if (!connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
     CheckConnection(kIpV6Endpoint1, service_endpoint_https);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
 }
@@ -1059,7 +1102,9 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartSameUsableIpNoEch) {
     // Even if the connection completes, without crypto ready being set, the
     // ConnectJob won't complete.
     if (connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     // DNS request completes, at which point we learn that no IPs are usable.
@@ -1069,11 +1114,14 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartSameUsableIpNoEch) {
         .CallOnServiceEndpointRequestFinished(OK);
 
     if (!connect_complete_before_crypto_ready) {
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer.Complete(OK);
+      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
     EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
     CheckConnection(kIpV6Endpoint1, service_endpoint_https);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
 }
@@ -1109,9 +1157,11 @@ TEST_F(TcpConnectJobTest, ConnectsStallForDns) {
 
       // Fail the first request. No second request should be made yet, since the
       // second ServiceEndpoint hasn't been received yet.
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer1.WaitForConnectAndComplete(ERR_FAILED);
       FastForwardBy(base::Milliseconds(1));
       EXPECT_FALSE(test_delegate_->has_result());
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 
       // Add an extra endpoint that should not resume connecting, if needed.
       if (add_superfluous_endpoint) {
@@ -1125,7 +1175,10 @@ TEST_F(TcpConnectJobTest, ConnectsStallForDns) {
       // should trigger the final connection attempt.
       request->add_endpoint(service_endpoint2)
           .CallOnServiceEndpointRequestFinished(OK);
+      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
       connect_completer2.WaitForConnectAndComplete(final_connect_result);
+      EXPECT_EQ(connect_job_->HasEstablishedConnection(),
+                final_connect_result == OK);
 
       EXPECT_THAT(test_delegate_->WaitForResult(),
                   IsError(final_connect_result));

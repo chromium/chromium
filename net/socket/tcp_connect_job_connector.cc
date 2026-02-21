@@ -182,6 +182,10 @@ int TcpConnectJob::Connector::DoTcpConnectComplete(int result) {
     return OnEndpointFailed(result);
   }
 
+  // The connection attempt succeeded, so can set this to true. This will
+  // prevent any new backup ConnectJobs from being made.
+  parent_->has_established_connection_ = true;
+
   next_state_ = State::kVerifyIPEndPointUsable;
   return OK;
 }
