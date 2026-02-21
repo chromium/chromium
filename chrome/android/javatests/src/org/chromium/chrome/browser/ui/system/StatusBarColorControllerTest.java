@@ -79,6 +79,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 // TODO(crbug.com/428056054): Do not read color from system window bars on B+.

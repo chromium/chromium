@@ -53,6 +53,7 @@ import java.util.Collection;
 @Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
 })
 public class HubActionButtonViewUnitTest {
     // All the tests in this file will run twice, once for isXrDevice=true and once for
@@ -179,13 +180,8 @@ public class HubActionButtonViewUnitTest {
 
     @Test
     public void testColorMixer() {
+        // Verify that color mixer was set on the button
         mPropertyModel.set(COLOR_MIXER, mColorMixer);
-
-        if (HubUtils.isGtsUpdateEnabled()) {
-            verify(mColorMixer, times(2)).registerBlend(any());
-        } else {
-            // Behaves differently on XR devices.
-            verify(mColorMixer).registerBlend(any());
-        }
+        verify(mColorMixer).registerBlend(any());
     }
 }
