@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Files that test importing of mojom files into other files
+# FOR_RELEASE: Ideally we would re-use the tests in
+# mojo/public/interfaces/bindings/tests, but we don't support all the features
+# yet.
+group("import_tests") {
+  testonly = true
+  public_deps = [
+    ":crate2",
+    ":crate2_rust",
+  ]
+}
+
+# Target 1: Two leaf files and one that imports them.
+mojom("crate1") {
+  testonly = true
+  generate_rust = true
+  sources = [
+    "imports_a_b.test-mojom",
+    "leaf_a.test-mojom",
+    "leaf_b.test-mojom",
+  ]
+}
+
+# Target 2: The remaining leaf file and the one that imports everything else.
+mojom("crate2") {
+  testonly = true
+  generate_rust = true
+  sources = [
+    "imports_a_c.test-mojom",
+    "leaf_c.test-mojom",
+  ]
+  public_deps = [ ":crate1" ]
+}

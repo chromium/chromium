@@ -8,34 +8,34 @@
 
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+{#- FOR_RELEASE: See if we can only add imports that are actually needed #}
+#![allow(unused_imports)]
 
 chromium::import! {
     "//mojo/public/rust/mojom_value_parser";
     "//mojo/public/rust/bindings";
     "//mojo/public/rust/system";
+{% for imprt in imports %}
+    "{{imprt}}";
+{%- endfor %}
 }
 
-{#- FOR RELEASE (optional): Look into calling rustfmt as part of the generation process #}
-
-use mojom_value_parser::*;
-
-#[allow(unused_imports)]
 use std::collections::HashMap;
-#[allow(unused_imports)]
 use ordered_float::OrderedFloat;
 
-{%- for enum in module.enums %}
-{{- declare_enum(enum.name, enum)}}
-{%- endfor %}
+use mojom_value_parser::*;
+{% for enum in module.enums %}
+{{ declare_enum(enum.name, enum)}}
+{% endfor -%}
 
-{%- for union in module.unions %}
-{{- declare_union(union.name, union)}}
-{%- endfor %}
+{% for union in module.unions %}
+{{ declare_union(union.name, union)}}
+{% endfor -%}
 
-{%- for struct in module.structs %}
-{{- declare_struct(struct.name, struct, true)}}
-{%- endfor %}
+{% for struct in module.structs %}
+{{ declare_struct(struct.name, struct, true)}}
+{% endfor -%}
 
-{%- for interface in module.interfaces %}
-{{- declare_interface(interface)}}
-{%- endfor %}
+{% for interface in module.interfaces %}
+{{ declare_interface(interface)}}
+{%- endfor -%}

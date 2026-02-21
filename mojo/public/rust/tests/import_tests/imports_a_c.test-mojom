@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module imports_ac.mojom;
+
+import "mojo/public/rust/tests/import_tests/leaf_a.test-mojom";
+import "mojo/public/rust/tests/import_tests/leaf_c.test-mojom";
+import "mojo/public/rust/tests/import_tests/imports_a_b.test-mojom";
+
+struct MessageAC {
+  leaf_a.mojom.StructA a;
+  leaf_c.mojom.StructC c;
+};
+
+interface InterfaceAC {
+  PassData(MessageAC ac, imports_ab.mojom.MessageAB ab);
+};

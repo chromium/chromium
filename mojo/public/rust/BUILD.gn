@@ -30,6 +30,7 @@ group("tests") {
       "sequences:rust_sequences_unittests",
       "system:ffi_unittests",
       "system:system_bindings_unittests",
+      "tests:testing_mojom_rust",
     ]
   }
 }

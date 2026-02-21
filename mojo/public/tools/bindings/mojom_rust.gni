@@ -21,7 +21,6 @@ template("mojom_rust") {
                          ])
 
   base_name = target_name
-  rust_generator_target_name = "${base_name}__generator"
 
   # Depends on all the mojom dependencies' metadata targets. A generated_file rule will use this
   # for GN metadata collection.
@@ -34,6 +33,7 @@ template("mojom_rust") {
   }
 
   if (sources_list != []) {
+    rust_generator_target_name = "${base_name}__generator"
     sources_for_rust_metadata = []
     foreach(s, sources_list) {
       sources_for_rust_metadata += [ rebase_path(s, "//") ]
@@ -55,7 +55,7 @@ template("mojom_rust") {
     # Outputs dependency info needed for Rust bindings generation.
     generated_file("${base_name}_dep_info") {
       outputs = [ "$target_gen_dir/${base_name}_dep_info.json" ]
-      deps = [ ":${base_name}_deps_meta" ]
+      deps = [ ":${base_name}_meta" ]
       data_keys = [ "mojom_rust_target_map" ]
 
       output_conversion = "json"
@@ -168,5 +168,16 @@ template("mojom_rust") {
 
       visibility = output_visibility
     }
+
+    not_needed([
+                 "output_target_name",
+                 "mojom_generator_script",
+                 "mojom_generator_sources",
+                 "jinja2_sources",
+                 "parser_target_name",
+                 "common_generator_args",
+                 "output_file_base_paths",
+                 "variant_suffix",
+               ])
   }
 }

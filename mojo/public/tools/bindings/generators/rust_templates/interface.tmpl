@@ -16,11 +16,11 @@
 {% endmacro %}
 
 {% macro args_struct(method) %}
-  {{- method.param_struct|to_rust_type -}}
+  {{- method.param_struct.name -}}
 {% endmacro %}
 
 {% macro response_struct(method) %}
-  {{- method.response_param_struct|to_rust_type -}}
+  {{- method.response_param_struct.name -}}
 {% endmacro %}
 
 {% macro declare_interface(interface) -%}
@@ -106,9 +106,9 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
         {%- endif %}
         self.{{method.name}}(
           {%- for field in method.param_struct.fields -%}
-            {#- #}parsed.{{field.name}} {{- ", " if not loop.last -}}
+            {#- #}parsed.{{field.name}},
           {% endfor -%}
-          {%- if method.response_parameters -%}, callback {%- endif -%}
+          {%- if method.response_parameters -%} callback {%- endif -%}
         );
       }
       {%- endfor %}
