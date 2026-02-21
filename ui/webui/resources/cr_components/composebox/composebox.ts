@@ -757,26 +757,30 @@ export class ComposeboxElement extends I18nMixinLit
     delayUpload: boolean,
     onContextAdded: (file: ComposeboxFile) => void,
   }>) {
-    const {token} = await this.searchboxHandler_.addTabContext(
-        e.detail.id, e.detail.delayUpload);
-    if (!token) {
+    try {
+      const token = await this.searchboxHandler_.addTabContext(
+          e.detail.id, e.detail.delayUpload);
+
+      const attachment: ComposeboxFile = {
+        uuid: token,
+        name: e.detail.title,
+        dataUrl: null,
+        objectUrl: null,
+        type: 'tab',
+        status: FileUploadStatus.kNotUploaded,
+        url: e.detail.url,
+        tabId: e.detail.id,
+        isDeletable: true,
+      };
+
+      e.detail.onContextAdded(attachment);
+      this.focusInput();
+
+    } catch (e) {
+      // TODO(crbug.com/484429365): Notify the user the reason for the context
+      // upload failure.
       return;
     }
-
-    const attachment: ComposeboxFile = {
-      uuid: token,
-      name: e.detail.title,
-      dataUrl: null,
-      objectUrl: null,
-      type: 'tab',
-      status: FileUploadStatus.kNotUploaded,
-      url: e.detail.url,
-      tabId: e.detail.id,
-      isDeletable: true,
-    };
-
-    e.detail.onContextAdded(attachment);
-    this.focusInput();
   }
 
   protected onPaste_(event: ClipboardEvent) {

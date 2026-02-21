@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -460,7 +461,8 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   // TODO(crbug.com/483526904): Return synchronous error in the callback.
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -469,7 +471,8 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -483,7 +486,7 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   // base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
   //     FROM_HERE, base::BindOnce(std::move(callback), context_token));
 
-  std::move(callback).Run(context_token);
+  std::move(callback).Run(base::ok(context_token));
 }
 
 void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
@@ -491,7 +494,8 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
                                                AddTabContextCallback callback) {
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto context_token = contextual_session_handle->CreateContextToken();

@@ -200,9 +200,9 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     return Promise.resolve({token: ''});
   }
 
-  addTabContext(tabId: number) {
-    this.methodCalled('addTabContext', {tabId});
-    return Promise.resolve({token: ''});
+  addTabContext(tabId: number, delayUpload: boolean) {
+    this.methodCalled('addTabContext', {tabId, delayUpload});
+    return Promise.resolve('');
   }
 
   deleteContext(fileToken: UnguessableToken) {

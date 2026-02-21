@@ -1106,8 +1106,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   std::optional<base::UnguessableToken> token_opt;
   base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
       callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce(testing::SaveArg<0>(&token_opt));
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+  });
 
   handler_->AddTabContext(tab_id, /*delay_upload=*/true, callback.Get());
   ASSERT_TRUE(token_opt.has_value());
@@ -1129,8 +1131,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
 
   // Reset and try again with active tab ID.
   std::optional<base::UnguessableToken> active_token_opt;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce(testing::SaveArg<0>(&active_token_opt));
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    active_token_opt = result.value();
+  });
   handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
   ASSERT_TRUE(active_token_opt.has_value());
   base::UnguessableToken active_token = active_token_opt.value();
@@ -1206,8 +1210,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
   std::optional<base::UnguessableToken> token_opt;
   base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
       callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce(testing::SaveArg<0>(&token_opt));
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+  });
 
   handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
   ASSERT_TRUE(token_opt.has_value());
@@ -1290,11 +1296,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_WaitsForUpload) {
       callback;
   std::optional<base::UnguessableToken> token_opt;
   base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_opt = token;
-        run_loop.Quit();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+    run_loop.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
                           callback.Get());
@@ -1381,11 +1387,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       callback;
   std::optional<base::UnguessableToken> token_opt;
   base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_opt = token;
-        run_loop.Quit();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+    run_loop.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
                           callback.Get());
@@ -1475,11 +1481,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       callback;
   std::optional<base::UnguessableToken> token_opt;
   base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_opt = token;
-        run_loop.Quit();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+    run_loop.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
                           callback.Get());
@@ -1589,11 +1595,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::optional<base::UnguessableToken> token_opt;
   base::RunLoop run_loop;
 
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_opt = token;
-        run_loop.Quit();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+    run_loop.Quit();
+  });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true, callback.Get());
@@ -1783,11 +1789,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::optional<base::UnguessableToken> normal_tab_token_opt;
 
   base::RunLoop run_loop_2;
-  EXPECT_CALL(normal_tab_cb, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        normal_tab_token_opt = token;
-        run_loop_2.Quit();
-      });
+  EXPECT_CALL(normal_tab_cb, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    normal_tab_token_opt = result.value();
+    run_loop_2.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
                           normal_tab_cb.Get());
@@ -1797,6 +1803,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Run add tab context's callback via mock so can store token in test.
   base::MockCallback<ContextualTasksComposeboxHandler::AddTabContextCallback>
       delayed_tab_cb;
+  EXPECT_CALL(delayed_tab_cb, Run(testing::_))
+      .WillOnce([&](const auto& result) {
+        // We don't store the token or quit a loop for delayed_tab_cb as it's
+        // not critical for the logic tested here, but we acknowledge the call.
+      });
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true,
                           delayed_tab_cb.Get());
 
@@ -1902,11 +1913,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   base::RunLoop run_loop_d1;
 
   // Run add tab context's callback via mock so can store token in test.
-  EXPECT_CALL(cb_d1, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_d1_opt = token;
-        run_loop_d1.Quit();
-      });
+  EXPECT_CALL(cb_d1, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_d1_opt = result.value();
+    run_loop_d1.Quit();
+  });
 
   ASSERT_EQ(handler_->GetNumTabsDelayed(), 0);
 
@@ -1928,11 +1939,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   base::RunLoop run_loop_d2;
 
   // Run add tab context's callback via mock so can store token in test.
-  EXPECT_CALL(cb_d2, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_d2_opt = token;
-        run_loop_d2.Quit();
-      });
+  EXPECT_CALL(cb_d2, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_d2_opt = result.value();
+    run_loop_d2.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true, cb_d2.Get());
   run_loop_d2.Run();
@@ -1948,11 +1959,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   base::RunLoop run_loop_rA;
 
   // Run add tab context's callback via mock so can store token in test.
-  EXPECT_CALL(cb_rA, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_rA_opt = token;
-        run_loop_rA.Quit();
-      });
+  EXPECT_CALL(cb_rA, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_rA_opt = result.value();
+    run_loop_rA.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false, cb_rA.Get());
   run_loop_rA.Run();
@@ -1973,11 +1984,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   base::RunLoop run_loop_rB;
 
   // Run add tab context's callback via mock so can store token in test.
-  EXPECT_CALL(cb_rB, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        token_rB_opt = token;
-        run_loop_rB.Quit();
-      });
+  EXPECT_CALL(cb_rB, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_rB_opt = result.value();
+    run_loop_rB.Quit();
+  });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false, cb_rB.Get());
   run_loop_rB.Run();
@@ -2137,8 +2148,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
   std::optional<base::UnguessableToken> token_opt;
   base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
       callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce(testing::SaveArg<0>(&token_opt));
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+  });
 
   handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
   ASSERT_TRUE(token_opt.has_value());
