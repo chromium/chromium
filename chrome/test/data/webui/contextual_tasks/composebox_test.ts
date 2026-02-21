@@ -1679,9 +1679,10 @@ suite('ContextualTasksComposeboxTest', () => {
         await composebox.updateComplete;
         await composebox.$.context.updateComplete;
         await microtasksFinished();
-        const button =
-            composebox.$.context.$.contextEntrypoint.shadowRoot.querySelector(
-                '#entrypoint');
+        const entrypointMenu =
+            composebox.$.context.$.contextEntrypoint.$.entrypointMenu;
+        assertTrue(!!entrypointMenu, 'Context menu should exist');
+        const button = entrypointMenu.shadowRoot?.querySelector('#entrypoint');
         assertTrue(!!button, 'Context menu button should exist');
         assertFalse(!!button.disabled);
 

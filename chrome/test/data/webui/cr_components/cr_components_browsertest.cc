@@ -295,6 +295,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualEntrypointButton) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualEntrypointAndMenu) {
+  RunTest("cr_components/composebox/contextual_entrypoint_and_menu_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualActionMenu) {
   RunTest("cr_components/composebox/contextual_action_menu_test.js",
           "mocha.run()");

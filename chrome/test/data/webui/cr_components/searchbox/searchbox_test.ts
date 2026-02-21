@@ -3200,8 +3200,13 @@ suite('NewTabPageRealboxNextTest', () => {
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
-    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
-        'cr-composebox-context-menu-entrypoint');
+    const entrypointAndMenu =
+        contextElement.shadowRoot.querySelector(
+            'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+    const contextMenuEntrypoint =
+        entrypointAndMenu.shadowRoot.querySelector(
+            'cr-composebox-context-menu-entrypoint');
     assertTrue(!!contextMenuEntrypoint);
 
     testProxy.handler.setResultFor(
@@ -3243,8 +3248,13 @@ suite('NewTabPageRealboxNextTest', () => {
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
-    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
-        'cr-composebox-context-menu-entrypoint');
+    const entrypointAndMenu =
+        contextElement.shadowRoot.querySelector(
+            'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+    const contextMenuEntrypoint =
+        entrypointAndMenu.shadowRoot.querySelector(
+            'cr-composebox-context-menu-entrypoint');
     assertTrue(!!contextMenuEntrypoint);
 
     testProxy.handler.setResultFor(

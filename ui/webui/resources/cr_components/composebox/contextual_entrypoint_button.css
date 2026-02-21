@@ -240,11 +240,6 @@ cr-button#entrypoint {
   --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color, var(--cr-button-text-color));
 }
 
-#entrypoint.menu-open {
-  --cr-hover-background-color: var(--cr-icon-button-hover-background-color);
-  background-color: var(--cr-icon-button-hover-background-color);
-}
-
 #entrypointPlaceholder {
   display: inline-block;
   width: 36px;

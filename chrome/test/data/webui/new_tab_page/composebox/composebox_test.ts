@@ -2910,9 +2910,12 @@ suite('NewTabPageComposeboxTest', () => {
           contextElement.shadowRoot?.querySelector<HTMLElement>(
               '#contextEntrypoint');
       assertTrue(!!entrypointElement);
-      const entrypointButton =
+      const entrypointMenu =
           entrypointElement.shadowRoot?.querySelector<HTMLElement>(
-              '#entrypoint');
+              '#entrypointMenu');
+      assertTrue(!!entrypointMenu);
+      const entrypointButton =
+          entrypointMenu.shadowRoot?.querySelector<HTMLElement>('#entrypoint');
       assertTrue(!!entrypointButton);
       entrypointButton.click();
       await microtasksFinished();
