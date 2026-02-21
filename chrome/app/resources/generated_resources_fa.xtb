@@ -1380,7 +1380,7 @@
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1915734383465415025">شماره فروشگاه</translation>
 <translation id="1916502483199172559">چهرک پیش‌فرض قرمز</translation>
-<translation id="1916770123977586577">برای اعمال کردن تنظیمات به‌روزرسانی‌شده خود در این سایت، این صفحه را بار کردن مجدد کنید</translation>
+<translation id="1916770123977586577">برای اعمال کردن تنظیمات به‌روزرسانی‌شده خود در این سایت، این صفحه را مجدداً بار کنید</translation>
 <translation id="1917766536967060661">‏دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و <ph name="BLOCKED_MEMBER_FULL_NAME" />‏ (<ph name="BLOCKED_MEMBER_EMAIL" />) دیگر نمی‌تواند در سرویس‌های Google با شما تعامل داشته باشد.</translation>
 <translation id="1918127774159128277">‏بازآوری قابلیت‌های WiFi Direct</translation>
 <translation id="1918141783557917887">&amp;کوچک تر</translation>
@@ -3138,7 +3138,7 @@
 <translation id="3083899879156272923">حرکت صفحه درحالی‌که موشواره در مرکز صفحه ثابت می‌ماند</translation>
 <translation id="3084121729444215602">سرپرست شما <ph name="EXTENSION_NAME" /> را سنجاق کرده است</translation>
 <translation id="3084548735795614657">رهاکردن جهت نصب</translation>
-<translation id="3084771660770137092">‏ممکن است حافظه Chrome تمام شده باشد یا فرآیند مربوط به صفحهٔ وب به دلایل دیگری متوقف شده باشد. برای ادامه، صفحه را بار کردن مجدد کنید یا به یک صفحه دیگر بروید.</translation>
+<translation id="3084771660770137092">‏ممکن است حافظه Chrome تمام شده باشد یا فرآیند مربوط به صفحهٔ وب به دلایل دیگری متوقف شده باشد. برای ادامه، صفحه را مجدداً بار کنید یا به یک صفحه دیگر بروید.</translation>
 <translation id="3085412380278336437">سایت می‌تواند از دوربینتان استفاده کند</translation>
 <translation id="3088052000289932193">‏سایت درحال استفاده از MIDI است</translation>
 <translation id="3088128611727407543">درحال آماده‌سازی نمایه برنامه...</translation>
@@ -6193,7 +6193,7 @@
 <translation id="516747639689914043">‏پروتکل انتقال ابرمتن (HTTP)</translation>
 <translation id="5167736746160955799">مشاهده پروژه‌ها</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
-<translation id="5171045022955879922">جستجو یا تایپ نشانی وب</translation>
+<translation id="5171045022955879922">جستجو یا تایپ کردن نشانی وب</translation>
 <translation id="5171343362375269016">حافظه جابجاشده</translation>
 <translation id="5172855596271336236">۱ چاپگر مدیریت‌شده وجود دارد.</translation>
 <translation id="5173668317844998239">اثرانگشت به کلید امنیتی اضافه کنید یا اثرهای انگشت ذخیره‌شده در آن را حذف کنید</translation>

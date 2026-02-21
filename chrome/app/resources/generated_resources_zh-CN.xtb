@@ -9910,7 +9910,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">添加网站搜索引擎</translation>
 <translation id="7759443981285558794">查看从 ChromeOS 导入的证书</translation>
-<translation id="7759809451544302770">可选</translation>
+<translation id="7759809451544302770">选填</translation>
 <translation id="7760176388948986635">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
 <translation id="7762024824096060040">无法使用此账号</translation>
 <translation id="776324966908034528">浏览器代理设置由多个来源控制</translation>

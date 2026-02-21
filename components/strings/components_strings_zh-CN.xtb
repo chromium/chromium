@@ -533,7 +533,7 @@
 <translation id="1839331950812095887">总结想法的几个字词</translation>
 <translation id="1839551713262164453">由于出现错误，未能成功验证政策值</translation>
 <translation id="1840009953725035797">家庭影院系统</translation>
-<translation id="184153295865602321">为提高安全性，在使用自动填充功能进行支付时，始终使用指纹、面孔或其他屏幕解锁方式</translation>
+<translation id="184153295865602321">为提高安全性，在使用自动填充功能进行支付时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
 <translation id="1842969606798536927">付款</translation>
 <translation id="184517536440397176">必须先征得家长或监护人的同意，然后才能访问此网站。在向他们提出请求之前，我们需要确认你的身份。</translation>
 <translation id="1846432862466000825">塑料（存档用）</translation>
@@ -3170,7 +3170,7 @@
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6089505343295765444">您从 Chrome 历史记录中删除的标签页仍会显示在比较表格中</translation>
 <translation id="6091115085465716987">Google 钱包徽标</translation>
-<translation id="6091691259076781835">为了加快结账速度，请将此银行卡验证码 (CVC) 保存到设备上</translation>
+<translation id="6091691259076781835">将此银行卡验证码 (CVC) 保存到设备上可加快结账速度</translation>
 <translation id="6093599771645355227">黄色 1</translation>
 <translation id="6093795393556121384">您的信用卡已成功验证</translation>
 <translation id="6094253940069566294">修改车辆信息</translation>
@@ -4250,7 +4250,7 @@
 <translation id="7756441544371887150">将此卡保存到 Google 钱包后，在 Chrome 中购物时即可自动填充相关信息。</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
 <translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
-<translation id="7759809451544302770">可选</translation>
+<translation id="7759809451544302770">选填</translation>
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7761159795823346334">允许使用摄像头？</translation>
 <translation id="7761701407923456692">服务器的证书与网址不相符。</translation>
