@@ -106,6 +106,7 @@ export function getHtml(this: ComposeboxElement) {
           .inputState="${this.inputState_}"
           searchbox-layout-mode="${this.searchboxLayoutMode}"
           ?carousel-on-top_="${this.carouselOnTop_}"
+          ?enable-carousel-scrolling="${this.enableCarouselScrolling}"
           ?show-voice-search="${this.shouldShowVoiceSearch_()}"
           ?show-model-picker="${this.showModelPicker_}"
           .submitButtonShown="${this.searchboxNextEnabled && this.submitEnabled_}">

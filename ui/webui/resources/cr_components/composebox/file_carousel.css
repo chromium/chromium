@@ -8,7 +8,65 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --composebox-thumbnail-height: 44px;
+  --composebox-thumbnail-gap: 6px;
+  display: block;
+  position: relative;
+}
+
+.file-carousel-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--composebox-thumbnail-gap);
+}
+
+:host([enable-scrolling]) .file-carousel-container {
+  /* Accommodates two rows of thumbnails */
+  max-height: calc(
+      var(--composebox-thumbnail-height) * 2 + var(--composebox-thumbnail-gap));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px; /* Space for scrollbar */
+}
+
+:host([enable-scrolling][gradient-top-hidden])::before {
+  display: none;
+}
+
+:host([enable-scrolling])::before {
+  background:
+      linear-gradient(to bottom, var(--cr-composebox-background-color), transparent);
+  content: '';
+  height: 16px;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+:host([enable-scrolling][gradient-bottom-hidden])::after {
+  display: none;
+}
+
+:host([enable-scrolling])::after {
+  background:
+      linear-gradient(to top, var(--cr-composebox-background-color), transparent);
+  content: '';
+  height: 16px;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+:host([enable-scrolling]) .file-carousel-container::-webkit-scrollbar {
+  width: 0;
+}
+
+:host([enable-scrolling]) .file-carousel-container::-webkit-scrollbar-button {
+  display: none;
 }
