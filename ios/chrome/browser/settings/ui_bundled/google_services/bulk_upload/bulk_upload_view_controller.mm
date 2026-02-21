@@ -134,7 +134,7 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 }
 
 - (void)settingsWillBeDismissed {
-  [self.delegate viewControllerIsBeingDismissed:self];
+  [self.delegate bulkUploadViewControllerIsBeingDismissed:self];
 }
 
 #pragma mark - BulkUploadConsumer
@@ -156,7 +156,7 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 }
 
 - (void)didTapCancelButton:(UIButton*)button {
-  [self.delegate viewControllerWantsToBeDismissed:self];
+  [self.delegate bulkUploadViewControllerWantsToBeDismissed:self];
 }
 
 @end

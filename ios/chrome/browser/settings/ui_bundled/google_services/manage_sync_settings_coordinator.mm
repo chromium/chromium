@@ -391,7 +391,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 #pragma mark - ManageSyncSettingsCommandHandler
 
 - (void)openBulkUpload {
-  [self stopBulkUpload];
+  if (_bulkUploadCoordinator) {
+    return;
+  }
   base::RecordAction(base::UserMetricsAction("BulkUploadSettingsOpen"));
   _bulkUploadCoordinator = [[BulkUploadCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -747,7 +749,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 #pragma mark - BulkUploadCoordinatorDelegate
 
 - (void)bulkUploadCoordinatorShouldStop:(BulkUploadCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, _bulkUploadCoordinator);
+  CHECK_EQ(coordinator, _bulkUploadCoordinator, base::NotFatalUntil::M155);
   [self stopBulkUpload];
 }
 

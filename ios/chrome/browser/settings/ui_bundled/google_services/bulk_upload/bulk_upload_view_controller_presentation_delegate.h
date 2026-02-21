@@ -11,10 +11,12 @@
 @protocol BulkUploadViewControllerPresentationDelegate <NSObject>
 
 // Requests the delegate to dismiss `controller`.
-- (void)viewControllerWantsToBeDismissed:(BulkUploadViewController*)controller;
+- (void)bulkUploadViewControllerWantsToBeDismissed:
+    (BulkUploadViewController*)controller;
 
 // Requests the delegate to dismiss `controller`.
-- (void)viewControllerIsBeingDismissed:(BulkUploadViewController*)controller;
+- (void)bulkUploadViewControllerIsBeingDismissed:
+    (BulkUploadViewController*)controller;
 
 @end
 

@@ -103,7 +103,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 }
 
 - (void)dealloc {
-  DCHECK(!_syncService);
+  CHECK(!_syncService, base::NotFatalUntil::M155);
 }
 
 - (void)disconnect {

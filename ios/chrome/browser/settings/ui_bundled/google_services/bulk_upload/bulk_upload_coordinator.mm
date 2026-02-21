@@ -22,7 +22,8 @@
 
 @interface BulkUploadCoordinator () <
     BulkUploadMediatorDelegate,
-    BulkUploadViewControllerPresentationDelegate>
+    BulkUploadViewControllerPresentationDelegate,
+    UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation BulkUploadCoordinator {
@@ -31,6 +32,8 @@
   // Whether the view controller was dismissed outside of this coordinator.
   BOOL _viewControllerIsDismissed;
   id<SnackbarCommands> _snackbarCommandsHandler;
+  // The navigation controller displaying `_viewController`.
+  UINavigationController* _navigationController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -40,7 +43,7 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_mediator);
+  CHECK(!_mediator, base::NotFatalUntil::M155);
 }
 
 - (void)start {
@@ -59,31 +62,30 @@
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
 
-  UINavigationController* navigationController = [[UINavigationController alloc]
+  _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  _navigationController.presentationController.delegate = self;
 
-  [self.baseViewController presentViewController:navigationController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  DCHECK(_viewController);
-  DCHECK(_mediator);
+  CHECK(_viewController, base::NotFatalUntil::M155);
+  CHECK(_mediator, base::NotFatalUntil::M155);
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator.delegate = nil;
   _mediator = nil;
   _viewController.mutator = nil;
   _viewController.delegate = nil;
+  _viewController.presentationController.delegate = nil;
   if (!_viewControllerIsDismissed) {
-    if (_viewController.presentingViewController) {
-      [_viewController.presentingViewController
-          dismissViewControllerAnimated:YES
-                             completion:nil];
-    }
+    [_viewController dismissViewControllerAnimated:YES completion:nil];
   }
   _viewController = nil;
+  _navigationController = nil;
 }
 
 #pragma mark - Private
@@ -100,11 +102,21 @@
 
 #pragma mark - BulkUploadViewControllerPresentationDelegate
 
-- (void)viewControllerWantsToBeDismissed:(BulkUploadViewController*)controller {
+- (void)bulkUploadViewControllerWantsToBeDismissed:
+    (BulkUploadViewController*)controller {
   [self.delegate bulkUploadCoordinatorShouldStop:self];
 }
 
-- (void)viewControllerIsBeingDismissed:(BulkUploadViewController*)controller {
+- (void)bulkUploadViewControllerIsBeingDismissed:
+    (BulkUploadViewController*)controller {
+  _viewControllerIsDismissed = YES;
+  [self.delegate bulkUploadCoordinatorShouldStop:self];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
   _viewControllerIsDismissed = YES;
   [self.delegate bulkUploadCoordinatorShouldStop:self];
 }
