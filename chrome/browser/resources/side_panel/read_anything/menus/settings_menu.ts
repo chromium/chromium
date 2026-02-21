@@ -204,8 +204,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.LINE_FOCUS);
     }
 
-    optionIDs =
-        optionIDs.concat([SettingsOption.PRESENTATION, SettingsOption.LINKS]);
+    // If Readability is enabled but ReadabilityWithLinks is not enabled,
+    // don't show the links toggle.
+    if (!chrome.readingMode.isReadabilityEnabled ||
+        chrome.readingMode.isReadabilityWithLinksEnabled) {
+      optionIDs =
+          optionIDs.concat([SettingsOption.PRESENTATION, SettingsOption.LINKS]);
+    }
 
     if (chrome.readingMode.imagesFeatureEnabled) {
       optionIDs.push(SettingsOption.IMAGES);
