@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,12 +36,16 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread_metrics.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
@@ -130,6 +135,56 @@ bool g_network_service_is_responding = false;
 // base::ThreadType::kPresentation
 BASE_FEATURE(kNetworkServiceIncreasedPriorityAlways,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNetworkServiceIncreasedPriorityWhileLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// MatchingScenarioObserver that boosts the priority of the thread it was
+// created on while the scenario matches a specified pattern.
+class BoostThreadOnMatchedScenario
+    : public performance_scenarios::MatchingScenarioObserver {
+ public:
+  BoostThreadOnMatchedScenario(base::ThreadType thread_type,
+                               performance_scenarios::ScenarioPattern pattern)
+      : performance_scenarios::MatchingScenarioObserver(pattern),
+        thread_type_(thread_type) {}
+
+  ~BoostThreadOnMatchedScenario() override = default;
+
+  void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
+                              bool matches_pattern) override {
+    // Callbacks must be received on the thread the object was created on.
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    if (matches_pattern) {
+      scoped_boost_priority_.emplace(thread_type_);
+    } else {
+      scoped_boost_priority_.reset();
+    }
+  }
+
+ private:
+  THREAD_CHECKER(thread_checker_);
+
+  const base::ThreadType thread_type_;
+  std::optional<base::ScopedBoostPriority> scoped_boost_priority_;
+};
+
+void BoostNetworkThreadWhileLoading() {
+  constexpr performance_scenarios::ScenarioPattern kBoostScenarioPattern = {
+      .loading = {performance_scenarios::LoadingScenario::kFocusedPageLoading},
+      .input = performance_scenarios::InputScenarios::All()};
+
+  static base::NoDestructor<BoostThreadOnMatchedScenario> boost_thread{
+      base::ThreadType::kPresentation, kBoostScenarioPattern};
+
+  // Add to the global scope since the goal is to boost the network thread
+  // while any page is loading.
+  auto observer_list =
+      performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+          performance_scenarios::ScenarioScope::kGlobal);
+  observer_list->AddMatchingObserver(boost_thread.get());
+}
 
 std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
   static base::SequenceLocalStorageSlot<
@@ -329,6 +384,12 @@ void CreateInProcessNetworkService(
       options.thread_type = base::ThreadType::kPresentation;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
+    // The two features that boost network thread priority interact and
+    // therefore enforce that only one of them is enabled.
+    CHECK(
+        !base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways) ||
+        !base::FeatureList::IsEnabled(
+            kNetworkServiceIncreasedPriorityWhileLoading));
     if (base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways)) {
       options.thread_type = base::ThreadType::kPresentation;
     }
@@ -352,6 +413,11 @@ void CreateInProcessNetworkService(
   GetNetworkTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&CreateInProcessNetworkServiceOnThread,
                                 std::move(receiver)));
+  if (base::FeatureList::IsEnabled(
+          kNetworkServiceIncreasedPriorityWhileLoading)) {
+    GetNetworkTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&BoostNetworkThreadWhileLoading));
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
