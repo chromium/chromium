@@ -25,9 +25,9 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
         android:layout_weight="0"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
+        android:layout_width="?attr/listItemIconSize"
+        android:layout_height="?attr/listItemIconSize"
+        android:layout_gravity="end|center_vertical"
         android:gravity="center_vertical"
         android:tint="@macro/default_icon_color_secondary"
         android:duplicateParentState="true"
