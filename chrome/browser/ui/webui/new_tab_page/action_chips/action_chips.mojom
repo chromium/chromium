@@ -28,12 +28,37 @@ enum ChipType {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ChipType)
 
+// This enum must be in sync with IconType in
+// third_party/omnibox_proto/suggest_template_info.proto.
+// In particular, the int values must match so the proto enum values are
+// correctly mapped to the mojom enum values.
+enum IconType {
+  kIconTypeUnspecified = 0,
+  kHistory = 1,
+  kSearchLoop = 2,
+  kSearchLoopWithSparkle = 3,
+  kTrending = 4,
+  kSubArrowRight = 5,
+  kGlobeWithSearchLoop = 6,
+  kBanana = 7,
+  kFavicon = 8,
+  kNotesSpark = 9,
+};
+
+// SuggestTemplateInfo contains a subset of the fields of SuggestTemplateInfo in
+// third_party/omnibox_proto/suggest_template_info.proto.
+// The field names must match.
+struct SuggestTemplateInfo {
+  IconType type_icon;
+};
+
 // The information representing a single action chip.
 struct ActionChip {
   string title;
   string subtitle;
   string suggestion;
   ChipType type;
+  SuggestTemplateInfo suggest_template_info;
   // the tab associated with this chip.
   TabInfo? tab;
 };

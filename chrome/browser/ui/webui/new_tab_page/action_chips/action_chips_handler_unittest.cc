@@ -53,6 +53,9 @@ namespace {
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
 using ::action_chips::mojom::ChipType;
+using ::action_chips::mojom::IconType;
+using ::action_chips::mojom::Page;
+using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
 using ::base::Bucket;
@@ -67,12 +70,12 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-class MockPage : public action_chips::mojom::Page {
+class MockPage : public Page {
  public:
   MockPage() = default;
   ~MockPage() override = default;
 
-  mojo::PendingRemote<action_chips::mojom::Page> BindAndGetRemote() {
+  mojo::PendingRemote<Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
@@ -81,7 +84,7 @@ class MockPage : public action_chips::mojom::Page {
               (std::vector<ActionChipPtr> action_chips),
               (override));
 
-  mojo::Receiver<action_chips::mojom::Page> receiver_{this};
+  mojo::Receiver<Page> receiver_{this};
 };
 
 class MockActionChipsGenerator : public ActionChipsGenerator {
@@ -101,7 +104,7 @@ class FakeActionChipsHandler : public ActionChipsHandler {
   FakeActionChipsHandler(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler>
           pending_receiver,
-      mojo::PendingRemote<action_chips::mojom::Page> pending_page,
+      mojo::PendingRemote<Page> pending_page,
       Profile* profile,
       content::WebUI* web_ui,
       std::unique_ptr<ActionChipsGenerator> action_chips_generator)
@@ -140,7 +143,8 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
                        tab_fields.last_active_time);
   }
   return ActionChip::New(fields.title, fields.subtitle, fields.suggestion,
-                         fields.type, std::move(tab));
+                         fields.type, SuggestTemplateInfo::New(),
+                         std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
@@ -167,8 +171,7 @@ ActionChipFields CreateStaticImageGenerationChip() {
 
 void CallWithStaticChips(
     base::optional_ref<const tabs::TabInterface> tab,
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback) {
+    base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
   std::vector<ActionChipPtr> chips;
   if (tab.has_value()) {
     content::WebContents& contents = *tab->GetContents();
@@ -479,19 +482,18 @@ TEST_F(
             actual_chips = std::move(action_chips);
             run_loop.Quit();
           });
-  std::vector<action_chips::mojom::ActionChipPtr> chips;
-  chips.push_back(action_chips::mojom::ActionChip::New(
-      "title1", "subtitle1", "suggention1",
-      action_chips::mojom::ChipType::kDeepSearch, nullptr));
-  chips.push_back(action_chips::mojom::ActionChip::New(
-      "title2", "subtitle2", "suggention2",
-      action_chips::mojom::ChipType::kDeepSearch, nullptr));
+  std::vector<ActionChipPtr> chips;
+  chips.push_back(ActionChip::New("title1", "subtitle1", "suggention1",
+                                  ChipType::kDeepSearch,
+                                  SuggestTemplateInfo::New(), nullptr));
+  chips.push_back(ActionChip::New("title2", "subtitle2", "suggention2",
+                                  ChipType::kDeepSearch,
+                                  SuggestTemplateInfo::New(), nullptr));
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(
           [&chips](
               base::optional_ref<const tabs::TabInterface>,
-              base::OnceCallback<void(
-                  std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+              base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
             std::move(callback).Run(std::move(chips));
           });
 
@@ -518,8 +520,7 @@ TEST_F(ActionChipsHandlerTest,
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(
           [](base::optional_ref<const tabs::TabInterface>,
-             base::OnceCallback<void(
-                 std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
             // Return no chip
             std::move(callback).Run(std::vector<ActionChipPtr>());
           });
@@ -546,8 +547,7 @@ TEST_F(ActionChipsHandlerTest,
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(
           [](base::optional_ref<const tabs::TabInterface>,
-             base::OnceCallback<void(
-                 std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
             std::vector<ActionChipPtr> chips;
             chips.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
             std::move(callback).Run(std::move(chips));
@@ -574,8 +574,7 @@ TEST_F(ActionChipsHandlerTest,
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(
           [](base::optional_ref<const tabs::TabInterface>,
-             base::OnceCallback<void(
-                 std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
             std::vector<ActionChipPtr> chips;
             chips.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
             std::move(callback).Run(std::move(chips));

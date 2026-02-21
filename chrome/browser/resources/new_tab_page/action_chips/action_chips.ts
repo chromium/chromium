@@ -11,7 +11,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
-import {ChipType} from '../action_chips.mojom-webui.js';
+import {ChipType, IconType} from '../action_chips.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
@@ -100,13 +100,13 @@ export class ActionChipsElement extends CrLitElement {
   private onActionChipChangedListenerId_: number|null = null;
 
   protected getAdditionalIconClasses_(chip: ActionChip): string {
-    switch (chip.type) {
-      case ChipType.kImage:
-        return 'banana';
-      case ChipType.kDeepSearch:
-        return 'deep-search';
-      case ChipType.kDeepDive:
-        return 'deep-dive';
+    switch (chip.suggestTemplateInfo.typeIcon) {
+      case IconType.kBanana:
+        return 'icon-type-banana';
+      case IconType.kGlobeWithSearchLoop:
+        return 'icon-type-globe-with-search-loop';
+      case IconType.kSubArrowRight:
+        return 'icon-type-sub-arrow-right';
       default:
         return '';
     }

@@ -77,34 +77,34 @@
   overflow: hidden;
 }
 
-.banana {
+.icon-type-banana {
   background-image: url(chrome://new-tab-page/icons/banana.svg);
   background-size: 24px;
 }
 
-:host([show-simplified-ui_]) .banana {
+:host([show-simplified-ui_]) .icon-type-banana {
   background-size: 16px;
   mask-size: 16px;
 }
 
-.deep-dive {
+.icon-type-sub-arrow-right {
   background-color: var(--color-new-tab-page-action-chip-text-body);
   background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
 }
 
-:host([show-simplified-ui_]) .deep-dive {
+:host([show-simplified-ui_]) .icon-type-sub-arrow-right {
   background-size: 16px;
   mask-size: 16px;
 }
 
-.deep-search {
+.icon-type-globe-with-search-loop {
   background-color: var(--color-new-tab-page-action-chip-text-body);
   background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
 }
 
-:host([show-simplified-ui_]) .deep-search {
+:host([show-simplified-ui_]) .icon-type-globe-with-search-loop {
   background-size: 16px;
   mask-size: 16px;
 }
