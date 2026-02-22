@@ -329,6 +329,16 @@ cr-button#entrypoint {
   background-color: var(--cr-hover-background-color);
 }
 
+.dropdown-item:focus {
+  background-color: var(--cr-hover-background-color);
+  outline: none;
+}
+
+.dropdown-item:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
 .dropdown-item[disabled] {
   color: var(--color-composebox-context-entrypoint-text-disabled);
   cursor: default;
