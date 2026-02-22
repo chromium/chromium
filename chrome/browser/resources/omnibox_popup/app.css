@@ -5,8 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
+ * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
  * #import=./omnibox_popup_shared_style.css.js
- * #include=omnibox-popup-shared-style
+ * #include=composebox-shared-style omnibox-popup-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
@@ -24,6 +25,13 @@
   --cr-searchbox-match-font-weight: 700;
 
   --text-input-inline-start-spacing: 16px;
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
+  --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
+  --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);
+  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
+  --composebox-lens-search-icon-color: var(--color-omnibox-composebox-primary-action);
+  --composebox-lens-search-button-text-color: var(--color-omnibox-text);
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
@@ -50,33 +58,30 @@
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
 }
 
-contextual-entrypoint-and-carousel {
-  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
-  --composebox-lens-search-icon-color: var(--color-omnibox-composebox-primary-action);
-  --composebox-lens-search-button-text-color: var(--color-omnibox-text);
-  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
-  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
-  --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
-  --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);
+#context {
+  color: var(--color-searchbox-results-foreground);
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode='TallBottomContext'] {
+:host([searchbox-layout-mode_='TallBottomContext']) {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode='TallTopContext'] {
+:host([searchbox-layout-mode_='TallTopContext']) {
   --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 10px;
 
-  &:not([show-dropdown]) {
+  &:not([has-visible-matches_]) {
     --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 0px;
     --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
   }
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode='Compact'] {
-  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline: 0px;
+:host([searchbox-layout-mode_='Compact']) {
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
   --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 16px;
+}
+
+:host([searchbox-layout-mode_^='Tall']) #context {
+  padding-inline: 8px;
 }
 
 /**
