@@ -116,6 +116,10 @@ struct FileInfo {
 
   // The input data associated with this file.
   std::unique_ptr<lens::ContextualInputData> input_data;
+
+  // Whether or not this file was superceded by a new file upload with the same
+  // context id.
+  bool is_superceded = false;
 };
 
 // LINT.IfChange(ContextualSearchErrorPage)
