@@ -1582,7 +1582,7 @@ void WebContentsAccessibilityAndroid::
   recorder.StartTimer(TextFormattingMetric::kSetAniTextDuration);
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
       env, obj, info, base::android::ConvertUTF16ToJavaString(env, text),
-      is_link, node->IsTextField(),
+      is_link,
       base::android::ConvertUTF16ToJavaString(env, node->GetStateDescription()),
       base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
       base::android::ConvertUTF16ToJavaString(env,
@@ -1651,7 +1651,7 @@ void WebContentsAccessibilityAndroid::
       is_link
           ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
           : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
-      is_link, node->IsTextField(),
+      is_link,
       GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
                                      ax::mojom::StringAttribute::kLanguage)),
       java_suggestion_starts, java_suggestion_ends, java_suggestion_text,
