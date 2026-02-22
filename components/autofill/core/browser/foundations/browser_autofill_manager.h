@@ -583,13 +583,12 @@ class BrowserAutofillManager : public AutofillManager {
   // Combines plus address and address profile suggestions into a single list,
   // prioritizing plus address suggestions first. Runs `callback` with the
   // resulting list of suggestions.
-  void MixPlusAddressAndAddressSuggestions(
-      std::vector<Suggestion> plus_address_suggestions,
-      std::vector<Suggestion> address_suggestions,
-      AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
+  void MergeAddressAndPlusAddressSuggestions(
+      std::vector<Suggestion>& plus_address_suggestions,
+      std::vector<Suggestion> suggestions,
+      AutofillSuggestionTriggerSource trigger_source,
       const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      OnGenerateSuggestionsCallback callback);
+      const FieldGlobalId& field_id);
 
   // Iterate through all the fields in the form to process the log events for
   // each field and record into FieldInfo UKM event.
