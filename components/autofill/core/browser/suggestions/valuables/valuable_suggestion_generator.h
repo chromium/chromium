@@ -35,11 +35,19 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
 // Extends `email_suggestions` with loyalty cards suggestions.
 // TODO(crbug.com/409962888): Remove after new suggestion generation logic is
 // launched.
-void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
+void MergeLoyaltyCardsAndAddressSuggestions(
+    std::vector<Suggestion>& email_suggestions,
+    std::vector<Suggestion> loyalty_card_suggestions);
+
+// Creates loyalty card suggestions specifically for the merge with the email
+// suggestions. We cannot use GetLoyaltyCardSuggestions() here because merging
+// requires constructing the suggestions directly, rather than using the full
+// LoyaltyCardSuggestionGenerator flow.
+// TODO(crbug.com/409962888): Remove after new suggestion generation logic is
+// launched.
+std::vector<Suggestion> CreateLoyaltyCardSuggestionsForMerge(
     const ValuablesDataManager& valuables_manager,
-    const GURL& url,
-    bool trigger_field_is_autofilled,
-    std::vector<Suggestion>& email_suggestions);
+    const GURL& url);
 
 class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
  public:

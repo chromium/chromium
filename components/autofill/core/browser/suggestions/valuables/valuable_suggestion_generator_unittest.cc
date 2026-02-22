@@ -334,10 +334,12 @@ TEST_F(ValuableSuggestionGeneratorTest,
       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
                  SuggestionType::kManageAddress)};
 
-  ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-      valuables_data_manager(),
-      GURL("https://common-matching-domain.example/test"),
-      /*trigger_field_is_autofilled=*/false, email_suggestions);
+  std::vector<Suggestion> loyalty_card_suggestions =
+      CreateLoyaltyCardSuggestionsForMerge(
+          valuables_data_manager(),
+          GURL("https://common-matching-domain.example/test"));
+  MergeLoyaltyCardsAndAddressSuggestions(email_suggestions,
+                                         std::move(loyalty_card_suggestions));
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(
@@ -402,9 +404,11 @@ TEST_F(ValuableSuggestionGeneratorTest,
       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
                  SuggestionType::kManageAddress)};
 
-  ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-      valuables_data_manager(), GURL("https://common-domain.example/test"),
-      /*trigger_field_is_autofilled=*/false, email_suggestions);
+  std::vector<Suggestion> loyalty_card_suggestions =
+      CreateLoyaltyCardSuggestionsForMerge(
+          valuables_data_manager(), GURL("https://common-domain.example/test"));
+  MergeLoyaltyCardsAndAddressSuggestions(email_suggestions,
+                                         std::move(loyalty_card_suggestions));
 
   EXPECT_THAT(email_suggestions,
               testing::ElementsAre(
@@ -457,10 +461,12 @@ TEST_F(ValuableSuggestionGeneratorTest,
       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
                  SuggestionType::kManageAddress)};
 
-  ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-      valuables_data_manager(),
-      GURL("https://common-matching-domain.example/test"),
-      /*trigger_field_is_autofilled=*/true, email_suggestions);
+  std::vector<Suggestion> loyalty_card_suggestions =
+      CreateLoyaltyCardSuggestionsForMerge(
+          valuables_data_manager(),
+          GURL("https://common-matching-domain.example/test"));
+  MergeLoyaltyCardsAndAddressSuggestions(email_suggestions,
+                                         std::move(loyalty_card_suggestions));
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(

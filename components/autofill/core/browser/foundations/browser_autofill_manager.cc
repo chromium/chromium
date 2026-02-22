@@ -3317,13 +3317,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
             suggestions = GetLoyaltyCardSuggestions(form, form_structure, field,
                                                     autofill_field);
           } else {
-            ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-                *valuables_manager,
-                client().GetLastCommittedPrimaryMainFrameURL(),
-                // TODO(crbug.com/393114125): Change to use
-                // `AutofillField::field_modifiers_` after launching
-                // `kAutofillFixIsAutofilled`.
-                field.is_autofilled_according_to_renderer(), suggestions);
+            std::vector<Suggestion> loyalty_cards_suggestions_for_merge =
+                CreateLoyaltyCardSuggestionsForMerge(
+                    *valuables_manager,
+                    client().GetLastCommittedPrimaryMainFrameURL());
+            MergeLoyaltyCardsAndAddressSuggestions(
+                suggestions, std::move(loyalty_cards_suggestions_for_merge));
           }
         }
       }

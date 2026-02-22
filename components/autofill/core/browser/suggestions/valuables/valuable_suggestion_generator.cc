@@ -7,6 +7,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
@@ -189,17 +190,15 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
   return suggestions;
 }
 
-void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
+std::vector<Suggestion> CreateLoyaltyCardSuggestionsForMerge(
     const ValuablesDataManager& valuables_manager,
-    const GURL& url,
-    bool trigger_field_is_autofilled,
-    std::vector<Suggestion>& email_suggestions) {
+    const GURL& url) {
   std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCardsToSuggest();
-  CHECK(!email_suggestions.empty());
   if (all_loyalty_cards.empty()) {
-    return;
+    return {};
   }
+
   std::vector<LoyaltyCard> affiliated_cards;
   std::copy_if(all_loyalty_cards.begin(), all_loyalty_cards.end(),
                std::back_inserter(affiliated_cards),
@@ -208,18 +207,15 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                         LoyaltyCard::AffiliationCategory::kAffiliated;
                });
   if (affiliated_cards.empty()) {
-    return;
+    return {};
   }
+
 #if BUILDFLAG(IS_ANDROID)
   // No submenu on Android. Loyalty card suggestions are listed right after
   // email suggestions.
   std::vector<Suggestion> loyalty_card_suggestions =
       CreateSuggestionsFromLoyaltyCards(affiliated_cards, valuables_manager);
-  email_suggestions.insert(
-      email_suggestions.end(),
-      std::make_move_iterator(loyalty_card_suggestions.begin()),
-      std::make_move_iterator(loyalty_card_suggestions.end()));
-  return;
+  return loyalty_card_suggestions;
 #else
   Suggestion submenu_suggestion = Suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE),
@@ -233,23 +229,39 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   submenu_suggestion.children.emplace_back(SuggestionType::kSeparator);
   submenu_suggestion.children.emplace_back(
       CreateManageLoyaltyCardsSuggestion());
+  return {submenu_suggestion};
+#endif
+}
+
+void MergeLoyaltyCardsAndAddressSuggestions(
+    std::vector<Suggestion>& email_suggestions,
+    std::vector<Suggestion> loyalty_card_suggestions) {
+  CHECK(!email_suggestions.empty());
+  if (loyalty_card_suggestions.empty()) {
+    return;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  base::Extend(email_suggestions, std::move(loyalty_card_suggestions));
+  return;
+#else
   // There is at least one email, separator and manage addresses suggestion.
   CHECK_GE(email_suggestions.size(), 3u);
-  if (trigger_field_is_autofilled) {
-    CHECK_EQ(email_suggestions[email_suggestions.size() - 2].type,
-             SuggestionType::kUndoOrClear);
-    // If the field is autofilled, insert the submenu suggestion before undo and
-    // Manage address suggestions.
-    email_suggestions.insert(email_suggestions.end() - 2, submenu_suggestion);
-    email_suggestions.insert(email_suggestions.end() - 2,
-                             Suggestion(SuggestionType::kSeparator));
-  } else {
-    // If the field is not yet autofilled, insert the submenu suggestion before
-    // the Manage address suggestion.
-    email_suggestions.insert(email_suggestions.end() - 1, submenu_suggestion);
-    email_suggestions.insert(email_suggestions.end() - 1,
-                             Suggestion(SuggestionType::kSeparator));
-  }
+
+  // Find the last separator by searching backwards.
+  auto last_separator_it = std::find_if(
+      email_suggestions.rbegin(), email_suggestions.rend(),
+      [](const Suggestion& s) { return s.type == SuggestionType::kSeparator; });
+  CHECK(last_separator_it != email_suggestions.rend());
+
+  // .base() converts the reverse iterator into a forward iterator that
+  // points after the found separator.
+  auto inserted_cards_it = email_suggestions.insert(
+      last_separator_it.base(), loyalty_card_suggestions.begin(),
+      loyalty_card_suggestions.end());
+
+  // Insert a new separator right after the loyalty cards we just added.
+  email_suggestions.insert(inserted_cards_it + loyalty_card_suggestions.size(),
+                           Suggestion(SuggestionType::kSeparator));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
