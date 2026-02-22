@@ -23,7 +23,8 @@ export function getHtml(this: SourcesMenuElement) {
           <cr-url-list-item class="dropdown-item" data-index="${index}"
               @click="${this.onFileClick_}"
               .url="${item.file.url}" .title="${item.file.title}">
-            <cr-icon slot="customIcon" icon="thumbnail:pdf" class="file-icon">
+            <cr-icon slot="customIcon" icon="contextual_tasks:pdf"
+                class="file-icon">
             </cr-icon>
           </cr-url-list-item>
         ` : ''}
