@@ -574,6 +574,16 @@ class BrowserAutofillManager : public AutofillManager {
       bool show_suggestions,
       std::vector<Suggestion> suggestions);
 
+  // Combines autocomplete suggestions and plus address suggestions into a
+  // single list, prioritizing plus address suggestions first.
+  // Note: out of all single field suggestions, only autocomplete suggestions
+  // are mergeable with plus address suggestions. Other (IBAN, Merchant codes)
+  // are incompatible with plus addresses.
+  void MergeAutocompleteAndPlusAddressSuggestions(
+      std::vector<Suggestion>& plus_address_suggestions,
+      std::vector<Suggestion> single_field_suggestions,
+      AutofillPlusAddressDelegate::SuggestionContext suggestions_context);
+
   // Combines identity credential suggestions and existing suggestions into a
   // single list, prioritizing identity credential suggestions first.
   void MergeIdentityCredentialsAndAddressSuggestions(

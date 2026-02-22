@@ -1697,6 +1697,21 @@ void BrowserAutofillManager::GenerateFooter(
                                 show_suggestions, std::move(suggestions));
 }
 
+void BrowserAutofillManager::MergeAutocompleteAndPlusAddressSuggestions(
+    std::vector<Suggestion>& plus_address_suggestions,
+    std::vector<Suggestion> single_field_suggestions,
+    AutofillPlusAddressDelegate::SuggestionContext suggestions_context) {
+  bool original_plus_address_suggestions_empty =
+      plus_address_suggestions.empty();
+  base::Extend(plus_address_suggestions, single_field_suggestions);
+  if (!original_plus_address_suggestions_empty) {
+    // Include ManagePlusAddressSuggestion item.
+    plus_address_suggestions.emplace_back(SuggestionType::kSeparator);
+    plus_address_suggestions.push_back(
+        client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
+  }
+}
+
 void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
@@ -1705,14 +1720,7 @@ void BrowserAutofillManager::
         OnGenerateSuggestionsCallback callback,
         std::vector<Suggestion> plus_address_suggestions,
         std::vector<Suggestion> single_field_suggestions) {
-  std::vector<Suggestion> suggestions;
-  suggestions.reserve(plus_address_suggestions.size() +
-                      single_field_suggestions.size());
-  // Prioritize plus address over single field form fill suggestions.
-  base::Extend(suggestions, plus_address_suggestions);
-  base::Extend(suggestions, std::move(single_field_suggestions));
-
-  if (suggestions.empty()) {
+  if (plus_address_suggestions.empty() && single_field_suggestions.empty()) {
     // Note the check below is the same done for regular autocomplete
     // suggestions.
     // TODO(crbug.com/381994105): Consider adding
@@ -1730,24 +1738,24 @@ void BrowserAutofillManager::
     }
     return;
   }
-
   if (!plus_address_suggestions.empty()) {
+    // TODO(crbug.com/409962888): Move this call to
+    // `OnPlusAddressSuggestionShown` into
+    // `BrowserAutofillManager::OnDidShowSuggestions`.
     const PasswordFormClassification password_form_classification =
         client().ClassifyAsPasswordForm(*this, form.global_id(),
                                         field.global_id());
     client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
         *this, form.global_id(), field.global_id(), suggestions_context,
-        password_form_classification.type, suggestions[0].type);
-
-    // Include ManagePlusAddressSuggestion item.
-    suggestions.emplace_back(SuggestionType::kSeparator);
-    suggestions.push_back(
-        client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
+        password_form_classification.type, plus_address_suggestions[0].type);
   }
-
+  MergeAutocompleteAndPlusAddressSuggestions(
+      plus_address_suggestions, std::move(single_field_suggestions),
+      suggestions_context);
   // Show the list of `suggestions`. These may include single field form field
   // and/or plus address suggestions.
-  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+  std::move(callback).Run(/*show_suggestions=*/true,
+                          std::move(plus_address_suggestions));
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(
