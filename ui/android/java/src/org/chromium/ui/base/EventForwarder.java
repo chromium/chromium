@@ -556,7 +556,13 @@ public class EventForwarder {
             float velocityY = mVelocityTracker.getYVelocity();
             if (Math.abs(velocityX) > MIN_FLING_VELOCITY
                     || Math.abs(velocityY) > MIN_FLING_VELOCITY) {
-                startFling(event.getEventTime(), velocityX, velocityY, false, false, true);
+                // Trackpad scroll events are handled by manually calculating deltas from raw
+                // coordinates. These calculations produce Cartesian deltas (Swipe Right = +X).
+                // However, Chrome expects touchpad events to follow "natural" scrolling conventions
+                // (where Swipe Right = Scroll Left = -X). We negate the calculated velocityX and
+                // deltaX to ensure horizontal trackpad scrolling moves content in the correct
+                // direction.
+                startFling(event.getEventTime(), -velocityX, velocityY, false, false, true);
                 return;
             }
         }
@@ -566,6 +572,7 @@ public class EventForwarder {
             cancelFling(event.getEventTime(), true);
         }
 
+        // Negate deltaX as explained above for trackpad scroll events.
         EventForwarderJni.get()
                 .onMouseWheelEvent(
                         mNativeEventForwarder,
@@ -575,7 +582,7 @@ public class EventForwarder {
                         mLastTrackpadScrollStartY,
                         mLastTrackpadScrollStartRawX,
                         mLastTrackpadScrollStartRawY,
-                        deltaX,
+                        -deltaX,
                         deltaY);
     }
 

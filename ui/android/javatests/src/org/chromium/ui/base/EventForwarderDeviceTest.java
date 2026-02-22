@@ -133,7 +133,7 @@ public class EventForwarderDeviceTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
-                        eq(trackpadScrollCurrentEvent.getX() - trackpadScrollLastEvent.getX()),
+                        eq(-(trackpadScrollCurrentEvent.getX() - trackpadScrollLastEvent.getX())),
                         eq(trackpadScrollCurrentEvent.getY() - trackpadScrollLastEvent.getY()));
     }
 
