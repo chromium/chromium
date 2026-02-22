@@ -932,6 +932,34 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask());
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       WebContentsVisibilityChanged) {
+  SetUpTasks();
+
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+
+  // Show side panel. Current WebContents is visible.
+  coordinator->Show(false,
+                    omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
+  content::WebContents* web_contents1 = coordinator->GetActiveWebContents();
+  web_contents1->WasShown();
+  EXPECT_EQ(content::Visibility::VISIBLE, web_contents1->GetVisibility());
+
+  // Switch to tab1. Previous WebContents is hidden. Current WebContents is
+  // visible.
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  content::WebContents* web_contents2 = coordinator->GetActiveWebContents();
+  EXPECT_EQ(content::Visibility::HIDDEN, web_contents1->GetVisibility());
+  EXPECT_EQ(content::Visibility::VISIBLE, web_contents2->GetVisibility());
+
+  // Close the side panel. Both WebContents are hidden.
+  coordinator->Close();
+  EXPECT_EQ(content::Visibility::HIDDEN, web_contents1->GetVisibility());
+  EXPECT_EQ(content::Visibility::HIDDEN, web_contents2->GetVisibility());
+}
+
 class TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest
     : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
  public:
