@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 29
+version_major: 30
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -51,11 +51,6 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e"
   ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=Certum Trusted Network CA 2, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL
-trust_anchors {
-  sha256_hex: "b676f2eddae8775cd36cb0f63cd1d4603961f49e6265ba013a2f0307b6d0b804"
 }
 
 # C=DE, O=Atos, CN=Atos TrustedRoot 2011
@@ -149,8 +144,12 @@ trust_anchors {
 }
 
 # CN=Certigna Root CA, OU=0002 48146308100036, O=Dhimyotis, C=FR
+# Constraint date: Sun, Jun 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168"
+  constraints: {
+    sct_not_after_sec: 1781481599
+  }
 }
 
 # CN=Certigna, O=Dhimyotis, C=FR
@@ -506,26 +505,42 @@ trust_anchors {
 
 # CN=SSL.com EV Root Certification Authority ECC, O=SSL Corporation, L=Houston, ST=Texas, C=US
 # https://test-ev-ecc.ssl.com/
+# Constraint date: Sun, Jun 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "22a2c1f7bded704cc1e701b5f408c310880fe956b5de2a4a44f99c873a25a7c8"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1781481599
+  }
 }
 
 # CN=SSL.com EV Root Certification Authority RSA R2, O=SSL Corporation, L=Houston, ST=Texas, C=US
 # https://test-ev-rsa.ssl.com/
+# Constraint date: Sun, Jun 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "2e7bf16cc22485a7bbe2aa8696750761b0ae39be3b2fe9d0cc6d4ef73491425c"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1781481599
+  }
 }
 
 # CN=SSL.com Root Certification Authority ECC, O=SSL Corporation, L=Houston, ST=Texas, C=US
+# Constraint date: Sun, Jun 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "3417bb06cc6007da1b961c920b8ab4ce3fad820e4aa30b9acbc4a74ebdcebc65"
+  constraints: {
+    sct_not_after_sec: 1781481599
+  }
 }
 
 # CN=SSL.com Root Certification Authority RSA, O=SSL Corporation, L=Houston, ST=Texas, C=US
+# Constraint date: Sun, Jun 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "85666a562ee0be5ce925c1d8890a6f76a87ec16d4d7d5f29ea7419cf20123b69"
+  constraints: {
+    sct_not_after_sec: 1781481599
+  }
 }
 
 # CN=SwissSign Gold CA - G2, O=SwissSign AG, C=CH
@@ -537,9 +552,13 @@ trust_anchors {
 
 # CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW
 # https://evssldemo3.twca.com.tw/index.html
+# Constraint date: Mon, Sep 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1789430399
+  }
 }
 
 # CN=TeliaSonera Root CA v1, O=TeliaSonera
@@ -748,6 +767,44 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1813017599
+  }
+}
+
+# CN=D-TRUST BR Root CA 2 2023, O=D-Trust GmbH, C=DE
+# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+trust_anchors {
+  sha256_hex: "0552e6f83fdf65e8fa9670e666df28a4e21340b510cbe52566f97c4fb94b2bd1"
+  constraints: {
+    sct_not_after_sec: 1819670399
+  }
+}
+
+# CN=D-TRUST EV Root CA 2 2023, O=D-Trust GmbH, C=DE
+# https://certdemo-ev-valid-rsa.tls.d-trust.net/
+# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+trust_anchors {
+  sha256_hex: "8e8221b2e7d4007836a1672f0dcc299c33bc07d316f132fa1a206d587150f1ce"
+  ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1819670399
+  }
+}
+
+# CN=Telekom Security TLS ECC Root 2020, O=Deutsche Telekom Security GmbH, C=DE
+# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+trust_anchors {
+  sha256_hex: "578af4ded0853f4e5998db4aeaf9cbea8d945f60b620a38d1a3c13b2bc7ba8e1"
+  constraints: {
+    sct_not_after_sec: 1819670399
+  }
+}
+
+# CN=Telekom Security TLS RSA Root 2023, O=Deutsche Telekom Security GmbH, C=DE
+# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+trust_anchors {
+  sha256_hex: "efc65cadbb59adb6efe84da22311b35624b71b3b1ea0da8b6655174ec8978646"
+  constraints: {
+    sct_not_after_sec: 1819670399
   }
 }
 

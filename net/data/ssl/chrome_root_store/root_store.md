@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 29
+Version: 30
 
 [TOC]
 
@@ -14,7 +14,6 @@ SHA 256 Hash | Subject | NotBefore | NotAfter
 8ecde6884f3d87b1125ba31ac3fcb13d7016de7f57cc904fe1cb97c6ae98196e | CN=Amazon Root CA 1,O=Amazon,C=US | 2015-05-26 | 2038-01-17
 e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092 | CN=Amazon Root CA 4,O=Amazon,C=US | 2015-05-26 | 2040-05-26
 5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e | CN=Certum Trusted Network CA,OU=Certum Certification Authority,O=Unizeto Technologies S.A.,C=PL | 2008-10-22 | 2029-12-31
-b676f2eddae8775cd36cb0f63cd1d4603961f49e6265ba013a2f0307b6d0b804 | CN=Certum Trusted Network CA 2,OU=Certum Certification Authority,O=Unizeto Technologies S.A.,C=PL | 2011-10-06 | 2046-10-06
 f356bea244b7a91eb35d53ca9ad7864ace018e2d35d5f8f96ddf68a6f41aa474 | CN=Atos TrustedRoot 2011,O=Atos,C=DE | 2011-07-07 | 2030-12-31
 57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a | CN=Autoridad de Certificacion Firmaprofesional CIF A62634068,C=ES | 2014-09-23 | 2036-05-05
 657cfe2fa73faa38462571f332a2363a46fce7020951710702cdfbb6eeda3305 | OU=certSIGN ROOT CA G2,O=CERTSIGN SA,C=RO | 2017-02-06 | 2042-02-06
@@ -24,7 +23,6 @@ eaa962c4fa4a6bafebe415196d351ccd888d4f53f3fa8ae6d7c466a94e6042bb | OU=certSIGN R
 eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881 | CN=D-TRUST Root Class 3 CA 2 EV 2009,O=D-Trust GmbH,C=DE | 2009-11-05 | 2029-11-05
 91e2f5788d5810eba7ba58737de1548a8ecacd014598bc0b143e041b17052552 | CN=T-TeleSec GlobalRoot Class 2,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
 fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd | CN=T-TeleSec GlobalRoot Class 3,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
-d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168 | CN=Certigna Root CA,OU=0002 48146308100036,O=Dhimyotis,C=FR | 2013-10-01 | 2033-10-01
 e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d | CN=Certigna,O=Dhimyotis,C=FR | 2007-06-29 | 2027-06-29
 31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0 | CN=DigiCert Global Root G3,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
 3e9099b5015e8f486c00bcea9d111ee721faba355a89bcf1df69561e3dc6325c | CN=DigiCert Assured ID Root CA,OU=www.digicert.com,O=DigiCert Inc,C=US | 2006-11-10 | 2031-11-10
@@ -77,12 +75,7 @@ e793c9b02fd8aa13e21c31228accb08119643b749c898964b1746d46c3d4cbd2 | CN=USERTrust 
 f1c1b50ae5a20dd8030ec9f6bc24823dd367b5255759b4e71b61fce9f7375d73 | CN=SecureTrust CA,O=SecureTrust Corporation,C=US | 2006-11-07 | 2029-12-31
 9bea11c976fe014764c1be56a6f914b5a560317abd9988393382e5161aa0493c | CN=UCA Global G2 Root,O=UniTrust,C=CN | 2016-03-11 | 2040-12-31
 d43af9b35473755c9684fc06d7d8cb70ee5c28e773fb294eb41ee71722924d24 | CN=UCA Extended Validation Root,O=UniTrust,C=CN | 2015-03-13 | 2038-12-31
-22a2c1f7bded704cc1e701b5f408c310880fe956b5de2a4a44f99c873a25a7c8 | CN=SSL.com EV Root Certification Authority ECC,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
-2e7bf16cc22485a7bbe2aa8696750761b0ae39be3b2fe9d0cc6d4ef73491425c | CN=SSL.com EV Root Certification Authority RSA R2,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2017-05-31 | 2042-05-30
-3417bb06cc6007da1b961c920b8ab4ce3fad820e4aa30b9acbc4a74ebdcebc65 | CN=SSL.com Root Certification Authority ECC,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
-85666a562ee0be5ce925c1d8890a6f76a87ec16d4d7d5f29ea7419cf20123b69 | CN=SSL.com Root Certification Authority RSA,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
 62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95 | CN=SwissSign Gold CA - G2,O=SwissSign AG,C=CH | 2006-10-25 | 2036-10-25
-59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b | CN=TWCA Global Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2012-06-27 | 2030-12-31
 dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389 | CN=TeliaSonera Root CA v1,O=TeliaSonera | 2007-10-18 | 2032-10-18
 6b328085625318aa50d173c98d8bda09d57e27413d114cf787a0f5d06c030cf6 | CN=Certum EC-384 CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-26 | 2043-03-26
 fe7696573855773e37a95e7ad4d9cc96c30157c15d31765ba9b15704e1ae78fd | CN=Certum Trusted Root CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-16 | 2043-03-16
@@ -122,6 +115,16 @@ SHA 256 Hash | Subject | NotBefore | NotAfter
 9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48 | CN=Buypass Class 2 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d | CN=Buypass Class 3 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5 | OU=ePKI Root Certification Authority,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2004-12-20 | 2034-12-20
+d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168 | CN=Certigna Root CA,OU=0002 48146308100036,O=Dhimyotis,C=FR | 2013-10-01 | 2033-10-01
 6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98 | CN=NetLock Arany (Class Gold) Főtanúsítvány,OU=Tanúsítványkiadók (Certification Services),O=NetLock Kft.,L=Budapest,C=HU | 2008-12-11 | 2028-12-06
+22a2c1f7bded704cc1e701b5f408c310880fe956b5de2a4a44f99c873a25a7c8 | CN=SSL.com EV Root Certification Authority ECC,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
+2e7bf16cc22485a7bbe2aa8696750761b0ae39be3b2fe9d0cc6d4ef73491425c | CN=SSL.com EV Root Certification Authority RSA R2,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2017-05-31 | 2042-05-30
+3417bb06cc6007da1b961c920b8ab4ce3fad820e4aa30b9acbc4a74ebdcebc65 | CN=SSL.com Root Certification Authority ECC,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
+85666a562ee0be5ce925c1d8890a6f76a87ec16d4d7d5f29ea7419cf20123b69 | CN=SSL.com Root Certification Authority RSA,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
+59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b | CN=TWCA Global Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2012-06-27 | 2030-12-31
 f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2019-02-22 | 2037-12-31
 193144f431e0fddb740717d4de926a571133884b4360d30e272913cbe660ce41 | CN=SwissSign RSA TLS Root CA 2022 - 1,O=SwissSign AG,C=CH | 2022-06-08 | 2047-06-08
+0552e6f83fdf65e8fa9670e666df28a4e21340b510cbe52566f97c4fb94b2bd1 | CN=D-TRUST BR Root CA 2 2023,O=D-Trust GmbH,C=DE | 2023-05-09 | 2038-05-09
+8e8221b2e7d4007836a1672f0dcc299c33bc07d316f132fa1a206d587150f1ce | CN=D-TRUST EV Root CA 2 2023,O=D-Trust GmbH,C=DE | 2023-05-09 | 2038-05-09
+578af4ded0853f4e5998db4aeaf9cbea8d945f60b620a38d1a3c13b2bc7ba8e1 | CN=Telekom Security TLS ECC Root 2020,O=Deutsche Telekom Security GmbH,C=DE | 2020-08-25 | 2045-08-25
+efc65cadbb59adb6efe84da22311b35624b71b3b1ea0da8b6655174ec8978646 | CN=Telekom Security TLS RSA Root 2023,O=Deutsche Telekom Security GmbH,C=DE | 2023-03-28 | 2048-03-27
