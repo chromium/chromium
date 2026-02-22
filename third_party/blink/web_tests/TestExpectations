@@ -4406,8 +4406,6 @@ crbug.com/1520703 [ Mac ] wpt_internal/prerender/unload-on-prerender-remove-subf
 crbug.com/1520703 wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.https.html [ Failure ]
 # TODO(crbug.com/1315625): Re-enable this test
 crbug.com/626703 external/wpt/webrtc-encoded-transform/sframe-keys.https.html [ Crash Failure Pass Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/speculation-rules/prerender/media-autoplay.https.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/media-autoplay.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/infrastructure/channels/test_call.html [ Timeout ]
