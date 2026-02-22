@@ -30,7 +30,11 @@ export function getHtml(this: ContextualTasksAppElement) {
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
       <h1 class="thread-header" id="composeboxHeader">
-          ${this.friendlyZeroStateTitle}
+          ${this.friendlyZeroStateGaiaName_
+            ? html`<span>${this.friendlyZeroStateTitleBeforeName_}</span><span class="name-shimmer">
+              ${this.friendlyZeroStateGaiaName_}</span><span>${this.friendlyZeroStateTitleAfterName_}</span>`
+            : html`<span>${this.friendlyZeroStateTitle}</span>`
+          }
           ${this.friendlyZeroStateSubtitle.length > 0 ?
               html`<br>
               ${this.friendlyZeroStateSubtitle}` : ''}

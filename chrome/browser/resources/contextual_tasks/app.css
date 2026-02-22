@@ -52,8 +52,7 @@
       rgba(240, 242, 245);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
   --color-suggestions-background-loading: rgba(241, 243, 244, 1);
-  --color-zero-state-greeting: rgba(10, 10, 10, 1);
-
+  --color-zero-state-greeting: rgba(0, 0, 0, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
   --composebox-max-width: 692px;
   /* 20px on right side. */
@@ -198,7 +197,7 @@
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(23, 24, 31, 1);
   --color-suggestions-background-loading: rgba(60, 64, 67, 1);
-  --color-zero-state-greeting: rgba(230, 232, 240, 1);
+  --color-zero-state-greeting: rgba(255, 255, 255, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
   --cr-composebox-background-color: rgba(29, 30, 38, 1);
@@ -294,6 +293,12 @@ error-page {
 
 :host([is-zero-state_][is-shown-in-tab_]) {
   --composebox-max-width: 750px;
+}
+
+:host([is-zero-state_]) #composebox {
+  animation: zero-state-intro 600ms ease
+      forwards;
+  opacity: 0;
 }
 
 :host([is-zero-state_][is-shown-in-tab_]) #composebox {
@@ -550,6 +555,8 @@ error-page {
 
 :host([is-zero-state_]) #composeboxHeaderWrapper {
   display: flex;
+  animation: zero-state-intro 600ms ease forwards;
+  opacity: 0;
 }
 
 :host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
@@ -584,4 +591,58 @@ error-page {
   height: 100%;
   overflow: hidden;
   width: 100%;
+}
+
+@keyframes zero-state-intro {
+  from {
+    opacity: 0;
+    transform: translateY(180px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.name-shimmer {
+  --bg-gradient: linear-gradient(
+    to bottom,
+    rgba(49, 134, 255, 1) 10%,
+    rgba(169, 168, 255, 1) 30%,
+    rgba(169, 168, 255, 1) 40%,
+    var(--color-zero-state-greeting) 100%
+  );
+  will-change: background-position;
+  color: transparent;
+  background-image: var(--bg-gradient);
+  background-clip: text;
+  background-size: auto 700%;
+  position: relative;
+  animation: textShimmerAnimation 1s cubic-bezier(0.3, 0, 1, 1) both;
+}
+
+.name-shimmer-dark {
+  --bg-gradient: linear-gradient(
+    to bottom,
+    rgba(49, 134, 255, 1) 10%,
+    rgba(169, 168, 255, 1) 50%,
+    var(--color-zero-state-greeting) 70%
+  );
+  will-change: background-position;
+  color: transparent;
+  background-image: var(--bg-gradient);
+  background-clip: text;
+  background-size: auto 700%;
+  position: relative;
+  animation: textShimmerAnimation 1s cubic-bezier(0.3, 0, 1, 1) both;
+  background-color: var(--color-zero-state-greeting);
+}
+
+@keyframes textShimmerAnimation {
+  0% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 50% 100%;
+  }
 }
