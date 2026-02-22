@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Ohrani skupino</translation>
 <translation id="1853692000353488670">Nov anonimni zavihek</translation>
 <translation id="1854463785401910334">Iskanje po odprtih zavihkih</translation>
+<translation id="1860609647735325606">Pojasnite z Geminijem</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} od {count} gesla}one{{position} od {count} gesla}two{{position} od {count} gesel}few{{position} od {count} gesel}other{{position} od {count} gesel}}</translation>
 <translation id="1861262398884155592">Ta mapa je prazna</translation>
 <translation id="1864266050569350424">Na spletnem mestu, kjer ste shranili geslo, se dotaknite polja za geslo za prijavo.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Odpri vse</translation>
 <translation id="2536991091671391962">Shranjena gesla lahko uporabljate v poljubni napravi. V Google Upravitelju gesel so shranjena za račun <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skrito, geslo</translation>
+<translation id="2538705697765638552">Shranite podatke in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. Podatke v Google Denarnici za <ph name="USER_EMAIL" /> lahko upravljate.</translation>
 <translation id="2539748786028143624">Vklop izboljšane zaščite …</translation>
 <translation id="2540111494300686866">Onemogoči pogovorna okna</translation>
 <translation id="2542268842667970959">Skrij »Varnostno preverjanje«</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Geslo je shranjeno v računu Google, {EMAIL}}one{Gesla so shranjena v računu Google, {EMAIL}}two{Gesla so shranjena v računu Google, {EMAIL}}few{Gesla so shranjena v računu Google, {EMAIL}}other{Gesla so shranjena v računu Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Dodajanje gesla …</translation>
 <translation id="2793703503584038325">Izberite geslo in se dotaknite ikone za deljenje</translation>
+<translation id="2793804887899597849">Podatki so shranjeni samo v napravi</translation>
 <translation id="2797029671965852011">Prikaz zgodovine</translation>
 <translation id="2797302972324086597">Koda države</translation>
 <translation id="2798263827270599246">Privzeta tema</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
 <translation id="3575426792457739946">Na tem seznamu so vsi naloženi profili</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, ki ga upravlja vaša organizacija.</translation>
+<translation id="3580448612293054698">Želite posodobiti to: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
 <translation id="3587482841069643663">Vse</translation>
 <translation id="3587885837929752825">Vaša organizacija omejuje, kaj je mogoče shraniti v računu Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Uvoz</translation>
 <translation id="3857113360369572832">Odpri <ph name="BEGIN_BOLD" />nastavitve Safarija<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Ime</translation>
+<translation id="386224966259596343">Te podatke boste lahko shranili v Denarnico, ko boste naslednjič izpolnili ustrezen obrazec.</translation>
 <translation id="3868495844258915202">Prikaz polnega URL-ja</translation>
 <translation id="3875783148670536197">Postopek</translation>
 <translation id="3878657761594430423">Orodje za prijemanje listov</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Pokaži pomoč</translation>
 <translation id="4095483462103784441">Ustvarjanje nove skupine zavihkov</translation>
 <translation id="4099756562043439968">Nastavi opomnik</translation>
+<translation id="4101867642407836771">V Google Denarnici za uporabnika <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Zaznava nevarne dogodke, ko se zgodijo, in vas opozarja nanje.</translation>
 <translation id="4111985840824673503">Označi vse kot prebrano</translation>
 <translation id="411254640334432676">Prenos ni uspel.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Spremenite gesla</translation>
 <translation id="4120936477286528673">To spletno mesto nenehno poskuša odpreti drugo aplikacijo.</translation>
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
+<translation id="4129768137228347731">Želite shraniti to: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Pripravljeni ste</translation>
 <translation id="4133265950310064865">Izboljšana zaščita</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1236,6 +1243,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5559567453458728487">Pretvorba merskih enot, najdenih v spletu</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5565871407246142825">Kreditne kartice</translation>
+<translation id="5566623128829375608">Shrani v napravo.</translation>
 <translation id="5567439033041178034">VEČ O TEM</translation>
 <translation id="5578795271662203820">Za iskanje te slike uporabi <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skrij bralni seznam</translation>
@@ -2178,6 +2186,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8829809207373502270">Ta ključ za dostop ne deluje več. Izbrisan je bil s spletnega mesta <ph name="WEBSITE" /> in bo kmalu izbrisan tudi tukaj. <ph name="BEGIN_LINK" />O ključih za dostop<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Zapri vse neaktivne</translation>
 <translation id="8837654851594567190">Razvrsti glede na izdajatelja</translation>
+<translation id="884351711508006491">Vaši podatki so shranjeni v napravi.</translation>
 <translation id="8844136307393039959">Znižanje cene za spremljan izdelek</translation>
 <translation id="8848286253339013170">Shranjevanje slike v Google Foto za račun <ph name="USER_EMAIL" /> …</translation>
 <translation id="8849001918648564819">Skrito</translation>

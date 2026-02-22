@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">نگه داشتن گروه</translation>
 <translation id="1853692000353488670">زبانه ناشناس جدید</translation>
 <translation id="1854463785401910334">جستجوی برگه‌های باز</translation>
+<translation id="1860609647735325606">‏توضیح با Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{position} از {count} گذرواژه}one{‫{position} از {count} گذرواژه}other{‫{position} از {count} گذرواژه}}</translation>
 <translation id="1861262398884155592">این پوشه خالی است</translation>
 <translation id="1864266050569350424">در سایتی که گذرواژه را ذخیره کرده‌اید، روی فیلد گذرواژه ورود به سیستم تک‌ضرب بزنید.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">باز کردن همه</translation>
 <translation id="2536991091671391962">‏گذرواژه‌های ذخیره‌شده را در هر دستگاهی می‌توانید استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره می‌شود.</translation>
 <translation id="2538103551183528357">گذرواژه پنهان</translation>
+<translation id="2538705697765638552">‏اطلاعاتتان را ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. می‌توانید اطلاعاتتان را در «کیف پول Google» مربوط به <ph name="USER_EMAIL" /> مدیریت کنید.</translation>
 <translation id="2539748786028143624">روشن کردن «محافظت بهبودیافته»…</translation>
 <translation id="2540111494300686866">جلوگیری از کادرهای گفتگو</translation>
 <translation id="2542268842667970959">پنهان کردن «کنترل ایمنی»</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏گذرواژه در «حساب Google» شما ({EMAIL}) ذخیره شد}one{‏گذرواژه در «حساب Google» شما ({EMAIL}) ذخیره شد}other{‏گذرواژه‌ها در «حساب Google» شما ({EMAIL}) ذخیره شد}}</translation>
 <translation id="2791174088547598693">افزودن گذرواژه…</translation>
 <translation id="2793703503584038325">گذرواژه‌ای را انتخاب کنید و روی نماد «هم‌رسانی» تک‌ضرب بزنید</translation>
+<translation id="2793804887899597849">اطلاعات فقط در دستگاه ذخیره شد</translation>
 <translation id="2797029671965852011">نمایش سابقه</translation>
 <translation id="2797302972324086597">کد کشور</translation>
 <translation id="2798263827270599246">زمینه پیش‌فرض</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3575426792457739946">این فهرست حاوی همه نمایه‌های بارشده است.</translation>
 <translation id="3578866308944526475">‫<ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود.</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> به‌روزرسانی شود؟</translation>
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3587885837929752825">‏سازمان شما آنچه را می‌توانید در «حساب Google» خود ذخیره کنید محدود می‌کند.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">وارد کردن</translation>
 <translation id="3857113360369572832">‏‫<ph name="BEGIN_BOLD" />Safari Settings (تنظیمات Safari)<ph name="END_BOLD" /> را باز کنید</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="386224966259596343">دفعه بعدی که فرم مربوطه را تکمیل کنید، فرصت خواهید داشت که این اطلاعات را در کیف پول ذخیره کنید.</translation>
 <translation id="3868495844258915202">نمایش نشانی وب کامل</translation>
 <translation id="3875783148670536197">نشان دادن روش کار</translation>
 <translation id="3878657761594430423">ورق‌گیر</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">نمایش راهنما</translation>
 <translation id="4095483462103784441">ایجاد گروه زبانه جدید</translation>
 <translation id="4099756562043439968">تنظیم یادآور</translation>
+<translation id="4101867642407836771">‏در «کیف پول Google» مربوط به <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">رویدادهای خطرناکی را که اتفاق می‌افتد شناسایی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
 <translation id="4111985840824673503">علامت‌گذاری همه به‌عنوان خوانده‌شده</translation>
 <translation id="411254640334432676">بارگیری نشد.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">گذرواژه‌هایتان را تغییر دهید</translation>
 <translation id="4120936477286528673">این سایت به‌طور مکرر تلاش می‌کند برنامه دیگری را باز کند.</translation>
 <translation id="4121993058175073134">برای ارسال داده‌های صادراتی شبکه، لطفاً حساب ایمیل‌تان را در برنامه تنظیمات پیکربندی کنید.</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> ذخیره شود؟</translation>
 <translation id="4133139945030148655">کاملاً آماده‌اید</translation>
 <translation id="4133265950310064865">محافظت بهبودیافته</translation>
 <translation id="4145507240503767005">‫<ph name="SEARCH_ENGINE_NAME" />، <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1236,6 +1243,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5559567453458728487">تبدیل واحدهای اندازه‌گیری پیداشده در وب</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5565871407246142825">کارت‌های اعتباری</translation>
+<translation id="5566623128829375608">در دستگاهتان ذخیره می‌کند.</translation>
 <translation id="5567439033041178034">بیشتر بدانید</translation>
 <translation id="5578795271662203820">جستجوی <ph name="SEARCH_ENGINE" /> برای این تصویر</translation>
 <translation id="5579012242779565775">پنهان کردن «فهرست خواندن»</translation>
@@ -2178,6 +2186,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8829809207373502270">این گذرکلید دیگر کار نمی‌کند. این گذرکلید از <ph name="WEBSITE" /> حذف شده است و به‌زودی از اینجا حذف خواهد شد. <ph name="BEGIN_LINK" />درباره گذرکلیدها<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">بستن همه برگه‌های غیرفعال</translation>
 <translation id="8837654851594567190">مرتب کردن براساس ناشر</translation>
+<translation id="884351711508006491">اطلاعات شما در دستگاهتان ذخیره می‌شود.</translation>
 <translation id="8844136307393039959">کاهش قیمت محصول ردیگیری‌شده</translation>
 <translation id="8848286253339013170">‏درحال ذخیره کردن تصویر در Google Photos برای <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">پنهان</translation>

@@ -428,6 +428,7 @@
 <translation id="1664389769577564606">Флексо фотополимер</translation>
 <translation id="1667730174533834274">тохиргоог өөрчлөхөөсөө өмнө өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1668071460721346172">Имэйл хүлээн авах</translation>
+<translation id="1670861525135254448">Тээврийн хэрэгслийг хадгалах</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> -с <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Эхлээд богино зах</translation>
 <translation id="168693727862418163">Энэ бодлогын утгыг схемтэй нь тулгаж баталж чадаагүй тул үүнийг үл хэрэгсэнэ.</translation>
@@ -470,6 +471,7 @@
 <translation id="1734878702283171397">Системийн админтай холбоо барина уу.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, хугацаа нь <ph name="CARD_EXPIRATION" />-д дуусна</translation>
 <translation id="1736420071277903564">Компьютер</translation>
+<translation id="1739364174357629566">Бүртгэлтэй аялагчийн дугаарыг шинэчлэх</translation>
 <translation id="1740404923954980840">Бүтэн дэлгэцээс гарахын тулд дээрээс чирч, буцах товчинд хүрнэ үү</translation>
 <translation id="1741474054575634405">Лояалти картыг удирдах...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode-г <ph name="SECURE_DNS_MODE_SECURE" /> байх үед тодорхойлогдсон бөгөөд хүчинтэй стринг байх ёстой.</translation>
@@ -1318,6 +1320,7 @@
 <translation id="3115363211799416195">{0,plural, =1{Нууцлалтай файл татах уу?}other{Нууцлалтай файлууд татах уу?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> танаас өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна.</translation>
 <translation id="3116158981186517402">Ламинатордах</translation>
+<translation id="3116695032231023709">Биеийн байцаалтыг хадгалах</translation>
 <translation id="3119689199889622589">Органик болон байгалийн гаралтай хоол хүнснүүд</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Холболтын оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
@@ -1325,6 +1328,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" /> руу очих</translation>
 <translation id="3122696783148405307">Сүүлийн 30 хоногийн илэрцийг харуулах</translation>
 <translation id="3126023634486644099">Шошго (салдаггүй)</translation>
+<translation id="3132345256151444894">Нөхөн төлөх дугаарыг хадгалах</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> нь одоо таны өгөгдмөл хайлтын систем юм</translation>
 <translation id="3134859781443140237">Дотоод сүлжээ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />-г хайх</translation>
@@ -2044,6 +2048,7 @@
 <translation id="4233220688695460165">Chrome зар санал болгосон сэдэв болон сайтуудыг 30 хоногийн дотор автоматаар устгадаг. Эсвэл та таалагдаагүй тодорхой сэдэв болон сайтуудыг блоклох боломжтой.</translation>
 <translation id="4235360514405112390">Хүчинтэй</translation>
 <translation id="4239799716689808527">Шошго</translation>
+<translation id="424063167283213501">Бүртгэлтэй аялагчийн дугаарыг хадгалах</translation>
 <translation id="4241830393007970744">Таны зочлохоор оролдсон сайт дээрх халдагчид танаар программ хангамж суулгуулах эсвэл нууц үг, утасны дугаар, кредит картын дугаар зэрэг зүйлсээ илчлэх үйлдэл хийлгэхээр таныг хуурч магадгүй.</translation>
 <translation id="4242380780309416996">Дугтуй (хүнд)</translation>
 <translation id="4242981939686657948">Хөтчийн түүхээсээ хайх илүү хүчирхэг аргыг авах бол дараахыг асаана уу:</translation>
@@ -2306,6 +2311,7 @@
 <translation id="4691093235373904540">Дээвэр нөхөх, засах үйлчилгээ</translation>
 <translation id="4692623383562244444">Хайлтын систем</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />-с асуух</translation>
+<translation id="4698308118265482293">Паспортыг шинэчлэх</translation>
 <translation id="4698692901173737941">Тулааны спортууд</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Хажуугийн</translation>
@@ -3273,6 +3279,8 @@
 <translation id="6236290670123303279">Тохиргоог удирдах</translation>
 <translation id="623825323736974198">Байнга идэвхтэй бөгөөд тэдгээрээс санах ойг суллахгүй байх сайтуудыг удирдах</translation>
 <translation id="6240447795304464094">Google Pay-н лого</translation>
+<translation id="6240553182907836376">Биеийн байцаалтыг шинэчлэх</translation>
+<translation id="6240601837375010619">Паспортыг хадгалах</translation>
 <translation id="6240964651812394252">Үйлдлийн системээрээ Нууц үгний менежерийг ашиглахын тулд Chrome-г дахин ачаалж, компьютерынхоо нууц үгний менежерт хандахыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="6241121617266208201">Зөвлөмжийг нуух</translation>
 <translation id="624499991300733384">Хэвлэлийг нэгтгэгч үйлчилгээ</translation>
@@ -3637,6 +3645,7 @@
 <translation id="681021252041861472">Шаардлагатай талбар</translation>
 <translation id="6810899417690483278">Тохируулах ID</translation>
 <translation id="6816109178681043245">Спортын бараанууд</translation>
+<translation id="681631578600400068">Жолооны үнэмлэхийг хадгалах</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">цуваа порт</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -3849,6 +3858,7 @@
 <translation id="7143668445748322952">камерын файл, татаж авсан файл, дэлгэцийн агшин</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
+<translation id="7145337554745942724">Жолооны үнэмлэхийг шинэчлэх</translation>
 <translation id="7152230779180489711">Хамгийн сүүлд зочилсон</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">Серверийг TLS 1.2 эсвэл түүнээс дээших хувилбар луу дэвшүүлэх шаардлагатай.</translation>
@@ -4041,6 +4051,7 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{Күүкинүүдийг өнөөдөр дахин блоклоно}=1{Күүкинүүдийг маргааш дахин блоклоно}other{Күүкинүүдийг дахин блоклох хүртэл # хоног үлдсэн}}</translation>
 <translation id="7447234474237738389">Хувцасны үйлчилгээнүүд</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
+<translation id="7450486349221991286">Тээврийн хэрэгслийг шинэчлэх</translation>
 <translation id="7450577240311017924">Синк хийхийг удирдах товчлуур, Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="7451311239929941790">Уг асуудлын талаар <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэж байна<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino тоглоом, тоглохын тулд зай авах товчийг дарна уу</translation>
@@ -4888,6 +4899,7 @@
 <translation id="8811725516933141693">Gemini-тэй чатлахын тулд @gemini гэж бичнэ үү</translation>
 <translation id="8813277370772331957">Надад дараа сануулах</translation>
 <translation id="8814707942599948500">Дугтуй C8</translation>
+<translation id="881559332211266856">Нөхөн төлөх дугаарыг шинэчлэх</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргооноосоо Chrome-г шинэчлэхийн тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
 <translation id="8819855907485254989">Тээврийн тасалбарыг Wallet-д хадгалах</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
