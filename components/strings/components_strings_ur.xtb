@@ -1507,7 +1507,7 @@
 <translation id="3440783957068352691">مربع</translation>
 <translation id="3441653493275994384">اسکرین</translation>
 <translation id="3443504041532578451">آپٹیکل ڈسک (ساٹن)</translation>
-<translation id="3447644283769633681">سبھی فریق ثالث کوکیز کو مسدود کریں</translation>
+<translation id="3447644283769633681">سبھی فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="3447661539832366887">اس آلہ کے مالک نے ڈائناسور گیم کو آف کر دیا ہے۔</translation>
 <translation id="3447884698081792621">سرٹیفیکیٹ دکھائیں (<ph name="ISSUER" /> کی جانب سے جاری کردہ)</translation>
 <translation id="3450323514459570273">‏آپ کے MIDI آلات کنٹرول کرنے اور دوبارہ پروگرام کرنے کے لیے کہہ سکتا ہے</translation>
@@ -2204,7 +2204,7 @@
 <translation id="4523580145196408446">لنک ہے</translation>
 <translation id="4523643381056109546">علامتی تختی</translation>
 <translation id="4524138615196389145">‏اب سے WebAuthn کے استعمال سے تیزی سے اپنے کارڈز کی تصدیق کریں</translation>
-<translation id="45243788195988825"><ph name="TOPIC" /> کو مسدود کریں</translation>
+<translation id="45243788195988825"><ph name="TOPIC" /> کو بلاک کریں</translation>
 <translation id="4528888973346221791">دفتری پروفائل کی معلومات (جیسے آپ کا صارف نام)</translation>
 <translation id="4530347922939905757">ٹیکسٹ پیغام</translation>
 <translation id="4531477351494678589">ورچوئل کارڈ نمبر:</translation>
@@ -3215,7 +3215,7 @@
 <translation id="6194209731893739467">اپنے تمام ٹریک کردہ پروڈکٹس یہاں دیکھیں</translation>
 <translation id="6195371403461054755">ارضیات</translation>
 <translation id="6195418151868446719">کنزیومر الیکٹرانکس</translation>
-<translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
+<translation id="6196640612572343990">فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="6197648101609735209">‏‎89 x 89 ملی میٹر</translation>
 <translation id="6198480336395236519">مکمل کٹ ٹیبز</translation>
 <translation id="6203231073485539293">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
@@ -4470,7 +4470,7 @@
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">‏‎14 x 18 انچ</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>
-<translation id="8220602974062798186"><ph name="TOPIC" /> کو اور کسی بھی متعلقہ موضوع کو مسدود کریں؟</translation>
+<translation id="8220602974062798186"><ph name="TOPIC" /> کو اور کسی بھی متعلقہ موضوع کو بلاک کریں؟</translation>
 <translation id="8226408512771130794">‫<ph name="KEYWORD_SHORTCUT" />، <ph name="KEYWORD_SUFFIX" /> سے پوچھیں</translation>
 <translation id="8228419419708659934">دو صفحہ کا منظر</translation>
 <translation id="822925450938886901">‏اضافی معلومات اور وہ پالیسیاں جو لاگو ہو سکتی ہیں ان کے لیے، اپنے براؤزر میں chrome://management کھولیں۔</translation>

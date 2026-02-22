@@ -41,7 +41,7 @@
 <translation id="1150263420752757504">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Você não tem senhas salvas no Gerenciador de senhas do Google.</translation>
 <translation id="115483310321669804">Use a senha <ph name="PASSWORD" /></translation>
-<translation id="1165109137568919258">Tire uma foto ou adicione uma imagem da sua galeria para pesquisar</translation>
+<translation id="1165109137568919258">Tire uma foto ou adicione uma imagem da sua galeria para pesquisar.</translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1174479719160874822">O Chrome solicita o site para dispositivos móveis quando a tela é estreita</translation>
 <translation id="1175241315203286684">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.</translation>
@@ -95,7 +95,7 @@
 <translation id="1366525380420346469">Quando ativado</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Você pode impedir que esse site envie outras notificações}one{Você pode impedir que esse site envie outras notificações}other{Você pode impedir que esses sites enviem outras notificações}}</translation>
 <translation id="1373696734384179344">Memória insuficiente para fazer o download do conteúdo selecionado.</translation>
-<translation id="137496472437646183">Escolha Proteção reforçada</translation>
+<translation id="137496472437646183">Escolha Proteção Reforçada</translation>
 <translation id="1376578503827013741">Calculando…</translation>
 <translation id="1381838868249179644">Para proteger você, as permissões de alguns sites foram removidas</translation>
 <translation id="1383876407941801731">Pesquise</translation>
@@ -191,7 +191,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, guia com gravação</translation>
 <translation id="1820408774134375111">Página inferior de login</translation>
 <translation id="1823492026305965829">Fazer login como <ph name="USER_FULL_NAME" /></translation>
-<translation id="1824902652744048041">Toque em Excluir dados de navegação.</translation>
+<translation id="1824902652744048041">Toque em Excluir Dados de Navegação.</translation>
 <translation id="1825772852827001597">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Encontrar na página</translation>
@@ -282,7 +282,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Janela vazia</translation>
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
-<translation id="2233735624724508540">Escolha um período e toque em Excluir dados</translation>
+<translation id="2233735624724508540">Escolha um período e toque em Excluir Dados</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2238038374973843156">Mover as guias para outra janela</translation>
 <translation id="2239812875700136898">Controle suas matérias com o botão "Opções do Discover"</translation>
@@ -746,7 +746,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="4285498937028063278">Liberar guia</translation>
-<translation id="4285846616383034558">Cookies, cache e outros dados do site</translation>
+<translation id="4285846616383034558">Cookies, cache e outros dados de sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ativar o bloqueio de tela nas configurações do Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nova guia anônima</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, guia anônima de seleção múltipla</translation>
@@ -1498,7 +1498,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="727288900855680735">Enviar <ph name="ONE_TIME_CODE" /> para <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site bloqueado</translation>
 <translation id="7276868533747677875">Se você exportou senhas antes, procure um arquivo CSV no dispositivo e use o gerenciador de senhas da sua preferência para importar esse arquivo.</translation>
-<translation id="728377807486816582">Toque em Barra de endereço</translation>
+<translation id="728377807486816582">Toque em Barra de Endereço</translation>
 <translation id="7289049772085228972">Você tem o nível mais alto de segurança do Chrome</translation>
 <translation id="7289303553784750393">Se você está on-line, mas o problema persiste, tente outras maneiras de continuar no <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Ação de renomear indisponível</translation>

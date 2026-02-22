@@ -25,7 +25,7 @@
 <translation id="1072679792409426431">已被管理员停用</translation>
 <translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
-<translation id="1081114897601629648">以下密码不符合要求，因此未导入 Google 密码管理工具。</translation>
+<translation id="1081114897601629648">以下密码不符合要求，因此未导入到 Google 密码管理工具。</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="1082554859195167538">为您推荐的商品评价</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
@@ -362,7 +362,7 @@
 <translation id="2306265833370324042">显示<ph name="SEARCH_ENGINE_NAME" />详细信息</translation>
 <translation id="2309265394777270359">关闭标签页</translation>
 <translation id="2311077293164383652">关闭固定标签页</translation>
-<translation id="2316129865977710310">不用了，谢谢</translation>
+<translation id="2316129865977710310">不用了</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
 <translation id="2323697864063408084">在锁屏状态下或以横幅形式接收通知，绝不错过任何重要信息</translation>
@@ -1363,7 +1363,7 @@
 <translation id="6151006591088192882">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="6152340033632117531">闲置</translation>
 <translation id="6152406514676263192">开启同步功能后，您便会看到系统根据您的兴趣推荐的最相关的内容。</translation>
-<translation id="6159839020698489198">可选</translation>
+<translation id="6159839020698489198">选填</translation>
 <translation id="6160780110287872296">下载文件？</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6168647875670665004">文章推荐</translation>
@@ -1803,7 +1803,7 @@
 <translation id="7757015014239760147">无用户名 ••••••</translation>
 <translation id="775755486779745798">自动填充失效月份 <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">紫罗兰色主题</translation>
-<translation id="7759809451544302770">可选</translation>
+<translation id="7759809451544302770">选填</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772948288262733182">欢迎回来</translation>
@@ -1814,7 +1814,7 @@
 <translation id="7795253248079882669">点按<ph name="BEGIN_BOLD" />导出<ph name="END_BOLD" /></translation>
 <translation id="7801064017114765401">电脑</translation>
 <translation id="7802239711290932774">使用建议的密码：</translation>
-<translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="780301667611848630">不用了</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7812377703891978671">您可选择“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”来访问您的所有浏览记录。</translation>
 <translation id="78146569776629510">下载内容</translation>

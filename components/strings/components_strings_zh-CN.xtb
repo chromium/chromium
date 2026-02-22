@@ -530,7 +530,7 @@
 <translation id="1839331950812095887">总结想法的几个字词</translation>
 <translation id="1839551713262164453">由于出现错误，未能成功验证政策值</translation>
 <translation id="1840009953725035797">家庭影院系统</translation>
-<translation id="184153295865602321">为了提高安全性，请在使用自动填充功能进行支付时，始终使用指纹、面孔或其他屏幕解锁方式</translation>
+<translation id="184153295865602321">为提高安全性，在使用自动填充功能进行支付时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
 <translation id="1842969606798536927">付款</translation>
 <translation id="184517536440397176">必须先征得家长或监护人的同意，然后才能访问此网站。在向他们提出请求之前，我们需要确认你的身份。</translation>
 <translation id="1846432862466000825">塑料（存档用）</translation>
@@ -1401,7 +1401,7 @@
 <translation id="3266367459139339908">我们推出了新的方式来限制网站在向您展示个性化广告时可以了解关于您的哪些信息，例如：</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
-<translation id="3270041629388773465">保存银行卡验证码 (CVC) 后，结账速度更快</translation>
+<translation id="3270041629388773465">保存银行卡验证码 (CVC) 后，结账更快捷</translation>
 <translation id="3270847123878663523">撤消顺序调整(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 希望连接到以下所选设备：</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -2916,7 +2916,7 @@
 <translation id="570953204696852961">红色 3</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">兽医学</translation>
-<translation id="5715150588940290235">删除已保存的安全码？</translation>
+<translation id="5715150588940290235">要删除已保存的安全码吗？</translation>
 <translation id="5715918316982363436">此设备上来自 <ph name="WINDOW_COUNT" />的 <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">点按即可在手机上打开标签页</translation>
 <translation id="5717509257172454543">滑冰</translation>
@@ -3139,7 +3139,7 @@
 <translation id="6085149458302186532">标签（彩色）</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6089505343295765444">您从 Chrome 历史记录中删除的标签页仍会显示在比较表格中</translation>
-<translation id="6091691259076781835">为了加快结账速度，请将此银行卡验证码 (CVC) 保存到设备上</translation>
+<translation id="6091691259076781835">将此银行卡验证码 (CVC) 保存到设备上可加快结账速度</translation>
 <translation id="6093599771645355227">黄色 1</translation>
 <translation id="6093795393556121384">您的信用卡已成功验证</translation>
 <translation id="6094253940069566294">修改车辆信息</translation>
@@ -4205,7 +4205,7 @@
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
 <translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
-<translation id="7759809451544302770">可选</translation>
+<translation id="7759809451544302770">选填</translation>
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7761159795823346334">允许使用摄像头？</translation>
 <translation id="7761701407923456692">服务器的证书与网址不相符。</translation>
@@ -4228,11 +4228,11 @@
 <translation id="7800977246388195491">Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。此外，您访问的网站也能反映出您的喜好。之后，网站可请求获取这类信息，以便向您展示个性化广告。您可以选择要根据哪些主题和网站向您展示广告。</translation>
 <translation id="7802523362929240268">网站是合规的</translation>
 <translation id="7802989406998618639">输入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数安全码，以便银行验证您的身份</translation>
-<translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="780301667611848630">不用了</translation>
 <translation id="7805268272389338048">加密可保护您的个人信息</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7805906048382884326">关闭提示</translation>
-<translation id="7810410097247356677">如果想在下次购物时更快捷地付款，请将您的付款卡信息连同已加密的安全码一起保存到您的设备上</translation>
+<translation id="7810410097247356677">为方便下次更快完成付款，请将银行卡信息连同已加密的安全码一起保存到设备上</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
 <translation id="781440967107097262">分享剪贴板？</translation>
@@ -4560,7 +4560,7 @@
 <translation id="8364627913115013041">未设置。</translation>
 <translation id="8366057325711477500">国际新闻</translation>
 <translation id="836616551641291797">详细了解您的浏览器的管理方式</translation>
-<translation id="8367705492654390392">请提出任何问题</translation>
+<translation id="8367705492654390392">有问题，尽管问</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服务</translation>

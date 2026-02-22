@@ -3143,7 +3143,7 @@
 <translation id="6085149458302186532">تصنيفات (ملوّنة)</translation>
 <translation id="6087312102907839798">عمليات البحث ذات الصلة</translation>
 <translation id="6089505343295765444">‏ستظل علامات التبويب التي تحذفها من سجلّ Chrome معروضة في جداول المقارنة</translation>
-<translation id="6091691259076781835">‏لإتمام عملية الدفع بشكل أسرع، يمكنك حفظ رمز التحقّق من البطاقة (CVC) هذا على جهازك</translation>
+<translation id="6091691259076781835">‏للدفع بشكل أسرع، يمكنك حفظ رمز التحقّق من البطاقة (CVC) هذا على جهازك</translation>
 <translation id="6093599771645355227">أصفر 1</translation>
 <translation id="6093795393556121384">تم التحقق من صلاحية بطاقتك</translation>
 <translation id="6094253940069566294">تعديل بيانات المركبة</translation>
@@ -3516,7 +3516,7 @@
 <translation id="6677351035258626477">وجبات سريعة</translation>
 <translation id="6677738644213083042">الانتقال إلى علامة التبويب هذه</translation>
 <translation id="6679354743514146922">‏يحاول متصفِّح Chrome إدخال كلمة مرورك على <ph name="APP_NAME" />.</translation>
-<translation id="6681790815630918386">‏تم حفظ رمز التحقّق من البطاقة (CVC)</translation>
+<translation id="6681790815630918386">‏تم حفظ رمز CVC للتحقّق من البطاقة</translation>
 <translation id="6683022854667115063">سمّاعات رأس</translation>
 <translation id="6687230248707087982">ظرف (عادي)</translation>
 <translation id="6687335167692595844">حجم الخط المطلوب</translation>

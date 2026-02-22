@@ -319,7 +319,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> کے ماتحت سبھی سائٹس</translation>
 <translation id="4340799661701629185">سائٹس کو اطلاعات بھیجنے کی اجازت نہ دیں</translation>
 <translation id="4341577178275615435">‏کیرٹ براؤزنگ کو آن یا آف کرنے کے لیے F7 شارٹ کٹ کا استعمال کریں</translation>
-<translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو مسدود کریں</translation>
+<translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو بلاک کریں</translation>
 <translation id="4412683424767388419">‏‫Chrome کی رنگوں کی نیچے کی شیٹ نصف اسکرین پر کھلی ہے</translation>
 <translation id="4412992751769744546">فریق ثالث کی کوکیز کی اجازت دیں</translation>
 <translation id="4419929467120297501">‏‫Chrome سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔ <ph name="BEGIN_LINK" />فریق ثالث کوکیز تک رسائی کا نظم<ph name="END_LINK" /> کرنے کے لیے ترتیبات ملاحظہ کریں۔</translation>
@@ -459,7 +459,7 @@
 <translation id="5908617755156109052">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق کرنے یا کیمرے کی پوزیشن کو ٹریک کرنے کی اجازت نہ دیں</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5922853908706496913">آپ کی اسکرین کا اشتراک کیا جا رہا ہے</translation>
-<translation id="5922967540311291836">فریق ثالث کوکیز کو مسدود کریں:</translation>
+<translation id="5922967540311291836">فریق ثالث کوکیز کو بلاک کریں:</translation>
 <translation id="5923512600150154850">اس سے سائٹس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="5948139900367969951">جو چیز آپ کے لیے اہم ہے اسے جلدی سے حاصل کریں</translation>
@@ -485,7 +485,7 @@
 <translation id="6192792657125177640">استثناء</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{‏Chrome کل کوکیز کو دوبارہ مسدود کر دے گا}other{# دنوں میں کوکیز کو دوبارہ مسدود کر دیا جائے گا}}</translation>
 <translation id="6195163219142236913">فریق ثالث کوکیز محدود ہیں</translation>
-<translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
+<translation id="6196640612572343990">فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6207207788774442484">ڈیٹا حذف اور اجازتیں ری سیٹ کریں</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />' اَن انسٹال کریں؟</translation>
@@ -497,7 +497,7 @@
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
 <translation id="6320088164292336938">وائبریٹ کریں</translation>
-<translation id="6367753977865761591">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کو مسدود کریں۔</translation>
+<translation id="6367753977865761591">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کو بلاک کریں۔</translation>
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
 <translation id="640163077447496506">میعاد آج ختم ہوگی</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
@@ -599,7 +599,7 @@
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7573594921350120855">سائٹس عام طور پر ویڈیو چیٹ جیسی کمیونیکشن کی خصوصیات کے لیے آپ کا ویڈیو کیمرا استعمال کرتی ہیں</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماہ قبل}other{‫<ph name="NUM_MONTHS_MANY" /> ماہ قبل}}</translation>
-<translation id="757524316907819857">محفوظ مواد چلانے سے سائٹس کو مسدود کریں</translation>
+<translation id="757524316907819857">محفوظ مواد چلانے سے سائٹس کو بلاک کریں</translation>
 <translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7594634374516752650">بلوٹوتھ آلے سے منسلک ہے</translation>
 <translation id="7617547684249261169">آپ اپنی بعض یا سبھی سرگزشت، کوکیز، سائٹ ڈیٹا اور مزید کو حذف کر سکتے ہیں</translation>
@@ -714,11 +714,11 @@
 <translation id="8751914237388039244">ایک تصویر منتخب کریں</translation>
 <translation id="8775741625735357092">آپ ترتیبات &gt; موجودگی میں بُک مارکس بار کو آن کر سکتے ہیں</translation>
 <translation id="8800034312320686233">سائٹ کام نہیں کر رہی ہے؟</translation>
-<translation id="8801436777607969138">‏کسی مخصوص سائٹ کیلئے JavaScript کو مسدود کریں۔</translation>
+<translation id="8801436777607969138">‏کسی مخصوص سائٹ کیلئے JavaScript کو بلاک کریں۔</translation>
 <translation id="8801657293260363985">‏V8‏ Chrome کا JavaScript اور WebAssembly انجن ہے جو سائٹ کی کارکردگی کو بہتر بنانے کے لیے استعمال ہوتا ہے</translation>
 <translation id="8803526663383843427">آن ہونے پر</translation>
 <translation id="8805385115381080995">براؤزنگ تیز تر ہے کیونکہ کسی سائٹ کے آپ سے اس بات کی تصدیق کرنے کے لیے کہنے کا امکان کم ہوتا ہے کہ آپ ایک حقیقی شخص ہیں</translation>
-<translation id="8816026460808729765">سینسرز تک رسائی حاصل کرنے سے سائٹس کو مسدود کریں</translation>
+<translation id="8816026460808729765">سینسرز تک رسائی حاصل کرنے سے سائٹس کو بلاک کریں</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="8889294078294184559">‏چونکہ آپ براؤز کرتے رہتے ہیں، اس لیے سائٹس Chrome سے رابطہ کر کے آپ کی ملاحظہ کردہ گزشتہ سائٹ سے یہ تصدیق کر سکتی ہیں کہ آپ ممکنہ طور پر ایک حقیقی شخص ہیں</translation>

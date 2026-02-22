@@ -3567,7 +3567,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Se agotó el papel</translation>
 <translation id="3435896845095436175">Habilitar</translation>
-<translation id="3436118221454753036">Pregúntale al Modo IA</translation>
+<translation id="3436118221454753036">Preguntarle al Modo IA</translation>
 <translation id="3437072258256045988">Administra tu actividad en las Apps con Gemini</translation>
 <translation id="3437397693214267762">Consulta tus archivos de SharePoint y OneDrive, y el calendario de Outlook</translation>
 <translation id="3438633801274389918">Ninja</translation>
@@ -6674,7 +6674,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
 <translation id="5562588178647493983">Si deseas obtener más información, comunícate con tu administrador</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
-<translation id="5563234215388768762">Busca en Google o escribe una URL</translation>
+<translation id="5563234215388768762">Buscar en Google o escribir una URL</translation>
 <translation id="5563824734298958390">¿Quieres salir del grupo de pestañas?</translation>
 <translation id="5564450015351086922">Prueba Google Lens en iOS</translation>
 <translation id="5565735124758917034">Activo</translation>
@@ -7482,7 +7482,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6135826623269483856">No pueden administrar las ventanas de todas tus pantallas</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6136287496450963112">Tu llave de seguridad no está protegida con un PIN. Para administrar las huellas dactilares, crea uno.</translation>
-<translation id="6136637346277431354">Agregar pestañas y otras cosas</translation>
+<translation id="6136637346277431354">Agregar pestañas y más</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6141988275892716286">Confirmar la descarga</translation>
@@ -9955,7 +9955,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7848244988854036372">Abrir todo (<ph name="URL_COUNT" />) en un grupo nuevo de pestañas</translation>
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> para <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Abrir &amp;imagen en una pestaña nueva</translation>
-<translation id="784934925303690534">Intervalo de tiempo</translation>
+<translation id="784934925303690534">Período</translation>
 <translation id="7850320739366109486">No interrumpir</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos con ChromeOS envíen informes automáticos, podemos priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en el que falló ChromeOS, qué funciones usas, la cantidad de memoria que usas en general y datos de uso y diagnóstico sobre las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo con ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
