@@ -44,7 +44,6 @@ crbug.com/1421239 [ iOS26-simulator ] external/wpt/html/semantics/embedded-conte
 crbug.com/1421239 [ iOS26-simulator ] external/wpt/html/webappapis/dynamic-markup-insertion/document-write/contentType.window.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS26-simulator ] external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS26-simulator ] external/wpt/mediacapture-streams/parallel-capture-requests.https.html [ Skip Timeout ]
-crbug.com/1421239 [ iOS26-simulator ] external/wpt/navigation-timing/dom-interactive-media-document.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS26-simulator ] external/wpt/performance-timeline/navigation-id-element-timing.tentative.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS26-simulator ] external/wpt/pointerevents/coalesced_events_attributes.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS26-simulator ] external/wpt/pointerevents/pointerevent_auxclick_is_a_pointerevent.html [ Skip Timeout ]
