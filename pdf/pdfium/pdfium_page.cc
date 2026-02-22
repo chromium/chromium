@@ -1696,23 +1696,6 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
         FPDF_StructElement_GetMarkedContentIdAtIndex(current_element, 0);
   }
   if (marked_content_id >= 0) {
-    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
-      auto text_runs_iter =
-          marked_content_id_to_text_runs_map_.find(marked_content_id);
-      if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
-        const std::vector<size_t>& text_run_indices = text_runs_iter->second;
-        const std::string tag_type =
-            base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-                base::BindRepeating(&FPDF_StructElement_GetType,
-                                    current_element),
-                /*check_expected_size=*/true));
-        for (size_t text_run_index : text_run_indices) {
-          CHECK_LT(text_run_index, text_runs_.size());
-          text_runs_[text_run_index].tag_type = tag_type;
-        }
-      }
-    }
-
     auto image_iter = marked_content_id_to_images_map_.find(marked_content_id);
     if (image_iter != marked_content_id_to_images_map_.end() &&
         images_[image_iter->second].alt_text.empty()) {

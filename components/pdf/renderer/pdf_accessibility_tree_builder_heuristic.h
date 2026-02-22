@@ -59,8 +59,7 @@ class PdfAccessibilityTreeBuilderHeuristic {
   void BuildPageTree();
 
  private:
-  ui::AXNodeData* CreateBlockLevelNode(const std::string& text_run_type,
-                                       float font_size);
+  ui::AXNodeData* CreateBlockLevelNode(float font_size);
 
   void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,

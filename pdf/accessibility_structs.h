@@ -85,13 +85,11 @@ struct AccessibilityTextRunInfo {
   AccessibilityTextRunInfo();
   AccessibilityTextRunInfo(uint32_t start_index,
                            uint32_t len,
-                           const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
                            const AccessibilityTextStyleInfo& style);
   AccessibilityTextRunInfo(uint32_t start_index,
                            uint32_t len,
-                           const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
                            const AccessibilityTextStyleInfo& style,
@@ -101,10 +99,6 @@ struct AccessibilityTextRunInfo {
 
   uint32_t start_index = 0;
   uint32_t len = 0;
-  // One of various types defined in a PDF tag, such as "Span", "P", "H1", "LI",
-  // etc.
-  // TODO(crbug.com/40707542): Remove in favor of AccessibilityStructureElement.
-  std::string tag_type;
   gfx::RectF bounds;
   AccessibilityTextDirection direction = AccessibilityTextDirection::kNone;
   AccessibilityTextStyleInfo style;

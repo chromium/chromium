@@ -300,16 +300,12 @@ TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(features::kPdfTags);
 
-  struct TestTextRun {
-    uint32_t len;
-    std::string tag_type;
-  };
-  static constexpr std::array<TestTextRun, 5> kExpectedTextRuns = {
-      TestTextRun{/*"Article\r\n"*/ 9, "Art"},
-      TestTextRun{/*"BlockQuote\r\n"*/ 12, "BlockQuote"},
-      TestTextRun{/*"Paragraph\r\n"*/ 11, "P"},
-      TestTextRun{/*"Heading1\r\n"*/ 10, "H1"},
-      TestTextRun{/*"Heading2"*/ 8, "H2"},
+  static constexpr std::array<uint32_t, 5> kExpectedTextRunLens = {
+      /*"Article\r\n"*/ 9,
+      /*"BlockQuote\r\n"*/ 12,
+      /*"Paragraph\r\n"*/ 11,
+      /*"Heading1\r\n"*/ 10,
+      /*"Heading2"*/ 8,
   };
 
   static constexpr char kExpectedChars[] =
@@ -332,11 +328,10 @@ TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
   EXPECT_EQ(chars.size(), page_info.char_count);
 
-  ASSERT_EQ(kExpectedTextRuns.size(), text_runs.size());
-  for (const auto [expected, actual] :
-       base::zip(kExpectedTextRuns, text_runs)) {
-    EXPECT_EQ(expected.len, actual.len);
-    EXPECT_EQ(expected.tag_type, actual.tag_type);
+  ASSERT_EQ(kExpectedTextRunLens.size(), text_runs.size());
+  for (const auto [expected_len, actual] :
+       base::zip(kExpectedTextRunLens, text_runs)) {
+    EXPECT_EQ(expected_len, actual.len);
   }
 
   ASSERT_EQ(std::size(kExpectedChars) - 1, chars.size());
