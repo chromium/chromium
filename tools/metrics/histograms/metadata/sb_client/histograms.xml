@@ -270,7 +270,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt{Encryption}"
     enum="BooleanRequested" expires_after="2026-11-16">
-  <owner>drubery@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often users in a population consented to deep scanning are
@@ -284,8 +284,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsImmediateDeepScan2"
-    enum="BooleanRequested" expires_after="2026-04-26">
-  <owner>drubery@chromium.org</owner>
+    enum="BooleanRequested" expires_after="2026-11-16">
+  <owner>liu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often users in a population consented to immediate deep scans
@@ -295,8 +295,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"
-    enum="BooleanRequested" expires_after="2026-02-23">
-  <owner>drubery@chromium.org</owner>
+    enum="BooleanRequested" expires_after="2026-11-16">
+  <owner>liu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often users in a population consented to local decryption are
