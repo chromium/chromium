@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.open_in_app;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 
@@ -27,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -64,8 +68,9 @@ public class CustomTabOpenInAppEntryPointUnitTest {
     @Mock private IntentFilter mIntentFilter;
     @Mock private Drawable mIcon;
     @Mock private ActivityInfo mActivityInfo;
+    @Mock private PackageManager mPackageManager;
+    @Spy private Context mContext;
 
-    private Context mContext;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private CustomTabOpenInAppEntryPoint mEntryPoint;
     private UserDataHost mUserDataHost;
@@ -73,19 +78,21 @@ public class CustomTabOpenInAppEntryPointUnitTest {
     private NavigationHandle mNavigationHandle;
 
     @Before
-    public void setUp() {
+    public void setUp() throws PackageManager.NameNotFoundException {
         ShadowPostTask.setTestImpl((taskTraits, task, delay) -> {});
-        mContext = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext = spy(Robolectric.buildActivity(Activity.class).setup().get());
         mTabSupplier = ObservableSuppliers.createNullable();
         mUserDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mIntentFilter.hasCategory(eq(Intent.CATEGORY_DEFAULT))).thenReturn(true);
+        when(mPackageManager.getApplicationInfo(any(), anyInt())).thenReturn(new ApplicationInfo());
+        when(mPackageManager.getApplicationLogo(any(ApplicationInfo.class))).thenReturn(mIcon);
+        when(mPackageManager.getApplicationLabel(any(ApplicationInfo.class))).thenReturn(LABEL);
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+
         mResolveInfo.filter = mIntentFilter;
         mActivityInfo.packageName = PACKAGE;
         mResolveInfo.activityInfo = mActivityInfo;
-        when(mResolveInfo.loadLabel(any())).thenReturn(LABEL);
-        when(mResolveInfo.loadIcon(any())).thenReturn(mIcon);
 
         mNavigationHandle = NavigationHandle.createForTesting(mUrl, false, 0, true);
         mNavigationHandle.didFinish(

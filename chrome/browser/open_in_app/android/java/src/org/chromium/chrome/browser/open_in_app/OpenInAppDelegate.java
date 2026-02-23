@@ -24,7 +24,7 @@ public class OpenInAppDelegate implements UserData {
          * App name to display for the open in app action. Null if the URL can be opened in more
          * than one app.
          */
-        public final @Nullable String appName;
+        public final @Nullable CharSequence appName;
 
         /**
          * App icon to display for the open in app action. Null if the URL can be opened in more
@@ -33,7 +33,7 @@ public class OpenInAppDelegate implements UserData {
         public final @Nullable Drawable appIcon;
 
         public OpenInAppInfo(
-                Runnable action, @Nullable String appName, @Nullable Drawable appIcon) {
+                Runnable action, @Nullable CharSequence appName, @Nullable Drawable appIcon) {
             this.action = action;
             this.appName = appName;
             this.appIcon = appIcon;

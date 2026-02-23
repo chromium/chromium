@@ -171,20 +171,25 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
         }
         if (mLastNavigatedUrl == null || !mLastNavigatedUrl.equals(url)) return;
 
-        // TODO(crbug.com/450253146): Share code with ExternalNavigationHandler#maybeAskToLaunchApp.
-        String name = null;
+        CharSequence name = null;
         Drawable icon = null;
         // Having actual resolve info means the intent is going to be handled by an app and not
         // ResolverActivity.
         if (result instanceof ResolveResult.Info info) {
             var resolveInfo = info.resolveInfo;
             var pm = mContext.getPackageManager();
-            name = resolveInfo.loadLabel(pm).toString();
-            icon = resolveInfo.loadIcon(pm);
+            String packageName = resolveInfo.activityInfo.packageName;
+
+            var iconAndLabel =
+                    ExternalNavigationHandler.getApplicationIconAndLabel(pm, packageName);
+            if (iconAndLabel == null) return;
+
+            name = iconAndLabel.second;
+            icon = iconAndLabel.first;
 
             // We're setting the package explicitly to make sure the app that this intent launches
             // matches what's expected based on the other data in resolveActivity.
-            targetIntent.setPackage(resolveInfo.activityInfo.packageName);
+            targetIntent.setPackage(packageName);
         }
 
         // The app should always launch in a new task.

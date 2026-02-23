@@ -26,6 +26,7 @@ import android.provider.Browser;
 import android.provider.Telephony;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
+import android.util.Pair;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebView;
 
@@ -2652,16 +2653,12 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
         String packageName = intentResolveInfo.activityInfo.packageName;
         PackageManager pm = assumeNonNull(mDelegate.getContext()).getPackageManager();
-        ApplicationInfo applicationInfo;
-        try {
-            applicationInfo = pm.getApplicationInfo(packageName, 0);
-        } catch (NameNotFoundException e) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
 
-        Drawable icon = pm.getApplicationLogo(applicationInfo);
-        if (icon == null) icon = pm.getApplicationIcon(applicationInfo);
-        CharSequence label = pm.getApplicationLabel(applicationInfo);
+        var iconAndLabel = getApplicationIconAndLabel(pm, packageName);
+        if (iconAndLabel == null) return OverrideUrlLoadingResult.forNoOverride();
+
+        Drawable icon = iconAndLabel.first;
+        CharSequence label = iconAndLabel.second;
 
         Resources res = mDelegate.getContext().getResources();
         String title = res.getString(R.string.external_navigation_continue_to_title, label);
@@ -2705,6 +2702,30 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                         .build();
         messageDispatcher.enqueueMessage(message, webContents, MessageScopeType.NAVIGATION, false);
         return OverrideUrlLoadingResult.forAsyncAction();
+    }
+
+    /**
+     * Retrieves the application icon and label for a given package name.
+     *
+     * @param packageManager The PackageManager instance to query.
+     * @param packageName The package name of the app.
+     * @return A Pair containing the application's icon (Drawable) and label (CharSequence), or null
+     *     if the application is not found.
+     */
+    public static @Nullable Pair<Drawable, CharSequence> getApplicationIconAndLabel(
+            PackageManager packageManager, String packageName) {
+        ApplicationInfo applicationInfo;
+        try {
+            applicationInfo = packageManager.getApplicationInfo(packageName, 0);
+        } catch (NameNotFoundException e) {
+            return null;
+        }
+
+        Drawable icon = packageManager.getApplicationLogo(applicationInfo);
+        if (icon == null) icon = packageManager.getApplicationIcon(applicationInfo);
+        CharSequence label = packageManager.getApplicationLabel(applicationInfo);
+
+        return Pair.create(icon, label);
     }
 
     /**

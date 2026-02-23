@@ -47,11 +47,16 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
                 icon = assertNonNull(mContext.getDrawable(R.drawable.ic_open_in_new_20dp));
             }
 
+            String text = mContext.getString(R.string.open_in_app);
+            String desc =
+                    openInAppInfo.appName != null
+                            ? mContext.getString(R.string.open_in_app_desc, openInAppInfo.appName)
+                            : text;
+
             mOmniboxChipManager.showChip(
-                    mContext.getString(R.string.open_in_app),
+                    text,
                     icon,
-                    // TODO(crbug.com/450253146): Add a real content description.
-                    mContext.getString(R.string.open_in_app),
+                    desc,
                     openInAppInfo.action,
                     new OmniboxChipManager.ChipCallback() {
                         @Override

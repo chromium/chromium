@@ -4891,6 +4891,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_OPEN_IN_APP" desc="Chip displayed in the omnibox or item displayed in the app menu that opens the current page in the relevant app. [CHAR_LIMIT=32]">
         Open in app
       </message>
+      <message name="IDS_OPEN_IN_APP_DESC" desc="Content description for the chip displayed in the omnibox or item displayed in the app menu that opens the current page in the relevant app.">
+        Open in <ph name="APP_NAME">%1$s<ex>Gmail</ex></ph>
+      </message>
 
       <!-- Voice search -->
       <message name="IDS_VOICE_SEARCH_ERROR" desc="Toast when the voice search activity couldn't be started. [CHAR_LIMIT=40]">

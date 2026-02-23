@@ -1354,6 +1354,11 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     AppMenuItemProperties.ICON,
                     ContextCompat.getDrawable(mContext, R.drawable.open_in_new_tab));
         }
+        if (info.appName != null) {
+            model.set(
+                    AppMenuItemProperties.TITLE_CONDENSED,
+                    mContext.getString(R.string.open_in_app_desc, info.appName));
+        }
         return new ListItem(AppMenuItemType.STANDARD, model);
     }
 }
