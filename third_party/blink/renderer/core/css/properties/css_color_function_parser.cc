@@ -525,6 +525,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   }
 
   bool has_alpha = false;
+  bool is_legacy_syntax = false;
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -534,6 +535,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     }
 
     // Parse the three color channel params.
+    std::array<bool, 2> separator_is_comma{};
     for (int i = 0; i < 3; i++) {
       if (!ConsumeChannel(stream, context, local_context, i,
                           color_parser_context)) {
@@ -542,25 +544,25 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       // Potentially expect a separator after the first and second channel. The
       // separator for a potential alpha channel is handled below.
       if (i < 2) {
-        const bool matched_comma =
+        separator_is_comma[i] =
             css_parsing_utils::ConsumeCommaIncludingWhitespace(stream);
-        if (is_legacy_syntax_) {
-          // We've parsed one separating comma token, so we expect the second
-          // separator to match.
-          if (!matched_comma) {
-            return nullptr;
-          }
-        } else if (matched_comma) {
-          if (IsRelativeColor()) {
-            return nullptr;
-          }
-          is_legacy_syntax_ = true;
-        }
       }
     }
 
+    // Validate that separators are consistent.
+    if (separator_is_comma[0] != separator_is_comma[1]) {
+      return nullptr;
+    }
+    // Legacy colors have commas separating their channels. This syntax is
+    // incompatible with CSSColor4 features like "none" or alpha with a slash.
+    is_legacy_syntax = separator_is_comma[0];
+
     // Parse alpha.
-    if (is_legacy_syntax_) {
+    if (is_legacy_syntax) {
+      // Relative colors can't use legacy syntax.
+      if (IsRelativeColor()) {
+        return nullptr;
+      }
       if (!Color::IsLegacyColorSpace(color_space_)) {
         return nullptr;
       }
@@ -584,7 +586,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       return nullptr;
     }
 
-    if (is_legacy_syntax_) {
+    if (is_legacy_syntax) {
       // "None" is not a part of the legacy syntax.
       if (has_none_) {
         return nullptr;
@@ -658,7 +660,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       }
     }
 
-    MakePerColorSpaceAdjustments(/*is_relative_color=*/false, is_legacy_syntax_,
+    MakePerColorSpaceAdjustments(/*is_relative_color=*/false, is_legacy_syntax,
                                  color_space_, channels, alpha);
 
     resolved_color = Color::FromColorSpace(color_space_, channels[0],

@@ -76,9 +76,6 @@ class CORE_EXPORT ColorFunctionParser {
   // function.
   const ColorFunction::Metadata* function_metadata_ = nullptr;
 
-  // Legacy colors have commas separating their channels. This syntax is
-  // incompatible with CSSColor4 features like "none" or alpha with a slash.
-  bool is_legacy_syntax_ = false;
   bool has_none_ = false;
 
   // For relative colors
