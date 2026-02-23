@@ -212,8 +212,8 @@
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 
   DCHECK(_tabInsertionBrowserAgent);
-  CaptivePortalTabHelper::GetOrCreateForWebState(webState)
-      ->SetTabInsertionBrowserAgent(_tabInsertionBrowserAgent);
+  CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
+      _tabInsertionBrowserAgent);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
       _NTPTabHelperDelegate);
@@ -364,8 +364,8 @@
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  CaptivePortalTabHelper::GetOrCreateForWebState(webState)
-      ->SetTabInsertionBrowserAgent(nil);
+  CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
+      nil);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 

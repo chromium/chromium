@@ -88,7 +88,7 @@ void IOSCaptivePortalBlockingPage::HandleCommand(
     captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
         captive_portal::CaptivePortalMetrics::OPEN_LOGIN_PAGE);
 
-    CaptivePortalTabHelper::GetOrCreateForWebState(web_state())
+    CaptivePortalTabHelper::FromWebState(web_state())
         ->DisplayCaptivePortalLoginPage(landing_url_);
   }
 }
