@@ -29,12 +29,21 @@ void BubbleSlideAnimator::SetSlideDuration(base::TimeDelta duration) {
 }
 
 void BubbleSlideAnimator::AnimateToAnchorView(View* desired_anchor_view) {
+  constexpr double kResetAnimationThreshold = 0.8;
+
   desired_anchor_view_ = desired_anchor_view;
   starting_bubble_bounds_ =
       bubble_delegate_->GetWidget()->GetWindowBoundsInScreen();
   target_bubble_bounds_ = CalculateTargetBounds(desired_anchor_view);
-  slide_animation_.SetCurrentValue(0);
-  slide_animation_.Start();
+
+  const double value = GetCurrentValue();
+  if (!slide_animation_.is_animating() || value > kResetAnimationThreshold) {
+    starting_offset_ = 0.0;
+    slide_animation_.SetCurrentValue(0);
+    slide_animation_.Start();
+  } else {
+    starting_offset_ = value;
+  }
 }
 
 void BubbleSlideAnimator::SnapToAnchorView(View* desired_anchor_view) {
@@ -76,8 +85,9 @@ base::CallbackListSubscription BubbleSlideAnimator::AddSlideCompleteCallback(
 }
 
 void BubbleSlideAnimator::AnimationProgressed(const gfx::Animation* animation) {
-  double value = gfx::Tween::CalculateValue(tween_type_,
-                                            slide_animation_.GetCurrentValue());
+  double denominator = 1.0 - starting_offset_;
+  double value = (GetCurrentValue() - starting_offset_) / denominator;
+  value = std::clamp(value, 0.0, 1.0);
 
   const gfx::Rect current_bounds = gfx::Tween::RectValueBetween(
       value, starting_bubble_bounds_, target_bubble_bounds_);
@@ -108,6 +118,11 @@ gfx::Rect BubbleSlideAnimator::CalculateTargetBounds(
   return bubble_delegate_->GetBubbleFrameView()->GetUpdatedWindowBounds(
       desired_anchor_view->GetAnchorBoundsInScreen(), bubble_delegate_->arrow(),
       bubble_delegate_->GetWidget()->client_view()->GetPreferredSize({}), true);
+}
+
+double BubbleSlideAnimator::GetCurrentValue() const {
+  return gfx::Tween::CalculateValue(tween_type_,
+                                    slide_animation_.GetCurrentValue());
 }
 
 }  // namespace views

@@ -102,6 +102,9 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   // Determines where to animate the bubble to during an animation.
   gfx::Rect CalculateTargetBounds(const View* desired_anchor_view) const;
 
+  // Returns the current value of the animation based on tween type.
+  double GetCurrentValue() const;
+
   const raw_ptr<BubbleDialogDelegateView, DanglingUntriaged> bubble_delegate_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   gfx::LinearAnimation slide_animation_{this};
@@ -116,6 +119,9 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
 
   gfx::Rect starting_bubble_bounds_;
   gfx::Rect target_bubble_bounds_;
+
+  double starting_offset_ = 0.0;
+
   base::RepeatingCallbackList<SlideProgressedCallbackSignature>
       slide_progressed_callbacks_;
   base::RepeatingCallbackList<SlideCompleteCallbackSignature>

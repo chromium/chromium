@@ -316,16 +316,36 @@ TEST_F(BubbleSlideAnimatorTest, SlideBackToStartingPosition) {
   EXPECT_EQ(final_bounds, first_bounds);
 }
 
-TEST_F(BubbleSlideAnimatorTest, InterruptingSlide) {
+TEST_F(BubbleSlideAnimatorTest, InterruptingSlideAndReuseAnimation) {
   const auto starting_bounds = widget_->GetWindowBoundsInScreen();
 
   // Start the first slide.
   delegate_->AnimateToAnchorView(view2_);
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
+  EXPECT_TRUE(delegate_->is_animating());
+
+  // Interrupt mid-slide with another slide (reusing existing animation).
+  delegate_->AnimateToAnchorView(view3_);
+  EXPECT_TRUE(delegate_->is_animating());
+  delegate_->test_api()->IncrementTime(kHalfSlideDuration);
+
+  // Ensure we are done.
+  const auto final_bounds = widget_->GetWindowBoundsInScreen();
+  EXPECT_FALSE(delegate_->is_animating());
+  EXPECT_EQ(final_bounds.y(), starting_bounds.y());
+  EXPECT_EQ(final_bounds.x(), starting_bounds.x() + view3_->x() - view1_->x());
+}
+
+TEST_F(BubbleSlideAnimatorTest, InterruptingSlideAndRestartAnimation) {
+  const auto starting_bounds = widget_->GetWindowBoundsInScreen();
+
+  // Start the first slide.
+  delegate_->AnimateToAnchorView(view2_);
+  delegate_->test_api()->IncrementTime(kSlideDuration * 0.9);
   const auto intermediate_bounds1 = widget_->GetWindowBoundsInScreen();
   EXPECT_TRUE(delegate_->is_animating());
 
-  // Interrupt mid-slide with another slide.
+  // Interrupt neear end-slide with another slide (restarting new animation).
   delegate_->AnimateToAnchorView(view3_);
   EXPECT_TRUE(delegate_->is_animating());
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
