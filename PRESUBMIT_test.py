@@ -6165,7 +6165,7 @@ class TestCheckSettingsChanges(unittest.TestCase):
                          ['jinsukkim@chromium.org', 'adelm@google.com'])
         errors = results[0].items
         self.assertTrue(any("MyFeature.java" in e and "Missing SEARCH_INDEX_DATA_PROVIDER" in e for e in errors))
-        self.assertTrue(any("MyScreen.java" in e and "Provider not registered" in e for e in errors))
+        self.assertTrue(any("MyScreen.java" in e and "Fragment not found in SearchIndexProviderRegistry" in e for e in errors))
 
     def testParityLogicMismatch(self):
         java_content = [
@@ -6202,7 +6202,7 @@ class TestCheckSettingsChanges(unittest.TestCase):
         self.assertEqual(len(results[0].items), 3)
         self.assertEqual(self.mock_output.more_cc,
                          ['jinsukkim@chromium.org', 'adelm@google.com'])
-        self.assertIn("Potential Search Index Issues", results[0].message)
+        self.assertIn("Potential Settings Search Indexing Issues", results[0].message)
         actual_errors = "\n".join(results[0].items)
         self.assertIn("updateEntrySummaryForKey", actual_errors)
         self.assertIn("removeEntryForKey()", actual_errors)

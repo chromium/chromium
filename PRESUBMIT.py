@@ -8141,11 +8141,12 @@ def CheckSettingsChanges(input_api, output_api):
          exists in the indexing block (stripping comments to avoid false hits).
     """
     cc_list = ['jinsukkim@chromium.org', 'adelm@google.com']
-    registry_path = 'java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java'
+
+    registry_filename = 'SearchIndexProviderRegistry.java'
 
     # Filter for Java files, excluding the registry file itself.
-    is_java_file = lambda f: (f.LocalPath().endswith('.java') and not f.
-                              LocalPath().endswith(registry_path))
+    is_java_file = lambda f: (f.LocalPath().endswith('.java') and not
+                              f.LocalPath().endswith(registry_filename))
     java_files = input_api.AffectedFiles(include_deletes=False,
                                          file_filter=is_java_file)
 
@@ -8177,37 +8178,51 @@ def CheckSettingsChanges(input_api, output_api):
          'this using updateEntrySummaryForKey(), addEntryForKey(), or Entry.Builder.setSummary().'
          ),
         (input_api.re.compile(r'\.(?:setVisible|removePreference)\('),
-         ['removeEntry', 'removeEntryForKey'],
-         'Preference visibility toggled. Ensure updateDynamicPreferences uses removeEntryForKey().'
+         ['removeEntry', 'removeEntryForKey', 'addEntry', 'addEntryForKey'],
+         'Preference visibility toggled. Ensure updateDynamicPreferences uses removeEntryForKey()/addEntryForKey().'
          ),
         (input_api.re.compile(r'\.addPreference\('),
          ['addEntry', 'addEntryForKey', 'updateEntry', 'updateEntryForKey'],
          'Preference added via Java. Ensure it is indexed in updateDynamicPreferences.'
          ),
-        (input_api.re.compile(
-            r'\.put(String|Int|Boolean|Long|Serializable)\('), ['getExtras'],
-         'Bundle extras modified. Ensure getExtras() provides these for search results.'
+        (input_api.re.compile(r'(?:getArguments\(\)|bundle|extras|savedInstanceState)\.put\w*\('),
+         ['getExtras'],
+         'Bundle extras (arguments) are modified. Ensure getExtras() provides these '
+         'so search results open the fragment correctly.'
          ),
-        (input_api.re.compile(
-            r'(?:getArguments\(\)\.get\w*\(|\.containsKey\(|extras\.get\w*\(|getArguments\(\)\.is)'
-        ), ['getExtras'],
-         'Fragment reads mandatory Bundle arguments. Ensure getExtras() overrides this.'
+        (input_api.re.compile(r'(?:getArguments\(\)\.(?:get\w*|containsKey|is)|(?:bundle|extras|savedInstanceState)\.(?:get\w*|containsKey))'),
+         ['getExtras'],
+         'The Fragment reads mandatory arguments from its Bundle. Ensure getExtras() '
+         'overrides this in the provider to pass these arguments when launched from search.'
          )
     ]
 
     problems = []
     relevant_files_found = False
     registry_content = ''
-    registry_full_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                                registry_path)
+    registry_repo_path = (
+        'chrome/android/java/src/org/chromium/chrome/browser/settings/search/'
+        'SearchIndexProviderRegistry.java')
+    repo_root = input_api.change.RepositoryRoot()
+    registry_full_path = input_api.os_path.join(repo_root, *registry_repo_path.split('/'))
 
-    try:
-        registry_content = input_api.ReadFile(registry_full_path)
-    except IOError:
-        # If the registry cannot be read (e.g., file has been moved), we default
-        # to an empty string. It is better to skip the registration check than
-        # to block the entire presubmit.
-        pass
+    registry_files = [f for f in input_api.AffectedFiles(include_deletes=False)
+                      if f.LocalPath().endswith(registry_filename)]
+    registry_file_in_cl = registry_files[0] if registry_files else None
+
+    if registry_file_in_cl:
+        # Read the staged content (what you just wrote in the cl you are uploading).
+        registry_content = input_api.ReadFile(registry_file_in_cl)
+    else:
+        # Fallback to using the absolute path.
+        try:
+            with open(registry_full_path, 'r') as f:
+                registry_content = f.read()
+        except IOError:
+            # If the registry cannot be read (e.g., file has been moved), we default
+            # to an empty string. It is better to skip the registration check than
+            # to block the entire presubmit.
+            pass
 
     for f in java_files:
         content = input_api.ReadFile(f)
@@ -8233,20 +8248,21 @@ def CheckSettingsChanges(input_api, output_api):
 
         if not provider_field_re.search(content):
             problems.append(
-                f'{f.LocalPath()}:0\n'
-                f'    \tMissing SEARCH_INDEX_DATA_PROVIDER field. To make this screen\n'
-                f'    \tsearchable, add a "public static final SearchIndexProvider\n'
-                f'    \tSEARCH_INDEX_DATA_PROVIDER" field to your Fragment class.\n'
-                f'    \tSee: //components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/search/SearchIndexProvider.java'
+              f'{f.LocalPath()}:0\n'
+              f'    \tIssue:  Missing SEARCH_INDEX_DATA_PROVIDER field.\n'
+              f'    \tAction: Add "public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER" to the class.'
             )
 
-        if class_name and f"{class_name}.SEARCH_INDEX_DATA_PROVIDER" not in registry_content:
-            problems.append(
-                f'{f.LocalPath()}:0\n'
-                f'    \tProvider not registered. Please add\n'
-                f'    \t"{class_name}.SEARCH_INDEX_DATA_PROVIDER" to the registry file at:\n'
-                f'    \t//chrome/android/java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java'
+        if registry_content and class_name:
+            registry_pattern = input_api.re.compile(
+              r'\b' + class_name + r'\s*\.\s*SEARCH_INDEX_DATA_PROVIDER'
             )
+            if not registry_pattern.search(registry_content):
+                problems.append(
+                    f'{f.LocalPath()}:0\n'
+                    f'    \tIssue:  Fragment not found in SearchIndexProviderRegistry.java.\n'
+                    f'    \tAction: Register "{class_name}.SEARCH_INDEX_DATA_PROVIDER" in the registry file.'
+                )
 
         provider_body_match = input_api.re.search(
             r'SEARCH_INDEX_DATA_PROVIDER\s*=\s*new [^{]+{(.*?)};', content,
@@ -8277,8 +8293,8 @@ def CheckSettingsChanges(input_api, output_api):
                     # If UI call found, ensure the provider body contains a mirroring API call.
                     if not any(s in clean_body for s in expected_api):
                         problems.append(f'{f.LocalPath()}:{line_num}\n'
-                                        f'    \t{line.strip()}\n'
-                                        f'    \t-> {msg}')
+                                        f'    \tUI Code: {line.strip()}\n'
+                                        f'    \tIndexer: {msg}')
 
     if relevant_files_found:
         for cc in cc_list:
@@ -8289,13 +8305,14 @@ def CheckSettingsChanges(input_api, output_api):
 
     return [
         output_api.PresubmitPromptWarning(
-            'Potential Search Index Issues:\n'
-            '  To ensure settings are searchable, concrete fragments must\n'
-            '  define a SEARCH_INDEX_DATA_PROVIDER and be registered in the\n'
-            '  SearchIndexProviderRegistry.java. Additionally, UI changes\n'
-            '  should be mirrored in the indexer.\n\n'
-            '  For instructions on implementing search indexing, see:\n'
-            '  //components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/search/SearchIndexProvider.java',
+            'Potential Settings Search Indexing Issues:\n'
+            '  To ensure settings are searchable and prevent crashes, concrete\n'
+            '  fragments must define a SEARCH_INDEX_DATA_PROVIDER and be registered\n'
+            '  in SearchIndexProviderRegistry.java. UI changes (summaries, \n'
+            '  visibility, and arguments) must be mirrored in the indexer.\n\n'
+            '  Search Indexing API Reference:\n'
+            '  //components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/search/SearchIndexProvider.java\n\n'
+            '  Detailed issues found in your changes:\n',
             problems)
     ]
 
