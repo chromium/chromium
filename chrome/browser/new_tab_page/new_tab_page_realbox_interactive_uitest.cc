@@ -19,6 +19,10 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 
 // To debug locally, you can run the test via:
@@ -78,11 +82,35 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
           /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
           /*is_off_the_record=*/false);
 
+  auto* rule_set = mock_aim_eligibility_service->config().mutable_rule_set();
+  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  auto* regular_config =
+      mock_aim_eligibility_service->config().add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config->set_menu_label("Fast");
+
+  auto* pro_config = mock_aim_eligibility_service->config().add_model_configs();
+  pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  pro_config->set_menu_label("Pro");
+  mock_aim_eligibility_service->config().set_hint_text("Ask anything");
+
   ON_CALL(*mock_aim_eligibility_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsCanvasEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsDeepSearchEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsCreateImagesEligible())
       .WillByDefault(testing::Return(true));
 
   return std::move(mock_aim_eligibility_service);
@@ -221,6 +249,20 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
+using NtpRealboxNextUiTest = NtpRealboxUiTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NtpRealboxNextUiTest,
+    ValuesIn(std::vector<NtpRealboxUiTestParams>{
+        {
+            .layout_mode = RealboxLayoutMode::kCompact,
+        },
+    }),
+    [](const testing::TestParamInfo<NtpRealboxUiTestParams>& info) {
+      return info.param.ToString();
+    });
+
 // TODO(crbug.com/454761015): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
   // Force a consistent window size to exercise realbox layout within New Tab
@@ -266,11 +308,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
                           /*baseline_cl=*/"7055903")));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, ContextualEntrypointOpensComposebox) {
-  if (!GetParam().compose_button_enabled) {
-    GTEST_SKIP() << "Compose button not enabled for this parameter set";
-  }
-
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest, AimButtonOpensComposebox) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxDialogOpenEvent);
 
   const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
@@ -289,10 +327,192 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, ContextualEntrypointOpensComposebox) {
       AddInstrumentedTab(kGooglePageId, GURL("https://www.google.com")),
       // 2. Load NTP.
       AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
-      // 3. Assert NTP has loaded by waiting for the realbox to render.
+      // 3. Assert NTP has loaded by waiting for the realbox and compose button
+      // to render.
       WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kComposeButton),
       // 4. Click on the compose button.
       ClickElement(kNtpElementId, kComposeButton),
       // 5. Observe/assert that the contextual dialog is open.
       WaitForStateChange(kNtpElementId, composebox_dialog_open));
+}
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
+                       ContextualEntrypointOpensContextMenu) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
+
+  const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
+  const DeepQuery kContextualEntrypoint = {"ntp-app",
+                                           "cr-searchbox",
+                                           "contextual-entrypoint-and-carousel",
+                                           "#contextEntrypoint",
+                                           "#entrypointButton",
+                                           "#entrypoint"};
+  const DeepQuery kContextMenuDialog = {"ntp-app",
+                                        "cr-searchbox",
+                                        "contextual-entrypoint-and-carousel",
+                                        "#contextEntrypoint",
+                                        "#menu",
+                                        "#menu",
+                                        "#dialog"};
+
+  WebContentsInteractionTestUtil::StateChange context_menu_open;
+  context_menu_open.event = kContextMenuOpenEvent;
+  context_menu_open.where = kContextMenuDialog;
+  context_menu_open.test_function = "(el) => el && el.open";
+
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
+      ClickElement(kNtpElementId, kContextualEntrypoint),
+      WaitForStateChange(kNtpElementId, context_menu_open));
+}
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
+                       ContextualEntrypointMenuHasOptions) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
+
+  const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
+  const DeepQuery kContextualEntrypoint = {"ntp-app",
+                                           "cr-searchbox",
+                                           "contextual-entrypoint-and-carousel",
+                                           "#contextEntrypoint",
+                                           "#entrypointButton",
+                                           "#entrypoint"};
+  const DeepQuery kContextMenuDialog = {"ntp-app",
+                                        "cr-searchbox",
+                                        "contextual-entrypoint-and-carousel",
+                                        "#contextEntrypoint",
+                                        "#menu",
+                                        "#menu",
+                                        "#dialog"};
+
+  WebContentsInteractionTestUtil::StateChange context_menu_open;
+  context_menu_open.event = kContextMenuOpenEvent;
+  context_menu_open.where = kContextMenuDialog;
+  context_menu_open.test_function = "(el) => el && el.open";
+
+  const DeepQuery kImageUploadItem = {"ntp-app",
+                                      "cr-searchbox",
+                                      "contextual-entrypoint-and-carousel",
+                                      "#contextEntrypoint",
+                                      "#menu",
+                                      "#imageUpload"};
+  const DeepQuery kFileUploadItem = {"ntp-app",
+                                     "cr-searchbox",
+                                     "contextual-entrypoint-and-carousel",
+                                     "#contextEntrypoint",
+                                     "#menu",
+                                     "#fileUpload"};
+  const DeepQuery kCreateImagesItem = {"ntp-app",
+                                       "cr-searchbox",
+                                       "contextual-entrypoint-and-carousel",
+                                       "#contextEntrypoint",
+                                       "#menu",
+                                       "button[data-mode='4']"};
+  const DeepQuery kCanvasItem = {"ntp-app",
+                                 "cr-searchbox",
+                                 "contextual-entrypoint-and-carousel",
+                                 "#contextEntrypoint",
+                                 "#menu",
+                                 "button[data-mode='2']"};
+  const DeepQuery kFastModelItem = {"ntp-app",
+                                    "cr-searchbox",
+                                    "contextual-entrypoint-and-carousel",
+                                    "#contextEntrypoint",
+                                    "#menu",
+                                    "button[data-model='1']"};
+  const DeepQuery kProModelItem = {"ntp-app",
+                                   "cr-searchbox",
+                                   "contextual-entrypoint-and-carousel",
+                                   "#contextEntrypoint",
+                                   "#menu",
+                                   "button[data-model='2']"};
+
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
+      ClickElement(kNtpElementId, kContextualEntrypoint),
+      WaitForStateChange(kNtpElementId, context_menu_open),
+      WaitForElementToRender(kNtpElementId, kImageUploadItem),
+      CheckJsResultAt(kNtpElementId, kImageUploadItem,
+                      "(el) => el.textContent.includes('Add image')"),
+      WaitForElementToRender(kNtpElementId, kFileUploadItem),
+      CheckJsResultAt(kNtpElementId, kFileUploadItem,
+                      "(el) => el.textContent.includes('Add file')"),
+      WaitForElementToRender(kNtpElementId, kCreateImagesItem),
+      CheckJsResultAt(kNtpElementId, kCreateImagesItem,
+                      "(el) => el.textContent.includes('Create images')"),
+      WaitForElementToRender(kNtpElementId, kCanvasItem),
+      CheckJsResultAt(kNtpElementId, kCanvasItem,
+                      "(el) => el.textContent.includes('Canvas')"),
+      WaitForElementToRender(kNtpElementId, kFastModelItem),
+      CheckJsResultAt(kNtpElementId, kFastModelItem,
+                      "(el) => el.textContent.includes('Fast') || "
+                      "el.textContent.includes('Auto')"),
+      WaitForElementToRender(kNtpElementId, kProModelItem),
+      CheckJsResultAt(kNtpElementId, kProModelItem,
+                      "(el) => el.textContent.includes('Pro')"));
+}
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
+                       ContextualEntrypointAttachTabTriggersComposebox) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuClosedEvent);
+
+  const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
+  const DeepQuery kContextualEntrypoint = {"ntp-app",
+                                           "cr-searchbox",
+                                           "contextual-entrypoint-and-carousel",
+                                           "#contextEntrypoint",
+                                           "#entrypointButton",
+                                           "#entrypoint"};
+  const DeepQuery kContextMenuDialog = {"ntp-app",
+                                        "cr-searchbox",
+                                        "contextual-entrypoint-and-carousel",
+                                        "#contextEntrypoint",
+                                        "#menu",
+                                        "#menu",
+                                        "#dialog"};
+
+  const DeepQuery kFirstTabItem = {"ntp-app",
+                                   "cr-searchbox",
+                                   "contextual-entrypoint-and-carousel",
+                                   "#contextEntrypoint",
+                                   "#menu",
+                                   "button.dropdown-item[data-index='0']"};
+  const DeepQuery kComposeboxInput = {"ntp-app", "#composebox", "#input"};
+  const DeepQuery kComposeboxSubmitButton = {"ntp-app", "#composebox",
+                                             "#submitContainer"};
+
+  WebContentsInteractionTestUtil::StateChange context_menu_open;
+  context_menu_open.event = kContextMenuOpenEvent;
+  context_menu_open.where = kContextMenuDialog;
+  context_menu_open.test_function = "(el) => el && el.open";
+
+  WebContentsInteractionTestUtil::StateChange context_menu_closed;
+  context_menu_closed.event = kContextMenuClosedEvent;
+  context_menu_closed.where = kContextMenuDialog;
+  context_menu_closed.test_function = "(el) => !el || !el.open";
+
+  RunTestSequence(
+      AddInstrumentedTab(kGooglePageId, GURL("https://www.espn.com")),
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
+      ClickElement(kNtpElementId, kContextualEntrypoint),
+      WaitForStateChange(kNtpElementId, context_menu_open),
+      WaitForElementToRender(kNtpElementId, kFirstTabItem),
+      ClickElement(kNtpElementId, kFirstTabItem),
+      WaitForStateChange(kNtpElementId, context_menu_closed),
+      WaitForElementToRender(kNtpElementId, kComposeboxInput),
+      CheckJsResultAt(kNtpElementId, kComposeboxInput,
+                      "(el) => el.placeholder.includes('Ask anything')"),
+      ExecuteJsAt(
+          kNtpElementId, kComposeboxInput,
+          "(el) => { el.value = 'Summarize this page'; el.dispatchEvent(new "
+          "Event('input', {bubbles: true, composed: true})); }"),
+      ClickElement(kNtpElementId, kComposeboxSubmitButton));
 }
