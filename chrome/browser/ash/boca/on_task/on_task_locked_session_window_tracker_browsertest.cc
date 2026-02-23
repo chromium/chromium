@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/common/chrome_paths.h"
@@ -1050,12 +1049,24 @@ IN_PROC_BROWSER_TEST_F(
       OnActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS)))
       .Times(1);
 
-  BrowserList::GetInstance()->SetLastActive(browser());
+  // TODO(crbug.com/480103891): We should not be faking browser activation state
+  // via indirect means (such as direct calls to `DidBecomeActive()`). We should
+  // instead convert this to an interactive browser test and directly activate
+  // the browser's backing ui::BaseWindow.
+  const auto activate_browser = [](BrowserWindowInterface* browser) {
+    // We must fake deactivation the previously activated browser first.
+    chrome::FindLastActive()->DidBecomeInactive();
+
+    // Simulate activation of `browser`.
+    browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+  };
+
+  activate_browser(browser());
   testing::Mock::VerifyAndClearExpectations(&window_observer);
 
   // Switch back to Boca SWA
   EXPECT_CALL(window_observer, OnActiveTabChanged(_)).Times(1);
-  BrowserList::GetInstance()->SetLastActive(boca_app_browser);
+  activate_browser(boca_app_browser);
 
   testing::Mock::VerifyAndClearExpectations(&window_observer);
   auto* const window_tracker =

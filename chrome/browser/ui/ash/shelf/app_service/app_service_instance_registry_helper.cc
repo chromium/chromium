@@ -159,9 +159,11 @@ void AppServiceInstanceRegistryHelper::OnBrowserRemoved() {
   for (const auto* instance : instances) {
     if (!ash::BrowserController::GetInstance()->GetBrowserForWindow(
             instance->Window())) {
-      // The tabs in the browser should be closed, and tab windows have been
-      // removed from |browser_window_to_tab_windows_|.
-      DCHECK(!browser_window_to_tab_windows_.contains(instance->Window()));
+      // The browser window may still exist in `tab_window_to_browser_window_`
+      // in cases where `OnTabClosing()` does not fire for a browser-close. This
+      // may occur in instances such as the browser app tab being re-parented to
+      // a new browser. In this case removing the window from
+      // `tab_window_to_browser_window_` is handled by `OnTabInserted()`.
 
       // The browser is removed if the window can't be found, so update the
       // Chrome window instance as destroyed.
@@ -275,6 +277,18 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     return;
   }
 
+  // Visibility changes from a browser's NativeWidget, which has a lifetime
+  // independent from browser and its associated Widget, can be propagated after
+  // the browser has been closed and its associated instance is destroyed. In
+  // such cases it is important to NOT call `OnInstances()` as this will end up
+  // calling `InstanceRegistry::CreateOrUpdateInstance()` re-creating an
+  // instance for the destroyed browser and resulting in UAF errors.
+  // TODO(crbug.com/486700214): Update app service classes to reflect correct
+  // browser lifetime semantics.
+  if (!ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
+    return;
+  }
+
   OnInstances(app_constants::kChromeAppId, window, std::string(),
               CalculateVisibilityState(window, visible));
 
@@ -320,6 +334,18 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
                   state);
       return;
     }
+    return;
+  }
+
+  // Activation changes from a browser's NativeWidget, which has a lifetime
+  // independent from browser and its associated Widget, can be propagated after
+  // the browser has been closed and its associated instance is destroyed. In
+  // such cases it is important to NOT call `OnInstances()` as this will end up
+  // calling `InstanceRegistry::CreateOrUpdateInstance()` re-creating an
+  // instance for the destroyed browser and resulting in UAF errors.
+  // TODO(crbug.com/486700214): Update app service classes to reflect correct
+  // browser lifetime semantics.
+  if (!ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
     return;
   }
 
