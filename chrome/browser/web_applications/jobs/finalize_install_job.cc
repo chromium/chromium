@@ -295,12 +295,6 @@ void FinalizeInstallJob::Start(InstallFinalizedCallback callback) {
   callback_ = std::move(callback);
   webapps::ManifestId manifest_id = web_app_info_.manifest_id();
 
-  // parent_app_manifest_id can only exist if installing as a sub-app.
-  CHECK((options_.install_surface == webapps::WebappInstallSource::SUB_APP &&
-         web_app_info_.parent_app_manifest_id.has_value()) ||
-        (options_.install_surface != webapps::WebappInstallSource::SUB_APP &&
-         !web_app_info_.parent_app_manifest_id.has_value()));
-
   bool needs_scope_validation =
       !web_app_info_.scope_extensions.empty() &&
       !web_app_info_.validated_scope_extensions.has_value();
@@ -328,8 +322,8 @@ void FinalizeInstallJob::Start(InstallFinalizedCallback callback) {
 
 void FinalizeInstallJob::OnOriginAssociationValidated(
     OriginAssociations validated_origin_associations) {
-  webapps::AppId app_id = GenerateAppIdFromManifestId(
-      web_app_info_.manifest_id(), web_app_info_.parent_app_manifest_id);
+  webapps::AppId app_id =
+      GenerateAppIdFromManifestId(web_app_info_.manifest_id());
 
   const WebApp* existing_web_app = registrar().GetAppById(app_id);
   std::unique_ptr<WebApp> web_app;
@@ -340,8 +334,7 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
     // here.
     web_app = std::make_unique<WebApp>(
         web_app_info_.manifest_id(), web_app_info_.start_url(),
-        web_app_info_.scope, web_app_info_.parent_app_id,
-        web_app_info_.parent_app_manifest_id);
+        web_app_info_.scope, web_app_info_.parent_app_id);
     web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   }
 

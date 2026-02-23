@@ -750,6 +750,8 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="InvalidDisplayOverrideUrlPatterns"/>
   <int value="70" label="StartUrlNotInScope"/>
   <int value="71" label="MigratedFromManifestIdInvalid"/>
+  <int value="72" label="AppIdMismatch"/>
+  <int value="73" label="AppIdMismatchForSubApp"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_app_database_serialization.h:ProtoParseResult) -->

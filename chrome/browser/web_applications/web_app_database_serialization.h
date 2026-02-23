@@ -95,7 +95,9 @@ enum class ProtoParseResult {
   kInvalidDisplayOverrideUrlPatterns = 69,
   kStartUrlNotInScope = 70,
   kMigratedFromManifestIdInvalid = 71,
-  kMaxValue = kMigratedFromManifestIdInvalid,
+  kAppIdMismatch = 72,
+  kAppIdMismatchForSubApp = 73,
+  kMaxValue = kAppIdMismatchForSubApp,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppProtoParseResult)
 

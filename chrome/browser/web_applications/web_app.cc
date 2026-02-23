@@ -271,12 +271,11 @@ WebApp::CachedDerivedData& WebApp::CachedDerivedData::operator=(
   return *this;
 }
 
-WebApp::WebApp(const webapps::AppId& app_id,
-               const webapps::ManifestId& manifest_id,
+WebApp::WebApp(const webapps::ManifestId& manifest_id,
                const GURL& start_url,
                const GURL& scope,
                std::optional<webapps::AppId> parent_app_id)
-    : app_id_(app_id),
+    : app_id_(GenerateAppIdFromManifestId(manifest_id)),
       start_url_(start_url),
       scope_(scope),
       chromeos_data_(IsChromeOsDataMandatory()
@@ -297,22 +296,6 @@ WebApp::WebApp(const webapps::AppId& app_id,
   SetStartUrl(start_url_);
   SetManifestId(manifest_id_);
   SetScope(scope_);
-}
-
-WebApp::WebApp(const webapps::ManifestId& manifest_id,
-               const GURL& start_url,
-               const GURL& scope,
-               std::optional<webapps::AppId> parent_app_id,
-               std::optional<webapps::ManifestId> parent_manifest_id)
-    : WebApp(GenerateAppIdFromManifestId(manifest_id, parent_manifest_id),
-             manifest_id,
-             start_url,
-             scope,
-             parent_app_id) {
-  if (parent_app_id_.has_value()) {
-    CHECK(!parent_app_id_->empty());
-  }
-  CHECK(!!parent_app_id == !!parent_manifest_id);
 }
 
 WebApp::WebApp(const sync_pb::WebAppSpecifics& sync_proto)

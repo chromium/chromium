@@ -133,10 +133,6 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
     return web_contents->GetPrimaryMainFrame();
   }
 
-  webapps::ManifestId parent_manifest_id() {
-    return provider().registrar_unsafe().GetAppManifestId(parent_app_id_);
-  }
-
   GURL GetURLFromPath(const std::string& path) {
     return https_server()->GetURL(kDomain, path);
   }
@@ -148,11 +144,9 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
   webapps::AppId GenerateSubAppIdFromPath(
       const std::string& path,
-      const content::RenderFrameHost* parent_frame,
-      const webapps::ManifestId& parent_manifest_id) {
+      const content::RenderFrameHost* parent_frame) {
     return GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                         GetURLFromPath(path, parent_frame),
-                         parent_manifest_id);
+                         GetURLFromPath(path, parent_frame));
   }
 
   webapps::AppId InstallPwaFromPath(const std::string& path) {
@@ -368,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
                 {{kSub1, kSub1}});
 
   // Verify a bunch of things for the newly installed sub-app.
-  webapps::AppId sub_app_id =
-      GenerateSubAppIdFromPath(kSub1, iwa_frame, parent_manifest_id());
+  webapps::AppId sub_app_id = GenerateSubAppIdFromPath(kSub1, iwa_frame);
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -411,8 +404,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                 {{kSubAppPath, kSubAppPath}});
 
   webapps::AppId standalone_app_id = InstallPwaFromPath(kSubAppPath);
-  webapps::AppId sub_app_id =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+  webapps::AppId sub_app_id = GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -441,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   // Inverting the order of installations.
   webapps::AppId standalone_app_id2 = InstallPwaFromPath(kSubAppPath2);
   webapps::AppId sub_app_id2 =
-      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame, parent_manifest_id());
+      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame);
   ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
                   SubAppsServiceResultCode::kSuccess}},
                 {{kSubAppPath2, kSubAppPath2}});
@@ -587,8 +579,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
   ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
                   SubAppsServiceResultCode::kSuccess}},
                 {{kSubAppPath, kSubAppPath}});
-  webapps::AppId sub_app_id =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+  webapps::AppId sub_app_id = GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::OpensInDedicatedWindow()));
 
@@ -875,11 +866,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Verify that sub-apps are installed.
   webapps::AppId sub_app_id_1 =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
   webapps::AppId sub_app_id_2 =
-      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame, parent_manifest_id());
+      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame);
   webapps::AppId sub_app_id_3 =
-      GenerateSubAppIdFromPath(kSubAppPath3, iwa_frame, parent_manifest_id());
+      GenerateSubAppIdFromPath(kSubAppPath3, iwa_frame);
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id_1, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -927,9 +918,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Verify that 2 sub-apps are installed.
   webapps::AppId sub_app_id_1 =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
   webapps::AppId sub_app_id_2 =
-      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame, parent_manifest_id());
+      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame);
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id_1, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
@@ -970,8 +961,7 @@ IN_PROC_BROWSER_TEST_F(
                   SubAppsServiceResultCode::kSuccess}},
                 {{kSubAppPath, kSubAppPath}});
 
-  webapps::AppId sub_app_id =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+  webapps::AppId sub_app_id = GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
@@ -1159,8 +1149,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
                   SubAppsServiceResultCode::kSuccess}},
                 {{kSubAppPath, kSubAppPath}});
 
-  webapps::AppId app_id =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+  webapps::AppId app_id = GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -1210,13 +1199,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
       webapps::ManifestId(GetURLFromPath(kSubAppPath2));
   EXPECT_FALSE(provider()
                    .registrar_unsafe()
-                   .GetInstallState(GenerateAppIdFromManifestId(
-                       sub_app_id_1, parent_manifest_id()))
+                   .GetInstallState(GenerateAppIdFromManifestId(sub_app_id_1))
                    .has_value());
   EXPECT_FALSE(provider()
                    .registrar_unsafe()
-                   .GetInstallState(GenerateAppIdFromManifestId(
-                       sub_app_id_2, parent_manifest_id()))
+                   .GetInstallState(GenerateAppIdFromManifestId(sub_app_id_2))
                    .has_value());
 
   std::optional<message_center::Notification> uninstall_notification =
@@ -1235,8 +1222,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveEmptyList) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  webapps::AppId sub_app_id =
-      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
+  webapps::AppId sub_app_id = GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
 
   ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
                   SubAppsServiceResultCode::kSuccess}},

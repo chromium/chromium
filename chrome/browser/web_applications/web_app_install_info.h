@@ -476,11 +476,6 @@ struct WebAppInstallInfo {
   // API.
   std::optional<webapps::AppId> parent_app_id;
 
-  // ManifestId of the app that called the SUB_APP API to install this app. This
-  // field is only used when the app is installed as a sub app through the
-  // SUB_APP API.
-  std::optional<webapps::ManifestId> parent_app_manifest_id;
-
   // A list of additional terms to use when matching this app against
   // identifiers in admin policies (for shelf pinning, default file handlers,
   // etc).

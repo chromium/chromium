@@ -25,8 +25,7 @@ namespace web_app {
 namespace {
 
 webapps::AppId GetAppId(const WebAppInstallInfo& install_info) {
-  return GenerateAppIdFromManifestId(install_info.manifest_id(),
-                                     install_info.parent_app_manifest_id);
+  return GenerateAppIdFromManifestId(install_info.manifest_id());
 }
 }  // namespace
 

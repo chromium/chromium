@@ -786,18 +786,6 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
       continue;
     }
 
-    // Record whether the derived app_id matches the database key.
-    bool mismatch = (web_app->app_id() != app_id);
-    base::UmaHistogramBoolean("WebApp.Database.AppIdMatch", !mismatch);
-
-    if (mismatch) {
-      log_->Append(base::DictValue()
-                       .Set("message", "App ID doesn't match storage key")
-                       .Set("expected_app_id", app_id)
-                       .Set("parsed_app_id", web_app->app_id())
-                       .Set("proto", proto::ToValue(app_proto)));
-      continue;
-    }
     registry.emplace(app_id, std::move(web_app));
   }
 

@@ -33,9 +33,7 @@ FinalizeUpdateJob::FinalizeUpdateJob(WebAppProvider& provider,
                                      const WebAppInstallInfo& web_app_info)
     : provider_(provider),
       web_app_info_(web_app_info.Clone()),
-      app_id_(
-          GenerateAppIdFromManifestId(web_app_info_.manifest_id(),
-                                      web_app_info_.parent_app_manifest_id)) {}
+      app_id_(GenerateAppIdFromManifestId(web_app_info_.manifest_id())) {}
 
 FinalizeUpdateJob::~FinalizeUpdateJob() = default;
 

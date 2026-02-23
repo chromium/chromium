@@ -34,9 +34,7 @@ InstallFromInfoJob::InstallFromInfoJob(
     : profile_(*profile),
       debug_value_(debug_value),
       manifest_id_(install_info->manifest_id()),
-      app_id_(
-          GenerateAppIdFromManifestId(manifest_id_,
-                                      install_info->parent_app_manifest_id)),
+      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
       install_params_(std::move(install_params)),

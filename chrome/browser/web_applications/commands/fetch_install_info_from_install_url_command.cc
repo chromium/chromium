@@ -50,8 +50,7 @@ FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
           /*args_for_shutdown=*/
           std::make_tuple(FetchInstallInfoResult::kShutdown, nullptr)),
       manifest_id_(manifest_id),
-      install_url_(install_url),
-      parent_manifest_id_(parent_manifest_id) {
+      install_url_(install_url) {
   CHECK(manifest_id_.is_valid());
   CHECK(install_url_.is_valid());
 
@@ -121,7 +120,6 @@ void FetchInstallInfoFromInstallUrlCommand::OnGetWebAppInstallInfo(
   }
 
   install_info->install_url = install_url_;
-  install_info->parent_app_manifest_id = parent_manifest_id_;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &lock_->shared_web_contents(),
@@ -202,13 +200,11 @@ void FetchInstallInfoFromInstallUrlCommand::OnInstallInfoFetched(
     std::unique_ptr<WebAppInstallInfo> info_from_manifest) {
   CHECK(info_from_manifest);
   info_from_manifest->install_url = install_url_;
-  info_from_manifest->parent_app_manifest_id = parent_manifest_id_;
 
   const webapps::AppId app_id =
-      GenerateAppIdFromManifestId(info_from_manifest->manifest_id(),
-                                  info_from_manifest->parent_app_manifest_id);
-  const webapps::AppId expected_app_id = GenerateAppIdFromManifestId(
-      manifest_id_, info_from_manifest->parent_app_manifest_id);
+      GenerateAppIdFromManifestId(info_from_manifest->manifest_id());
+  const webapps::AppId expected_app_id =
+      GenerateAppIdFromManifestId(manifest_id_);
 
   GetMutableDebugValue().Set("app_id", app_id);
   GetMutableDebugValue().Set("expected_app_id", expected_app_id);

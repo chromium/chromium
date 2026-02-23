@@ -4266,9 +4266,7 @@ webapps::AppId GetAppIdForIsolatedSite(Site site) {
     // isolated-app:// origin based on the signing key of the app.
     GURL parent_app_origin = url_info.origin().GetURL();
     GURL start_url = parent_app_origin.Resolve(GetRelativeSubAppPath(site));
-    return GenerateAppId(
-        /*manifest_id_path=*/std::nullopt, start_url,
-        /*parent_manifest_id=*/webapps::ManifestId(parent_app_origin));
+    return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
   }
 
   return url_info.app_id();
@@ -4287,10 +4285,7 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
 
   if (site_config.parent_site) {
     auto parent_site = GetSiteConfiguration(site_config.parent_site.value());
-    return GenerateAppId(
-        manifest_id, start_url,
-        webapps::ManifestId(
-            GetTestServerForSiteMode(site).GetURL(parent_site.relative_url)));
+    return GenerateAppId(manifest_id, start_url);
   } else {
     return GenerateAppId(manifest_id, start_url);
   }

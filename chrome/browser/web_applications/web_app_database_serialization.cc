@@ -487,21 +487,27 @@ std::unique_ptr<WebApp> ParseWebAppProto(
   }
   webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
 
+  if (app_id != expected_app_id) {
+    DLOG(ERROR) << "WebApp proto app_id error for " << manifest_id
+                << ", where '" << app_id << "' does not match expected '"
+                << expected_app_id << "'";
+
+    if (proto.has_parent_app_id()) {
+      RecordProtoParseResult(ProtoParseResult::kAppIdMismatchForSubApp);
+    } else {
+      RecordProtoParseResult(ProtoParseResult::kAppIdMismatch);
+    }
+
+    return nullptr;
+  }
+
   std::unique_ptr<WebApp> web_app = std::make_unique<WebApp>(sync_data);
   if (proto.has_parent_app_id()) {
     web_app->SetParentAppId(proto.parent_app_id());
-    web_app->SetStartUrl(start_url);
-    web_app->SetScope(scope);
-  } else {
-    if (app_id != expected_app_id) {
-      DLOG(ERROR) << "WebApp proto app_id error for " << manifest_id
-                  << ", where '" << app_id << "' does not match expected '"
-                  << expected_app_id << "'";
-      return nullptr;
-    }
-    web_app->SetStartUrl(start_url);
-    web_app->SetScope(scope);
   }
+
+  web_app->SetStartUrl(start_url);
+  web_app->SetScope(scope);
 
   if (!sync_data.has_user_display_mode_cros() &&
       !sync_data.has_user_display_mode_default()) {

@@ -34,16 +34,13 @@ TEST(WebAppHelpers, GenerateAppId) {
 
 TEST(WebAppHelpers, GenerateAppIdForSubApps) {
   const std::string subapp_starturl = "https://example.com/subapp";
-  const webapps::ManifestId parent_manifest_id =
-      webapps::ManifestId(GURL("https://example.com"));
 
-  EXPECT_EQ("emdpgjhffapdncpmnindbhiapcohmjga",
-            GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                          GURL(subapp_starturl), parent_manifest_id));
+  EXPECT_EQ(
+      "ghmpeckcpimfdekfodogbnnpmkppngmo",
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, GURL(subapp_starturl)));
 
-  EXPECT_EQ("jaadilplijgkeakjaoplplaeceoommee",
-            GenerateAppId("manifest.webmanifest", GURL(subapp_starturl),
-                          parent_manifest_id));
+  EXPECT_EQ("fekpfidpgacknlbhejgeblllclomiekk",
+            GenerateAppId("manifest.webmanifest", GURL(subapp_starturl)));
 }
 
 TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
