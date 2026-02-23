@@ -63,8 +63,7 @@ bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
   if (is_dev_tools_connected_) {
     menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
                             gfx::Rect(screen_location, gfx::Size()),
-                            views::MenuAnchorPosition::kBubbleBottomRight,
-                            source);
+                            views::MenuAnchorPosition::kTopLeft, source);
     UpdateState();
   }
   return true;
