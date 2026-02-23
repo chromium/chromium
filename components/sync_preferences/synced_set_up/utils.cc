@@ -8,11 +8,13 @@
 #include <string>
 #include <tuple>
 
+#include "base/logging.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
+#include "components/sync_preferences/features.h"
 
 namespace {
 
@@ -132,8 +134,12 @@ DeviceData GetBestMatchDeviceData(
         device_info->os_type() == local_device->os_type(),
         data.observed_change_count};
     scored_remote_devices.insert({score, guid});
+    if (base::FeatureList::IsEnabled(
+            sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
+      VLOG(1) << "found device with change count "
+              << data.observed_change_count;
+    }
   }
-
   if (scored_remote_devices.empty()) {
     return {};
   }
@@ -183,6 +189,13 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
       device_data_map, device_info_tracker, local_device);
   std::map<std::string_view, base::Value> cross_device_pref_values =
       GetCrossDevicePrefValuesForDevice(best_match_device_data);
+  if (base::FeatureList::IsEnabled(
+          sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
+    for (const auto& [key, value] : cross_device_pref_values) {
+      VLOG(1) << "XplatSyncedSetup, GetCrossDevicePrefsFromRemoteDevice: key="
+              << key << ", value=" << value.DebugString();
+    }
+  }
   return cross_device_pref_values;
 }
 

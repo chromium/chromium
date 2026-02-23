@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -59,6 +60,8 @@ import java.util.function.Supplier;
 
 @NullMarked
 public class CrossDeviceSettingImporter implements TopResumedActivityChangedObserver {
+
+    private static final String TAG = "XplatSyncedSetup";
 
     // Fixed prefix used by CrossDevicePrefTracker for dictionary prefs with values from all devices
     private static final String CROSS_DEVICE_PREFIX = "cross_device.";
@@ -465,8 +468,20 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         @Nullable Object bottomOmniboxValue = preferences.get(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
         if (bottomOmniboxValue != null
                 && bottomOmniboxValue instanceof Boolean bottomOmniboxBoolean) {
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                Log.i(
+                        TAG,
+                        "importedSettingsHaveOmniboxChange, bottomOmniboxBoolean = "
+                                + bottomOmniboxBoolean
+                                + ", localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION) = "
+                                + localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION));
+            }
             return bottomOmniboxBoolean
                     != localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(TAG, "importedSettingsHaveOmniboxChange, returning false at bottom of function");
         }
         return false;
     }
@@ -575,6 +590,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     crossDeviceKey.replaceAll(
                             /* regex= */ "^" + CROSS_DEVICE_PREFIX, /* replacement= */ "");
             res.put(key, crossDevicePrefs.get(crossDeviceKey));
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(TAG, "getPrefsFromRemoteDevice, res = " + res);
         }
         return res;
     }
