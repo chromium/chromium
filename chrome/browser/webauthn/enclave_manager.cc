@@ -19,6 +19,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -55,6 +56,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
@@ -3646,11 +3648,25 @@ void EnclaveManager::CheckGpmPinAvailability(
     GpmPinAvailabilityCallback callback) {
   CoreAccountInfo account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  // TODO(crbug.com/485450318): calling this should not cancel ongoing requests.
   download_account_state_request_ =
       trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
           account_info,
-          base::BindOnce(&EnclaveManager::OnCheckGpmPinAvailabilityResult,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          base::BindOnce(
+              [](GpmPinAvailabilityCallback callback,
+                 trusted_vault::
+                     DownloadAuthenticationFactorsRegistrationStateResult
+                         result) {
+                if (!result.gpm_pin_metadata) {
+                  std::move(callback).Run(GpmPinAvailability::kGpmPinUnset);
+                  return;
+                }
+                std::move(callback).Run(
+                    result.gpm_pin_metadata->usable_pin_metadata
+                        ? GpmPinAvailability::kGpmPinSetAndUsable
+                        : GpmPinAvailability::kGpmPinSetButNotUsable);
+              },
+              std::move(callback)),
           base::DoNothing());
 }
 
@@ -3823,13 +3839,34 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   }
 
   FIDO_LOG(EVENT) << "Opportunistic keys provided";
-  // These keys were provided opportunistically so that a MagicArch flow can
-  // be avoided in the future. However, as an invariant, we only register with
-  // the enclave if we can serve requests, which means having a form of local
-  // user verification (either system UV or GPM PIN).
-  AreUserVerifyingKeysSupported(
-      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysUVCheckComplete,
+
+  // These keys were provided opportunistically so that a MagicArch flow can be
+  // avoided later. Download the GPM PIN metadata and check for system UV before
+  // storing the keys.
+  auto callback = base::BarrierCallback<OpportunisticRetrievalCheck>(
+      2,
+      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysChecksComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
+  AreUserVerifyingKeysSupported(base::BindOnce(
+      [](base::RepeatingCallback<void(OpportunisticRetrievalCheck)> cb,
+         bool result) {
+        std::move(cb).Run(result ? SystemUv::kSupported
+                                 : SystemUv::kNotSupported);
+      },
+      callback));
+  CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  // TODO(crbug.com/485450318): calling this should not cancel ongoing requests.
+  download_account_state_request_ =
+      trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
+          account_info,
+          base::BindOnce(
+              [](base::RepeatingCallback<void(OpportunisticRetrievalCheck)> cb,
+                 trusted_vault::
+                     DownloadAuthenticationFactorsRegistrationStateResult
+                         result) { std::move(cb).Run(std::move(result)); },
+              callback),
+          base::DoNothing());
 }
 
 std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
@@ -4417,56 +4454,45 @@ void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
   Act();
 }
 
-void EnclaveManager::OnCheckGpmPinAvailabilityResult(
-    base::OnceCallback<void(GpmPinAvailability)> callback,
-    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-        result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  download_account_state_request_.reset();
-  auto pin_availability = GpmPinAvailability::kGpmPinUnset;
-  if (result.gpm_pin_metadata) {
-    pin_availability = result.gpm_pin_metadata->usable_pin_metadata
-                           ? GpmPinAvailability::kGpmPinSetAndUsable
-                           : GpmPinAvailability::kGpmPinSetButNotUsable;
-  }
-  // Calling the callback after fetching the GPM PIN info:
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), pin_availability));
-}
-
-void EnclaveManager::OpportunisticStoreKeysUVCheckComplete(
+void EnclaveManager::OpportunisticStoreKeysChecksComplete(
     std::unique_ptr<StoreKeysArgs> pending_keys,
-    bool can_make_uv_keys) {
-  FIDO_LOG(EVENT) << "Opportunistic keys UV key result: " << can_make_uv_keys;
-  if (!can_make_uv_keys) {
+    std::vector<OpportunisticRetrievalCheck> opportunistic_retrieval_checks) {
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      account_state;
+  SystemUv system_uv;
+  {
+    CHECK_EQ(opportunistic_retrieval_checks.size(), 2u);
+    auto& first = opportunistic_retrieval_checks.at(0);
+    auto& second = opportunistic_retrieval_checks.at(1);
+    if (std::holds_alternative<SystemUv>(first)) {
+      system_uv = std::get<SystemUv>(first);
+      account_state = std::get<
+          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
+          std::move(second));
+    } else {
+      account_state = std::get<
+          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
+          std::move(first));
+      system_uv = std::get<SystemUv>(second);
+    }
+  }
+  bool has_pin = account_state.gpm_pin_metadata &&
+                 account_state.gpm_pin_metadata->usable_pin_metadata;
+  FIDO_LOG(EVENT) << "Opportunistic keys checks complete. "
+                  << "Has UV: " << static_cast<int>(system_uv)
+                  << ", has PIN: " << has_pin << ".";
+  if (system_uv == SystemUv::kNotSupported && !has_pin) {
     // Without local UV we can store keys only if the GPM pin is available and
     // usable.
-    CheckGpmPinAvailability(base::BindOnce(
-        &EnclaveManager::OpportunisticStoreKeysGpmPinCheckComplete,
-        weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
-    return;
-  }
-  OpportunisticStoreKeys(std::move(pending_keys));
-}
-
-void EnclaveManager::OpportunisticStoreKeysGpmPinCheckComplete(
-    std::unique_ptr<StoreKeysArgs> pending_keys,
-    GpmPinAvailability gpm_pin_availability) {
-  if (gpm_pin_availability != GpmPinAvailability::kGpmPinSetAndUsable) {
     NotifyObserversAboutOutOfContextRecoveryOutcome(
         OutOfContextRecoveryOutcome::
             kStoreKeysFromOpportunisticFlowIgnoredNoUV);
     return;
   }
-  OpportunisticStoreKeys(std::move(pending_keys));
-}
-
-void EnclaveManager::OpportunisticStoreKeys(
-    std::unique_ptr<StoreKeysArgs> pending_keys) {
   pending_keys_ = std::move(pending_keys);
   store_keys_count_++;
   AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt,
+      std::move(account_state.gpm_pin_metadata),
       base::BindOnce(&EnclaveManager::OpportunisticStoreKeysAddComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

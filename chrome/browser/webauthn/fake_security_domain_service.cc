@@ -204,11 +204,18 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   }
 
   MaybeResponse ListMembers() {
-    // We can't list a pretend member.
-    CHECK(!pretend_there_are_members_);
-
+    std::vector<trusted_vault_pb::SecurityDomainMember> members = members_;
+    if (pretend_there_are_members_) {
+      trusted_vault_pb::SecurityDomainMember member;
+      member.set_name("Pretend member");
+      member.set_public_key("Pretend public key");
+      member.set_member_type(
+          trusted_vault_pb::SecurityDomainMember_MemberType::
+              SecurityDomainMember_MemberType_MEMBER_TYPE_UNSPECIFIED);
+      members.push_back(std::move(member));
+    }
     trusted_vault_pb::ListSecurityDomainMembersResponse response;
-    for (const auto& member : members_) {
+    for (const auto& member : members) {
       auto* proto_member = response.add_security_domain_members();
       proto_member->CopyFrom(member);
     }
