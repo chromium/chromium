@@ -35,9 +35,9 @@ bool ShouldShowPrompts() {
   PrefService* local_state = g_browser_process->local_state();
 
   const int declined_count =
-      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
+      local_state->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount);
   const base::Time last_declined_time =
-      local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
+      local_state->GetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime);
 
   constexpr int kMaxPromptCount = 5;
   constexpr int kRepromptDurationDays = 21;

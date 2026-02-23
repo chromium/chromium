@@ -74,9 +74,9 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOverscrollHistoryNavigationEnabled,
                                 true);
 #endif
-  registry->RegisterTimePref(prefs::kDefaultBrowserLastDeclinedTime,
+  registry->RegisterTimePref(prefs::kDefaultBrowserInfobarLastDeclinedTime,
                              base::Time());
-  registry->RegisterIntegerPref(prefs::kDefaultBrowserDeclinedCount, 0);
+  registry->RegisterIntegerPref(prefs::kDefaultBrowserInfobarDeclinedCount, 0);
   registry->RegisterTimePref(prefs::kDefaultBrowserFirstShownTime,
                              base::Time());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -124,7 +124,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kPinSplitTabButton, false,
                                 pref_registration_flags);
 
-  registry->RegisterInt64Pref(prefs::kDefaultBrowserLastDeclined, 0);
+  registry->RegisterInt64Pref(prefs::kDefaultBrowserInfobarLastDeclined, 0);
   registry->RegisterBooleanPref(prefs::kWebAppCreateOnDesktop, true);
   registry->RegisterBooleanPref(prefs::kWebAppCreateInAppsMenu, true);
   registry->RegisterBooleanPref(prefs::kWebAppCreateInQuickLaunchBar, true);

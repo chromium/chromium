@@ -10,22 +10,22 @@
 #include "components/prefs/pref_service.h"
 
 void chrome::startup::default_prompt::ResetPromptPrefs(Profile* profile) {
-  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
+  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserInfobarLastDeclined);
 
   PrefService* local_state = g_browser_process->local_state();
-  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
-  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+  local_state->ClearPref(prefs::kDefaultBrowserInfobarLastDeclinedTime);
+  local_state->ClearPref(prefs::kDefaultBrowserInfobarDeclinedCount);
 }
 
 void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
     Profile* profile) {
   base::Time now = base::Time::Now();
-  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
+  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserInfobarLastDeclined,
                                 now.ToInternalValue());
 
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
+  local_state->SetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime, now);
   local_state->SetInteger(
-      prefs::kDefaultBrowserDeclinedCount,
-      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
+      prefs::kDefaultBrowserInfobarDeclinedCount,
+      local_state->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount) + 1);
 }

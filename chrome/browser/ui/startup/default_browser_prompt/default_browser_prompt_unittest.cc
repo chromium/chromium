@@ -39,47 +39,47 @@ class DefaultBrowserPromptTest : public testing::Test {
 };
 
 TEST_F(DefaultBrowserPromptTest, MigrateLastDeclinedTimeProfilePrefDefault) {
-  profile_prefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
-  local_state()->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
+  profile_prefs()->ClearPref(prefs::kDefaultBrowserInfobarLastDeclined);
+  local_state()->SetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime,
                          base::Time::Now());
-  local_state()->SetInteger(prefs::kDefaultBrowserDeclinedCount, 3);
+  local_state()->SetInteger(prefs::kDefaultBrowserInfobarDeclinedCount, 3);
 
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs());
-  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime),
+  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime),
             base::Time::Now());
-  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount), 3);
+  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount), 3);
 }
 
 TEST_F(DefaultBrowserPromptTest, MigrateLastDeclinedTimeLocalPrefDefault) {
-  profile_prefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
+  profile_prefs()->SetInt64(prefs::kDefaultBrowserInfobarLastDeclined,
                             base::Time::Now().ToInternalValue());
-  local_state()->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
-  local_state()->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+  local_state()->ClearPref(prefs::kDefaultBrowserInfobarLastDeclinedTime);
+  local_state()->ClearPref(prefs::kDefaultBrowserInfobarDeclinedCount);
 
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs());
-  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime),
+  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime),
             base::Time::Now());
-  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount), 1);
+  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount), 1);
 }
 
 TEST_F(DefaultBrowserPromptTest, MigrateLastDeclinedTimeIfMoreRecent) {
-  profile_prefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
+  profile_prefs()->SetInt64(prefs::kDefaultBrowserInfobarLastDeclined,
                             base::Time::Now().ToInternalValue());
-  local_state()->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
+  local_state()->SetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime,
                          base::Time::Now() - base::Seconds(1));
-  local_state()->SetInteger(prefs::kDefaultBrowserDeclinedCount, 1);
+  local_state()->SetInteger(prefs::kDefaultBrowserInfobarDeclinedCount, 1);
 
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs());
-  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime),
+  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime),
             base::Time::Now());
-  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount), 1);
+  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount), 1);
 
   profile_prefs()->SetInt64(
-      prefs::kDefaultBrowserLastDeclined,
+      prefs::kDefaultBrowserInfobarLastDeclined,
       (base::Time::Now() - base::Seconds(1)).ToInternalValue());
 
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs());
-  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime),
+  EXPECT_EQ(local_state()->GetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime),
             base::Time::Now());
-  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount), 1);
+  EXPECT_EQ(local_state()->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount), 1);
 }

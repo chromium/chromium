@@ -1417,16 +1417,16 @@ inline constexpr char kPluginsAlwaysOpenPdfExternally[] =
 
 // Int64 containing the internal value of the time at which the default browser
 // infobar was last dismissed by the user.
-inline constexpr char kDefaultBrowserLastDeclined[] =
+inline constexpr char kDefaultBrowserInfobarLastDeclined[] =
     "browser.default_browser_infobar_last_declined";
 
 // base::Time containing time at which the default browser infobar was last
 // dismissed by the user.
-inline constexpr char kDefaultBrowserLastDeclinedTime[] =
+inline constexpr char kDefaultBrowserInfobarLastDeclinedTime[] =
     "browser.default_browser_infobar_last_declined_time";
 
 // Int representing the number of times the user has dismissed the infobar.
-inline constexpr char kDefaultBrowserDeclinedCount[] =
+inline constexpr char kDefaultBrowserInfobarDeclinedCount[] =
     "browser.default_browser_infobar_declined_count";
 
 // base::Time containing first time the default browser app menu chip was shown.

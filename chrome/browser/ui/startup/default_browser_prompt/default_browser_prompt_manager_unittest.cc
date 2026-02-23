@@ -58,16 +58,16 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
       bool expect_infobar_exists) {
     if (last_declined_time_delta.has_value()) {
       local_state()->SetTime(
-          prefs::kDefaultBrowserLastDeclinedTime,
+          prefs::kDefaultBrowserInfobarLastDeclinedTime,
           base::Time::Now() - last_declined_time_delta.value());
     } else {
-      local_state()->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
+      local_state()->ClearPref(prefs::kDefaultBrowserInfobarLastDeclinedTime);
     }
     if (declined_count.has_value()) {
-      local_state()->SetInteger(prefs::kDefaultBrowserDeclinedCount,
+      local_state()->SetInteger(prefs::kDefaultBrowserInfobarDeclinedCount,
                                 declined_count.value());
     } else {
-      local_state()->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+      local_state()->ClearPref(prefs::kDefaultBrowserInfobarDeclinedCount);
     }
 
     manager()->CloseAllPrompts(

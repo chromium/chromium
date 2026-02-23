@@ -187,7 +187,7 @@ void DefaultBrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void DefaultBrowserInfoBarManager::OnAccept() {
   base::UmaHistogramCounts100("DefaultBrowser.InfoBar.TimesShownBeforeAccept",
                               g_browser_process->local_state()->GetInteger(
-                                  prefs::kDefaultBrowserDeclinedCount) +
+                                  prefs::kDefaultBrowserInfobarDeclinedCount) +
                                   1);
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Accept"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
