@@ -1376,8 +1376,20 @@ VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
   VISIT(page_context);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::TextFragmentData& proto) {
+  VISIT(text_start);
+  VISIT(text_end);
+  VISIT(prefix);
+  VISIT(suffix);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::ScrollPosition& proto) {
+  VISIT(text_fragment);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::PageContext& proto) {
   VISIT(form_field_info);
+  VISIT(scroll_position);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FormFieldInfo& proto) {

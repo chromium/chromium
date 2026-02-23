@@ -272,6 +272,40 @@ TEST(SendTabToSelfEntry, PageContextSizeLimit) {
   EXPECT_FALSE(pb_entry.specifics().has_page_context());
 }
 
+TEST(SendTabToSelfEntry, TextFragment) {
+  TextFragmentData tf_data;
+  tf_data.text_start = "start";
+  tf_data.text_end = "end";
+  tf_data.prefix = "prefix";
+  tf_data.suffix = "suffix";
+
+  PageContext context;
+  context.scroll_position.text_fragment = tf_data;
+
+  SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
+                           base::Time::FromTimeT(10), "device", "device2",
+                           context);
+
+  EXPECT_EQ(tf_data, entry.GetPageContext().scroll_position.text_fragment);
+
+  SendTabToSelfLocal local_pb = entry.AsLocalProto();
+  EXPECT_TRUE(local_pb.specifics().has_page_context());
+  EXPECT_TRUE(local_pb.specifics().page_context().has_scroll_position());
+  EXPECT_TRUE(local_pb.specifics()
+                  .page_context()
+                  .scroll_position()
+                  .has_text_fragment());
+  EXPECT_EQ("start", local_pb.specifics()
+                         .page_context()
+                         .scroll_position()
+                         .text_fragment()
+                         .text_start());
+
+  std::unique_ptr<SendTabToSelfEntry> entry2 =
+      SendTabToSelfEntry::FromProto(local_pb.specifics(), base::Time::Now());
+  EXPECT_EQ(tf_data, entry2->GetPageContext().scroll_position.text_fragment);
+}
+
 }  // namespace
 
 }  // namespace send_tab_to_self
