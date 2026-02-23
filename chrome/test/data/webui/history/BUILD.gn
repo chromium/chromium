@@ -10,6 +10,7 @@ build_webui_tests("build") {
     "history_clusters/utils.ts",
     "history_drawer_test.ts",
     "history_embeddings_promo_test.ts",
+    "history_filter_chips_test.ts",
     "history_item_focus_test.ts",
     "history_item_test.ts",
     "history_list_focus_test.ts",

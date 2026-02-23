@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {BrowserServiceImpl} from './browser_service.js';
 import {getCss} from './filter_chips.css.js';
 import {getHtml} from './filter_chips.html.js';
 
@@ -51,6 +52,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
       this.actorVisits = true;
     }
 
+    this.recordMetrics_(this.userVisits, this.actorVisits);
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
@@ -63,7 +65,23 @@ export class HistoryFilterChipsElement extends CrLitElement {
       this.actorVisits = true;
     }
 
+    this.recordMetrics_(this.userVisits, this.actorVisits);
     this.fireChange_(this.userVisits, this.actorVisits);
+  }
+
+  protected recordMetrics_(newUserState: boolean, newActorState: boolean) {
+    let action = '';
+    if (newUserState && newActorState) {
+      action = 'HistoryPage_ShowAllEnabled';
+    } else if (newUserState && !newActorState) {
+      action = 'HistoryPage_ShowUserOnlyEnabled';
+    } else if (!newUserState && newActorState) {
+      action = 'HistoryPage_ShowActorOnlyEnabled';
+    }
+
+    if (action !== '') {
+      BrowserServiceImpl.getInstance().recordAction(action);
+    }
   }
 
   private fireChange_(userVisits: boolean, actorVisits: boolean) {
