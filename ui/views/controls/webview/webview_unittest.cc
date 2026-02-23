@@ -395,6 +395,27 @@ TEST_F(WebViewUnitTest, CrashedOverlayView) {
   web_view->SetCrashedOverlayView(nullptr);
 }
 
+// Test that the specified crashed overlay view is shown when a WebContents
+// is in a crashed state, using TakeCrashedOverlayView.
+TEST_F(WebViewUnitTest, TakeCrashedOverlayView) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+
+  View* contents_view = top_level_widget()->GetContentsView();
+  auto* web_view = contents_view->AddChildView(
+      std::make_unique<WebView>(web_contents->GetBrowserContext()));
+  web_view->SetWebContents(web_contents.get());
+
+  View* crashed_overlay_view =
+      web_view->TakeCrashedOverlayView(std::make_unique<View>());
+  EXPECT_FALSE(crashed_overlay_view->IsDrawn());
+
+  SimulateRendererCrash(web_contents.get(), web_view);
+  EXPECT_TRUE(crashed_overlay_view->IsDrawn());
+
+  web_view->TakeCrashedOverlayView(nullptr);
+}
+
 // Tests to make sure we can default construct the WebView class and set the
 // BrowserContext after construction.
 TEST_F(WebViewUnitTest, DefaultConstructability) {

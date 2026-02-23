@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -134,6 +135,22 @@ class WEBVIEW_EXPORT WebView : public View,
   // `crashed_overlay_view`.
   void SetCrashedOverlayView(View* crashed_overlay_view);
 
+  // Takes ownership of `crashed_overlay_view` and shows it when the web
+  // contents is in a crashed state. This is cleared automatically if the web
+  // contents is changed. Returns the raw pointer for callers that may want to
+  // hold a pointer to the view.
+  template <typename T>
+  T* TakeCrashedOverlayView(std::unique_ptr<T> crashed_overlay_view) {
+    T* view_ptr = crashed_overlay_view.get();
+    TakeCrashedOverlayViewImpl(std::move(crashed_overlay_view));
+    return view_ptr;
+  }
+
+  std::nullptr_t TakeCrashedOverlayView(std::nullptr_t) {
+    TakeCrashedOverlayView(std::unique_ptr<View>());
+    return nullptr;
+  }
+
   // Adds a callback for when a WebContents is attached to this WebView.
   base::CallbackListSubscription AddWebContentsAttachedCallback(
       WebContentsAttachedCallback callback);
@@ -229,6 +246,9 @@ class WEBVIEW_EXPORT WebView : public View,
 
  private:
   friend class WebViewUnitTest;
+
+  void TakeCrashedOverlayViewImpl(std::unique_ptr<View> crashed_overlay_view);
+
   bool IsObservingAXModeForTesting();
   bool IsObservingWidgetAXManagerForTesting();
 

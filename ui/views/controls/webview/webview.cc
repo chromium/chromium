@@ -181,7 +181,12 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
   }
 
   if (crashed_overlay_view_.view()) {
-    RemoveChildView(crashed_overlay_view_.view());
+    View* old_view = crashed_overlay_view_.view();
+    if (old_view->owned_by_client()) {
+      RemoveChildView(old_view);
+    } else {
+      RemoveChildViewT(old_view);
+    }
     // Show the hosted web contents view iff the crashed
     // overlay is NOT showing, to ensure hit testing is
     // correct on Mac. See https://crbug.com/896508
@@ -195,6 +200,44 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
     AddChildViewRaw(crashed_overlay_view_.view());
     holder_->SetVisible(false);
     crashed_overlay_view_.view()->SetBoundsRect(GetLocalBounds());
+  }
+
+  UpdateCrashedOverlayView();
+}
+
+void WebView::TakeCrashedOverlayViewImpl(
+    std::unique_ptr<View> crashed_overlay_view) {
+  if (crashed_overlay_view.get()) {
+    CHECK(!crashed_overlay_view->owned_by_client());
+  }
+
+  // TODO(http://crbug.com/486052969): Remove code below that depends on a
+  // transitory set_owned_by_client and non-set_owned_by_client state after
+  // SadTabView drops set_owned_by_client().
+  if (crashed_overlay_view_.view() == crashed_overlay_view.get()) {
+    return;
+  }
+
+  if (crashed_overlay_view_.view()) {
+    View* old_view = crashed_overlay_view_.view();
+    if (old_view->owned_by_client()) {
+      RemoveChildView(old_view);
+    } else {
+      RemoveChildViewT(old_view);
+    }
+    // Show the hosted web contents view iff the crashed
+    // overlay is NOT showing, to ensure hit testing is
+    // correct on Mac. See https://crbug.com/896508
+    holder_->SetVisible(true);
+  }
+
+  if (crashed_overlay_view) {
+    crashed_overlay_view_.SetView(
+        AddChildView(std::move(crashed_overlay_view)));
+    holder_->SetVisible(false);
+    crashed_overlay_view_.view()->SetBoundsRect(GetLocalBounds());
+  } else {
+    crashed_overlay_view_.SetView(nullptr);
   }
 
   UpdateCrashedOverlayView();
