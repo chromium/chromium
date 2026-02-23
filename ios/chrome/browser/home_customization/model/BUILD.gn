@@ -24,13 +24,15 @@ source_set("model") {
     "user_uploaded_image_manager_factory.h",
     "user_uploaded_image_manager_factory.mm",
   ]
-  deps = [
+  public_deps = [
     ":theme_syncable_service_ios",
+    "//components/sync/protocol",
+  ]
+  deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/sync/model",
-    "//components/sync/protocol",
     "//components/themes",
     "//components/themes:prefs",
     "//ios/chrome/browser/home_customization/utils",

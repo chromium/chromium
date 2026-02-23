@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
-#import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/utils/theme_ios_specifics_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -156,7 +155,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   LoadCurrentTheme();
 
   if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
-    theme_syncable_service_ = std::make_unique<ThemeSyncableServiceIOS>();
+    theme_syncable_service_ = std::make_unique<ThemeSyncableServiceIOS>(this);
   }
 
   const base::ListValue& recently_used_backgrounds_list =
@@ -215,6 +214,44 @@ HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
 void HomeBackgroundCustomizationService::Shutdown() {
   // It's safe to call `reset()` unconditionally.
   theme_syncable_service_.reset();
+}
+
+sync_pb::ThemeIosSpecifics HomeBackgroundCustomizationService::GetCurrentTheme()
+    const {
+  return current_theme_;
+}
+
+void HomeBackgroundCustomizationService::ApplyTheme(
+    const sync_pb::ThemeIosSpecifics& theme) {
+  current_theme_ = theme;
+
+  ClearCurrentUserUploadedBackground();
+
+  StoreCurrentTheme();
+
+  NotifyObserversOfBackgroundChange();
+}
+
+void HomeBackgroundCustomizationService::CacheLocalTheme() {
+  std::string encoded_theme = EncodeThemeIosSpecifics(current_theme_);
+
+  SetOrClearStringPref(pref_service_, prefs::kIosSavedThemeSpecificsIos,
+                       encoded_theme);
+}
+
+void HomeBackgroundCustomizationService::RestoreCachedTheme() {
+  std::string saved_encoded_theme =
+      pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos);
+
+  sync_pb::ThemeIosSpecifics cached_theme =
+      DecodeThemeIosSpecifics(saved_encoded_theme);
+
+  ApplyTheme(cached_theme);
+}
+
+bool HomeBackgroundCustomizationService::IsCurrentThemeSyncable() const {
+  // If a user uploaded background is set, do NOT sync.
+  return !current_user_uploaded_background_.has_value();
 }
 
 void HomeBackgroundCustomizationService::RegisterProfilePrefs(
@@ -497,6 +534,10 @@ void HomeBackgroundCustomizationService::RemoveObserver(
 void HomeBackgroundCustomizationService::NotifyObserversOfBackgroundChange() {
   for (HomeBackgroundCustomizationServiceObserver& observer : observers_) {
     observer.OnBackgroundChanged();
+  }
+
+  if (theme_syncable_service_) {
+    theme_syncable_service_->OnThemeChanged();
   }
 }
 

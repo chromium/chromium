@@ -14,6 +14,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync/base/features.h"
+#import "components/sync/protocol/entity_specifics.pb.h"
 #import "components/sync/protocol/theme_specifics.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/sync/test/fake_sync_change_processor.h"
@@ -145,13 +146,17 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
         service_->GetThemeSyncableService());
   }
 
-  // Helper to force the service into an "actively syncing" state.
-  void StartSyncing() {
-    ASSERT_TRUE(theme_sync_service()) << "ThemeSyncableServiceIOS is nullptr";
+  // Helper to begin syncing.
+  syncer::FakeSyncChangeProcessor* StartSyncing() {
+    EXPECT_TRUE(theme_sync_service()) << "ThemeSyncableServiceIOS is nullptr";
+    auto processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+    syncer::FakeSyncChangeProcessor* processor_ptr = processor.get();
+
     theme_sync_service()->MergeDataAndStartSyncing(
-        syncer::THEMES_IOS, syncer::SyncDataList(),
-        std::make_unique<syncer::FakeSyncChangeProcessor>());
-    ASSERT_TRUE(theme_sync_service()->IsSyncing());
+        syncer::THEMES_IOS, syncer::SyncDataList(), std::move(processor));
+    EXPECT_TRUE(theme_sync_service()->IsSyncing());
+
+    return processor_ptr;
   }
 
   // Helper to fetch and decode a theme from a given pref.
@@ -1044,4 +1049,143 @@ TEST_F(HomeBackgroundCustomizationServiceTest, ClearsBothPrefsWhenNotSyncing) {
   EXPECT_TRUE(pref_service_->GetString(prefs::kIosNtpThemeSpecifics).empty());
   EXPECT_TRUE(
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos).empty());
+}
+
+// Tests that `GetCurrentTheme` returns the currently active theme specifics.
+TEST_F(HomeBackgroundCustomizationServiceTest, DelegateGetCurrentTheme) {
+  CreateService();
+
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff00ff);
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+
+  sync_pb::ThemeIosSpecifics local_theme = service_->GetCurrentTheme();
+
+  EXPECT_TRUE(local_theme.has_user_color_theme());
+  EXPECT_EQ(color_theme, local_theme.user_color_theme());
+}
+
+// Tests that `ApplyTheme()` from the sync delegate correctly updates the local
+// theme, clears any user-uploaded images, and alerts UI observers.
+TEST_F(HomeBackgroundCustomizationServiceTest, DelegateApplyTheme) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kNTPBackgroundCustomization, syncer::kSyncThemesIos}, {});
+  CreateService();
+
+  // Simulate a user having an uploaded image initially.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  EXPECT_TRUE(service_->GetCurrentCustomBackground());
+
+  sync_pb::ThemeIosSpecifics specifics;
+  *specifics.mutable_user_color_theme() = GenerateUserColorTheme(0xff00ff);
+
+  observer_.on_background_changed_called = false;
+
+  // Simulate Sync pushing a remote theme down to the delegate.
+  service_->ApplyTheme(specifics);
+
+  EXPECT_TRUE(observer_.on_background_changed_called);
+  ASSERT_TRUE(service_->GetCurrentColorTheme().has_value());
+  EXPECT_EQ(specifics.user_color_theme(),
+            service_->GetCurrentColorTheme().value());
+  EXPECT_EQ(specifics, service_->GetCurrentTheme());
+
+  // Verify the user uploaded background was cleared.
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+}
+
+// Tests that `CacheLocalTheme()` and `RestoreCachedTheme()` successfully
+// snapshot and revert the local UI state.
+TEST_F(HomeBackgroundCustomizationServiceTest, DelegateCacheAndRestoreTheme) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kNTPBackgroundCustomization, syncer::kSyncThemesIos}, {});
+  CreateService();
+
+  // Set initial theme (take snapshot).
+  sync_pb::UserColorTheme initial_theme = GenerateUserColorTheme(0x111111);
+  service_->SetBackgroundColor(initial_theme.color(),
+                               initial_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  // Simulate starting sync (which triggers a cache).
+  theme_sync_service()->WillStartInitialSync();
+  StartSyncing();
+
+  // Verify it was written to the legacy/snapshot pref.
+  EXPECT_EQ(
+      initial_theme,
+      GetThemeFromPref(prefs::kIosSavedThemeSpecificsIos).user_color_theme());
+
+  // Change the theme locally while syncing.
+  sync_pb::UserColorTheme new_theme = GenerateUserColorTheme(0x222222);
+  service_->SetBackgroundColor(new_theme.color(),
+                               new_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+  EXPECT_EQ(new_theme, service_->GetCurrentColorTheme().value());
+
+  observer_.on_background_changed_called = false;
+
+  // Simulate stopping sync (which triggers a restore)
+  theme_sync_service()->StopSyncing(syncer::THEMES_IOS);
+
+  // Expect a revert back to initial theme.
+  EXPECT_TRUE(observer_.on_background_changed_called);
+  ASSERT_TRUE(service_->GetCurrentColorTheme().has_value());
+  EXPECT_EQ(initial_theme, service_->GetCurrentColorTheme().value());
+}
+
+// Tests that `IsCurrentThemeSyncable()` prevents uploading custom user images.
+TEST_F(HomeBackgroundCustomizationServiceTest, DelegateIsThemeSyncable) {
+  CreateService();
+
+  // Default state is syncable.
+  EXPECT_TRUE(service_->IsCurrentThemeSyncable());
+
+  // Color themes are syncable.
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  EXPECT_TRUE(service_->IsCurrentThemeSyncable());
+
+  // User uploaded images are local-only and NOT syncable.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+
+  EXPECT_FALSE(service_->IsCurrentThemeSyncable());
+}
+
+// Tests that changing the theme locally automatically propagates the update
+// to the sync service.
+TEST_F(HomeBackgroundCustomizationServiceTest, LocalChangesTriggerSync) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kNTPBackgroundCustomization, syncer::kSyncThemesIos}, {});
+  CreateService();
+
+  syncer::FakeSyncChangeProcessor* processor = StartSyncing();
+  ASSERT_TRUE(processor);
+  EXPECT_EQ(0u, processor->changes().size());
+
+  // Make a local change.
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xabcdef);
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+
+  // Verify that the change was successfully sent out to Sync.
+  const syncer::SyncChangeList& changes = processor->changes();
+  ASSERT_EQ(1u, changes.size());
+
+  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, changes[0].change_type());
+
+  EXPECT_TRUE(changes[0].sync_data().GetSpecifics().has_theme_ios());
+  EXPECT_EQ(
+      color_theme,
+      changes[0].sync_data().GetSpecifics().theme_ios().user_color_theme());
 }

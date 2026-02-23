@@ -51,7 +51,6 @@ class ThemeSyncableServiceIOS : public syncer::SyncableService {
     // respect enterprise policy when syncing themes.
   };
 
-  ThemeSyncableServiceIOS();
   explicit ThemeSyncableServiceIOS(Delegate* delegate);
   ThemeSyncableServiceIOS(const ThemeSyncableServiceIOS&) = delete;
   ThemeSyncableServiceIOS& operator=(const ThemeSyncableServiceIOS&) = delete;

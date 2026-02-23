@@ -19,13 +19,13 @@
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios.h"
 #import "third_party/skia/include/core/SkColor.h"
 
 class GURL;
 class HomeBackgroundCustomizationServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
-class ThemeSyncableServiceIOS;
 class UserUploadedImageManager;
 
 namespace syncer {
@@ -121,7 +121,9 @@ bool operator==(const sync_pb::ThemeIosSpecifics& lhs,
 }  // namespace sync_pb
 
 // Service for allowing customization of the Home surface background.
-class HomeBackgroundCustomizationService : public KeyedService {
+class HomeBackgroundCustomizationService
+    : public KeyedService,
+      public ThemeSyncableServiceIOS::Delegate {
  public:
   explicit HomeBackgroundCustomizationService(
       PrefService* pref_service,
@@ -137,6 +139,13 @@ class HomeBackgroundCustomizationService : public KeyedService {
 
   // KeyedService implementation:
   void Shutdown() override;
+
+  // `ThemeSyncableServiceIOS::Delegate` overrides.
+  sync_pb::ThemeIosSpecifics GetCurrentTheme() const override;
+  void ApplyTheme(const sync_pb::ThemeIosSpecifics& theme) override;
+  void CacheLocalTheme() override;
+  void RestoreCachedTheme() override;
+  bool IsCurrentThemeSyncable() const override;
 
   // Returns the current custom background data, if there is one.
   std::optional<HomeCustomBackground> GetCurrentCustomBackground();

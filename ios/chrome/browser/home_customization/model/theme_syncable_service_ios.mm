@@ -31,8 +31,6 @@ constexpr char kSyncEntityTitle[] = "Current iOS Theme";
 
 }  // namespace
 
-ThemeSyncableServiceIOS::ThemeSyncableServiceIOS() : delegate_(nullptr) {}
-
 ThemeSyncableServiceIOS::ThemeSyncableServiceIOS(Delegate* delegate)
     : delegate_(delegate) {
   CHECK(delegate_);
@@ -51,10 +49,6 @@ void ThemeSyncableServiceIOS::WaitUntilReadyToSync(base::OnceClosure done) {
 void ThemeSyncableServiceIOS::WillStartInitialSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!delegate_) {
-    return;
-  }
-
   // Save the pre-sync local theme so it can be restored if the user signs out.
   delegate_->CacheLocalTheme();
 }
@@ -68,11 +62,6 @@ std::optional<ModelError> ThemeSyncableServiceIOS::MergeDataAndStartSyncing(
   CHECK_EQ(type, syncer::THEMES_IOS);
 
   sync_processor_ = std::move(sync_processor);
-
-  if (!delegate_) {
-    return ModelError(FROM_HERE,
-                      ModelError::Type::kThemeSyncableServiceNotStarted);
-  }
 
   if (initial_sync_data.size() > 1) {
     return ModelError(FROM_HERE, ModelError::Type::kThemeTooManySpecifics);
@@ -116,7 +105,7 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ProcessSyncChanges(
     const SyncChangeList& change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!delegate_ || !sync_processor_) {
+  if (!sync_processor_) {
     return ModelError(FROM_HERE,
                       ModelError::Type::kThemeSyncableServiceNotStarted);
   }
@@ -157,7 +146,7 @@ void ThemeSyncableServiceIOS::OnThemeChanged() {
     return;
   }
 
-  if (!delegate_ || !delegate_->IsCurrentThemeSyncable()) {
+  if (!delegate_->IsCurrentThemeSyncable()) {
     return;
   }
 
@@ -184,7 +173,7 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ValidateAndApplyRemoteTheme(
   // local-only custom background images.
   // TODO(crbug.com/485933379): Add `IsCurrentThemeManagedByPolicy()` to
   // respect enterprise policy when syncing themes.
-  if (!delegate_ || !delegate_->IsCurrentThemeSyncable() ||
+  if (!delegate_->IsCurrentThemeSyncable() ||
       home_customization::AreThemeIosSpecificsEquivalent(
           delegate_->GetCurrentTheme(), remote_theme)) {
     return std::nullopt;
@@ -200,9 +189,7 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ValidateAndApplyRemoteTheme(
 void ThemeSyncableServiceIOS::StopSyncingAndRevertToLocalTheme() {
   sync_processor_.reset();
 
-  if (delegate_) {
-    delegate_->RestoreCachedTheme();
-  }
+  delegate_->RestoreCachedTheme();
 }
 
 base::WeakPtr<syncer::SyncableService> ThemeSyncableServiceIOS::AsWeakPtr() {
