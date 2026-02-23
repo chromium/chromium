@@ -1989,6 +1989,17 @@ const char kChromeAppStoreUrl[] =
       FROM_HERE, std::move(animationCompletion));
 }
 
+// Starts the StoreKitCoordinator with the given productParameters.
+- (void)startStoreKitCoordinatorWithParameters:
+    (NSDictionary*)productParameters {
+  self.storeKitCoordinator = [[StoreKitCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.storeKitCoordinator.delegate = self;
+  self.storeKitCoordinator.iTunesProductParameters = productParameters;
+  [self.storeKitCoordinator start];
+}
+
 #pragma mark - ActivityServiceCommands
 
 - (void)stopAndStartSharingCoordinatorFromView:(UIView*)shareButton {
@@ -4170,12 +4181,22 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - WebContentCommands
 
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
-  self.storeKitCoordinator = [[StoreKitCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.storeKitCoordinator.delegate = self;
-  self.storeKitCoordinator.iTunesProductParameters = productParameters;
-  [self.storeKitCoordinator start];
+  // TODO (crbug.com/486139801): Start the StoreKitCoordinator with
+  // clearPresentedState regardless of whether the ComposeBox feature is
+  // enabled. This was originally restricted to the feature flag to ensure a
+  // safer cherry-pick.
+  if (IsComposeboxIOSEnabled()) {
+    __weak __typeof(self) weakSelf = self;
+
+    // Properly start the StoreKitCoordinator in a clean presented state.
+    [self
+        clearPresentedStateWithCompletion:^{
+          [weakSelf startStoreKitCoordinatorWithParameters:productParameters];
+        }
+                           dismissOmnibox:YES];
+  } else {
+    [self startStoreKitCoordinatorWithParameters:productParameters];
+  }
 }
 
 - (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes {
