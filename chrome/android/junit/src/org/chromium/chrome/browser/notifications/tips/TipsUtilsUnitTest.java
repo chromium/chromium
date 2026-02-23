@@ -37,7 +37,9 @@ public class TipsUtilsUnitTest {
     public void testGetFeatureTipPromoDataForType_EnhancedSafeBrowsing() {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
-                        mActivity, TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
+                        mActivity,
+                        TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING,
+                        /* isUserSignedIn= */ false);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text),
                 promoData.positiveButtonText);
@@ -66,7 +68,9 @@ public class TipsUtilsUnitTest {
     public void testGetFeatureTipPromoDataForType_QuickDelete() {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
-                        mActivity, TipsNotificationsFeatureType.QUICK_DELETE);
+                        mActivity,
+                        TipsNotificationsFeatureType.QUICK_DELETE,
+                        /* isUserSignedIn= */ false);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text),
                 promoData.positiveButtonText);
@@ -95,7 +99,9 @@ public class TipsUtilsUnitTest {
     public void testGetFeatureTipPromoDataForType_GoogleLens() {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
-                        mActivity, TipsNotificationsFeatureType.GOOGLE_LENS);
+                        mActivity,
+                        TipsNotificationsFeatureType.GOOGLE_LENS,
+                        /* isUserSignedIn= */ false);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_lens),
                 promoData.positiveButtonText);
@@ -124,7 +130,9 @@ public class TipsUtilsUnitTest {
     public void testGetFeatureTipPromoDataForType_BottomOmnibox() {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
-                        mActivity, TipsNotificationsFeatureType.BOTTOM_OMNIBOX);
+                        mActivity,
+                        TipsNotificationsFeatureType.BOTTOM_OMNIBOX,
+                        /* isUserSignedIn= */ false);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text),
                 promoData.positiveButtonText);
@@ -153,7 +161,9 @@ public class TipsUtilsUnitTest {
     public void testGetFeatureTipPromoDataForType_PasswordAutofill() {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
-                        mActivity, TipsNotificationsFeatureType.PASSWORD_AUTOFILL);
+                        mActivity,
+                        TipsNotificationsFeatureType.PASSWORD_AUTOFILL,
+                        /* isUserSignedIn= */ false);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_noop),
                 promoData.positiveButtonText);
@@ -182,7 +192,9 @@ public class TipsUtilsUnitTest {
     public void testGetFeatureTipPromoDataForType_Signin() {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
-                        mActivity, TipsNotificationsFeatureType.SIGNIN);
+                        mActivity,
+                        TipsNotificationsFeatureType.SIGNIN,
+                        /* isUserSignedIn= */ false);
         assertEquals(
                 mActivity.getString(R.string.signin_promo_signin), promoData.positiveButtonText);
         assertEquals(
@@ -203,6 +215,20 @@ public class TipsUtilsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_signin),
                 promoData.detailPageTitle);
+    }
+
+    @SmallTest
+    @Test
+    public void testGetFeatureTipPromoDataForType_Signin_UserAlreadySignedIn() {
+        FeatureTipPromoData promoData =
+                TipsUtils.getFeatureTipPromoDataForType(
+                        mActivity, TipsNotificationsFeatureType.SIGNIN, /* isUserSignedIn= */ true);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_noop),
+                promoData.positiveButtonText);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_signin_signed_in),
+                promoData.mainPageTitle);
     }
 
     @SmallTest

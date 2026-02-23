@@ -44,13 +44,17 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.TipsPromoSheetContent;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -70,6 +74,8 @@ public class TipsPromoCoordinatorUnitTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LensController mLensController;
+    @Mock private Profile mProfile;
+    @Mock private IdentityManager mIdentityManagerMock;
 
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
@@ -84,6 +90,8 @@ public class TipsPromoCoordinatorUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
         mTipsPromoCoordinator =
                 new TipsPromoCoordinator(
                         mActivity,
@@ -92,6 +100,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mSigninCoordinator,
                         mWindowAndroid,
                         /* isIncognito= */ false,
+                        mProfile,
                         TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
@@ -400,6 +409,26 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SmallTest
+    @Test
+    public void testShowBottomSheet_Signin_UserAlreadySignedIn() {
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+
+        setUpTipsPromoCoordinator(TipsNotificationsFeatureType.SIGNIN);
+        mTipsPromoCoordinator.showBottomSheet();
+        assertNotNull(((ImageView) mView.findViewById(R.id.main_page_logo)).getDrawable());
+
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        assertEquals(View.GONE, mView.findViewById(R.id.tips_promo_details_button).getVisibility());
+        assertEquals(
+                View.GONE, mView.findViewById(R.id.main_page_description_text).getVisibility());
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        mView.findViewById(R.id.tips_promo_settings_button).performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+    }
+
     @Test
     public void testSheetContent_handleBackPressDetailScreen() {
         HistogramWatcher histogramWatcher =
@@ -504,6 +533,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mSigninCoordinator,
                         mWindowAndroid,
                         /* isIncognito= */ false,
+                        mProfile,
                         featureType);
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
         mView = mTipsPromoCoordinator.getViewForTesting();

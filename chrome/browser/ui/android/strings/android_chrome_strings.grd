@@ -7520,6 +7520,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN" desc="Title of the Sign in feature tip main page promo. [CHAR_LIMIT=32]">
         Sign in to Chrome
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN_SIGNED_IN" desc="Title of the Sign in feature tip main page promo when the user is already signed in. [CHAR_LIMIT=32]">
+        You\u2019re already signed in
+      </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_SIGNIN" desc="Description of the Sign in feature tip main page promo.">
         Sign in to easily continue on all your devices
       </message>

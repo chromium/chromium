@@ -2764,6 +2764,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                             SigninAccessPoint.SET_UP_LIST),
                                     getWindowAndroid(),
                                     getCurrentTabModel().isIncognito(),
+                                    getProfileProviderSupplier().get().getOriginalProfile(),
                                     fromTipsNotifications);
                     mTipsPromoCoordinator.showBottomSheet();
                 }

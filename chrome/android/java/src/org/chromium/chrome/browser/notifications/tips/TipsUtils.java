@@ -80,9 +80,12 @@ public class TipsUtils {
      *
      * @param context The Android {@link Context}.
      * @param featureType The {@link TipsNotificationsFeatureType} to show a promo for.
+     * @param isUserSignedIn Whether the user is signed in, used for the Sign-in feature promo.
      */
     public static FeatureTipPromoData getFeatureTipPromoDataForType(
-            Context context, @TipsNotificationsFeatureType int featureType) {
+            Context context,
+            @TipsNotificationsFeatureType int featureType,
+            boolean isUserSignedIn) {
         final @StringRes int positiveButtonTextRes;
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
@@ -168,8 +171,14 @@ public class TipsUtils {
                                 R.string.tips_promo_bottom_sheet_third_step_password_autofill));
                 break;
             case TipsNotificationsFeatureType.SIGNIN:
-                positiveButtonTextRes = R.string.signin_promo_signin;
-                mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_signin;
+                positiveButtonTextRes =
+                        isUserSignedIn
+                                ? R.string.tips_promo_bottom_sheet_positive_button_text_noop
+                                : R.string.signin_promo_signin;
+                mainPageTitleRes =
+                        isUserSignedIn
+                                ? R.string.tips_promo_bottom_sheet_title_signin_signed_in
+                                : R.string.tips_promo_bottom_sheet_title_signin;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_signin;
                 mainPageLogoViewRes = R.drawable.tips_promo_signin_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_signin;
