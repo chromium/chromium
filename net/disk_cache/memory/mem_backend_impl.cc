@@ -9,8 +9,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
@@ -25,8 +27,26 @@ namespace disk_cache {
 
 namespace {
 
-const int kDefaultInMemoryCacheSize = 10 * 1024 * 1024;
-const int kDefaultEvictionSize = kDefaultInMemoryCacheSize / 10;
+const int32_t kDefaultInMemoryCacheSize = 10 * 1024 * 1024;
+const int32_t kMaxMemoryCacheSize = kDefaultInMemoryCacheSize * 5;
+
+int32_t CalculateDefaultMaxSize() {
+  // The default max size is based on amount of physical memory of the machine.
+
+  base::ByteSize total_memory = base::SysInfo::AmountOfTotalPhysicalMemory();
+  if (total_memory.is_zero()) {
+    return kDefaultInMemoryCacheSize;
+  }
+
+  // We want to use up to 2% of the computer's memory, with a limit of 50 MB,
+  // reached on system with more than 2.5 GB of RAM.
+  if (total_memory >= base::MiBU(2500)) {
+    return kMaxMemoryCacheSize;
+  }
+
+  base::ByteSize max_size = total_memory * 2 / 100;
+  return base::checked_cast<int32_t>(max_size.InBytes());
+}
 
 // Returns the next entry after |node| in |lru_list| that's not a child
 // of |node|.  This is useful when dooming, since dooming a parent entry
@@ -64,47 +84,17 @@ MemBackendImpl::~MemBackendImpl() {
 std::unique_ptr<MemBackendImpl> MemBackendImpl::CreateBackend(
     int64_t max_bytes,
     net::NetLog* net_log) {
-  std::unique_ptr<MemBackendImpl> cache(
-      std::make_unique<MemBackendImpl>(net_log));
-  if (cache->SetMaxSize(max_bytes) && cache->Init())
-    return cache;
-
-  LOG(ERROR) << "Unable to create cache";
-  return nullptr;
-}
-
-bool MemBackendImpl::Init() {
-  if (max_size_)
-    return true;
-
-  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory().InBytes();
-
-  if (total_memory == 0) {
-    max_size_ = kDefaultInMemoryCacheSize;
-    return true;
+  if (max_bytes < 0 || max_bytes > std::numeric_limits<int32_t>::max()) {
+    LOG(ERROR) << "Unable to create cache";
+    return nullptr;
   }
 
-  // We want to use up to 2% of the computer's memory, with a limit of 50 MB,
-  // reached on system with more than 2.5 GB of RAM.
-  total_memory = total_memory * 2 / 100;
-  if (total_memory > static_cast<uint64_t>(kDefaultInMemoryCacheSize) * 5)
-    max_size_ = kDefaultInMemoryCacheSize * 5;
-  else
-    max_size_ = static_cast<int32_t>(total_memory);
+  auto cache = std::make_unique<MemBackendImpl>(net_log);
 
-  return true;
-}
+  // `max_bytes` is guaranteed to fit because of the check above.
+  cache->Init(base::checked_cast<int32_t>(max_bytes));
 
-bool MemBackendImpl::SetMaxSize(int64_t max_bytes) {
-  if (max_bytes < 0 || max_bytes > std::numeric_limits<int>::max())
-    return false;
-
-  // Zero size means use the default.
-  if (!max_bytes)
-    return true;
-
-  max_size_ = max_bytes;
-  return true;
+  return cache;
 }
 
 int64_t MemBackendImpl::MaxFileSize() const {
@@ -135,7 +125,7 @@ void MemBackendImpl::ModifyStorageSize(int32_t delta) {
 }
 
 bool MemBackendImpl::HasExceededStorageSize() const {
-  return current_size_ > max_size_;
+  return current_size_ > current_max_size_;
 }
 
 void MemBackendImpl::SetPostCleanupCallback(base::OnceClosure cb) {
@@ -319,10 +309,18 @@ void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
     it->second->UpdateStateOnUse();
 }
 
+void MemBackendImpl::Init(int32_t max_bytes) {
+  max_size_ = max_bytes ? max_bytes : CalculateDefaultMaxSize();
+  current_max_size_ = max_size_;
+}
+
 void MemBackendImpl::EvictIfNeeded() {
-  if (current_size_ <= max_size_)
+  if (current_size_ <= current_max_size_) {
     return;
-  int target_size = std::max(0, max_size_ - kDefaultEvictionSize);
+  }
+  // Evict 10% more than necessary to avoid evicting on every insertion when the
+  // cache is full.
+  int target_size = current_max_size_ - (current_max_size_ / 10);
   EvictTill(target_size);
 }
 
@@ -341,14 +339,16 @@ void MemBackendImpl::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
+      current_max_size_ = max_size_;
       break;
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      EvictTill(max_size_ / 2);
+      current_max_size_ = max_size_ / 2;
       break;
     case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      EvictTill(max_size_ / 10);
+      current_max_size_ = max_size_ / 10;
       break;
   }
+  EvictTill(current_max_size_);
 }
 
 }  // namespace disk_cache

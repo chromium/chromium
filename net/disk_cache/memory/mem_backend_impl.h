@@ -57,9 +57,6 @@ class NET_EXPORT_PRIVATE MemBackendImpl final
   static std::unique_ptr<MemBackendImpl> CreateBackend(int64_t max_bytes,
                                                        net::NetLog* net_log);
 
-  // Performs general initialization for this current instance of the cache.
-  bool Init();
-
   // Returns the maximum size for a file to reside on the cache.
   int64_t MaxFileSize() const override;
 
@@ -133,8 +130,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final
   using EntryMap =
       std::unordered_map<std::string, raw_ptr<MemEntryImpl, CtnExperimental>>;
 
-  // Sets the maximum size for the total amount of data stored by this instance.
-  bool SetMaxSize(int64_t max_bytes);
+  // Performs general initialization for this current instance of the cache.
+  void Init(int32_t max_bytes);
 
   // Deletes entries from the cache until the current size is below the limit.
   void EvictIfNeeded();
@@ -154,7 +151,12 @@ class NET_EXPORT_PRIVATE MemBackendImpl final
   // most recently used.
   base::LinkedList<MemEntryImpl> lru_list_;
 
-  int32_t max_size_ = 0;  // Maximum data size for this instance.
+  // Maximum data size for this instance, assuming no memory pressure.
+  int32_t max_size_ = 0;
+
+  // Current maximum data size for this instance, based on memory pressure.
+  int32_t current_max_size_ = 0;
+
   int32_t current_size_ = 0;
 
   raw_ptr<net::NetLog> net_log_;
