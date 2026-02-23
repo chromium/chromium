@@ -191,8 +191,7 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert no files.
     assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
-    searchboxHandler.setPromiseResolveFor(ADD_FILE_CONTEXT_FN,
-                                  {token: token});
+    searchboxHandler.setPromiseResolveFor(ADD_FILE_CONTEXT_FN, token);
 
     // Act.
     const dataTransfer = new DataTransfer();
@@ -232,8 +231,7 @@ suite('NewTabPageComposeboxTest', () => {
     loadTimeData.overrideValues({composeboxShowSubmit: true});
     createComposeboxElement();
     searchboxHandler.setPromiseResolveFor(
-        ADD_FILE_CONTEXT_FN,
-        {token: {low: BigInt(1), high: BigInt(2)}});
+        ADD_FILE_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
     // Check submit button disabled.
     assertStyle(composeboxElement.$.submitContainer, 'cursor', 'not-allowed');
@@ -515,8 +513,7 @@ suite('NewTabPageComposeboxTest', () => {
   test('upload pdf', async () => {
     createComposeboxElement();
     searchboxHandler.setPromiseResolveFor(
-        ADD_FILE_CONTEXT_FN,
-        {token: {low: BigInt(1), high: BigInt(2)}});
+        ADD_FILE_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
     // Assert no files.
     assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
@@ -565,8 +562,7 @@ suite('NewTabPageComposeboxTest', () => {
     let i = 0;
     searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
       i += 1;
-      return Promise.resolve(
-          {token: {low: BigInt(i + 1), high: BigInt(i + 2)}});
+      return Promise.resolve({low: BigInt(i + 1), high: BigInt(i + 2)});
     });
 
     // Arrange.
@@ -2335,7 +2331,7 @@ suite('NewTabPageComposeboxTest', () => {
     let i = 0;
     searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
       i++;
-      return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+      return Promise.resolve({low: BigInt(i), high: BigInt(0)});
     });
 
     const validFiles = Array.from({length: 6}, (_, i) =>
@@ -2444,7 +2440,7 @@ suite('NewTabPageComposeboxTest', () => {
         let i = 0;
         searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
           i++;
-          return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+          return Promise.resolve({low: BigInt(i), high: BigInt(0)});
         });
 
         const validFile = new File(['foo'], 'image.png', {type: 'image/png'});
@@ -2850,6 +2846,32 @@ suite('NewTabPageComposeboxTest', () => {
 
       // Assert callback was not called and no files in carousel.
       assertFalse(contextAdded);
+      assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
+    });
+
+    test('add file context fails', async () => {
+      loadTimeData.overrideValues({composeboxShowPdfUpload: true});
+      createComposeboxElement();
+      // Set the promise to reject to simulate a failure.
+      searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+        return Promise.reject(new Error('fail'));
+      });
+
+      // Assert no files.
+      assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
+
+      // Act.
+      const dataTransfer = new DataTransfer();
+      const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+      dataTransfer.items.add(file);
+      composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
+      composeboxElement.$.context.$.fileInput.dispatchEvent(
+          new Event('change'));
+
+      await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
+      await microtasksFinished();
+
+      // Assert no files in carousel.
       assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
     });
 

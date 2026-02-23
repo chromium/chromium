@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_POPUP_FILE_SELECTOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -58,7 +60,8 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
       std::string image_data_url,
       std::string file_name,
       std::string mime_string,
-      const std::optional<base::UnguessableToken>& file_token);
+      base::expected<base::UnguessableToken,
+                     contextual_search::FileUploadErrorType> result);
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;

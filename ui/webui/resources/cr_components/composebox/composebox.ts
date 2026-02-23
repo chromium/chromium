@@ -700,17 +700,20 @@ export class ComposeboxElement extends I18nMixinLit
       const fileBuffer = await file.arrayBuffer();
       const bigBuffer:
           BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
-      const {token} = await this.searchboxHandler_.addFileContext(
-          {
-            fileName: file.name,
-            imageDataUrl: null,
-            mimeType: file.type,
-            isDeletable: true,
-            selectionTime: new Date(),
-          },
-          bigBuffer);
-
-      if (!token) {
+      let token: UnguessableToken;
+      try {
+        token = await this.searchboxHandler_.addFileContext(
+            {
+              fileName: file.name,
+              imageDataUrl: null,
+              mimeType: file.type,
+              isDeletable: true,
+              selectionTime: new Date(),
+            },
+            bigBuffer);
+      } catch (e) {
+        // TODO(crbug.com/484429365): Notify the user the reason for the context
+        // upload failure.
         continue;
       }
 

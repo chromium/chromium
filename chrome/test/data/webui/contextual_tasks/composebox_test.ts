@@ -189,7 +189,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     mockSearchboxPageHandler.resetResolver(ADD_FILE_CONTEXT_FN);
     mockSearchboxPageHandler.setResultFor(
-        ADD_FILE_CONTEXT_FN, Promise.resolve({token: token}));
+        ADD_FILE_CONTEXT_FN, Promise.resolve(token));
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(file);
 

@@ -1697,11 +1697,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
       callback;
   std::optional<base::UnguessableToken> current_token;
   base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        current_token = token;
-        run_loop.Quit();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    current_token = result.value();
+    run_loop.Quit();
+  });
 
   handler_->AddFileContext(std::move(file_info), std::move(file_bytes),
                            callback.Get());
@@ -1797,11 +1797,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::vector<uint8_t> data = {0x1, 0x2};
 
   base::RunLoop run_loop;
-  EXPECT_CALL(file_cb, Run(testing::_))
-      .WillOnce([&](const std::optional<base::UnguessableToken>& token) {
-        file_token_opt = token;
-        run_loop.Quit();
-      });
+  EXPECT_CALL(file_cb, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    file_token_opt = result.value();
+    run_loop.Quit();
+  });
 
   handler_->AddFileContext(std::move(file_info), mojo_base::BigBuffer(data),
                            file_cb.Get());
@@ -2365,14 +2365,17 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
 
   base::MockCallback<ContextualTasksComposeboxHandler::AddFileContextCallback>
       callback;
-  std::optional<base::UnguessableToken> token;
+  base::expected<base::UnguessableToken, contextual_search::FileUploadErrorType>
+      result;
 
-  EXPECT_CALL(callback, Run(testing::_)).WillOnce(testing::SaveArg<0>(&token));
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce(testing::SaveArg<0>(&result));
 
   handler->AddFileContext(std::move(file_info), std::move(file_bytes),
                           callback.Get());
 
-  EXPECT_FALSE(token.has_value());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            contextual_search::FileUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
