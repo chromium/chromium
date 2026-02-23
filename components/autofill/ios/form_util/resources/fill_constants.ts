@@ -81,7 +81,7 @@ export const RENDERER_ID_NOT_SET = '0';
 /**
  Name of the html attribute used for storing stable unique form and field IDs.
  */
-export const UNIQUE_ID_ATTRIBUTE = '__gChrome_uniqueID';
+export const UNIQUE_ID_ATTRIBUTE = '__gCrUniqueID';
 
 /**
  * The JS Symbol object used to set stable unique form and field IDs.
@@ -93,5 +93,4 @@ export const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
  a child frame. Stored as an attribute of the iframe html element hosting the
  child frame.
  */
-export const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE =
-    '__gChrome_childFrameRemoteToken';
+export const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE = '__gCrChildFrameRemoteToken';

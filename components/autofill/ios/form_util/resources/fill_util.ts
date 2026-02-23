@@ -72,7 +72,7 @@ export declare interface FrameTokenWithPredecessor {
  Name of the html attribute used for storing the remote frame token assigned to
  the current html document.
  */
-const REMOTE_FRAME_TOKEN_ATTRIBUTE = '__gChrome_remoteFrameToken';
+const REMOTE_FRAME_TOKEN_ATTRIBUTE = '__gCrRemoteFrameToken';
 
 /**
  * Acquires the specified DOM `attribute` from the DOM `element` and returns

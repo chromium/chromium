@@ -74,7 +74,7 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
     __block bool done = false;
     __block std::string remote_frame_token;
     frame->ExecuteJavaScript(
-        u"document.documentElement.getAttribute('__gChrome_remoteFrameToken')",
+        u"document.documentElement.getAttribute('__gCrRemoteFrameToken')",
         base::BindOnce(^(const base::Value* result) {
           if (result && result->is_string()) {
             remote_frame_token = result->GetString();

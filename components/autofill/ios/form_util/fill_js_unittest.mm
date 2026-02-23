@@ -356,7 +356,7 @@ TEST_F(FillJsTest, GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
     SCOPED_TRACE(testing::Message() << "invalid_id = " << invalid_id);
     NSString* set_invalid_id_script = [NSString
         stringWithFormat:@"var form = document.getElementById('form');"
-                          "form.setAttribute('__gChrome_uniqueID', %@);",
+                          "form.setAttribute('__gCrUniqueID', %@);",
                          invalid_id];
 
     // Make the renderer ID invalid. The DOM is shared across content
