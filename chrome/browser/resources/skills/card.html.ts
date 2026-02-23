@@ -16,6 +16,10 @@ export function getHtml(this: SkillCardElement) {
     <div id="infoContainer">
       <div id="icon">${this.skill.icon}</div>
       <div id="name">${this.skill.name}</div>
+      <cr-tooltip for="infoContainer" position="bottom" offset="0"
+          fit-to-visible-bounds>
+        ${this.skill.name}
+      </cr-tooltip>
     </div>
     <!-- Only show the menu button for user-created skills. -->
     ${this.isDiscoverCard_() ? html`` : html`
