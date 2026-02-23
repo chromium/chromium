@@ -693,6 +693,8 @@ TEST_F(PageContentProtoUtilTest, ConvertIframeData) {
   frame_data->frame_interaction_info->selection->end_dom_node_id = 2;
   frame_data->frame_interaction_info->selection->start_offset = 3;
   frame_data->frame_interaction_info->selection->end_offset = 4;
+  frame_data->frame_interaction_info->focused_dom_node_id = 1;
+  frame_data->frame_interaction_info->accessibility_focused_dom_node_id = 2;
   iframe_data->content =
       blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
           std::move(frame_data));
@@ -757,6 +759,8 @@ TEST_F(PageContentProtoUtilTest, ConvertIframeData) {
   EXPECT_EQ(selection.end_node_id(), 2);
   EXPECT_EQ(selection.start_offset(), 3);
   EXPECT_EQ(selection.end_offset(), 4);
+  EXPECT_EQ(frame_interaction_info.focused_node_id(), 1);
+  EXPECT_EQ(frame_interaction_info.accessibility_focused_node_id(), 2);
 
   EXPECT_FALSE(page_content.proto.main_frame_data().has_media_data());
   EXPECT_TRUE(proto_iframe_data.frame_data().has_media_data());
@@ -800,10 +804,9 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_Default) {
       gfx::Rect(111, 121, 131, 141);
   root_content->root_node->children_nodes.emplace_back(std::move(text_node2));
 
-  root_content->page_interaction_info =
-      blink::mojom::AIPageContentPageInteractionInfo::New();
-  root_content->page_interaction_info->focused_dom_node_id = 1;
-  root_content->page_interaction_info->accessibility_focused_dom_node_id = 1;
+  root_content->frame_data->frame_interaction_info->focused_dom_node_id = 1;
+  root_content->frame_data->frame_interaction_info
+      ->accessibility_focused_dom_node_id = 1;
 
   AIPageContentResult page_content;
   EXPECT_TRUE(
@@ -885,6 +888,115 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_ActionableElements) {
   EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
 }
 
+TEST_F(PageContentProtoUtilTest, ConvertGeometryInIframe) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  root_content->root_node->children_nodes.emplace_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe));
+
+  auto iframe_token = CreateFrameToken();
+  auto iframe_data = blink::mojom::AIPageContentIframeData::New();
+  iframe_data->frame_token = iframe_token.frame_token;
+  auto frame_data = blink::mojom::AIPageContentFrameData::New();
+  frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  frame_data->frame_interaction_info->focused_dom_node_id = 1;
+  frame_data->frame_interaction_info->accessibility_focused_dom_node_id = 1;
+  iframe_data->content =
+      blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
+          std::move(frame_data));
+
+  auto& iframe_node = root_content->root_node->children_nodes.back();
+  iframe_node->content_attributes->iframe_data = std::move(iframe_data);
+
+  auto text_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
+  text_node->content_attributes->dom_node_id = 1;
+  text_node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  text_node->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(10, 20, 30, 40);
+  text_node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(11, 21, 31, 41);
+  iframe_node->children_nodes.emplace_back(std::move(text_node));
+
+  auto text_node2 =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
+  text_node2->content_attributes->dom_node_id = 2;
+  text_node2->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  text_node2->content_attributes->geometry->outer_bounding_box =
+      gfx::Rect(110, 120, 130, 140);
+  text_node2->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(111, 121, 131, 141);
+  iframe_node->children_nodes.emplace_back(std::move(text_node2));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  std::optional<blink::FrameToken> query_token;
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int child_process_id,
+          blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        query_token = token;
+        RenderFrameInfo render_frame_info;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
+        } else {
+          render_frame_info.global_frame_token = iframe_token;
+          render_frame_info.media_data = CreateMediaData();
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token =
+            main_frame_token.frame_token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  auto result = ConvertAIPageContentToProto(
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, frame_token_set, page_content);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(query_token.has_value());
+  EXPECT_EQ(iframe_token.frame_token, *query_token);
+
+  EXPECT_EQ(page_content.proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& proto_iframe_node =
+      page_content.proto.root_node().children_nodes(0);
+  ASSERT_EQ(proto_iframe_node.children_nodes_size(), 2);
+  EXPECT_EQ(
+      proto_iframe_node.children_nodes(0).content_attributes().attribute_type(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  const auto& geometry =
+      proto_iframe_node.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(geometry.outer_bounding_box().x(), 10);
+  EXPECT_EQ(geometry.outer_bounding_box().y(), 20);
+  EXPECT_EQ(geometry.outer_bounding_box().width(), 30);
+  EXPECT_EQ(geometry.outer_bounding_box().height(), 40);
+  EXPECT_EQ(geometry.visible_bounding_box().x(), 11);
+  EXPECT_EQ(geometry.visible_bounding_box().y(), 21);
+  EXPECT_EQ(geometry.visible_bounding_box().width(), 31);
+  EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
+
+  EXPECT_EQ(
+      proto_iframe_node.children_nodes(1).content_attributes().attribute_type(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  // When in non-actionable mode, geometry is only poluated for the
+  // accessibility focused node.
+  EXPECT_FALSE(
+      proto_iframe_node.children_nodes(1).content_attributes().has_geometry());
+}
+
 TEST_F(PageContentProtoUtilTest, ConvertPageInteractionInfo) {
   auto root_content = CreatePageContent();
   root_content->page_interaction_info =
@@ -923,6 +1035,8 @@ TEST_F(PageContentProtoUtilTest, ConvertMainFrameInteractionInfo) {
   frame_data->frame_interaction_info->selection->end_dom_node_id = 2u;
   frame_data->frame_interaction_info->selection->start_offset = 3u;
   frame_data->frame_interaction_info->selection->end_offset = 4u;
+  frame_data->frame_interaction_info->focused_dom_node_id = 1;
+  frame_data->frame_interaction_info->accessibility_focused_dom_node_id = 2;
 
   root_content->frame_data = std::move(frame_data);
 
@@ -940,6 +1054,8 @@ TEST_F(PageContentProtoUtilTest, ConvertMainFrameInteractionInfo) {
   EXPECT_EQ(selection.end_node_id(), 2);
   EXPECT_EQ(selection.start_offset(), 3);
   EXPECT_EQ(selection.end_offset(), 4);
+  EXPECT_EQ(frame_interaction_info.focused_node_id(), 1);
+  EXPECT_EQ(frame_interaction_info.accessibility_focused_node_id(), 2);
 }
 
 TEST_F(PageContentProtoUtilTest, ConvertAnnotatedRoles) {

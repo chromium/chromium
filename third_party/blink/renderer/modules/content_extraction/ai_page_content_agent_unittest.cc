@@ -3755,6 +3755,11 @@ TEST_F(AIPageContentAgentTest, Focus) {
   const auto& page_interaction_info = Content()->page_interaction_info;
   EXPECT_EQ(page_interaction_info->focused_dom_node_id,
             button.content_attributes->dom_node_id);
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  EXPECT_EQ(frame_interaction_info->focused_dom_node_id,
+            button.content_attributes->dom_node_id);
 }
 
 TEST_F(AIPageContentAgentTest, AccessibilityFocus) {
@@ -3804,6 +3809,11 @@ TEST_F(AIPageContentAgentTest, AccessibilityFocus) {
             button.content_attributes->dom_node_id);
   CheckGeometry(button, gfx::Rect(-20, -10, 30, 40), gfx::Rect(0, 0, 10, 30));
   EXPECT_FALSE(div2.content_attributes->geometry);
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  EXPECT_EQ(frame_interaction_info->accessibility_focused_dom_node_id,
+            button.content_attributes->dom_node_id);
 }
 
 TEST_F(AIPageContentAgentTest, MousePosition) {

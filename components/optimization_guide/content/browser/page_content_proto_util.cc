@@ -43,6 +43,9 @@ BASE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions,
 
 namespace {
 
+// This is the same as `kInvalidDOMNodeId` defined in blink.
+constexpr int kInvalidDOMNodeId = 0;
+
 std::optional<AutofillFieldMetadata> GetAutofillFieldData(
     std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
     ConvertAIPageContentToProtoSession& session,
@@ -336,6 +339,14 @@ void ConvertFrameInteractionInfo(
   if (mojom_frame_interaction_info.selection) {
     ConvertSelection(*mojom_frame_interaction_info.selection,
                      proto_frame_interaction_info->mutable_selection());
+  }
+  if (mojom_frame_interaction_info.focused_dom_node_id) {
+    proto_frame_interaction_info->set_focused_node_id(
+        *mojom_frame_interaction_info.focused_dom_node_id);
+  }
+  if (mojom_frame_interaction_info.accessibility_focused_dom_node_id) {
+    proto_frame_interaction_info->set_accessibility_focused_node_id(
+        *mojom_frame_interaction_info.accessibility_focused_dom_node_id);
   }
 }
 
@@ -902,13 +913,13 @@ void ConvertRedactedIframeData(
 }
 
 int GetAccessibilityFocusedNodeId(
-    const blink::mojom::AIPageContent& page_content) {
-  if (!page_content.page_interaction_info) {
-    return 0;
+    const blink::mojom::AIPageContentFrameData& frame_data) {
+  if (!frame_data.frame_interaction_info) {
+    return kInvalidDOMNodeId;
   }
 
-  return page_content.page_interaction_info->accessibility_focused_dom_node_id
-      .value_or(0);
+  return frame_data.frame_interaction_info->accessibility_focused_dom_node_id
+      .value_or(kInvalidDOMNodeId);
 }
 
 // Contains the information that remains the same throughout the tree
@@ -939,6 +950,9 @@ class Converter {
         proto_node->mutable_content_attributes()));
     MaybeAddSensitivePaymentData(mojom_attributes,
                                  proto_node->content_attributes());
+
+    int accessibility_focused_node_id_for_children =
+        accessibility_focused_node_id;
 
     std::optional<RenderFrameInfo> render_frame_info;
     if (mojom_attributes.attribute_type ==
@@ -996,21 +1010,17 @@ class Converter {
                   auto* proto_child_frame_node =
                       proto_node->add_children_nodes();
 
-                  int iframe_accessibility_focused_node_id =
-                      GetAccessibilityFocusedNodeId(*page_content);
-
                   if (page_content->frame_data &&
                       page_content->frame_data->popup) {
                     RETURN_IF_ERROR(ConvertPopup(
-                        *page_content->frame_data->popup, *render_frame_info,
-                        iframe_accessibility_focused_node_id));
+                        *page_content->frame_data->popup, *render_frame_info));
                   }
 
-                  RETURN_IF_ERROR(
-                      ConvertNode(render_frame_info->global_frame_token,
-                                  *page_content->root_node,
-                                  iframe_accessibility_focused_node_id,
-                                  proto_child_frame_node));
+                  RETURN_IF_ERROR(ConvertNode(
+                      render_frame_info->global_frame_token,
+                      *page_content->root_node,
+                      GetAccessibilityFocusedNodeId(*page_content->frame_data),
+                      proto_child_frame_node));
 
                   ConvertIframeData(*render_frame_info, iframe_data,
                                     /*mojom_local_frame_data=*/
@@ -1040,12 +1050,15 @@ class Converter {
                 iframe_data.content->get_local_frame_data()->popup) {
               RETURN_IF_ERROR(ConvertPopup(
                   *iframe_data.content->get_local_frame_data()->popup,
-                  *render_frame_info, accessibility_focused_node_id));
+                  *render_frame_info));
             }
             ConvertIframeData(*render_frame_info, iframe_data,
                               /*mojom_local_frame_data=*/
                               *iframe_data.content->get_local_frame_data(),
                               proto_iframe_data);
+            accessibility_focused_node_id_for_children =
+                GetAccessibilityFocusedNodeId(
+                    *iframe_data.content->get_local_frame_data());
             // Breaking instead of returning so we get to copy the child nodes.
             break;
           case blink::mojom::AIPageContentIframeContent::Tag::
@@ -1081,7 +1094,8 @@ class Converter {
     for (const auto& mojom_child : mojom_node.children_nodes) {
       auto* proto_child = proto_node->add_children_nodes();
       RETURN_IF_ERROR(ConvertNode(source_frame_for_children, *mojom_child,
-                                  accessibility_focused_node_id, proto_child));
+                                  accessibility_focused_node_id_for_children,
+                                  proto_child));
     }
 
     return base::ok();
@@ -1091,7 +1105,6 @@ class Converter {
   // so their traversal can be greatly simplified.
   base::expected<void, std::string> ConvertPopupNode(
       const blink::mojom::AIPageContentNode& mojom_node,
-      int accessibility_focused_node_id,
       optimization_guide::proto::ContentNode* proto_node) {
     const auto& mojom_attributes = *mojom_node.content_attributes;
     if (mojom_attributes.attribute_type ==
@@ -1101,15 +1114,16 @@ class Converter {
 
     RETURN_IF_ERROR(ConvertAttributes(
         std::nullopt, session_, mojom_attributes,
-        ShouldPopulateGeometry(mojom_attributes, accessibility_focused_node_id),
+        ShouldPopulateGeometry(
+            mojom_attributes,
+            /*accessibility_focused_node_id=*/kInvalidDOMNodeId),
         proto_node->mutable_content_attributes()));
     MaybeAddSensitivePaymentData(mojom_attributes,
                                  proto_node->content_attributes());
 
     for (const auto& mojom_child : mojom_node.children_nodes) {
       auto* proto_child = proto_node->add_children_nodes();
-      RETURN_IF_ERROR(ConvertPopupNode(
-          *mojom_child, accessibility_focused_node_id, proto_child));
+      RETURN_IF_ERROR(ConvertPopupNode(*mojom_child, proto_child));
     }
 
     return base::ok();
@@ -1117,8 +1131,7 @@ class Converter {
 
   base::expected<void, std::string> ConvertPopup(
       const blink::mojom::AIPageContentPopup& mojom_popup,
-      const RenderFrameInfo& opener_frame_info,
-      int accessibility_focused_node_id) {
+      const RenderFrameInfo& opener_frame_info) {
     if (!base::FeatureList::IsEnabled(
             blink::features::kAIPageContentIncludePopupWindows)) {
       return base::ok();
@@ -1129,7 +1142,6 @@ class Converter {
 
     // First, walk the popup's DOM tree to create proto::ContentNodes.
     RETURN_IF_ERROR(ConvertPopupNode(*mojom_popup.root_node,
-                                     accessibility_focused_node_id,
                                      popup_window->mutable_root_node()));
 
     // Set the document ID to the frame which opened the popup (might be wrong,
@@ -1311,12 +1323,9 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
                       page_content_result);
   converter.AddPasswordRedactionData(*main_frame_page_content);
 
-  int accessibility_focused_node_id =
-      GetAccessibilityFocusedNodeId(*main_frame_page_content);
-
   RETURN_IF_ERROR(converter.ConvertNode(
       main_frame_token, *main_frame_page_content->root_node,
-      accessibility_focused_node_id,
+      GetAccessibilityFocusedNodeId(*main_frame_page_content->frame_data),
       page_content_result.proto.mutable_root_node()));
 
   if (main_frame_page_content->page_interaction_info) {
@@ -1339,8 +1348,7 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
   // If the page had a popup open, provide that popup to APC as well.
   if (main_frame_page_content->frame_data->popup) {
     RETURN_IF_ERROR(converter.ConvertPopup(
-        *main_frame_page_content->frame_data->popup, *render_frame_info,
-        accessibility_focused_node_id));
+        *main_frame_page_content->frame_data->popup, *render_frame_info));
   }
 
   return base::ok();

@@ -478,17 +478,18 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
         render_frame_host->GetWeakDocumentPtr();
   }
 
+  content::RenderFrameHost* main_render_frame_host =
+      content::RenderFrameHost::FromFrameToken(main_frame_token);
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(main_render_frame_host);
+
   if (base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentWithAutofillAnnotations)) {
-    content::RenderFrameHost* render_frame_host =
-        content::RenderFrameHost::FromFrameToken(main_frame_token);
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
     if (auto* autofill_annotations_provider =
             AutofillAnnotationsProvider::GetFor(web_contents)) {
       AutofillAvailability autofill_availability =
           autofill_annotations_provider->GetAutofillAvailability(
-              *render_frame_host);
+              *main_render_frame_host);
       proto::AutofillInformation* autofill_information =
           page_content.proto.mutable_profile_information()
               ->mutable_autofill_information();
@@ -502,6 +503,22 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
       }
     }
   }
+
+  // Default to the main frame.
+  content::GlobalRenderFrameHostToken focued_frame_token = main_frame_token;
+  if (web_contents) {
+    if (const content::RenderFrameHost* focused_rfh =
+            web_contents->GetFocusedFrame()) {
+      focued_frame_token = focused_rfh->GetGlobalFrameToken();
+    }
+  }
+
+  std::optional<std::string> serialized_server_token =
+      DocumentIdentifierUserData::GetDocumentIdentifier(focued_frame_token);
+  CHECK(serialized_server_token);
+  page_content.proto.mutable_page_interaction_info()
+      ->mutable_focused_frame()
+      ->set_serialized_token(*serialized_server_token);
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},

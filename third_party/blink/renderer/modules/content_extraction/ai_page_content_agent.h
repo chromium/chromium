@@ -116,6 +116,7 @@ class MODULES_EXPORT AIPageContentAgent final
       bool is_aria_disabled = false;
       const ComputedStyle& document_style;
       int stack_depth = 0;
+      DOMNodeId accessibility_focused_node_id = kInvalidDOMNodeId;
     };
 
     bool actionable_mode() const {
@@ -154,7 +155,8 @@ class MODULES_EXPORT AIPageContentAgent final
         const LocalFrame& frame,
         Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
     void AddNodeGeometry(const LayoutObject& object,
-                         mojom::blink::AIPageContentAttributes& attributes);
+                         mojom::blink::AIPageContentAttributes& attributes,
+                         DOMNodeId accessibility_focused_node_id);
     void AddAnnotatedRoles(const LayoutObject& object,
                            Vector<mojom::blink::AIPageContentAnnotatedRole>&
                                annotated_roles) const;
@@ -190,7 +192,8 @@ class MODULES_EXPORT AIPageContentAgent final
 
     bool ShouldAddNodeGeometry(
         const LayoutObject& object,
-        const mojom::blink::AIPageContentAttributes& attributes) const;
+        const mojom::blink::AIPageContentAttributes& attributes,
+        DOMNodeId accessibility_focused_node_id) const;
 
     Vector<gfx::Rect> visible_bounding_box_for_passwords_;
 
@@ -198,10 +201,6 @@ class MODULES_EXPORT AIPageContentAgent final
     // produce a ContentNode.
     HashSet<DOMNodeId, IntWithZeroKeyHashTraits<DOMNodeId>>
         interactive_dom_node_ids_;
-
-    // If present, the node which is accessibility focused. This is used to
-    // determine which node to add geometry for in non-actionable mode.
-    DOMNodeId accessibility_focused_node_id_ = kInvalidDOMNodeId;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
     const AIPageContentAgent& agent_;

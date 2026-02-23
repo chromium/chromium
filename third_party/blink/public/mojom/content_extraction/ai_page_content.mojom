@@ -135,10 +135,16 @@ struct AIPageContentSelection {
 // the main frame and embedded iframes.
 struct AIPageContentPageInteractionInfo {
   // The DOMNodeId of the content node that is currently focused.
+  //
+  // TODO(crbug.com/415778689): Deprecate when consumers move to
+  // AIPageContentFrameInteractionInfo.focused_dom_node_id.
   int32? focused_dom_node_id;
 
   // The DOMNodeId of the content node that is currently focused by a
   // screen reader or other accessibility tool.
+  //
+  // TODO(crbug.com/415778689): Deprecate when consumers move to
+  // AIPageContentFrameInteractionInfo.accessibility_focused_dom_node_id.
   int32? accessibility_focused_dom_node_id;
 
   // The last known mouse position, in the page coordinate system.
@@ -148,6 +154,13 @@ struct AIPageContentPageInteractionInfo {
 struct AIPageContentFrameInteractionInfo {
   // The current selection.
   AIPageContentSelection? selection;
+
+  // The DOMNodeId of the content node that is currently focused.
+  int32? focused_dom_node_id;
+
+  // The DOMNodeId of the content node that is currently focused by a
+  // screen reader or other accessibility tool.
+  int32? accessibility_focused_dom_node_id;
 };
 
 // Provides the reasons which make an element clickable.

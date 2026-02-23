@@ -883,6 +883,48 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   EXPECT_EQ(selection.selected_text(), "text");
 }
 
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       Focus) {
+  LoadPage(https_server()->GetURL(
+               "a.com", base::StringPrintf(
+                            "/paragraph_iframe_partially_offscreen.html%s",
+                            QueryParam())),
+           nullptr);
+
+  content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* sub_rfh = content::ChildFrameAt(main_rfh, 0);
+  ASSERT_TRUE(sub_rfh);
+
+  // Paragraphs are not focusable by default, so we set tabIndex.
+  ASSERT_TRUE(content::ExecJs(sub_rfh,
+                              "const p = document.querySelector('p');"
+                              "p.tabIndex = 0;"
+                              "p.focus();"));
+
+  LoadData();
+
+  const auto& root_node = page_content().root_node();
+  ASSERT_GE(root_node.children_nodes().size(), 1u);
+  const auto& iframe_node = root_node.children_nodes()[0];
+  ASSERT_EQ(iframe_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  const auto& iframe_data =
+      iframe_node.content_attributes().iframe_data().frame_data();
+
+  const auto& page_interaction_info = page_content().page_interaction_info();
+  ASSERT_TRUE(page_interaction_info.has_focused_frame());
+  EXPECT_EQ(page_interaction_info.focused_frame().serialized_token(),
+            iframe_data.document_identifier().serialized_token());
+
+  const auto& frame_interaction_info = iframe_data.frame_interaction_info();
+  const auto& iframe_root = iframe_node.children_nodes()[0];
+  EXPECT_EQ(frame_interaction_info.focused_node_id(),
+            iframe_root.children_nodes()[0]
+                .content_attributes()
+                .common_ancestor_dom_node_id());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContentProtoProviderBrowserTestSiteIsolation,
                          testing::Bool());
