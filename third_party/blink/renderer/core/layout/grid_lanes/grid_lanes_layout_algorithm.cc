@@ -519,10 +519,16 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
-    const auto margins = ComputeMarginsFor(space, item_style, container_space);
-    const LayoutUnit fragment_size =
+
+    // Margins can affect the visual placement of the item, but should not cause
+    // the running position to move backwards. If the margin size is greater
+    // than the size of the fragment, we should clamp the fragment size to 0.
+    auto margins = ComputeMarginsFor(space, item_style, container_space);
+    LayoutUnit fragment_size =
         is_for_columns ? fragment.BlockSize() + margins.BlockSum()
                        : fragment.InlineSize() + margins.InlineSum();
+    const LayoutUnit fragment_stacking_axis_contribution =
+        fragment_size.ClampNegativeToZero();
 
     // If dense packing is set, we need to figure out if the item can possibly
     // fit into any previous track openings. If it can, then we need to adjust
@@ -535,8 +541,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       LayoutUnit updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
               start_offset,
-              /*item_stacking_axis_contribution=*/fragment_size +
-                  stacking_axis_gap,
+              /*item_stacking_axis_contribution=*/
+              fragment_stacking_axis_contribution + stacking_axis_gap,
               /*auto_placement_stacking_axis_offset=*/
               start_offset_in_stacking_axis, track_collection, grid_lanes_item);
 
@@ -625,8 +631,9 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // size of the item, the size of the opening in the stacking axis, and the
     // margin.
     if (!item_moved_to_earlier_opening) {
-      auto new_running_position =
-          start_offset_in_stacking_axis + stacking_axis_gap + fragment_size;
+      auto new_running_position = start_offset_in_stacking_axis +
+                                  stacking_axis_gap +
+                                  fragment_stacking_axis_contribution;
 
       // If dense packing is enabled, we need to input the maximum running
       // position of the tracks our items span so that we can account for any

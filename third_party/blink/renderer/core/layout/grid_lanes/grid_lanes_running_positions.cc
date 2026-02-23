@@ -189,9 +189,6 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
           TrackOpening(new_running_position, LayoutUnit::Max()));
       continue;
     }
-    // TODO(celestepan): Consider setting the running position of the track to
-    // be the maximum between the current and the new, depending on how
-    // https://github.com/w3c/csswg-drafts/issues/12918 resolves.
     last_track_opening.start_position = new_running_position;
   }
 }
