@@ -119,6 +119,25 @@ TEST_F(RecordingDataManagerImplTest, AddRecordingWithName) {
   EXPECT_EQ(recording->name(), "My Recording");
 }
 
+TEST_F(RecordingDataManagerImplTest, AddRecordingWithScreenshot) {
+  Recording r;
+  r.set_url("https://foo.com");
+  r.set_screenshot("fake_screenshot_data");
+
+  data_manager().AddRecording(r);
+
+  {
+    auto recording = data_manager().GetRecording("https://foo.com");
+    ASSERT_TRUE(recording.has_value());
+    EXPECT_EQ(recording->screenshot(), "fake_screenshot_data");
+  }
+
+  RecreateCache();
+  auto recording = data_manager().GetRecording("https://foo.com");
+  ASSERT_TRUE(recording.has_value());
+  EXPECT_EQ(recording->screenshot(), "fake_screenshot_data");
+}
+
 // Tests that RecordingDataManagerImpl handles a race condition in LevelDB:
 // TODO(crbug.com/483687781): Remove this test once the the issue fixed.
 TEST(RecordingDataManagerImplTest_LevelDbRaceCondition, AvoidDcheck) {

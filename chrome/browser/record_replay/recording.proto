@@ -62,4 +62,7 @@ message Recording {
 
   // A user-readable name for the recording.
   string name = 4;
+
+  // A screenshot of the page at the start of the recording, encoded as a JPEG.
+  optional bytes screenshot = 5;
 }

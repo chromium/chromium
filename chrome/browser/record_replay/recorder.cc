@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/record_replay/recording.pb.h"
 #include "chrome/common/record_replay/aliases.h"
@@ -72,6 +73,10 @@ void Recorder::AddAutofill(Selector element_selector,
 
 void Recorder::SetName(std::string name) {
   recording_.set_name(std::move(name));
+}
+
+void Recorder::SetScreenshot(base::span<const uint8_t> screenshot) {
+  recording_.set_screenshot(base::as_string_view(screenshot));
 }
 
 }  // namespace record_replay

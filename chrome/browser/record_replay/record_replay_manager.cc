@@ -67,6 +67,10 @@ void RecordReplayManager::StartRecording() {
                      base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
                          now, "yyyy-MM-dd")));
 
+  // TODO(crbug.com/485828286): Capture a screenshot of the `WebContents` and
+  // encode it as a JPEG before passing it to the recorder.
+  recorder_->SetScreenshot({});
+
   client_->GetDriverFactory().SetRecordForFutureDrivers(true);
   client_->GetDriverFactory().ForEachDriver(
       [](RecordReplayDriver& driver) { driver.StartRecording(); });
