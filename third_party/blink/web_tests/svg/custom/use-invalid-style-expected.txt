@@ -1,5 +1,4 @@
 This page contains the following errors:
-error on line 10 at column 7: Opening and ending tag mismatch: junk line 9 and svg
-
+error on line 10 at column 6: Unexpected closing tag: {http://www.w3.org/2000/svg}svg != {http://www.w3.org/2000/svg}junk
 Below is a rendering of the page up to the first error.
 This should not crash, but display an error document.
