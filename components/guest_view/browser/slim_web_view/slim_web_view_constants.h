@@ -12,6 +12,8 @@ extern const char kEventContentLoad[];
 extern const char kEventExit[];
 extern const char kEventLoadAbort[];
 extern const char kEventLoadCommit[];
+extern const char kEventLoadStart[];
+extern const char kEventLoadStop[];
 extern const char kEventNewWindow[];
 extern const char kEventSizeChanged[];
 extern const char kEventUnresponsive[];

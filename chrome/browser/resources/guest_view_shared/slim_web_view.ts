@@ -39,17 +39,20 @@ export class ExitEvent extends Event {
   }
 }
 
-
-export class LoadCommitEvent extends Event {
+export class LoadEvent extends Event {
   readonly url: string;
   readonly isTopLevel: boolean;
 
-  static factory(args: EventDict) {
-    return new LoadCommitEvent(args);
+  static loadCommitFactory(args: EventDict) {
+    return new LoadEvent('loadcommit', args);
   }
 
-  private constructor(args: EventDict) {
-    super('loadcommit', {
+  static loadStartFactory(args: EventDict) {
+    return new LoadEvent('loadstart', args);
+  }
+
+  protected constructor(type: string, args: EventDict) {
+    super(type, {
       bubbles: true,
       cancelable: false,
     });
@@ -58,9 +61,7 @@ export class LoadCommitEvent extends Event {
   }
 }
 
-export class LoadAbortEvent extends Event {
-  readonly url: string;
-  readonly isTopLevel: boolean;
+export class LoadAbortEvent extends LoadEvent {
   readonly code: number;
   readonly reason: string;
 
@@ -69,12 +70,7 @@ export class LoadAbortEvent extends Event {
   }
 
   private constructor(args: EventDict) {
-    super('loadabort', {
-      bubbles: true,
-      cancelable: false,
-    });
-    this.url = args.getString('url');
-    this.isTopLevel = args.getBool('isTopLevel');
+    super('loadabort', args);
     this.code = args.getInt('code');
     this.reason = args.getString('reason');
   }
@@ -160,8 +156,18 @@ const eventDescriptors: EventMap = new Map([
   [
     'loadcommit',
     {
-      factory: LoadCommitEvent.factory,
+      factory: LoadEvent.loadCommitFactory,
     },
+  ],
+  [
+    'loadstart',
+    {
+      factory: LoadEvent.loadStartFactory,
+    },
+  ],
+  [
+    'loadstop',
+    {},
   ],
   [
     'newwindow',

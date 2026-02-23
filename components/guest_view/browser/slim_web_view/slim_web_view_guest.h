@@ -59,6 +59,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
       base::RepeatingClosure hang_monitor_restarter) final;
 
   // content::WebContentsObserver:
+  void DidStartNavigation(content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
 
   // guest_view::GuestViewBase:
@@ -75,6 +76,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
                        scoped_refptr<content::SiteInstance> site_instance,
                        const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) final;
+  void GuestViewDidStopLoading() final;
 
   void LoadAbort(bool is_top_level, const GURL& url, net::Error error_code);
 };

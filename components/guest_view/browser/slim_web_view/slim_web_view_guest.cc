@@ -200,6 +200,24 @@ void SlimWebViewGuest::RendererUnresponsive(
       slim_web_view::kEventUnresponsive, base::DictValue()));
 }
 
+void SlimWebViewGuest::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!IsObservedNavigationWithinGuest(navigation_handle)) {
+    return;
+  }
+  // New window creation is not supported in SlimWebView.
+  CHECK(!GetOpener());
+  if (navigation_handle->IsSameDocument()) {
+    return;
+  }
+  base::DictValue args;
+  args.Set(guest_view::kUrl, navigation_handle->GetURL().spec());
+  args.Set(guest_view::kIsTopLevel,
+           IsObservedNavigationWithinGuestMainFrame(navigation_handle));
+  DispatchEventToView(std::make_unique<GuestViewEvent>(
+      slim_web_view::kEventLoadStart, std::move(args)));
+}
+
 void SlimWebViewGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!IsObservedNavigationWithinGuest(navigation_handle)) {
@@ -315,6 +333,11 @@ void SlimWebViewGuest::CreateInnerPage(
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(stored_params);
   std::move(callback).Run(std::move(owned_this), std::move(new_contents));
+}
+
+void SlimWebViewGuest::GuestViewDidStopLoading() {
+  DispatchEventToView(std::make_unique<GuestViewEvent>(
+      slim_web_view::kEventLoadStop, base::DictValue()));
 }
 
 void SlimWebViewGuest::LoadAbort(bool is_top_level,
