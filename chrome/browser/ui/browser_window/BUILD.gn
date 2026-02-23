@@ -99,7 +99,7 @@ if (!is_android || is_desktop_android) {
     } else {
       sources += [
         "internal/create_browser_window_browsertest.cc",
-        "internal/profile_browser_collection_non_android_browsertest.cc",
+        "internal/profile_browser_collection_browsertest.cc",
         "public/browser_window_interface_iterator_browsertest.cc",
       ]
     }
