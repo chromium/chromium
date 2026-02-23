@@ -57,7 +57,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     std::unique_ptr<web::WebState> web_state =
         web::WebState::Create(create_params);
     OverlayRequestQueue::CreateForWebState(web_state.get());
-    BlockedPopupTabHelper::GetOrCreateForWebState(web_state.get());
+    BlockedPopupTabHelper::CreateForWebState(web_state.get());
     SnapshotTabHelper::CreateForWebState(web_state.get());
     SnapshotSourceTabHelper::CreateForWebState(web_state.get());
     data_controls::DataControlsTabHelper::CreateForWebState(web_state.get());
@@ -95,7 +95,7 @@ TEST_F(WebStateDelegateBrowserAgentTest, CreateNewWebStateAndPopup) {
 
   // Verify that this webstate's popups are blocked
   BlockedPopupTabHelper* popup_helper =
-      BlockedPopupTabHelper::GetOrCreateForWebState(web_state);
+      BlockedPopupTabHelper::FromWebState(web_state);
   EXPECT_TRUE(popup_helper->ShouldBlockPopup(GURL(kURL1)));
   // Create a new webstate without user initiation.
   web::WebState* web_state2 =

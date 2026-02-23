@@ -197,7 +197,7 @@ const CGFloat kFeatureRowIconSize = 20;
 
       // Show row only if blocking is active AND there are blocked popups.
       BlockedPopupTabHelper* helper =
-          BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
+          BlockedPopupTabHelper::FromWebState(_webState);
       bool hasBlockedPopups = helper && helper->GetBlockedPopupCount() > 0;
 
       return setting == CONTENT_SETTING_BLOCK && hasBlockedPopups;
@@ -266,7 +266,7 @@ const CGFloat kFeatureRowIconSize = 20;
     return 0;
   }
   BlockedPopupTabHelper* helper =
-      BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
+      BlockedPopupTabHelper::FromWebState(_webState);
   return helper ? helper->GetBlockedPopupCount() : 0;
 }
 
@@ -432,7 +432,7 @@ const CGFloat kFeatureRowIconSize = 20;
   }
 
   BlockedPopupTabHelper* helper =
-      BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
+      BlockedPopupTabHelper::FromWebState(_webState);
   if (!helper) {
     return;
   }

@@ -10,8 +10,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "ios/web/public/lazy_web_state_user_data.h"
 #import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
 
 class ProfileIOS;
@@ -28,7 +28,7 @@ class WebState;
 // allowing the user to add an exception and navigate to the site.
 class BlockedPopupTabHelper
     : public infobars::InfoBarManager::Observer,
-      public web::LazyWebStateUserData<BlockedPopupTabHelper> {
+      public web::WebStateUserData<BlockedPopupTabHelper> {
  public:
   explicit BlockedPopupTabHelper(web::WebState* web_state);
 
@@ -67,7 +67,7 @@ class BlockedPopupTabHelper
   std::vector<Popup> GetBlockedPopups() const { return popups_; }
 
  private:
-  friend class web::LazyWebStateUserData<BlockedPopupTabHelper>;
+  friend class web::WebStateUserData<BlockedPopupTabHelper>;
 
   friend class BlockedPopupTabHelperTest;
 

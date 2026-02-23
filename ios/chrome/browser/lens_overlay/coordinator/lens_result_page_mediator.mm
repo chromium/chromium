@@ -486,7 +486,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
             initiatedByUser:(BOOL)initiatedByUser {
   // Check if requested web state is a popup and block it if necessary.
   if (!initiatedByUser) {
-    auto* helper = BlockedPopupTabHelper::GetOrCreateForWebState(webState);
+    auto* helper = BlockedPopupTabHelper::FromWebState(webState);
     if (helper->ShouldBlockPopup(openerURL)) {
       // It's possible for a page to inject a popup into a window created via
       // window.open before its initial load is committed.  Rather than relying

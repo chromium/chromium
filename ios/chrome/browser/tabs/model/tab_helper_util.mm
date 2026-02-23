@@ -491,4 +491,5 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<data_controls::DataControlsTabHelper>();
   attacher.Create<CaptivePortalTabHelper>();
   attacher.Create<PrintTabHelper>();
+  attacher.Create<BlockedPopupTabHelper>();
 }
