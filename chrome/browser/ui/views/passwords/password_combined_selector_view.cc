@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -66,6 +67,75 @@ constexpr int kVerticalPadding = 8;
 constexpr int kMaxVisibleItems = 3;
 constexpr int kItemHeight = 72;
 
+// A custom radio button that allows for group management and focus handling
+// across different parent views. This is necessary because the default
+// views::RadioButton assumes all buttons in a group share the same parent.
+class PasswordCombinedSelectorRadioButton : public views::RadioButton {
+  METADATA_HEADER(PasswordCombinedSelectorRadioButton, views::RadioButton)
+ public:
+  explicit PasswordCombinedSelectorRadioButton(
+      PasswordCombinedSelectorRadioButtonDelegate* delegate,
+      int index)
+      : views::RadioButton(u"", kGroupId), delegate_(delegate), index_(index) {}
+
+  views::View* GetSelectedViewForGroup(int group) override {
+    Views views;
+    GetRadioButtonsInList(group, &views);
+
+    const auto i = std::ranges::find_if(views, [](const views::View* view) {
+      return static_cast<const PasswordCombinedSelectorRadioButton*>(view)
+          ->GetChecked();
+    });
+    return (i == views.cend()) ? nullptr : *i;
+  }
+
+  void SetChecked(bool checked) override {
+    if (checked == RadioButton::GetChecked()) {
+      return;
+    }
+    if (checked) {
+      Views other;
+      GetRadioButtonsInList(GetGroup(), &other);
+      for (views::View* peer : other) {
+        if (peer != this &&
+            IsViewClass<PasswordCombinedSelectorRadioButton>(peer)) {
+          static_cast<PasswordCombinedSelectorRadioButton*>(peer)->SetChecked(
+              false);
+        }
+      }
+      delegate_->OnRadioButtonChecked(index_);
+      RequestFocus();
+    }
+    views::Checkbox::SetChecked(checked);
+  }
+
+ private:
+  void GetRadioButtonsInList(int group, Views* views) {
+    views::View* row_view = parent();
+    if (!row_view) {
+      return;
+    }
+    views::View* list_view = row_view->parent();
+    if (!list_view) {
+      return;
+    }
+    list_view->GetViewsInGroup(group, views);
+  }
+
+  // Allow the Enter key to be used to select the radio button.
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override {
+    return event.key_code() == ui::VKEY_RETURN
+               ? false
+               : RadioButton::SkipDefaultKeyEventProcessing(event);
+  }
+
+  raw_ptr<PasswordCombinedSelectorRadioButtonDelegate> delegate_;
+  const int index_;
+};
+
+BEGIN_METADATA(PasswordCombinedSelectorRadioButton)
+END_METADATA
+
 class PasswordCombinedSelectorViewWrapper : public views::View {
   METADATA_HEADER(PasswordCombinedSelectorViewWrapper, views::View)
 };
@@ -85,8 +155,8 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
       const GURL& icon_url,
       network::mojom::URLLoaderFactory* loader_factory,
       const url::Origin& initiator,
-      base::RepeatingCallback<void(views::RadioButton*)> callback)
-      : callback_(callback) {
+      PasswordCombinedSelectorRadioButtonDelegate* radio_delegate,
+      int index) {
     const int horizontal_padding = show_radio_button ? kHorizontalPadding : 0;
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, horizontal_padding)));
@@ -154,23 +224,32 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
 
     // Radio Button
     if (show_radio_button) {
-      radio_button_ = AddChildView(
-          std::make_unique<views::RadioButton>(std::u16string(), kGroupId));
-      std::u16string acc_name = username;
-      for (const auto& detail : details) {
-        acc_name += u"\n" + detail;
-      }
-      radio_button_->GetViewAccessibility().SetName(acc_name);
-      radio_button_->SetCallback(base::BindRepeating(
-          &PasswordCombinedSelectorRowView::OnRadioButtonPressed,
-          base::Unretained(this)));
+      MaybeAddRadioButton(username, details, radio_delegate, index);
     }
+  }
+
+  void MaybeAddRadioButton(
+      const std::u16string& username,
+      const std::vector<std::u16string>& details,
+      PasswordCombinedSelectorRadioButtonDelegate* delegate,
+      int index) {
+    auto radio_button =
+        std::make_unique<PasswordCombinedSelectorRadioButton>(delegate, index);
+    std::vector<std::u16string> name_parts = {username};
+    name_parts.insert(name_parts.end(), details.begin(), details.end());
+    radio_button->GetViewAccessibility().SetName(
+        base::JoinString(name_parts, u"\n"));
+    radio_button_ = AddChildView(std::move(radio_button));
   }
 
   void SetChecked(bool checked) {
     if (radio_button_) {
       radio_button_->SetChecked(checked);
     }
+  }
+
+  bool is_selected() const {
+    return radio_button_ && radio_button_->GetChecked();
   }
 
   views::RadioButton* GetRadioButton() { return radio_button_; }
@@ -195,6 +274,12 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
   }
 
   // views::TableLayoutView:
+  void RequestFocus() override {
+    if (radio_button_) {
+      radio_button_->RequestFocus();
+    }
+  }
+
   bool OnMousePressed(const ui::MouseEvent& event) override {
     if (radio_button_ && event.IsOnlyLeftMouseButton()) {
       const gfx::Point center = radio_button_->GetLocalBounds().CenterPoint();
@@ -214,27 +299,151 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
           ui::EventType::kMouseReleased, center, center, event.time_stamp(),
           event.flags(), event.changed_button_flags());
       radio_button_->OnMouseReleased(synthetic_release_event);
+      RequestFocus();
       return;
     }
     views::TableLayoutView::OnMouseReleased(event);
   }
 
  private:
-  void OnRadioButtonPressed() {
-    if (radio_button_ && radio_button_->GetChecked()) {
-      callback_.Run(radio_button_);
-    }
-  }
-
-  base::RepeatingCallback<void(views::RadioButton*)> callback_;
   // AccountAvatarFetcherDelegate:
   raw_ptr<views::ImageView> image_view_ = nullptr;
-  raw_ptr<views::RadioButton> radio_button_ = nullptr;
+  raw_ptr<PasswordCombinedSelectorRadioButton> radio_button_ = nullptr;
 
   base::WeakPtrFactory<PasswordCombinedSelectorRowView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(PasswordCombinedSelectorRowView)
+END_METADATA
+
+class PasswordCombinedSelectorListView : public views::View {
+  METADATA_HEADER(PasswordCombinedSelectorListView, views::View)
+ public:
+  PasswordCombinedSelectorListView(
+      CredentialManagerDialogController* controller,
+      content::WebContents* web_contents,
+      PasswordCombinedSelectorRadioButtonDelegate* delegate) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
+
+    auto wrapper = std::make_unique<views::View>();
+    wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+        /*between_child_spacing=*/4));
+
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms =
+        controller->GetLocalForms();
+    bool show_radio_buttons = forms.size() > 1;
+
+    if (show_radio_buttons) {
+      wrapper->AddChildView(std::make_unique<views::Separator>());
+    }
+
+    int i = 0;
+    for (const std::unique_ptr<password_manager::PasswordForm>& form : forms) {
+      if (i > 0) {
+        wrapper->AddChildView(std::make_unique<views::Separator>());
+      }
+
+      std::pair<std::u16string, std::u16string> labels =
+          GetCredentialLabelsForAccountChooser(*form);
+      std::u16string username = labels.first;
+      std::vector<std::u16string> details;
+
+      if (!labels.second.empty()) {
+        for (const auto& line :
+             base::SplitString(labels.second, u"\n", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY)) {
+          details.push_back(line);
+        }
+      }
+      if (password_manager_util::GetMatchType(*form) !=
+          password_manager_util::GetLoginMatchType::kExact) {
+        details.push_back(url_formatter::FormatOriginForSecurityDisplay(
+            url::Origin::Create(form->url),
+            url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+      }
+      if (!form->IsFederatedCredential()) {
+        details.push_back(l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER));
+      }
+
+      auto* row = wrapper->AddChildView(
+          std::make_unique<PasswordCombinedSelectorRowView>(
+              username, details, show_radio_buttons,
+              form->IsFederatedCredential(), form->icon_url,
+              GetURLLoaderForMainFrame(web_contents).get(),
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              delegate, i));
+
+      if (i == 0) {
+        selected_view_ = row;
+      }
+
+      i++;
+    }
+
+    wrapper->SetOwnedGroup(kGroupId);
+
+    if (show_radio_buttons) {
+      wrapper->AddChildView(std::make_unique<views::Separator>());
+    }
+
+    scroll_view->ClipHeightTo(0, kMaxVisibleItems * kItemHeight);
+    scroll_view->SetContents(std::move(wrapper));
+  }
+
+  void RequestFocus() override {
+    if (selected_view_) {
+      selected_view_->RequestFocus();
+    }
+  }
+
+  void SetSelectedView(views::View* view) { selected_view_ = view; }
+
+  void SetSelectedIndex(size_t index) {
+    PasswordCombinedSelectorRowView* row = GetRowView(index);
+    if (row) {
+      row->SetChecked(true);
+      selected_view_ = row;
+    }
+  }
+
+  PasswordCombinedSelectorRowView* GetRowView(size_t index) {
+    auto* scroll_view = static_cast<views::ScrollView*>(children()[0]);
+    views::View* wrapper = scroll_view->contents();
+    const auto& forms = wrapper->children();
+    // When there are multiple forms, separators are added between them and
+    // around the list, so the actual row views are at odd indices (1, 3, 5...).
+    size_t child_index = (forms.size() > 1) ? 1 + 2 * index : index;
+    if (child_index >= forms.size()) {
+      return nullptr;
+    }
+    return static_cast<PasswordCombinedSelectorRowView*>(forms[child_index]);
+  }
+
+  std::vector<raw_ptr<views::RadioButton>> GetRadioButtons() {
+    std::vector<raw_ptr<views::RadioButton>> radio_buttons;
+    auto* scroll_view = static_cast<views::ScrollView*>(children()[0]);
+    views::View* wrapper = scroll_view->contents();
+    for (views::View* child : wrapper->children()) {
+      if (views::IsViewClass<PasswordCombinedSelectorRowView>(child)) {
+        auto* radio_button =
+            static_cast<PasswordCombinedSelectorRowView*>(child)
+                ->GetRadioButton();
+        if (radio_button) {
+          radio_buttons.push_back(radio_button);
+        }
+      }
+    }
+    return radio_buttons;
+  }
+
+ private:
+  raw_ptr<views::View> selected_view_ = nullptr;
+};
+
+BEGIN_METADATA(PasswordCombinedSelectorListView)
 END_METADATA
 
 }  // namespace
@@ -291,6 +500,7 @@ ui::mojom::ModalType PasswordCombinedSelectorView::GetModalType() const {
 }
 
 void PasswordCombinedSelectorView::WindowClosing() {
+  list_view_ = nullptr;
   radio_buttons_.clear();
   selected_form_ = nullptr;
   if (controller_) {
@@ -308,99 +518,41 @@ bool PasswordCombinedSelectorView::Accept() {
         *selected_form_,
         password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
   }
-  // Closed by the controller.
+  // The dialog is closed by the controller, so return false here to prevent the
+  // default dialog closing logic.
   return false;
 }
 
 void PasswordCombinedSelectorView::InitWindow() {
   auto main_view = std::make_unique<PasswordCombinedSelectorViewWrapper>();
   main_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto* scroll_view =
-      main_view->AddChildView(std::make_unique<views::ScrollView>());
-
-  auto wrapper = std::make_unique<views::View>();
-  wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      /*between_child_spacing=*/4));
+  auto list_view = std::make_unique<PasswordCombinedSelectorListView>(
+      controller_.get(), web_contents_, this);
+  list_view_ = main_view->AddChildView(std::move(list_view));
 
   const auto& forms = controller_->GetLocalForms();
-  bool show_radio_buttons = forms.size() > 1;
-  radio_buttons_.clear();
-
-  if (show_radio_buttons) {
-    wrapper->AddChildView(std::make_unique<views::Separator>());
+  if (!forms.empty()) {
+    selected_form_ = forms[0].get();
+    static_cast<PasswordCombinedSelectorListView*>(list_view_)
+        ->SetSelectedIndex(0);
   }
-
-  int i = 0;
-  for (const auto& form : forms) {
-    if (i > 0) {
-      wrapper->AddChildView(std::make_unique<views::Separator>());
-    }
-
-    auto labels = GetCredentialLabelsForAccountChooser(*form);
-    std::u16string username = labels.first;
-    std::vector<std::u16string> details;
-
-    // Use subtitle for details if present
-    if (!labels.second.empty()) {
-      for (const auto& line :
-           base::SplitString(labels.second, u"\n", base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY)) {
-        details.push_back(line);
-      }
-    }
-    if (password_manager_util::GetMatchType(*form) !=
-        password_manager_util::GetLoginMatchType::kExact) {
-      details.push_back(url_formatter::FormatOriginForSecurityDisplay(
-          url::Origin::Create(form->url),
-          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-    }
-    if (!form->IsFederatedCredential()) {
-      details.push_back(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER));
-    }
-
-    auto* row =
-        wrapper->AddChildView(std::make_unique<PasswordCombinedSelectorRowView>(
-            username, details, show_radio_buttons,
-            form->IsFederatedCredential(), form->icon_url,
-            GetURLLoaderForMainFrame(web_contents_).get(),
-            web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-            base::BindRepeating(
-                &PasswordCombinedSelectorView::OnRadioButtonClicked,
-                base::Unretained(this), form.get())));
-
-    if (!selected_form_) {
-      selected_form_ = form.get();
-      row->SetChecked(true);
-    }
-
-    if (row->GetRadioButton()) {
-      radio_buttons_.push_back(row->GetRadioButton());
-    }
-    i++;
-  }
-
-  if (show_radio_buttons) {
-    wrapper->AddChildView(std::make_unique<views::Separator>());
-  }
-
-  scroll_view->ClipHeightTo(0, kMaxVisibleItems * kItemHeight);
-  scroll_view->SetContents(std::move(wrapper));
+  radio_buttons_ = static_cast<PasswordCombinedSelectorListView*>(list_view_)
+                       ->GetRadioButtons();
 
   SetContentsView(std::move(main_view));
 }
 
-void PasswordCombinedSelectorView::OnRadioButtonClicked(
-    const password_manager::PasswordForm* form,
-    views::RadioButton* radio_button) {
+void PasswordCombinedSelectorView::OnRadioButtonChecked(int index) {
   if (!controller_) {
     return;
   }
-  selected_form_ = form;
-  for (views::RadioButton* rb : radio_buttons_) {
-    if (rb != radio_button) {
-      rb->SetChecked(false);
-    }
+  const auto& forms = controller_->GetLocalForms();
+  if (static_cast<size_t>(index) < forms.size()) {
+    selected_form_ = forms[index].get();
   }
+
+  // Update selected_view_ in list_view_ for RequestFocus.
+  auto* list_view_ptr =
+      static_cast<PasswordCombinedSelectorListView*>(list_view_);
+  list_view_ptr->SetSelectedView(list_view_ptr->GetRowView(index));
 }
