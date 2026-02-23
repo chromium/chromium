@@ -117,7 +117,7 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
             /*ignore_certificate_errors=*/nullptr,
             /*early_data_enabled=*/nullptr),
         pool_(kMaxSockets,
-              SocketPoolAdditionalCapacity::Create(),
+              SocketPoolAdditionalCapacity::CreateEmpty(),
               ProxyChain::Direct(),
               &common_connect_job_params_) {
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(
@@ -1419,8 +1419,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
 TEST_F(WebSocketTransportClientSocketPoolTest,
        ValidateAdditionalCapacityForWebSocketTransportClientSocketPool) {
   WebSocketTransportClientSocketPool pool(
-      /*socket_soft_cap=*/256, kFieldTrialPool, ProxyChain::Direct(),
-      &common_connect_job_params_);
+      /*socket_soft_cap=*/256, SocketPoolAdditionalCapacity::Create(),
+      ProxyChain::Direct(), &common_connect_job_params_);
   ValidateAdditionalCapacityForSocketPool(
       base::BindLambdaForTesting([&]() {
         StartRequest(kDefaultPriority, &pool);

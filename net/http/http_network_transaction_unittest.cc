@@ -683,6 +683,7 @@ class HttpNetworkTransactionTest
     } else {
       disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
+    disabled_features.emplace_back(features::kTcpSocketPoolLimitRandomization);
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

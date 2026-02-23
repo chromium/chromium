@@ -619,6 +619,8 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
     connect_backup_jobs_enabled_ =
         TransportClientSocketPool::connect_backup_jobs_enabled();
     TransportClientSocketPool::set_connect_backup_jobs_enabled(true);
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kTcpSocketPoolLimitRandomization);
   }
 
   ~ClientSocketPoolBaseTest() override {
@@ -735,6 +737,8 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
 
   // Must outlive `connect_job_factory_`
   std::unique_ptr<TransportClientSocketPool> pool_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<TestConnectJobFactory> connect_job_factory_;
   ClientSocketPoolTest test_base_;

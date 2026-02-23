@@ -2241,8 +2241,9 @@ TEST_F(TransportClientSocketPoolTest, HasActiveSocket) {
 TEST_F(TransportClientSocketPoolTest,
        ValidateAdditionalCapacityForTransportClientSocketPool) {
   TransportClientSocketPool pool(
-      /*socket_soft_cap=*/256, kMaxSocketsPerGroup, kFieldTrialPool,
-      kUnusedIdleSocketTimeout, ProxyChain::Direct(),
+      /*socket_soft_cap=*/256, kMaxSocketsPerGroup,
+      SocketPoolAdditionalCapacity::Create(), kUnusedIdleSocketTimeout,
+      ProxyChain::Direct(),
       /*is_for_websockets=*/false, common_connect_job_params_.get());
   ValidateAdditionalCapacityForSocketPool(
       base::BindLambdaForTesting([&]() {

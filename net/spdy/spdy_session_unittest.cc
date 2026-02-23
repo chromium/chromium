@@ -192,7 +192,10 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
              NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow,
              /*disable_cert_verification_network_fetches=*/false),
-        ssl_(SYNCHRONOUS, OK) {}
+        ssl_(SYNCHRONOUS, OK) {
+    feature_list_.InitAndDisableFeature(
+        features::kTcpSocketPoolLimitRandomization);
+  }
 
   ~SpdySessionTest() override {
     // Important to restore the per-pool limit first, since the pool limit must
@@ -372,6 +375,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   const url::SchemeHostPort test_server_;
   SpdySessionKey key_;
   SSLSocketDataProvider ssl_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class SpdySessionTestWithMockTime : public SpdySessionTest {

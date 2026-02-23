@@ -581,31 +581,31 @@ BASE_FEATURE(kVerifyMTCs, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kTcpSocketPoolLimitRandomization,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(double,
                    kTcpSocketPoolLimitRandomizationBase,
                    &kTcpSocketPoolLimitRandomization,
                    "TcpSocketPoolLimitRandomizationBase",
-                   0.0);
+                   0.000001);
 
 BASE_FEATURE_PARAM(int,
                    kTcpSocketPoolLimitRandomizationCapacity,
                    &kTcpSocketPoolLimitRandomization,
                    "TcpSocketPoolLimitRandomizationCapacity",
-                   0);
+                   256);
 
 BASE_FEATURE_PARAM(double,
                    kTcpSocketPoolLimitRandomizationMinimum,
                    &kTcpSocketPoolLimitRandomization,
                    "TcpSocketPoolLimitRandomizationMinimum",
-                   0.0);
+                   0.01);
 
 BASE_FEATURE_PARAM(double,
                    kTcpSocketPoolLimitRandomizationNoise,
                    &kTcpSocketPoolLimitRandomization,
                    "TcpSocketPoolLimitRandomizationNoise",
-                   0.0);
+                   0.2);
 
 BASE_FEATURE(kNetTaskScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,

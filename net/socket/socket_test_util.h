@@ -1558,10 +1558,6 @@ bool CanGetTaggedBytes();
 uint64_t GetTaggedBytes(int32_t expected_tag);
 #endif
 
-// This should be kept in sync with the field trial config's default pool.
-const SocketPoolAdditionalCapacity kFieldTrialPool =
-    SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
-
 // The goal of this test is to walk a pool back and forth between being
 // capped and uncapped, tracking at what point the transition occurs
 // and using that data to validate expected behavior. We take this walk
