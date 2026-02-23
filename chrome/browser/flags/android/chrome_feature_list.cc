@@ -73,6 +73,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
+#include "components/sync_preferences/features.h"
 #include "components/sync_sessions/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
@@ -499,6 +500,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
     &switches::kClankDefaultSearchApi,
     &switches::kRestrictLegacySearchEnginePromoOnFormFactors,
+    &sync_preferences::features::kCrossDevicePrefTrackerExtraLogs,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
