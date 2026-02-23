@@ -72,11 +72,16 @@ class SyncedTabDelegateAndroidTest : public testing::Test {
     TabModelList::RemoveTabModel(test_tab_model_.get());
   }
 
-  void MockBufferFromPickle(const base::Pickle& pickle) {
-    base::raw_span<const uint8_t> UNSAFE_TODO(
-        nav_span{pickle.data(), pickle.size()});
+  void MockBufferFromPickle(base::Pickle& pickle) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+
+    auto jbuffer = base::android::ScopedJavaLocalRef<jobject>::Adopt(
+        env, env->NewDirectByteBuffer(
+                 reinterpret_cast<void*>(pickle.AsWritableBytes().data()),
+                 pickle.size()));
+
     std::unique_ptr<WebContentsStateByteBuffer> buffer =
-        std::make_unique<WebContentsStateByteBuffer>(nav_span, kVersion);
+        std::make_unique<WebContentsStateByteBuffer>(jbuffer, kVersion);
     EXPECT_CALL(mock_tab_android_data_provider_, GetWebContentsByteBuffer())
         .WillOnce(Return(std::move(buffer)));
   }

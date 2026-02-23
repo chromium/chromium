@@ -165,16 +165,9 @@ std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     base::android::ScopedJavaLocalRef<jobject> web_contents_byte_buffer_result,
     int saved_state_version)
-    : state_version(saved_state_version) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  java_buffer.Reset(web_contents_byte_buffer_result);
-  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
+    : state_version_(saved_state_version) {
+  java_buffer_.Reset(web_contents_byte_buffer_result);
 }
-
-WebContentsStateByteBuffer::WebContentsStateByteBuffer(
-    base::raw_span<const uint8_t> raw_data,
-    int saved_state_version)
-    : backing_buffer(raw_data), state_version(saved_state_version) {}
 
 WebContentsStateByteBuffer::~WebContentsStateByteBuffer() = default;
 
@@ -182,6 +175,11 @@ WebContentsStateByteBuffer& WebContentsStateByteBuffer::operator=(
     WebContentsStateByteBuffer&& other) noexcept = default;
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     WebContentsStateByteBuffer&& other) noexcept = default;
+
+base::span<const uint8_t> WebContentsStateByteBuffer::GetBuffer() const {
+  return base::android::JavaByteBufferToSpan(
+      base::android::AttachCurrentThread(), java_buffer_);
+}
 
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     JNIEnv* env,
@@ -324,7 +322,7 @@ std::unique_ptr<WebContents> WebContentsState::RestoreContentsFromByteBuffer(
     bool initially_hidden,
     bool no_renderer) {
   return WebContentsState::RestoreContentsFromByteBufferImpl(
-      browser_context, byte_buffer->backing_buffer, byte_buffer->state_version,
+      browser_context, byte_buffer->GetBuffer(), byte_buffer->state_version(),
       initially_hidden, no_renderer);
 }
 

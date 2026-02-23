@@ -253,7 +253,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
   if (tab->web_contents()) {
     return std::make_unique<ScopedWebContents>(tab->web_contents());
   }
-  if (web_contents_state->state_version != -1) {
+  if (web_contents_state->state_version() != -1) {
     auto native_contents = WebContentsState::RestoreContentsFromByteBuffer(
         tab->profile(), web_contents_state, /*initially_hidden=*/true,
         /*no_renderer=*/true);
