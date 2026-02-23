@@ -292,6 +292,7 @@ class CORE_EXPORT HTMLVideoElement final
   // GetSourceImageForCanvas(), etc). Created on demand.
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> snapshot_provider_;
   std::optional<CanvasSnapshotProvider::Info> cached_draw_info_;
+  sk_sp<SkSurface> sw_draw_surface_;
   bool allow_accelerated_images_ = true;
   HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 

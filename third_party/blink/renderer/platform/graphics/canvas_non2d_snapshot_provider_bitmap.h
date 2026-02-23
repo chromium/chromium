@@ -44,6 +44,8 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   gfx::Size Size() const override { return info_.size; }
   const CanvasSnapshotProvider::Info& Info() const { return info_; }
 
+  static sk_sp<SkSurface> CreateSurface(
+      const CanvasSnapshotProvider::Info& info);
   sk_sp<SkSurface> GetCachedSurface();
 
  private:

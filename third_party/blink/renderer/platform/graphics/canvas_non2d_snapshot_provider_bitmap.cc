@@ -10,9 +10,9 @@
 
 namespace blink {
 
-namespace {
-
-sk_sp<SkSurface> CreateSurface(const CanvasSnapshotProvider::Info& info) {
+// static
+sk_sp<SkSurface> CanvasNon2DSnapshotProviderBitmap::CreateSurface(
+    const CanvasSnapshotProvider::Info& info) {
   const bool can_use_lcd_text = info.alpha_type == kOpaque_SkAlphaType;
   const auto props =
       skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
@@ -22,8 +22,6 @@ sk_sp<SkSurface> CreateSurface(const CanvasSnapshotProvider::Info& info) {
                         kPremul_SkAlphaType, info.color_space.ToSkColorSpace()),
       &props);
 }
-
-}  // namespace
 
 CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::ImageProviderImpl(
     bool is_f16,
