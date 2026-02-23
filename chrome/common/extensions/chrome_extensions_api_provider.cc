@@ -62,8 +62,9 @@ void ChromeExtensionsAPIProvider::RegisterPermissions(
       chrome_api_permissions::GetPermissionAliases());
 }
 
-void ChromeExtensionsAPIProvider::RegisterManifestHandlers() {
-  RegisterChromeManifestHandlers();
+void ChromeExtensionsAPIProvider::RegisterManifestHandlers(
+    ManifestHandlerRegistry* registry) {
+  RegisterChromeManifestHandlers(registry);
 }
 
 }  // namespace extensions

@@ -7,9 +7,11 @@
 
 namespace extensions {
 
+class ManifestHandlerRegistry;
+
 // Registers all manifest handlers used in Chrome. Should be called
 // once in each process. See also extensions/common/common_manifest_handlers.h.
-void RegisterChromeManifestHandlers();
+void RegisterChromeManifestHandlers(ManifestHandlerRegistry* registry);
 
 }  // namespace extensions
 

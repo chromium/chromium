@@ -54,10 +54,7 @@
 
 namespace extensions {
 
-void RegisterCommonManifestHandlers() {
-  // TODO(devlin): Pass in |registry| rather than Get()ing it.
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
-
+void RegisterCommonManifestHandlers(ManifestHandlerRegistry* registry) {
   registry->RegisterHandler(std::make_unique<AboutPageHandler>());
   registry->RegisterHandler(std::make_unique<AutomationHandler>());
   registry->RegisterHandler(std::make_unique<AppDisplayManifestHandler>());

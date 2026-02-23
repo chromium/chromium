@@ -55,7 +55,8 @@ void ControlledFrameAPIProvider::RegisterPermissions(
   // No Controlled Frame specific permissions.
 }
 
-void ControlledFrameAPIProvider::RegisterManifestHandlers() {
+void ControlledFrameAPIProvider::RegisterManifestHandlers(
+    extensions::ManifestHandlerRegistry* registry) {
   // No Controlled Frame specific manifest handlers.
 }
 

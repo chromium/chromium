@@ -32,10 +32,7 @@
 
 namespace extensions {
 
-void RegisterChromeManifestHandlers() {
-  // TODO(devlin): Pass in |registry| rather than Get()ing it.
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
-
+void RegisterChromeManifestHandlers(ManifestHandlerRegistry* registry) {
   registry->RegisterHandler(std::make_unique<AppLaunchManifestHandler>());
   registry->RegisterHandler(std::make_unique<MinimumChromeVersionChecker>());
   registry->RegisterHandler(std::make_unique<NativelyConnectableHandler>());

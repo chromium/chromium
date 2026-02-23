@@ -60,7 +60,8 @@ void ChromeAppsAPIProvider::RegisterPermissions(
       base::span<const extensions::Alias>());
 }
 
-void ChromeAppsAPIProvider::RegisterManifestHandlers() {
+void ChromeAppsAPIProvider::RegisterManifestHandlers(
+    extensions::ManifestHandlerRegistry* registry) {
   // No apps-specific manifest handlers (yet).
 }
 

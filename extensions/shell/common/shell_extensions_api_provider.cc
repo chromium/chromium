@@ -50,6 +50,7 @@ std::string_view ShellExtensionsAPIProvider::GetAPISchema(
 void ShellExtensionsAPIProvider::RegisterPermissions(
     PermissionsInfo* permissions_info) {}
 
-void ShellExtensionsAPIProvider::RegisterManifestHandlers() {}
+void ShellExtensionsAPIProvider::RegisterManifestHandlers(
+    ManifestHandlerRegistry* registry) {}
 
 }  // namespace extensions

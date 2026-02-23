@@ -60,8 +60,9 @@ void CoreExtensionsAPIProvider::RegisterPermissions(
       api_permissions::GetPermissionAliases());
 }
 
-void CoreExtensionsAPIProvider::RegisterManifestHandlers() {
-  RegisterCommonManifestHandlers();
+void CoreExtensionsAPIProvider::RegisterManifestHandlers(
+    ManifestHandlerRegistry* registry) {
+  RegisterCommonManifestHandlers(registry);
 }
 
 }  // namespace extensions

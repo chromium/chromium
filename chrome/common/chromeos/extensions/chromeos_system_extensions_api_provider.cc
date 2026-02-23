@@ -23,8 +23,8 @@
 
 namespace chromeos {
 
-ChromeOSSystemExtensionsAPIProvider::ChromeOSSystemExtensionsAPIProvider()
-    : registry_(extensions::ManifestHandlerRegistry::Get()) {}
+ChromeOSSystemExtensionsAPIProvider::ChromeOSSystemExtensionsAPIProvider() =
+    default;
 
 ChromeOSSystemExtensionsAPIProvider::~ChromeOSSystemExtensionsAPIProvider() =
     default;
@@ -71,11 +71,11 @@ void ChromeOSSystemExtensionsAPIProvider::RegisterPermissions(
       base::span<const extensions::Alias>());
 }
 
-void ChromeOSSystemExtensionsAPIProvider::RegisterManifestHandlers() {
+void ChromeOSSystemExtensionsAPIProvider::RegisterManifestHandlers(
+    extensions::ManifestHandlerRegistry* registry) {
   DCHECK(!extensions::ManifestHandler::IsRegistrationFinalized());
 
-  registry_->RegisterHandler(
-      std::make_unique<ChromeOSSystemExtensionHandler>());
+  registry->RegisterHandler(std::make_unique<ChromeOSSystemExtensionHandler>());
 }
 
 }  // namespace chromeos

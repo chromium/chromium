@@ -12,6 +12,7 @@ namespace extensions {
 class FeatureProvider;
 class JSONFeatureProviderSource;
 class PermissionsInfo;
+class ManifestHandlerRegistry;
 
 // A class to provide API-specific bits and bobs to the extensions system.
 // This allows for composition of multiple providers, so that we can easily
@@ -44,7 +45,7 @@ class ExtensionsAPIProvider {
   virtual void RegisterPermissions(PermissionsInfo* permissions_info) = 0;
 
   // Registers manifest handlers for any associated API features.
-  virtual void RegisterManifestHandlers() = 0;
+  virtual void RegisterManifestHandlers(ManifestHandlerRegistry* registry) = 0;
 };
 
 }  // namespace extensions

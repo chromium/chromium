@@ -25,7 +25,7 @@ TEST(ManifestHandlerPerfTest, MANUAL_CommonInitialize) {
   for (int i = 0; i < 100000; ++i) {
     {
       LoggingTimer timer(kTimerId);
-      RegisterCommonManifestHandlers();
+      RegisterCommonManifestHandlers(ManifestHandlerRegistry::Get());
       ManifestHandler::FinalizeRegistration();
     }
     ManifestHandlerRegistry::ResetForTesting();
@@ -35,10 +35,10 @@ TEST(ManifestHandlerPerfTest, MANUAL_CommonInitialize) {
 
 TEST(ManifestHandlerPerfTest, MANUAL_LookupTest) {
   ScopedTestingManifestHandlerRegistry scoped_registry;
-  RegisterCommonManifestHandlers();
-  ManifestHandler::FinalizeRegistration();
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
   ASSERT_TRUE(registry);
+  RegisterCommonManifestHandlers(registry);
+  ManifestHandler::FinalizeRegistration();
   std::vector<std::string> handler_names;
   handler_names.reserve(registry->handlers_.size());
   for (const auto& entry : registry->handlers_) {
@@ -59,7 +59,7 @@ TEST(ManifestHandlerPerfTest, MANUAL_CommonMeasureFinalization) {
   static constexpr char kTimerId[] = "Finalize";
   for (int i = 0; i < 100000; ++i) {
     {
-      RegisterCommonManifestHandlers();
+      RegisterCommonManifestHandlers(ManifestHandlerRegistry::Get());
       LoggingTimer timer(kTimerId);
       ManifestHandler::FinalizeRegistration();
     }

@@ -42,10 +42,8 @@ class ChromeOSSystemExtensionsAPIProvider
   std::string_view GetAPISchema(const std::string& name) override;
   void RegisterPermissions(
       extensions::PermissionsInfo* permissions_info) override;
-  void RegisterManifestHandlers() override;
-
- private:
-  raw_ptr<extensions::ManifestHandlerRegistry> registry_;  // not owned
+  void RegisterManifestHandlers(
+      extensions::ManifestHandlerRegistry* registry) override;
 };
 
 }  // namespace chromeos
