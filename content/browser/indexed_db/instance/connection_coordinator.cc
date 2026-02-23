@@ -234,7 +234,15 @@ class ConnectionCoordinator::OpenRequest
     saved_status_ = db_->OpenInternal();
     if (saved_status_.ok()) {
       if (bucket_context_handle_->IsUsingSqlite()) {
-        pending_->data_loss_info = db_->GetDataLossInfo();
+        // The SQLite backing store itself surfaces data loss info only at the
+        // database level, but `pending_->data_loss_info` will already contain
+        // backing-store-level data loss info in some cases such as when a
+        // corrupted LevelDB store is recreated with SQLite.
+        if (const IndexedDBDataLossInfo& db_data_loss_info =
+                db_->GetDataLossInfo();
+            db_data_loss_info.status != blink::mojom::IDBDataLoss::None) {
+          pending_->data_loss_info = db_data_loss_info;
+        }
       }
     } else {
       std::u16string message;

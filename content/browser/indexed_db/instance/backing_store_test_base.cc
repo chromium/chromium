@@ -100,7 +100,9 @@ std::unique_ptr<BucketContext> BackingStoreTestBase::CreateBucketContext(
   auto bucket_context = std::make_unique<BucketContext>(
       bucket_info, data_path, BucketContext::Delegate(), quota_manager_proxy_,
       std::move(blob_storage_context), std::move(fsa_context));
-  bucket_context->SetShouldUseSqliteForTesting(use_sqlite);
+  bucket_context->SetSqliteRolloutStageForTesting(
+      use_sqlite ? SqliteRolloutStage::kUseSqliteOnly
+                 : SqliteRolloutStage::kUseLevelDbOnly);
   std::tie(std::ignore, std::ignore, data_loss_info_) =
       bucket_context->InitBackingStore(/*create_if_missing=*/true);
   return bucket_context;

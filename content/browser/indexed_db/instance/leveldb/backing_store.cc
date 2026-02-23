@@ -88,6 +88,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -1545,7 +1546,7 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
       if (!ldb_status.IsNotFound()) {
         ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors", ldb_status);
       }
-      return {nullptr, std::move(ldb_status), IndexedDBDataLossInfo(),
+      return {nullptr, std::move(ldb_status), std::move(data_loss_info),
               is_disk_full};
     }
   }
@@ -1612,7 +1613,7 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
     std::move(*backing_store).SignalWhenDestructionComplete(&destruct_event);
     backing_store.reset();
     destruct_event.Wait();
-    return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
+    return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
   }
   backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
   backing_store->bucket_context_ = &bucket_context;
@@ -4159,7 +4160,9 @@ const blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata()
 const IndexedDBDataLossInfo& BackingStore::Database::GetDataLossInfo() const {
   // Data loss is logged when the backing store is opened, not on a per-DB
   // level.
-  NOTREACHED();
+  constexpr static const IndexedDBDataLossInfo kNoDataLossInfo{
+      blink::mojom::IDBDataLoss::None, {}};
+  return kNoDataLossInfo;
 }
 
 BackingStore::Transaction::BlobWriteState::BlobWriteState() = default;

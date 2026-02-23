@@ -53,12 +53,16 @@ class BackingStore;
 class BucketContextHandle;
 class Database;
 
+// Used as a feature param by `kIdbSqliteOnDiskRollout`. Adding, removing and
+// reordering values is fine; just make sure to update
+// `kIdbSqliteOnDiskRolloutStages` when adding new values.
 enum class SqliteRolloutStage {
   // Use LevelDB exclusively; delete SQLite stores if found.
   kUseLevelDbOnly,
+  // Use SQLite for new stores and existing LevelDB stores that are corrupted.
+  kUseSqliteForNewStores,
   // Use SQLite exclusively; delete LevelDB stores if found.
   kUseSqliteOnly,
-  kMaxValue = kUseSqliteOnly,
 };
 
 // BucketContext manages the per-bucket IndexedDB state, and other important
@@ -163,7 +167,7 @@ class CONTENT_EXPORT BucketContext
 
   // All `BucketContext` instances created during the lifetime of the returned
   // object will use SQLite iff `use_sqlite` is true, unless overridden for a
-  // specific instance with `SetShouldUseSqliteForTesting()`.
+  // specific instance with `SetSqliteRolloutStageForTesting()`.
   static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
       bool use_sqlite);
 
@@ -317,14 +321,15 @@ class CONTENT_EXPORT BucketContext
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTestWithBucketType,
                            ChangingEngineDeletesOtherEngineFiles);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTestWithBucketType, UseSqliteForNewStores);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest,
                            OverrideShouldUseSqliteForTesting);
 
-  // Overrides the backing store type for this instance only. Must be called
-  // before backing store initialization.
-  void SetShouldUseSqliteForTesting(bool use_sqlite);
+  // Overrides the rollout stage for this instance only. Must be called before
+  // backing store initialization.
+  void SetSqliteRolloutStageForTesting(SqliteRolloutStage stage);
 
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.
@@ -398,7 +403,8 @@ class CONTENT_EXPORT BucketContext
   // Base directory for blobs and backing store files.
   const base::FilePath data_path_;
 
-  // Set at construction. Can be overridden by `SetShouldUseSqliteForTesting()`.
+  // Set at construction. Can be overridden by
+  // `SetSqliteRolloutStageForTesting()`.
   SqliteRolloutStage sqlite_rollout_stage_;
 
   // True if there are blobs referencing this backing store that are still
