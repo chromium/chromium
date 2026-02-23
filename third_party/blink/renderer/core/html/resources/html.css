@@ -1012,23 +1012,20 @@ select:-internal-list-box optgroup option {
     }
 }
 
-/* TODO(crbug.com/357649033): This line-height rule can't be undone for
- * customizable select multiple because we can't put !important inside
- * -internal-auto-base(). */
 select:-internal-list-box option,
 select:-internal-list-box optgroup {
-    line-height: initial !important;
+    line-height: -internal-auto-base(initial, revert-rule) !important;
 }
 
 /* option selected, list-box focused.
  * Sites are relying on the !important here: http://crbug.com/415953695 */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:hover {
-    background-color: SelectedItem !important;
-    color: SelectedItemText !important;
+    background-color: -internal-auto-base(SelectedItem, revert-rule) !important;
+    color: -internal-auto-base(SelectedItemText, revert-rule) !important;
 }
 select:-internal-list-box:focus option:checked:disabled {
-    background-color: -internal-inactive-list-box-selection !important;
+    background-color: -internal-auto-base(-internal-inactive-list-box-selection, revert-rule) !important;
 }
 
 /* option selected, list-box not focused */
