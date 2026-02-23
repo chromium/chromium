@@ -2623,6 +2623,7 @@ _CONFIG = [
         'paths': ['third_party/blink/renderer/modules/clipboard/'],
         'allowed': [
             'net::ParseMimeTypeWithoutParameter',
+            'ui::kWebClipboardFormatPrefix',
         ],
     },
     {

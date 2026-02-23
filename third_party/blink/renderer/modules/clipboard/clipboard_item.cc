@@ -97,8 +97,7 @@ ClipboardItem::ClipboardItem(
       // TODO(caseq,japhet): we can't pass typed promises from bindings yet, but
       // when we can, the type cast below should go away.
       String web_custom_format_string =
-          UNSAFE_TODO(String::Format("%s%s", ui::kWebClipboardFormatPrefix,
-                                     web_custom_format.Utf8().c_str()));
+          StrCat({ui::kWebClipboardFormatPrefix, web_custom_format});
       representations_.emplace_back(web_custom_format_string,
                                     representation.second);
       custom_format_types_.push_back(web_custom_format_string);
