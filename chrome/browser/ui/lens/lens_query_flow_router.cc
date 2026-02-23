@@ -91,6 +91,12 @@ void LensQueryFlowRouter::StartQueryFlow(
     // remove the observer before creating a new session handle.
     file_upload_status_observation_.Reset();
 
+    // The page content should only be uploaded if the overlay was not opened by
+    // the contextual tasks composebox.
+    bool should_upload_page_content =
+        lens_search_controller_->invocation_source() !=
+        lens::LensOverlayInvocationSource::kContextualTasksComposebox;
+
     if (!GetContextualSearchSessionHandle()) {
       pending_session_handle_ = CreateContextualSearchSessionHandle();
       pending_session_handle_->NotifySessionStarted();
@@ -103,14 +109,18 @@ void LensQueryFlowRouter::StartQueryFlow(
 
     // If permissions have been granted, start uploading the current viewport
     // and page content. If not, store as a callback to be run later.
-    auto upload_task =
-        base::BindOnce(&LensQueryFlowRouter::UploadContextualInputData,
-                       weak_factory_.GetWeakPtr(),
-                       CreateContextualInputData(
-                           screenshot, page_url, page_title,
-                           std::move(significant_region_boxes),
-                           underlying_page_contents, primary_content_type,
-                           pdf_current_page, ui_scale_factor, invocation_time));
+    auto upload_task = base::BindOnce(
+        &LensQueryFlowRouter::UploadContextualInputData,
+        weak_factory_.GetWeakPtr(),
+        CreateContextualInputData(
+            screenshot, should_upload_page_content ? page_url : GURL(),
+            should_upload_page_content ? page_title : std::nullopt,
+            std::move(significant_region_boxes),
+            should_upload_page_content ? underlying_page_contents
+                                       : base::span<const PageContent>(),
+            should_upload_page_content ? primary_content_type
+                                       : lens::MimeType::kUnknown,
+            pdf_current_page, ui_scale_factor, invocation_time));
 
     if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
         !lens::DidUserGrantLensOverlayNeededPermissions(
